@@ -1,4 +1,4 @@
-package dev.codesoapbox.gogbackupservice.shared.api.controllers;
+package dev.codesoapbox.gogbackupservice.shared.presentation;
 
 public final class ApiControllerPaths {
 

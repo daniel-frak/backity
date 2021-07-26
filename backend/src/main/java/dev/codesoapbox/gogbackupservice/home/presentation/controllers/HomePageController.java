@@ -1,6 +1,6 @@
 package dev.codesoapbox.gogbackupservice.home.presentation.controllers;
 
-import dev.codesoapbox.gogbackupservice.shared.api.controllers.ApiControllerPaths;
+import dev.codesoapbox.gogbackupservice.shared.presentation.ApiControllerPaths;
 import dev.codesoapbox.gogbackupservice.home.application.dto.HomePageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

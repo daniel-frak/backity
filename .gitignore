@@ -26,3 +26,5 @@
 
 ### Custom ###
 run-sonar.sh
+/games/
+/app.log
