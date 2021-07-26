@@ -1,18 +1,18 @@
-# spring-boot-angular-scaffolding
+# gog-backup-service
 
 ![keep growing logo](readme-images/logo_250x60.png)
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_spring-boot-angular-scaffolding&metric=alert_status)](https://sonarcloud.io/dashboard?id=little-pinecone_spring-boot-angular-scaffolding)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_spring-boot-angular-scaffolding&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=little-pinecone_spring-boot-angular-scaffolding)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_spring-boot-angular-scaffolding&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=little-pinecone_spring-boot-angular-scaffolding)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_gog-backup-service&metric=alert_status)](https://sonarcloud.io/dashboard?id=little-pinecone_gog-backup-service)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_gog-backup-service&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=little-pinecone_gog-backup-service)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_gog-backup-service&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=little-pinecone_gog-backup-service)
 
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_spring-boot-angular-scaffolding&metric=bugs)](https://sonarcloud.io/dashboard?id=little-pinecone_spring-boot-angular-scaffolding)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_spring-boot-angular-scaffolding&metric=coverage)](https://sonarcloud.io/dashboard?id=little-pinecone_spring-boot-angular-scaffolding)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_spring-boot-angular-scaffolding&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=little-pinecone_spring-boot-angular-scaffolding)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_spring-boot-angular-scaffolding&metric=code_smells)](https://sonarcloud.io/dashboard?id=little-pinecone_spring-boot-angular-scaffolding)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_spring-boot-angular-scaffolding&metric=sqale_index)](https://sonarcloud.io/dashboard?id=little-pinecone_spring-boot-angular-scaffolding)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_gog-backup-service&metric=bugs)](https://sonarcloud.io/dashboard?id=little-pinecone_gog-backup-service)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_gog-backup-service&metric=coverage)](https://sonarcloud.io/dashboard?id=little-pinecone_gog-backup-service)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_gog-backup-service&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=little-pinecone_gog-backup-service)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_gog-backup-service&metric=code_smells)](https://sonarcloud.io/dashboard?id=little-pinecone_gog-backup-service)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_gog-backup-service&metric=sqale_index)](https://sonarcloud.io/dashboard?id=little-pinecone_gog-backup-service)
 
-![GitHub](https://img.shields.io/github/license/little-pinecone/spring-boot-angular-scaffolding)
+![GitHub](https://img.shields.io/github/license/little-pinecone/gog-backup-service)
 
 To learn how to set up a project like this one, check out the [Integrate Angular with a Spring Boot project](http://keepgrowing.in/java/springboot/integrate-angular-with-a-spring-boot-project/)
 post.
@@ -32,7 +32,7 @@ the frontend. The project can be built into a single jar file using Maven.
 - [Running test suits](#running-test-suits)
   * [Backend](#backend)
   * [Frontend](#frontend)
-- [SonarQube analysis on local environment](#sonarqube-analysis-on-local-environment)
+- [SonarQube analysis on a local environment](#sonarqube-analysis-on-local-a-environment)
   * [Prerequisites](#prerequisites)
   * [Full analysis](#full-analysis)
   * [Backend analysis](#backend-analysis)
@@ -149,7 +149,7 @@ cd frontend/src/main/angular
 ng test
 ```
 
-## SonarQube analysis on local environment
+## SonarQube analysis on a local environment
 
 ### Prerequisites
 

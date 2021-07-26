@@ -1,4 +1,4 @@
-package in.keepgrowing.springbootangularscaffolding.presentation.viewmodel;
+package dev.codesoapbox.gogbackupservice.presentation.viewmodel;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,7 @@
-package in.keepgrowing.springbootangularscaffolding.presentation.controllers;
+package dev.codesoapbox.gogbackupservice.presentation.controllers;
 
-import in.keepgrowing.springbootangularscaffolding.presentation.viewmodel.HomePageDto;
-import in.keepgrowing.springbootangularscaffolding.shared.presentation.controllers.ApiControllerPaths;
+import dev.codesoapbox.gogbackupservice.shared.presentation.controllers.ApiControllerPaths;
+import dev.codesoapbox.gogbackupservice.presentation.viewmodel.HomePageDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;

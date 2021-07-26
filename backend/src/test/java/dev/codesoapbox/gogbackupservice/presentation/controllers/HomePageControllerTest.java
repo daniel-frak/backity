@@ -1,7 +1,7 @@
-package in.keepgrowing.springbootangularscaffolding.presentation.controllers;
+package dev.codesoapbox.gogbackupservice.presentation.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import in.keepgrowing.springbootangularscaffolding.presentation.viewmodel.HomePageDto;
+import dev.codesoapbox.gogbackupservice.presentation.viewmodel.HomePageDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

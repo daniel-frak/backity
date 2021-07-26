@@ -1,4 +1,4 @@
-package in.keepgrowing.springbootangularscaffolding.shared.presentation.controllers;
+package dev.codesoapbox.gogbackupservice.shared.presentation.controllers;
 
 public final class ApiControllerPaths {
 

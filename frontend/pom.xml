@@ -3,8 +3,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>in.keepgrowing</groupId>
-        <artifactId>spring-boot-angular-scaffolding</artifactId>
+        <groupId>dev.codesoapbox</groupId>
+        <artifactId>gog-backup-service</artifactId>
         <version>2.0.1</version>
     </parent>
     <artifactId>frontend</artifactId>
@@ -16,8 +16,8 @@
         <node.version>v14.17.1</node.version>
         <npm.version>7.17.0</npm.version>
 
-        <sonar.projectKey>little-pinecone_spring-boot-angular-scaffolding-frontend</sonar.projectKey>
-        <sonar.projectName>Spring Boot Angular Scaffolding (frontend)</sonar.projectName>
+        <sonar.projectKey>gog-backup-service-frontend</sonar.projectKey>
+        <sonar.projectName>GOG Backup Service (frontend)</sonar.projectName>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
         <sonar.sources>src/main/angular/src</sonar.sources>
         <sonar.tests>src/main/angular/src</sonar.tests>

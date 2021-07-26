@@ -1,4 +1,4 @@
-package in.keepgrowing.springbootangularscaffolding.shared.config.openapi;
+package dev.codesoapbox.gogbackupservice.shared.config.openapi;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
