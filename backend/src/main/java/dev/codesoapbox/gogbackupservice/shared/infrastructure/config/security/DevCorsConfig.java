@@ -1,4 +1,4 @@
-package dev.codesoapbox.gogbackupservice.shared.config.security;
+package dev.codesoapbox.gogbackupservice.shared.infrastructure.config.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;

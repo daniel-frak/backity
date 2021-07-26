@@ -1,7 +1,7 @@
-package dev.codesoapbox.gogbackupservice.presentation.controllers;
+package dev.codesoapbox.gogbackupservice.home.presentation.controllers;
 
-import dev.codesoapbox.gogbackupservice.shared.presentation.controllers.ApiControllerPaths;
-import dev.codesoapbox.gogbackupservice.presentation.viewmodel.HomePageDto;
+import dev.codesoapbox.gogbackupservice.shared.api.controllers.ApiControllerPaths;
+import dev.codesoapbox.gogbackupservice.home.application.dto.HomePageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
@@ -17,8 +17,8 @@ public class HomePageController {
 
     @GetMapping
     @Operation(summary = "Returns unsecured test data from backend")
-    public ResponseEntity<HomePageDto> getHomePageData() {
-        var body = new HomePageDto("working");
+    public ResponseEntity<HomePageResponse> getHomePageData() {
+        var body = new HomePageResponse("working");
 
         return ResponseEntity.ok(body);
     }

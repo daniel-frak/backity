@@ -1,7 +1,7 @@
-package dev.codesoapbox.gogbackupservice.presentation.controllers;
+package dev.codesoapbox.gogbackupservice.home.presentation.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.codesoapbox.gogbackupservice.presentation.viewmodel.HomePageDto;
+import dev.codesoapbox.gogbackupservice.home.application.dto.HomePageResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -34,7 +34,7 @@ class HomePageControllerTest {
 
     @Test
     void shouldGetTestDataForHomepage() throws Exception {
-        var expected = new HomePageDto("working");
+        var expected = new HomePageResponse("working");
 
         mvc.perform(get("/api/home")
                 .contentType(MediaType.APPLICATION_JSON))

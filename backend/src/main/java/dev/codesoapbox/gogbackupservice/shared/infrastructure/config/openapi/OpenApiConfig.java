@@ -1,4 +1,4 @@
-package dev.codesoapbox.gogbackupservice.shared.config.openapi;
+package dev.codesoapbox.gogbackupservice.shared.infrastructure.config.openapi;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.models.OpenAPI;

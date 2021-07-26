@@ -1,4 +1,4 @@
-package dev.codesoapbox.gogbackupservice.presentation.viewmodel;
+package dev.codesoapbox.gogbackupservice.home.application.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Schema(name = "Home")
-public class HomePageDto {
+public class HomePageResponse {
 
     private String body;
 }

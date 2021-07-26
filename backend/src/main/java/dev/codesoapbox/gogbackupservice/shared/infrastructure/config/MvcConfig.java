@@ -1,4 +1,4 @@
-package dev.codesoapbox.gogbackupservice.shared.config;
+package dev.codesoapbox.gogbackupservice.shared.infrastructure.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;

@@ -1,4 +1,4 @@
-package dev.codesoapbox.gogbackupservice.shared.config.openapi;
+package dev.codesoapbox.gogbackupservice.shared.infrastructure.config.openapi;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
