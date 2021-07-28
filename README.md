@@ -26,21 +26,21 @@ http://localhost:8080/api/auth?code=<CODE>
 
 ----------------------------------------------------------------------------
 
-# gog-backup-service
+# Backity
 
-![keep growing logo](readme-images/logo_250x60.png)
+![Code Soapbox Logo](readme-images/logo.svg)
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_gog-backup-service&metric=alert_status)](https://sonarcloud.io/dashboard?id=little-pinecone_gog-backup-service)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_gog-backup-service&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=little-pinecone_gog-backup-service)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_gog-backup-service&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=little-pinecone_gog-backup-service)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_backity&metric=alert_status)](https://sonarcloud.io/dashboard?id=little-pinecone_backity)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_backity&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=little-pinecone_backity)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_backity&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=little-pinecone_backity)
 
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_gog-backup-service&metric=bugs)](https://sonarcloud.io/dashboard?id=little-pinecone_gog-backup-service)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_gog-backup-service&metric=coverage)](https://sonarcloud.io/dashboard?id=little-pinecone_gog-backup-service)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_gog-backup-service&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=little-pinecone_gog-backup-service)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_gog-backup-service&metric=code_smells)](https://sonarcloud.io/dashboard?id=little-pinecone_gog-backup-service)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_gog-backup-service&metric=sqale_index)](https://sonarcloud.io/dashboard?id=little-pinecone_gog-backup-service)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_backity&metric=bugs)](https://sonarcloud.io/dashboard?id=little-pinecone_backity)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_backity&metric=coverage)](https://sonarcloud.io/dashboard?id=little-pinecone_backity)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_backity&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=little-pinecone_backity)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_backity&metric=code_smells)](https://sonarcloud.io/dashboard?id=little-pinecone_backity)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_backity&metric=sqale_index)](https://sonarcloud.io/dashboard?id=little-pinecone_backity)
 
-![GitHub](https://img.shields.io/github/license/little-pinecone/gog-backup-service)
+![GitHub](https://img.shields.io/github/license/little-pinecone/backity)
 
 To learn how to set up a project like this one, check out the [Integrate Angular with a Spring Boot project](http://keepgrowing.in/java/springboot/integrate-angular-with-a-spring-boot-project/)
 post.

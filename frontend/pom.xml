@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>dev.codesoapbox</groupId>
-        <artifactId>gog-backup-service</artifactId>
+        <artifactId>backity</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>frontend</artifactId>
@@ -16,8 +16,8 @@
         <node.version>v14.17.1</node.version>
         <npm.version>7.17.0</npm.version>
 
-        <sonar.projectKey>gog-backup-service-frontend</sonar.projectKey>
-        <sonar.projectName>GOG Backup Service (frontend)</sonar.projectName>
+        <sonar.projectKey>backity-frontend</sonar.projectKey>
+        <sonar.projectName>Backity (frontend)</sonar.projectName>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
         <sonar.sources>src/main/angular/src</sonar.sources>
         <sonar.tests>src/main/angular/src</sonar.tests>

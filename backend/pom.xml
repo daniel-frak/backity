@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>gog-backup-service</artifactId>
+        <artifactId>backity</artifactId>
         <groupId>dev.codesoapbox</groupId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
@@ -18,8 +18,8 @@
         <maven-clean.version>3.1.0</maven-clean.version>
         <angular-openapi.version>12.0.0</angular-openapi.version>
         <jacoco.version>0.8.7</jacoco.version>
-        <sonar.projectKey>gog-backup-service-backend</sonar.projectKey>
-        <sonar.projectName>GOG Backup Service (backend)</sonar.projectName>
+        <sonar.projectKey>backity-backend</sonar.projectKey>
+        <sonar.projectName>Backity (backend)</sonar.projectName>
     </properties>
 
     <dependencies>

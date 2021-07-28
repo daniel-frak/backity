@@ -9,11 +9,11 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>dev.codesoapbox</groupId>
-    <artifactId>gog-backup-service</artifactId>
+    <artifactId>backity</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>gog-backup-service</name>
-    <description>A web service to backup your GOG games</description>
+    <name>backity</name>
+    <description>A web service to automatically download backups of your games from external clients such as GOG.</description>
 
     <modules>
         <module>backend</module>
@@ -21,8 +21,8 @@
     </modules>
 
     <properties>
-        <sonar.projectKey>gog-backup-service</sonar.projectKey>
-        <sonar.projectName>Gog Backup Service</sonar.projectName>
+        <sonar.projectKey>backity</sonar.projectKey>
+        <sonar.projectName>Backity</sonar.projectName>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
     </properties>
 
