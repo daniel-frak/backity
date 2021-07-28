@@ -5,16 +5,28 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './pages/home/home.component';
 import {HttpClientModule} from "@angular/common/http";
+import { AuthComponent } from './pages/auth/auth.component';
+import { DefaultLayoutComponent } from './layout/default-layout/default-layout.component';
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import { FileDiscoveryComponent } from './pages/file-discovery/file-discovery.component';
+import { DownloadsComponent } from './pages/downloads/downloads.component';
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+    AuthComponent,
+    DefaultLayoutComponent,
+    FileDiscoveryComponent,
+    DownloadsComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    NgbModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

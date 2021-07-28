@@ -2,7 +2,12 @@ import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core
 import { Configuration } from './configuration';
 import { HttpClient } from '@angular/common/http';
 
+import { DownloadsService } from './api/downloads.service';
+import { FileDiscoveryService } from './api/fileDiscovery.service';
+import { GOGService } from './api/gOG.service';
+import { GOGAuthenticationService } from './api/gOGAuthentication.service';
 import { HomePageService } from './api/homePage.service';
+import { LogsService } from './api/logs.service';
 
 @NgModule({
   imports:      [],

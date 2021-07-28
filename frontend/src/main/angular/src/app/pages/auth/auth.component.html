@@ -1,0 +1,44 @@
+<div class="card">
+  <div class="card-body">
+    <h1 class="card-title">GOG</h1>
+    <p>
+      Status:
+      <span class="badge"
+        [ngClass]="{'bg-success': gogAuthenticated, 'bg-danger': !gogAuthenticated}">
+        <i class="me-1"
+          [ngClass]="{'bi bi-check-circle': gogAuthenticated, 'bi bi-x-circle': !gogAuthenticated}"
+          aria-hidden="true">
+        </i>
+
+        <ng-container *ngIf="gogAuthenticated">Authenticated</ng-container>
+        <ng-container *ngIf="!gogAuthenticated">Not authenticated</ng-container>
+      </span>
+    </p>
+
+    <ol *ngIf="!gogAuthenticated">
+      <li>
+        <p>Press the button below to log in to GOG:</p>
+        <p>
+          <button (click)="showGogAuthPopup()" class="btn btn-primary">Log in to GOG</button>
+        </p>
+      </li>
+      <li>
+        <p>Copy the URL you're redirected to and paste it below:</p>
+        <p>
+          <label for="urlInput" class="form-label">URL</label>
+          <input type="text" class="form-control" id="urlInput" placeholder="URL" [(ngModel)]="gogCodeUrl">
+        </p>
+      </li>
+      <li>
+        <p>Press the button below:</p>
+        <p>
+          <button (click)="authenticateGog()" class="btn btn-primary">Authenticate</button>
+        </p>
+      </li>
+    </ol>
+
+    <div *ngIf="gogAuthenticated">
+      <button (click)="signOutGog()" class="btn btn-danger">Log out</button>
+    </div>
+  </div>
+</div>

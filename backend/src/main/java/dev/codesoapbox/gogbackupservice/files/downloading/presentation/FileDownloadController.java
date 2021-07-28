@@ -3,6 +3,7 @@ package dev.codesoapbox.gogbackupservice.files.downloading.presentation;
 import dev.codesoapbox.gogbackupservice.files.downloading.application.services.FileDownloadFacade;
 import dev.codesoapbox.gogbackupservice.files.downloading.domain.EnqueuedFileDownload;
 import dev.codesoapbox.gogbackupservice.shared.presentation.ApiControllerPaths;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+@Tag(name = "Downloads")
 @RestController
 @RequestMapping(ApiControllerPaths.API + "downloads")
 @RequiredArgsConstructor

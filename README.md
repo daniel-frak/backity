@@ -6,7 +6,7 @@ https://login.gog.com/auth?client_id=46899977096215655&redirect_uri=https%3A%2F%
 
 2. Copy the code from the URL you're redirected to and insert it into the following URL, then visit it:
 
-http://localhost:8080/api/auth?code=<CODE>
+http://localhost:8080/api/gog/auth?code=<CODE>
 
 # Dev Info
 

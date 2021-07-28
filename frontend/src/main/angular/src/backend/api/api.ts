@@ -1,3 +1,13 @@
+export * from './downloads.service';
+import { DownloadsService } from './downloads.service';
+export * from './fileDiscovery.service';
+import { FileDiscoveryService } from './fileDiscovery.service';
+export * from './gOG.service';
+import { GOGService } from './gOG.service';
+export * from './gOGAuthentication.service';
+import { GOGAuthenticationService } from './gOGAuthentication.service';
 export * from './homePage.service';
 import { HomePageService } from './homePage.service';
-export const APIS = [HomePageService];
+export * from './logs.service';
+import { LogsService } from './logs.service';
+export const APIS = [DownloadsService, FileDiscoveryService, GOGService, GOGAuthenticationService, HomePageService, LogsService];

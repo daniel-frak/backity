@@ -1,6 +1,6 @@
 package dev.codesoapbox.gogbackupservice.files.downloading.application.services;
 
-import dev.codesoapbox.gogbackupservice.gog.application.services.embed.GogEmbedClient;
+import dev.codesoapbox.gogbackupservice.integrations.gog.application.services.embed.GogEmbedClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Value;

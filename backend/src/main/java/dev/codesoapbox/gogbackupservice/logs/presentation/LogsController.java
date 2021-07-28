@@ -2,6 +2,7 @@ package dev.codesoapbox.gogbackupservice.logs.presentation;
 
 import dev.codesoapbox.gogbackupservice.logs.application.LogsService;
 import dev.codesoapbox.gogbackupservice.shared.presentation.ApiControllerPaths;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+@Tag(name = "Logs")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(ApiControllerPaths.API + "logs")

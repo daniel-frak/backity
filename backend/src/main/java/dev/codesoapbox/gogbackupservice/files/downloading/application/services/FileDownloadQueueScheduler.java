@@ -1,8 +1,8 @@
 package dev.codesoapbox.gogbackupservice.files.downloading.application.services;
 
 import dev.codesoapbox.gogbackupservice.files.downloading.domain.EnqueuedFileDownload;
-import dev.codesoapbox.gogbackupservice.gog.application.services.auth.GogAuthService;
-import dev.codesoapbox.gogbackupservice.gog.application.services.embed.FileSizeAccumulator;
+import dev.codesoapbox.gogbackupservice.integrations.gog.application.services.auth.GogAuthService;
+import dev.codesoapbox.gogbackupservice.integrations.gog.application.services.embed.FileSizeAccumulator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

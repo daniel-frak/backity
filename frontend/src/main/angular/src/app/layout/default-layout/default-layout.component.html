@@ -1,0 +1,41 @@
+<header>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container">
+      <a class="navbar-brand" href="#">Backity</a>
+
+      <button class="navbar-toggler" type="button"
+              (click)="collapse.toggle()" [attr.aria-expanded]="!isCollapsed">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse"
+           #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="'/'" routerLinkActive="active"
+               [routerLinkActiveOptions]="{ exact: true }">
+              <i class="bi bi-person-square"></i>
+              Authentication
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="'file-discovery'" routerLinkActive="active">
+              <i class="bi bi-search"></i>
+              File discovery
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="'downloads'" routerLinkActive="active">
+              <i class="bi bi-cloud-download"></i>
+              Downloads
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<div class="container">
+  <router-outlet></router-outlet>
+</div>
