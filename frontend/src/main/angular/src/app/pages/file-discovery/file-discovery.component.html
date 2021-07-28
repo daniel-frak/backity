@@ -7,7 +7,15 @@
     </p>
 
     <p>
-      <button class="btn btn-primary">Discover new files</button>
+      <button class="btn btn-primary me-3" (click)="discoverFiles()">Discover new files</button>
+      <button class="btn btn-primary" (click)="refresh()">Refresh</button>
     </p>
+
+    <div *ngFor="let file of discoveredFiles">
+      {{file.gameTitle}}
+      -
+      {{file.name}}
+      ({{file.size}})
+    </div>
   </div>
 </div>

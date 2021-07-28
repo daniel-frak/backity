@@ -11,6 +11,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import { FileDiscoveryComponent } from './pages/file-discovery/file-discovery.component';
 import { DownloadsComponent } from './pages/downloads/downloads.component';
 import {FormsModule} from "@angular/forms";
+import { LogsComponent } from './pages/logs/logs.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import {FormsModule} from "@angular/forms";
     AuthComponent,
     DefaultLayoutComponent,
     FileDiscoveryComponent,
-    DownloadsComponent
+    DownloadsComponent,
+    LogsComponent
   ],
   imports: [
     BrowserModule,

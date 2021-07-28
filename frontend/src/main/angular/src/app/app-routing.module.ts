@@ -5,6 +5,7 @@ import {DefaultLayoutComponent} from "./layout/default-layout/default-layout.com
 import {FileDiscoveryComponent} from "./pages/file-discovery/file-discovery.component";
 import {DownloadsComponent} from "./pages/downloads/downloads.component";
 import {AuthComponent} from "./pages/auth/auth.component";
+import {LogsComponent} from "./pages/logs/logs.component";
 
 const routes: Routes = [
   {
@@ -13,6 +14,7 @@ const routes: Routes = [
       {path: 'auth', component: AuthComponent},
       {path: 'file-discovery', component: FileDiscoveryComponent},
       {path: 'downloads', component: DownloadsComponent},
+      {path: 'logs', component: LogsComponent},
       {path: 'home', component: HomeComponent},
     ]
   }
