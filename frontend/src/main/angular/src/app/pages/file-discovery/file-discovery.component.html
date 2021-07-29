@@ -11,11 +11,35 @@
       <button class="btn btn-primary" (click)="refresh()">Refresh</button>
     </p>
 
-    <div *ngFor="let file of discoveredFiles">
-      {{file.gameTitle}}
-      -
-      {{file.name}}
-      ({{file.size}})
-    </div>
+    <table class="table table-custom-responsive-lg-down" *ngIf="discoveredFiles?.length">
+      <caption>Discovered files</caption>
+      <thead>
+      <tr>
+        <th>Game title</th>
+        <th>File name</th>
+        <th>Size</th>
+        <th>Actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let file of discoveredFiles">
+        <td data-title="Game title">
+          {{file.gameTitle}}
+        </td>
+
+        <td data-title="File name">
+          {{file.name}}
+        </td>
+
+        <td data-title="Size">
+          {{file.size}}
+        </td>
+
+        <td class="hide-title">
+          <button (click)="enqueueFile(file.id)" class="btn btn-primary">Enqueue</button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
   </div>
 </div>

@@ -1,13 +1,3 @@
-# Authenticating
-
-1. Log in through:
-
-https://login.gog.com/auth?client_id=46899977096215655&redirect_uri=https%3A%2F%2Fembed.gog.com%2Fon_login_success%3Forigin%3Dclient&response_type=code&layout=client2
-
-2. Copy the code from the URL you're redirected to and insert it into the following URL, then visit it:
-
-http://localhost:8080/api/gog/auth?code=<CODE>
-
 # Dev Info
 
 * Some games return empty arrays instead of objects from the GOG API, e.g., #1207667173
@@ -20,9 +10,12 @@ http://localhost:8080/api/gog/auth?code=<CODE>
   * Add some way to track download progress (https://stackoverflow.com/questions/68518804/how-to-track-progress-of-databufferutils-write)
   * Improve the way file-size checks are handled (e.g., free space verification)
   * Try to remove the need to save to a temp file before renaming
-* Add frontend via [spring-boot-angular-scaffolding](https://github.com/little-pinecone/spring-boot-angular-scaffolding)
-  * Add client code generation
+  * Try to add tracking of download speed
+  * Try to add pausing/resuming of downloads
 * Auto-save cd-keys
+* Generify file discovery/downloading code to support more than just GOG in the future
+* Support downloading extras
+* Add loading icons to everything on the frontend
 
 ----------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {DiscoveredFile, FileDiscoveryService, Pageable} from "../../../backend";
+import {DiscoveredFile, DiscoveredFileId, FileDiscoveryService, Pageable} from "../../../backend";
 
 @Component({
   selector: 'app-file-discovery',
@@ -18,7 +18,7 @@ export class FileDiscoveryComponent implements OnInit {
 
   refresh() {
     const pageable: Pageable = {
-      size: 100,
+      size: 20,
       page: 0
     };
     this.fileDiscoveryService.getDiscoveredFiles(pageable).subscribe(df => this.discoveredFiles = df.content);
@@ -26,5 +26,9 @@ export class FileDiscoveryComponent implements OnInit {
 
   discoverFiles() {
     this.fileDiscoveryService.discover().subscribe(() => console.info("Finished discovering"));
+  }
+
+  enqueueFile(id?: DiscoveredFileId) {
+
   }
 }

@@ -7,7 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class DefaultLayoutComponent implements OnInit {
 
-  public isCollapsed = false;
+  public isCollapsed = true;
 
   constructor() { }
 

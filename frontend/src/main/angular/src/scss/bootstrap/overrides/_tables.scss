@@ -1,0 +1,67 @@
+@import "~src/scss/bootstrap/basics";
+
+table {
+  caption-side: top;
+}
+
+@each $breakpoint in map-keys($grid-breakpoints) {
+  $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+  $postfix: if($infix != "", $infix + "-down", "");
+
+  table {
+    &.table-custom-responsive#{$postfix} {
+      @include media-breakpoint-down($breakpoint) {
+        display: block;
+
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+          display: block;
+        }
+
+        caption {
+          display: block;
+          caption-side: top;
+        }
+
+        /* Hide table headers (but not display: none;, for accessibility) */
+        thead tr {
+          position: absolute;
+          top: -9999px;
+          left: -9999px;
+        }
+
+        tr {
+          //&:not(:last-of-type) {
+          border-bottom: $table-border-width solid $table-border-color;
+          padding-bottom: map_get($spacers, 2);
+          margin-bottom: map_get($spacers, 2);
+          //}
+        }
+
+        td {
+          border: none;
+          position: relative;
+          white-space: normal;
+          text-align: left;
+
+          padding-top: 0;
+          padding-bottom: 0;
+
+          &:not(.hide-title) {
+            &:before {
+              content: attr(data-title) ':';
+              text-align: left;
+              font-weight: bold;
+              white-space: pre-wrap;
+              position: relative;
+              display: inline-block;
+            }
+          }
+        }
+      }
+    }
+  }
+}
