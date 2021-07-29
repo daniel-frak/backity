@@ -12,6 +12,7 @@ import { FileDiscoveryComponent } from './pages/file-discovery/file-discovery.co
 import { DownloadsComponent } from './pages/downloads/downloads.component';
 import {FormsModule} from "@angular/forms";
 import { LogsComponent } from './pages/logs/logs.component';
+import { LoadedContentComponent } from './shared/components/loaded-content/loaded-content.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { LogsComponent } from './pages/logs/logs.component';
     DefaultLayoutComponent,
     FileDiscoveryComponent,
     DownloadsComponent,
-    LogsComponent
+    LogsComponent,
+    LoadedContentComponent
   ],
   imports: [
     BrowserModule,

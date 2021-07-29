@@ -9,6 +9,7 @@ import {DiscoveredFile, DiscoveredFileId, FileDiscoveryService, Pageable} from "
 export class FileDiscoveryComponent implements OnInit {
 
   discoveredFiles?: DiscoveredFile[];
+  public filesAreLoading: boolean = false;
 
   constructor(private readonly fileDiscoveryService: FileDiscoveryService) { }
 
@@ -17,11 +18,15 @@ export class FileDiscoveryComponent implements OnInit {
   }
 
   refresh() {
+    this.filesAreLoading = true;
     const pageable: Pageable = {
       size: 20,
       page: 0
     };
-    this.fileDiscoveryService.getDiscoveredFiles(pageable).subscribe(df => this.discoveredFiles = df.content);
+    this.fileDiscoveryService.getDiscoveredFiles(pageable).subscribe(df => {
+      this.discoveredFiles = df.content;
+      this.filesAreLoading = false;
+    });
   }
 
   discoverFiles() {

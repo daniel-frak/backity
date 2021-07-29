@@ -14,13 +14,16 @@ export class AuthComponent implements OnInit {
 
   public gogAuthenticated: boolean = false;
   public gogCodeUrl: string = "";
+  public gogIsLoading: boolean = true;
 
   constructor(private readonly gogAuthService: GOGAuthenticationService) {
   }
 
   ngOnInit(): void {
+    this.gogIsLoading = true;
     this.gogAuthService.check().subscribe(isAuthenticated => {
       this.gogAuthenticated = isAuthenticated;
+      this.gogIsLoading = false;
     });
   }
 
@@ -29,17 +32,19 @@ export class AuthComponent implements OnInit {
   }
 
   authenticateGog() {
+    this.gogIsLoading = true;
     const params = (new URL(this.gogCodeUrl)).searchParams;
     const code = params.get("code") as string;
     console.warn(code);
     this.gogAuthService.authenticate(code).subscribe(r => {
-      if(r.refresh_token) {
+      if (r.refresh_token) {
         console.info("Refresh token: " + r.refresh_token);
         this.gogAuthenticated = true;
       } else {
         console.error("Something went wrong when authenticating GOG");
       }
-    })
+      this.gogIsLoading = false;
+    });
   }
 
   signOutGog() {
