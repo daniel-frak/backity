@@ -39,7 +39,8 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     this.filesAreLoading = true;
     const pageable: Pageable = {
       size: this.pageSize,
-      page: 0
+      page: 0,
+      sort: ["dateCreated,desc"]
     };
     this.fileDiscoveryService.getDiscoveredFiles(pageable).subscribe(df => {
       this.discoveredFiles = df;
