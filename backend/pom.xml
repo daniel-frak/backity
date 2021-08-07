@@ -30,6 +30,7 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Spring Boot Misc. -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -49,6 +50,7 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
+        <!-- END of Spring Boot Misc. -->
 
         <!-- Testing -->
         <dependency>
@@ -87,6 +89,13 @@
             <version>${springdoc.version}</version>
         </dependency>
         <!-- END of Documentation -->
+
+        <!-- Websockets -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <!-- END of Websockets -->
 
         <!-- Utilities -->
         <dependency>

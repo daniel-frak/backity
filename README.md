@@ -5,6 +5,7 @@
 # TODO
 
 * Add all the missing tests
+* Store refresh token in cookie
 * Consider a better package structure
 * Improve file download code (`FileDownloader`, `GogEmbedClient::getFileBuffer`)
   * Add some way to track download progress (https://stackoverflow.com/questions/68518804/how-to-track-progress-of-databufferutils-write)

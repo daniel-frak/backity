@@ -5,6 +5,8 @@ import dev.codesoapbox.gogbackupservice.files.discovery.domain.DiscoveredFileId;
 import dev.codesoapbox.gogbackupservice.files.discovery.infrastructure.repositories.DiscoveredFileSpringRepository;
 import dev.codesoapbox.gogbackupservice.integrations.gog.application.dto.embed.GameDetailsResponse;
 import dev.codesoapbox.gogbackupservice.integrations.gog.application.services.embed.GogEmbedClient;
+import dev.codesoapbox.gogbackupservice.shared.application.MessageService;
+import dev.codesoapbox.gogbackupservice.shared.application.MessageTopics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ public class FileDiscoveryService {
 
     private final GogEmbedClient gogEmbedClient;
     private final DiscoveredFileSpringRepository repository;
+    private final MessageService messageService;
 
     public void discoverNewFiles() {
         log.info("Discovering new files...");
@@ -35,6 +38,7 @@ public class FileDiscoveryService {
 
                 if(!repository.existsById(discoveredFileId)) {
                     repository.save(discoveredFile);
+                    messageService.sendMessage(MessageTopics.FILE_DISCOVERY, discoveredFile);
                     log.info("Discovered new file: {} (game: {})", fileDetails.getManualUrl(), details.getTitle());
                 }
             });

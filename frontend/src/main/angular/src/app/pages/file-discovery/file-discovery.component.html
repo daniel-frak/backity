@@ -7,12 +7,28 @@
     </p>
 
     <p>
+      Status:
+      <span class="badge"
+            [ngClass]="{'bg-success': discoveryOngoing, 'bg-secondary': !discoveryOngoing}">
+        <i class="me-1"
+           [ngClass]="{'bi bi-check-circle': discoveryOngoing, 'bi bi-x-circle': !discoveryOngoing}"
+           aria-hidden="true">
+        </i>
+
+        <ng-container *ngIf="discoveryOngoing">Discovery in progress</ng-container>
+        <ng-container *ngIf="!discoveryOngoing">Last run: xx.xx.xxxx</ng-container>
+      </span>
+    </p>
+
+    <p>
       <button class="btn btn-primary me-3" (click)="discoverFiles()">Discover new files</button>
-      <button class="btn btn-primary" (click)="refresh()">Refresh</button>
+    </p>
+    <p>
+      <button class="btn btn-primary" (click)="refresh()">Refresh discovered files</button>
     </p>
 
     <app-loaded-content [isLoading]="filesAreLoading">
-      <table class="table table-custom-responsive-lg-down" *ngIf="discoveredFiles?.length">
+      <table class="table table-custom-responsive-lg-down" *ngIf="discoveredFiles?.content?.length">
         <caption>Discovered files</caption>
         <thead>
         <tr>
@@ -23,7 +39,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let file of discoveredFiles">
+        <tr *ngFor="let file of discoveredFiles?.content">
           <td data-title="Game title">
             {{file.gameTitle}}
           </td>
