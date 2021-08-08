@@ -224,7 +224,7 @@
                 <jacoco.skip>false</jacoco.skip>
                 <maven.test.skip>false</maven.test.skip>
                 <skip.unit.tests>false</skip.unit.tests>
-                <sonar.exclusions>**/GogBackupServiceApplication.java,**/**Config.java</sonar.exclusions>
+                <sonar.exclusions>**/BackityApplication.java,**/**Config.java</sonar.exclusions>
             </properties>
             <build>
                 <plugins>
