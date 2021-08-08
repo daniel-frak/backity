@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.integrations.gog.application.services;
 
-import dev.codesoapbox.backity.files.discovery.domain.model.DiscoveredFile;
-import dev.codesoapbox.backity.files.discovery.domain.model.DiscoveredFileId;
-import dev.codesoapbox.backity.files.discovery.domain.services.SourceFileDiscoveryService;
+import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
+import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFileId;
+import dev.codesoapbox.backity.core.files.discovery.domain.services.SourceFileDiscoveryService;
 import dev.codesoapbox.backity.integrations.gog.application.dto.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.application.services.embed.GogEmbedClient;
 import lombok.Getter;

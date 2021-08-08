@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.integrations.gog.application.services;
 
-import dev.codesoapbox.backity.files.downloading.application.services.FilePathProvider;
-import dev.codesoapbox.backity.files.downloading.domain.services.SourceFileDownloader;
-import dev.codesoapbox.backity.files.downloading.domain.model.EnqueuedFileDownload;
+import dev.codesoapbox.backity.core.files.downloading.application.services.FilePathProvider;
+import dev.codesoapbox.backity.core.files.downloading.domain.services.SourceFileDownloader;
+import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
 import dev.codesoapbox.backity.integrations.gog.application.services.embed.GogEmbedClient;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
