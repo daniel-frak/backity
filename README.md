@@ -35,17 +35,17 @@
 
 ![Code Soapbox Logo](readme-images/logo.svg)
 
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_backity&metric=alert_status)](https://sonarcloud.io/dashboard?id=little-pinecone_backity)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_backity&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=little-pinecone_backity)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_backity&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=little-pinecone_backity)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=backity&metric=alert_status)](https://sonarcloud.io/dashboard?id=backity)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=backity&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=backity)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=backity&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=backity)
 
-[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_backity&metric=bugs)](https://sonarcloud.io/dashboard?id=little-pinecone_backity)
-[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_backity&metric=coverage)](https://sonarcloud.io/dashboard?id=little-pinecone_backity)
-[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_backity&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=little-pinecone_backity)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_backity&metric=code_smells)](https://sonarcloud.io/dashboard?id=little-pinecone_backity)
-[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=little-pinecone_backity&metric=sqale_index)](https://sonarcloud.io/dashboard?id=little-pinecone_backity)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=backity&metric=bugs)](https://sonarcloud.io/dashboard?id=backity)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=backity&metric=coverage)](https://sonarcloud.io/dashboard?id=backity)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=backity&metric=vulnerabilities)](https://sonarcloud.io/dashboard?id=backity)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=backity&metric=code_smells)](https://sonarcloud.io/dashboard?id=backity)
+[![Technical Debt](https://sonarcloud.io/api/project_badges/measure?project=backity&metric=sqale_index)](https://sonarcloud.io/dashboard?id=backity)
 
-![GitHub](https://img.shields.io/github/license/little-pinecone/backity)
+![GitHub](https://img.shields.io/github/license/daniel-frak/backity)
 
 To learn how to set up a project like this one, check out the [Integrate Angular with a Spring Boot project](http://keepgrowing.in/java/springboot/integrate-angular-with-a-spring-boot-project/)
 post.
