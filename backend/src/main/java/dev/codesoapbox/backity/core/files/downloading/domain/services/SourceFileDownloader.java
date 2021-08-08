@@ -7,4 +7,6 @@ public interface SourceFileDownloader {
     String getSource();
 
     void downloadGameFile(EnqueuedFileDownload enqueuedFileDownload, String tempFilePath);
+
+    boolean isReady();
 }

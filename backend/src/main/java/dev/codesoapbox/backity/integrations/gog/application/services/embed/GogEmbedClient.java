@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.application.services.embed;
 
+import dev.codesoapbox.backity.core.files.downloading.domain.services.FileSizeAccumulator;
 import dev.codesoapbox.backity.integrations.gog.application.dto.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.application.dto.embed.GameFileDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.application.dto.embed.remote.GogGameDetailsResponse;

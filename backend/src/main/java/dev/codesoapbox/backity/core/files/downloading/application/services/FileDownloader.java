@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.files.downloading.application.services;
 
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.SourceFileDownloader;
-import dev.codesoapbox.backity.integrations.gog.application.services.embed.FileSizeAccumulator;
+import dev.codesoapbox.backity.core.files.downloading.domain.services.FileSizeAccumulator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.stereotype.Service;
@@ -84,5 +84,9 @@ public class FileDownloader {
         }
 
         return fileDownloaders.get(source);
+    }
+
+    public boolean isReadyFor(EnqueuedFileDownload enqueuedFileDownload) {
+        return getSourceDownloader(enqueuedFileDownload.getSource()).isReady();
     }
 }

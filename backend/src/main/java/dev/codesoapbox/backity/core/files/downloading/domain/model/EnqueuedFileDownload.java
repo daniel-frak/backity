@@ -29,4 +29,5 @@ public class EnqueuedFileDownload {
 
     private boolean downloaded;
     private boolean failed;
+    private String failedReason;
 }

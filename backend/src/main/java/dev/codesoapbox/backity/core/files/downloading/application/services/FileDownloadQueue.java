@@ -42,8 +42,9 @@ public class FileDownloadQueue {
         repository.save(enqueuedFileDownload);
     }
 
-    public void acknowledgeFailed(EnqueuedFileDownload enqueuedFileDownload) {
+    public void acknowledgeFailed(EnqueuedFileDownload enqueuedFileDownload, String reason) {
         enqueuedFileDownload.setFailed(true);
+        enqueuedFileDownload.setFailedReason(reason);
         repository.save(enqueuedFileDownload);
     }
 

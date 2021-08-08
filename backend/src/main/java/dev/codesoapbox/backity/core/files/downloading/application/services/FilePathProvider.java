@@ -16,6 +16,8 @@ public class FilePathProvider {
         return defaultPathTemplate
                 .replace("{SOURCE}", source)
                 .replace("{TITLE}", gameTitle)
-                .replace("{FILENAME}", fileName);
+                .replace("{FILENAME}", fileName)
+                // @TODO Replace all illegal chars here
+                .replace(":", " -");
     }
 }

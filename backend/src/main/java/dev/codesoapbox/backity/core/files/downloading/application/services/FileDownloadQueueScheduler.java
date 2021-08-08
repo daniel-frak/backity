@@ -1,7 +1,6 @@
 package dev.codesoapbox.backity.core.files.downloading.application.services;
 
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
-import dev.codesoapbox.backity.integrations.gog.application.services.auth.GogAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,14 +13,13 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public class FileDownloadQueueScheduler {
 
-    private final GogAuthService authService;
     private final FileDownloadQueue fileDownloadQueue;
     private final FileDownloader fileDownloader;
     private final AtomicReference<EnqueuedFileDownload> enqueuedFileDownloadReference = new AtomicReference<>();
 
     @Scheduled(fixedRate = 5000)
     public synchronized void processQueue() {
-        if (!authService.isAuthenticated() || enqueuedFileDownloadReference.get() != null) {
+        if (enqueuedFileDownloadReference.get() != null) {
             return;
         }
 
@@ -30,6 +28,10 @@ public class FileDownloadQueueScheduler {
     }
 
     private void processEnqueuedFileDownload(EnqueuedFileDownload enqueuedFileDownload) {
+        if (!fileDownloader.isReadyFor(enqueuedFileDownload)) {
+            return;
+        }
+
         enqueuedFileDownloadReference.set(enqueuedFileDownload);
 
         log.info("Downloading enqueued file {}", enqueuedFileDownload.getUrl());
@@ -40,7 +42,7 @@ public class FileDownloadQueueScheduler {
         } catch (RuntimeException e) {
             log.error("An error occurred while trying to process enqueued file (id: {})",
                     enqueuedFileDownload.getId(), e);
-            fileDownloadQueue.acknowledgeFailed(enqueuedFileDownload);
+            fileDownloadQueue.acknowledgeFailed(enqueuedFileDownload, e.getMessage());
         } finally {
             enqueuedFileDownloadReference.set(null);
         }

@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.integrations.gog.application.services;
 import dev.codesoapbox.backity.core.files.downloading.application.services.FilePathProvider;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.SourceFileDownloader;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
+import dev.codesoapbox.backity.integrations.gog.application.services.auth.GogAuthService;
 import dev.codesoapbox.backity.integrations.gog.application.services.embed.GogEmbedClient;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import static java.nio.file.StandardOpenOption.CREATE;
 public class GogFileDownloader implements SourceFileDownloader {
 
     private final GogEmbedClient gogEmbedClient;
+    private final GogAuthService authService;
     private final FilePathProvider filePathProvider;
 
     @Getter
@@ -52,6 +54,11 @@ public class GogFileDownloader implements SourceFileDownloader {
         String newFilePath = filePathProvider.getFilePath(enqueuedFileDownload.getGameTitle(), targetFileName.get(),
                 enqueuedFileDownload.getSource());
         renameFile(tempFilePath, newFilePath);
+    }
+
+    @Override
+    public boolean isReady() {
+        return authService.isAuthenticated();
     }
 
     private void validateDownloadedFileSize(String tempFilePath, AtomicLong size) {

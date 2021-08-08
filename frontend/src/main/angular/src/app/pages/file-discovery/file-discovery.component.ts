@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {DiscoveredFileId, FileDiscoveryService, Pageable, PageDiscoveredFile} from "../../../backend";
+import {DiscoveredFileId, DownloadsService, FileDiscoveryService, Pageable, PageDiscoveredFile} from "../../../backend";
 import {MessagesService} from "../../backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
 
@@ -17,6 +17,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   private subscriptions: StompSubscription[] = [];
 
   constructor(private readonly fileDiscoveryService: FileDiscoveryService,
+              private readonly downloadsService: DownloadsService,
               private readonly messageService: MessagesService) {
   }
 
@@ -52,8 +53,8 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     this.fileDiscoveryService.discover().subscribe(() => console.info("Finished discovering"));
   }
 
-  enqueueFile(id?: DiscoveredFileId) {
-
+  enqueueFile(id?: string) {
+    this.downloadsService.download(id as string).subscribe();
   }
 
   ngOnDestroy(): void {
