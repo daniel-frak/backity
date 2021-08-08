@@ -2,6 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {FileDiscoveryComponent} from './file-discovery.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {LoadedContentStubComponent} from "../../shared/components/loaded-content/loaded-content.component.stub";
 
 describe('FileDiscoveryComponent', () => {
   let component: FileDiscoveryComponent;
@@ -9,7 +10,10 @@ describe('FileDiscoveryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [FileDiscoveryComponent],
+      declarations: [
+        FileDiscoveryComponent,
+        LoadedContentStubComponent
+      ],
       imports: [
         HttpClientTestingModule
       ]

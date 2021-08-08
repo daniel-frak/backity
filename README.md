@@ -13,6 +13,7 @@
 
 # TODO
 
+* Disable STOMP messages for tests
 * Split Angular into modules
 * `/downloads/arx_fatalis/en1installer0` (`Arx Fatalis (Part 1 of 2)`) downloads a `403 - Forbidden` page
 * Add all the missing tests
