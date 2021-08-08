@@ -2,6 +2,15 @@
 
 * Some games return empty arrays instead of objects from the GOG API, e.g., #1207667173
 
+# Support planned for the future
+
+* Itch.io
+* Humble Store
+* IndieGala
+* GamersGate
+* Zoom Platform
+* Steam?
+
 # TODO
 
 * Add all the missing tests

@@ -64,7 +64,9 @@ public class FileDownloader {
     }
 
     private String prepareFilePath(String gameTitle, String fileName) {
-        return defaultPathTemplate.replace("{TITLE}", gameTitle)
+        return defaultPathTemplate
+                .replace("{SOURCE}", "GOG") // @TODO Extract source information
+                .replace("{TITLE}", gameTitle)
                 .replace("{FILENAME}", fileName);
     }
 
