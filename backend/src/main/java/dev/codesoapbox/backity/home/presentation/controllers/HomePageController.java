@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.home.presentation.controllers;
 
-import dev.codesoapbox.backity.shared.presentation.ApiControllerPaths;
 import dev.codesoapbox.backity.home.application.dto.HomePageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = ApiControllerPaths.API + "/home", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/home", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "Home page")
 public class HomePageController {
 

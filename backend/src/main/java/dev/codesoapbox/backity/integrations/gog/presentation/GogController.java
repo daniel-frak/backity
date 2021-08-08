@@ -2,7 +2,6 @@ package dev.codesoapbox.backity.integrations.gog.presentation;
 
 import dev.codesoapbox.backity.integrations.gog.application.dto.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.application.services.embed.GogEmbedClient;
-import dev.codesoapbox.backity.shared.presentation.ApiControllerPaths;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "GOG")
 @Slf4j
 @RestController
-@RequestMapping(ApiControllerPaths.API + "gog")
+@RequestMapping("gog")
 @RequiredArgsConstructor
 public class GogController {
 

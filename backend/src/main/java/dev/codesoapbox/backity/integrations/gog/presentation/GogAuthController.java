@@ -2,7 +2,6 @@ package dev.codesoapbox.backity.integrations.gog.presentation;
 
 import dev.codesoapbox.backity.integrations.gog.application.dto.auth.RefreshTokenResponse;
 import dev.codesoapbox.backity.integrations.gog.application.services.auth.GogAuthService;
-import dev.codesoapbox.backity.shared.presentation.ApiControllerPaths;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "GOG authentication")
 @RestController
-@RequestMapping(ApiControllerPaths.API + "gog/auth")
+@RequestMapping("gog/auth")
 @RequiredArgsConstructor
 public class GogAuthController {
 

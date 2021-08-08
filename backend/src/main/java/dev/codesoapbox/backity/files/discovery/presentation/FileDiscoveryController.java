@@ -1,8 +1,7 @@
 package dev.codesoapbox.backity.files.discovery.presentation;
 
-import dev.codesoapbox.backity.files.discovery.domain.model.DiscoveredFile;
 import dev.codesoapbox.backity.files.discovery.application.services.FileDiscoveryFacade;
-import dev.codesoapbox.backity.shared.presentation.ApiControllerPaths;
+import dev.codesoapbox.backity.files.discovery.domain.model.DiscoveredFile;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "File discovery")
 @RestController
-@RequestMapping(ApiControllerPaths.API + "discovered-files")
+@RequestMapping("discovered-files")
 @RequiredArgsConstructor
 public class FileDiscoveryController {
 
