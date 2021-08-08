@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.shared.infrastructure.config;
 
+import dev.codesoapbox.backity.BackityApplication;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -22,7 +23,8 @@ public class MvcConfig implements WebMvcConfigurer {
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
         configurer.addPathPrefix("/api",
-                HandlerTypePredicate.forAnnotation(RestController.class));
+                HandlerTypePredicate.forBasePackage(BackityApplication.class.getPackageName()).and(
+                        HandlerTypePredicate.forAnnotation(RestController.class)));
     }
 
     @Override
