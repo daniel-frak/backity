@@ -1,13 +1,11 @@
 package dev.codesoapbox.gogbackupservice.files.downloading.application.services;
 
-import dev.codesoapbox.gogbackupservice.files.discovery.domain.DiscoveredFileRepository;
-import dev.codesoapbox.gogbackupservice.files.downloading.domain.EnqueuedFileDownload;
+import dev.codesoapbox.gogbackupservice.files.discovery.domain.repositories.DiscoveredFileRepository;
+import dev.codesoapbox.gogbackupservice.files.downloading.domain.model.EnqueuedFileDownload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.UUID;
 

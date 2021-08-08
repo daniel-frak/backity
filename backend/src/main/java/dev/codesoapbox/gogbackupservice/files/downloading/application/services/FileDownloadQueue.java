@@ -1,7 +1,7 @@
 package dev.codesoapbox.gogbackupservice.files.downloading.application.services;
 
-import dev.codesoapbox.gogbackupservice.files.discovery.domain.DiscoveredFile;
-import dev.codesoapbox.gogbackupservice.files.downloading.domain.EnqueuedFileDownload;
+import dev.codesoapbox.gogbackupservice.files.discovery.domain.model.DiscoveredFile;
+import dev.codesoapbox.gogbackupservice.files.downloading.domain.model.EnqueuedFileDownload;
 import dev.codesoapbox.gogbackupservice.files.downloading.infrastructure.repositories.EnqueuedFileDownloadSpringRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +23,7 @@ public class FileDownloadQueue {
 
     private EnqueuedFileDownload createEnqueuedFileDownload(DiscoveredFile discoveredFile) {
         var enqueuedFileDownload = new EnqueuedFileDownload();
+        enqueuedFileDownload.setSource(discoveredFile.getSource());
         enqueuedFileDownload.setUrl(discoveredFile.getId().getUrl());
         enqueuedFileDownload.setName(discoveredFile.getName());
         enqueuedFileDownload.setGameTitle(discoveredFile.getGameTitle());

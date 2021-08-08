@@ -1,4 +1,4 @@
-package dev.codesoapbox.gogbackupservice.files.discovery.domain;
+package dev.codesoapbox.gogbackupservice.files.discovery.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

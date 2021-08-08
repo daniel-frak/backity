@@ -1,5 +1,6 @@
-package dev.codesoapbox.gogbackupservice.files.discovery.domain;
+package dev.codesoapbox.gogbackupservice.files.discovery.domain.repositories;
 
+import dev.codesoapbox.gogbackupservice.files.discovery.domain.model.DiscoveredFile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

@@ -1,79 +1,60 @@
 package dev.codesoapbox.gogbackupservice.files.downloading.application.services;
 
-import dev.codesoapbox.gogbackupservice.integrations.gog.application.services.embed.GogEmbedClient;
-import lombok.RequiredArgsConstructor;
+import dev.codesoapbox.gogbackupservice.files.downloading.domain.model.EnqueuedFileDownload;
+import dev.codesoapbox.gogbackupservice.files.downloading.domain.services.SourceFileDownloader;
+import dev.codesoapbox.gogbackupservice.integrations.gog.application.services.embed.FileSizeAccumulator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
-import static java.nio.file.StandardOpenOption.CREATE;
-
+/**
+ * Wrapper for all source file downloaders.
+ * <p>
+ * Downloads files from remote servers.
+ */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class FileDownloader {
 
-    private final GogEmbedClient gogEmbedClient;
     private final FilePathProvider filePathProvider;
+    private final Map<String, SourceFileDownloader> fileDownloaders;
 
-    public void downloadGameFile(String gameTitle, String url, Long sizeInBytes) {
+    public FileDownloader(FilePathProvider filePathProvider, List<SourceFileDownloader> fileDownloaders) {
+        this.filePathProvider = filePathProvider;
+        this.fileDownloaders = fileDownloaders.stream()
+                .collect(Collectors.toMap(SourceFileDownloader::getSource, d -> d));
+    }
+
+    public void downloadGameFile(EnqueuedFileDownload enqueuedFileDownload) {
+        String url = enqueuedFileDownload.getUrl();
+        log.info("Downloading game file {}...", url);
+
         if (Strings.isBlank(url)) {
             throw new IllegalArgumentException("Game file url must not be null or empty");
         }
 
-        log.info("Downloading game file {}...", url);
+        String tempFilePath = createTempFilePath(enqueuedFileDownload);
+        validateEnoughFreeSpaceOnDisk(enqueuedFileDownload.getSize(), tempFilePath);
 
+        getSourceDownloader(enqueuedFileDownload.getSource())
+                .downloadGameFile(enqueuedFileDownload, tempFilePath);
+    }
+
+    private String createTempFilePath(EnqueuedFileDownload enqueuedFileDownload) {
         String tempFileName = "TEMP_" + UUID.randomUUID();
-        String source = "GOG"; //@TODO Extract this from the download info
-        String tempFilePath = filePathProvider.getFilePath(gameTitle, tempFileName, source);
-
+        String tempFilePath = filePathProvider.getFilePath(enqueuedFileDownload.getGameTitle(), tempFileName,
+                enqueuedFileDownload.getSource());
         createDirectories(tempFilePath);
-        validateEnoughFreeSpaceOnDisk(sizeInBytes, tempFilePath);
-
-        AtomicReference<String> newFileName = new AtomicReference<>();
-        AtomicLong sizeInBytesFromRequest = new AtomicLong();
-
-        final Flux<DataBuffer> dataBufferFlux = gogEmbedClient.getFileBuffer(url, newFileName, sizeInBytesFromRequest);
-
-        final Path path = FileSystems.getDefault().getPath(tempFilePath);
-        DataBufferUtils
-                .write(dataBufferFlux, path, CREATE)
-                .share()
-                .block();
-
-        log.info("Downloaded file {} to {}", url, tempFilePath);
-
-        validateFileSize(tempFilePath, sizeInBytesFromRequest);
-
-        String newFilePath = filePathProvider.getFilePath(gameTitle, newFileName.get(), source);
-        renameFile(tempFilePath, newFilePath);
-    }
-
-    private void validateEnoughFreeSpaceOnDisk(Long sizeInBytes, String filePath) {
-        File file = new File(extractDirectory(filePath));
-        if (file.getUsableSpace() < sizeInBytes) {
-            throw new RuntimeException("Not enough space left to save: " + filePath);
-        }
-    }
-
-    private void validateFileSize(String tempFilePath, AtomicLong size) {
-        File downloadedFile = new File(tempFilePath);
-        if (downloadedFile.length() != size.get()) {
-            throw new RuntimeException("The downloaded size of " + tempFilePath + "is not what was expected ("
-                    + downloadedFile.length() + " vs " + size.get() + ")");
-        } else {
-            log.info("Filesize check for {} passed successfully", tempFilePath);
-        }
+        return tempFilePath;
     }
 
     private void createDirectories(String tempFilePath) {
@@ -85,18 +66,23 @@ public class FileDownloader {
         }
     }
 
-    private void renameFile(String tempFilePath, String newFilePath) {
-        Path originalPath = Paths.get(tempFilePath);
-        Path newPath = Paths.get(newFilePath);
-        try {
-            Files.move(originalPath, newPath, StandardCopyOption.REPLACE_EXISTING);
-            log.info("Renamed file {} to {}", tempFilePath, newFilePath);
-        } catch (IOException e) {
-            log.error("Could not rename file: " + tempFilePath, e);
+    private String extractDirectory(String path) {
+        return path.substring(0, path.lastIndexOf('/'));
+    }
+
+    private void validateEnoughFreeSpaceOnDisk(String size, String filePath) {
+        Long sizeInBytes = new FileSizeAccumulator().add(size).getInBytes();
+        File file = new File(extractDirectory(filePath));
+        if (file.getUsableSpace() < sizeInBytes) {
+            throw new RuntimeException("Not enough space left to save: " + filePath);
         }
     }
 
-    private String extractDirectory(String path) {
-        return path.substring(0, path.lastIndexOf('/'));
+    private SourceFileDownloader getSourceDownloader(String source) {
+        if(!fileDownloaders.containsKey(source)) {
+            throw new IllegalArgumentException("File downloader for source not found: " + source);
+        }
+
+        return fileDownloaders.get(source);
     }
 }

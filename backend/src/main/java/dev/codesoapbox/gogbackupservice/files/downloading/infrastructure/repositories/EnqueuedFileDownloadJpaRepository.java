@@ -1,7 +1,7 @@
 package dev.codesoapbox.gogbackupservice.files.downloading.infrastructure.repositories;
 
-import dev.codesoapbox.gogbackupservice.files.downloading.domain.EnqueuedFileDownload;
-import dev.codesoapbox.gogbackupservice.files.downloading.domain.EnqueuedFileDownloadRepository;
+import dev.codesoapbox.gogbackupservice.files.downloading.domain.model.EnqueuedFileDownload;
+import dev.codesoapbox.gogbackupservice.files.downloading.domain.repositories.EnqueuedFileDownloadRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

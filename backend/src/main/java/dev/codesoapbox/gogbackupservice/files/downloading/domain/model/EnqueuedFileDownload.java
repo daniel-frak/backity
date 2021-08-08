@@ -1,4 +1,4 @@
-package dev.codesoapbox.gogbackupservice.files.downloading.domain;
+package dev.codesoapbox.gogbackupservice.files.downloading.domain.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -17,6 +17,7 @@ public class EnqueuedFileDownload {
     @SequenceGenerator(name = "seq_enqueued_file")
     private Long id;
 
+    private String source;
     private String url;
     private String name;
     private String gameTitle;

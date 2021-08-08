@@ -1,7 +1,7 @@
 package dev.codesoapbox.gogbackupservice.files.discovery.infrastructure.repositories;
 
-import dev.codesoapbox.gogbackupservice.files.discovery.domain.DiscoveredFile;
-import dev.codesoapbox.gogbackupservice.files.discovery.domain.DiscoveredFileRepository;
+import dev.codesoapbox.gogbackupservice.files.discovery.domain.model.DiscoveredFile;
+import dev.codesoapbox.gogbackupservice.files.discovery.domain.repositories.DiscoveredFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

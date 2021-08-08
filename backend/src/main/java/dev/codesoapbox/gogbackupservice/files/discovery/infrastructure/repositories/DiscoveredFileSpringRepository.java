@@ -1,7 +1,7 @@
 package dev.codesoapbox.gogbackupservice.files.discovery.infrastructure.repositories;
 
-import dev.codesoapbox.gogbackupservice.files.discovery.domain.DiscoveredFile;
-import dev.codesoapbox.gogbackupservice.files.discovery.domain.DiscoveredFileId;
+import dev.codesoapbox.gogbackupservice.files.discovery.domain.model.DiscoveredFile;
+import dev.codesoapbox.gogbackupservice.files.discovery.domain.model.DiscoveredFileId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

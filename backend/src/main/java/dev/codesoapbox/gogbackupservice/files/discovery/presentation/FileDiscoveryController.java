@@ -1,7 +1,7 @@
 package dev.codesoapbox.gogbackupservice.files.discovery.presentation;
 
-import dev.codesoapbox.gogbackupservice.files.discovery.domain.DiscoveredFile;
-import dev.codesoapbox.gogbackupservice.files.discovery.domain.FileDiscoveryFacade;
+import dev.codesoapbox.gogbackupservice.files.discovery.domain.model.DiscoveredFile;
+import dev.codesoapbox.gogbackupservice.files.discovery.application.services.FileDiscoveryFacade;
 import dev.codesoapbox.gogbackupservice.shared.presentation.ApiControllerPaths;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

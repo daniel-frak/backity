@@ -1,7 +1,7 @@
 package dev.codesoapbox.gogbackupservice.files.downloading.presentation;
 
 import dev.codesoapbox.gogbackupservice.files.downloading.application.services.FileDownloadFacade;
-import dev.codesoapbox.gogbackupservice.files.downloading.domain.EnqueuedFileDownload;
+import dev.codesoapbox.gogbackupservice.files.downloading.domain.model.EnqueuedFileDownload;
 import dev.codesoapbox.gogbackupservice.shared.presentation.ApiControllerPaths;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

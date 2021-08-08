@@ -1,4 +1,4 @@
-package dev.codesoapbox.gogbackupservice.files.discovery.domain;
+package dev.codesoapbox.gogbackupservice.files.discovery.domain.model;
 
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -20,6 +20,7 @@ public class DiscoveredFile {
 
     private UUID uniqueId = UUID.randomUUID();
 
+    private String source;
     private String name;
     private String gameTitle;
     private String size;

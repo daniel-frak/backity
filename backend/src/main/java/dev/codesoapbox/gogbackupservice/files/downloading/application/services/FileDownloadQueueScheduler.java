@@ -1,8 +1,7 @@
 package dev.codesoapbox.gogbackupservice.files.downloading.application.services;
 
-import dev.codesoapbox.gogbackupservice.files.downloading.domain.EnqueuedFileDownload;
+import dev.codesoapbox.gogbackupservice.files.downloading.domain.model.EnqueuedFileDownload;
 import dev.codesoapbox.gogbackupservice.integrations.gog.application.services.auth.GogAuthService;
-import dev.codesoapbox.gogbackupservice.integrations.gog.application.services.embed.FileSizeAccumulator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -34,10 +33,9 @@ public class FileDownloadQueueScheduler {
         enqueuedFileDownloadReference.set(enqueuedFileDownload);
 
         log.info("Downloading enqueued file {}", enqueuedFileDownload.getUrl());
-        Long size = new FileSizeAccumulator().add(enqueuedFileDownload.getSize()).getInBytes();
 
         try {
-            fileDownloader.downloadGameFile(enqueuedFileDownload.getGameTitle(), enqueuedFileDownload.getUrl(), size);
+            fileDownloader.downloadGameFile(enqueuedFileDownload);
             fileDownloadQueue.acknowledgeSuccess(enqueuedFileDownload);
         } catch (RuntimeException e) {
             log.error("An error occurred while trying to process enqueued file (id: {})",
