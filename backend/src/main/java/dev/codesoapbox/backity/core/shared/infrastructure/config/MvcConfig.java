@@ -17,14 +17,16 @@ import java.io.IOException;
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
+    private static final String API_BASE_PACKAGE = BackityApplication.class.getPackageName();
+
     /*
     Add /api prefix to all controllers:
      */
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
         configurer.addPathPrefix("/api",
-                HandlerTypePredicate.forBasePackage(BackityApplication.class.getPackageName()).and(
-                        HandlerTypePredicate.forAnnotation(RestController.class)));
+                HandlerTypePredicate.forBasePackage(API_BASE_PACKAGE)
+                        .and(HandlerTypePredicate.forAnnotation(RestController.class)));
     }
 
     @Override
