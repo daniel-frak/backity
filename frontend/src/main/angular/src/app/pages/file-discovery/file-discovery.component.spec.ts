@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FileDiscoveryComponent } from './file-discovery.component';
+import {FileDiscoveryComponent} from './file-discovery.component';
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('FileDiscoveryComponent', () => {
   let component: FileDiscoveryComponent;
@@ -8,9 +9,12 @@ describe('FileDiscoveryComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FileDiscoveryComponent ]
+      declarations: [FileDiscoveryComponent],
+      imports: [
+        HttpClientTestingModule
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

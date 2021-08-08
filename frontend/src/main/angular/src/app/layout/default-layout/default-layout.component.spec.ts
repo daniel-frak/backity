@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DefaultLayoutComponent } from './default-layout.component';
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 describe('DefaultLayoutComponent', () => {
   let component: DefaultLayoutComponent;
@@ -8,7 +9,10 @@ describe('DefaultLayoutComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DefaultLayoutComponent ]
+      declarations: [ DefaultLayoutComponent ],
+      imports: [
+        NgbModule
+      ]
     })
     .compileComponents();
   });
