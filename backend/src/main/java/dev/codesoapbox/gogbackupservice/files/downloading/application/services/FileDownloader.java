@@ -1,9 +1,9 @@
 package dev.codesoapbox.gogbackupservice.files.downloading.application.services;
 
 import dev.codesoapbox.gogbackupservice.integrations.gog.application.services.embed.GogEmbedClient;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.stereotype.Service;
@@ -20,16 +20,11 @@ import static java.nio.file.StandardOpenOption.CREATE;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class FileDownloader {
 
     private final GogEmbedClient gogEmbedClient;
-    private final String defaultPathTemplate;
-
-    public FileDownloader(GogEmbedClient gogEmbedClient,
-                          @Value("${default-path-template}") String defaultPathTemplate) {
-        this.gogEmbedClient = gogEmbedClient;
-        this.defaultPathTemplate = defaultPathTemplate;
-    }
+    private final FilePathProvider filePathProvider;
 
     public void downloadGameFile(String gameTitle, String url, Long sizeInBytes) {
         if (Strings.isBlank(url)) {
@@ -39,7 +34,8 @@ public class FileDownloader {
         log.info("Downloading game file {}...", url);
 
         String tempFileName = "TEMP_" + UUID.randomUUID();
-        String tempFilePath = prepareFilePath(gameTitle, tempFileName);
+        String source = "GOG"; //@TODO Extract this from the download info
+        String tempFilePath = filePathProvider.getFilePath(gameTitle, tempFileName, source);
 
         createDirectories(tempFilePath);
         validateEnoughFreeSpaceOnDisk(sizeInBytes, tempFilePath);
@@ -59,20 +55,13 @@ public class FileDownloader {
 
         validateFileSize(tempFilePath, sizeInBytesFromRequest);
 
-        String newFilePath = prepareFilePath(gameTitle, newFileName.get());
+        String newFilePath = filePathProvider.getFilePath(gameTitle, newFileName.get(), source);
         renameFile(tempFilePath, newFilePath);
-    }
-
-    private String prepareFilePath(String gameTitle, String fileName) {
-        return defaultPathTemplate
-                .replace("{SOURCE}", "GOG") // @TODO Extract source information
-                .replace("{TITLE}", gameTitle)
-                .replace("{FILENAME}", fileName);
     }
 
     private void validateEnoughFreeSpaceOnDisk(Long sizeInBytes, String filePath) {
         File file = new File(extractDirectory(filePath));
-        if(file.getUsableSpace() < sizeInBytes) {
+        if (file.getUsableSpace() < sizeInBytes) {
             throw new RuntimeException("Not enough space left to save: " + filePath);
         }
     }
