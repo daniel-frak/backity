@@ -22,6 +22,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.*;
+
 // https://gogapidocs.readthedocs.io/en/latest/index.html
 @Slf4j
 @Service
@@ -72,6 +74,9 @@ public class GogEmbedClient {
                         .collect(Collectors.toList()))
                 .block();
 
+        if(gameIds == null) {
+            gameIds = emptyList();
+        }
         log.info("Found {} games", gameIds.size());
 
         return gameIds;
@@ -94,7 +99,11 @@ public class GogEmbedClient {
                 .map(this::extractGameDetails)
                 .block();
 
-        log.debug("Retrieved game details for game: {} (#{})", details.getTitle(), gameId);
+        if(details != null) {
+            log.debug("Retrieved game details for game: {} (#{})", details.getTitle(), gameId);
+        } else {
+            log.error("Could not retrieve game details for game id: {}", gameId);
+        }
 
         return details;
     }
@@ -113,7 +122,7 @@ public class GogEmbedClient {
 
     private List<GameFileDetailsResponse> getFileDetails(GogGameDetailsResponse response) {
         if (response.getDownloads() == null) {
-            return Collections.emptyList();
+            return emptyList();
         }
 
         return response.getDownloads().stream()
