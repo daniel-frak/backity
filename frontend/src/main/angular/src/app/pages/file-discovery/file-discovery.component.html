@@ -24,8 +24,41 @@
       <button class="btn btn-primary me-3" (click)="discoverFiles()">Discover new files</button>
     </p>
     <p>
-      <button class="btn btn-primary" (click)="refresh()">Refresh discovered files</button>
+      <button class="btn btn-secondary" (click)="refresh()">Refresh discovered files</button>
     </p>
+
+    <div *ngIf="newestDiscovered">
+      <table class="table table-custom-responsive-lg-down" *ngIf="discoveredFiles?.content?.length">
+        <caption>Newest discovered file</caption>
+        <thead>
+        <tr>
+          <th scope="col">Game title</th>
+          <th scope="col">File name</th>
+          <th scope="col">Size</th>
+          <th scope="col">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td data-title="Game title">
+            {{newestDiscovered.gameTitle}}
+          </td>
+
+          <td data-title="File name">
+            {{newestDiscovered.name}}
+          </td>
+
+          <td data-title="Size">
+            {{newestDiscovered.size}}
+          </td>
+
+          <td class="hide-title actions">
+            <button (click)="enqueueFile(newestDiscovered.uniqueId)" class="btn btn-primary">Enqueue</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
 
     <app-loaded-content [isLoading]="filesAreLoading">
       <table class="table table-custom-responsive-lg-down" *ngIf="discoveredFiles?.content?.length">
@@ -52,7 +85,7 @@
             {{file.size}}
           </td>
 
-          <td class="hide-title">
+          <td class="hide-title actions">
             <button (click)="enqueueFile(file.uniqueId)" class="btn btn-primary">Enqueue</button>
           </td>
         </tr>
