@@ -1,40 +1,10 @@
-# Dev Info
-
-* Some games return empty arrays instead of objects from the GOG API, e.g., #1207667173
-
-# Support planned for the future
-
-* Itch.io
-* Humble Store
-* IndieGala
-* GamersGate
-* Zoom Platform
-* Steam?
-
-# TODO
-
-* Disable STOMP messages for tests
-* Split Angular into modules
-* `/downloads/arx_fatalis/en1installer0` (`Arx Fatalis (Part 1 of 2)`) downloads a `403 - Forbidden` page
-* Add all the missing tests
-* Store refresh token in cookie
-* Consider a better package structure
-* Improve file download code (`FileDownloader`, `GogEmbedClient::getFileBuffer`)
-  * Add some way to track download progress (https://stackoverflow.com/questions/68518804/how-to-track-progress-of-databufferutils-write)
-  * Improve the way file-size checks are handled (e.g., free space verification)
-  * Try to remove the need to save to a temp file before renaming
-  * Try to add tracking of download speed
-  * Try to add pausing/resuming of downloads
-* Auto-save cd-keys
-* Generify file discovery/downloading code to support more than just GOG in the future
-* Support downloading extras
-* Add loading icons to everything on the frontend
-
-----------------------------------------------------------------------------
+<div style="text-align:center">
 
 # Backity
 
-![Code Soapbox Logo](readme-images/logo.svg)
+![Backity Logo](readme-images/logo.svg)
+
+[![Code Soapbox Logo](readme-images/codesoapbox_logo.svg)](https://codesoapbox.dev/)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=backity&metric=alert_status)](https://sonarcloud.io/dashboard?id=backity)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=backity&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=backity)
@@ -48,11 +18,16 @@
 
 ![GitHub](https://img.shields.io/github/license/daniel-frak/backity)
 
-To learn how to set up a project like this one, check out the [Integrate Angular with a Spring Boot project](http://keepgrowing.in/java/springboot/integrate-angular-with-a-spring-boot-project/)
-post.
+</div>
 
-This project is a multi-module application, using the following frameworks: Spring Boot for the backend and Angular for
-the frontend. The project can be built into a single jar file using Maven.
+Backity is a web service to automatically download backups of your games from external clients
+such as GOG.
+
+**For instructions on how to use Backity, [consult the Wiki](https://github.com/daniel-frak/backity/wiki).**
+
+The information below is aimed at developers who want to extend this project's functionality.
+
+---
 
 - [Getting Started](#getting-started)
 - [Profiles summary](#profiles-summary)
@@ -85,10 +60,10 @@ Then, build it locally with:
 mvn clean install
 ```
 
-You can run the project from command line with:
+You can run the project with the following command:
 
 ```shell
-mvn spring-boot:run
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
 As a result, you should be able to visit the home page on [http://localhost:8080/](http://localhost:8080/):
@@ -102,8 +77,10 @@ summary of the available profiles.
 
 ### Spring profiles
 
-* `dev` - for allowing request from `http://localhost:4200/`. This profile is set as an active profile by default. 
-  You can change it in the `backend/src/main/resources/application.properties` file.
+* `dev` - for local development. Allows things like handling requests from `http://localhost:4200/`.
+* `angular` - special profile used for
+[client code generation](https://codesoapbox.dev/generate-client-code-from-spring-boot-using-maven/).
+Applied automatically when the `angular` Maven profile is enabled.
 
 ### Maven profiles
 
@@ -115,8 +92,7 @@ summary of the available profiles.
 
 ## API documentation
 
-The backend module serves one endpoint for testing purposes. First, build and run the application. Then you'll be able
-to reach the API docs.
+First, build and run the application. Then you'll be able to reach the API docs.
 
 ### Swagger
 
@@ -124,25 +100,27 @@ The Swagger UI page: [http://localhost:8080/swagger-ui.html](http://localhost:80
 
 ### OpenAPI
 
-The OpenAPI description in json format is available at the following
-url: [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs).
+The OpenAPI description is available at the following urls:
+* [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs) - in `json` format
+* [http://localhost:8080/v3/api-docs.yaml](http://localhost:8080/v3/api-docs.yaml) - in `yml` format
 
 ## Client code generation
 
 To run [client code generation](https://codesoapbox.dev/generate-client-code-from-spring-boot-using-maven/) 
-using the `openapi-generator-maven-plugin` execute the following command:
+using the `openapi-generator-maven-plugin`, execute the following command:
 
 ```shell
 mvn clean verify -Pangular -DskipTests
 ```
 
-The application will be started so that the API specification can be obtained from the open api endpoint.
+The application will be started so that the API specification can be obtained from the Open API endpoint.
 
-The generated code is available in the `frontend/src/main/angular/src/backend` directory. Don't edit those files manually.
+The generated code will be available in the `frontend/src/main/angular/src/backend` directory.
+**Don't edit those files manually.**
 
 ## Working with frontend on a local environment
 
-If you want to see how changes you make in the frontend code affects the application you don't need to build it together
+If you want to see how changes you make in the frontend code affect the application you don't need to build it together
 with the `backend` module every time. Use the following commands:
 
 ```shell
@@ -150,9 +128,10 @@ cd frontend/src/main/angular
 ng serve
 ```
 
-and visit [http://localhost:4200/](http://localhost:4200/). The application reloads automatically which speeds up your work.
+and visit [http://localhost:4200/](http://localhost:4200/).
+The application reloads automatically which speeds up your work.
 
-In order to incorporate changes with the project, rebuild the whole application from the main project directory with:
+In order to incorporate changes into the project, rebuild the whole application from the main project directory with:
 
 ```shell
 mvn clean install
@@ -187,12 +166,11 @@ ng test
 
 ### Prerequisites
 
+* You'll need Chrome installed on your machine to run a frontend analysis with code coverage.
 * Read the [Boost project quality with SonarQube – local code analysis](https://keepgrowing.in/tools/boost-project-quality-with-sonarqube-local-code-analysis/)
   post to set up dependencies properly.
-* You'll need Chrome installed on your machine for running a frontend analysis with code coverage.
 * Read the [How to add an Angular module built with Maven to a SonarQube analysis](https://keepgrowing.in/angular/how-to-add-an-angular-module-built-with-maven-to-a-sonarqube-analysis/) 
 to learn more about analysing a multi-module maven application.
-  
 
 ### Full analysis
 
@@ -202,11 +180,9 @@ You can run analysis for the **whole project** (both backend and frontend):
 mvn clean verify sonar:sonar -Pfrontend-pre-sonar -Pcode-coverage -Dsonar.login=your_username -Dsonar.password=your_password
 ```
 
-Or use the shell script: `./run-sonar.sh -a`
-
 ### Backend analysis
 
-You can run analysis for the **backend** module:
+You can run a separate analysis for the **backend** module:
 
 ```shell
 cd backend
@@ -215,21 +191,17 @@ mvn clean verify sonar:sonar -Pcode-coverage -Dsonar.login=your_username -Dsonar
 
 ### Frontend analysis
 
-You can run analysis for the **frontend** module:
+You can run a separate analysis for the **frontend** module:
 
 ```shell
 cd frontend
 mvn sonar:sonar -Pfrontend-pre-sonar -Dsonar.login=your_username -Dsonar.password=your_password
 ```
 
-Or use the shell script which you can find in the closing paragraphs of
-the [How to add an Angular module built with Maven to a SonarQube analysis](https://keepgrowing.in/angular/how-to-add-an-angular-module-built-with-maven-to-a-sonarqube-analysis/)
-post.
-
 ### Verifying results
 
 Visit the [Projects](http://localhost:9000/projects) page and choose the right project. Depending on which modules were
-analysed you can see one, two, or three projects.
+analysed you should see one, two, or three projects.
 
 ## Built With
 
