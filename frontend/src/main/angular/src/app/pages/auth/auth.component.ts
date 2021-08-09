@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {GOGAuthenticationService} from "../../../backend";
+import {GOGAuthenticationClient} from "../../../backend";
 
 @Component({
   selector: 'app-auth',
@@ -16,12 +16,12 @@ export class AuthComponent implements OnInit {
   public gogCodeUrl: string = "";
   public gogIsLoading: boolean = true;
 
-  constructor(private readonly gogAuthService: GOGAuthenticationService) {
+  constructor(private readonly gogAuthClient: GOGAuthenticationClient) {
   }
 
   ngOnInit(): void {
     this.gogIsLoading = true;
-    this.gogAuthService.check().subscribe(isAuthenticated => {
+    this.gogAuthClient.check().subscribe(isAuthenticated => {
       this.gogAuthenticated = isAuthenticated;
       this.gogIsLoading = false;
     });
@@ -36,7 +36,7 @@ export class AuthComponent implements OnInit {
     const params = (new URL(this.gogCodeUrl)).searchParams;
     const code = params.get("code") as string;
     console.warn(code);
-    this.gogAuthService.authenticate(code).subscribe(r => {
+    this.gogAuthClient.authenticate(code).subscribe(r => {
       if (r.refresh_token) {
         console.info("Refresh token: " + r.refresh_token);
         this.gogAuthenticated = true;

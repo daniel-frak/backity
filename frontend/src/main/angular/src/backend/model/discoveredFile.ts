@@ -15,6 +15,7 @@ import { DiscoveredFileId } from './discoveredFileId';
 export interface DiscoveredFile { 
     id?: DiscoveredFileId;
     uniqueId?: string;
+    source?: string;
     name?: string;
     gameTitle?: string;
     size?: string;

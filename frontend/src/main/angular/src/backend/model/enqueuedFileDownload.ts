@@ -13,6 +13,7 @@
 
 export interface EnqueuedFileDownload { 
     id?: number;
+    source?: string;
     url?: string;
     name?: string;
     gameTitle?: string;
@@ -21,5 +22,6 @@ export interface EnqueuedFileDownload {
     dateCreated?: string;
     downloaded?: boolean;
     failed?: boolean;
+    failedReason?: string;
 }
 

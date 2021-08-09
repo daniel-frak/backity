@@ -110,6 +110,7 @@ To run [client code generation](https://codesoapbox.dev/generate-client-code-fro
 using the `openapi-generator-maven-plugin`, execute the following command:
 
 ```shell
+cd backend
 mvn clean verify -Pangular -DskipTests
 ```
 

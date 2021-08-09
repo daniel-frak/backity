@@ -28,7 +28,7 @@ import { Configuration }                                     from '../configurat
 @Injectable({
   providedIn: 'root'
 })
-export class FileDiscoveryService {
+export class FileDiscoveryClient {
 
     protected basePath = 'http://localhost:8080';
     public defaultHeaders = new HttpHeaders();

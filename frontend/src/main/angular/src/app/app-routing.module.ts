@@ -1,6 +1,5 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {HomeComponent} from "./pages/home/home.component";
 import {DefaultLayoutComponent} from "./layout/default-layout/default-layout.component";
 import {FileDiscoveryComponent} from "./pages/file-discovery/file-discovery.component";
 import {DownloadsComponent} from "./pages/downloads/downloads.component";
@@ -14,8 +13,7 @@ const routes: Routes = [
       {path: 'auth', component: AuthComponent},
       {path: 'file-discovery', component: FileDiscoveryComponent},
       {path: 'downloads', component: DownloadsComponent},
-      {path: 'logs', component: LogsComponent},
-      {path: 'home', component: HomeComponent},
+      {path: 'logs', component: LogsComponent}
     ]
   }
 

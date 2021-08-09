@@ -7,7 +7,6 @@ api/downloads.service.ts
 api/fileDiscovery.service.ts
 api/gOG.service.ts
 api/gOGAuthentication.service.ts
-api/homePage.service.ts
 api/logs.service.ts
 configuration.ts
 encoder.ts
@@ -18,7 +17,6 @@ model/discoveredFileId.ts
 model/enqueuedFileDownload.ts
 model/gameDetailsResponse.ts
 model/gameFileDetailsResponse.ts
-model/home.ts
 model/models.ts
 model/pageDiscoveredFile.ts
 model/pageEnqueuedFileDownload.ts

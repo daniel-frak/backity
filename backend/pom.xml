@@ -204,8 +204,12 @@
                                         <!--
                                             Put generator-specific parameters here, e.g. for typescript-angular:
                                             <apiModulePrefix>Backend</apiModulePrefix>
+
+                                            See more:
+                                            https://openapi-generator.tech/docs/generators/typescript-angular/
                                          -->
                                         <ngVersion>${angular-openapi.version}</ngVersion>
+                                        <serviceSuffix>Client</serviceSuffix>
                                     </configOptions>
                                 </configuration>
                             </execution>

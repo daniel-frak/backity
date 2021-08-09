@@ -28,7 +28,7 @@ import { Configuration }                                     from '../configurat
 @Injectable({
   providedIn: 'root'
 })
-export class DownloadsService {
+export class DownloadsClient {
 
     protected basePath = 'http://localhost:8080';
     public defaultHeaders = new HttpHeaders();

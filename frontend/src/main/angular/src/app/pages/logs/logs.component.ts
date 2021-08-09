@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {LogsClient} from "../../../backend";
 
 @Component({
   selector: 'app-logs',
@@ -7,9 +8,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LogsComponent implements OnInit {
 
-  constructor() { }
+  logs: string[] = [];
+  public logsAreLoading: boolean = false;
+
+  constructor(private readonly logsClient: LogsClient) { }
 
   ngOnInit(): void {
+    this.refresh();
   }
 
+  refresh() {
+    this.logsAreLoading = true;
+    this.logsClient.getLogs()
+      .subscribe(logs => {
+        this.logs = logs.reverse();
+        this.logsAreLoading = false;
+      });
+  }
 }

@@ -27,7 +27,7 @@ import { Configuration }                                     from '../configurat
 @Injectable({
   providedIn: 'root'
 })
-export class GOGService {
+export class GOGClient {
 
     protected basePath = 'http://localhost:8080';
     public defaultHeaders = new HttpHeaders();

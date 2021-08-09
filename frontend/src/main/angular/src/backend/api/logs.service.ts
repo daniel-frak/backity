@@ -26,7 +26,7 @@ import { Configuration }                                     from '../configurat
 @Injectable({
   providedIn: 'root'
 })
-export class LogsService {
+export class LogsClient {
 
     protected basePath = 'http://localhost:8080';
     public defaultHeaders = new HttpHeaders();
