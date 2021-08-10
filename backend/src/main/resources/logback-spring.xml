@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+<!--    <appender name="inmemoryappender" class="dev.codesoapbox.backity.core.logs.application.InMemoryLogAppender"/>-->
+<!--    <root level="info">-->
+<!--        <appender-ref ref="inmemoryappender"/>-->
+<!--    </root>-->
+</configuration>

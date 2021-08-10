@@ -1,10 +1,10 @@
+[![Code Soapbox Logo](readme-images/codesoapbox_logo.svg)](https://codesoapbox.dev/)
+
 <div align="center">
 
 # Backity
 
 ![Backity Logo](readme-images/logo.svg)
-
-[![Code Soapbox Logo](readme-images/codesoapbox_logo.svg)](https://codesoapbox.dev/)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=backity&metric=alert_status)](https://sonarcloud.io/dashboard?id=backity)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=backity&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=backity)
@@ -20,8 +20,7 @@
 
 </div>
 
-Backity is a web service to automatically download backups of your games from external clients
-such as GOG.
+Backity is a web service for automatically downloading backups of your games from external clients such as GOG.
 
 **For instructions on how to use Backity, [consult the Wiki](https://github.com/daniel-frak/backity/wiki).**
 

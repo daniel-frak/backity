@@ -13,7 +13,9 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>backity</name>
-    <description>A web service to automatically download backups of your games from external clients such as GOG.</description>
+    <description>
+        A web service for automatically downloading backups of your games from external clients such as GOG.
+    </description>
 
     <modules>
         <module>backend</module>
