@@ -11,9 +11,14 @@
     </p>
 
     <app-loaded-content [isLoading]="logsAreLoading">
+      <span class="badge bg-secondary" *ngIf="logs && logs.length > 0">
+        Showing {{logs?.length}} newest logs.
+      </span>
       <code>
+        <hr>
         <ng-container *ngFor="let log of logs">
-          {{log}}<br><br>
+          {{log}}
+          <hr>
         </ng-container>
       </code>
     </app-loaded-content>

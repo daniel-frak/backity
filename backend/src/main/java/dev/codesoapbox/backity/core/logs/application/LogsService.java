@@ -1,59 +1,91 @@
 package dev.codesoapbox.backity.core.logs.application;
 
-import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.PatternLayout;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.OutputStreamAppender;
 import lombok.SneakyThrows;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toList;
 
 @Service
 public class LogsService {
 
-    private final String logPath;
-    private InMemoryLogAppender logAppender;
+    private static final String CONSOLE_APPENDER = "CONSOLE";
 
-    public LogsService(@Value("${logging.file.name}") String logPath) {
-        this.logPath = logPath;
-        createLogger();
+    // https://stackoverflow.com/a/25189932
+    private static final Pattern ANSI_PATTERN = Pattern.compile("\\e\\[[\\d;]*[^\\d;]");
+
+    private final InMemoryLimitedLogAppender logAppender;
+    private final PatternLayout layout;
+
+    public LogsService(@Value("${in-memory-logs.max}") Integer maxLogs) {
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        Logger logger = createLogger();
+        this.layout = createPatternLayout(loggerContext, logger);
+        this.logAppender = createAndAddLogAppender(loggerContext, logger, maxLogs);
+    }
+
+    private Logger createLogger() {
+        return (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    }
+
+    private InMemoryLimitedLogAppender createAndAddLogAppender(LoggerContext loggerContext, Logger logger, Integer maxLogs) {
+        InMemoryLimitedLogAppender logAppender = createAppender(loggerContext, maxLogs);
+        logger.addAppender(logAppender);
+        return logAppender;
+    }
+
+    private InMemoryLimitedLogAppender createAppender(LoggerContext loggerContext, Integer maxLogs) {
+        InMemoryLimitedLogAppender appender = new InMemoryLimitedLogAppender();
+        appender.setContext(loggerContext);
+        appender.setMaxLogs(maxLogs);
+        appender.start();
+
+        return appender;
+    }
+
+
+    private PatternLayout createPatternLayout(LoggerContext loggerContext, Logger logger) {
+        String pattern = getFileAppenderPattern(logger);
+
+        PatternLayout layout = new PatternLayout();
+        layout.setPattern(pattern);
+        layout.setContext(loggerContext);
+        layout.start();
+
+        return layout;
+    }
+
+    private String getFileAppenderPattern(Logger logger) {
+        OutputStreamAppender<ILoggingEvent> fileAppender =
+                (OutputStreamAppender<ILoggingEvent>) logger.getAppender(CONSOLE_APPENDER);
+
+        PatternLayoutEncoder encoder = (PatternLayoutEncoder) fileAppender.getEncoder();
+        return encoder.getPattern();
     }
 
     @SneakyThrows
     public List<String> getLogs() {
-        return logAppender.getEventMap().entrySet().stream()
-                .sorted(Map.Entry.comparingByKey())
-                .map(e -> getLogMessage(e))
+        return logAppender.getEvents().stream()
+                .map(this::getLogMessage)
                 .collect(toList());
     }
 
-    private String getLogMessage(Map.Entry<Long, ILoggingEvent> e) {
-        return "[" + LocalDateTime.ofInstant(Instant.ofEpochMilli(e.getKey()), ZoneId.systemDefault()).toString() + "] " + e.getValue().getLevel().toString() + " " + e.getValue().getMessage();
+    private String getLogMessage(ILoggingEvent event) {
+        String message = layout.doLayout(event);
+        return stripAnsi(message);
     }
 
-    private Logger createLogger() {
-        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-
-        InMemoryLogAppender appender = new InMemoryLogAppender();
-        appender.setContext(lc);
-        appender.start();
-
-        Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        logger.addAppender(appender);
-        logger.setLevel(Level.DEBUG);
-        logger.setAdditive(false); /* set to true if root should log too */
-
-        this.logAppender = appender;
-
-        return logger;
+    private String stripAnsi(String value) {
+        return ANSI_PATTERN.matcher(value).replaceAll("");
     }
 }
