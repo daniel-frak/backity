@@ -19,7 +19,13 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "@environment/*": [ "src/environments/*" ],
+      "@app/*": [ "src/app/*" ],
+      "@backend": [ "src/backend/index.ts" ],
+      "@backend/*": [ "src/backend/*" ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

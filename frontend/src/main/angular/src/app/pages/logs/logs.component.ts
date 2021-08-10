@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {LogsClient} from "../../../backend";
+import {LogsClient} from "@backend";
 
 @Component({
   selector: 'app-logs',

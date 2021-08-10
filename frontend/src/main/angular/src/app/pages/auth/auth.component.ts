@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {GOGAuthenticationClient} from "../../../backend";
+import {GOGAuthenticationClient} from "@backend";
 
 @Component({
   selector: 'app-auth',
