@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static java.util.Collections.synchronizedList;
 
@@ -14,6 +15,8 @@ public class InMemoryLimitedLogAppender extends AppenderBase<ILoggingEvent> {
 
     @Getter
     private final List<ILoggingEvent> events = synchronizedList(new LinkedList<>());
+
+    private final List<Consumer<ILoggingEvent>> subscribers = synchronizedList(new LinkedList<>());
 
     @Getter
     @Setter
@@ -25,5 +28,10 @@ public class InMemoryLimitedLogAppender extends AppenderBase<ILoggingEvent> {
         if (events.size() > maxLogs) {
             events.remove(0);
         }
+        subscribers.forEach(s -> s.accept(event));
+    }
+
+    public void subscribe(Consumer<ILoggingEvent> subscription) {
+        subscribers.add(subscription);
     }
 }

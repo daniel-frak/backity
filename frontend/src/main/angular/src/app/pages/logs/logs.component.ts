@@ -1,20 +1,32 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {LogsClient} from "@backend";
+import {MessagesService} from "@app/backend/services/messages.service";
+import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
 
 @Component({
   selector: 'app-logs',
   templateUrl: './logs.component.html',
   styleUrls: ['./logs.component.scss']
 })
-export class LogsComponent implements OnInit {
+export class LogsComponent implements OnInit, OnDestroy {
 
   logs: string[] = [];
   public logsAreLoading: boolean = false;
+  private stompSubscriptions: StompSubscription[] = [];
 
-  constructor(private readonly logsClient: LogsClient) { }
+  constructor(private readonly logsClient: LogsClient, private readonly messageService: MessagesService) { }
 
   ngOnInit(): void {
     this.refresh();
+
+    this.messageService.onConnect(client => this.stompSubscriptions.push(
+      client.subscribe('/topic/logs', (payload) => {
+        const message = JSON.parse(payload.body);
+        this.logs.unshift(message['message']);
+        if(this.logs.length > message['maxLogs']) {
+          this.logs.pop();
+        }
+      })));
   }
 
   refresh() {
@@ -24,5 +36,9 @@ export class LogsComponent implements OnInit {
         this.logs = logs.reverse();
         this.logsAreLoading = false;
       });
+  }
+
+  ngOnDestroy(): void {
+    this.stompSubscriptions.forEach(s => s.unsubscribe());
   }
 }

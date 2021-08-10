@@ -6,6 +6,9 @@ import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.OutputStreamAppender;
+import dev.codesoapbox.backity.core.logs.application.messages.LogCreatedMessage;
+import dev.codesoapbox.backity.core.shared.application.MessageTopics;
+import dev.codesoapbox.backity.core.shared.application.services.MessageService;
 import lombok.SneakyThrows;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,14 +27,22 @@ public class LogsService {
     // https://stackoverflow.com/a/25189932
     private static final Pattern ANSI_PATTERN = Pattern.compile("\\e\\[[\\d;]*[^\\d;]");
 
+    private final MessageService messageService;
     private final InMemoryLimitedLogAppender logAppender;
     private final PatternLayout layout;
 
-    public LogsService(@Value("${in-memory-logs.max}") Integer maxLogs) {
+    public LogsService(MessageService messageService, @Value("${in-memory-logs.max}") Integer maxLogs) {
+        this.messageService = messageService;
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger logger = createLogger();
         this.layout = createPatternLayout(loggerContext, logger);
         this.logAppender = createAndAddLogAppender(loggerContext, logger, maxLogs);
+        this.logAppender.subscribe(this::onLogEvent);
+    }
+
+    private void onLogEvent(ILoggingEvent event) {
+        messageService.sendMessage(MessageTopics.LOGS,
+                LogCreatedMessage.of(getLogMessage(event), logAppender.getMaxLogs()));
     }
 
     private Logger createLogger() {

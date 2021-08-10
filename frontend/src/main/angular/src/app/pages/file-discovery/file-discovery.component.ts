@@ -15,7 +15,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   newestDiscovered?: DiscoveredFile;
   public filesAreLoading: boolean = false;
   public discoveryOngoing: boolean = false;
-  private subscriptions: StompSubscription[] = [];
+  private stompSubscriptions: StompSubscription[] = [];
 
   constructor(private readonly fileDiscoveryClient: FileDiscoveryClient,
               private readonly downloadsClient: DownloadsClient,
@@ -25,7 +25,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.refresh();
 
-    this.messageService.onConnect(client => this.subscriptions.push(
+    this.messageService.onConnect(client => this.stompSubscriptions.push(
       client.subscribe('/topic/file-discovery', (payload) => {
         this.newestDiscovered = JSON.parse(payload.body);
       })));
@@ -53,6 +53,6 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.stompSubscriptions.forEach(s => s.unsubscribe());
   }
 }
