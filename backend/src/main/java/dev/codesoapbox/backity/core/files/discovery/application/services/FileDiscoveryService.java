@@ -34,7 +34,7 @@ public class FileDiscoveryService {
     private void saveDiscoveredFileInfo(DiscoveredFile discoveredFile) {
         if (!repository.existsById(discoveredFile.getId())) {
             repository.save(discoveredFile);
-            messageService.sendMessage(MessageTopics.FILE_DISCOVERY, discoveredFile);
+            messageService.sendMessage(MessageTopics.FILE_DISCOVERY.toString(), discoveredFile);
             log.info("Discovered new file: {} (game: {})",
                     discoveredFile.getId().getUrl(), discoveredFile.getGameTitle());
         }

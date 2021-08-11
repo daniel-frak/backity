@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {LogsClient} from "@backend";
+import {LogCreatedMessage, LogsClient, MessageTopics} from "@backend";
 import {MessagesService} from "@app/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
 
@@ -20,10 +20,10 @@ export class LogsComponent implements OnInit, OnDestroy {
     this.refresh();
 
     this.messageService.onConnect(client => this.stompSubscriptions.push(
-      client.subscribe('/topic/logs', (payload) => {
-        const message = JSON.parse(payload.body);
-        this.logs.unshift(message['message']);
-        if(this.logs.length > message['maxLogs']) {
+      client.subscribe(MessageTopics.Logs, (payload) => {
+        const message: LogCreatedMessage = JSON.parse(payload.body);
+        this.logs.unshift(message.message);
+        if(this.logs.length > (message.maxLogs)) {
           this.logs.pop();
         }
       })));

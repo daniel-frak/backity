@@ -3,6 +3,8 @@ export * from './discoveredFileId';
 export * from './enqueuedFileDownload';
 export * from './gameDetailsResponse';
 export * from './gameFileDetailsResponse';
+export * from './logCreatedMessage';
+export * from './messageTopics';
 export * from './pageDiscoveredFile';
 export * from './pageEnqueuedFileDownload';
 export * from './pageable';

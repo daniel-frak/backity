@@ -41,7 +41,7 @@ public class LogsService {
     }
 
     private void onLogEvent(ILoggingEvent event) {
-        messageService.sendMessage(MessageTopics.LOGS,
+        messageService.sendMessage(MessageTopics.LOGS.toString(),
                 LogCreatedMessage.of(getLogMessage(event), logAppender.getMaxLogs()));
     }
 

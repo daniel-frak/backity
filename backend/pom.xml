@@ -13,7 +13,7 @@
 
     <properties>
         <java.version>13</java.version>
-        <springdoc.version>1.5.9</springdoc.version>
+        <springdoc.version>1.5.10</springdoc.version>
         <openapi-generator.version>5.2.0</openapi-generator.version>
         <maven-clean.version>3.1.0</maven-clean.version>
         <angular-openapi.version>12.0.0</angular-openapi.version>
@@ -96,6 +96,14 @@
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
         <!-- END of Websockets -->
+
+        <!-- Websockets -->
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.12</version>
+        </dependency>
+        <!-- Reflective access -->
 
         <!-- Utilities -->
         <dependency>

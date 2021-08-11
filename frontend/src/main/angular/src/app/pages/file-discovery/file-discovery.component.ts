@@ -1,5 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {DiscoveredFile, DownloadsClient, FileDiscoveryClient, Pageable, PageDiscoveredFile} from "@backend";
+import {
+  DiscoveredFile,
+  DownloadsClient,
+  FileDiscoveryClient,
+  MessageTopics,
+  Pageable,
+  PageDiscoveredFile
+} from "@backend";
 import {MessagesService} from "@app/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
 
@@ -26,7 +33,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     this.refresh();
 
     this.messageService.onConnect(client => this.stompSubscriptions.push(
-      client.subscribe('/topic/file-discovery', (payload) => {
+      client.subscribe(MessageTopics.FileDiscovery, (payload) => {
         this.newestDiscovered = JSON.parse(payload.body);
       })));
   }
