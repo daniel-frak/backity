@@ -85,6 +85,8 @@ export class GOGAuthenticationClient {
     }
 
     /**
+     * Authenticate
+     * Returns a refresh token based on a code
      * @param code 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -136,6 +138,8 @@ export class GOGAuthenticationClient {
     }
 
     /**
+     * Check authentication
+     * Returns whether or not the user is currently authenticated
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
@@ -176,6 +180,8 @@ export class GOGAuthenticationClient {
     }
 
     /**
+     * Refresh access token
+     * Refreshes the access token using a refresh token
      * @param refreshToken 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.

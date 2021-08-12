@@ -3,8 +3,10 @@ package dev.codesoapbox.backity.core.files.downloading.presentation;
 import dev.codesoapbox.backity.core.files.downloading.application.services.FileDownloadFacade;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.converters.models.PageableAsQueryParam;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +25,9 @@ public class FileDownloadController {
     private final FileDownloadFacade fileDownloadFacade;
 
     @Operation(summary = "List queue items", description = "Returns a paginated list of all downloads in the queue")
+    @PageableAsQueryParam
     @GetMapping
-    public Page<EnqueuedFileDownload> getQueueItems(Pageable pageable) {
+    public Page<EnqueuedFileDownload> getQueueItems(@Parameter(hidden = true) Pageable pageable) {
         return fileDownloadFacade.getQueueItems(pageable);
     }
 

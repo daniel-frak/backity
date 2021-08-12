@@ -85,16 +85,18 @@ export class GOGClient {
     }
 
     /**
+     * Get game details
+     * Returns the details of a game
      * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getGameFileDetails(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<GameDetailsResponse>;
-    public getGameFileDetails(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<GameDetailsResponse>>;
-    public getGameFileDetails(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<GameDetailsResponse>>;
-    public getGameFileDetails(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
+    public getGameDetails(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<GameDetailsResponse>;
+    public getGameDetails(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<GameDetailsResponse>>;
+    public getGameDetails(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<GameDetailsResponse>>;
+    public getGameDetails(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling getGameFileDetails.');
+            throw new Error('Required parameter id was null or undefined when calling getGameDetails.');
         }
 
         let headers = this.defaultHeaders;
@@ -129,6 +131,8 @@ export class GOGClient {
     }
 
     /**
+     * Get library size
+     * Returns the size of the user\&#39;s GOG library
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */

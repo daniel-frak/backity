@@ -18,7 +18,6 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 import { PageEnqueuedFileDownload } from '../model/models';
-import { Pageable } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -86,6 +85,8 @@ export class DownloadsClient {
     }
 
     /**
+     * Enqueue file
+     * Adds a discovered file to the download queue
      * @param discoveredFileUniqueId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -129,22 +130,33 @@ export class DownloadsClient {
     }
 
     /**
-     * @param pageable 
+     * List queue items
+     * Returns a paginated list of all downloads in the queue
+     * @param page Zero-based page index (0..N)
+     * @param size The size of the page to be returned
+     * @param sort Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getQueueItems(pageable: Pageable, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<PageEnqueuedFileDownload>;
-    public getQueueItems(pageable: Pageable, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<PageEnqueuedFileDownload>>;
-    public getQueueItems(pageable: Pageable, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<PageEnqueuedFileDownload>>;
-    public getQueueItems(pageable: Pageable, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
-        if (pageable === null || pageable === undefined) {
-            throw new Error('Required parameter pageable was null or undefined when calling getQueueItems.');
-        }
+    public getQueueItems(page?: number, size?: number, sort?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<PageEnqueuedFileDownload>;
+    public getQueueItems(page?: number, size?: number, sort?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<PageEnqueuedFileDownload>>;
+    public getQueueItems(page?: number, size?: number, sort?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<PageEnqueuedFileDownload>>;
+    public getQueueItems(page?: number, size?: number, sort?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
-        if (pageable !== undefined && pageable !== null) {
+        if (page !== undefined && page !== null) {
           queryParameters = this.addToHttpParams(queryParameters,
-            <any>pageable, 'pageable');
+            <any>page, 'page');
+        }
+        if (size !== undefined && size !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>size, 'size');
+        }
+        if (sort) {
+            sort.forEach((element) => {
+                queryParameters = this.addToHttpParams(queryParameters,
+                  <any>element, 'sort');
+            })
         }
 
         let headers = this.defaultHeaders;

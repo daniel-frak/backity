@@ -9,11 +9,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Sort } from './sort';
 
 
 export interface Pageable { 
-    page?: number;
-    size?: number;
-    sort?: Array<string>;
+    paged?: boolean;
+    unpaged?: boolean;
+    pageNumber?: number;
+    pageSize?: number;
+    offset?: number;
+    sort?: Sort;
 }
 
