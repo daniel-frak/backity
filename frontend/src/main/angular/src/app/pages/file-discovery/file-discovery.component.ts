@@ -13,6 +13,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   private pageSize = 20;
   discoveredFiles?: PageDiscoveredFile;
   newestDiscovered?: DiscoveredFile;
+  newDiscoveredCount: number = 0;
   public filesAreLoading: boolean = false;
   public discoveryOngoing: boolean = false;
   private stompSubscriptions: StompSubscription[] = [];
@@ -28,6 +29,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
       client.subscribe(MessageTopics.FileDiscovery, (payload) => {
         this.newestDiscovered = JSON.parse(payload.body);
+        this.newDiscoveredCount++;
       })));
   }
 
@@ -38,12 +40,13 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     const sort = ["dateCreated,desc"];
     this.fileDiscoveryClient.getDiscoveredFiles(page, size, sort).subscribe(df => {
       this.discoveredFiles = df;
+      this.newDiscoveredCount = 0;
       this.filesAreLoading = false;
     });
   }
 
   discoverFiles() {
-    this.fileDiscoveryClient.discover().subscribe(() => console.info("Finished discovering"));
+    this.fileDiscoveryClient.discover().subscribe(() => {});
   }
 
   enqueueFile(id?: string) {

@@ -1,8 +1,13 @@
 // https://codeburst.io/create-a-material-design-ripple-effect-without-js-9d3cbee25b3e
 
-.btn:not(.btn-link) {
+.btn:not(.btn-link), .badge-clickable {
   position: relative;
   overflow: hidden;
+
+  &.badge {
+    vertical-align: bottom;
+  }
+
   transform: translate3d(0, 0, 0);
 
   &:after {

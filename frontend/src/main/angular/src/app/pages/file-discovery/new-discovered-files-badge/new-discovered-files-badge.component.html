@@ -1,0 +1,11 @@
+<span class="badge badge-info badge-clickable"
+      [ngbPopover]="newDiscoveredContent"
+      popoverTitle="Newest discovered file"
+      popoverClass="popover-static-width">
+  <i class="bi bi-info-circle"></i>
+  New discovered: {{newDiscoveredCount}}
+</span>
+
+<ng-template #newDiscoveredContent>
+  <app-new-discovered-popup [newestDiscovered]="newestDiscovered"></app-new-discovered-popup>
+</ng-template>

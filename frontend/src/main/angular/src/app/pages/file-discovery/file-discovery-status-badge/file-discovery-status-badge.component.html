@@ -1,0 +1,10 @@
+<span class="badge"
+      [ngClass]="{'bg-success': discoveryOngoing, 'bg-secondary': !discoveryOngoing}">
+<i class="me-1"
+   [ngClass]="{'bi bi-check-circle': discoveryOngoing, 'bi bi-x-circle': !discoveryOngoing}"
+   aria-hidden="true">
+</i>
+
+<ng-container *ngIf="discoveryOngoing">Discovery in progress</ng-container>
+<ng-container *ngIf="!discoveryOngoing">Last run: xx.xx.xxxx</ng-container>
+</span>

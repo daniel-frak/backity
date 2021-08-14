@@ -12,6 +12,9 @@ import {DownloadsComponent} from './pages/downloads/downloads.component';
 import {FormsModule} from "@angular/forms";
 import {LogsComponent} from './pages/logs/logs.component';
 import {LoadedContentComponent} from './shared/components/loaded-content/loaded-content.component';
+import { NewDiscoveredPopupComponent } from './pages/file-discovery/new-discovered-files-badge/new-discovered-popup/new-discovered-popup.component';
+import { NewDiscoveredFilesBadgeComponent } from './pages/file-discovery/new-discovered-files-badge/new-discovered-files-badge.component';
+import { FileDiscoveryStatusBadgeComponent } from './pages/file-discovery/file-discovery-status-badge/file-discovery-status-badge.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +24,10 @@ import {LoadedContentComponent} from './shared/components/loaded-content/loaded-
     FileDiscoveryComponent,
     DownloadsComponent,
     LogsComponent,
-    LoadedContentComponent
+    LoadedContentComponent,
+    NewDiscoveredPopupComponent,
+    NewDiscoveredFilesBadgeComponent,
+    FileDiscoveryStatusBadgeComponent
   ],
   imports: [
     BrowserModule,

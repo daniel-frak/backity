@@ -1,3 +1,38 @@
+@import "../basics";
+
+@mixin badge-variant(
+  $background,
+  $color: color-contrast($background),
+  $hover-background: if($color == $color-contrast-light, shade-color($background, $btn-hover-bg-shade-amount),
+    tint-color($background, $btn-hover-bg-tint-amount)),
+  $hover-color: color-contrast($hover-background),
+) {
+  color: $color;
+  @include gradient-bg($background);
+  @include box-shadow($btn-box-shadow);
+
+  &.badge-clickable:hover {
+    color: $hover-color;
+    @include gradient-bg($hover-background);
+  }
+}
+
+@each $color, $value in $theme-colors {
+  .badge-#{$color} {
+    @include badge-variant($value);
+  }
+}
+
 .badge {
   cursor: default;
+}
+
+.badge-clickable {
+  cursor: pointer;
+  user-select: none;
+
+  .badge {
+    cursor: pointer;
+    user-select: none;
+  }
 }

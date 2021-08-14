@@ -34,6 +34,7 @@ export class MessagesService {
     this.stompClient.onConnect = function (frame) {
       // All subscribes must be done is this callback
       // This is needed because this will be executed after a (re)connect
+      console.log("Executing stompClient subscriptions...");
       _this.subscriptions.subscribe(func => func(_this.stompClient as CompatClient));
     };
     this.stompClient.activate();

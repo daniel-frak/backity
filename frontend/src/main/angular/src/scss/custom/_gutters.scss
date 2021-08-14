@@ -1,0 +1,17 @@
+@import "src/scss/bootstrap/basics";
+
+@mixin gutters-variant($gutter-size) {
+  display: flex;
+  flex-wrap: wrap;
+  margin: -$gutter-size / 2;
+
+  > * {
+    padding: $gutter-size / 2;
+  }
+}
+
+@each $index, $value in $spacers {
+  .gutters-#{$index} {
+    @include gutters-variant($value);
+  }
+}

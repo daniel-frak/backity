@@ -6,59 +6,18 @@
       Here you can manage all of the new files that have been found but have not yet been scheduled for download.
     </p>
 
-    <p>
-      Status:
-      <span class="badge"
-            [ngClass]="{'bg-success': discoveryOngoing, 'bg-secondary': !discoveryOngoing}">
-        <i class="me-1"
-           [ngClass]="{'bi bi-check-circle': discoveryOngoing, 'bi bi-x-circle': !discoveryOngoing}"
-           aria-hidden="true">
-        </i>
+    <div class="gutters-1">
+        <app-file-discovery-status-badge [discoveryOngoing]="discoveryOngoing"></app-file-discovery-status-badge>
+        <app-new-discovered-files-badge [newDiscoveredCount]="newDiscoveredCount"
+                                        [newestDiscovered]="newestDiscovered">
+        </app-new-discovered-files-badge>
+    </div>
 
-        <ng-container *ngIf="discoveryOngoing">Discovery in progress</ng-container>
-        <ng-container *ngIf="!discoveryOngoing">Last run: xx.xx.xxxx</ng-container>
-      </span>
-    </p>
-
-    <p>
-      <button class="btn btn-primary me-3" (click)="discoverFiles()">Discover new files</button>
-    </p>
+    <button class="btn btn-primary mt-2 me-3" (click)="discoverFiles()">Discover new files</button>
+    <hr>
     <p>
       <button class="btn btn-secondary" (click)="refresh()">Refresh discovered files</button>
     </p>
-
-    <div *ngIf="newestDiscovered">
-      <table class="table table-custom-responsive-lg-down" *ngIf="discoveredFiles?.content?.length">
-        <caption>Newest discovered file</caption>
-        <thead>
-        <tr>
-          <th scope="col">Game title</th>
-          <th scope="col">File name</th>
-          <th scope="col">Size</th>
-          <th scope="col">Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-          <td data-title="Game title">
-            {{newestDiscovered.gameTitle}}
-          </td>
-
-          <td data-title="File name">
-            {{newestDiscovered.name}}
-          </td>
-
-          <td data-title="Size">
-            {{newestDiscovered.size}}
-          </td>
-
-          <td class="hide-title actions">
-            <button (click)="enqueueFile(newestDiscovered.uniqueId)" class="btn btn-primary">Enqueue</button>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
 
     <app-loaded-content [isLoading]="filesAreLoading">
       <table class="table table-custom-responsive-lg-down" *ngIf="discoveredFiles?.content?.length">
