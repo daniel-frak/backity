@@ -6,11 +6,13 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
 import {RouterModule} from "@angular/router";
 import {CommonModule} from "@angular/common";
+import { PageHeaderComponent } from './components/page-header/page-header.component';
 
 @NgModule({
   declarations: [
     DefaultLayoutComponent,
     LoadedContentComponent,
+    PageHeaderComponent,
   ],
   imports: [
     CommonModule,
@@ -21,7 +23,8 @@ import {CommonModule} from "@angular/common";
   ],
   exports: [
     DefaultLayoutComponent,
-    LoadedContentComponent
+    LoadedContentComponent,
+    PageHeaderComponent
   ],
   providers: []
 })

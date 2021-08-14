@@ -1,0 +1,11 @@
+.btn-help-icon {
+  padding: 0;
+  vertical-align: top;
+  font-size: 50%;
+}
+
+.btn-link {
+  &:focus {
+    box-shadow: none;
+  }
+}

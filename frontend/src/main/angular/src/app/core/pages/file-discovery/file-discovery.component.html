@@ -1,11 +1,9 @@
-<h1>File discovery</h1>
+<app-page-header title="File discovery">
+  Here you can manage all of the new files that have been found but have not yet been scheduled for download.
+</app-page-header>
 
 <div class="card mt-3">
   <div class="card-body">
-    <p>
-      Here you can manage all of the new files that have been found but have not yet been scheduled for download.
-    </p>
-
     <div class="gutters-1">
         <app-file-discovery-status-badge [discoveryOngoing]="discoveryOngoing"></app-file-discovery-status-badge>
         <app-new-discovered-files-badge [newDiscoveredCount]="newDiscoveredCount"

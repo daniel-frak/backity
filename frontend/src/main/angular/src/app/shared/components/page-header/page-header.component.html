@@ -1,0 +1,12 @@
+<h1>
+  {{title}}
+  <button class="btn btn-link btn-help-icon"
+          [ngbPopover]="pageHelpContent"
+          placement="end auto">
+    <i class="bi bi-question-circle-fill" aria-hidden="true"></i>
+  </button>
+
+  <ng-template #pageHelpContent>
+    <ng-content></ng-content>
+  </ng-template>
+</h1>
