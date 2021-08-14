@@ -13,6 +13,9 @@ import {NewDiscoveredFilesBadgeComponent} from './pages/file-discovery/new-disco
 import {FileDiscoveryStatusBadgeComponent} from './pages/file-discovery/file-discovery-status-badge/file-discovery-status-badge.component';
 import {SharedModule} from "@app/shared/shared.module";
 import {GogModule} from "@app/gog/gog.module";
+import { SettingsLayoutComponent } from './pages/settings/settings-layout/settings-layout.component';
+import {RouterModule} from "@angular/router";
+import { SettingsSideNavComponent } from './pages/settings/settings-layout/settings-side-nav/settings-side-nav.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +25,9 @@ import {GogModule} from "@app/gog/gog.module";
     LogsComponent,
     NewDiscoveredPopupComponent,
     NewDiscoveredFilesBadgeComponent,
-    FileDiscoveryStatusBadgeComponent
+    FileDiscoveryStatusBadgeComponent,
+    SettingsLayoutComponent,
+    SettingsSideNavComponent
   ],
   imports: [
     SharedModule,
@@ -30,7 +35,8 @@ import {GogModule} from "@app/gog/gog.module";
     BrowserModule,
     HttpClientModule,
     NgbModule,
-    FormsModule
+    FormsModule,
+    RouterModule
   ],
   providers: [],
 })
