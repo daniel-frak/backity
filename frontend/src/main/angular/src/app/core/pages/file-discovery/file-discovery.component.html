@@ -1,7 +1,7 @@
-<div class="card">
-  <div class="card-body">
-    <h1 class="card-title">File discovery</h1>
+<h1>File discovery</h1>
 
+<div class="card mt-3">
+  <div class="card-body">
     <p>
       Here you can manage all of the new files that have been found but have not yet been scheduled for download.
     </p>
@@ -14,14 +14,18 @@
     </div>
 
     <button class="btn btn-primary mt-2 me-3" (click)="discoverFiles()">Discover new files</button>
-    <hr>
+  </div>
+</div>
+<div class="card mt-3">
+  <div class="card-body">
+    <h2 class="card-title">Discovered files</h2>
     <p>
-      <button class="btn btn-secondary" (click)="refresh()">Refresh discovered files</button>
+      <button class="btn btn-secondary" (click)="refresh()">Refresh</button>
     </p>
 
     <app-loaded-content [isLoading]="filesAreLoading">
       <table class="table table-custom-responsive-lg-down" *ngIf="discoveredFiles?.content?.length">
-        <caption>Discovered files</caption>
+<!--        <caption>Discovered files</caption>-->
         <thead>
         <tr>
           <th scope="col">Game title</th>

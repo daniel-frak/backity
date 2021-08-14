@@ -1,9 +1,8 @@
 <app-loaded-content [isLoading]="gogIsLoading">
-  <div class="card">
+  <div class="card mt-3">
     <div class="card-body">
-      <h1 class="card-title">GOG</h1>
+      <h2 class="card-title">GOG</h2>
       <p>
-        Status:
         <span class="badge"
               [ngClass]="{'bg-success': gogAuthenticated, 'bg-danger': !gogAuthenticated}">
         <i class="me-1"
