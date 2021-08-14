@@ -12,6 +12,7 @@ import {NewDiscoveredPopupComponent} from './pages/file-discovery/new-discovered
 import {NewDiscoveredFilesBadgeComponent} from './pages/file-discovery/new-discovered-files-badge/new-discovered-files-badge.component';
 import {FileDiscoveryStatusBadgeComponent} from './pages/file-discovery/file-discovery-status-badge/file-discovery-status-badge.component';
 import {SharedModule} from "@app/shared/shared.module";
+import {GogModule} from "@app/gog/gog.module";
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import {SharedModule} from "@app/shared/shared.module";
   ],
   imports: [
     SharedModule,
+    GogModule,
     BrowserModule,
     HttpClientModule,
     NgbModule,
