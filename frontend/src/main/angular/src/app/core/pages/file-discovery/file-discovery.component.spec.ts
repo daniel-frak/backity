@@ -4,7 +4,7 @@ import {FileDiscoveryComponent} from './file-discovery.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
 import createSpyObj = jasmine.createSpyObj;
-import {MessagesService} from "../../backend/services/messages.service";
+import {MessagesService} from "../../../shared/backend/services/messages.service";
 
 describe('FileDiscoveryComponent', () => {
   let component: FileDiscoveryComponent;

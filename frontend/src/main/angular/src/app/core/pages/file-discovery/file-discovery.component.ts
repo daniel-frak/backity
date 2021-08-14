@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {DiscoveredFile, DownloadsClient, FileDiscoveryClient, MessageTopics, PageDiscoveredFile} from "@backend";
-import {MessagesService} from "@app/backend/services/messages.service";
+import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
 
 @Component({

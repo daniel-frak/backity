@@ -1,10 +1,10 @@
 import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
-import {DefaultLayoutComponent} from "./layout/default-layout/default-layout.component";
-import {FileDiscoveryComponent} from "./pages/file-discovery/file-discovery.component";
-import {DownloadsComponent} from "./pages/downloads/downloads.component";
-import {AuthComponent} from "./pages/auth/auth.component";
-import {LogsComponent} from "./pages/logs/logs.component";
+import {DefaultLayoutComponent} from "./shared/layout/default-layout/default-layout.component";
+import {FileDiscoveryComponent} from "./core/pages/file-discovery/file-discovery.component";
+import {DownloadsComponent} from "./core/pages/downloads/downloads.component";
+import {AuthComponent} from "./core/pages/auth/auth.component";
+import {LogsComponent} from "./core/pages/logs/logs.component";
 
 const routes: Routes = [
   {
