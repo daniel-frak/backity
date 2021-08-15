@@ -33,7 +33,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
-      client.subscribe(FileDiscoveryMessageTopics.TopicFileDiscovery, this.onDiscoveredFileReceived)
+      client.subscribe(FileDiscoveryMessageTopics.TopicFileDiscovery, p => this.onDiscoveredFileReceived(p))
     ))
 
     this.refresh();
@@ -50,7 +50,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     const size = this.pageSize;
     const sort = ["dateCreated,desc"];
     this.fileDiscoveryClient.getDiscoveredFiles(page, size, sort)
-      .subscribe(this.updateDiscoveredFiles);
+      .subscribe(df => this.updateDiscoveredFiles(df));
   }
 
   private updateDiscoveredFiles(df: PageDiscoveredFile) {

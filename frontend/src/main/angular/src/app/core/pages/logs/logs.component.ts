@@ -20,7 +20,7 @@ export class LogsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
-      client.subscribe(LogsMessageTopics.TopicLogs, this.onLogReceived)
+      client.subscribe(LogsMessageTopics.TopicLogs, p => this.onLogReceived(p))
     ));
 
     this.refresh();
@@ -37,7 +37,7 @@ export class LogsComponent implements OnInit, OnDestroy {
   refresh() {
     this.logsAreLoading = true;
     this.logsClient.getLogs()
-      .subscribe(this.updateLogs);
+      .subscribe(l => this.updateLogs(l));
   }
 
   private updateLogs(logs: Array<string>) {
