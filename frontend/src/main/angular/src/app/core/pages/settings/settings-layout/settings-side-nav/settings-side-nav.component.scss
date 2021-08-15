@@ -2,29 +2,30 @@
 
 $sidebar-width: 200px;
 $sidebar-width-minimized: 47px;
+$animation-time: 0.3s;
+$link-padding: map_get($spacers, 3);
+$hover-background: tint-color($dark, $btn-hover-bg-tint-amount);
 
 :host {
   background: $dark;
-
-  display: block;
+  width: $sidebar-width;
   min-width: $sidebar-width;
-  max-width: $sidebar-width;
-  width: 9999px;
-  transition: all 0.3s;
+  transition: all $animation-time;
   overflow-x: hidden;
+
+  // Don't allow selecting text
   user-select: none;
 
   nav {
     width: $sidebar-width;
-    min-width: $sidebar-width;
 
     a {
       display: flex;
-      padding: 15px;
+      padding: $link-padding;
       width: 100%;
 
       &:hover {
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: $hover-background;
       }
 
       .bi {
@@ -34,18 +35,18 @@ $sidebar-width-minimized: 47px;
   }
 
   .link-title {
-    transition: opacity 0.3s;
+    transition: opacity $animation-time;
 
     // Ellipsis:
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+    // END Ellipsis
   }
 
-  &.hidden {
-    min-width: 0;
-    max-width: $sidebar-width-minimized;
-    width: auto;
+  &.minimized {
+    width: $sidebar-width-minimized;
+    min-width: $sidebar-width-minimized;
 
     .link-title {
       opacity: 0;

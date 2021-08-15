@@ -8,7 +8,7 @@ import {Component, HostBinding, Input, OnInit} from '@angular/core';
 export class SettingsSideNavComponent implements OnInit {
 
   @Input()
-  @HostBinding('class.hidden')
+  @HostBinding('class.minimized')
   minimizeSideNav: boolean = false;
 
   constructor() { }
