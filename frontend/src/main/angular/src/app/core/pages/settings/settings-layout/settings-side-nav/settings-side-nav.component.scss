@@ -8,10 +8,18 @@ $hover-background: tint-color($dark, $btn-hover-bg-tint-amount);
 
 :host {
   background: $dark;
+}
+
+.sidebar-wrapper {
   width: $sidebar-width;
   min-width: $sidebar-width;
   transition: all $animation-time;
   overflow-x: hidden;
+
+  // Make sticky
+  position: sticky;
+  top: 0;
+  display: block;
 
   // Don't allow selecting text
   user-select: none;
