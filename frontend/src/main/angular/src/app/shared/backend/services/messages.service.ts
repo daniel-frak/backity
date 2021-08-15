@@ -1,18 +1,17 @@
 import {Injectable} from '@angular/core';
 import {environment} from "@environment/environment";
 import {ReplaySubject} from "rxjs";
-import * as Stomp from '@stomp/stompjs';
 import * as SockJS from 'sockjs-client';
-import {CompatClient} from "@stomp/stompjs";
+import {Client, CompatClient} from "@stomp/stompjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessagesService {
 
-  private stompClient?: CompatClient;
-  private subscriptions: ReplaySubject<(client: CompatClient) => any> =
-    new ReplaySubject<(client: CompatClient) => any>();
+  private stompClient?: Client;
+  private subscriptions: ReplaySubject<(client: Client) => any> =
+    new ReplaySubject<(client: Client) => any>();
 
   /*
   https://grokonez.com/angular-12-springboot-websocket
@@ -23,12 +22,13 @@ export class MessagesService {
    */
 
   constructor() {
-    if(environment.mockMessages) {
+    if (environment.mockMessages) {
       return;
     }
 
-    const socket = new SockJS(environment.apiUrl + '/messages');
-    this.stompClient = Stomp.Stomp.over(socket);
+    this.stompClient = new Client({
+      webSocketFactory: () => new SockJS(environment.apiUrl + '/messages')
+    });
 
     const _this = this;
     this.stompClient.onConnect = function (frame) {
@@ -40,7 +40,7 @@ export class MessagesService {
     this.stompClient.activate();
   }
 
-  public onConnect(func: (client: CompatClient) => any): void {
+  public onConnect(func: (client: Client) => any): void {
     this.subscriptions.next(client => func(client));
   }
 }
