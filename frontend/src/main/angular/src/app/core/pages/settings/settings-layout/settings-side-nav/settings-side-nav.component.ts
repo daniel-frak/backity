@@ -7,13 +7,19 @@ import {Component, HostBinding, Input, OnInit} from '@angular/core';
 })
 export class SettingsSideNavComponent implements OnInit {
 
-  @Input()
   @HostBinding('class.minimized')
   minimizeSideNav: boolean = false;
 
   constructor() { }
 
   ngOnInit(): void {
+    if(this.isMobileClient()) {
+      this.minimizeSideNav = true;
+    }
   }
 
+  private isMobileClient() {
+    const ua = navigator.userAgent;
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(ua);
+  }
 }
