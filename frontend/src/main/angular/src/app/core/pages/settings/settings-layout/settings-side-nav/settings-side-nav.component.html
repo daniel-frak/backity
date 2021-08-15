@@ -1,15 +1,22 @@
-<nav id="sidebar" class="navbar-dark bg-dark" [ngClass]="{'hidden': hideSideNav }">
+<nav class="navbar-dark bg-dark">
   <ul class="navbar-nav">
     <li class="nav-item">
-      <a class="nav-link" [routerLink]="'/settings'" routerLinkActive="active">
+      <a class="nav-link" [routerLink]="'/settings'" routerLinkActive="active"
+         [routerLinkActiveOptions]="{ exact: true }">
         <i class="bi bi-folder" aria-hidden="true"></i>
-        Files
+        <span class="link-title">Files Files Files Files Files Files Files</span>
       </a>
     </li>
     <li class="nav-item">
       <a class="nav-link" [routerLink]="'/settings/logs'" routerLinkActive="active">
         <i class="bi bi-journal" aria-hidden="true"></i>
-        Logs
+        <span class="link-title">Logs</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [routerLink]="" (click)="minimizeSideNav = !minimizeSideNav">
+        <i class="bi" [ngClass]="minimizeSideNav ? 'bi-chevron-right' : 'bi-chevron-left'" aria-hidden="true"></i>
+        <span class="link-title">Minimize</span>
       </a>
     </li>
   </ul>

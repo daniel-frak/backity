@@ -1,53 +1,54 @@
+@import "src/scss/bootstrap/basics";
+
+$sidebar-width: 200px;
+$sidebar-width-minimized: 47px;
+
 :host {
-  background: #343a40;
-}
+  background: $dark;
 
-#sidebar {
-  min-width: 200px;
-  max-width: 200px;
-  min-height: 100vh;
-  color: #fff;
-  transition: all 0.3s;
-  font-weight: 300;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-#sidebar.hidden {
-  margin-left: -200px;
-}
-
-a[data-toggle="collapse"] {
-  position: relative;
-}
-
-@media (max-width: 575px) {
-  #sidebar {
-    margin-left: -200px;
-  }
-  #sidebar.hidden {
-    margin-left: 0;
-  }
-}
-
-a, a:hover, a:focus {
-  color: inherit;
-}
-
-#sidebar .sidebar-header {
-  padding: 20px;
-}
-
-#sidebar ul li a {
-  padding: 15px;
   display: block;
-  width: 100%;
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-}
+  min-width: $sidebar-width;
+  max-width: $sidebar-width;
+  width: 9999px;
+  transition: all 0.3s;
+  overflow-x: hidden;
+  user-select: none;
 
-hr {
-  border-top: 1px solid #fff;
-  margin-top: 0;
+  nav {
+    width: $sidebar-width;
+    min-width: $sidebar-width;
+
+    a {
+      display: flex;
+      padding: 15px;
+      width: 100%;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      .bi {
+        margin-right: map_get($spacers, 2);
+      }
+    }
+  }
+
+  .link-title {
+    transition: opacity 0.3s;
+
+    // Ellipsis:
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  &.hidden {
+    min-width: 0;
+    max-width: $sidebar-width-minimized;
+    width: auto;
+
+    .link-title {
+      opacity: 0;
+    }
+  }
 }
