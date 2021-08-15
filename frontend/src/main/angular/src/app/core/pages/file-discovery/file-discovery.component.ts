@@ -1,7 +1,14 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {DiscoveredFile, DownloadsClient, FileDiscoveryClient, MessageTopics, PageDiscoveredFile} from "@backend";
+import {
+  DiscoveredFile,
+  DownloadsClient,
+  FileDiscoveryClient,
+  FileDiscoveryMessageTopics,
+  PageDiscoveredFile
+} from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
+import {IMessage} from "@stomp/stompjs";
 
 @Component({
   selector: 'app-file-discovery',
@@ -10,12 +17,13 @@ import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
 })
 export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
-  private pageSize = 20;
   discoveredFiles?: PageDiscoveredFile;
   newestDiscovered?: DiscoveredFile;
   newDiscoveredCount: number = 0;
-  public filesAreLoading: boolean = false;
-  public discoveryOngoing: boolean = false;
+  filesAreLoading: boolean = false;
+  discoveryOngoing: boolean = false;
+
+  private pageSize = 20;
   private stompSubscriptions: StompSubscription[] = [];
 
   constructor(private readonly fileDiscoveryClient: FileDiscoveryClient,
@@ -24,13 +32,16 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.refresh();
-
     this.messageService.onConnect(client => this.stompSubscriptions.push(
-      client.subscribe(MessageTopics.FileDiscovery, (payload) => {
-        this.newestDiscovered = JSON.parse(payload.body);
-        this.newDiscoveredCount++;
-      })));
+      client.subscribe(FileDiscoveryMessageTopics.TopicFileDiscovery, this.onDiscoveredFileReceived)
+    ))
+
+    this.refresh();
+  }
+
+  private onDiscoveredFileReceived(payload: IMessage) {
+    this.newestDiscovered = JSON.parse(payload.body);
+    this.newDiscoveredCount++;
   }
 
   refresh() {
@@ -38,15 +49,19 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     const page = 0;
     const size = this.pageSize;
     const sort = ["dateCreated,desc"];
-    this.fileDiscoveryClient.getDiscoveredFiles(page, size, sort).subscribe(df => {
-      this.discoveredFiles = df;
-      this.newDiscoveredCount = 0;
-      this.filesAreLoading = false;
-    });
+    this.fileDiscoveryClient.getDiscoveredFiles(page, size, sort)
+      .subscribe(this.updateDiscoveredFiles);
+  }
+
+  private updateDiscoveredFiles(df: PageDiscoveredFile) {
+    this.discoveredFiles = df;
+    this.newDiscoveredCount = 0;
+    this.filesAreLoading = false;
   }
 
   discoverFiles() {
-    this.fileDiscoveryClient.discover().subscribe(() => {});
+    this.fileDiscoveryClient.discover().subscribe(() => {
+    });
   }
 
   enqueueFile(id?: string) {

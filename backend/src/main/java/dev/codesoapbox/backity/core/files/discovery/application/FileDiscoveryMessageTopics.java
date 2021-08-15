@@ -1,14 +1,13 @@
-package dev.codesoapbox.backity.core.shared.application;
+package dev.codesoapbox.backity.core.files.discovery.application;
 
 import dev.codesoapbox.backity.core.shared.infrastructure.config.openapi.IncludeInOpenApiDocs;
 import lombok.AllArgsConstructor;
 
 @IncludeInOpenApiDocs
 @AllArgsConstructor
-public enum MessageTopics {
+public enum FileDiscoveryMessageTopics {
 
-    FILE_DISCOVERY("/topic/file-discovery"),
-    LOGS("/topic/logs");
+    FILE_DISCOVERY("/topic/file-discovery");
 
     private final String value;
 

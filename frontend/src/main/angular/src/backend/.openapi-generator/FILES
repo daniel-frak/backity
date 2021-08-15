@@ -15,10 +15,11 @@ index.ts
 model/discoveredFile.ts
 model/discoveredFileId.ts
 model/enqueuedFileDownload.ts
+model/fileDiscoveryMessageTopics.ts
 model/gameDetailsResponse.ts
 model/gameFileDetailsResponse.ts
 model/logCreatedMessage.ts
-model/messageTopics.ts
+model/logsMessageTopics.ts
 model/models.ts
 model/pageDiscoveredFile.ts
 model/pageEnqueuedFileDownload.ts

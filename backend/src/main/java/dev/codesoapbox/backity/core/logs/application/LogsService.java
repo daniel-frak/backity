@@ -7,7 +7,6 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.OutputStreamAppender;
 import dev.codesoapbox.backity.core.logs.application.messages.LogCreatedMessage;
-import dev.codesoapbox.backity.core.shared.application.MessageTopics;
 import dev.codesoapbox.backity.core.shared.application.services.MessageService;
 import lombok.SneakyThrows;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,7 @@ public class LogsService {
     }
 
     private void onLogEvent(ILoggingEvent event) {
-        messageService.sendMessage(MessageTopics.LOGS.toString(),
+        messageService.sendMessage(LogsMessageTopics.LOGS.toString(),
                 LogCreatedMessage.of(getLogMessage(event), logAppender.getMaxLogs()));
     }
 

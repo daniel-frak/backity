@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.files.discovery.application.services;
 
+import dev.codesoapbox.backity.core.files.discovery.application.FileDiscoveryMessageTopics;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
 import dev.codesoapbox.backity.core.files.discovery.domain.services.SourceFileDiscoveryService;
 import dev.codesoapbox.backity.core.files.discovery.infrastructure.repositories.DiscoveredFileSpringRepository;
 import dev.codesoapbox.backity.core.shared.application.services.MessageService;
-import dev.codesoapbox.backity.core.shared.application.MessageTopics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class FileDiscoveryService {
     private void saveDiscoveredFileInfo(DiscoveredFile discoveredFile) {
         if (!repository.existsById(discoveredFile.getId())) {
             repository.save(discoveredFile);
-            messageService.sendMessage(MessageTopics.FILE_DISCOVERY.toString(), discoveredFile);
+            messageService.sendMessage(FileDiscoveryMessageTopics.FILE_DISCOVERY.toString(), discoveredFile);
             log.info("Discovered new file: {} (game: {})",
                     discoveredFile.getId().getUrl(), discoveredFile.getGameTitle());
         }
