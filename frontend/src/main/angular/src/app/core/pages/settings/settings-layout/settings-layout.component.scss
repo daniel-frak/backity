@@ -1,5 +1,16 @@
+$content-min-width: 300px;
+
 :host {
   flex: auto;
   display: flex;
   flex-direction: row;
+}
+
+.content-wrapper {
+  overflow-x: auto;
+  width: 100%;
+
+  > div {
+    min-width: $content-min-width;
+  }
 }
