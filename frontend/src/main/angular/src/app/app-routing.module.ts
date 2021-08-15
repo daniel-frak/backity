@@ -4,9 +4,10 @@ import {DefaultLayoutComponent} from "./shared/layout/default-layout/default-lay
 import {FileDiscoveryComponent} from "./core/pages/file-discovery/file-discovery.component";
 import {DownloadsComponent} from "./core/pages/downloads/downloads.component";
 import {AuthComponent} from "./core/pages/auth/auth.component";
-import {LogsComponent} from "./core/pages/logs/logs.component";
+import {LogsComponent} from "./core/pages/settings/logs/logs.component";
 import {SettingsLayoutComponent} from "@app/core/pages/settings/settings-layout/settings-layout.component";
 import {ContainedLayoutComponent} from "@app/shared/layout/contained-layout/contained-layout.component";
+import {FilesComponent} from "@app/pages/settings/files/files.component";
 
 const routes: Routes = [
   {
@@ -28,7 +29,8 @@ const routes: Routes = [
         path: 'settings',
         component: SettingsLayoutComponent,
         children: [
-          {path: '', component: LogsComponent}
+          {path: '', component: FilesComponent},
+          {path: 'logs', component: LogsComponent}
         ]
       }
     ]

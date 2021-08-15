@@ -7,7 +7,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {FileDiscoveryComponent} from './pages/file-discovery/file-discovery.component';
 import {DownloadsComponent} from './pages/downloads/downloads.component';
 import {FormsModule} from "@angular/forms";
-import {LogsComponent} from './pages/logs/logs.component';
+import {LogsComponent} from './pages/settings/logs/logs.component';
 import {NewDiscoveredPopupComponent} from './pages/file-discovery/new-discovered-files-badge/new-discovered-popup/new-discovered-popup.component';
 import {NewDiscoveredFilesBadgeComponent} from './pages/file-discovery/new-discovered-files-badge/new-discovered-files-badge.component';
 import {FileDiscoveryStatusBadgeComponent} from './pages/file-discovery/file-discovery-status-badge/file-discovery-status-badge.component';
