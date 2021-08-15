@@ -7,7 +7,7 @@ import {AuthComponent} from "./core/pages/auth/auth.component";
 import {LogsComponent} from "./core/pages/settings/logs/logs.component";
 import {SettingsLayoutComponent} from "@app/core/pages/settings/settings-layout/settings-layout.component";
 import {ContainedLayoutComponent} from "@app/shared/layout/contained-layout/contained-layout.component";
-import {FilesComponent} from "@app/pages/settings/files/files.component";
+import {FilesComponent} from "@app/core/pages/settings/files/files.component";
 
 const routes: Routes = [
   {

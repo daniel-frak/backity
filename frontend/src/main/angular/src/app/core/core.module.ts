@@ -16,6 +16,7 @@ import {GogModule} from "@app/gog/gog.module";
 import { SettingsLayoutComponent } from './pages/settings/settings-layout/settings-layout.component';
 import {RouterModule} from "@angular/router";
 import { SettingsSideNavComponent } from './pages/settings/settings-layout/settings-side-nav/settings-side-nav.component';
+import {FilesComponent} from "@app/core/pages/settings/files/files.component";
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { SettingsSideNavComponent } from './pages/settings/settings-layout/setti
     NewDiscoveredFilesBadgeComponent,
     FileDiscoveryStatusBadgeComponent,
     SettingsLayoutComponent,
-    SettingsSideNavComponent
+    SettingsSideNavComponent,
+    FilesComponent
   ],
   imports: [
     SharedModule,
