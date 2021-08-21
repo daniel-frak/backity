@@ -1,5 +1,4 @@
-import {Component, ContentChildren, Input, OnInit, QueryList, TemplateRef} from '@angular/core';
-import {TableColumn} from "@app/shared/components/table/table-column";
+import {Component, ContentChildren, Input, OnInit, QueryList} from '@angular/core';
 import {TableContent} from "@app/shared/components/table/table-content";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
 
@@ -12,9 +11,6 @@ export class TableComponent implements OnInit {
 
   @ContentChildren(TableColumnDirective, {descendants: false})
   templateRefs?: QueryList<TableColumnDirective>;
-
-  // @Input()
-  // columns?: TableColumn[];
 
   @Input()
   content?: TableContent;
