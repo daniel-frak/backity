@@ -8,6 +8,7 @@ import {LogsComponent} from "./core/pages/settings/logs/logs.component";
 import {SettingsLayoutComponent} from "@app/core/pages/settings/settings-layout/settings-layout.component";
 import {ContainedLayoutComponent} from "@app/shared/layout/contained-layout/contained-layout.component";
 import {FilesComponent} from "@app/core/pages/settings/files/files.component";
+import {ThemeComponent} from "@app/core/pages/theme/theme.component";
 
 const routes: Routes = [
   {
@@ -23,6 +24,10 @@ const routes: Routes = [
           {path: 'file-discovery', component: FileDiscoveryComponent},
           {path: 'downloads', component: DownloadsComponent},
           {path: 'logs', component: LogsComponent},
+          {
+            path: 'theme',
+            component: ThemeComponent
+          }
         ]
       },
       {

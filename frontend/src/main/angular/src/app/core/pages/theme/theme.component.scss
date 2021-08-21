@@ -1,0 +1,31 @@
+:host {
+  display: block;
+  padding-bottom: 2rem;
+}
+
+.bs-component {
+  position: relative;
+
+  & + .bs-component {
+    margin-top: 1rem;
+  }
+
+  .modal {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    bottom: auto;
+    z-index: 1;
+    display: block;
+  }
+}
+
+.bs-docs-section {
+  .page-header {
+    h1 {
+      padding: 2rem 0;
+      font-size: 3rem;
+    }
+  }
+}

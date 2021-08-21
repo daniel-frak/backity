@@ -17,6 +17,7 @@ import { SettingsLayoutComponent } from './pages/settings/settings-layout/settin
 import {RouterModule} from "@angular/router";
 import { SettingsSideNavComponent } from './pages/settings/settings-layout/settings-side-nav/settings-side-nav.component';
 import {FilesComponent} from "@app/core/pages/settings/files/files.component";
+import { ThemeComponent } from './pages/theme/theme.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import {FilesComponent} from "@app/core/pages/settings/files/files.component";
     FileDiscoveryStatusBadgeComponent,
     SettingsLayoutComponent,
     SettingsSideNavComponent,
-    FilesComponent
+    FilesComponent,
+    ThemeComponent
   ],
   imports: [
     SharedModule,
