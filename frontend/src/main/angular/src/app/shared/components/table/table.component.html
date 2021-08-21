@@ -1,0 +1,20 @@
+<app-loaded-content [isLoading]="isLoading">
+  <table *ngIf="content?.content?.length && columns" class="table table-custom-responsive-lg-down">
+    <caption *ngIf="caption">{{caption}}</caption>
+    <thead>
+      <tr>
+        <th *ngFor="let column of columns" scope="col">
+          {{column.title}}
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of content?.content">
+        <td *ngFor="let columnContent of templateRefs; let i = index" [attr.data-title]="columns[i].title"
+            [ngClass]="getTdClass(i)">
+          <ng-container *ngTemplateOutlet="columnContent; context: { $implicit: row, index: i}"></ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</app-loaded-content>

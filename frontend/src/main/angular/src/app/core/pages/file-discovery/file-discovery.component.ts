@@ -9,6 +9,7 @@ import {
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
 import {IMessage} from "@stomp/stompjs";
+import {TableColumn} from "@app/shared/components/table/table-column";
 
 @Component({
   selector: 'app-file-discovery',
@@ -26,10 +27,31 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   private pageSize = 20;
   private stompSubscriptions: StompSubscription[] = [];
 
+  columns: TableColumn[] = [
+    {
+      title: "Game title"
+    },
+    {
+      title: "File name"
+    },
+    {
+      title: "Size"
+    },
+    {
+      title: "Actions",
+      hideTitleOnMobile: true,
+      class: "text-end"
+    },
+  ]
+
   constructor(private readonly fileDiscoveryClient: FileDiscoveryClient,
               private readonly downloadsClient: DownloadsClient,
               private readonly messageService: MessagesService) {
   }
+
+  asFile(file: DiscoveredFile): DiscoveredFile {
+    return file
+  };
 
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(

@@ -8,6 +8,7 @@ import {RouterModule} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import { PageHeaderComponent } from './components/page-header/page-header.component';
 import { ContainedLayoutComponent } from './layout/contained-layout/contained-layout.component';
+import { TableComponent } from './components/table/table.component';
 
 @NgModule({
   declarations: [
@@ -15,6 +16,7 @@ import { ContainedLayoutComponent } from './layout/contained-layout/contained-la
     LoadedContentComponent,
     PageHeaderComponent,
     ContainedLayoutComponent,
+    TableComponent,
   ],
   imports: [
     CommonModule,
@@ -26,7 +28,8 @@ import { ContainedLayoutComponent } from './layout/contained-layout/contained-la
   exports: [
     DefaultLayoutComponent,
     LoadedContentComponent,
-    PageHeaderComponent
+    PageHeaderComponent,
+    TableComponent
   ],
   providers: []
 })
