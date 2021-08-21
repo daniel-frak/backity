@@ -1,6 +1,7 @@
 import {Component, ContentChildren, Input, OnInit, QueryList, TemplateRef} from '@angular/core';
 import {TableColumn} from "@app/shared/components/table/table-column";
 import {TableContent} from "@app/shared/components/table/table-content";
+import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
 
 @Component({
   selector: 'app-table',
@@ -9,11 +10,11 @@ import {TableContent} from "@app/shared/components/table/table-content";
 })
 export class TableComponent implements OnInit {
 
-  @ContentChildren(TemplateRef)
-  templateRefs?: QueryList<TemplateRef<any>>;
+  @ContentChildren(TableColumnDirective, {descendants: false})
+  templateRefs?: QueryList<TableColumnDirective>;
 
-  @Input()
-  columns?: TableColumn[];
+  // @Input()
+  // columns?: TableColumn[];
 
   @Input()
   content?: TableContent;
@@ -30,10 +31,16 @@ export class TableComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  getTdClass(index: number): string {
+  getColumnTitles(): string[] {
+    let columns: string[] = [];
+    this.templateRefs?.forEach(t => columns.push(t.columnTitle as string));
+
+    return columns;
+  }
+
+  getTdClass(column: TableColumnDirective): string {
     let classes = [];
 
-    const column = (this.columns as TableColumn[])[index];
     if (column.hideTitleOnMobile) {
       classes.push('hide-title')
     }

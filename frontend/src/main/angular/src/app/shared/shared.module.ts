@@ -9,6 +9,7 @@ import {CommonModule} from "@angular/common";
 import { PageHeaderComponent } from './components/page-header/page-header.component';
 import { ContainedLayoutComponent } from './layout/contained-layout/contained-layout.component';
 import { TableComponent } from './components/table/table.component';
+import { TableColumnDirective } from './components/table/column-directive/table-column.directive';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { TableComponent } from './components/table/table.component';
     PageHeaderComponent,
     ContainedLayoutComponent,
     TableComponent,
+    TableColumnDirective,
   ],
   imports: [
     CommonModule,
@@ -29,7 +31,8 @@ import { TableComponent } from './components/table/table.component';
     DefaultLayoutComponent,
     LoadedContentComponent,
     PageHeaderComponent,
-    TableComponent
+    TableComponent,
+    TableColumnDirective
   ],
   providers: []
 })

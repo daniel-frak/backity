@@ -2,8 +2,38 @@
   Here you can see the download queue.
 </app-page-header>
 
-<div class="card">
+<div class="card mt-3">
   <div class="card-body">
-    ...
+    <h2 class="card-title">Enqueued files</h2>
+    <p>
+      <button (click)="refresh()"
+              [disabled]="filesAreLoading"
+              class="btn btn-secondary">
+        Refresh
+      </button>
+    </p>
+
+    <app-table [content]="enqueuedDownloads" [isLoading]="filesAreLoading">
+      <ng-template app-table-column="Game title" let-item>
+        {{asFile(item).gameTitle}}
+      </ng-template>
+      <ng-template app-table-column="File name" let-item>
+        {{asFile(item).name}}
+      </ng-template>
+      <ng-template app-table-column="Size" let-item>
+        {{asFile(item).size}}
+      </ng-template>
+      <ng-template app-table-column="Actions"
+                   append-class="text-end"
+                   hide-title-on-mobile
+                   let-item>
+        <ng-container *ngFor="let file of [asFile(item)]">
+          <button (click)="removeFromQueue(file.id)"
+                  *ngIf="!file.downloaded" class="btn btn-primary">
+            Cancel
+          </button>
+        </ng-container>
+      </ng-template>
+    </app-table>
   </div>
 </div>

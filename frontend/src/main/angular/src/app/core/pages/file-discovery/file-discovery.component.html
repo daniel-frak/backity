@@ -11,28 +11,39 @@
       </app-new-discovered-files-badge>
     </div>
 
-    <button (click)="discoverFiles()" class="btn btn-primary mt-2 me-3">Discover new files</button>
+    <button (click)="discoverFiles()"
+            [disabled]="discoveryOngoing"
+            class="btn btn-primary mt-2 me-3">
+      Discover new files
+    </button>
   </div>
 </div>
 <div class="card mt-3">
   <div class="card-body">
     <h2 class="card-title">Discovered files</h2>
     <p>
-      <button (click)="refresh()" class="btn btn-secondary">Refresh</button>
+      <button (click)="refresh()"
+              [disabled]="filesAreLoading"
+              class="btn btn-secondary">
+        Refresh
+      </button>
     </p>
 
-    <app-table [columns]="columns" [content]="discoveredFiles" [isLoading]="filesAreLoading">
-      <ng-template let-file>
-        {{asFile(file).gameTitle}}
+    <app-table [content]="discoveredFiles" [isLoading]="filesAreLoading">
+      <ng-template app-table-column="Game title" let-item>
+        {{asFile(item).gameTitle}}
       </ng-template>
-      <ng-template let-file>
-        {{asFile(file).name}}
+      <ng-template app-table-column="File name" let-item>
+        {{asFile(item).name}}
       </ng-template>
-      <ng-template let-file>
-        {{asFile(file).size}}
+      <ng-template app-table-column="Size" let-item>
+        {{asFile(item).size}}
       </ng-template>
-      <ng-template let-file>
-        <button (click)="enqueueFile(asFile(file).uniqueId)" class="btn btn-primary">Enqueue</button>
+      <ng-template app-table-column="Actions"
+                   append-class="text-end"
+                   hide-title-on-mobile
+                   let-item>
+        <button (click)="enqueueFile(asFile(item).uniqueId)" class="btn btn-primary">Enqueue</button>
       </ng-template>
     </app-table>
   </div>
