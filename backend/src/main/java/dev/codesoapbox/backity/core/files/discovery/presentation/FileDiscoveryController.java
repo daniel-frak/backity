@@ -21,7 +21,8 @@ public class FileDiscoveryController {
 
     private final FileDiscoveryFacade fileDiscoveryFacade;
 
-    @Operation(summary = "List discovered files", description = "Returns a paginated list of discovered files")
+    @Operation(summary = "List discovered files",
+            description = "Returns a paginated list of discovered files which were not yet added to the download queue")
     @PageableAsQueryParam
     @GetMapping
     public Page<DiscoveredFile> getDiscoveredFiles(@Parameter(hidden = true) Pageable pageable) {

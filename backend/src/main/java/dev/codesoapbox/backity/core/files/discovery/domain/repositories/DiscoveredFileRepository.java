@@ -11,5 +11,7 @@ public interface DiscoveredFileRepository {
 
     Optional<DiscoveredFile> findByUniqueId(UUID uniqueId);
 
-    Page<DiscoveredFile> findAll(Pageable pageable);
+    Page<DiscoveredFile> findAllUnqueued(Pageable pageable);
+
+    DiscoveredFile save(DiscoveredFile discoveredFile);
 }

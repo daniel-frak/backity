@@ -9,6 +9,8 @@ import {
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
 import {IMessage} from "@stomp/stompjs";
+import {catchError} from "rxjs/operators";
+import {throwError} from "rxjs";
 
 @Component({
   selector: 'app-file-discovery',
@@ -66,8 +68,14 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     });
   }
 
-  enqueueFile(id?: string) {
-    this.downloadsClient.download(id as string).subscribe();
+  enqueueFile(file: DiscoveredFile) {
+    file.enqueued = true;
+    this.downloadsClient.download(file.uniqueId as string)
+      .pipe(catchError(e => {
+        file.enqueued = false;
+        return throwError(e);
+      }))
+      .subscribe();
   }
 
   ngOnDestroy(): void {

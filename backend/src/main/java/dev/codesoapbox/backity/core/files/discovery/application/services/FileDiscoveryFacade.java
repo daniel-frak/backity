@@ -15,7 +15,7 @@ public class FileDiscoveryFacade {
     private final DiscoveredFileRepository repository;
 
     public Page<DiscoveredFile> getDiscoveredFiles(Pageable pageable) {
-        return repository.findAll(pageable);
+        return repository.findAllUnqueued(pageable);
     }
 
     public void discoverNewFiles() {

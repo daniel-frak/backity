@@ -22,7 +22,12 @@ public class DiscoveredFileJpaRepository implements DiscoveredFileRepository {
     }
 
     @Override
-    public Page<DiscoveredFile> findAll(Pageable pageable) {
-        return springRepository.findAll(pageable);
+    public Page<DiscoveredFile> findAllUnqueued(Pageable pageable) {
+        return springRepository.findAllByEnqueuedFalse(pageable);
+    }
+
+    @Override
+    public DiscoveredFile save(DiscoveredFile discoveredFile) {
+        return springRepository.save(discoveredFile);
     }
 }

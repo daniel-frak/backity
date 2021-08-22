@@ -24,4 +24,9 @@ public class EnqueuedFileDownloadJpaRepository implements EnqueuedFileDownloadRe
     public Page<EnqueuedFileDownload> findAllOrderedByDateCreatedAscending(Pageable pageable) {
         return springRepository.findAllByOrderByDateCreatedAsc(pageable);
     }
+
+    @Override
+    public EnqueuedFileDownload save(EnqueuedFileDownload enqueuedFileDownload) {
+        return springRepository.save(enqueuedFileDownload);
+    }
 }

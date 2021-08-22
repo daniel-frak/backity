@@ -9,6 +9,9 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * A file that is available to download.
+ */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Table(indexes = @Index(columnList = "uniqueId", name = "idx_unique_id", unique = true))

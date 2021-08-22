@@ -29,6 +29,20 @@
       </button>
     </p>
 
+    <div class="gutters-1">
+      <div>
+        <span class="badge bg-secondary">
+          Showing: {{ discoveredFiles?.size || 0 }}
+        </span>
+      </div>
+
+      <div>
+        <span class="badge bg-secondary">
+          Total elements: {{ discoveredFiles?.totalElements || 0 }}
+        </span>
+      </div>
+    </div>
+
     <app-table [content]="discoveredFiles" [isLoading]="filesAreLoading">
       <ng-template app-table-column="Game title" let-item>
         {{asFile(item).gameTitle}}
@@ -43,7 +57,13 @@
                    append-class="text-end"
                    hide-title-on-mobile
                    let-item>
-        <button (click)="enqueueFile(asFile(item).uniqueId)" class="btn btn-primary">Enqueue</button>
+        <ng-container *ngFor="let file of [asFile(item)]">
+          <button (click)="enqueueFile(file)"
+                  [disabled]="file.enqueued"
+                  class="btn btn-primary">
+            Enqueue
+          </button>
+        </ng-container>
       </ng-template>
     </app-table>
   </div>

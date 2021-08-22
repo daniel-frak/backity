@@ -7,6 +7,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * A file that is either currently being downloaded or schedule for download.
+ */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Data
