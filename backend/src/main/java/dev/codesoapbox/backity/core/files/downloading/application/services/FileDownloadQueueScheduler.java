@@ -37,6 +37,7 @@ public class FileDownloadQueueScheduler {
         log.info("Downloading enqueued file {}", enqueuedFileDownload.getUrl());
 
         try {
+            fileDownloadQueue.markInProgress(enqueuedFileDownload);
             fileDownloader.downloadGameFile(enqueuedFileDownload);
             fileDownloadQueue.acknowledgeSuccess(enqueuedFileDownload);
         } catch (RuntimeException e) {

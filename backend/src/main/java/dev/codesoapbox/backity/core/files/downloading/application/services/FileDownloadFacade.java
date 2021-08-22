@@ -16,8 +16,8 @@ public class FileDownloadFacade {
     private final DiscoveredFileRepository discoveredFileRepository;
     private final FileDownloadQueue fileDownloadQueue;
 
-    public Page<EnqueuedFileDownload> getQueueItems(Pageable pageable) {
-        return fileDownloadQueue.getQueueItems(pageable);
+    public Page<EnqueuedFileDownload> findAllQueued(Pageable pageable) {
+        return fileDownloadQueue.findAllQueued(pageable);
     }
 
     public void download(UUID discoveredFileUniqueId) {
@@ -25,5 +25,14 @@ public class FileDownloadFacade {
                 .ifPresentOrElse(fileDownloadQueue::enqueue, () -> {
                     throw new IllegalArgumentException("Discovered file not found: " + discoveredFileUniqueId);
                 });
+    }
+
+    public EnqueuedFileDownload findCurrentlyDownloading() {
+        return fileDownloadQueue.findCurrentlyDownloading()
+                .orElse(null);
+    }
+
+    public Page<EnqueuedFileDownload> findAllProcessed(Pageable pageable) {
+        return fileDownloadQueue.findAllProcessed(pageable);
     }
 }

@@ -1,7 +1,7 @@
 <app-loaded-content [isLoading]="isLoading">
-  <table *ngIf="content?.content?.length" class="table table-custom-responsive-lg-down">
+  <table class="table table-custom-responsive-lg-down">
     <caption *ngIf="caption">{{caption}}</caption>
-    <thead>
+    <thead *ngIf="content?.content?.length">
       <tr>
         <th *ngFor="let columnTitle of getColumnTitles()" scope="col">
           {{columnTitle}}
@@ -9,11 +9,17 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let row of content?.content">
-        <td *ngFor="let columnContent of templateRefs; let i = index" [attr.data-title]="columnContent.columnTitle"
-            [ngClass]="getTdClass(columnContent)">
-          <ng-container *ngTemplateOutlet="columnContent.template; context: { $implicit: row, index: i}"></ng-container>
-        </td>
+      <ng-container *ngIf="content?.content?.length">
+        <tr *ngFor="let row of content?.content">
+          <td *ngFor="let columnContent of templateRefs; let i = index" [attr.data-title]="columnContent.columnTitle"
+              [ngClass]="getTdClass(columnContent)">
+            <ng-container
+              *ngTemplateOutlet="columnContent.template; context: { $implicit: row, index: i}"></ng-container>
+          </td>
+        </tr>
+      </ng-container>
+      <tr *ngIf="content?.content?.length === 0">
+        <td class="hide-title">No data</td>
       </tr>
     </tbody>
   </table>

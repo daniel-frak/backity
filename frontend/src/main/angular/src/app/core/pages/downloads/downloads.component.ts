@@ -1,7 +1,14 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {DownloadsClient, EnqueuedFileDownload, PageEnqueuedFileDownload} from "@backend";
+import {
+  DownloadsClient,
+  DownloadStatus,
+  EnqueuedFileDownload,
+  FileDownloadMessageTopics,
+  PageEnqueuedFileDownload
+} from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
+import {IMessage} from "@stomp/stompjs";
 
 @Component({
   selector: 'app-downloads',
@@ -11,8 +18,10 @@ import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
 export class DownloadsComponent implements OnInit, OnDestroy {
 
   enqueuedDownloads?: PageEnqueuedFileDownload;
+  processedFiles?: PageEnqueuedFileDownload;
   currentDownload?: EnqueuedFileDownload;
   filesAreLoading: boolean = false;
+  DownloadStatus = DownloadStatus;
 
   private pageSize = 20;
   private stompSubscriptions: StompSubscription[] = [];
@@ -24,7 +33,20 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   asFile = (file: EnqueuedFileDownload) => file;
 
   ngOnInit(): void {
+    this.messageService.onConnect(client => this.stompSubscriptions.push(
+      client.subscribe(FileDownloadMessageTopics.Started, p => this.onDownloadStartedReceived(p)),
+      client.subscribe(FileDownloadMessageTopics.Finished, () => this.onDownloadFinishedReceived())
+    ))
+
     this.refresh();
+  }
+
+  private onDownloadStartedReceived(payload: IMessage) {
+    this.currentDownload = JSON.parse(payload.body);
+  }
+
+  private onDownloadFinishedReceived() {
+    this.currentDownload = undefined;
   }
 
   refresh() {
@@ -34,12 +56,18 @@ export class DownloadsComponent implements OnInit, OnDestroy {
     const sort = ["dateCreated,desc"];
 
     this.downloadsClient.getQueueItems(page, size, sort)
-      .subscribe(d => this.updateEnqueuedDownloads(d));
-  }
+      .subscribe(d => {
+        this.enqueuedDownloads = d;
 
-  private updateEnqueuedDownloads(downloads: PageEnqueuedFileDownload) {
-    this.enqueuedDownloads = downloads;
-    this.filesAreLoading = false;
+        this.downloadsClient.getProcessedFiles()
+          .subscribe(f => {
+            this.processedFiles = f;
+            this.filesAreLoading = false;
+          })
+      });
+
+    this.downloadsClient.getCurrentlyDownloading()
+      .subscribe(d => this.currentDownload = d);
   }
 
   removeFromQueue(fileId?: number) {

@@ -2,8 +2,11 @@ package dev.codesoapbox.backity.core.files.downloading.application.services;
 
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
 import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
+import dev.codesoapbox.backity.core.files.downloading.application.FileDownloadMessageTopics;
+import dev.codesoapbox.backity.core.files.downloading.domain.model.DownloadStatus;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
 import dev.codesoapbox.backity.core.files.downloading.domain.repositories.EnqueuedFileDownloadRepository;
+import dev.codesoapbox.backity.core.shared.application.services.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +21,7 @@ public class FileDownloadQueue {
 
     private final DiscoveredFileRepository discoveredFileRepository;
     private final EnqueuedFileDownloadRepository downloadRepository;
+    private final MessageService messageService;
 
     @Transactional
     public void enqueue(DiscoveredFile discoveredFile) {
@@ -45,17 +49,32 @@ public class FileDownloadQueue {
     }
 
     public void acknowledgeSuccess(EnqueuedFileDownload enqueuedFileDownload) {
-        enqueuedFileDownload.setDownloaded(true);
+        enqueuedFileDownload.setStatus(DownloadStatus.DOWNLOADED);
         downloadRepository.save(enqueuedFileDownload);
+        messageService.sendMessage(FileDownloadMessageTopics.DOWNLOAD_FINISHED.toString(), enqueuedFileDownload);
     }
 
     public void acknowledgeFailed(EnqueuedFileDownload enqueuedFileDownload, String reason) {
-        enqueuedFileDownload.setFailed(true);
-        enqueuedFileDownload.setFailedReason(reason);
+        enqueuedFileDownload.fail(reason);
         downloadRepository.save(enqueuedFileDownload);
+        messageService.sendMessage(FileDownloadMessageTopics.DOWNLOAD_FINISHED.toString(), enqueuedFileDownload);
     }
 
-    public Page<EnqueuedFileDownload> getQueueItems(Pageable pageable) {
-        return downloadRepository.findAllOrderedByDateCreatedAscending(pageable);
+    public Page<EnqueuedFileDownload> findAllQueued(Pageable pageable) {
+        return downloadRepository.findAllQueued(pageable);
+    }
+
+    public Optional<EnqueuedFileDownload> findCurrentlyDownloading() {
+        return downloadRepository.findCurrentlyDownloading();
+    }
+
+    public void markInProgress(EnqueuedFileDownload enqueuedFileDownload) {
+        enqueuedFileDownload.setStatus(DownloadStatus.IN_PROGRESS);
+        downloadRepository.save(enqueuedFileDownload);
+        messageService.sendMessage(FileDownloadMessageTopics.DOWNLOAD_STARTED.toString(), enqueuedFileDownload);
+    }
+
+    public Page<EnqueuedFileDownload> findAllProcessed(Pageable pageable) {
+        return downloadRepository.findAllProcessed(pageable);
     }
 }

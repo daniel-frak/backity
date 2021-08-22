@@ -4,6 +4,29 @@
 
 <div class="card mt-3">
   <div class="card-body">
+    <h2 class="card-title">Currently downloading</h2>
+
+    <ng-container *ngIf="!currentDownload">
+      Nothing is currently being downloaded.
+    </ng-container>
+    <ng-container *ngIf="currentDownload">
+      <app-table [content]="{content: [currentDownload]}" [isLoading]="filesAreLoading">
+        <ng-template app-table-column="Game title" let-item>
+          {{asFile(item).gameTitle}}
+        </ng-template>
+        <ng-template app-table-column="File name" let-item>
+          {{asFile(item).name}}
+        </ng-template>
+        <ng-template app-table-column="Size" let-item>
+          {{asFile(item).size}}
+        </ng-template>
+      </app-table>
+    </ng-container>
+  </div>
+</div>
+
+<div class="card mt-3">
+  <div class="card-body">
     <h2 class="card-title">Enqueued files</h2>
     <p>
       <button (click)="refresh()"
@@ -13,7 +36,7 @@
       </button>
     </p>
 
-    <app-table [content]="enqueuedDownloads" [isLoading]="filesAreLoading">
+    <app-table [content]="enqueuedDownloads" [isLoading]="filesAreLoading" caption="Download queue">
       <ng-template app-table-column="Game title" let-item>
         {{asFile(item).gameTitle}}
       </ng-template>
@@ -29,9 +52,37 @@
                    let-item>
         <ng-container *ngFor="let file of [asFile(item)]">
           <button (click)="removeFromQueue(file.id)"
-                  *ngIf="!file.downloaded" class="btn btn-primary">
+                  *ngIf="file.status == DownloadStatus.Waiting" class="btn btn-primary">
             Cancel
           </button>
+        </ng-container>
+      </ng-template>
+    </app-table>
+
+    <app-table [content]="processedFiles" [isLoading]="filesAreLoading" caption="Processed files">
+      <ng-template app-table-column="Game title" let-item>
+        {{asFile(item).gameTitle}}
+      </ng-template>
+      <ng-template app-table-column="File name" let-item>
+        {{asFile(item).name}}
+      </ng-template>
+      <ng-template app-table-column="Size" let-item>
+        {{asFile(item).size}}
+      </ng-template>
+      <ng-template app-table-column="Status" let-item>
+        <ng-container *ngFor="let file of [asFile(item)]">
+          <span
+            [ngClass]="{'bg-success': file.status == DownloadStatus.Downloaded,
+             'bg-danger': file.status != DownloadStatus.Downloaded}"
+            class="badge">
+            <i [ngClass]="{'bi bi-check-circle': file.status == DownloadStatus.Downloaded,
+             'bi bi-x-circle': file.status != DownloadStatus.Downloaded}"
+               aria-hidden="true"
+               class="me-1">
+            </i>
+
+            {{file.status}}
+          </span>
         </ng-container>
       </ng-template>
     </app-table>

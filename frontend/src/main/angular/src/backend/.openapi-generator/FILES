@@ -14,8 +14,10 @@ git_push.sh
 index.ts
 model/discoveredFile.ts
 model/discoveredFileId.ts
+model/downloadStatus.ts
 model/enqueuedFileDownload.ts
 model/fileDiscoveryMessageTopics.ts
+model/fileDownloadMessageTopics.ts
 model/gameDetailsResponse.ts
 model/gameFileDetailsResponse.ts
 model/logCreatedMessage.ts

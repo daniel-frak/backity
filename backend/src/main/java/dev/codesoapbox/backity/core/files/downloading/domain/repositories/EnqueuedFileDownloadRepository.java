@@ -10,7 +10,11 @@ public interface EnqueuedFileDownloadRepository {
 
     Optional<EnqueuedFileDownload> findOldestUnprocessed();
 
-    Page<EnqueuedFileDownload> findAllOrderedByDateCreatedAscending(Pageable pageable);
+    Page<EnqueuedFileDownload> findAllQueued(Pageable pageable);
 
     EnqueuedFileDownload save(EnqueuedFileDownload enqueuedFileDownload);
+
+    Optional<EnqueuedFileDownload> findCurrentlyDownloading();
+
+    Page<EnqueuedFileDownload> findAllProcessed(Pageable pageable);
 }

@@ -9,19 +9,19 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { DownloadStatus } from './downloadStatus';
 
 
 export interface EnqueuedFileDownload { 
     id?: number;
-    source?: string;
-    url?: string;
-    name?: string;
-    gameTitle?: string;
-    version?: string;
-    size?: string;
-    dateCreated?: string;
-    downloaded?: boolean;
-    failed?: boolean;
+    source: string;
+    url: string;
+    name: string;
+    gameTitle: string;
+    version: string;
+    size: string;
+    dateCreated: string;
+    status: DownloadStatus;
     failedReason?: string;
 }
 

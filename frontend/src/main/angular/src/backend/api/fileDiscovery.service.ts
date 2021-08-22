@@ -127,7 +127,7 @@ export class FileDiscoveryClient {
 
     /**
      * List discovered files
-     * Returns a paginated list of discovered files
+     * Returns a paginated list of discovered files which were not yet added to the download queue
      * @param page Zero-based page index (0..N)
      * @param size The size of the page to be returned
      * @param sort Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.

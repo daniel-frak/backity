@@ -24,11 +24,26 @@ public class FileDownloadController {
 
     private final FileDownloadFacade fileDownloadFacade;
 
+    @Operation(summary = "List queue items", description = "Returns the file currently being downloaded")
+    @PageableAsQueryParam
+    @GetMapping("current")
+    public EnqueuedFileDownload getCurrentlyDownloading() {
+        return fileDownloadFacade.findCurrentlyDownloading();
+    }
+
     @Operation(summary = "List queue items", description = "Returns a paginated list of all downloads in the queue")
     @PageableAsQueryParam
-    @GetMapping
+    @GetMapping("queue")
     public Page<EnqueuedFileDownload> getQueueItems(@Parameter(hidden = true) Pageable pageable) {
-        return fileDownloadFacade.getQueueItems(pageable);
+        return fileDownloadFacade.findAllQueued(pageable);
+    }
+
+    @Operation(summary = "List queue items",
+            description = "Returns a paginated list of all processed files (downloaded or failed)")
+    @PageableAsQueryParam
+    @GetMapping("processed")
+    public Page<EnqueuedFileDownload> getProcessedFiles(@Parameter(hidden = true) Pageable pageable) {
+        return fileDownloadFacade.findAllProcessed(pageable);
     }
 
     @Operation(summary = "Enqueue file", description = "Adds a discovered file to the download queue")

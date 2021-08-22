@@ -5,6 +5,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
@@ -20,17 +21,35 @@ public class EnqueuedFileDownload {
     @SequenceGenerator(name = "seq_enqueued_file")
     private Long id;
 
+    @NotNull
     private String source;
+
+    @NotNull
     private String url;
+
+    @NotNull
     private String name;
+
+    @NotNull
     private String gameTitle;
+
+    @NotNull
     private String version;
+
+    @NotNull
     private String size;
 
+    @NotNull
     @CreatedDate
     private LocalDateTime dateCreated;
 
-    private boolean downloaded;
-    private boolean failed;
+    @NotNull
+    private DownloadStatus status = DownloadStatus.WAITING;
+    
     private String failedReason;
+
+    public void fail(String failedReason) {
+        this.status = DownloadStatus.FAILED;
+        this.failedReason = failedReason;
+    }
 }

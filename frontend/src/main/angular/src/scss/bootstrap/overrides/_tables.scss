@@ -52,7 +52,7 @@ table {
 
           &:not(.hide-title) {
             &:before {
-              content: attr(data-title) ':';
+              content: attr(data-title) ': ';
               text-align: left;
               font-weight: bold;
               white-space: pre-wrap;
