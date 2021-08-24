@@ -3,6 +3,7 @@ export * from './discoveredFileId';
 export * from './downloadStatus';
 export * from './enqueuedFileDownload';
 export * from './fileDiscoveryMessageTopics';
+export * from './fileDiscoveryStatus';
 export * from './fileDownloadMessageTopics';
 export * from './gameDetailsResponse';
 export * from './gameFileDetailsResponse';

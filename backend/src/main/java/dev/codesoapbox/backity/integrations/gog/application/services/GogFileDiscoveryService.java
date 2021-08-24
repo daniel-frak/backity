@@ -24,7 +24,6 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
 
     @Override
     public void discoverNewFiles(Consumer<DiscoveredFile> discoveredFileConsumer) {
-
         log.info("Discovering new files...");
         gogEmbedClient.getLibraryGameIds().forEach(id -> {
             GameDetailsResponse details = gogEmbedClient.getGameDetails(id);

@@ -1,4 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
+import {FileDiscoveryStatus} from "@backend";
 
 @Component({
   selector: 'app-file-discovery-status-badge',
@@ -8,9 +9,10 @@ import {Component, Input, OnInit} from '@angular/core';
 export class FileDiscoveryStatusBadgeComponent implements OnInit {
 
   @Input()
-  public discoveryOngoing: boolean = false;
+  public status: FileDiscoveryStatus = {};
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }

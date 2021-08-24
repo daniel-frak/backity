@@ -1,10 +1,12 @@
 <span class="badge"
-      [ngClass]="{'bg-success': discoveryOngoing, 'bg-secondary': !discoveryOngoing}">
+      [ngClass]="{'bg-success': status.inProgress, 'bg-secondary': !status.inProgress}">
 <i class="me-1"
-   [ngClass]="{'bi bi-play-circle': discoveryOngoing, 'bi bi-slash-circle': !discoveryOngoing}"
+   [ngClass]="{'bi bi-play-circle': status.inProgress, 'bi bi-slash-circle': !status.inProgress}"
    aria-hidden="true">
 </i>
 
-<ng-container *ngIf="discoveryOngoing">Discovery in progress...</ng-container>
-<ng-container *ngIf="!discoveryOngoing">Last run: xx.xx.xxxx</ng-container>
+{{ status.source }} -
+
+<ng-container *ngIf="status.inProgress">Discovery in progress...</ng-container>
+<ng-container *ngIf="!status.inProgress">Last run: xx.xx.xxxx</ng-container>
 </span>

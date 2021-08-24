@@ -4,25 +4,31 @@
 
 <div class="card mt-3">
   <div class="card-body">
-    <div class="gutters-1">
-      <app-file-discovery-status-badge [discoveryOngoing]="discoveryOngoing"></app-file-discovery-status-badge>
-      <app-new-discovered-files-badge [newDiscoveredCount]="newDiscoveredCount"
-                                      [newestDiscovered]="newestDiscovered">
-      </app-new-discovered-files-badge>
-    </div>
+    <app-loaded-content [isLoading]="infoIsLoading">
+      <div class="gutters-1">
+        <ng-container *ngFor="let status of getStatuses()">
+          <app-file-discovery-status-badge [status]="status"></app-file-discovery-status-badge>
+        </ng-container>
+      </div>
+      <div class="gutters-1">
+        <app-new-discovered-files-badge [newDiscoveredCount]="newDiscoveredCount"
+                                        [newestDiscovered]="newestDiscovered">
+        </app-new-discovered-files-badge>
+      </div>
 
-    <button (click)="discoverFiles()"
-            [disabled]="discoveryOngoing"
-            class="btn btn-primary mt-2 me-3">
-      Discover new files
-    </button>
+      <button (click)="discoverFiles()"
+              [disabled]="discoveryOngoing()"
+              class="btn btn-primary mt-2 me-3">
+        Discover new files
+      </button>
+    </app-loaded-content>
   </div>
 </div>
 <div class="card mt-3">
   <div class="card-body">
     <h2 class="card-title">Discovered files</h2>
     <p>
-      <button (click)="refresh()"
+      <button (click)="refreshDiscoveredFiles()"
               [disabled]="filesAreLoading"
               class="btn btn-secondary">
         Refresh

@@ -4,6 +4,7 @@ import {
   DownloadsClient,
   FileDiscoveryClient,
   FileDiscoveryMessageTopics,
+  FileDiscoveryStatus,
   PageDiscoveredFile
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
@@ -22,8 +23,9 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   discoveredFiles?: PageDiscoveredFile;
   newestDiscovered?: DiscoveredFile;
   newDiscoveredCount: number = 0;
+  infoIsLoading: boolean = false;
   filesAreLoading: boolean = false;
-  discoveryOngoing: boolean = false;
+  discoveryStatuses: any = {};
 
   private pageSize = 20;
   private stompSubscriptions: StompSubscription[] = [];
@@ -37,10 +39,13 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
-      client.subscribe(FileDiscoveryMessageTopics.TopicFileDiscovery, p => this.onDiscoveredFileReceived(p))
+      client.subscribe(FileDiscoveryMessageTopics.Discovery, p => this.onDiscoveredFileReceived(p)),
+      client.subscribe(FileDiscoveryMessageTopics.DiscoveryStatus, p => this.onStatusChanged(p))
     ))
 
-    this.refresh();
+    this.refreshInfo();
+
+    this.refreshDiscoveredFiles();
   }
 
   private onDiscoveredFileReceived(payload: IMessage) {
@@ -48,7 +53,25 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     this.newDiscoveredCount++;
   }
 
-  refresh() {
+  private onStatusChanged(payload: IMessage) {
+    const status: FileDiscoveryStatus = JSON.parse(payload.body);
+    this.discoveryStatuses[status.source as string] = status.inProgress;
+  }
+
+  private refreshInfo() {
+    this.infoIsLoading = true;
+    this.fileDiscoveryClient.getStatuses()
+      .subscribe(ss => {
+        ss.forEach((s) => this.updateDiscoveryStatus(s))
+        this.infoIsLoading = false;
+      });
+  }
+
+  private updateDiscoveryStatus(s: FileDiscoveryStatus) {
+    return this.discoveryStatuses[s.source as string] = s.inProgress;
+  }
+
+  refreshDiscoveredFiles() {
     this.filesAreLoading = true;
     const page = 0;
     const size = this.pageSize;
@@ -80,5 +103,28 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stompSubscriptions.forEach(s => s.unsubscribe());
+  }
+
+  getStatuses(): FileDiscoveryStatus[] {
+    if (!this.discoveryStatuses) {
+      return [];
+    }
+
+    return Object.keys(this.discoveryStatuses)
+      .map(s => {
+        return {
+          source: s,
+          inProgress: this.discoveryStatuses[s]
+        };
+      });
+  }
+
+  discoveryOngoing(): boolean {
+    if (!this.discoveryStatuses) {
+      return false;
+    }
+
+    return !Object.keys(this.discoveryStatuses)
+      .some(s => this.discoveryStatuses[s].inProgress);
   }
 }

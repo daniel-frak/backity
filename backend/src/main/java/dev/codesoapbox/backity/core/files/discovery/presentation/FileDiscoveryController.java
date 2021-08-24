@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.files.discovery.presentation;
 
+import dev.codesoapbox.backity.core.files.discovery.application.messages.FileDiscoveryStatus;
 import dev.codesoapbox.backity.core.files.discovery.application.services.FileDiscoveryFacade;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Tag(name = "File discovery", description = "Everything to do with discovering files available for download")
 @RestController
@@ -33,5 +36,12 @@ public class FileDiscoveryController {
     @GetMapping("discover")
     public void discover() {
         fileDiscoveryFacade.discoverNewFiles();
+    }
+
+    @Operation(summary = "List discovery statuses",
+            description = "Returns a list of discovery statuses for every remote client")
+    @GetMapping("statuses")
+    public List<FileDiscoveryStatus> getStatuses() {
+        return fileDiscoveryFacade.getStatuses();
     }
 }
