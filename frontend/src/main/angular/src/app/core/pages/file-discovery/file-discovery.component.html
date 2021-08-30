@@ -1,5 +1,6 @@
 <app-page-header title="File discovery">
-  Here you can manage all of the new files that have been found but have not yet been scheduled for download.
+  Here you can manage all of the new files that have been found but have not yet been scheduled for download,
+  as well as manually trigger file discovery.
 </app-page-header>
 
 <div class="card mt-3">
@@ -21,6 +22,16 @@
               class="btn btn-primary mt-2 me-3">
         Discover new files
       </button>
+
+      <div class="gutters-1">
+        <ng-container *ngFor="let status of getStatuses()">
+          <button (click)="discoverFilesFor(status.source)"
+                  [disabled]="status.inProgress"
+                  class="btn btn-secondary btn-sm mt-2 me-3">
+            Discover new files for {{ status.source }}
+          </button>
+        </ng-container>
+      </div>
     </app-loaded-content>
   </div>
 </div>

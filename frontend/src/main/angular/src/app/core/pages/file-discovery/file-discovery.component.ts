@@ -121,10 +121,14 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
   discoveryOngoing(): boolean {
     if (!this.discoveryStatuses) {
-      return false;
+      return true;
     }
 
-    return !Object.keys(this.discoveryStatuses)
-      .some(s => this.discoveryStatuses[s].inProgress);
+    return Object.keys(this.discoveryStatuses)
+      .some(s => this.discoveryStatuses[s]);
+  }
+
+  discoverFilesFor(source?: string) {
+    console.error("Per-source file discovery start not yet implemented");
   }
 }

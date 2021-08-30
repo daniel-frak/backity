@@ -31,7 +31,10 @@ public class FileDiscoveryService {
         this.repository = repository;
         this.messageService = messageService;
 
-        discoveryServices.forEach(s -> discoveryStatuses.put(s.getSource(), false));
+        discoveryServices.forEach(s -> {
+            discoveryStatuses.put(s.getSource(), false);
+            s.subscribeToProgress(System.out::println);
+        });
     }
 
     public void discoverNewFiles() {

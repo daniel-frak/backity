@@ -2,6 +2,8 @@ package dev.codesoapbox.backity.integrations.gog.application.services;
 
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFileId;
+import dev.codesoapbox.backity.core.files.discovery.domain.model.ProgressInfo;
+import dev.codesoapbox.backity.core.files.discovery.domain.model.IncrementalProgressTracker;
 import dev.codesoapbox.backity.core.files.discovery.domain.services.SourceFileDiscoveryService;
 import dev.codesoapbox.backity.integrations.gog.application.dto.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.application.services.embed.GogEmbedClient;
@@ -10,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -22,10 +26,18 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
     @Getter
     private final String source = "GOG";
 
+    private final List<Consumer<ProgressInfo>> progressConsumers = new ArrayList<>();
+    private IncrementalProgressTracker progressTracker;
+
     @Override
     public void discoverNewFiles(Consumer<DiscoveredFile> discoveredFileConsumer) {
         log.info("Discovering new files...");
-        gogEmbedClient.getLibraryGameIds().forEach(id -> {
+
+        List<String> libraryGameIds = gogEmbedClient.getLibraryGameIds();
+        int totalGames = libraryGameIds.size();
+        progressTracker = new IncrementalProgressTracker((long) totalGames);
+
+        libraryGameIds.forEach(id -> {
             GameDetailsResponse details = gogEmbedClient.getGameDetails(id);
             if (details == null || details.getFiles() == null) {
                 return;
@@ -42,6 +54,26 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
 
                 discoveredFileConsumer.accept(discoveredFile);
             });
+
+            progressTracker.increment();
+            updateProgress(progressTracker.getProgressInfo());
         });
+    }
+
+    private void updateProgress(ProgressInfo progressInfo) {
+        progressConsumers.forEach(c -> c.accept(progressInfo));
+    }
+
+    @Override
+    public void subscribeToProgress(Consumer<ProgressInfo> progressConsumer) {
+        progressConsumers.add(progressConsumer);
+    }
+
+    @Override
+    public ProgressInfo getProgress() {
+        if(progressTracker == null) {
+            return ProgressInfo.none();
+        }
+        return progressTracker.getProgressInfo();
     }
 }
