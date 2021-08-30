@@ -20,6 +20,13 @@ public class IncrementalProgressTracker {
         }
     }
 
+    public void incrementBy(long value) {
+        currentElement += value;
+        if (totalElements < currentElement) {
+            currentElement = totalElements;
+        }
+    }
+
     public ProgressInfo getProgressInfo() {
         if (currentElement <= 1) {
             return ProgressInfo.none();
@@ -35,8 +42,8 @@ public class IncrementalProgressTracker {
     private Duration getTimeLeft() {
         long nowTime = System.currentTimeMillis();
         long elapsedTime = nowTime - startTime;
-        long timePerElement = elapsedTime / currentElement;
-        long timeLeft = timePerElement * (totalElements - currentElement);
+        double timePerElement = (double) elapsedTime / currentElement;
+        long timeLeft = (long)(timePerElement * (totalElements - currentElement));
         return Duration.of(timeLeft, ChronoUnit.MILLIS);
     }
 }

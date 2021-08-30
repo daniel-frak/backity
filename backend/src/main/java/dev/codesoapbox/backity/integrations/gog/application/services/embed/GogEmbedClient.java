@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.application.services.embed;
 
+import dev.codesoapbox.backity.core.files.downloading.application.services.DownloadProgress;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.FileSizeAccumulator;
 import dev.codesoapbox.backity.integrations.gog.application.dto.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.application.dto.embed.GameFileDetailsResponse;
@@ -15,14 +16,13 @@ import reactor.core.publisher.Flux;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.*;
+import static java.util.Collections.emptyList;
 
 // https://gogapidocs.readthedocs.io/en/latest/index.html
 @Slf4j
@@ -74,7 +74,7 @@ public class GogEmbedClient {
                         .collect(Collectors.toList()))
                 .block();
 
-        if(gameIds == null) {
+        if (gameIds == null) {
             gameIds = emptyList();
         }
         log.info("Found {} games", gameIds.size());
@@ -99,7 +99,7 @@ public class GogEmbedClient {
                 .map(this::extractGameDetails)
                 .block();
 
-        if(details != null) {
+        if (details != null) {
             log.debug("Retrieved game details for game: {} (#{})", details.getTitle(), gameId);
         } else {
             log.error("Could not retrieve game details for game id: {}", gameId);
@@ -148,7 +148,8 @@ public class GogEmbedClient {
         return version;
     }
 
-    public Flux<DataBuffer> getFileBuffer(String gameFileUrl, AtomicReference<String> newFileName, AtomicLong size) {
+    public Flux<DataBuffer> getFileBuffer(String gameFileUrl, AtomicReference<String> newFileName, AtomicLong size,
+                                          DownloadProgress progress) {
         return webClientEmbed.get()
                 .uri(gameFileUrl)
                 .header(HEADER_AUTHORIZATION, getBearerToken())
@@ -168,6 +169,10 @@ public class GogEmbedClient {
                                         .exchangeToFlux(response3 -> {
                                             size.set(Long.parseLong(
                                                     response3.headers().header("content-length").get(0)));
+
+                                            long contentLength = response3.headers().contentLength().orElse(-1);
+                                            progress.setLength(contentLength);
+
                                             return response3
                                                     .bodyToFlux(DataBuffer.class);
                                         })
