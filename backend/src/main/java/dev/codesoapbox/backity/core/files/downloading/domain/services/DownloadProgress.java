@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -24,7 +25,7 @@ public class DownloadProgress {
 
     public void setLength(long contentLength) {
         this.contentLength = contentLength;
-        this.progressTracker = new IncrementalProgressTracker(contentLength);
+        this.progressTracker = new IncrementalProgressTracker(contentLength, Clock.systemDefaultZone());
     }
 
     public OutputStream getOutputStream(FileOutputStream fileOutputStream) {

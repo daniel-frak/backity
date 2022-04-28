@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.files.discovery.domain.model;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
@@ -11,28 +12,36 @@ import java.time.temporal.ChronoUnit;
 public class IncrementalProgressTracker {
 
     private final Long totalElements;
-    private final long startTime = System.currentTimeMillis();
-    private Long currentElement = 1L;
+    private final Clock clock;
+    private final long startTime;
+
+    private Long processedElementsCount = 0L;
+
+    public IncrementalProgressTracker(Long totalElements, Clock clock) {
+        this.totalElements = totalElements;
+        this.clock = clock;
+        this.startTime = clock.millis();
+    }
 
     public void increment() {
-        if (totalElements > currentElement) {
-            currentElement++;
+        if (totalElements > processedElementsCount) {
+            processedElementsCount++;
         }
     }
 
     public void incrementBy(long value) {
-        currentElement += value;
-        if (totalElements < currentElement) {
-            currentElement = totalElements;
+        processedElementsCount += value;
+        if (totalElements < processedElementsCount) {
+            processedElementsCount = totalElements;
         }
     }
 
     public ProgressInfo getProgressInfo() {
-        if (currentElement <= 1) {
+        if (processedElementsCount < 1) {
             return ProgressInfo.none();
         }
 
-        double percentage = (currentElement * 100) / (double) totalElements;
+        double percentage = (processedElementsCount * 100) / (double) totalElements;
 
         Duration timeLeftDuration = getTimeLeft();
 
@@ -40,10 +49,10 @@ public class IncrementalProgressTracker {
     }
 
     private Duration getTimeLeft() {
-        long nowTime = System.currentTimeMillis();
+        long nowTime = clock.millis();
         long elapsedTime = nowTime - startTime;
-        double timePerElement = (double) elapsedTime / currentElement;
-        long timeLeft = (long)(timePerElement * (totalElements - currentElement));
+        double timePerElement = (double) elapsedTime / processedElementsCount;
+        long timeLeft = (long) (timePerElement * (totalElements - processedElementsCount));
         return Duration.of(timeLeft, ChronoUnit.MILLIS);
     }
 }

@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -33,7 +34,7 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
 
         List<String> libraryGameIds = gogEmbedClient.getLibraryGameIds();
         int totalGames = libraryGameIds.size();
-        progressTracker = new IncrementalProgressTracker((long) totalGames);
+        progressTracker = new IncrementalProgressTracker((long) totalGames, Clock.systemDefaultZone());
 
         libraryGameIds.forEach(id -> {
             GameDetailsResponse details = gogEmbedClient.getGameDetails(id);
