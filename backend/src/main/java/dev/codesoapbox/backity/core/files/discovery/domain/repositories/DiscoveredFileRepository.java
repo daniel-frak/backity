@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.files.discovery.domain.services.repositories;
+package dev.codesoapbox.backity.core.files.discovery.domain.repositories;
 
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
 import org.springframework.data.domain.Page;

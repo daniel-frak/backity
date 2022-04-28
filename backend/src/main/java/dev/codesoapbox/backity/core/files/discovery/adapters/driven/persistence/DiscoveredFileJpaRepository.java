@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.files.discovery.adapters.driven.persistence;
 
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
-import dev.codesoapbox.backity.core.files.discovery.domain.services.repositories.DiscoveredFileRepository;
+import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

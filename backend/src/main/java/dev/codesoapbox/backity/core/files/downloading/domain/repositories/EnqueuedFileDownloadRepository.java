@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.files.downloading.domain.services.repositories;
+package dev.codesoapbox.backity.core.files.downloading.domain.repositories;
 
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
 import org.springframework.data.domain.Page;

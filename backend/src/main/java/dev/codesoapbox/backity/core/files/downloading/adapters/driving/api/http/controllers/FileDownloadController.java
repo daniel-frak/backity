@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.downloading.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.files.discovery.domain.services.repositories.DiscoveredFileRepository;
+import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.FileDownloadQueue;
 import io.swagger.v3.oas.annotations.Operation;

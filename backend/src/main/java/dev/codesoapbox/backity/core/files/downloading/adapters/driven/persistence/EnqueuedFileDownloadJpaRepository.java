@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.files.downloading.adapters.driven.persisten
 
 import dev.codesoapbox.backity.core.files.downloading.domain.model.DownloadStatus;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
-import dev.codesoapbox.backity.core.files.downloading.domain.services.repositories.EnqueuedFileDownloadRepository;
+import dev.codesoapbox.backity.core.files.downloading.domain.repositories.EnqueuedFileDownloadRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

@@ -2,8 +2,8 @@ package dev.codesoapbox.backity.core.files.discovery.adapters.driving.api.http.c
 
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.messages.FileDiscoveryStatus;
+import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
 import dev.codesoapbox.backity.core.files.discovery.domain.services.FileDiscoveryService;
-import dev.codesoapbox.backity.core.files.discovery.domain.services.repositories.DiscoveredFileRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

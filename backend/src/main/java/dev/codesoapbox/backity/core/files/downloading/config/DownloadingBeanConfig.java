@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.files.downloading.config;
 
-import dev.codesoapbox.backity.core.files.discovery.domain.services.repositories.DiscoveredFileRepository;
+import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
 import dev.codesoapbox.backity.core.files.downloading.adapters.driven.persistence.EnqueuedFileDownloadJpaRepository;
 import dev.codesoapbox.backity.core.files.downloading.adapters.driven.persistence.EnqueuedFileDownloadSpringRepository;
+import dev.codesoapbox.backity.core.files.downloading.domain.repositories.EnqueuedFileDownloadRepository;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.*;
-import dev.codesoapbox.backity.core.files.downloading.domain.services.repositories.EnqueuedFileDownloadRepository;
 import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

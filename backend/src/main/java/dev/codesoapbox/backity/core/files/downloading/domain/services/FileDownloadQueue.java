@@ -1,11 +1,11 @@
 package dev.codesoapbox.backity.core.files.downloading.domain.services;
 
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
-import dev.codesoapbox.backity.core.files.discovery.domain.services.repositories.DiscoveredFileRepository;
+import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.DownloadStatus;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.FileDownloadMessageTopics;
-import dev.codesoapbox.backity.core.files.downloading.domain.services.repositories.EnqueuedFileDownloadRepository;
+import dev.codesoapbox.backity.core.files.downloading.domain.repositories.EnqueuedFileDownloadRepository;
 import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
