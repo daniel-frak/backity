@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.files.downloading.domain.model;
+package dev.codesoapbox.backity.core.files.downloading.domain.model.messages;
 
 import dev.codesoapbox.backity.core.shared.config.openapi.IncludeInOpenApiDocs;
 import lombok.AllArgsConstructor;

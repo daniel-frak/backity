@@ -1,7 +1,9 @@
 package dev.codesoapbox.backity.core.files.discovery.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
-import dev.codesoapbox.backity.core.files.discovery.domain.model.messages.FileDiscoveryStatus;
+import dev.codesoapbox.backity.core.files.discovery.adapters.driving.api.http.model.DiscoveredFileJson;
+import dev.codesoapbox.backity.core.files.discovery.adapters.driving.api.http.model.DiscoveredFileJsonMapper;
+import dev.codesoapbox.backity.core.files.discovery.adapters.driving.api.http.model.FileDiscoveryStatusJson;
+import dev.codesoapbox.backity.core.files.discovery.adapters.driving.api.http.model.FileDiscoveryStatusJsonMapper;
 import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
 import dev.codesoapbox.backity.core.files.discovery.domain.services.FileDiscoveryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 @Tag(name = "File discovery", description = "Everything to do with discovering files available for download")
 @RestController
 @RequestMapping("discovered-files")
@@ -30,8 +34,9 @@ public class FileDiscoveryController {
             description = "Returns a paginated list of discovered files which were not yet added to the download queue")
     @PageableAsQueryParam
     @GetMapping
-    public Page<DiscoveredFile> getDiscoveredFiles(@Parameter(hidden = true) Pageable pageable) {
-        return repository.findAllUnqueued(pageable);
+    public Page<DiscoveredFileJson> getDiscoveredFiles(@Parameter(hidden = true) Pageable pageable) {
+        return repository.findAllUnqueued(pageable)
+                .map(DiscoveredFileJsonMapper.INSTANCE::toJson);
     }
 
     @Operation(summary = "Discover files", description = "Starts the process of file discovery")
@@ -43,7 +48,9 @@ public class FileDiscoveryController {
     @Operation(summary = "List discovery statuses",
             description = "Returns a list of discovery statuses for every remote client")
     @GetMapping("statuses")
-    public List<FileDiscoveryStatus> getStatuses() {
-        return fileDiscoveryService.getStatuses();
+    public List<FileDiscoveryStatusJson> getStatuses() {
+        return fileDiscoveryService.getStatuses().stream()
+                .map(FileDiscoveryStatusJsonMapper.INSTANCE::toJson)
+                .collect(toList());
     }
 }

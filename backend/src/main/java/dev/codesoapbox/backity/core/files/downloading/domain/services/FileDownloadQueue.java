@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
 import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.DownloadStatus;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
-import dev.codesoapbox.backity.core.files.downloading.domain.model.FileDownloadMessageTopics;
+import dev.codesoapbox.backity.core.files.downloading.domain.model.messages.FileDownloadMessageTopics;
 import dev.codesoapbox.backity.core.files.downloading.domain.repositories.EnqueuedFileDownloadRepository;
 import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
 import lombok.RequiredArgsConstructor;

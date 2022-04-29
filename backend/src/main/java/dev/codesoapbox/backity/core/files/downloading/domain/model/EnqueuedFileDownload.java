@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
- * A file that is either currently being downloaded or schedule for download.
+ * A file that is either currently being downloaded or scheduled for download.
  */
 @Entity
 @EntityListeners(AuditingEntityListener.class)

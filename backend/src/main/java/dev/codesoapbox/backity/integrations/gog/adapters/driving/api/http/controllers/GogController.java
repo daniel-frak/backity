@@ -1,7 +1,8 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.model.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedClient;
+import dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model.GameDetailsJsonResponse;
+import dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model.GameDetailsJsonResponseMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class GogController {
 
     @Operation(summary = "Get game details", description = "Returns the details of a game")
     @GetMapping("games/{id}")
-    public GameDetailsResponse getGameDetails(@PathVariable String id) {
-        return gogEmbedClient.getGameDetails(id);
+    public GameDetailsJsonResponse getGameDetails(@PathVariable String id) {
+        return GameDetailsJsonResponseMapper.INSTANCE.toJson(gogEmbedClient.getGameDetails(id));
     }
 }

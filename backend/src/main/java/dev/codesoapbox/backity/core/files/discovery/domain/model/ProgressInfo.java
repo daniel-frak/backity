@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.core.files.discovery.domain.model;
 
-import lombok.NonNull;
 import lombok.Value;
 
 import java.time.Duration;
@@ -8,7 +7,6 @@ import java.time.Duration;
 @Value(staticConstructor = "of")
 public class ProgressInfo {
 
-    @NonNull
     int percentage;
 
     Duration timeLeft;

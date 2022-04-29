@@ -1,7 +1,8 @@
 package dev.codesoapbox.backity.core.files.downloading.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
-import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
+import dev.codesoapbox.backity.core.files.downloading.adapters.driving.api.http.model.EnqueuedFileDownloadJson;
+import dev.codesoapbox.backity.core.files.downloading.adapters.driving.api.http.model.EnqueuedFileDownloadJsonMapper;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.FileDownloadQueue;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,24 +30,27 @@ public class FileDownloadController {
     @Operation(summary = "List queue items", description = "Returns the file currently being downloaded")
     @PageableAsQueryParam
     @GetMapping("current")
-    public EnqueuedFileDownload getCurrentlyDownloading() {
+    public EnqueuedFileDownloadJson getCurrentlyDownloading() {
         return fileDownloadQueue.findCurrentlyDownloading()
+                .map(EnqueuedFileDownloadJsonMapper.INSTANCE::toJson)
                 .orElse(null);
     }
 
     @Operation(summary = "List queue items", description = "Returns a paginated list of all downloads in the queue")
     @PageableAsQueryParam
     @GetMapping("queue")
-    public Page<EnqueuedFileDownload> getQueueItems(@Parameter(hidden = true) Pageable pageable) {
-        return fileDownloadQueue.findAllQueued(pageable);
+    public Page<EnqueuedFileDownloadJson> getQueueItems(@Parameter(hidden = true) Pageable pageable) {
+        return fileDownloadQueue.findAllQueued(pageable)
+                .map(EnqueuedFileDownloadJsonMapper.INSTANCE::toJson);
     }
 
     @Operation(summary = "List queue items",
             description = "Returns a paginated list of all processed files (downloaded or failed)")
     @PageableAsQueryParam
     @GetMapping("processed")
-    public Page<EnqueuedFileDownload> getProcessedFiles(@Parameter(hidden = true) Pageable pageable) {
-        return fileDownloadQueue.findAllProcessed(pageable);
+    public Page<EnqueuedFileDownloadJson> getProcessedFiles(@Parameter(hidden = true) Pageable pageable) {
+        return fileDownloadQueue.findAllProcessed(pageable)
+                .map(EnqueuedFileDownloadJsonMapper.INSTANCE::toJson);
     }
 
     @Operation(summary = "Enqueue file", description = "Adds a discovered file to the download queue")
