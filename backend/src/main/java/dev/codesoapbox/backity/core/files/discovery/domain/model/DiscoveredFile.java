@@ -28,7 +28,7 @@ public class DiscoveredFile {
     private DiscoveredFileId id;
 
     @NotNull
-    @Type(type = "pg-uuid")
+    @Type(type = "uuid-char")
     private UUID uniqueId = UUID.randomUUID();
 
     @NotNull
