@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.files.downloading.domain.services;
 
+import dev.codesoapbox.backity.core.files.downloading.domain.exceptions.EnqueuedFileDownloadUrlEmptyException;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
@@ -22,11 +23,11 @@ import java.util.stream.Collectors;
 public class FileDownloader {
 
     private final FilePathProvider filePathProvider;
-    private final Map<String, SourceFileDownloader> fileDownloaders;
+    private final Map<String, SourceFileDownloader> sourceFileDownloaders;
 
-    public FileDownloader(FilePathProvider filePathProvider, List<SourceFileDownloader> fileDownloaders) {
+    public FileDownloader(FilePathProvider filePathProvider, List<SourceFileDownloader> sourceFileDownloaders) {
         this.filePathProvider = filePathProvider;
-        this.fileDownloaders = fileDownloaders.stream()
+        this.sourceFileDownloaders = sourceFileDownloaders.stream()
                 .collect(Collectors.toMap(SourceFileDownloader::getSource, d -> d));
     }
 
@@ -35,7 +36,7 @@ public class FileDownloader {
         log.info("Downloading game file {}...", url);
 
         if (Strings.isBlank(url)) {
-            throw new IllegalArgumentException("Game file url must not be null or empty");
+            throw new EnqueuedFileDownloadUrlEmptyException(enqueuedFileDownload.getId());
         }
 
         String tempFilePath = createTempFilePath(enqueuedFileDownload);
@@ -75,11 +76,11 @@ public class FileDownloader {
     }
 
     private SourceFileDownloader getSourceDownloader(String source) {
-        if(!fileDownloaders.containsKey(source)) {
+        if (!sourceFileDownloaders.containsKey(source)) {
             throw new IllegalArgumentException("File downloader for source not found: " + source);
         }
 
-        return fileDownloaders.get(source);
+        return sourceFileDownloaders.get(source);
     }
 
     public boolean isReadyFor(EnqueuedFileDownload enqueuedFileDownload) {

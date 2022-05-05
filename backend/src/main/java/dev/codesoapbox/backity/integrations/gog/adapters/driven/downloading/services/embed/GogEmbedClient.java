@@ -168,7 +168,7 @@ public class GogEmbedClient {
                                                     response3.headers().header("content-length").get(0)));
 
                                             long contentLength = response3.headers().contentLength().orElse(-1);
-                                            progress.setLength(contentLength);
+                                            progress.startTracking(contentLength);
 
                                             return response3
                                                     .bodyToFlux(DataBuffer.class);

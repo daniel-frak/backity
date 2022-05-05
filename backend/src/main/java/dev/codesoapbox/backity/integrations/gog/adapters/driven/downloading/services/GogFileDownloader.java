@@ -58,7 +58,7 @@ public class GogFileDownloader implements SourceFileDownloader {
             progress.subscribeToProgress(progressInfoConsumer);
 
             DataBufferUtils
-                    .write(dataBufferFlux, progress.getOutputStream(fileOutputStream))
+                    .write(dataBufferFlux, progress.getTrackedOutputStream(fileOutputStream))
                     .blockLast();
         } catch (FileNotFoundException e) {
             throw new RuntimeException("Unable to create file", e);
