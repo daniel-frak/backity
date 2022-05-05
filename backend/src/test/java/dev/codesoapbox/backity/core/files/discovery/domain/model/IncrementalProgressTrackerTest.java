@@ -41,13 +41,13 @@ class IncrementalProgressTrackerTest {
     @Test
     void shouldIncrementAndGetCorrectPercentage() {
         tracker.increment();
-        assertEquals(10, tracker.getProgressInfo().getPercentage());
+        assertEquals(10, tracker.getProgressInfo().percentage());
     }
 
     @Test
     void shouldIncrementByAndGetCorrectPercentage() {
         tracker.incrementBy(2L);
-        assertEquals(20, tracker.getProgressInfo().getPercentage());
+        assertEquals(20, tracker.getProgressInfo().percentage());
     }
 
     @ParameterizedTest(name = "when {0}")
@@ -58,15 +58,15 @@ class IncrementalProgressTrackerTest {
         tracker.incrementBy(trackerIncrement);
         ProgressInfo progressInfo = tracker.getProgressInfo();
 
-        assertEquals(expectedPercentage, progressInfo.getPercentage());
-        assertEquals(Duration.of(expectedSecondsLeft, ChronoUnit.SECONDS), progressInfo.getTimeLeft());
+        assertEquals(expectedPercentage, progressInfo.percentage());
+        assertEquals(Duration.of(expectedSecondsLeft, ChronoUnit.SECONDS), progressInfo.timeLeft());
     }
 
     @Test
     void getProgressInfoShouldShowNoProgressWhenNeverIncremented() {
         ProgressInfo progressInfo = tracker.getProgressInfo();
 
-        assertEquals(0, progressInfo.getPercentage());
-        assertNull(progressInfo.getTimeLeft());
+        assertEquals(0, progressInfo.percentage());
+        assertNull(progressInfo.timeLeft());
     }
 }

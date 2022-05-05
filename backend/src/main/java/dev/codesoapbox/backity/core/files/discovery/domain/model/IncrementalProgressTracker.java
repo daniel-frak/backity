@@ -45,7 +45,7 @@ public class IncrementalProgressTracker {
 
         Duration timeLeftDuration = getTimeLeft();
 
-        return ProgressInfo.of((int) percentage, timeLeftDuration);
+        return new ProgressInfo((int) percentage, timeLeftDuration);
     }
 
     private Duration getTimeLeft() {
