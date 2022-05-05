@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.files.discovery.domain.services;
 
-import dev.codesoapbox.backity.core.files.discovery.adapters.driven.persistence.DiscoveredFileSpringRepository;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFileId;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.messages.FileDiscoveryMessageTopics;
+import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
 import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ class FileDiscoveryServiceTest {
     private FakeSourceFileDiscoveryService sourceFileDiscoveryService;
 
     @Mock
-    private DiscoveredFileSpringRepository repository;
+    private DiscoveredFileRepository repository;
 
     @Mock
     private MessageService messageService;

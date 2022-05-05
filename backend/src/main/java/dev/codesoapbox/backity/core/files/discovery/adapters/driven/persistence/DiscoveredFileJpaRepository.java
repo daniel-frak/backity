@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.files.discovery.adapters.driven.persistence;
 
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
+import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFileId;
 import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,5 +28,10 @@ public class DiscoveredFileJpaRepository implements DiscoveredFileRepository {
     @Override
     public DiscoveredFile save(DiscoveredFile discoveredFile) {
         return springRepository.save(discoveredFile);
+    }
+
+    @Override
+    public boolean existsById(DiscoveredFileId id) {
+        return springRepository.existsById(id);
     }
 }

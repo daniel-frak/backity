@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.core.files.discovery.domain.services;
 
-import dev.codesoapbox.backity.core.files.discovery.adapters.driven.persistence.DiscoveredFileSpringRepository;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.messages.FileDiscoveryMessageTopics;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.messages.FileDiscoveryStatus;
+import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
 import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,13 +18,12 @@ import static java.util.stream.Collectors.toList;
 public class FileDiscoveryService {
 
     private final List<SourceFileDiscoveryService> discoveryServices;
-    // @TODO This should be DiscoveredFileRepository!
-    private final DiscoveredFileSpringRepository repository;
+    private final DiscoveredFileRepository repository;
     private final MessageService messageService;
     private final Map<String, Boolean> discoveryStatuses = new ConcurrentHashMap<>();
 
     public FileDiscoveryService(List<SourceFileDiscoveryService> discoveryServices,
-                                DiscoveredFileSpringRepository repository, MessageService messageService) {
+                                DiscoveredFileRepository repository, MessageService messageService) {
         this.discoveryServices = discoveryServices;
         this.repository = repository;
         this.messageService = messageService;

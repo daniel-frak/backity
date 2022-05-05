@@ -109,4 +109,11 @@ abstract class DiscoveredFileJpaRepositoryAbstractTest {
         assertNotNull(savedFile.getDateCreated());
         assertNotNull(savedFile.getDateModified());
     }
+
+    @Test
+    void existsByIdShouldReturnCorrectValue() {
+        assertTrue(discoveredFileJpaRepository.existsById(new DiscoveredFileId("someUrl1", "someVersion1")));
+        assertFalse(discoveredFileJpaRepository.existsById(
+                new DiscoveredFileId("nonexistentUrl", "nonexistentVersion")));
+    }
 }

@@ -11,7 +11,7 @@ class ProgressInfoTest {
     void noneShouldCreateInfoWithNoProgress() {
         var result = ProgressInfo.none();
 
-        assertEquals(0, result.getPercentage());
-        assertNull(result.getTimeLeft());
+        assertEquals(0, result.percentage());
+        assertNull(result.timeLeft());
     }
 }

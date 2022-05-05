@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.files.discovery.domain.repositories;
 
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
+import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFileId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,4 +15,6 @@ public interface DiscoveredFileRepository {
     Page<DiscoveredFile> findAllUnqueued(Pageable pageable);
 
     DiscoveredFile save(DiscoveredFile discoveredFile);
+
+    boolean existsById(DiscoveredFileId id);
 }

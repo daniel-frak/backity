@@ -15,14 +15,14 @@ import java.util.List;
 public class FileDiscoveryBeanConfig {
 
     @Bean
-    FileDiscoveryService fileDiscoveryService(List<SourceFileDiscoveryService> discoveryServices,
-                                              DiscoveredFileSpringRepository repository,
-                                              MessageService messageService) {
-        return new FileDiscoveryService(discoveryServices, repository, messageService);
+    DiscoveredFileRepository discoveredFileRepository(DiscoveredFileSpringRepository springRepository) {
+        return new DiscoveredFileJpaRepository(springRepository);
     }
 
     @Bean
-    DiscoveredFileRepository discoveredFileRepository(DiscoveredFileSpringRepository springRepository) {
-        return new DiscoveredFileJpaRepository(springRepository);
+    FileDiscoveryService fileDiscoveryService(List<SourceFileDiscoveryService> discoveryServices,
+                                              DiscoveredFileRepository repository,
+                                              MessageService messageService) {
+        return new FileDiscoveryService(discoveryServices, repository, messageService);
     }
 }
