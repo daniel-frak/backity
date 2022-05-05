@@ -1,5 +1,7 @@
 package dev.codesoapbox.backity.testing.containers;
 
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -21,5 +23,13 @@ public class PostgresContainerWrapper extends PostgreSQLContainer<PostgresContai
         registry.add(DATASOURCE_URL, this::getJdbcUrl);
         registry.add(DATASOURCE_USERNAME, this::getUsername);
         registry.add(DATASOURCE_PASSWORD, this::getPassword);
+    }
+
+    public void setPostgreSQLProperties(ConfigurableApplicationContext applicationContext) {
+        TestPropertyValues.of(
+                DATASOURCE_URL + "=" + getJdbcUrl(),
+                DATASOURCE_USERNAME + "=" + getUsername(),
+                DATASOURCE_PASSWORD + "=" + getPassword()
+        ).applyTo(applicationContext.getEnvironment());
     }
 }
