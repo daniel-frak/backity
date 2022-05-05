@@ -1,6 +1,9 @@
 package dev.codesoapbox.backity.core.files.downloading.domain.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -14,11 +17,14 @@ import java.time.LocalDateTime;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class EnqueuedFileDownload {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @SequenceGenerator(name = "seq_enqueued_file")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "enqueued_file_generator")
+    @SequenceGenerator(name = "enqueued_file_generator", sequenceName = "seq_enqueued_file")
     private Long id;
 
     @NotNull
@@ -44,6 +50,7 @@ public class EnqueuedFileDownload {
     private LocalDateTime dateCreated;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private DownloadStatus status = DownloadStatus.WAITING;
     
     private String failedReason;

@@ -22,19 +22,26 @@ abstract class DiscoveredFileJpaRepositoryAbstractTest {
     private DiscoveredFileJpaRepository discoveredFileJpaRepository;
 
     @Autowired
-    private EntityManagerFactory emf;
+    private EntityManagerFactory entityManagerFactory;
 
-    private EntityManager em;
+    private EntityManager entityManager;
 
     @BeforeEach
     void setUp() {
-        em = emf.createEntityManager();
+        entityManager = entityManagerFactory.createEntityManager();
+        cleanDatabase();
         persistTestDiscoveredFiles();
     }
 
+    private void cleanDatabase() {
+        entityManager.getTransaction().begin();
+        entityManager.createNativeQuery("DELETE FROM discovered_file;").executeUpdate();
+        entityManager.getTransaction().commit();
+    }
+
     private void persistTestDiscoveredFiles() {
-        em.getTransaction().begin();
-        em.createNativeQuery(""" 
+        entityManager.getTransaction().begin();
+        entityManager.createNativeQuery("""
                         INSERT INTO discovered_file
                         (date_created, date_modified, game_title, name, size, source, unique_id,
                          url, version, enqueued, ignored)
@@ -42,8 +49,7 @@ abstract class DiscoveredFileJpaRepositoryAbstractTest {
                         ('2022-04-29T14:15:53', '2022-04-29T15:15:53', 'someGameTitle1',
                         'someName1', 'someSize1', 'someSource1', 'e3e4a77b-5ddf-479a-bd49-37ec2656ad4b', 
                         'someUrl1', 'someVersion1', true, false);
-                """).executeUpdate();
-        em.createNativeQuery(""" 
+                        
                         INSERT INTO discovered_file
                         (date_created, date_modified, game_title, name, size, source, unique_id,
                          url, version, enqueued, ignored)
@@ -52,15 +58,12 @@ abstract class DiscoveredFileJpaRepositoryAbstractTest {
                         'someName2', 'someSize2', 'someSource2', '1126057b-e0c5-4cd4-85e3-8e2719c737d3', 
                         'someUrl2', 'someVersion2', false, false);
                 """).executeUpdate();
-        em.getTransaction().commit();
+        entityManager.getTransaction().commit();
     }
 
     @AfterEach
     void tearDown() {
-        EntityManager em = emf.createEntityManager();
-        em.getTransaction().begin();
-        em.createNativeQuery("DELETE FROM discovered_file;").executeUpdate();
-        em.getTransaction().commit();
+        cleanDatabase();
     }
 
     @Test
@@ -102,8 +105,9 @@ abstract class DiscoveredFileJpaRepositoryAbstractTest {
 
         DiscoveredFile savedFile = discoveredFileJpaRepository.save(discoveredFile);
 
-        BigInteger recordCount = (BigInteger) em.createNativeQuery("SELECT COUNT(*) FROM discovered_file f" +
-                        " WHERE f.unique_id = '1126057b-e0c5-4cd4-85e3-8e2719c737d3';")
+        BigInteger recordCount = (BigInteger) entityManager.createNativeQuery(
+                        "SELECT COUNT(*) FROM discovered_file f" +
+                                " WHERE f.unique_id = '1126057b-e0c5-4cd4-85e3-8e2719c737d3';")
                 .getSingleResult();
         assertEquals(BigInteger.ONE, recordCount);
         assertNotNull(savedFile.getDateCreated());

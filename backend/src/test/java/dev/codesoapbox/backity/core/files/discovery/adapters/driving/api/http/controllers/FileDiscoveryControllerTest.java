@@ -10,12 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
 import static java.util.Collections.singletonList;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -42,8 +42,9 @@ class FileDiscoveryControllerTest {
                 .uniqueId(UUID.fromString("780677cc-1e8c-43a3-ba70-a4ee3fec8555"))
                 .build();
 
-        when(repository.findAllUnqueued(any()))
-                .thenReturn(new PageImpl<>(singletonList(discoveredFile)));
+        Pageable pageable = Pageable.ofSize(1);
+        when(repository.findAllUnqueued(pageable))
+                .thenReturn(new PageImpl<>(singletonList(discoveredFile), pageable, 2));
 
         var expectedJson = """
                 {
@@ -62,10 +63,21 @@ class FileDiscoveryControllerTest {
                       "ignored": false
                     }
                   ],
-                  "pageable": "INSTANCE",
-                  "totalPages": 1,
-                  "totalElements": 1,
-                  "last": true,
+                  "pageable": {
+                     "sort": {
+                       "empty": true,
+                       "sorted": false,
+                       "unsorted": true
+                     },
+                     "offset": 0,
+                     "pageNumber": 0,
+                     "pageSize": 1,
+                     "unpaged": false,
+                     "paged": true
+                   },
+                  "totalPages": 2,
+                  "totalElements": 2,
+                  "last": false,
                   "size": 1,
                   "number": 0,
                   "sort": {
@@ -78,7 +90,7 @@ class FileDiscoveryControllerTest {
                   "empty": false
                 }""";
 
-        mockMvc.perform(get("/api/discovered-files"))
+        mockMvc.perform(get("/api/discovered-files?size=1"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));

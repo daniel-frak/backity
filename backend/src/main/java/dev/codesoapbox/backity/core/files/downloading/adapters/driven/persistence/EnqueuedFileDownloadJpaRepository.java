@@ -17,13 +17,13 @@ public class EnqueuedFileDownloadJpaRepository implements EnqueuedFileDownloadRe
 
     @Override
     public Optional<EnqueuedFileDownload> findOldestUnprocessed() {
-        return springRepository.findAllQueued(PageRequest.of(0, 1)).get()
+        return springRepository.findAllUnprocessed(PageRequest.of(0, 1)).get()
                 .findFirst();
     }
 
     @Override
-    public Page<EnqueuedFileDownload> findAllQueued(Pageable pageable) {
-        return springRepository.findAllQueued(pageable);
+    public Page<EnqueuedFileDownload> findAllUnprocessed(Pageable pageable) {
+        return springRepository.findAllUnprocessed(pageable);
     }
 
     @Override

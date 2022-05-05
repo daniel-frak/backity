@@ -59,7 +59,7 @@ public class FileDownloadQueue {
     }
 
     public Page<EnqueuedFileDownload> findAllQueued(Pageable pageable) {
-        return downloadRepository.findAllQueued(pageable);
+        return downloadRepository.findAllUnprocessed(pageable);
     }
 
     public Optional<EnqueuedFileDownload> findCurrentlyDownloading() {
