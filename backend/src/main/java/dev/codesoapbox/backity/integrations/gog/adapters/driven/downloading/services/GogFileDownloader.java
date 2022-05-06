@@ -3,13 +3,12 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.ser
 import dev.codesoapbox.backity.core.files.discovery.domain.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.DownloadProgress;
-import dev.codesoapbox.backity.core.files.downloading.domain.services.FilePathProvider;
+import dev.codesoapbox.backity.core.files.downloading.domain.services.FileManager;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.SourceFileDownloader;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth.GogAuthService;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedClient;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -19,7 +18,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -30,14 +30,13 @@ public class GogFileDownloader implements SourceFileDownloader {
 
     private final GogEmbedClient gogEmbedClient;
     private final GogAuthService authService;
-    private final FilePathProvider filePathProvider;
+    private final FileManager fileManager;
 
     @Getter
     private final String source = "GOG";
 
-    @SneakyThrows
     @Override
-    public void downloadGameFile(EnqueuedFileDownload enqueuedFileDownload, String tempFilePath) {
+    public void downloadGameFile(EnqueuedFileDownload enqueuedFileDownload, String tempFilePath) throws IOException {
         AtomicReference<String> targetFileName = new AtomicReference<>();
         AtomicLong sizeInBytesFromRequest = new AtomicLong();
 
@@ -51,6 +50,16 @@ public class GogFileDownloader implements SourceFileDownloader {
         final Flux<DataBuffer> dataBufferFlux = gogEmbedClient.getFileBuffer(enqueuedFileDownload.getUrl(),
                 targetFileName, sizeInBytesFromRequest, progress);
 
+        writeToDisk(dataBufferFlux, tempFilePath, progress);
+
+        log.info("Downloaded file {} to {}", enqueuedFileDownload.getUrl(), tempFilePath);
+
+        validateDownloadedFileSize(tempFilePath, sizeInBytesFromRequest);
+        fileManager.renameFile(tempFilePath, targetFileName.get());
+    }
+
+    private void writeToDisk(Flux<DataBuffer> dataBufferFlux, String tempFilePath, DownloadProgress progress)
+            throws IOException {
         final Path path = FileSystems.getDefault().getPath(tempFilePath);
 
         Consumer<ProgressInfo> progressInfoConsumer = i -> System.out.println("File download progress: " + i);
@@ -66,14 +75,6 @@ public class GogFileDownloader implements SourceFileDownloader {
             // @TODO: Do we really need to unsubscribe if DownloadProgress is just a temporary object...?
             progress.unsubscribeFromProgress(progressInfoConsumer);
         }
-
-        log.info("Downloaded file {} to {}", enqueuedFileDownload.getUrl(), tempFilePath);
-
-        validateDownloadedFileSize(tempFilePath, sizeInBytesFromRequest);
-
-        String newFilePath = filePathProvider.getFilePath(enqueuedFileDownload.getGameTitle(), targetFileName.get(),
-                enqueuedFileDownload.getSource());
-        renameFile(tempFilePath, newFilePath);
     }
 
     @Override
@@ -88,17 +89,6 @@ public class GogFileDownloader implements SourceFileDownloader {
                     + downloadedFile.length() + " vs " + size.get() + ")");
         } else {
             log.info("Filesize check for {} passed successfully", tempFilePath);
-        }
-    }
-
-    private void renameFile(String tempFilePath, String newFilePath) {
-        Path originalPath = Paths.get(tempFilePath);
-        Path newPath = Paths.get(newFilePath);
-        try {
-            Files.move(originalPath, newPath, StandardCopyOption.REPLACE_EXISTING);
-            log.info("Renamed file {} to {}", tempFilePath, newFilePath);
-        } catch (IOException e) {
-            log.error("Could not rename file: " + tempFilePath, e);
         }
     }
 }

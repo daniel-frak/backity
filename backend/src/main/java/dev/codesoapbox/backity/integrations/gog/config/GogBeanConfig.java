@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.config;
 
-import dev.codesoapbox.backity.core.files.downloading.domain.services.FilePathProvider;
+import dev.codesoapbox.backity.core.files.downloading.domain.services.FileManager;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.GogFileDiscoveryService;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.GogFileDownloader;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth.GogAuthClient;
@@ -43,8 +43,8 @@ public class GogBeanConfig {
 
     @Bean
     GogFileDownloader gogFileDownloader(GogEmbedClient gogEmbedClient, GogAuthService authService,
-                                        FilePathProvider filePathProvider) {
-        return new GogFileDownloader(gogEmbedClient, authService, filePathProvider);
+                                        FileManager fileManager) {
+        return new GogFileDownloader(gogEmbedClient, authService, fileManager);
     }
 
     @Bean

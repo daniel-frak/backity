@@ -1,7 +1,10 @@
 package dev.codesoapbox.backity.core.files.downloading.domain.services;
 
 import dev.codesoapbox.backity.core.files.downloading.domain.exceptions.EnqueuedFileDownloadUrlEmptyException;
+import dev.codesoapbox.backity.core.files.downloading.domain.exceptions.FileDownloadFailedException;
+import dev.codesoapbox.backity.core.files.downloading.domain.exceptions.NotEnoughFreeSpaceException;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
+import dev.codesoapbox.backity.core.files.downloading.fakes.FakeFileManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,16 +14,12 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.IOException;
 
 import static java.util.Collections.singletonList;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FileDownloaderTest {
@@ -33,11 +32,35 @@ class FileDownloaderTest {
     @Mock
     private SourceFileDownloader sourceFileDownloader;
 
+    private FakeFileManager fileManager;
+
     @BeforeEach
     void setUp() {
         when(sourceFileDownloader.getSource())
                 .thenReturn("someSource");
-        fileDownloader = new FileDownloader(filePathProvider, singletonList(sourceFileDownloader));
+        fileManager = new FakeFileManager(5000);
+        fileDownloader = new FileDownloader(filePathProvider, fileManager, singletonList(sourceFileDownloader));
+    }
+
+    @Test
+    void shouldDownloadGameFile() throws IOException {
+        String source = sourceFileDownloader.getSource();
+        var gameTitle = "someGameTitle";
+        var enqueuedFileDownload = EnqueuedFileDownload.builder()
+                .gameTitle(gameTitle)
+                .source(source)
+                .url("someUrl")
+                .size("5 KB")
+                .build();
+        var tempFilePath = "someFileDir/someFile";
+
+        when(filePathProvider.createTemporaryFilePath(eq(source), eq(gameTitle)))
+                .thenReturn(tempFilePath);
+
+        fileDownloader.downloadGameFile(enqueuedFileDownload);
+
+        assertTrue(fileManager.freeSpaceWasCheckedFor(tempFilePath));
+        verify(sourceFileDownloader).downloadGameFile(enqueuedFileDownload, tempFilePath);
     }
 
     @ParameterizedTest
@@ -48,40 +71,94 @@ class FileDownloaderTest {
                 .url(url)
                 .build();
 
-        assertThrows(EnqueuedFileDownloadUrlEmptyException.class,
+        FileDownloadFailedException exception = assertThrows(FileDownloadFailedException.class,
                 () -> fileDownloader.downloadGameFile(enqueuedFileDownload));
+        assertEquals(EnqueuedFileDownloadUrlEmptyException.class, exception.getCause().getClass());
     }
 
     @Test
-    void shouldDownloadGameFile() {
+    void downloadGameFileShouldThrowIfSourceDownloaderNotFound() throws IOException {
+        var source = "nonExistentSource";
         var gameTitle = "someGameTitle";
         var enqueuedFileDownload = EnqueuedFileDownload.builder()
                 .gameTitle(gameTitle)
-                .source(sourceFileDownloader.getSource())
+                .source(source)
                 .url("someUrl")
                 .size("5 KB")
                 .build();
-        var tempFileDirectory = "someFileDir";
-        var tempFilePath = tempFileDirectory + "/someFile";
-        String source = sourceFileDownloader.getSource();
+        var tempFilePath = "someFileDir/someFile";
 
-        when(filePathProvider.getFilePath(eq(gameTitle), any(), eq(source)))
+        lenient().when(filePathProvider.createTemporaryFilePath(eq(source), eq(gameTitle)))
                 .thenReturn(tempFilePath);
 
-        fileDownloader.downloadGameFile(enqueuedFileDownload);
+        FileDownloadFailedException exception = assertThrows(FileDownloadFailedException.class,
+                () -> fileDownloader.downloadGameFile(enqueuedFileDownload));
+        assertEquals(IllegalArgumentException.class, exception.getCause().getClass());
 
-        assertTrue(Files.exists(Path.of(tempFileDirectory)));
-        verify(sourceFileDownloader).downloadGameFile(enqueuedFileDownload, tempFilePath);
-        // @TODO Finish me
+    }
+
+    @Test
+    void downloadGameFileShouldThrowIfIOExceptionOccurs() throws IOException {
+        var source = sourceFileDownloader.getSource();
+        var gameTitle = "someGameTitle";
+        var enqueuedFileDownload = EnqueuedFileDownload.builder()
+                .gameTitle(gameTitle)
+                .source(source)
+                .url("someUrl")
+                .size("5 KB")
+                .build();
+
+        when(filePathProvider.createTemporaryFilePath(eq(source), eq(gameTitle)))
+                .thenThrow(new IOException());
+
+        FileDownloadFailedException exception = assertThrows(FileDownloadFailedException.class,
+                () -> fileDownloader.downloadGameFile(enqueuedFileDownload));
+        assertEquals(IOException.class, exception.getCause().getClass());
+    }
+
+    @Test
+    void downloadGameFileShouldThrowIfNotEnoughFreeSpace() throws IOException {
+        var source = sourceFileDownloader.getSource();
+        var gameTitle = "someGameTitle";
+        var enqueuedFileDownload = EnqueuedFileDownload.builder()
+                .gameTitle(gameTitle)
+                .source(source)
+                .url("someUrl")
+                .size("5 KB")
+                .build();
+        var tempFilePath = "someFileDir/someFile";
+
+        when(filePathProvider.createTemporaryFilePath(eq(source), eq(gameTitle)))
+                .thenReturn(tempFilePath);
+
+        fileManager.setAvailableSizeInBytes(0);
+
+        FileDownloadFailedException exception = assertThrows(FileDownloadFailedException.class,
+                () -> fileDownloader.downloadGameFile(enqueuedFileDownload));
+        assertEquals(NotEnoughFreeSpaceException.class, exception.getCause().getClass());
     }
 
     @Test
     void isReadyForShouldReturnTrueIfFileIsReadyToDownload() {
-        // @TODO Finish me
+        var enqueuedFileDownload = EnqueuedFileDownload.builder()
+                .source(sourceFileDownloader.getSource())
+                .build();
+
+        when(sourceFileDownloader.isReady())
+                .thenReturn(true);
+
+        assertTrue(fileDownloader.isReadyFor(enqueuedFileDownload));
     }
 
     @Test
     void isReadyForShouldReturnFalseIfFileIsNotReadyToDownload() {
-        // @TODO Finish me
+        var enqueuedFileDownload = EnqueuedFileDownload.builder()
+                .source(sourceFileDownloader.getSource())
+                .build();
+
+        when(sourceFileDownloader.isReady())
+                .thenReturn(false);
+
+        assertFalse(fileDownloader.isReadyFor(enqueuedFileDownload));
     }
 }

@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.files.downloading.config;
 
 import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
+import dev.codesoapbox.backity.core.files.downloading.adapters.driven.files.RealFileManager;
 import dev.codesoapbox.backity.core.files.downloading.adapters.driven.persistence.EnqueuedFileDownloadJpaRepository;
 import dev.codesoapbox.backity.core.files.downloading.adapters.driven.persistence.EnqueuedFileDownloadSpringRepository;
 import dev.codesoapbox.backity.core.files.downloading.domain.repositories.EnqueuedFileDownloadRepository;
@@ -16,13 +17,20 @@ import java.util.List;
 public class DownloadingBeanConfig {
 
     @Bean
-    FilePathProvider filePathProvider(@Value("${default-path-template}") String defaultPathTemplate) {
-        return new FilePathProvider(defaultPathTemplate);
+    FileManager fileManager() {
+        return new RealFileManager();
     }
 
     @Bean
-    FileDownloader fileDownloader(FilePathProvider filePathProvider, List<SourceFileDownloader> fileDownloaders) {
-        return new FileDownloader(filePathProvider, fileDownloaders);
+    FilePathProvider filePathProvider(@Value("${default-path-template}") String defaultPathTemplate,
+                                      FileManager fileManager) {
+        return new FilePathProvider(defaultPathTemplate, fileManager);
+    }
+
+    @Bean
+    FileDownloader fileDownloader(FilePathProvider filePathProvider, List<SourceFileDownloader> fileDownloaders,
+                                  FileManager fileManager) {
+        return new FileDownloader(filePathProvider, fileManager, fileDownloaders);
     }
 
     @Bean
