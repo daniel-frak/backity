@@ -2,6 +2,9 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.ser
 
 import dev.codesoapbox.backity.core.files.downloading.domain.services.DownloadProgress;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.FileSizeAccumulator;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.exceptions.GameDetailsRequestFailedException;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.exceptions.GameDownloadRequestFailedException;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.exceptions.GameListRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.model.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.model.embed.GameFileDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.model.embed.remote.GogGameDetailsResponse;
@@ -29,7 +32,7 @@ import static java.util.Collections.emptyList;
 @RequiredArgsConstructor
 public class GogEmbedClient {
 
-    private static final String HEADER_AUTHORIZATION = "Authorization";
+    static final String HEADER_AUTHORIZATION = "Authorization";
     private static final String VERSION_UNKNOWN_VALUE = "unknown";
 
     private final WebClient webClientEmbed;
@@ -63,6 +66,7 @@ public class GogEmbedClient {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {
                 })
+                .onErrorMap(GameListRequestFailedException::new)
                 .map(m -> (List<Integer>) m.get("owned"))
                 .map(m -> m.stream().map(String::valueOf)
                         .collect(Collectors.toList()))
@@ -89,16 +93,11 @@ public class GogEmbedClient {
                 .header(HEADER_AUTHORIZATION, getBearerToken())
                 .retrieve()
                 .bodyToMono(GogGameDetailsResponse.class)
-                .doOnError(e -> log.info("An error occurred while retrieving details for game #" + gameId, e))
-                .onErrorReturn(new GogGameDetailsResponse())
+                .onErrorMap(e -> new GameDetailsRequestFailedException(gameId, e))
                 .map(this::extractGameDetails)
                 .block();
 
-        if (details != null) {
-            log.debug("Retrieved game details for game: {} (#{})", details.getTitle(), gameId);
-        } else {
-            log.error("Could not retrieve game details for game id: {}", gameId);
-        }
+        log.debug("Retrieved game details for game: {} (#{})", details.getTitle(), gameId);
 
         return details;
     }
@@ -148,6 +147,7 @@ public class GogEmbedClient {
 
     public Flux<DataBuffer> getFileBuffer(String gameFileUrl, AtomicReference<String> newFileName, AtomicLong size,
                                           DownloadProgress progress) {
+        // @TODO Is there a way to simplify this?
         return webClientEmbed.get()
                 .uri(gameFileUrl)
                 .header(HEADER_AUTHORIZATION, getBearerToken())
@@ -178,6 +178,7 @@ public class GogEmbedClient {
                                                         + gameFileUrl, e));
                             });
                 })
+                .onErrorMap(e -> new GameDownloadRequestFailedException(gameFileUrl, e))
                 .doOnError(e -> log.info("An error occurred while downloading game file" + gameFileUrl, e));
     }
 

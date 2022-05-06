@@ -10,26 +10,13 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 public class GogAuthClient {
 
-    private static final String REDIRECT_URI = "https://embed.gog.com/on_login_success?origin=client";
-    private static final String GRANT_TYPE_AUTHORIZATION_CODE = "authorization_code";
-    private static final String GRANT_TYPE_REFRESH_TOKEN = "refresh_token";
+    static final String REDIRECT_URI = "https://embed.gog.com/on_login_success?origin=client";
+    static final String GRANT_TYPE_AUTHORIZATION_CODE = "authorization_code";
+    static final String GRANT_TYPE_REFRESH_TOKEN = "refresh_token";
 
     private final WebClient webClientAuth;
     private final String clientId;
     private final String clientSecret;
-
-    public GogAuthenticationResponse refreshToken(String refreshToken) {
-        return webClientAuth.get()
-                .uri(uriBuilder -> uriBuilder.path("/token")
-                        .queryParam("client_id", clientId)
-                        .queryParam("client_secret", clientSecret)
-                        .queryParam("grant_type", GRANT_TYPE_REFRESH_TOKEN)
-                        .queryParam("refresh_token", refreshToken)
-                        .build())
-                .retrieve()
-                .bodyToMono(GogAuthenticationResponse.class)
-                .block();
-    }
 
     public GogAuthenticationResponse getInitialToken(String secret) {
         return webClientAuth.get()
@@ -39,6 +26,19 @@ public class GogAuthClient {
                         .queryParam("grant_type", GRANT_TYPE_AUTHORIZATION_CODE)
                         .queryParam("redirect_uri", REDIRECT_URI)
                         .queryParam("code", secret)
+                        .build())
+                .retrieve()
+                .bodyToMono(GogAuthenticationResponse.class)
+                .block();
+    }
+
+    public GogAuthenticationResponse refreshToken(String refreshToken) {
+        return webClientAuth.get()
+                .uri(uriBuilder -> uriBuilder.path("/token")
+                        .queryParam("client_id", clientId)
+                        .queryParam("client_secret", clientSecret)
+                        .queryParam("grant_type", GRANT_TYPE_REFRESH_TOKEN)
+                        .queryParam("refresh_token", refreshToken)
                         .build())
                 .retrieve()
                 .bodyToMono(GogAuthenticationResponse.class)

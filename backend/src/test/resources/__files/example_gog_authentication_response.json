@@ -1,0 +1,7 @@
+{
+  "access_token": "someAccessToken",
+  "refresh_token": "someRefreshToken",
+  "expires_in": "3600",
+  "session_id": "someSessionId",
+  "user_id": "someUserId"
+}

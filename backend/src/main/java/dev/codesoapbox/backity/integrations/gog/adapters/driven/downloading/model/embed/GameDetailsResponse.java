@@ -1,10 +1,14 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.model.embed;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class GameDetailsResponse {
 
     private String title;

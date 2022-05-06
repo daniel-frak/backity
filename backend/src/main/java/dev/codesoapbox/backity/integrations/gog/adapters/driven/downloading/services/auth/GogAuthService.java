@@ -65,7 +65,7 @@ public class GogAuthService {
 
     // Check every minute
     @Scheduled(fixedRate = 60000)
-    public void checkIfAccessTokenNeedsRefreshing() {
+    public void refreshAccessTokenIfNeeded() {
         log.debug("Checking access token expiration...");
 
         if(accessToken == null) {
