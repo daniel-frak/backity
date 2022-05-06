@@ -37,7 +37,7 @@ The information below is aimed at developers who want to extend this project's f
   * [OpenAPI](#openapi)
 - [Client code generation](#client-code-generation)
 - [Working with frontend on a local environment](#working-with-frontend-on-a-local-environment)
-- [Running test suits](#running-test-suits)
+- [Running test suites](#running-test-suites)
   * [Backend](#backend)
   * [Frontend](#frontend)
 - [SonarQube analysis on a local environment](#sonarqube-analysis-on-local-a-environment)
@@ -134,10 +134,10 @@ The application reloads automatically which speeds up your work.
 In order to incorporate changes into the project, rebuild the whole application from the main project directory with:
 
 ```shell
-mvn clean install
+mvn clean package
 ```
 
-## Running test suits
+## Running test suites
 
 ### Backend
 
