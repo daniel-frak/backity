@@ -42,8 +42,8 @@ public class FileDownloadQueue {
         return enqueuedFileDownload;
     }
 
-    public Optional<EnqueuedFileDownload> getOldestUnprocessed() {
-        return downloadRepository.findOldestUnprocessed();
+    public Optional<EnqueuedFileDownload> getOldestWaiting() {
+        return downloadRepository.findOldestWaiting();
     }
 
     public void acknowledgeSuccess(EnqueuedFileDownload enqueuedFileDownload) {
@@ -59,7 +59,7 @@ public class FileDownloadQueue {
     }
 
     public Page<EnqueuedFileDownload> findAllQueued(Pageable pageable) {
-        return downloadRepository.findAllUnprocessed(pageable);
+        return downloadRepository.findAllWaiting(pageable);
     }
 
     public Optional<EnqueuedFileDownload> findCurrentlyDownloading() {

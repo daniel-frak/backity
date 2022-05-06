@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 @NoArgsConstructor
-public class FakeFileManager implements FileManager {
+public class FakeUnixFileManager implements FileManager {
 
     @Getter
     @Setter
@@ -21,19 +21,24 @@ public class FakeFileManager implements FileManager {
     private Set<String> directoriesCreated = new HashSet<>();
     private Map<String, String> filesRenamed = new HashMap<>();
 
-    public FakeFileManager(long availableSizeInBytes) {
+    public FakeUnixFileManager(long availableSizeInBytes) {
         this.availableSizeInBytes = availableSizeInBytes;
     }
 
     @Override
     public boolean isEnoughFreeSpaceOnDisk(long sizeInBytes, String filePath) {
-        pathsCheckedForSize.add(filePath);
+        pathsCheckedForSize.add(fixSeparatorChar(filePath));
         return availableSizeInBytes >= sizeInBytes;
+    }
+
+    private String fixSeparatorChar(String filePath) {
+        return filePath
+                .replace("/", "\\");
     }
 
     @Override
     public void createDirectories(String filePath) {
-        directoriesCreated.add(filePath);
+        directoriesCreated.add(fixSeparatorChar(filePath));
     }
 
     @Override
@@ -43,11 +48,11 @@ public class FakeFileManager implements FileManager {
 
     public boolean freeSpaceWasCheckedFor(String path) {
         return pathsCheckedForSize.stream()
-                .anyMatch(p -> p.contains(path));
+                .anyMatch(p -> p.contains(fixSeparatorChar(path)));
     }
 
     public boolean directoryWasCreated(String path) {
         return directoriesCreated.stream()
-                .anyMatch(p -> p.contains(path));
+                .anyMatch(p -> p.contains(fixSeparatorChar(path)));
     }
 }

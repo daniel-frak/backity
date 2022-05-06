@@ -78,8 +78,8 @@ abstract class EnqueuedFileDownloadJpaRepositoryAbstractTest {
     }
 
     @Test
-    void shouldFindOldestUnprocessed() {
-        Optional<EnqueuedFileDownload> result = enqueuedFileDownloadJpaRepository.findOldestUnprocessed();
+    void shouldFindOldestWaiting() {
+        Optional<EnqueuedFileDownload> result = enqueuedFileDownloadJpaRepository.findOldestWaiting();
 
         assertTrue(result.isPresent());
         assertNotNull(result.get().getId());
@@ -99,8 +99,8 @@ abstract class EnqueuedFileDownloadJpaRepositoryAbstractTest {
     }
 
     @Test
-    void shouldFindAllUnprocessed() {
-        Page<EnqueuedFileDownload> result = enqueuedFileDownloadJpaRepository.findAllUnprocessed(Pageable.unpaged());
+    void shouldFindAllWaiting() {
+        Page<EnqueuedFileDownload> result = enqueuedFileDownloadJpaRepository.findAllWaiting(Pageable.unpaged());
 
         assertNotNull(result.getContent().get(0).getId());
         var expectedResult = List.of(

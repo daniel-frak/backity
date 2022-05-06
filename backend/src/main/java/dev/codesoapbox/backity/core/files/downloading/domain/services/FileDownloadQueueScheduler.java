@@ -13,7 +13,8 @@ public class FileDownloadQueueScheduler {
 
     private final FileDownloadQueue fileDownloadQueue;
     private final FileDownloader fileDownloader;
-    private final AtomicReference<EnqueuedFileDownload> enqueuedFileDownloadReference = new AtomicReference<>();
+
+    final AtomicReference<EnqueuedFileDownload> enqueuedFileDownloadReference = new AtomicReference<>();
 
     @Scheduled(fixedRate = 5000)
     public synchronized void processQueue() {
@@ -21,7 +22,7 @@ public class FileDownloadQueueScheduler {
             return;
         }
 
-        fileDownloadQueue.getOldestUnprocessed()
+        fileDownloadQueue.getOldestWaiting()
                 .ifPresent(this::processEnqueuedFileDownload);
     }
 

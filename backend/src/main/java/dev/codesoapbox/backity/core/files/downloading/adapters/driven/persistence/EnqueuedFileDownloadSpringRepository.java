@@ -14,7 +14,7 @@ public interface EnqueuedFileDownloadSpringRepository extends JpaRepository<Enqu
     @Query("SELECT f FROM EnqueuedFileDownload f" +
             " WHERE f.status = dev.codesoapbox.backity.core.files.downloading.domain.model.DownloadStatus.WAITING" +
             " ORDER BY f.dateCreated ASC")
-    Page<EnqueuedFileDownload> findAllUnprocessed(Pageable pageable);
+    Page<EnqueuedFileDownload> findAllWaiting(Pageable pageable);
 
     Optional<EnqueuedFileDownload> findByStatus(DownloadStatus status);
 

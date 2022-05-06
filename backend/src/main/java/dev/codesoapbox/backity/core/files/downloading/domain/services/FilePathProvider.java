@@ -9,12 +9,18 @@ import java.util.UUID;
 @Slf4j
 public class FilePathProvider {
 
-    private final String defaultPathTemplate;
+    final String defaultPathTemplate;
     private final FileManager fileManager;
 
     public FilePathProvider(String defaultPathTemplate, FileManager fileManager) {
-        this.defaultPathTemplate = defaultPathTemplate;
+        this.defaultPathTemplate = replaceWithCorrectFileSeparator(defaultPathTemplate);
         this.fileManager = fileManager;
+    }
+
+    private String replaceWithCorrectFileSeparator(String defaultPathTemplate) {
+        return defaultPathTemplate
+                .replace("/", File.separator)
+                .replace("\\", File.separator);
     }
 
     public String createTemporaryFilePath(String source, String gameTitle) throws IOException {
@@ -24,7 +30,7 @@ public class FilePathProvider {
         return tempFilePath;
     }
 
-    public String getFilePath(String gameTitle, String fileName, String source) {
+    private String getFilePath(String gameTitle, String fileName, String source) {
         return defaultPathTemplate
                 .replace("{SOURCE}", source)
                 .replace("{TITLE}", gameTitle)
@@ -39,6 +45,12 @@ public class FilePathProvider {
     }
 
     private String extractDirectory(String path) {
-        return path.substring(0, path.lastIndexOf(File.separator));
+        int indexOfLastSeparator = path.lastIndexOf(File.separator);
+
+        if (indexOfLastSeparator == -1) {
+            return path;
+        }
+
+        return path.substring(0, indexOfLastSeparator);
     }
 }

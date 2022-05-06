@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.files.downloading.domain.exceptions.Enqueued
 import dev.codesoapbox.backity.core.files.downloading.domain.exceptions.FileDownloadFailedException;
 import dev.codesoapbox.backity.core.files.downloading.domain.exceptions.NotEnoughFreeSpaceException;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
-import dev.codesoapbox.backity.core.files.downloading.fakes.FakeFileManager;
+import dev.codesoapbox.backity.core.files.downloading.fakes.FakeUnixFileManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,13 +32,13 @@ class FileDownloaderTest {
     @Mock
     private SourceFileDownloader sourceFileDownloader;
 
-    private FakeFileManager fileManager;
+    private FakeUnixFileManager fileManager;
 
     @BeforeEach
     void setUp() {
         when(sourceFileDownloader.getSource())
                 .thenReturn("someSource");
-        fileManager = new FakeFileManager(5000);
+        fileManager = new FakeUnixFileManager(5000);
         fileDownloader = new FileDownloader(filePathProvider, fileManager, singletonList(sourceFileDownloader));
     }
 

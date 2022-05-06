@@ -8,9 +8,9 @@ import java.util.Optional;
 
 public interface EnqueuedFileDownloadRepository {
 
-    Optional<EnqueuedFileDownload> findOldestUnprocessed();
+    Optional<EnqueuedFileDownload> findOldestWaiting();
 
-    Page<EnqueuedFileDownload> findAllUnprocessed(Pageable pageable);
+    Page<EnqueuedFileDownload> findAllWaiting(Pageable pageable);
 
     EnqueuedFileDownload save(EnqueuedFileDownload enqueuedFileDownload);
 
