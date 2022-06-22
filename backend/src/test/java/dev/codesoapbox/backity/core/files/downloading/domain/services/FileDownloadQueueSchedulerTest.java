@@ -54,6 +54,7 @@ class FileDownloadQueueSchedulerTest {
 
         fileDownloadQueueScheduler.processQueue();
 
+        verify(fileDownloadQueue).markInProgress(enqueuedFileDownload);
         verify(fileDownloadQueue).acknowledgeFailed(enqueuedFileDownload, "someFailedReason");
         assertNull(fileDownloadQueueScheduler.enqueuedFileDownloadReference.get());
         verifyNoMoreInteractions(fileDownloadQueue, fileDownloader);

@@ -47,6 +47,7 @@ class LogbackLogServiceTest {
         consoleAppender.start();
 
         Logger logger = (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+        logger.detachAppender(LogbackLogService.CONSOLE_APPENDER);
         logger.addAppender(consoleAppender);
     }
 
