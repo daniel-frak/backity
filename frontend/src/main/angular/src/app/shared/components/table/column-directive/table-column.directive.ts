@@ -11,7 +11,7 @@ export class TableColumnDirective {
   columnTitle?: string;
 
   get hideTitleOnMobile(): boolean {
-    return !!this._hideTitleOnMobile || this._hideTitleOnMobile == '';
+    return !!this._hideTitleOnMobile || this._hideTitleOnMobile === '';
   }
 
   @Input('hide-title-on-mobile')

@@ -1,4 +1,4 @@
-import {Component, HostBinding, Input, OnInit} from '@angular/core';
+import {Component, HostBinding, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-settings-side-nav',
@@ -10,10 +10,11 @@ export class SettingsSideNavComponent implements OnInit {
   @HostBinding('class.minimized')
   minimizeSideNav: boolean = false;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
-    if(this.isMobileClient()) {
+    if (this.isMobileClient()) {
       this.minimizeSideNav = true;
     }
   }

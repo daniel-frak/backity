@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static java.util.stream.Collectors.toList;
-
 @Slf4j
 public class FileDiscoveryService {
 
@@ -30,7 +28,7 @@ public class FileDiscoveryService {
 
         discoveryServices.forEach(s -> {
             discoveryStatuses.put(s.getSource(), false);
-            s.subscribeToProgress(System.out::println);
+            s.subscribeToProgress(p -> log.info("Discovery progress: " + p));
         });
     }
 
@@ -55,7 +53,7 @@ public class FileDiscoveryService {
                 .whenComplete((v, t) -> changeDiscoveryStatus(discoveryService, false));
     }
 
-    private Boolean alreadyInProgress(SourceFileDiscoveryService discoveryService) {
+    private boolean alreadyInProgress(SourceFileDiscoveryService discoveryService) {
         return discoveryStatuses.get(discoveryService.getSource());
     }
 
@@ -81,6 +79,6 @@ public class FileDiscoveryService {
     public List<FileDiscoveryStatus> getStatuses() {
         return discoveryStatuses.entrySet().stream()
                 .map(s -> new FileDiscoveryStatus(s.getKey(), s.getValue()))
-                .collect(toList());
+                .toList();
     }
 }

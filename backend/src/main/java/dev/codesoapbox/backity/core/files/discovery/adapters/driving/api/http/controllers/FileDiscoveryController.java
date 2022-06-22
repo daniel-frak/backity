@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
-
 @Tag(name = "File discovery", description = "Everything to do with discovering files available for download")
 @RestController
 @RequestMapping("discovered-files")
@@ -51,6 +49,6 @@ public class FileDiscoveryController {
     public List<FileDiscoveryStatusJson> getStatuses() {
         return fileDiscoveryService.getStatuses().stream()
                 .map(FileDiscoveryStatusJsonMapper.INSTANCE::toJson)
-                .collect(toList());
+                .toList();
     }
 }

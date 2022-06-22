@@ -54,7 +54,7 @@ class FileDownloaderTest {
                 .build();
         var tempFilePath = "someFileDir/someFile";
 
-        when(filePathProvider.createTemporaryFilePath(eq(source), eq(gameTitle)))
+        when(filePathProvider.createTemporaryFilePath(source, gameTitle))
                 .thenReturn(tempFilePath);
 
         fileDownloader.downloadGameFile(enqueuedFileDownload);
@@ -108,7 +108,7 @@ class FileDownloaderTest {
                 .size("5 KB")
                 .build();
 
-        when(filePathProvider.createTemporaryFilePath(eq(source), eq(gameTitle)))
+        when(filePathProvider.createTemporaryFilePath(source, gameTitle))
                 .thenThrow(new IOException());
 
         FileDownloadFailedException exception = assertThrows(FileDownloadFailedException.class,
@@ -128,7 +128,7 @@ class FileDownloaderTest {
                 .build();
         var tempFilePath = "someFileDir/someFile";
 
-        when(filePathProvider.createTemporaryFilePath(eq(source), eq(gameTitle)))
+        when(filePathProvider.createTemporaryFilePath(source, gameTitle))
                 .thenReturn(tempFilePath);
 
         fileManager.setAvailableSizeInBytes(0);

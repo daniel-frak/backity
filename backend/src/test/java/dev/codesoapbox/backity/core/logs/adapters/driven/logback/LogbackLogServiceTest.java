@@ -62,7 +62,7 @@ class LogbackLogServiceTest {
 
     @AfterEach
     void tearDown() {
-        if(originalConsoleAppender != null) {
+        if (originalConsoleAppender != null) {
             Logger logger = (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
             logger.addAppender(originalConsoleAppender);
         }

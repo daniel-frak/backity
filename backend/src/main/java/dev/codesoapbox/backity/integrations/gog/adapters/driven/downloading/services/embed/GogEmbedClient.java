@@ -97,7 +97,11 @@ public class GogEmbedClient {
                 .map(this::extractGameDetails)
                 .block();
 
-        log.debug("Retrieved game details for game: {} (#{})", details.getTitle(), gameId);
+        if(details != null) {
+            log.debug("Retrieved game details for game: {} (#{})", details.getTitle(), gameId);
+        } else {
+            log.error("Could not retrieve game details for gameId: {}", gameId);
+        }
 
         return details;
     }

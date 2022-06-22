@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileD
 import dev.codesoapbox.backity.core.files.downloading.domain.services.DownloadProgress;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.FileManager;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.SourceFileDownloader;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.exceptions.FileDownloadException;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth.GogAuthService;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedClient;
 import lombok.Getter;
@@ -62,7 +63,7 @@ public class GogFileDownloader implements SourceFileDownloader {
             throws IOException {
         final Path path = FileSystems.getDefault().getPath(tempFilePath);
 
-        Consumer<ProgressInfo> progressInfoConsumer = i -> System.out.println("File download progress: " + i);
+        Consumer<ProgressInfo> progressInfoConsumer = i -> log.trace("File download progress: " + i);
         try (FileOutputStream fileOutputStream = new FileOutputStream(path.toFile())) {
             progress.subscribeToProgress(progressInfoConsumer);
 
@@ -70,7 +71,7 @@ public class GogFileDownloader implements SourceFileDownloader {
                     .write(dataBufferFlux, progress.getTrackedOutputStream(fileOutputStream))
                     .blockLast();
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("Unable to create file", e);
+            throw new FileDownloadException("Unable to create file", e);
         } finally {
             // @TODO: Do we really need to unsubscribe if DownloadProgress is just a temporary object...?
             progress.unsubscribeFromProgress(progressInfoConsumer);
