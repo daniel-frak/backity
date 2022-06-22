@@ -75,7 +75,6 @@ public class LogbackLogService implements LogService {
     }
 
     private String getFileAppenderPattern(Logger logger) {
-        logger.iteratorForAppenders().forEachRemaining(a -> System.out.println(a.getName()));
         OutputStreamAppender<ILoggingEvent> fileAppender =
                 (OutputStreamAppender<ILoggingEvent>) logger.getAppender(CONSOLE_APPENDER);
 

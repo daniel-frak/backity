@@ -4,11 +4,14 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
 import dev.codesoapbox.backity.core.logs.domain.model.LogCreatedMessage;
 import dev.codesoapbox.backity.core.logs.domain.model.LogsMessageTopics;
 import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,19 +27,19 @@ import static org.mockito.Mockito.verify;
 class LogbackLogServiceTest {
 
     private static final int MAX_LOGS = 2;
+    private static Appender<ILoggingEvent> originalConsoleAppender;
 
     private LogbackLogService logService;
 
     @Mock
     private MessageService messageService;
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void beforeAll() {
         addConsoleAppender();
-        logService = new LogbackLogService(messageService, MAX_LOGS);
     }
 
-    private void addConsoleAppender() {
+    private static void addConsoleAppender() {
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         ConsoleAppender<ILoggingEvent> consoleAppender = new ConsoleAppender<>();
         consoleAppender.setContext(loggerContext);
@@ -47,8 +50,22 @@ class LogbackLogServiceTest {
         consoleAppender.start();
 
         Logger logger = (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+        originalConsoleAppender = logger.getAppender(LogbackLogService.CONSOLE_APPENDER);
         logger.detachAppender(LogbackLogService.CONSOLE_APPENDER);
         logger.addAppender(consoleAppender);
+    }
+
+    @BeforeEach
+    void setUp() {
+        logService = new LogbackLogService(messageService, MAX_LOGS);
+    }
+
+    @AfterEach
+    void tearDown() {
+        if(originalConsoleAppender != null) {
+            Logger logger = (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+            logger.addAppender(originalConsoleAppender);
+        }
     }
 
     @Test
