@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { GogAuthComponent } from './gog-auth.component';
+import {GogAuthComponent} from './gog-auth.component';
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('GogAuthComponent', () => {
   let component: GogAuthComponent;
@@ -8,9 +9,12 @@ describe('GogAuthComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GogAuthComponent ]
+      declarations: [GogAuthComponent],
+      imports: [
+        HttpClientTestingModule
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
