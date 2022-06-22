@@ -188,7 +188,10 @@ public class GogEmbedClient {
 
     private String extractFileNameFromUrl(String url) {
         String fileNameTemp = url.substring(url.lastIndexOf('/') + 1);
-        return fileNameTemp.substring(0, fileNameTemp.indexOf("?"));
+        if(fileNameTemp.contains("?")) {
+            return fileNameTemp.substring(0, fileNameTemp.indexOf("?"));
+        }
+        return fileNameTemp;
     }
 
     @SneakyThrows

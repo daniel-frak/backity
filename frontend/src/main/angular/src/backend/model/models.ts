@@ -1,5 +1,4 @@
 export * from './discoveredFile';
-export * from './discoveredFileId';
 export * from './downloadStatus';
 export * from './enqueuedFileDownload';
 export * from './fileDiscoveryMessageTopics';

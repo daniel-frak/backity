@@ -63,7 +63,7 @@ public class GogFileDownloader implements SourceFileDownloader {
             throws IOException {
         final Path path = FileSystems.getDefault().getPath(tempFilePath);
 
-        Consumer<ProgressInfo> progressInfoConsumer = i -> log.trace("File download progress: " + i);
+        Consumer<ProgressInfo> progressInfoConsumer = i -> log.info("File download progress: " + i);
         try (FileOutputStream fileOutputStream = new FileOutputStream(path.toFile())) {
             progress.subscribeToProgress(progressInfoConsumer);
 

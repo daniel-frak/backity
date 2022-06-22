@@ -9,18 +9,18 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { DiscoveredFileId } from './discoveredFileId';
 
 
 export interface DiscoveredFile { 
-    id?: DiscoveredFileId;
-    uniqueId: string;
-    source: string;
-    name: string;
-    gameTitle: string;
-    size: string;
-    dateCreated: string;
-    dateModified: string;
+    id?: string;
+    url?: string;
+    version?: string;
+    source?: string;
+    name?: string;
+    gameTitle?: string;
+    size?: string;
+    dateCreated?: string;
+    dateModified?: string;
     enqueued?: boolean;
     ignored?: boolean;
 }

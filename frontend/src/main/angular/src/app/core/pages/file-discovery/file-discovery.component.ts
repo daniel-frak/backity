@@ -93,7 +93,8 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
   enqueueFile(file: DiscoveredFile) {
     file.enqueued = true;
-    this.downloadsClient.download(file.uniqueId)
+    console.info("Enqueuing: " + file.id);
+    this.downloadsClient.download(file.id as string)
       .pipe(catchError(e => {
         file.enqueued = false;
         return throwError(e);

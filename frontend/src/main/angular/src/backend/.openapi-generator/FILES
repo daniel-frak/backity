@@ -7,13 +7,13 @@ api/downloads.service.ts
 api/fileDiscovery.service.ts
 api/gOG.service.ts
 api/gOGAuthentication.service.ts
+api/h2Database.service.ts
 api/logs.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
 index.ts
 model/discoveredFile.ts
-model/discoveredFileId.ts
 model/downloadStatus.ts
 model/enqueuedFileDownload.ts
 model/fileDiscoveryMessageTopics.ts

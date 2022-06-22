@@ -1,12 +1,6 @@
-import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core';
-import { Configuration } from './configuration';
-import { HttpClient } from '@angular/common/http';
-
-import { DownloadsClient } from './api/downloads.service';
-import { FileDiscoveryClient } from './api/fileDiscovery.service';
-import { GOGClient } from './api/gOG.service';
-import { GOGAuthenticationClient } from './api/gOGAuthentication.service';
-import { LogsClient } from './api/logs.service';
+import {ModuleWithProviders, NgModule, Optional, SkipSelf} from '@angular/core';
+import {Configuration} from './configuration';
+import {HttpClient} from '@angular/common/http';
 
 @NgModule({
   imports:      [],
