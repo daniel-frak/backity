@@ -25,7 +25,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class H2DbControllerTest {
 
-    private static final Path TEST_DUMP_PATH = Path.of(System.getProperty("user.dir") + File.separator + "test_dump.sql");
+    private static final Path TEST_DUMP_PATH = Path.of(
+            System.getProperty("user.dir") + File.separator + "test_dump.sql");
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -38,7 +40,7 @@ class H2DbControllerTest {
     }
 
     private void deleteTestDump() throws IOException {
-        Files.delete(TEST_DUMP_PATH);
+        Files.deleteIfExists(TEST_DUMP_PATH);
     }
 
     @AfterEach
