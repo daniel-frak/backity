@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.logs.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.logs.domain.services.LogsService;
+import dev.codesoapbox.backity.core.logs.domain.services.LogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -16,11 +16,11 @@ import java.util.List;
 @RequestMapping("logs")
 public class LogsController {
 
-    private final LogsService logsService;
+    private final LogService logService;
 
     @Operation(summary = "List logs", description = "Returns the most recent logs")
     @GetMapping
     public List<String> getLogs() {
-        return logsService.getLogs();
+        return logService.getLogs();
     }
 }

@@ -41,7 +41,7 @@ export class LogsComponent implements OnInit, OnDestroy {
   }
 
   private updateLogs(logs: Array<string>) {
-    this.logs = logs.reverse();
+    this.logs = [...logs].reverse();
     this.logsAreLoading = false;
   }
 

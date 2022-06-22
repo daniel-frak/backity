@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 
 import static java.util.Collections.synchronizedList;
 
-public class InMemoryLimitedLogAppender extends AppenderBase<ILoggingEvent> {
+public class InMemoryLimitedLogbackAppender extends AppenderBase<ILoggingEvent> {
 
     @Getter
     private final List<ILoggingEvent> events = synchronizedList(new LinkedList<>());

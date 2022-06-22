@@ -8,7 +8,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.OutputStreamAppender;
 import dev.codesoapbox.backity.core.logs.domain.model.LogCreatedMessage;
 import dev.codesoapbox.backity.core.logs.domain.model.LogsMessageTopics;
-import dev.codesoapbox.backity.core.logs.domain.services.LogsService;
+import dev.codesoapbox.backity.core.logs.domain.services.LogService;
 import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
 import lombok.SneakyThrows;
 import org.slf4j.LoggerFactory;
@@ -18,18 +18,18 @@ import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.toList;
 
-public class LogbackLogsService implements LogsService {
+public class LogbackLogService implements LogService {
 
-    private static final String CONSOLE_APPENDER = "CONSOLE";
+    static final String CONSOLE_APPENDER = "CONSOLE";
 
     // https://stackoverflow.com/a/25189932
     private static final Pattern ANSI_PATTERN = Pattern.compile("\\e\\[[\\d;]*[^\\d;]");
 
     private final MessageService messageService;
-    private final InMemoryLimitedLogAppender logAppender;
+    private final InMemoryLimitedLogbackAppender logAppender;
     private final PatternLayout layout;
 
-    public LogbackLogsService(MessageService messageService, Integer maxLogs) {
+    public LogbackLogService(MessageService messageService, Integer maxLogs) {
         this.messageService = messageService;
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger logger = createLogger();
@@ -44,17 +44,18 @@ public class LogbackLogsService implements LogsService {
     }
 
     private Logger createLogger() {
-        return (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+        return (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
     }
 
-    private InMemoryLimitedLogAppender createAndAddLogAppender(LoggerContext loggerContext, Logger logger, Integer maxLogs) {
-        InMemoryLimitedLogAppender logAppender = createAppender(loggerContext, maxLogs);
-        logger.addAppender(logAppender);
-        return logAppender;
+    private InMemoryLimitedLogbackAppender createAndAddLogAppender(LoggerContext loggerContext, Logger logger,
+                                                                   Integer maxLogs) {
+        InMemoryLimitedLogbackAppender inMemoryLogAppender = createAppender(loggerContext, maxLogs);
+        logger.addAppender(inMemoryLogAppender);
+        return inMemoryLogAppender;
     }
 
-    private InMemoryLimitedLogAppender createAppender(LoggerContext loggerContext, Integer maxLogs) {
-        InMemoryLimitedLogAppender appender = new InMemoryLimitedLogAppender();
+    private InMemoryLimitedLogbackAppender createAppender(LoggerContext loggerContext, Integer maxLogs) {
+        InMemoryLimitedLogbackAppender appender = new InMemoryLimitedLogbackAppender();
         appender.setContext(loggerContext);
         appender.setMaxLogs(maxLogs);
         appender.start();
@@ -62,19 +63,19 @@ public class LogbackLogsService implements LogsService {
         return appender;
     }
 
-
     private PatternLayout createPatternLayout(LoggerContext loggerContext, Logger logger) {
         String pattern = getFileAppenderPattern(logger);
 
-        PatternLayout layout = new PatternLayout();
-        layout.setPattern(pattern);
-        layout.setContext(loggerContext);
-        layout.start();
+        PatternLayout patternLayout = new PatternLayout();
+        patternLayout.setPattern(pattern);
+        patternLayout.setContext(loggerContext);
+        patternLayout.start();
 
-        return layout;
+        return patternLayout;
     }
 
     private String getFileAppenderPattern(Logger logger) {
+        logger.iteratorForAppenders().forEachRemaining(a -> System.out.println(a.getName()));
         OutputStreamAppender<ILoggingEvent> fileAppender =
                 (OutputStreamAppender<ILoggingEvent>) logger.getAppender(CONSOLE_APPENDER);
 
