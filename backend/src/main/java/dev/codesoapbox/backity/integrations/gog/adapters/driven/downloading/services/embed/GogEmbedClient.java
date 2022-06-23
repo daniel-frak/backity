@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed;
 
 import dev.codesoapbox.backity.core.files.downloading.domain.services.DownloadProgress;
+import dev.codesoapbox.backity.core.files.downloading.domain.services.FileBufferProvider;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.FileSizeAccumulator;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.exceptions.GameDetailsRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.exceptions.GameDownloadRequestFailedException;
@@ -30,7 +31,7 @@ import static java.util.Collections.emptyList;
 // https://gogapidocs.readthedocs.io/en/latest/index.html
 @Slf4j
 @RequiredArgsConstructor
-public class GogEmbedClient {
+public class GogEmbedClient implements FileBufferProvider {
 
     static final String HEADER_AUTHORIZATION = "Authorization";
     private static final String VERSION_UNKNOWN_VALUE = "unknown";
@@ -148,7 +149,8 @@ public class GogEmbedClient {
         return version;
     }
 
-    public Flux<DataBuffer> getFileBuffer(String gameFileUrl, AtomicReference<String> newFileName, AtomicLong size,
+    @Override
+    public Flux<DataBuffer> getFileBuffer(String gameFileUrl, AtomicReference<String> targetFileName, AtomicLong size,
                                           DownloadProgress progress) {
         // @TODO Is there a way to simplify this?
         return webClientEmbed.get()
@@ -163,7 +165,7 @@ public class GogEmbedClient {
                             .exchangeToFlux(response2 -> {
                                 String redirectUrl2 = response2.headers().header("Location").get(0);
                                 log.info("Redirecting to: " + redirectUrl2);
-                                newFileName.set(extractFileNameFromUrl(redirectUrl2));
+                                targetFileName.set(extractFileNameFromUrl(redirectUrl2));
                                 return webClientEmbed.get()
                                         .uri(redirectUrl2)
                                         .exchangeToFlux(response3 -> {
