@@ -119,18 +119,14 @@ class FileDiscoveryServiceTest {
             return "someSource";
         }
 
+        @SuppressWarnings("StatementWithEmptyBody")
         @Override
         public void discoverNewFiles(Consumer<DiscoveredFile> discoveredFileConsumer) {
             this.discoveredFileConsumer.set(discoveredFileConsumer);
             timesTriggered.incrementAndGet();
 
             while (!shouldFinish.get()) {
-                try {
-                    // Do nothing
-                    TimeUnit.MILLISECONDS.sleep(1000L);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                // Do nothing
             }
         }
 

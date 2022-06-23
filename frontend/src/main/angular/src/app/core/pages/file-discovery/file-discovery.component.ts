@@ -28,7 +28,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   discoveryStatuses: any = {};
 
   private pageSize = 20;
-  private stompSubscriptions: StompSubscription[] = [];
+  private readonly stompSubscriptions: StompSubscription[] = [];
 
   constructor(private readonly fileDiscoveryClient: FileDiscoveryClient,
               private readonly downloadsClient: DownloadsClient,
@@ -68,7 +68,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   }
 
   private updateDiscoveryStatus(s: FileDiscoveryStatus) {
-    return this.discoveryStatuses[s.source as string] = s.inProgress;
+    this.discoveryStatuses[s.source as string] = s.inProgress;
   }
 
   refreshDiscoveredFiles() {

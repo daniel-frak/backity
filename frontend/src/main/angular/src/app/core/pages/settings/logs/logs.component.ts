@@ -13,7 +13,7 @@ export class LogsComponent implements OnInit, OnDestroy {
 
   logs: string[] = [];
   public logsAreLoading: boolean = false;
-  private stompSubscriptions: StompSubscription[] = [];
+  private readonly stompSubscriptions: StompSubscription[] = [];
 
   constructor(private readonly logsClient: LogsClient, private readonly messageService: MessagesService) {
   }

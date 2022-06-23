@@ -68,8 +68,7 @@ public class GogEmbedClient {
                 })
                 .onErrorMap(GameListRequestFailedException::new)
                 .map(m -> (List<Integer>) m.get("owned"))
-                .map(m -> m.stream().map(String::valueOf)
-                        .collect(Collectors.toList()))
+                .map(m -> m.stream().map(String::valueOf).toList())
                 .block();
 
         if (gameIds == null) {

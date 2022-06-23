@@ -9,8 +9,8 @@ import {Client, CompatClient} from "@stomp/stompjs";
 })
 export class MessagesService {
 
-  private stompClient?: Client;
-  private subscriptions: ReplaySubject<(client: Client) => any> =
+  private readonly stompClient?: Client;
+  private readonly subscriptions: ReplaySubject<(client: Client) => any> =
     new ReplaySubject<(client: Client) => any>();
 
   /*

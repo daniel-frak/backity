@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth;
 
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.exceptions.GogAuthException;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.model.auth.remote.GogAuthenticationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,10 +47,10 @@ public class GogAuthService {
 
     public String getAccessToken() {
         if(accessToken == null) {
-            throw new RuntimeException("You must authenticate before using the GOG API!");
+            throw new GogAuthException("You must authenticate before using the GOG API!");
         }
         if(expirationTime.isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Access token expired!");
+            throw new GogAuthException("Access token expired!");
         }
 
         return accessToken;
@@ -57,7 +58,7 @@ public class GogAuthService {
 
     public String getRefreshToken() {
         if(refreshToken == null) {
-            throw new RuntimeException("You must authenticate before using the GOG API!");
+            throw new GogAuthException("You must authenticate before using the GOG API!");
         }
 
         return refreshToken;

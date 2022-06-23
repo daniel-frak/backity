@@ -28,14 +28,14 @@ export class TableComponent implements OnInit {
   }
 
   getColumnTitles(): string[] {
-    let columns: string[] = [];
+    const columns: string[] = [];
     this.templateRefs?.forEach(t => columns.push(t.columnTitle as string));
 
     return columns;
   }
 
   getTdClass(column: TableColumnDirective): string {
-    let classes = [];
+    const classes = [];
 
     if (column.hideTitleOnMobile) {
       classes.push('hide-title')
