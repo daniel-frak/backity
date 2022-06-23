@@ -41,14 +41,16 @@ public class FilePathProvider {
 
     private void createDirectories(String tempFilePath) throws IOException {
         String directoryPath = extractDirectory(tempFilePath);
-        fileManager.createDirectories(directoryPath);
+        if (directoryPath != null) {
+            fileManager.createDirectories(directoryPath);
+        }
     }
 
     private String extractDirectory(String path) {
         int indexOfLastSeparator = path.lastIndexOf(File.separator);
 
         if (indexOfLastSeparator == -1) {
-            return path;
+            return null;
         }
 
         return path.substring(0, indexOfLastSeparator);

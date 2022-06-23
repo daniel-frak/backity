@@ -38,21 +38,19 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
 
         libraryGameIds.forEach(id -> {
             GameDetailsResponse details = gogEmbedClient.getGameDetails(id);
-            if (details == null || details.getFiles() == null) {
-                return;
+            if (details != null && details.getFiles() != null) {
+                details.getFiles().forEach(fileDetails -> {
+                    var discoveredFile = new DiscoveredFile();
+                    var discoveredFileId = new DiscoveredFileId(fileDetails.getManualUrl(), fileDetails.getVersion());
+                    discoveredFile.setId(discoveredFileId);
+                    discoveredFile.setSource("GOG");
+                    discoveredFile.setName(fileDetails.getName());
+                    discoveredFile.setGameTitle(details.getTitle());
+                    discoveredFile.setSize(fileDetails.getSize());
+
+                    discoveredFileConsumer.accept(discoveredFile);
+                });
             }
-
-            details.getFiles().forEach(fileDetails -> {
-                var discoveredFile = new DiscoveredFile();
-                var discoveredFileId = new DiscoveredFileId(fileDetails.getManualUrl(), fileDetails.getVersion());
-                discoveredFile.setId(discoveredFileId);
-                discoveredFile.setSource("GOG");
-                discoveredFile.setName(fileDetails.getName());
-                discoveredFile.setGameTitle(details.getTitle());
-                discoveredFile.setSize(fileDetails.getSize());
-
-                discoveredFileConsumer.accept(discoveredFile);
-            });
 
             progressTracker.increment();
             updateProgress(progressTracker.getProgressInfo());

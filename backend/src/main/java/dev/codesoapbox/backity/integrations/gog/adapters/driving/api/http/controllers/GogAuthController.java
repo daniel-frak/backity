@@ -28,13 +28,13 @@ public class GogAuthController {
     @Operation(summary = "Check authentication",
             description = "Returns whether or not the user is currently authenticated")
     @GetMapping("/check")
-    public boolean check() {
+    public boolean checkAuthentication() {
         return authService.isAuthenticated();
     }
 
     @Operation(summary = "Refresh access token", description = "Refreshes the access token using a refresh token")
     @GetMapping("refresh")
-    public RefreshTokenJsonResponse refresh(@RequestParam("refresh_token") String refreshToken) {
+    public RefreshTokenJsonResponse refreshAccessToken(@RequestParam("refresh_token") String refreshToken) {
         authService.refresh(refreshToken);
         return RefreshTokenJsonResponse.of(authService.getRefreshToken());
     }

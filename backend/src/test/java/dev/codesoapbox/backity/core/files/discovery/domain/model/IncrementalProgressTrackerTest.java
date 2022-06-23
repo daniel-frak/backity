@@ -50,6 +50,20 @@ class IncrementalProgressTrackerTest {
         assertEquals(20, tracker.getProgressInfo().percentage());
     }
 
+    @Test
+    void shouldNotIncrementByPastTotalElements() {
+        tracker.incrementBy(20L);
+        assertEquals(100, tracker.getProgressInfo().percentage());
+    }
+
+    @Test
+    void shouldNotIncrementPastTotalElements() {
+        for (int i = 0; i < 20; i++) {
+            tracker.increment();
+        }
+        assertEquals(100, tracker.getProgressInfo().percentage());
+    }
+
     @ParameterizedTest(name = "when {0}")
     @MethodSource("progressArguments")
     void getProgressInfoShouldShowCorrectProgress(Integer trackerIncrement, Integer timeOffset,

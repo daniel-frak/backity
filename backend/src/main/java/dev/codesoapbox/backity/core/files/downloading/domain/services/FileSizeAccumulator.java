@@ -1,5 +1,7 @@
 package dev.codesoapbox.backity.core.files.downloading.domain.services;
 
+import dev.codesoapbox.backity.core.files.downloading.domain.exceptions.UnrecognizedFileSizeUnitException;
+
 import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -22,19 +24,23 @@ public class FileSizeAccumulator {
     }
 
     private BigDecimal convertToBytes(double originalSize, String originalFormat) {
-        if(originalFormat.equals("KB")) {
+        if (originalFormat.equals("B")) {
+            return BigDecimal.valueOf(originalSize);
+        }
+        if (originalFormat.equals("KB")) {
             return BigDecimal.valueOf(originalSize).multiply(KB_IN_B);
         }
-        if(originalFormat.equals("MB")) {
+        if (originalFormat.equals("MB")) {
             return BigDecimal.valueOf(originalSize).multiply(MB_IN_B);
         }
-        if(originalFormat.equals("GB")) {
+        if (originalFormat.equals("GB")) {
             return BigDecimal.valueOf(originalSize).multiply(GB_IN_B);
         }
-        if(originalFormat.equals("TB")) {
+        if (originalFormat.equals("TB")) {
             return BigDecimal.valueOf(originalSize).multiply(TB_IN_B);
         }
-        return BigDecimal.valueOf(originalSize);
+
+        throw new UnrecognizedFileSizeUnitException(originalFormat);
     }
 
     public Long getInBytes() {
@@ -43,7 +49,7 @@ public class FileSizeAccumulator {
 
     @Override
     public String toString() {
-        return totalSizeInBytes.get()
+        return totalSizeInBytes.get().longValue()
                 + " bytes";
     }
 }

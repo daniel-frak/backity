@@ -10,7 +10,6 @@ import dev.codesoapbox.backity.core.logs.domain.model.LogCreatedMessage;
 import dev.codesoapbox.backity.core.logs.domain.model.LogsMessageTopics;
 import dev.codesoapbox.backity.core.logs.domain.services.LogService;
 import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
-import lombok.SneakyThrows;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
@@ -83,7 +82,6 @@ public class LogbackLogService implements LogService {
     }
 
     @Override
-    @SneakyThrows
     public List<String> getLogs() {
         return logAppender.getEvents().stream()
                 .map(this::getLogMessage)
