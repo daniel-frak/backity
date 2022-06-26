@@ -18,8 +18,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 abstract class DiscoveredFileJpaRepositoryAbstractTest {
 
-    @Autowired
     private DiscoveredFileJpaRepository discoveredFileJpaRepository;
+
+    @Autowired
+    private DiscoveredFileSpringRepository discoveredFileSpringRepository;
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
@@ -28,6 +30,7 @@ abstract class DiscoveredFileJpaRepositoryAbstractTest {
 
     @BeforeEach
     void setUp() {
+        discoveredFileJpaRepository = new DiscoveredFileJpaRepository(discoveredFileSpringRepository);
         entityManager = entityManagerFactory.createEntityManager();
         cleanDatabase();
         persistTestDiscoveredFiles();

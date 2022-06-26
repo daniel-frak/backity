@@ -20,8 +20,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 abstract class EnqueuedFileDownloadJpaRepositoryAbstractTest {
 
-    @Autowired
     private EnqueuedFileDownloadJpaRepository enqueuedFileDownloadJpaRepository;
+
+    @Autowired
+    private EnqueuedFileDownloadSpringRepository enqueuedFileDownloadSpringRepository;
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;
@@ -30,6 +32,7 @@ abstract class EnqueuedFileDownloadJpaRepositoryAbstractTest {
 
     @BeforeEach
     void setUp() {
+        enqueuedFileDownloadJpaRepository = new EnqueuedFileDownloadJpaRepository(enqueuedFileDownloadSpringRepository);
         entityManager = entityManagerFactory.createEntityManager();
         cleanDatabase();
         persistTestEnqueuedFiles();
