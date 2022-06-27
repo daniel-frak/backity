@@ -1,7 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed;
 
 import dev.codesoapbox.backity.core.files.downloading.domain.services.DownloadProgress;
-import dev.codesoapbox.backity.core.files.downloading.domain.services.FileBufferProvider;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.FileSizeAccumulator;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.exceptions.GameDetailsRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.exceptions.GameDownloadRequestFailedException;
@@ -9,6 +8,7 @@ import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.exce
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.model.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.model.embed.GameFileDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.model.embed.remote.GogGameDetailsResponse;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.FileBufferProvider;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth.GogAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -37,7 +37,6 @@ public class GogEmbedClient implements FileBufferProvider {
     private static final String VERSION_UNKNOWN_VALUE = "unknown";
 
     private final WebClient webClientEmbed;
-    private final WebClient webClientGeneral;
     private final GogAuthService authService;
 
     public String getLibrarySize() {
@@ -152,36 +151,19 @@ public class GogEmbedClient implements FileBufferProvider {
     @Override
     public Flux<DataBuffer> getFileBuffer(String gameFileUrl, AtomicReference<String> targetFileName, AtomicLong size,
                                           DownloadProgress progress) {
-        // @TODO Is there a way to simplify this?
         return webClientEmbed.get()
                 .uri(gameFileUrl)
                 .header(HEADER_AUTHORIZATION, getBearerToken())
                 .exchangeToFlux(response -> {
-                    String redirectUrl = response.headers().header("Location").get(0);
-                    log.info("Redirecting to: " + redirectUrl);
+                    targetFileName.set(extractFileNameFromUrl(response.headers().header("Final-location").get(0)));
+                    size.set(Long.parseLong(
+                            response.headers().header("content-length").get(0)));
 
-                    return webClientGeneral.get()
-                            .uri(decode(redirectUrl))
-                            .exchangeToFlux(response2 -> {
-                                String redirectUrl2 = response2.headers().header("Location").get(0);
-                                log.info("Redirecting to: " + redirectUrl2);
-                                targetFileName.set(extractFileNameFromUrl(redirectUrl2));
-                                return webClientEmbed.get()
-                                        .uri(redirectUrl2)
-                                        .exchangeToFlux(response3 -> {
-                                            size.set(Long.parseLong(
-                                                    response3.headers().header("content-length").get(0)));
+                    long contentLength = response.headers().contentLength().orElse(-1);
+                    progress.startTracking(contentLength);
 
-                                            long contentLength = response3.headers().contentLength().orElse(-1);
-                                            progress.startTracking(contentLength);
-
-                                            return response3
-                                                    .bodyToFlux(DataBuffer.class);
-                                        })
-                                        .doOnError(e -> log.info(
-                                                "(Final redirect) An error occurred while downloading game file"
-                                                        + gameFileUrl, e));
-                            });
+                    return response
+                            .bodyToFlux(DataBuffer.class);
                 })
                 .onErrorMap(e -> new GameDownloadRequestFailedException(gameFileUrl, e))
                 .doOnError(e -> log.info("An error occurred while downloading game file" + gameFileUrl, e));

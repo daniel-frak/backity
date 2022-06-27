@@ -34,11 +34,6 @@ public class DownloadingBeanConfig {
     }
 
     @Bean
-    EnqueuedFileDownloader enqueuedFileDownloader(FileManager fileManager) {
-        return new EnqueuedFileDownloader(fileManager);
-    }
-
-    @Bean
     EnqueuedFileDownloadRepository enqueuedFileDownloadRepository(
             EnqueuedFileDownloadSpringRepository springRepository) {
         return new EnqueuedFileDownloadJpaRepository(springRepository);

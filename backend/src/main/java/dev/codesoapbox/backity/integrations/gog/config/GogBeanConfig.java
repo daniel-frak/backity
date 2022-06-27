@@ -1,8 +1,9 @@
 package dev.codesoapbox.backity.integrations.gog.config;
 
-import dev.codesoapbox.backity.core.files.downloading.domain.services.EnqueuedFileDownloader;
+import dev.codesoapbox.backity.core.files.downloading.domain.services.FileManager;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.GogFileDiscoveryService;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.GogFileDownloader;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.UrlFileDownloader;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth.GogAuthClient;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth.GogAuthService;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedClient;
@@ -35,16 +36,19 @@ public class GogBeanConfig {
     }
 
     @Bean
-    GogEmbedClient gogEmbedClient(@Qualifier("gogEmbed") WebClient webClientEmbed,
-                                  @Qualifier("webClientGeneral") WebClient webClientGeneral,
-                                  GogAuthService authService) {
-        return new GogEmbedClient(webClientEmbed, webClientGeneral, authService);
+    GogEmbedClient gogEmbedClient(@Qualifier("gogEmbed") WebClient webClientEmbed, GogAuthService authService) {
+        return new GogEmbedClient(webClientEmbed, authService);
+    }
+
+    @Bean
+    UrlFileDownloader enqueuedFileDownloader(FileManager fileManager) {
+        return new UrlFileDownloader(fileManager);
     }
 
     @Bean
     GogFileDownloader gogFileDownloader(GogEmbedClient gogEmbedClient, GogAuthService authService,
-                                        EnqueuedFileDownloader enqueuedFileDownloader) {
-        return new GogFileDownloader(gogEmbedClient, authService, enqueuedFileDownloader);
+                                        UrlFileDownloader urlFileDownloader) {
+        return new GogFileDownloader(gogEmbedClient, authService, urlFileDownloader);
     }
 
     @Bean

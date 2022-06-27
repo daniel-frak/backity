@@ -13,7 +13,7 @@ public class RealFileManager implements FileManager {
     @Override
     public boolean isEnoughFreeSpaceOnDisk(long sizeInBytes, String filePath) {
         File file = new File(filePath);
-        return file.getUsableSpace() >= sizeInBytes;
+        return file.getParentFile().getUsableSpace() >= sizeInBytes;
     }
 
     @Override

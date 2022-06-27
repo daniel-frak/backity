@@ -1,7 +1,8 @@
-package dev.codesoapbox.backity.core.files.downloading.domain.services;
+package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services;
 
 import dev.codesoapbox.backity.core.files.discovery.domain.model.ProgressInfo;
-import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
+import dev.codesoapbox.backity.core.files.downloading.domain.services.DownloadProgress;
+import dev.codesoapbox.backity.core.files.downloading.domain.services.FileManager;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.exceptions.FileDownloadException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,21 +22,21 @@ import java.util.function.Consumer;
 
 @Slf4j
 @RequiredArgsConstructor
-public class EnqueuedFileDownloader {
+public class UrlFileDownloader {
 
     private final FileManager fileManager;
 
-    public void downloadGameFile(FileBufferProvider fileBufferProvider, EnqueuedFileDownload enqueuedFileDownload,
-                                 String tempFilePath) throws IOException {
+    public void downloadGameFile(FileBufferProvider fileBufferProvider, String url, String tempFilePath)
+            throws IOException {
         var targetFileName = new AtomicReference<String>();
         var sizeInBytesFromRequest = new AtomicLong();
         var progress = new DownloadProgress();
-        Flux<DataBuffer> dataBufferFlux = fileBufferProvider.getFileBuffer(enqueuedFileDownload.getUrl(),
+        Flux<DataBuffer> dataBufferFlux = fileBufferProvider.getFileBuffer(url,
                 targetFileName, sizeInBytesFromRequest, progress);
 
         writeToDisk(dataBufferFlux, tempFilePath, progress);
 
-        log.info("Downloaded file {} to {}", enqueuedFileDownload.getUrl(), tempFilePath);
+        log.info("Downloaded file {} to {}", url, tempFilePath);
 
         validateDownloadedFileSize(tempFilePath, sizeInBytesFromRequest);
         fileManager.renameFile(tempFilePath, targetFileName.get());
