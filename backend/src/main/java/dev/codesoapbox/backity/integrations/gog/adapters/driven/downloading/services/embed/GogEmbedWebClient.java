@@ -12,18 +12,15 @@ import dev.codesoapbox.backity.integrations.gog.domain.model.embed.remote.GogGam
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -100,7 +97,7 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
                 .map(this::extractGameDetails)
                 .block();
 
-        if(details != null) {
+        if (details != null) {
             log.debug("Retrieved game details for game: {} (#{})", details.getTitle(), gameId);
         } else {
             log.error("Could not retrieve game details for gameId: {}", gameId);
@@ -153,36 +150,43 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
     }
 
     @Override
-    public Flux<DataBuffer> getFileBuffer(String gameFileUrl, AtomicReference<String> targetFileName, AtomicLong size,
+    public Flux<DataBuffer> getFileBuffer(String gameFileUrl, AtomicReference<String> targetFileName,
                                           DownloadProgress progress) {
         return webClientEmbed.get()
                 .uri(gameFileUrl)
                 .header(HEADER_AUTHORIZATION, getBearerToken())
                 .exchangeToFlux(response -> {
-                    targetFileName.set(extractFileNameFromUrl(response.headers().header("Final-location").get(0)));
-                    size.set(Long.parseLong(
-                            response.headers().header("content-length").get(0)));
+                    verifyResponseIsSuccessful(response, gameFileUrl);
 
-                    long contentLength = response.headers().contentLength().orElse(-1);
-                    progress.startTracking(contentLength);
+                    targetFileName.set(extractFileNameFromResponse(response));
+                    progress.startTracking(extractSizeInBytes(response));
 
-                    return response
-                            .bodyToFlux(DataBuffer.class);
-                })
-                .onErrorMap(e -> new GameDownloadRequestFailedException(gameFileUrl, e))
-                .doOnError(e -> log.info("An error occurred while downloading game file" + gameFileUrl, e));
+                    return response.bodyToFlux(DataBuffer.class);
+                });
+    }
+
+    private long extractSizeInBytes(ClientResponse response) {
+        return response.headers().contentLength().orElse(-1);
+    }
+
+    private String extractFileNameFromResponse(ClientResponse response) {
+        String url = response.headers().header("Final-location").get(0);
+        return extractFileNameFromUrl(url);
+    }
+
+    private void verifyResponseIsSuccessful(ClientResponse response, String gameFileUrl) {
+        if (!response.statusCode().is2xxSuccessful()) {
+            throw new GameDownloadRequestFailedException(gameFileUrl, new RuntimeException(
+                    "Http status code was: " + response.rawStatusCode()
+            ));
+        }
     }
 
     private String extractFileNameFromUrl(String url) {
         String fileNameTemp = url.substring(url.lastIndexOf('/') + 1);
-        if(fileNameTemp.contains("?")) {
+        if (fileNameTemp.contains("?")) {
             return fileNameTemp.substring(0, fileNameTemp.indexOf("?"));
         }
         return fileNameTemp;
-    }
-
-    @SneakyThrows
-    private String decode(String redirectUrl) {
-        return URLDecoder.decode(redirectUrl, StandardCharsets.UTF_8.toString());
     }
 }

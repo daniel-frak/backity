@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.files.downloading.domain.services;
 
 import dev.codesoapbox.backity.core.files.discovery.domain.model.IncrementalProgressTracker;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.ProgressInfo;
+import lombok.Getter;
 
 import java.io.FilterOutputStream;
 import java.io.IOException;
@@ -22,6 +23,7 @@ public class DownloadProgress {
     private final List<Consumer<ProgressInfo>> progressConsumers = new ArrayList<>();
     private IncrementalProgressTracker progressTracker;
 
+    @Getter
     private long contentLengthBytes = -1;
     private long downloadedLengthBytes;
 

@@ -16,7 +16,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -29,16 +28,14 @@ public class UrlFileDownloader {
     public void downloadGameFile(FileBufferProvider fileBufferProvider, String url, String tempFilePath)
             throws IOException {
         var targetFileName = new AtomicReference<String>();
-        var sizeInBytesFromRequest = new AtomicLong();
         var progress = new DownloadProgress();
-        Flux<DataBuffer> dataBufferFlux = fileBufferProvider.getFileBuffer(url,
-                targetFileName, sizeInBytesFromRequest, progress);
+        Flux<DataBuffer> dataBufferFlux = fileBufferProvider.getFileBuffer(url, targetFileName, progress);
 
         writeToDisk(dataBufferFlux, tempFilePath, progress);
 
         log.info("Downloaded file {} to {}", url, tempFilePath);
 
-        validateDownloadedFileSize(tempFilePath, sizeInBytesFromRequest);
+        validateDownloadedFileSize(tempFilePath, progress.getContentLengthBytes());
         fileManager.renameFile(tempFilePath, targetFileName.get());
     }
 
@@ -60,11 +57,11 @@ public class UrlFileDownloader {
         }
     }
 
-    private void validateDownloadedFileSize(String tempFilePath, AtomicLong size) {
+    private void validateDownloadedFileSize(String tempFilePath, long sizeInBytes) {
         File downloadedFile = new File(tempFilePath);
-        if (downloadedFile.length() != size.get()) {
+        if (downloadedFile.length() != sizeInBytes) {
             throw new FileDownloadException("The downloaded size of " + tempFilePath + "is not what was expected ("
-                    + downloadedFile.length() + " vs " + size.get() + ")");
+                    + downloadedFile.length() + " vs " + sizeInBytes + ")");
         } else {
             log.info("Filesize check for {} passed successfully", tempFilePath);
         }

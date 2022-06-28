@@ -13,7 +13,6 @@ import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsRe
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -28,7 +27,6 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -170,7 +168,6 @@ class GogEmbedWebClientTest {
         var expectedFileName = "someFile.exe";
         var accessToken = "someAccessToken";
         var targetFileName = new AtomicReference<String>();
-        var size = new AtomicLong();
         var progress = new DownloadProgress();
         var progressHistory = new ArrayList<ProgressInfo>();
         var outputStream = new ByteArrayOutputStream();
@@ -196,29 +193,24 @@ class GogEmbedWebClientTest {
                         .withBody(expectedResult.getBytes(StandardCharsets.UTF_8))
                         .withStatus(200)));
 
-
         Flux<DataBuffer> dataBufferFlux = gogEmbedClient
-                .getFileBuffer("/someUrl1", targetFileName, size, progress);
+                .getFileBuffer("/someUrl1", targetFileName, progress);
         DataBufferUtils.write(dataBufferFlux, progress.getTrackedOutputStream(outputStream)).blockFirst();
 
         String result = outputStream.toString();
 
         assertEquals(expectedResult, result);
         assertEquals(expectedFileName, targetFileName.get());
-        assertEquals(4, size.get());
+        assertEquals(4, progress.getContentLengthBytes());
         assertEquals(1, progressHistory.size());
         assertEquals(100, progressHistory.get(0).percentage());
     }
 
-    // @TODO FIX ME!
-    @Disabled
     @Test
     void getFileBufferShouldThrowIfRequestFails() {
         var accessToken = "someAccessToken";
         var targetFileName = new AtomicReference<String>();
-        var size = new AtomicLong();
         var progress = new DownloadProgress();
-        var outputStream = new ByteArrayOutputStream();
 
         when(authService.getAccessToken())
                 .thenReturn(accessToken);
@@ -228,10 +220,10 @@ class GogEmbedWebClientTest {
                 .willReturn(aResponse()
                         .withStatus(500)));
 
+        @SuppressWarnings("ReactiveStreamsUnusedPublisher")
         Flux<DataBuffer> dataBufferFlux = gogEmbedClient
-                .getFileBuffer("/someUrl1", targetFileName, size, progress);
+                .getFileBuffer("/someUrl1", targetFileName, progress);
 
-        assertThrows(GameDownloadRequestFailedException.class,
-                () -> DataBufferUtils.write(dataBufferFlux, outputStream).blockFirst());
+        assertThrows(GameDownloadRequestFailedException.class, dataBufferFlux::blockFirst);
     }
 }

@@ -24,7 +24,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   DownloadStatus = DownloadStatus;
 
   private pageSize = 20;
-  private stompSubscriptions: StompSubscription[] = [];
+  private readonly stompSubscriptions: StompSubscription[] = [];
 
   constructor(private readonly downloadsClient: DownloadsClient,
               private readonly messageService: MessagesService) {
