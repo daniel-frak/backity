@@ -1,8 +1,6 @@
-package dev.codesoapbox.backity.core.files.downloading.adapters.driving.files;
+package dev.codesoapbox.backity.core.files.downloading.domain.services;
 
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
-import dev.codesoapbox.backity.core.files.downloading.domain.services.FileDownloadQueue;
-import dev.codesoapbox.backity.core.files.downloading.domain.services.FileDownloader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,10 +13,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class FileDownloadQueueSchedulerTest {
+class FileDownloadQueueProcessorTest {
 
     @InjectMocks
-    private FileDownloadQueueScheduler fileDownloadQueueScheduler;
+    private FileDownloadQueueProcessor fileDownloadQueueProcessor;
 
     @Mock
     private FileDownloadQueue fileDownloadQueue;
@@ -35,12 +33,12 @@ class FileDownloadQueueSchedulerTest {
         when(fileDownloader.isReadyFor(enqueuedFileDownload))
                 .thenReturn(true);
 
-        fileDownloadQueueScheduler.processQueue();
+        fileDownloadQueueProcessor.processQueue();
 
         verify(fileDownloadQueue).markInProgress(enqueuedFileDownload);
         verify(fileDownloader).downloadGameFile(enqueuedFileDownload);
         verify(fileDownloadQueue).acknowledgeSuccess(enqueuedFileDownload);
-        assertNull(fileDownloadQueueScheduler.enqueuedFileDownloadReference.get());
+        assertNull(fileDownloadQueueProcessor.enqueuedFileDownloadReference.get());
     }
 
     @Test
@@ -54,11 +52,11 @@ class FileDownloadQueueSchedulerTest {
         doThrow(new RuntimeException("someFailedReason"))
                 .when(fileDownloader).downloadGameFile(enqueuedFileDownload);
 
-        fileDownloadQueueScheduler.processQueue();
+        fileDownloadQueueProcessor.processQueue();
 
         verify(fileDownloadQueue).markInProgress(enqueuedFileDownload);
         verify(fileDownloadQueue).acknowledgeFailed(enqueuedFileDownload, "someFailedReason");
-        assertNull(fileDownloadQueueScheduler.enqueuedFileDownloadReference.get());
+        assertNull(fileDownloadQueueProcessor.enqueuedFileDownloadReference.get());
         verifyNoMoreInteractions(fileDownloadQueue, fileDownloader);
     }
 
@@ -71,16 +69,16 @@ class FileDownloadQueueSchedulerTest {
         when(fileDownloader.isReadyFor(enqueuedFileDownload))
                 .thenReturn(false);
 
-        fileDownloadQueueScheduler.processQueue();
+        fileDownloadQueueProcessor.processQueue();
 
         verifyNoMoreInteractions(fileDownloadQueue, fileDownloader);
     }
 
     @Test
     void shouldDoNothingIfCurrentlyDownloading() {
-        fileDownloadQueueScheduler.enqueuedFileDownloadReference.set(new EnqueuedFileDownload());
+        fileDownloadQueueProcessor.enqueuedFileDownloadReference.set(new EnqueuedFileDownload());
 
-        fileDownloadQueueScheduler.processQueue();
+        fileDownloadQueueProcessor.processQueue();
 
         verifyNoInteractions(fileDownloadQueue, fileDownloader);
     }

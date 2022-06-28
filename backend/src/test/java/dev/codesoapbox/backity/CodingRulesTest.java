@@ -46,7 +46,9 @@ public class CodingRulesTest {
     private final ArchRule fieldInjectionShouldNotBeUsed = NO_CLASSES_SHOULD_USE_FIELD_INJECTION;
 
     @ArchTest
-    private final ArchRule beansShouldBeDefinedInConfiguration = noClasses().should()
+    private final ArchRule beansShouldBeDefinedInConfiguration = noClasses().that()
+            .resideOutsideOfPackage(ArchitectureTest.CONFIG_PACKAGE)
+            .should()
             .beAnnotatedWith(Component.class)
             .orShould().beAnnotatedWith(Service.class);
 }

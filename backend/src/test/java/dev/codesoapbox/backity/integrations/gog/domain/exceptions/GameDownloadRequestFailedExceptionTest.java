@@ -8,9 +8,10 @@ class GameDownloadRequestFailedExceptionTest {
 
     @Test
     void shouldGetMessage() {
-        var exception = new GameDownloadRequestFailedException("someUrl", null);
+        var exception = new GameDownloadRequestFailedException("someUrl", "someMessage");
 
-        assertEquals("An error occurred while downloading game file: someUrl", exception.getMessage());
+        assertEquals("An error occurred while downloading game file: someUrl. someMessage",
+                exception.getMessage());
     }
 
     @Test

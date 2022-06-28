@@ -4,7 +4,6 @@ import dev.codesoapbox.backity.core.files.discovery.domain.repositories.Discover
 import dev.codesoapbox.backity.core.files.downloading.adapters.driven.files.RealFileManager;
 import dev.codesoapbox.backity.core.files.downloading.adapters.driven.persistence.EnqueuedFileDownloadJpaRepository;
 import dev.codesoapbox.backity.core.files.downloading.adapters.driven.persistence.EnqueuedFileDownloadSpringRepository;
-import dev.codesoapbox.backity.core.files.downloading.adapters.driving.files.FileDownloadQueueScheduler;
 import dev.codesoapbox.backity.core.files.downloading.domain.repositories.EnqueuedFileDownloadRepository;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.*;
 import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
@@ -48,8 +47,8 @@ public class DownloadingBeanConfig {
     }
 
     @Bean
-    FileDownloadQueueScheduler fileDownloadQueueScheduler(FileDownloadQueue fileDownloadQueue,
+    FileDownloadQueueProcessor fileDownloadQueueScheduler(FileDownloadQueue fileDownloadQueue,
                                                           FileDownloader fileDownloader) {
-        return new FileDownloadQueueScheduler(fileDownloadQueue, fileDownloader);
+        return new FileDownloadQueueProcessor(fileDownloadQueue, fileDownloader);
     }
 }

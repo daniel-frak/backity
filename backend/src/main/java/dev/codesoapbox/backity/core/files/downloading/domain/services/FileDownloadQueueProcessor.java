@@ -1,24 +1,20 @@
-package dev.codesoapbox.backity.core.files.downloading.adapters.driving.files;
+package dev.codesoapbox.backity.core.files.downloading.domain.services;
 
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
-import dev.codesoapbox.backity.core.files.downloading.domain.services.FileDownloadQueue;
-import dev.codesoapbox.backity.core.files.downloading.domain.services.FileDownloader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @RequiredArgsConstructor
-public class FileDownloadQueueScheduler {
+public class FileDownloadQueueProcessor {
 
     private final FileDownloadQueue fileDownloadQueue;
     private final FileDownloader fileDownloader;
 
     final AtomicReference<EnqueuedFileDownload> enqueuedFileDownloadReference = new AtomicReference<>();
 
-    @Scheduled(fixedRate = 5000)
     public synchronized void processQueue() {
         if (enqueuedFileDownloadReference.get() != null) {
             return;

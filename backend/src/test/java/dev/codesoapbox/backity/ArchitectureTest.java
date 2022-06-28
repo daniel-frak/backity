@@ -38,7 +38,7 @@ class ArchitectureTest {
     private static final String DOMAIN_SERVICES_PACKAGE = "..domain..services..";
     private static final String DOMAIN_REPOSITORIES_PACKAGE = "..domain..repositories..";
     private static final String EXCEPTIONS_PACKAGE = "..exceptions..";
-    private static final String CONFIG_PACKAGE = "..config..";
+    static final String CONFIG_PACKAGE = "..config..";
     private static final String PERSISTENCE_ADAPTER_PACKAGE = "..adapters.driven.persistence..";
     private static final String CONTROLLER_PACKAGE = "..adapters.driving.api.http.controllers..";
     private static final String SPRING_PACKAGE = "org.springframework..";
