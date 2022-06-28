@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth.GogAuthService;
 import dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model.RefreshTokenJsonResponse;
+import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

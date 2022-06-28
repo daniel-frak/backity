@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedClient;
 import dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model.GameDetailsJsonResponse;
 import dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model.GameDetailsJsonResponseMapper;
+import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

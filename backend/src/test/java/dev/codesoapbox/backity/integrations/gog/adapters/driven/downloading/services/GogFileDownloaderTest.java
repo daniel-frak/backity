@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services;
 
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth.GogAuthService;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedClient;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedWebClient;
+import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,7 +22,7 @@ class GogFileDownloaderTest {
     private GogFileDownloader gogFileDownloader;
 
     @Mock
-    private GogEmbedClient gogEmbedClient;
+    private GogEmbedWebClient gogEmbedClient;
 
     @Mock
     private GogAuthService authService;

@@ -5,8 +5,8 @@ import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFileI
 import dev.codesoapbox.backity.core.files.discovery.domain.model.IncrementalProgressTracker;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.discovery.domain.services.SourceFileDiscoveryService;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.model.embed.GameDetailsResponse;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedClient;
+import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
+import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +68,7 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
 
     @Override
     public ProgressInfo getProgress() {
-        if(progressTracker == null) {
+        if (progressTracker == null) {
             return ProgressInfo.none();
         }
         return progressTracker.getProgressInfo();

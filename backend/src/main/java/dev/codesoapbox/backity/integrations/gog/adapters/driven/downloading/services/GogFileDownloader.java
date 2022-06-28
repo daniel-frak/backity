@@ -2,8 +2,8 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.ser
 
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.SourceFileDownloader;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth.GogAuthService;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedClient;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedWebClient;
+import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class GogFileDownloader implements SourceFileDownloader {
 
-    private final GogEmbedClient gogEmbedClient;
+    private final GogEmbedWebClient gogEmbedClient;
     private final GogAuthService authService;
     private final UrlFileDownloader urlFileDownloader;
 

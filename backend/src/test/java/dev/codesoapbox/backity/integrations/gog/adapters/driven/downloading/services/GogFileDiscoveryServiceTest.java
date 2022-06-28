@@ -3,9 +3,9 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.ser
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFileId;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.ProgressInfo;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.model.embed.GameDetailsResponse;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.model.embed.GameFileDetailsResponse;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedClient;
+import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
+import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileDetailsResponse;
+import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

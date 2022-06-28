@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.ser
 
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.model.auth.remote.GogAuthenticationResponse;
+import dev.codesoapbox.backity.integrations.gog.domain.model.auth.remote.GogAuthenticationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;

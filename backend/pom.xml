@@ -22,6 +22,7 @@
         <sonar.projectName>Backity (backend)</sonar.projectName>
         <org.mapstruct.version>1.5.0.RC1</org.mapstruct.version>
         <testcontainers.version>1.17.1</testcontainers.version>
+        <archunit.version>0.23.1</archunit.version>
     </properties>
 
     <dependencies>
@@ -93,6 +94,18 @@
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock-jre8</artifactId>
             <version>2.33.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit</artifactId>
+            <version>${archunit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit-junit5</artifactId>
+            <version>${archunit.version}</version>
             <scope>test</scope>
         </dependency>
         <!-- END of Testing -->

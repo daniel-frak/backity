@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model;
 
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.model.embed.GameDetailsResponse;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.model.embed.GameFileDetailsResponse;
+import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
+import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileDetailsResponse;
 import org.junit.jupiter.api.Test;
 
 import static java.util.Collections.singletonList;

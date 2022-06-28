@@ -1,11 +1,11 @@
 package dev.codesoapbox.backity.core.logs.domain.model;
 
-import dev.codesoapbox.backity.core.shared.config.openapi.IncludeInOpenApiDocs;
+import dev.codesoapbox.backity.core.shared.domain.IncludeInDocumentation;
 import lombok.Value;
 
 import javax.validation.constraints.NotNull;
 
-@IncludeInOpenApiDocs
+@IncludeInDocumentation
 @Value(staticConstructor = "of")
 public class LogCreatedMessage {
 

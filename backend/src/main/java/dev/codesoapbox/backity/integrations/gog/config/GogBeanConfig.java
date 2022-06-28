@@ -5,8 +5,9 @@ import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.serv
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.GogFileDownloader;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.UrlFileDownloader;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth.GogAuthClient;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth.GogAuthService;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedClient;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth.GogAuthSpringService;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedWebClient;
+import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -32,12 +33,12 @@ public class GogBeanConfig {
 
     @Bean
     GogAuthService gogAuthService(GogAuthClient gogAuthClient) {
-        return new GogAuthService(gogAuthClient);
+        return new GogAuthSpringService(gogAuthClient);
     }
 
     @Bean
-    GogEmbedClient gogEmbedClient(@Qualifier("gogEmbed") WebClient webClientEmbed, GogAuthService authService) {
-        return new GogEmbedClient(webClientEmbed, authService);
+    GogEmbedWebClient gogEmbedClient(@Qualifier("gogEmbed") WebClient webClientEmbed, GogAuthService authService) {
+        return new GogEmbedWebClient(webClientEmbed, authService);
     }
 
     @Bean
@@ -46,13 +47,13 @@ public class GogBeanConfig {
     }
 
     @Bean
-    GogFileDownloader gogFileDownloader(GogEmbedClient gogEmbedClient, GogAuthService authService,
+    GogFileDownloader gogFileDownloader(GogEmbedWebClient gogEmbedClient, GogAuthService authService,
                                         UrlFileDownloader urlFileDownloader) {
         return new GogFileDownloader(gogEmbedClient, authService, urlFileDownloader);
     }
 
     @Bean
-    GogFileDiscoveryService gogFileDiscoveryService(GogEmbedClient gogEmbedClient) {
+    GogFileDiscoveryService gogFileDiscoveryService(GogEmbedWebClient gogEmbedClient) {
         return new GogFileDiscoveryService(gogEmbedClient);
     }
 }

@@ -1,0 +1,8 @@
+package dev.codesoapbox.backity.core.shared.domain;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface IncludeInDocumentation {
+}

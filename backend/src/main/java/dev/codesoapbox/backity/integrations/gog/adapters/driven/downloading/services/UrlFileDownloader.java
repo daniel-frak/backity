@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.ser
 import dev.codesoapbox.backity.core.files.discovery.domain.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.DownloadProgress;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.FileManager;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.exceptions.FileDownloadException;
+import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileDownloadException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -63,7 +63,7 @@ public class UrlFileDownloader {
     private void validateDownloadedFileSize(String tempFilePath, AtomicLong size) {
         File downloadedFile = new File(tempFilePath);
         if (downloadedFile.length() != size.get()) {
-            throw new RuntimeException("The downloaded size of " + tempFilePath + "is not what was expected ("
+            throw new FileDownloadException("The downloaded size of " + tempFilePath + "is not what was expected ("
                     + downloadedFile.length() + " vs " + size.get() + ")");
         } else {
             log.info("Filesize check for {} passed successfully", tempFilePath);

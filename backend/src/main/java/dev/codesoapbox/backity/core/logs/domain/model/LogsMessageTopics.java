@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.core.logs.domain.model;
 
-import dev.codesoapbox.backity.core.shared.config.openapi.IncludeInOpenApiDocs;
+import dev.codesoapbox.backity.core.shared.domain.IncludeInDocumentation;
 import lombok.AllArgsConstructor;
 
-@IncludeInOpenApiDocs
+@IncludeInDocumentation
 @AllArgsConstructor
 public enum LogsMessageTopics {
 

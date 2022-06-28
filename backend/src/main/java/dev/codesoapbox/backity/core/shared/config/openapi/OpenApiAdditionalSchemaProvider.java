@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.shared.config.openapi;
 
+import dev.codesoapbox.backity.core.shared.domain.IncludeInDocumentation;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -14,7 +15,7 @@ import java.util.stream.Stream;
 /**
  * Provides objects annotated with {@code @IncludeInApiDocs} as additional schema in OpenAPI docs.
  *
- * @see IncludeInOpenApiDocs
+ * @see IncludeInDocumentation
  */
 @RequiredArgsConstructor
 public class OpenApiAdditionalSchemaProvider implements OpenApiCustomiser {
@@ -34,13 +35,13 @@ public class OpenApiAdditionalSchemaProvider implements OpenApiCustomiser {
 
     private Stream<Class<?>> getAdditionalClasses() {
         return reflections.getSubTypesOf(Object.class).stream()
-                .filter(c -> c.isAnnotationPresent(IncludeInOpenApiDocs.class));
+                .filter(c -> c.isAnnotationPresent(IncludeInDocumentation.class));
     }
 
     @SuppressWarnings("rawtypes")
     private Stream<Class<? extends Enum>> getAdditionalEnums() {
         return reflections.getSubTypesOf(Enum.class).stream()
-                .filter(c -> c.isAnnotationPresent(IncludeInOpenApiDocs.class));
+                .filter(c -> c.isAnnotationPresent(IncludeInDocumentation.class));
     }
 
     @SuppressWarnings("rawtypes")

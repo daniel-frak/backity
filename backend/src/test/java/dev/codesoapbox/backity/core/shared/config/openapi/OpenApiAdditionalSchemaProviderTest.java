@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.shared.config.openapi;
 
+import dev.codesoapbox.backity.core.shared.domain.IncludeInDocumentation;
 import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
 import org.springdoc.core.customizers.OpenApiCustomiser;
@@ -44,7 +45,7 @@ class OpenApiAdditionalSchemaProviderTest {
             return new OpenApiAdditionalSchemaProvider(reflections);
         }
 
-        @IncludeInOpenApiDocs
+        @IncludeInDocumentation
         public enum SpecialTestObject {
             SPECIAL_TEST_VALUE
         }
