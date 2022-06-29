@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -44,6 +45,11 @@ public class FakeUnixFileManager implements FileManager {
     @Override
     public void renameFile(String filePath, String fileName) {
         filesRenamed.put(filePath, fileName);
+    }
+
+    @Override
+    public ByteArrayOutputStream getOutputStream(String path) {
+        return new ByteArrayOutputStream();
     }
 
     public boolean freeSpaceWasCheckedFor(String path) {

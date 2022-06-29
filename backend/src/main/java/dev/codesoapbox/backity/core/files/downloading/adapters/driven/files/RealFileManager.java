@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.*;
 
 @Slf4j
@@ -28,6 +29,12 @@ public class RealFileManager implements FileManager {
 
         Files.move(originalPath, newPath, StandardCopyOption.REPLACE_EXISTING);
         log.info("Renamed file {} to {}", originalPath, newPath);
+    }
+
+    @Override
+    public OutputStream getOutputStream(String stringPath) throws IOException {
+        Path path = FileSystems.getDefault().getPath(stringPath);
+        return Files.newOutputStream(path);
     }
 
     private String extractDirectory(String path) {

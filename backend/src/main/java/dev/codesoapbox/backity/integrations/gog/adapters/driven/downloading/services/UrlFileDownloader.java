@@ -12,10 +12,8 @@ import reactor.core.publisher.Flux;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
+import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -24,6 +22,7 @@ import java.util.function.Consumer;
 public class UrlFileDownloader {
 
     private final FileManager fileManager;
+    private final Consumer<ProgressInfo> progressInfoConsumer;
 
     public void downloadGameFile(FileBufferProvider fileBufferProvider, String url, String tempFilePath)
             throws IOException {
@@ -41,14 +40,11 @@ public class UrlFileDownloader {
 
     private void writeToDisk(Flux<DataBuffer> dataBufferFlux, String tempFilePath, DownloadProgress progress)
             throws IOException {
-        Path path = FileSystems.getDefault().getPath(tempFilePath);
-
-        Consumer<ProgressInfo> progressInfoConsumer = i -> log.info("File download progress: " + i);
-        try (FileOutputStream fileOutputStream = new FileOutputStream(path.toFile())) {
+        try (OutputStream outputStream = fileManager.getOutputStream(tempFilePath)) {
             progress.subscribeToProgress(progressInfoConsumer);
 
             DataBufferUtils
-                    .write(dataBufferFlux, progress.getTrackedOutputStream(fileOutputStream))
+                    .write(dataBufferFlux, progress.getTrackedOutputStream(outputStream))
                     .blockLast();
         } catch (FileNotFoundException e) {
             throw new FileDownloadException("Unable to create file", e);
@@ -60,7 +56,7 @@ public class UrlFileDownloader {
     private void validateDownloadedFileSize(String tempFilePath, long sizeInBytes) {
         File downloadedFile = new File(tempFilePath);
         if (downloadedFile.length() != sizeInBytes) {
-            throw new FileDownloadException("The downloaded size of " + tempFilePath + "is not what was expected ("
+            throw new FileDownloadException("The downloaded size of " + tempFilePath + " is not what was expected ("
                     + downloadedFile.length() + " vs " + sizeInBytes + ")");
         } else {
             log.info("Filesize check for {} passed successfully", tempFilePath);

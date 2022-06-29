@@ -8,12 +8,14 @@ import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.serv
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth.GogAuthSpringService;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedWebClient;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
+@Slf4j
 @Configuration
 public class GogBeanConfig {
 
@@ -43,7 +45,7 @@ public class GogBeanConfig {
 
     @Bean
     UrlFileDownloader enqueuedFileDownloader(FileManager fileManager) {
-        return new UrlFileDownloader(fileManager);
+        return new UrlFileDownloader(fileManager, i -> log.info("File download progress: " + i));
     }
 
     @Bean
