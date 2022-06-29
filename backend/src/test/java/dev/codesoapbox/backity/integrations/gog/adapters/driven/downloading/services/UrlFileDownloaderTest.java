@@ -69,7 +69,6 @@ class UrlFileDownloaderTest {
 
         assertThrows(FileDownloadException.class,
                 () -> urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileUrl, "badFilePath"));
-
     }
 
     @RequiredArgsConstructor
