@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ContainedLayoutComponent } from './contained-layout.component';
+import {ContainedLayoutComponent} from './contained-layout.component';
+import {RouterTestingModule} from "@angular/router/testing";
 
 describe('ContainedLayoutComponent', () => {
   let component: ContainedLayoutComponent;
@@ -8,9 +9,10 @@ describe('ContainedLayoutComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ContainedLayoutComponent ]
+      declarations: [ContainedLayoutComponent],
+      imports: [RouterTestingModule]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

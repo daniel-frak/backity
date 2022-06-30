@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-loaded-content',
-  template: '<ng-content></ng-content>'
+  template: '<div *ngIf="!isLoading"><ng-content></ng-content></div>'
 } as any)
 export class LoadedContentStubComponent implements OnInit {
 

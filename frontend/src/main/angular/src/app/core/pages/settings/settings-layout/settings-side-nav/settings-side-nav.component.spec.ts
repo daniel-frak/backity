@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { SettingsSideNavComponent } from './settings-side-nav.component';
+import {SettingsSideNavComponent} from './settings-side-nav.component';
+import {RouterTestingModule} from "@angular/router/testing";
 
 describe('SettingsSideNavComponent', () => {
   let component: SettingsSideNavComponent;
@@ -8,7 +9,8 @@ describe('SettingsSideNavComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SettingsSideNavComponent ]
+      declarations: [ SettingsSideNavComponent ],
+      imports: [ RouterTestingModule ]
     })
     .compileComponents();
   });

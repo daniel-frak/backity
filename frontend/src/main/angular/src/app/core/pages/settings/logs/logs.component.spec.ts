@@ -2,7 +2,8 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {LogsComponent} from './logs.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {LoadedContentStubComponent} from "../../../../shared/components/loaded-content/loaded-content.component.stub";
+import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
+import {PageHeaderStubComponent} from "@app/shared/components/page-header/page-header.component.stub";
 
 describe('LogsComponent', () => {
   let component: LogsComponent;
@@ -12,7 +13,8 @@ describe('LogsComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         LogsComponent,
-        LoadedContentStubComponent
+        LoadedContentStubComponent,
+        PageHeaderStubComponent
       ],
       imports: [
         HttpClientTestingModule

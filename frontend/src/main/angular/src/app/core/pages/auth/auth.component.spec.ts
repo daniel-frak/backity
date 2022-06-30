@@ -4,6 +4,8 @@ import {AuthComponent} from './auth.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
 import {FormsModule} from "@angular/forms";
+import {PageHeaderStubComponent} from "@app/shared/components/page-header/page-header.component.stub";
+import {GogAuthComponent} from "@app/gog/pages/auth/gog-auth/gog-auth.component";
 
 describe('AuthComponent', () => {
   let component: AuthComponent;
@@ -13,7 +15,9 @@ describe('AuthComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [
         AuthComponent,
-        LoadedContentStubComponent
+        LoadedContentStubComponent,
+        PageHeaderStubComponent,
+        GogAuthComponent
       ],
       imports: [
         HttpClientTestingModule,
