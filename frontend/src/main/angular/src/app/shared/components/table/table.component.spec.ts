@@ -1,15 +1,18 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TableComponent} from './table.component';
-import {Component, Input, ViewChild} from "@angular/core";
+import {Component, Input, QueryList, ViewChild} from "@angular/core";
 import {TableContent} from "@app/shared/components/table/table-content";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
+import {By} from "@angular/platform-browser";
 
 @Component({
   template: `
     <app-table [isLoading]="isLoading" [content]="content" caption="Test table">
-      <ng-template app-table-column="Test column" let-item>Item: {{item}}</ng-template>
+      <ng-template app-table-column="Test column 1" let-item>Col1: {{item}}</ng-template>
+      <ng-template app-table-column="Test column 2" hide-title-on-mobile let-item>Col2: {{item}}</ng-template>
+      <ng-template app-table-column="Test column 3" append-class="custom-class" let-item>Col3: {{item}}</ng-template>
     </app-table>
   `
 })
@@ -48,7 +51,7 @@ describe('TableComponent', () => {
   it('should show content', () => {
     fixture.componentInstance.content = {content: ["testContent"]};
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('td').textContent).toContain("Item: testContent");
+    expect(fixture.nativeElement.querySelector('td').textContent).toContain("Col1: testContent");
   });
 
   it('should show title', () => {
@@ -61,5 +64,37 @@ describe('TableComponent', () => {
     fixture.componentInstance.isLoading = true;
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).not.toContain("Test table");
+  });
+
+  it('should add class to row if hide-title-on-mobile is used', () => {
+    fixture.componentInstance.content = {content: ["testContent"]};
+    fixture.detectChanges();
+
+    const columns = fixture.debugElement.queryAll(By.css('td'));
+    const secondColumn = columns[1];
+
+    expect(secondColumn.classes['hide-title']).toBeTruthy();
+  });
+
+  it('should add custom class to row', () => {
+    fixture.componentInstance.content = {content: ["testContent"]};
+    fixture.detectChanges();
+
+    const columns = fixture.debugElement.queryAll(By.css('td'));
+    const thirdColumn = columns[2];
+
+    expect(thirdColumn.classes['custom-class']).toBeTruthy();
+  });
+
+  it('should show title with undefined templateRefs', () => {
+    component.templateRefs = undefined;
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain("Test table");
+  });
+
+  it('should show title with empty templateRefs', () => {
+    component.templateRefs = new QueryList<TableColumnDirective>();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain("Test table");
   });
 });

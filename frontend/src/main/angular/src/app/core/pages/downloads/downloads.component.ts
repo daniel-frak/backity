@@ -71,7 +71,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   }
 
   removeFromQueue(fileId?: number) {
-    console.warn("Removing from queue not yet implemented");
+    console.error("Removing from queue not yet implemented");
   }
 
   ngOnDestroy(): void {

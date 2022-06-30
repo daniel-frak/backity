@@ -25,7 +25,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   newDiscoveredCount: number = 0;
   infoIsLoading: boolean = false;
   filesAreLoading: boolean = false;
-  discoveryStatuses: any = {};
+  discoveryStatuses: Map<string, boolean> = new Map<string, boolean>();
 
   private pageSize = 20;
   private readonly stompSubscriptions: StompSubscription[] = [];
@@ -55,7 +55,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
   private onStatusChanged(payload: IMessage) {
     const status: FileDiscoveryStatus = JSON.parse(payload.body);
-    this.discoveryStatuses[status.source as string] = status.inProgress;
+    this.updateDiscoveryStatus(status);
   }
 
   private refreshInfo() {
@@ -67,8 +67,8 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
       });
   }
 
-  private updateDiscoveryStatus(s: FileDiscoveryStatus) {
-    this.discoveryStatuses[s.source as string] = s.inProgress;
+  private updateDiscoveryStatus(status: FileDiscoveryStatus) {
+    this.discoveryStatuses.set(status.source as string, status.inProgress as boolean);
   }
 
   refreshDiscoveredFiles() {
@@ -99,7 +99,8 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
         file.enqueued = false;
         return throwError(e);
       }))
-      .subscribe();
+      .subscribe(() => {}, err => console.error('An error occurred while trying to enqueue a file ('
+        + file + ')', file, err));
   }
 
   ngOnDestroy(): void {
@@ -107,26 +108,26 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   }
 
   getStatuses(): FileDiscoveryStatus[] {
-    if (!this.discoveryStatuses) {
+    if (this.discoveryStatuses.size == 0) {
       return [];
     }
 
-    return Object.keys(this.discoveryStatuses)
-      .map(s => {
+    return Array.from(this.discoveryStatuses)
+      .map(([source, inProgress]) => {
         return {
-          source: s,
-          inProgress: this.discoveryStatuses[s]
+          source: source,
+          inProgress: inProgress
         };
       });
   }
 
   discoveryOngoing(): boolean {
-    if (!this.discoveryStatuses) {
-      return true;
+    if (this.discoveryStatuses.size == 0) {
+      return false;
     }
 
-    return Object.keys(this.discoveryStatuses)
-      .some(s => this.discoveryStatuses[s]);
+    return Array.from(this.discoveryStatuses)
+      .some(([source, inProgress]) => inProgress);
   }
 
   discoverFilesFor(source?: string) {

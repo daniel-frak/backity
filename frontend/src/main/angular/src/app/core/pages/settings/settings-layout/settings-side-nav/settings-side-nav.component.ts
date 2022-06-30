@@ -1,4 +1,5 @@
 import {Component, HostBinding, OnInit} from '@angular/core';
+import {NavigatorProviderService} from "@app/shared/services/navigator-provider.service";
 
 @Component({
   selector: 'app-settings-side-nav',
@@ -10,7 +11,7 @@ export class SettingsSideNavComponent implements OnInit {
   @HostBinding('class.minimized')
   minimizeSideNav: boolean = false;
 
-  constructor() {
+  constructor(private readonly navigatorProvider: NavigatorProviderService) {
   }
 
   ngOnInit(): void {
@@ -20,7 +21,7 @@ export class SettingsSideNavComponent implements OnInit {
   }
 
   private isMobileClient() {
-    const ua = navigator.userAgent;
+    const ua = this.navigatorProvider.get().userAgent;
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(ua);
   }
 }

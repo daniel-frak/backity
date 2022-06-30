@@ -48,6 +48,6 @@ export class GogAuthComponent implements OnInit {
   }
 
   signOutGog() {
-    alert('Not yet implemented');
+    console.error('Not yet implemented');
   }
 }

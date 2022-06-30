@@ -2,26 +2,51 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {SettingsSideNavComponent} from './settings-side-nav.component';
 import {RouterTestingModule} from "@angular/router/testing";
+import {NavigatorProviderService} from "@app/shared/services/navigator-provider.service";
 
 describe('SettingsSideNavComponent', () => {
   let component: SettingsSideNavComponent;
   let fixture: ComponentFixture<SettingsSideNavComponent>;
+  const navigatorMock = {
+    userAgent: ''
+  };
 
   beforeEach(async () => {
+    navigatorMock.userAgent = 'Desktop';
+    const navigatorProviderServiceMock: NavigatorProviderService = {
+      get: () => navigatorMock as any
+    };
     await TestBed.configureTestingModule({
-      declarations: [ SettingsSideNavComponent ],
-      imports: [ RouterTestingModule ]
+      declarations: [SettingsSideNavComponent],
+      imports: [RouterTestingModule],
+      providers: [
+        {
+          provide: NavigatorProviderService,
+          useValue: navigatorProviderServiceMock
+        }
+      ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(SettingsSideNavComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should set minimizeSideNav to false if desktop client', () => {
+    fixture.detectChanges();
+    expect(component).toBeTruthy();
+  });
+
+  it('should set minimizeSideNav to true if mobile client', () => {
+    navigatorMock.userAgent = 'Android';
+    fixture.detectChanges();
+
+    expect(component.minimizeSideNav).toBeTrue();
   });
 });

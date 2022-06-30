@@ -3,7 +3,7 @@
 </app-page-header>
 
 <div class="card mt-3">
-  <div class="card-body">
+  <div class="card-body" id="currently-downloading">
     <h2 class="card-title">Currently downloading</h2>
 
     <ng-container *ngIf="!currentDownload">
@@ -36,7 +36,7 @@
       </button>
     </p>
 
-    <app-table [content]="enqueuedDownloads" [isLoading]="filesAreLoading" caption="Download queue">
+    <app-table [content]="enqueuedDownloads" [isLoading]="filesAreLoading" caption="Download queue" id="download-queue">
       <ng-template app-table-column="Game title" let-item>
         {{asFile(item).gameTitle}}
       </ng-template>
@@ -59,7 +59,7 @@
       </ng-template>
     </app-table>
 
-    <app-table [content]="processedFiles" [isLoading]="filesAreLoading" caption="Processed files">
+    <app-table [content]="processedFiles" [isLoading]="filesAreLoading" caption="Processed files" id="processed-files">
       <ng-template app-table-column="Game title" let-item>
         {{asFile(item).gameTitle}}
       </ng-template>
