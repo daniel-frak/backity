@@ -7,7 +7,7 @@
     "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "pre-sonar": "ng test --code-coverage --no-watch --source-map=false --browsers=ChromeHeadless"
+    "pre-sonar": "ng test --code-coverage --no-watch --source-map=true --browsers=ChromeHeadless"
   },
   "private": true,
   "dependencies": {
