@@ -23,8 +23,7 @@ import static java.util.Collections.singletonList;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FileDiscoveryServiceTest {
@@ -69,6 +68,24 @@ class FileDiscoveryServiceTest {
 
         verify(repository).save(discoveredFile);
         verify(messageService).sendMessage(FileDiscoveryMessageTopics.FILE_DISCOVERY.toString(), discoveredFile);
+    }
+
+    @Test
+    void discoverNewFilesShouldNotSaveDiscoveredFileIfAlreadyExists() {
+        DiscoveredFile discoveredFile = new DiscoveredFile();
+        discoveredFile.setId(new DiscoveredFileId("someUrl", "someVersion"));
+
+        when(repository.existsById(discoveredFile.getId()))
+                .thenReturn(true);
+
+        fileDiscoveryService.discoverNewFiles();
+
+        await().atMost(5, TimeUnit.SECONDS)
+                .until(sourceFileDiscoveryService::hasBeenTriggered);
+        sourceFileDiscoveryService.simulateFileDiscovery(discoveredFile);
+
+        verify(repository, never()).save(any());
+        verify(messageService, never()).sendMessage(eq(FileDiscoveryMessageTopics.FILE_DISCOVERY.toString()), any());
     }
 
     @Test
