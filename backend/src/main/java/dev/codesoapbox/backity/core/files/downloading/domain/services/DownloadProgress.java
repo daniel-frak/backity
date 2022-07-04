@@ -47,6 +47,8 @@ public class DownloadProgress {
             public void write(int currentByte) throws IOException {
                 out.write(currentByte);
                 downloadedLengthBytes++;
+                progressTracker.incrementBy(1);
+                updateProgress(progressTracker.getProgressInfo());
             }
 
             @Override
@@ -64,8 +66,6 @@ public class DownloadProgress {
     private void done() {
         if (contentLengthBytes == -1) {
             contentLengthBytes = downloadedLengthBytes;
-        } else {
-            downloadedLengthBytes = contentLengthBytes;
         }
     }
 

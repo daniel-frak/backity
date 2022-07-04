@@ -99,8 +99,8 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
         file.enqueued = false;
         return throwError(e);
       }))
-      .subscribe(() => {}, err => console.error('An error occurred while trying to enqueue a file ('
-        + file + ')', file, err));
+      .subscribe(() => {}, err => console.error(`An error occurred while trying to enqueue a file (${file})`,
+        file, err));
   }
 
   ngOnDestroy(): void {
@@ -108,7 +108,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   }
 
   getStatuses(): FileDiscoveryStatus[] {
-    if (this.discoveryStatuses.size == 0) {
+    if (this.discoveryStatuses.size === 0) {
       return [];
     }
 
@@ -122,7 +122,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   }
 
   discoveryOngoing(): boolean {
-    if (this.discoveryStatuses.size == 0) {
+    if (this.discoveryStatuses.size === 0) {
       return false;
     }
 

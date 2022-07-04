@@ -10,7 +10,7 @@ import {TableColumnDirective} from "@app/shared/components/table/column-directiv
 export class TableComponent implements OnInit {
 
   @ContentChildren(TableColumnDirective, {descendants: false})
-  templateRefs?: QueryList<TableColumnDirective>;
+  templateRefs!: QueryList<TableColumnDirective>;
 
   @Input()
   content?: TableContent;
@@ -29,7 +29,7 @@ export class TableComponent implements OnInit {
 
   getColumnTitles(): string[] {
     const columns: string[] = [];
-    this.templateRefs?.forEach(t => columns.push(t.columnTitle as string));
+    this.templateRefs.forEach(t => columns.push(t.columnTitle as string));
 
     return columns;
   }

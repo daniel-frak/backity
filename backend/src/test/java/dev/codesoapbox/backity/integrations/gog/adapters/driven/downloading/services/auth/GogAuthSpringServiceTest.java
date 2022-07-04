@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth;
 
+import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GogAuthException;
 import dev.codesoapbox.backity.integrations.gog.domain.model.auth.remote.GogAuthenticationResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -87,10 +88,29 @@ class GogAuthSpringServiceTest {
     }
 
     @Test
+    void getAccessTokenShouldThrowIfTokenIsNull() {
+        var exception = assertThrows(GogAuthException.class, () -> gogAuthService.getAccessToken());
+        assertTrue(exception.getMessage().contains("must authenticate"));
+    }
+
+    @Test
+    void getAccessTokenShouldThrowIfTokenIsExpired() {
+        authenticateCorrectly(-1);
+        var exception = assertThrows(GogAuthException.class, () -> gogAuthService.getAccessToken());
+        assertTrue(exception.getMessage().contains("Access token expired"));
+    }
+
+    @Test
     void shouldGetRefreshToken() {
         authenticateCorrectly(3600);
 
         assertEquals("someRefreshToken", gogAuthService.getRefreshToken());
+    }
+
+    @Test
+    void getRefreshTokenShouldThrowIfTokenIsNull() {
+        var exception = assertThrows(GogAuthException.class, () -> gogAuthService.getRefreshToken());
+        assertTrue(exception.getMessage().contains("must authenticate"));
     }
 
     @Test

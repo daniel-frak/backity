@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.files.downloading.domain.services.DownloadPr
 import dev.codesoapbox.backity.core.files.downloading.domain.services.FileManager;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileDownloadException;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,19 +68,40 @@ class UrlFileDownloaderTest {
         doThrow(new FileNotFoundException())
                 .when(fileManager).getOutputStream(any());
 
-        assertThrows(FileDownloadException.class,
+        var exception = assertThrows(FileDownloadException.class,
                 () -> urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileUrl, "badFilePath"));
+        assertTrue(exception.getMessage().contains("Unable to create file"));
+    }
+
+    @Test
+    void downloadGameFileShouldThrowWhenFileSizeIsInvalid(@TempDir Path tempDir) {
+        urlFileDownloader = new UrlFileDownloader(new RealFileManager(), progressHistory::add);
+        String gameFileUrl = "someUrl";
+        FileBufferProviderStub fileBufferProvider = new FileBufferProviderStub();
+        fileBufferProvider.setGiveIncorrectFileSize(true);
+
+        var exception = assertThrows(FileDownloadException.class,
+                () -> urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileUrl,
+                        tempDir + File.separator + "tempFile"));
+        assertTrue(exception.getMessage().contains("The downloaded size of"));
     }
 
     @RequiredArgsConstructor
     private static class FileBufferProviderStub implements FileBufferProvider {
+
+        @Setter
+        private boolean giveIncorrectFileSize;
 
         @Override
         public Flux<DataBuffer> getFileBuffer(String gameFileUrl, AtomicReference<String> targetFileName,
                                               DownloadProgress progress) {
             byte[] bytes = "abcd".getBytes(StandardCharsets.UTF_8);
             targetFileName.set(getFileName());
-            progress.startTracking(bytes.length);
+            if (giveIncorrectFileSize) {
+                progress.startTracking(bytes.length + 1);
+            } else {
+                progress.startTracking(bytes.length);
+            }
             DefaultDataBuffer dataBuffer = DefaultDataBufferFactory.sharedInstance.wrap(ByteBuffer.wrap(bytes));
             return Flux.just(dataBuffer);
         }

@@ -1,0 +1,42 @@
+{
+  "title": "Unreal Tournament 2004 Editor's Choice Edition",
+  "backgroundImage": "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
+  "cdKey": "someCdKey",
+  "textInformation": "someTextInformation",
+  "downloads": [
+    [
+      "English",
+      {
+        "windows": [
+          {
+            "manualUrl": "/downlink/unreal_tournament_2004_ece/en1installer3",
+            "downloaderUrl": "gogdownloader://unreal_tournament_2004_ece/installer_win_en",
+            "name": "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)",
+            "version": null,
+            "date": "someDate",
+            "size": "1 MB"
+          }
+        ]
+      }
+    ]
+  ],
+  "extras": [
+    {
+      "manualUrl": "/downlink/file/unreal_tournament_2004_ece/6093",
+      "downloaderUrl": "gogdownloader://unreal_tournament_2004_ece/6093",
+      "name": "manual (33 pages)",
+      "type": "manuals",
+      "info": 1,
+      "size": "2 MB"
+    }
+  ],
+  "dlcs": [],
+  "tags": [],
+  "isPreOrder": false,
+  "releaseTimestamp": 1227585600,
+  "messages": [],
+  "changelog": "someChangelog",
+  "forumLink": "https://embed.gog.com/forum/unreal_series",
+  "isBaseProductMissing": false,
+  "missingBaseProduct": null
+}

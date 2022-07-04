@@ -11,7 +11,7 @@ export class MessagesService {
   private readonly subscriptions: ReplaySubject<(client: Client) => any> =
     new ReplaySubject<(client: Client) => any>();
 
-  constructor(@Inject(STOMP_CLIENT) private stompClient: Client) {
+  constructor(@Inject(STOMP_CLIENT) private readonly stompClient: Client) {
     stompClient.onConnect = (frame) => {
       this.subscriptions.subscribe(func => func(stompClient));
     };

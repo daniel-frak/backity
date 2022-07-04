@@ -86,12 +86,6 @@ describe('TableComponent', () => {
     expect(thirdColumn.classes['custom-class']).toBeTruthy();
   });
 
-  it('should show title with undefined templateRefs', () => {
-    component.templateRefs = undefined;
-    fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain("Test table");
-  });
-
   it('should show title with empty templateRefs', () => {
     component.templateRefs = new QueryList<TableColumnDirective>();
     fixture.detectChanges();

@@ -100,7 +100,7 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
         if (details != null) {
             log.debug("Retrieved game details for game: {} (#{})", details.getTitle(), gameId);
         } else {
-            log.error("Could not retrieve game details for gameId: {}", gameId);
+            throw new GameDetailsRequestFailedException(gameId, "Game details were NULL");
         }
 
         return details;

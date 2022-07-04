@@ -22,8 +22,7 @@ public class GogAuthSpringService implements GogAuthService {
 
     @Override
     public boolean isAuthenticated() {
-        return accessToken != null
-                && (expirationTime.isEqual(LocalDateTime.now()) || expirationTime.isAfter(LocalDateTime.now()));
+        return accessToken != null && expirationTime.isAfter(LocalDateTime.now());
     }
 
     @Override
@@ -52,10 +51,10 @@ public class GogAuthSpringService implements GogAuthService {
 
     @Override
     public String getAccessToken() {
-        if(accessToken == null) {
+        if (accessToken == null) {
             throw new GogAuthException("You must authenticate before using the GOG API!");
         }
-        if(expirationTime.isBefore(LocalDateTime.now())) {
+        if (expirationTime.isBefore(LocalDateTime.now())) {
             throw new GogAuthException("Access token expired!");
         }
 
@@ -64,7 +63,7 @@ public class GogAuthSpringService implements GogAuthService {
 
     @Override
     public String getRefreshToken() {
-        if(refreshToken == null) {
+        if (refreshToken == null) {
             throw new GogAuthException("You must authenticate before using the GOG API!");
         }
 
@@ -77,13 +76,13 @@ public class GogAuthSpringService implements GogAuthService {
     public void refreshAccessTokenIfNeeded() {
         log.debug("Checking access token expiration...");
 
-        if(accessToken == null) {
+        if (accessToken == null) {
             log.debug("No access token to expire");
             return;
         }
 
         // Refresh token when it's halfway to expiring
-        if(expirationTime.minusSeconds(expiresInSeconds / 2).isBefore(LocalDateTime.now())) {
+        if (expirationTime.minusSeconds(expiresInSeconds / 2).isBefore(LocalDateTime.now())) {
             log.info("Refreshing access token...");
             refresh();
         }
