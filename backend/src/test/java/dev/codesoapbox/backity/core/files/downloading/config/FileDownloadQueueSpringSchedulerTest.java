@@ -24,7 +24,7 @@ class FileDownloadQueueSpringSchedulerTest {
     void shouldProcessQueueOnSchedule() {
         await()
                 .pollInterval(Duration.ofMillis(5))
-                .atMost(Duration.ofMillis(10))
+                .atMost(Duration.ofMillis(100))
                 .untilAsserted(() -> verify(fileDownloadQueueProcessor, atLeastOnce()).processQueue());
     }
 }
