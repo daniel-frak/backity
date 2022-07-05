@@ -3,7 +3,6 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.ser
 import dev.codesoapbox.backity.core.files.downloading.domain.services.DownloadProgress;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.FileSizeAccumulator;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.FileBufferProvider;
-import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameDetailsRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameDownloadRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameListRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
@@ -18,9 +17,12 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -44,7 +46,9 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
         List<String> libraryGameIds = getLibraryGameIds();
 
         libraryGameIds.stream()
-                .flatMap(id -> getGameDetails(id).getFiles().stream())
+                .map(this::getGameDetails)
+                .filter(Objects::nonNull)
+                .flatMap(details -> details.getFiles().stream())
                 .map(GameFileDetailsResponse::getSize)
                 .forEach(accumulator::add);
 
@@ -88,19 +92,24 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
     public GameDetailsResponse getGameDetails(String gameId) {
         log.debug("Retrieving game details for game #" + gameId + "...");
 
+        AtomicBoolean loggedError = new AtomicBoolean();
         GameDetailsResponse details = webClientEmbed.get()
                 .uri("/account/gameDetails/" + gameId + ".json")
                 .header(HEADER_AUTHORIZATION, getBearerToken())
                 .retrieve()
                 .bodyToMono(GogGameDetailsResponse.class)
-                .onErrorMap(e -> new GameDetailsRequestFailedException(gameId, e))
+                .onErrorResume(e -> {
+                    log.error("Could not retrieve game details for game id: {}", gameId, e);
+                    loggedError.set(true);
+                    return Mono.empty();
+                })
                 .map(this::extractGameDetails)
                 .block();
 
         if (details != null) {
             log.debug("Retrieved game details for game: {} (#{})", details.getTitle(), gameId);
-        } else {
-            throw new GameDetailsRequestFailedException(gameId, "Game details were NULL");
+        } else if (!loggedError.get()) {
+            log.error("Could not retrieve game details for game id: {}. Response was empty.", gameId);
         }
 
         return details;

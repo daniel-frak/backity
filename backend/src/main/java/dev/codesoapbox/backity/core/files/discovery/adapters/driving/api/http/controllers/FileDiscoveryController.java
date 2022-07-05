@@ -37,10 +37,16 @@ public class FileDiscoveryController {
                 .map(DiscoveredFileJsonMapper.INSTANCE::toJson);
     }
 
-    @Operation(summary = "Discover files", description = "Starts the process of file discovery")
+    @Operation(summary = "Start file discovery", description = "Starts the process of file discovery")
     @GetMapping("discover")
     public void discover() {
-        fileDiscoveryService.discoverNewFiles();
+        fileDiscoveryService.startFileDiscovery();
+    }
+
+    @Operation(summary = "Stop file discovery", description = "Stops the process of file discovery")
+    @GetMapping("stop-discovery")
+    public void stopDiscovery() {
+        fileDiscoveryService.stopFileDiscovery();
     }
 
     @Operation(summary = "List discovery statuses",

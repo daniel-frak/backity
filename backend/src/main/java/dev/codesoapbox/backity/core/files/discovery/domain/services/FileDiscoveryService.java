@@ -32,13 +32,13 @@ public class FileDiscoveryService {
         });
     }
 
-    public void discoverNewFiles() {
+    public void startFileDiscovery() {
         log.info("Discovering new files...");
 
-        discoveryServices.forEach(this::discoverNewFiles);
+        discoveryServices.forEach(this::startFileDiscovery);
     }
 
-    private void discoverNewFiles(SourceFileDiscoveryService discoveryService) {
+    private void startFileDiscovery(SourceFileDiscoveryService discoveryService) {
         if (alreadyInProgress(discoveryService)) {
             log.info("Discovery for {} is already in progress. Aborting additional discovery.",
                     discoveryService.getSource());
@@ -49,7 +49,7 @@ public class FileDiscoveryService {
 
         changeDiscoveryStatus(discoveryService, true);
 
-        CompletableFuture.runAsync(() -> discoveryService.discoverNewFiles(this::saveDiscoveredFileInfo))
+        CompletableFuture.runAsync(() -> discoveryService.startFileDiscovery(this::saveDiscoveredFileInfo))
                 .whenComplete((v, t) -> changeDiscoveryStatus(discoveryService, false));
     }
 
@@ -74,6 +74,23 @@ public class FileDiscoveryService {
             log.info("Discovered new file: {} (game: {})",
                     discoveredFile.getId().getUrl(), discoveredFile.getGameTitle());
         }
+    }
+
+    public void stopFileDiscovery() {
+        log.info("Stopping file discovery...");
+
+        discoveryServices.forEach(this::stopFileDiscovery);
+    }
+
+    private void stopFileDiscovery(SourceFileDiscoveryService discoveryService) {
+        if (!alreadyInProgress(discoveryService)) {
+            log.info("Discovery for {} is not in progress. No need to stop.", discoveryService.getSource());
+            return;
+        }
+
+        log.info("Stopping discovery for source: {}", discoveryService.getSource());
+
+        discoveryService.stopFileDiscovery();
     }
 
     public List<FileDiscoveryStatus> getStatuses() {

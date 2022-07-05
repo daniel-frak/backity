@@ -8,7 +8,6 @@ import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.DownloadProgress;
 import dev.codesoapbox.backity.integrations.gog.config.WebClientConfig;
-import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameDetailsRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameDownloadRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameListRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
@@ -162,7 +161,7 @@ class GogEmbedWebClientTest {
     }
 
     @Test
-    void getGameDetailsShouldThrowWhenRequestFails() {
+    void getGameDetailsShouldNotThrowWhenRequestFails(CapturedOutput capturedOutput) {
         var accessToken = "someAccessToken";
 
         when(authService.getAccessToken())
@@ -173,11 +172,14 @@ class GogEmbedWebClientTest {
                 .willReturn(aResponse()
                         .withStatus(500)));
 
-        assertThrows(GameDetailsRequestFailedException.class, () -> gogEmbedClient.getGameDetails("someGameId"));
+        GameDetailsResponse result = gogEmbedClient.getGameDetails("someGameId");
+
+        assertNull(result);
+        assertTrue(capturedOutput.getOut().contains("Could not retrieve game details for game id"));
     }
 
     @Test
-    void getGameDetailsShouldThrowWhenRequestReturnsNull() {
+    void getGameDetailsShouldNotThrowWhenRequestReturnsNull(CapturedOutput capturedOutput) {
         var accessToken = "someAccessToken";
 
         when(authService.getAccessToken())
@@ -188,7 +190,10 @@ class GogEmbedWebClientTest {
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")));
 
-        assertThrows(GameDetailsRequestFailedException.class, () -> gogEmbedClient.getGameDetails("someGameId"));
+        GameDetailsResponse result = gogEmbedClient.getGameDetails("someGameId");
+
+        assertNull(result);
+        assertTrue(capturedOutput.getOut().contains("Response was empty"));
     }
 
     @Test

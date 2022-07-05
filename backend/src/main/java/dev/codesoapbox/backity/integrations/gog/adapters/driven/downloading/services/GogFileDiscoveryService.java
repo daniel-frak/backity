@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.files.discovery.domain.model.IncrementalProg
 import dev.codesoapbox.backity.core.files.discovery.domain.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.discovery.domain.services.SourceFileDiscoveryService;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
+import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -26,35 +28,57 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
     private final String source = "GOG";
 
     private final List<Consumer<ProgressInfo>> progressConsumers = new ArrayList<>();
+
+    private final AtomicBoolean shouldStopFileDiscovery = new AtomicBoolean();
     private IncrementalProgressTracker progressTracker;
 
     @Override
-    public void discoverNewFiles(Consumer<DiscoveredFile> discoveredFileConsumer) {
+    public void startFileDiscovery(Consumer<DiscoveredFile> discoveredFileConsumer) {
         log.info("Discovering new files...");
 
+        shouldStopFileDiscovery.set(false);
         List<String> libraryGameIds = gogEmbedClient.getLibraryGameIds();
         int totalGames = libraryGameIds.size();
         progressTracker = new IncrementalProgressTracker((long) totalGames, Clock.systemDefaultZone());
 
-        libraryGameIds.forEach(id -> {
-            GameDetailsResponse details = gogEmbedClient.getGameDetails(id);
-            if (details != null && details.getFiles() != null) {
-                details.getFiles().forEach(fileDetails -> {
-                    var discoveredFile = new DiscoveredFile();
-                    var discoveredFileId = new DiscoveredFileId(fileDetails.getManualUrl(), fileDetails.getVersion());
-                    discoveredFile.setId(discoveredFileId);
-                    discoveredFile.setSource("GOG");
-                    discoveredFile.setName(fileDetails.getName());
-                    discoveredFile.setGameTitle(details.getTitle());
-                    discoveredFile.setSize(fileDetails.getSize());
-
-                    discoveredFileConsumer.accept(discoveredFile);
+        libraryGameIds.stream()
+                .takeWhile(id -> !shouldStopFileDiscovery.get())
+                .forEach(id -> {
+                    GameDetailsResponse details = gogEmbedClient.getGameDetails(id);
+                    processFiles(discoveredFileConsumer, details);
+                    incrementProgress();
                 });
-            }
+    }
 
-            progressTracker.increment();
-            updateProgress(progressTracker.getProgressInfo());
+    private void processFiles(Consumer<DiscoveredFile> discoveredFileConsumer, GameDetailsResponse details) {
+        if (details == null || details.getFiles() == null) {
+            return;
+        }
+        details.getFiles().forEach(fileDetails -> {
+            DiscoveredFile discoveredFile = mapToDiscoveredFile(details, fileDetails);
+            discoveredFileConsumer.accept(discoveredFile);
         });
+    }
+
+    private DiscoveredFile mapToDiscoveredFile(GameDetailsResponse details, GameFileDetailsResponse fileDetails) {
+        var discoveredFile = new DiscoveredFile();
+        var discoveredFileId = new DiscoveredFileId(fileDetails.getManualUrl(), fileDetails.getVersion());
+        discoveredFile.setId(discoveredFileId);
+        discoveredFile.setSource("GOG");
+        discoveredFile.setName(fileDetails.getName());
+        discoveredFile.setGameTitle(details.getTitle());
+        discoveredFile.setSize(fileDetails.getSize());
+        return discoveredFile;
+    }
+
+    private void incrementProgress() {
+        progressTracker.increment();
+        updateProgress(progressTracker.getProgressInfo());
+    }
+
+    @Override
+    public void stopFileDiscovery() {
+        shouldStopFileDiscovery.set(true);
     }
 
     private void updateProgress(ProgressInfo progressInfo) {

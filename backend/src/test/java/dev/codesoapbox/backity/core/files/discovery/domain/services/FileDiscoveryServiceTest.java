@@ -46,23 +46,23 @@ class FileDiscoveryServiceTest {
     }
 
     @Test
-    void discoverNewFilesShouldStartFileDiscovery() {
-        fileDiscoveryService.discoverNewFiles();
+    void shouldStartFileDiscovery() {
+        fileDiscoveryService.startFileDiscovery();
 
         assertTrue(fileDiscoveryService.getStatuses().get(0).isInProgress());
     }
 
     @Test
-    void discoverNewFilesShouldSaveDiscoveredFilesAndSendMessages() {
+    void startFileDiscoveryShouldSaveDiscoveredFilesAndSendMessages() {
         DiscoveredFile discoveredFile = new DiscoveredFile();
         discoveredFile.setId(new DiscoveredFileId("someUrl", "someVersion"));
 
         when(repository.existsById(discoveredFile.getId()))
                 .thenReturn(false);
 
-        fileDiscoveryService.discoverNewFiles();
+        fileDiscoveryService.startFileDiscovery();
 
-        await().atMost(5, TimeUnit.SECONDS)
+        await().atMost(2, TimeUnit.SECONDS)
                 .until(sourceFileDiscoveryService::hasBeenTriggered);
         sourceFileDiscoveryService.simulateFileDiscovery(discoveredFile);
 
@@ -71,16 +71,16 @@ class FileDiscoveryServiceTest {
     }
 
     @Test
-    void discoverNewFilesShouldNotSaveDiscoveredFileIfAlreadyExists() {
+    void startFileDiscoveryShouldNotSaveDiscoveredFileIfAlreadyExists() {
         DiscoveredFile discoveredFile = new DiscoveredFile();
         discoveredFile.setId(new DiscoveredFileId("someUrl", "someVersion"));
 
         when(repository.existsById(discoveredFile.getId()))
                 .thenReturn(true);
 
-        fileDiscoveryService.discoverNewFiles();
+        fileDiscoveryService.startFileDiscovery();
 
-        await().atMost(5, TimeUnit.SECONDS)
+        await().atMost(2, TimeUnit.SECONDS)
                 .until(sourceFileDiscoveryService::hasBeenTriggered);
         sourceFileDiscoveryService.simulateFileDiscovery(discoveredFile);
 
@@ -89,26 +89,35 @@ class FileDiscoveryServiceTest {
     }
 
     @Test
-    void discoverNewFilesShouldSetSourceServiceAsNotInProgressWhenDone() {
-        fileDiscoveryService.discoverNewFiles();
+    void startFileDiscoveryShouldSetSourceServiceAsNotInProgressWhenDone() {
+        fileDiscoveryService.startFileDiscovery();
 
         sourceFileDiscoveryService.complete();
 
-        await().atMost(5, TimeUnit.SECONDS)
+        await().atMost(2, TimeUnit.SECONDS)
                 .until(() -> !fileDiscoveryService.getStatuses().get(0).isInProgress());
         assertEquals(1, fileDiscoveryService.getStatuses().size());
     }
 
     @Test
-    void discoverNewFilesShouldNotTriggerWhenSourceDiscoveryServiceAlreadyInProgress() {
-        fileDiscoveryService.discoverNewFiles();
-        fileDiscoveryService.discoverNewFiles();
+    void startFileDiscoveryShouldNotTriggerWhenSourceDiscoveryServiceAlreadyInProgress() {
+        fileDiscoveryService.startFileDiscovery();
+        fileDiscoveryService.startFileDiscovery();
         sourceFileDiscoveryService.complete();
 
-        await().atMost(5, TimeUnit.SECONDS)
+        await().atMost(2, TimeUnit.SECONDS)
                 .until(() -> !fileDiscoveryService.getStatuses().get(0).isInProgress());
         assertEquals(1, fileDiscoveryService.getStatuses().size());
         assertEquals(1, sourceFileDiscoveryService.getTimesTriggered().get());
+    }
+
+    @Test
+    void shouldStopFileDiscovery() {
+        fileDiscoveryService.startFileDiscovery();
+        fileDiscoveryService.stopFileDiscovery();
+
+        await().atMost(2, TimeUnit.SECONDS)
+                .until(() -> !fileDiscoveryService.getStatuses().get(0).isInProgress());
     }
 
     private static class FakeSourceFileDiscoveryService implements SourceFileDiscoveryService {
@@ -138,13 +147,18 @@ class FileDiscoveryServiceTest {
 
         @SuppressWarnings("StatementWithEmptyBody")
         @Override
-        public void discoverNewFiles(Consumer<DiscoveredFile> discoveredFileConsumer) {
+        public void startFileDiscovery(Consumer<DiscoveredFile> discoveredFileConsumer) {
             this.discoveredFileConsumer.set(discoveredFileConsumer);
             timesTriggered.incrementAndGet();
 
             while (!shouldFinish.get()) {
                 // Do nothing
             }
+        }
+
+        @Override
+        public void stopFileDiscovery() {
+            shouldFinish.set(true);
         }
 
         @Override

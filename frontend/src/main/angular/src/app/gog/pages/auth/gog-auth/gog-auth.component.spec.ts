@@ -86,7 +86,7 @@ describe('GogAuthComponent', () => {
     expect(component.gogAuthenticated).toBeTrue();
     expect(component.gogIsLoading).toBeFalse();
     expect(console.info).toHaveBeenCalledWith('Refresh token: someRefreshToken');
-    expect(console.warn).toHaveBeenCalledWith('1234');
+    expect(console.info).toHaveBeenCalledWith('Authentication code: 1234');
     expect(console.error).toHaveBeenCalledTimes(0);
   });
 
@@ -106,7 +106,7 @@ describe('GogAuthComponent', () => {
     component.authenticateGog();
     expect(component.gogAuthenticated).toBeFalse();
     expect(component.gogIsLoading).toBeFalse();
-    expect(console.warn).toHaveBeenCalledWith('1234');
+    expect(console.info).toHaveBeenCalledWith('Authentication code: 1234');
     expect(console.error).toHaveBeenCalled();
   });
 

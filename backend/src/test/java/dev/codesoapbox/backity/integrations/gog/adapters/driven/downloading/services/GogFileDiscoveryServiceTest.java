@@ -16,7 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class GogFileDiscoveryServiceTest {
@@ -32,7 +33,7 @@ class GogFileDiscoveryServiceTest {
         mockFileDiscovery();
 
         List<DiscoveredFile> discoveredFiles = new ArrayList<>();
-        gogFileDiscoveryService.discoverNewFiles(discoveredFiles::add);
+        gogFileDiscoveryService.startFileDiscovery(discoveredFiles::add);
 
         var expectedDiscoveredFiles = List.of(
                 new DiscoveredFile(new DiscoveredFileId("someUrl1", "1.0.0"), null, "GOG",
@@ -56,6 +57,9 @@ class GogFileDiscoveryServiceTest {
         var gameId3 = "gameId3";
         var gameId4 = "gameId4";
 
+        var game1Details = new GameDetailsResponse("Game 1", null, null,
+                null, null, null);
+
         var game2Details = new GameDetailsResponse("Game 2", null, null,
                 null, List.of(
                 new GameFileDetailsResponse("1.0.0", "someUrl1", "fileName1", "100 KB"),
@@ -70,8 +74,7 @@ class GogFileDiscoveryServiceTest {
         when(gogEmbedClient.getLibraryGameIds())
                 .thenReturn(List.of(gameId1, gameId2, gameId3, gameId4));
         when(gogEmbedClient.getGameDetails(gameId1))
-                .thenReturn(new GameDetailsResponse("Game 1", null, null,
-                        null, null, null));
+                .thenReturn(game1Details);
         when(gogEmbedClient.getGameDetails(gameId2))
                 .thenReturn(game2Details);
         when(gogEmbedClient.getGameDetails(gameId3))
@@ -89,12 +92,52 @@ class GogFileDiscoveryServiceTest {
     }
 
     @Test
+    void shouldStopFileDiscoveryBeforeProcessingFiles() {
+        var gameId1 = "gameId1";
+
+        when(gogEmbedClient.getLibraryGameIds())
+                .thenAnswer(inv -> {
+                    gogFileDiscoveryService.stopFileDiscovery();
+                    return List.of(gameId1, "gameId2", "gameId3", "gameId4");
+                });
+
+        List<DiscoveredFile> discoveredFiles = new ArrayList<>();
+        gogFileDiscoveryService.startFileDiscovery(discoveredFiles::add);
+
+        assertEquals(0, discoveredFiles.size());
+        verify(gogEmbedClient, never()).getGameDetails(any());
+    }
+
+    @Test
+    void shouldStopFileDiscoveryWhileProcessingFiles() {
+        var gameId1 = "gameId1";
+        var game1Details = new GameDetailsResponse("Game 1", null, null,
+                null, List.of(
+                new GameFileDetailsResponse("3.0.0", "someUrl3", "fileName3", "300 KB")
+        ), null);
+
+        when(gogEmbedClient.getLibraryGameIds())
+                .thenReturn(List.of(gameId1, "gameId2", "gameId3", "gameId4"));
+        when(gogEmbedClient.getGameDetails(gameId1))
+                .thenAnswer(inv -> {
+                    gogFileDiscoveryService.stopFileDiscovery();
+                    return game1Details;
+                });
+
+        List<DiscoveredFile> discoveredFiles = new ArrayList<>();
+        gogFileDiscoveryService.startFileDiscovery(discoveredFiles::add);
+
+        assertEquals(1, discoveredFiles.size());
+        verify(gogEmbedClient, times(1)).getGameDetails(any());
+    }
+
+    @Test
     void shouldSubscribeToProgress() {
         mockFileDiscovery();
 
         List<ProgressInfo> progressInfos = new ArrayList<>();
         gogFileDiscoveryService.subscribeToProgress(progressInfos::add);
-        gogFileDiscoveryService.discoverNewFiles(df -> {
+        gogFileDiscoveryService.startFileDiscovery(df -> {
         });
 
         assertEquals(25, progressInfos.get(0).percentage());
@@ -111,7 +154,7 @@ class GogFileDiscoveryServiceTest {
     @Test
     void shouldGetProgress() {
         mockFileDiscovery();
-        gogFileDiscoveryService.discoverNewFiles(df -> {
+        gogFileDiscoveryService.startFileDiscovery(df -> {
         });
 
         ProgressInfo progressInfo = gogFileDiscoveryService.getProgress();

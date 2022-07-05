@@ -9,7 +9,9 @@ public interface SourceFileDiscoveryService {
 
     String getSource();
 
-    void discoverNewFiles(Consumer<DiscoveredFile> discoveredFileConsumer);
+    void startFileDiscovery(Consumer<DiscoveredFile> discoveredFileConsumer);
+
+    void stopFileDiscovery();
 
     void subscribeToProgress(Consumer<ProgressInfo> progressConsumer);
 

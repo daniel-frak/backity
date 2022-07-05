@@ -35,7 +35,7 @@ export class GogAuthComponent implements OnInit {
     this.gogIsLoading = true;
     const params = (new URL(this.gogCodeUrl)).searchParams;
     const code = params.get("code") as string;
-    console.warn(code);
+    console.info("Authentication code: " + code);
     this.gogAuthClient.authenticate(code).subscribe(r => {
       if (r.refresh_token) {
         console.info("Refresh token: " + r.refresh_token);

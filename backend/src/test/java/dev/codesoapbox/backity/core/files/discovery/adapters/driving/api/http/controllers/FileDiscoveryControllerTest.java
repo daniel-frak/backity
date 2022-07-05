@@ -97,12 +97,21 @@ class FileDiscoveryControllerTest {
     }
 
     @Test
-    void shouldDiscover() throws Exception {
+    void shouldStartFileDiscovery() throws Exception {
         mockMvc.perform(get("/api/discovered-files/discover"))
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        verify(fileDiscoveryService).discoverNewFiles();
+        verify(fileDiscoveryService).startFileDiscovery();
+    }
+
+    @Test
+    void shouldStopFileDiscovery() throws Exception {
+        mockMvc.perform(get("/api/discovered-files/stop-discovery"))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        verify(fileDiscoveryService).stopFileDiscovery();
     }
 
     @Test
