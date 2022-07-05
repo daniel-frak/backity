@@ -42,7 +42,7 @@ export const STOMP_CLIENT = new InjectionToken('STOMP_CLIENT');
   providers: [
     {
       provide: STOMP_CLIENT,
-      useValue: () => new Client({
+      useValue: new Client({
         webSocketFactory: () => new SockJS(environment.apiUrl + '/messages')
       }),
     }
