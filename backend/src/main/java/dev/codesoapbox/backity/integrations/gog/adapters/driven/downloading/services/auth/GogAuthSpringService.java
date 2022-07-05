@@ -5,7 +5,6 @@ import dev.codesoapbox.backity.integrations.gog.domain.model.auth.remote.GogAuth
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDateTime;
 
@@ -70,9 +69,7 @@ public class GogAuthSpringService implements GogAuthService {
         return refreshToken;
     }
 
-    // Check every minute
     @Override
-    @Scheduled(fixedRate = 60000)
     public void refreshAccessTokenIfNeeded() {
         log.debug("Checking access token expiration...");
 
