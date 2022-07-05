@@ -132,12 +132,22 @@ class FileDiscoveryServiceTest {
 
         await().atMost(2, TimeUnit.SECONDS)
                 .until(() -> !fileDiscoveryService.getStatuses().get(0).isInProgress());
+        assertEquals(1, sourceFileDiscoveryService.getStoppedTimes());
+    }
+
+    @Test
+    void shouldNotStopFileDiscoveryIfAlreadyStopped() {
+        fileDiscoveryService.stopFileDiscovery();
+        assertEquals(0, sourceFileDiscoveryService.getStoppedTimes());
     }
 
     private static class FakeSourceFileDiscoveryService implements SourceFileDiscoveryService {
 
         private final AtomicBoolean shouldFinish = new AtomicBoolean(false);
         private final AtomicReference<Consumer<DiscoveredFile>> discoveredFileConsumer = new AtomicReference<>();
+
+        @Getter
+        private int stoppedTimes = 0;
 
         @Getter
         private final AtomicInteger timesTriggered = new AtomicInteger();
@@ -172,6 +182,7 @@ class FileDiscoveryServiceTest {
 
         @Override
         public void stopFileDiscovery() {
+            stoppedTimes++;
             shouldFinish.set(true);
         }
 
