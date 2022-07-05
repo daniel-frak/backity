@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileDiscoveryStatus {
+public class FileDiscoveryProgress {
 
     private String source;
-    private boolean isInProgress;
+    private int percentage;
+    private long timeLeftSeconds;
 }

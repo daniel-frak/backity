@@ -21,9 +21,9 @@ export interface PageDiscoveredFile {
     content?: Array<DiscoveredFile>;
     number?: number;
     sort?: Sort;
+    numberOfElements?: number;
     first?: boolean;
     last?: boolean;
-    numberOfElements?: number;
     pageable?: Pageable;
     empty?: boolean;
 }

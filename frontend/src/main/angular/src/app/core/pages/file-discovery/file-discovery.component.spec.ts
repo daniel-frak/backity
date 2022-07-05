@@ -15,6 +15,7 @@ import {
   DownloadsClient,
   FileDiscoveryClient,
   FileDiscoveryMessageTopics,
+  FileDiscoveryProgress,
   FileDiscoveryStatus,
   PageDiscoveredFile
 } from "@backend";
@@ -27,12 +28,14 @@ describe('FileDiscoveryComponent', () => {
   let fixture: ComponentFixture<FileDiscoveryComponent>;
   let discoveredSubscriptions: Function[];
   let discoveryChangedSubscriptions: Function[];
+  let discoveryProgressSubscriptions: Function[];
   let fileDiscoveryClientMock: any;
   let downloadsClientMock: any;
 
   beforeEach(async () => {
     discoveredSubscriptions = [];
     discoveryChangedSubscriptions = [];
+    discoveryProgressSubscriptions = [];
 
     const messagesServiceMock = MessageTesting.mockMessageService(
       (destination, callback) => {
@@ -41,6 +44,9 @@ describe('FileDiscoveryComponent', () => {
         }
         if (destination == FileDiscoveryMessageTopics.DiscoveryStatus) {
           discoveryChangedSubscriptions.push(callback);
+        }
+        if (destination == FileDiscoveryMessageTopics.DiscoveryProgress) {
+          discoveryProgressSubscriptions.push(callback);
         }
       });
 
@@ -83,7 +89,8 @@ describe('FileDiscoveryComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FileDiscoveryComponent);
     component = fixture.componentInstance;
-    component.discoveryStatuses.clear();
+    component.discoveryStatusBySource.clear();
+    component.discoveryProgressBySource.clear();
     fixture.detectChanges();
   });
 
@@ -108,7 +115,7 @@ describe('FileDiscoveryComponent', () => {
 
     component.ngOnInit();
 
-    expect(component.discoveryStatuses.get('someSource')).toBeTrue();
+    expect(component.discoveryStatusBySource.get('someSource')).toBeTrue();
     expect(component.discoveredFiles).toEqual(expectedDiscoveredFiles);
     expect(component.newDiscoveredCount).toBe(0);
     expect(component.filesAreLoading).toBeFalse();
@@ -120,6 +127,10 @@ describe('FileDiscoveryComponent', () => {
 
   it('should subscribe to discovery status updates', () => {
     expect(discoveryChangedSubscriptions.length).toBe(1);
+  });
+
+  it('should subscribe to discovery progress updates', () => {
+    expect(discoveryProgressSubscriptions.length).toBe(1);
   });
 
   it('should set newest discovered and increment discovered count on new discovery', () => {
@@ -142,9 +153,9 @@ describe('FileDiscoveryComponent', () => {
     };
 
     discoveryChangedSubscriptions[0]({body: JSON.stringify(newStatus1)});
-    expect(component.discoveryStatuses.get('someSource')).toBeTrue();
+    expect(component.discoveryStatusBySource.get('someSource')).toBeTrue();
     discoveryChangedSubscriptions[0]({body: JSON.stringify(newStatus2)});
-    expect(component.discoveryStatuses.get('someSource')).toBeFalse();
+    expect(component.discoveryStatusBySource.get('someSource')).toBeFalse();
   });
 
   it('should discover files', () => {
@@ -170,6 +181,36 @@ describe('FileDiscoveryComponent', () => {
     expect(file.enqueued).toBeTrue();
     expect(observableMock.subscribe).toHaveBeenCalled();
     expect(console.info).toHaveBeenCalled();
+  });
+
+  it('should update discovery progress', () => {
+    const progressUpdate: FileDiscoveryProgress = {
+      source: 'someSource',
+      percentage: 25,
+      timeLeftSeconds: 1234
+    };
+    discoveryProgressSubscriptions[0]({body: JSON.stringify(progressUpdate)});
+
+    expect(component.discoveryProgressBySource.get('someSource')).toEqual(progressUpdate);
+  });
+
+  it('should get progress list', () => {
+    expect(component.getProgressList()).toEqual([]);
+    const expectedProgress: FileDiscoveryProgress = {
+      source: 'someSource',
+      percentage: 25,
+      timeLeftSeconds: 1234
+    };
+
+    component.discoveryProgressBySource.set('someSource', expectedProgress);
+    expect(component.getProgressList()).toEqual([expectedProgress]);
+  });
+
+  it('should correctly check if is in progress', () => {
+    expect(component.isInProgress('someSource')).toBeFalse();
+
+    component.discoveryStatusBySource.set('someSource', true);
+    expect(component.isInProgress('someSource')).toBeTrue();
   });
 
   it('should dequeue file when enqueueFile throws', () => {
@@ -201,17 +242,17 @@ describe('FileDiscoveryComponent', () => {
       inProgress: true
     }
 
-    component.discoveryStatuses.set('someSource', true);
+    component.discoveryStatusBySource.set('someSource', true);
     expect(component.getStatuses()).toEqual([expectedStatus]);
   });
 
   it('should return if discovery is ongoing', () => {
     expect(component.discoveryOngoing()).toBeFalse();
 
-    component.discoveryStatuses.set('someSource', false);
+    component.discoveryStatusBySource.set('someSource', false);
     expect(component.discoveryOngoing()).toBeFalse();
 
-    component.discoveryStatuses.set('someSource', true);
+    component.discoveryStatusBySource.set('someSource', true);
     expect(component.discoveryOngoing()).toBeTrue();
   })
 

@@ -1,7 +1,9 @@
 package dev.codesoapbox.backity.core.files.discovery.domain.services;
 
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
+import dev.codesoapbox.backity.core.files.discovery.domain.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.messages.FileDiscoveryMessageTopics;
+import dev.codesoapbox.backity.core.files.discovery.domain.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.messages.FileDiscoveryStatus;
 import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
 import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
@@ -28,8 +30,14 @@ public class FileDiscoveryService {
 
         discoveryServices.forEach(s -> {
             discoveryStatuses.put(s.getSource(), false);
-            s.subscribeToProgress(p -> log.info("Discovery progress: " + p));
+            s.subscribeToProgress(p -> onProgressMade(messageService, s.getSource(), p));
         });
+    }
+
+    private void onProgressMade(MessageService messageService, String source, ProgressInfo progress) {
+        var payload = new FileDiscoveryProgress(source, progress.percentage(), progress.timeLeft().getSeconds());
+        messageService.sendMessage(FileDiscoveryMessageTopics.FILE_DISCOVERY_PROGRESS.toString(), payload);
+        log.debug("Discovery progress: " + progress);
     }
 
     public void startFileDiscovery() {

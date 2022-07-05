@@ -21,7 +21,7 @@ export class GogAuthComponent implements OnInit {
 
   ngOnInit(): void {
     this.gogIsLoading = true;
-    this.gogAuthClient.check().subscribe(isAuthenticated => {
+    this.gogAuthClient.checkAuthentication().subscribe(isAuthenticated => {
       this.gogAuthenticated = isAuthenticated;
       this.gogIsLoading = false;
     });

@@ -13,8 +13,8 @@ describe('GogAuthComponent', () => {
   let gogAuthClientMock: any;
 
   beforeEach(async () => {
-    gogAuthClientMock = createSpyObj(GOGAuthenticationClient, ['check', 'authenticate']);
-    gogAuthClientMock.check.and.returnValue({subscribe: (s: (f: any) => any) => s(false)});
+    gogAuthClientMock = createSpyObj(GOGAuthenticationClient, ['checkAuthentication', 'authenticate']);
+    gogAuthClientMock.checkAuthentication.and.returnValue({subscribe: (s: (f: any) => any) => s(false)});
 
     await TestBed.configureTestingModule({
       declarations: [
@@ -48,7 +48,7 @@ describe('GogAuthComponent', () => {
   it('should check authentications status on init', () => {
     expect(component.gogAuthenticated).toBeFalse();
 
-    gogAuthClientMock.check.and.returnValue({
+    gogAuthClientMock.checkAuthentication.and.returnValue({
       subscribe: (s: (f: any) => any) => {
         expect(component.gogIsLoading).toBeTrue();
         s(true);

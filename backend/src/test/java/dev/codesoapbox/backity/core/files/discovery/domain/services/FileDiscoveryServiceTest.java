@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFileId;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.messages.FileDiscoveryMessageTopics;
+import dev.codesoapbox.backity.core.files.discovery.domain.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
 import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
 import lombok.Getter;
@@ -13,6 +14,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -60,6 +65,14 @@ class FileDiscoveryServiceTest {
         when(repository.existsById(discoveredFile.getId()))
                 .thenReturn(false);
 
+        List<FileDiscoveryProgress> progressList = new ArrayList<>();
+        doAnswer(inv -> {
+            progressList.add(inv.getArgument(1));
+            return null;
+        }).when(messageService).sendMessage(eq(FileDiscoveryMessageTopics.FILE_DISCOVERY_PROGRESS.toString()), any());
+        fileDiscoveryService = new FileDiscoveryService(singletonList(sourceFileDiscoveryService),
+                repository, messageService);
+
         fileDiscoveryService.startFileDiscovery();
 
         await().atMost(2, TimeUnit.SECONDS)
@@ -68,6 +81,7 @@ class FileDiscoveryServiceTest {
 
         verify(repository).save(discoveredFile);
         verify(messageService).sendMessage(FileDiscoveryMessageTopics.FILE_DISCOVERY.toString(), discoveredFile);
+        assertEquals(1, progressList.size());
     }
 
     @Test
@@ -163,12 +177,12 @@ class FileDiscoveryServiceTest {
 
         @Override
         public void subscribeToProgress(Consumer<ProgressInfo> progressConsumer) {
-
+            progressConsumer.accept(getProgress());
         }
 
         @Override
         public ProgressInfo getProgress() {
-            return null;
+            return new ProgressInfo(25, Duration.of(1234, ChronoUnit.SECONDS));
         }
     }
 }

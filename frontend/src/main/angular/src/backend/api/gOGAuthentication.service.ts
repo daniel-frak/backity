@@ -141,10 +141,10 @@ export class GOGAuthenticationClient {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public check(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<boolean>;
-    public check(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<boolean>>;
-    public check(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<boolean>>;
-    public check(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
+    public checkAuthentication(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<boolean>;
+    public checkAuthentication(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<boolean>>;
+    public checkAuthentication(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<boolean>>;
+    public checkAuthentication(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
@@ -184,12 +184,12 @@ export class GOGAuthenticationClient {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public refresh(refreshToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<RefreshTokenResponse>;
-    public refresh(refreshToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<RefreshTokenResponse>>;
-    public refresh(refreshToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<RefreshTokenResponse>>;
-    public refresh(refreshToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
+    public refreshAccessToken(refreshToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<RefreshTokenResponse>;
+    public refreshAccessToken(refreshToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<RefreshTokenResponse>>;
+    public refreshAccessToken(refreshToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<RefreshTokenResponse>>;
+    public refreshAccessToken(refreshToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
         if (refreshToken === null || refreshToken === undefined) {
-            throw new Error('Required parameter refreshToken was null or undefined when calling refresh.');
+            throw new Error('Required parameter refreshToken was null or undefined when calling refreshAccessToken.');
         }
 
         let queryParameters = new HttpParams({encoder: this.encoder});

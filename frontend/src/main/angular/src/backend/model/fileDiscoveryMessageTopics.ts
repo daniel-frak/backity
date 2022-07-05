@@ -11,10 +11,11 @@
  */
 
 
-export type FileDiscoveryMessageTopics = '/topic/file-discovery' | '/topic/file-discovery/status';
+export type FileDiscoveryMessageTopics = '/topic/file-discovery' | '/topic/file-discovery/status' | '/topic/file-discovery/progress';
 
 export const FileDiscoveryMessageTopics = {
     Discovery: '/topic/file-discovery' as FileDiscoveryMessageTopics,
-    DiscoveryStatus: '/topic/file-discovery/status' as FileDiscoveryMessageTopics
+    DiscoveryStatus: '/topic/file-discovery/status' as FileDiscoveryMessageTopics,
+    DiscoveryProgress: '/topic/file-discovery/progress' as FileDiscoveryMessageTopics
 };
 

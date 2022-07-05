@@ -2,6 +2,7 @@ export * from './discoveredFile';
 export * from './downloadStatus';
 export * from './enqueuedFileDownload';
 export * from './fileDiscoveryMessageTopics';
+export * from './fileDiscoveryProgress';
 export * from './fileDiscoveryStatus';
 export * from './fileDownloadMessageTopics';
 export * from './gameDetailsResponse';

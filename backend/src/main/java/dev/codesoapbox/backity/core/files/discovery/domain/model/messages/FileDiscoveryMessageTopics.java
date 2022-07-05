@@ -8,7 +8,8 @@ import lombok.AllArgsConstructor;
 public enum FileDiscoveryMessageTopics {
 
     FILE_DISCOVERY("/topic/file-discovery"),
-    FILE_DISCOVERY_STATUS("/topic/file-discovery/status");
+    FILE_DISCOVERY_STATUS("/topic/file-discovery/status"),
+    FILE_DISCOVERY_PROGRESS("/topic/file-discovery/progress");
 
     private final String value;
 

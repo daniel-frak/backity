@@ -109,7 +109,6 @@ To run [client code generation](https://codesoapbox.dev/generate-client-code-fro
 using the `openapi-generator-maven-plugin`, execute the following command:
 
 ```shell
-cd backend
 mvn clean verify -Pangular -DskipTests
 ```
 
@@ -194,8 +193,7 @@ mvn clean verify sonar:sonar -Pcode-coverage -Dsonar.login=your_username -Dsonar
 You can run a separate analysis for the **frontend** module:
 
 ```shell
-cd frontend
-mvn sonar:sonar -Pfrontend-pre-sonar -Dsonar.login=your_username -Dsonar.password=your_password
+mvn sonar:sonar -pl frontend -Pfrontend-pre-sonar -Dsonar.login=your_username -Dsonar.password=your_password
 ```
 
 ### Verifying results

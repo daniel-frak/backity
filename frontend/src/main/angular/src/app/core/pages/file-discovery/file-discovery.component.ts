@@ -4,6 +4,7 @@ import {
   DownloadsClient,
   FileDiscoveryClient,
   FileDiscoveryMessageTopics,
+  FileDiscoveryProgress,
   FileDiscoveryStatus,
   PageDiscoveredFile
 } from "@backend";
@@ -25,7 +26,8 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   newDiscoveredCount: number = 0;
   infoIsLoading: boolean = false;
   filesAreLoading: boolean = false;
-  discoveryStatuses: Map<string, boolean> = new Map<string, boolean>();
+  discoveryStatusBySource: Map<string, boolean> = new Map<string, boolean>();
+  discoveryProgressBySource: Map<string, FileDiscoveryProgress> = new Map<string, FileDiscoveryProgress>();
 
   private pageSize = 20;
   private readonly stompSubscriptions: StompSubscription[] = [];
@@ -40,7 +42,8 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
       client.subscribe(FileDiscoveryMessageTopics.Discovery, p => this.onDiscoveredFileReceived(p)),
-      client.subscribe(FileDiscoveryMessageTopics.DiscoveryStatus, p => this.onStatusChanged(p))
+      client.subscribe(FileDiscoveryMessageTopics.DiscoveryStatus, p => this.onStatusChanged(p)),
+      client.subscribe(FileDiscoveryMessageTopics.DiscoveryProgress, p => this.onProgressUpdated(p))
     ))
 
     this.refreshInfo();
@@ -58,6 +61,15 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     this.updateDiscoveryStatus(status);
   }
 
+  private onProgressUpdated(payload: IMessage) {
+    const progress: FileDiscoveryProgress = JSON.parse(payload.body);
+    this.discoveryProgressBySource.set(progress.source as string, progress);
+  }
+
+  private updateDiscoveryStatus(status: FileDiscoveryStatus) {
+    this.discoveryStatusBySource.set(status.source as string, status.inProgress as boolean);
+  }
+
   private refreshInfo() {
     this.infoIsLoading = true;
     this.fileDiscoveryClient.getStatuses()
@@ -65,10 +77,6 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
         ss.forEach((s) => this.updateDiscoveryStatus(s))
         this.infoIsLoading = false;
       });
-  }
-
-  private updateDiscoveryStatus(status: FileDiscoveryStatus) {
-    this.discoveryStatuses.set(status.source as string, status.inProgress as boolean);
   }
 
   refreshDiscoveredFiles() {
@@ -99,7 +107,8 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
         file.enqueued = false;
         return throwError(e);
       }))
-      .subscribe(() => {}, err => console.error(`An error occurred while trying to enqueue a file (${file})`,
+      .subscribe(() => {
+      }, err => console.error(`An error occurred while trying to enqueue a file (${file})`,
         file, err));
   }
 
@@ -108,11 +117,11 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   }
 
   getStatuses(): FileDiscoveryStatus[] {
-    if (this.discoveryStatuses.size === 0) {
+    if (this.discoveryStatusBySource.size === 0) {
       return [];
     }
 
-    return Array.from(this.discoveryStatuses)
+    return Array.from(this.discoveryStatusBySource)
       .map(([source, inProgress]) => {
         return {
           source: source,
@@ -121,16 +130,30 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
       });
   }
 
+  getProgressList(): FileDiscoveryProgress[] {
+    if (this.discoveryProgressBySource.size === 0) {
+      return [];
+    }
+    return Array.from(this.discoveryProgressBySource)
+      .map(([source, progress]) => {
+        return progress;
+      });
+  }
+
   discoveryOngoing(): boolean {
-    if (this.discoveryStatuses.size === 0) {
+    if (this.discoveryStatusBySource.size === 0) {
       return false;
     }
 
-    return Array.from(this.discoveryStatuses)
+    return Array.from(this.discoveryStatusBySource)
       .some(([source, inProgress]) => inProgress);
   }
 
   discoverFilesFor(source?: string) {
     console.error("Per-source file discovery start not yet implemented");
+  }
+
+  isInProgress(source: string): boolean {
+    return !!this.discoveryStatusBySource.get(source);
   }
 }

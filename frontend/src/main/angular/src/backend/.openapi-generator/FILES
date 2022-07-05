@@ -17,6 +17,7 @@ model/discoveredFile.ts
 model/downloadStatus.ts
 model/enqueuedFileDownload.ts
 model/fileDiscoveryMessageTopics.ts
+model/fileDiscoveryProgress.ts
 model/fileDiscoveryStatus.ts
 model/fileDownloadMessageTopics.ts
 model/gameDetailsResponse.ts
