@@ -28,6 +28,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   filesAreLoading: boolean = false;
   discoveryStatusBySource: Map<string, boolean> = new Map<string, boolean>();
   discoveryProgressBySource: Map<string, FileDiscoveryProgress> = new Map<string, FileDiscoveryProgress>();
+  discoveryStateUnknown: boolean = true;
 
   private pageSize = 20;
   private readonly stompSubscriptions: StompSubscription[] = [];
@@ -42,7 +43,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
       client.subscribe(FileDiscoveryMessageTopics.Discovery, p => this.onDiscoveredFileReceived(p)),
-      client.subscribe(FileDiscoveryMessageTopics.DiscoveryStatus, p => this.onStatusChanged(p)),
+      client.subscribe(FileDiscoveryMessageTopics.DiscoveryStatus, p => this.onDiscoveryStatusChanged(p)),
       client.subscribe(FileDiscoveryMessageTopics.DiscoveryProgress, p => this.onProgressUpdated(p))
     ))
 
@@ -56,7 +57,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     this.newDiscoveredCount++;
   }
 
-  private onStatusChanged(payload: IMessage) {
+  private onDiscoveryStatusChanged(payload: IMessage) {
     const status: FileDiscoveryStatus = JSON.parse(payload.body);
     this.updateDiscoveryStatus(status);
   }
@@ -68,6 +69,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
   private updateDiscoveryStatus(status: FileDiscoveryStatus) {
     this.discoveryStatusBySource.set(status.source as string, status.inProgress as boolean);
+    this.discoveryStateUnknown = false;
   }
 
   private refreshInfo() {
@@ -94,8 +96,15 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     this.filesAreLoading = false;
   }
 
-  discoverFiles() {
+  startDiscovery() {
+    this.discoveryStateUnknown = true;
     this.fileDiscoveryClient.discover().subscribe(() => {
+    });
+  }
+
+  stopDiscovery() {
+    this.discoveryStateUnknown = true;
+    this.fileDiscoveryClient.stopDiscovery().subscribe(() => {
     });
   }
 

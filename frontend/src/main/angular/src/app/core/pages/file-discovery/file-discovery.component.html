@@ -17,10 +17,16 @@
         </app-new-discovered-files-badge>
       </div>
 
-      <button (click)="discoverFiles()"
-              [disabled]="discoveryOngoing()"
-              class="btn btn-primary mt-2 me-3">
+      <button (click)="startDiscovery()"
+              [disabled]="discoveryStateUnknown || discoveryOngoing()"
+              class="btn btn-primary mt-2 me-1">
         Discover new files
+      </button>
+
+      <button (click)="stopDiscovery()"
+              [disabled]="discoveryStateUnknown || !discoveryOngoing()"
+              class="btn btn-secondary mt-2 me-1">
+        Stop discovery
       </button>
 
       <div class="gutters-1">

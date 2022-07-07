@@ -51,7 +51,7 @@ describe('FileDiscoveryComponent', () => {
       });
 
     fileDiscoveryClientMock = createSpyObj(FileDiscoveryClient, ['getStatuses', 'getDiscoveredFiles',
-      'discover']);
+      'discover', 'stopDiscovery']);
     fileDiscoveryClientMock.getStatuses.and.returnValue({subscribe: (s: (f: any) => any) => s([])});
     fileDiscoveryClientMock.getDiscoveredFiles.and.returnValue({subscribe: (s: (f: any) => any) => s([])});
 
@@ -158,11 +158,20 @@ describe('FileDiscoveryComponent', () => {
     expect(component.discoveryStatusBySource.get('someSource')).toBeFalse();
   });
 
-  it('should discover files', () => {
+  it('should start file discovery', () => {
     const observableMock: any = createSpyObj('Observable', ['subscribe']);
     fileDiscoveryClientMock.discover.and.returnValue(observableMock);
 
-    component.discoverFiles();
+    component.startDiscovery();
+
+    expect(observableMock.subscribe).toHaveBeenCalled();
+  });
+
+  it('should stop file discovery', () => {
+    const observableMock: any = createSpyObj('Observable', ['subscribe']);
+    fileDiscoveryClientMock.stopDiscovery.and.returnValue(observableMock);
+
+    component.stopDiscovery();
 
     expect(observableMock.subscribe).toHaveBeenCalled();
   });
