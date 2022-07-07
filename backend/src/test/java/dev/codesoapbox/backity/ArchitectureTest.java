@@ -6,6 +6,8 @@ import com.tngtech.archunit.junit.ArchIgnore;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.library.dependencies.SliceRule;
+import dev.codesoapbox.backity.testing.archunit.AdapterPackagesOnlyAccessedByTheirConfigCondition;
+import dev.codesoapbox.backity.testing.archunit.AdaptersShouldNotDependOnOtherAdaptersCondition;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -49,16 +51,28 @@ class ArchitectureTest {
             .layer(CONFIG_LAYER).definedBy(CONFIG_PACKAGE);
 
     @ArchTest
-    static final ArchRule adaptersShouldOnlyBeAccessedByConfig = LAYERS
+    static final ArchRule adapterLayerShouldOnlyBeAccessedByConfigLayer = LAYERS
             .whereLayer(ADAPTER_LAYER).mayOnlyBeAccessedByLayers(CONFIG_LAYER);
 
     @ArchTest
-    static final SliceRule adaptersShouldNotDependOnEachOther = slices()
+    static final ArchRule configLayerShouldNotBeAccessedByAnyLayer = LAYERS
+            .whereLayer(CONFIG_LAYER).mayNotBeAccessedByAnyLayer();
+
+    @ArchTest
+    static final SliceRule adapterPackagesShouldNotDependOnEachOther = slices()
             .matching("..adapters.(*)..").should().notDependOnEachOther();
 
     @ArchTest
-    static final ArchRule configShouldNotBeAccessedByAnyLayer = LAYERS
-            .whereLayer(CONFIG_LAYER).mayNotBeAccessedByAnyLayer();
+    static final ArchRule adapterPackagesShouldOnlyBeAccessedByThemselvesOrTheirOwnConfig = classes().that()
+            .resideInAPackage("..adapters.*..")
+            .should(new AdapterPackagesOnlyAccessedByTheirConfigCondition(
+                    "adapters", "config"));
+
+    @ArchTest
+    static final ArchRule adaptersShouldNotDependOnEachOther = classes().that()
+            .resideInAPackage("..adapters.*..")
+            .should(new AdaptersShouldNotDependOnOtherAdaptersCondition(BackityApplication.class.getPackageName(),
+                    "domain"));
 
     @ArchTest
     static final ArchRule domainModelShouldNotCallServices = noClasses().that()
@@ -134,4 +148,5 @@ class ArchitectureTest {
     static final ArchRule integrationsShouldNotDependOnEachOther = slices()
             .matching(BackityApplication.class.getPackageName() + ".integrations.(*)..")
             .should().notDependOnEachOther();
+
 }
