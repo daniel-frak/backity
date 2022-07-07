@@ -2,11 +2,9 @@ package dev.codesoapbox.backity.core.files.discovery.domain.services;
 
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.ProgressInfo;
-import dev.codesoapbox.backity.core.files.discovery.domain.model.messages.FileDiscoveryMessageTopics;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.messages.FileDiscoveryStatus;
 import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
-import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -19,11 +17,11 @@ public class FileDiscoveryService {
 
     private final List<SourceFileDiscoveryService> discoveryServices;
     private final DiscoveredFileRepository repository;
-    private final MessageService messageService;
+    private final FileDiscoveryMessageService messageService;
     private final Map<String, Boolean> discoveryStatuses = new ConcurrentHashMap<>();
 
     public FileDiscoveryService(List<SourceFileDiscoveryService> discoveryServices,
-                                DiscoveredFileRepository repository, MessageService messageService) {
+                                DiscoveredFileRepository repository, FileDiscoveryMessageService messageService) {
         this.discoveryServices = discoveryServices;
         this.repository = repository;
         this.messageService = messageService;
@@ -34,9 +32,9 @@ public class FileDiscoveryService {
         });
     }
 
-    private void onProgressMade(MessageService messageService, String source, ProgressInfo progress) {
+    private void onProgressMade(FileDiscoveryMessageService messageService, String source, ProgressInfo progress) {
         var payload = new FileDiscoveryProgress(source, progress.percentage(), progress.timeLeft().getSeconds());
-        messageService.sendMessage(FileDiscoveryMessageTopics.FILE_DISCOVERY_PROGRESS.toString(), payload);
+        messageService.sendProgress(payload);
         log.debug("Discovery progress: " + progress);
     }
 
@@ -71,14 +69,13 @@ public class FileDiscoveryService {
     }
 
     private void sendDiscoveryStatusMessage(SourceFileDiscoveryService discoveryService, boolean status) {
-        messageService.sendMessage(FileDiscoveryMessageTopics.FILE_DISCOVERY_STATUS.toString(),
-                new FileDiscoveryStatus(discoveryService.getSource(), status));
+        messageService.sendStatus(new FileDiscoveryStatus(discoveryService.getSource(), status));
     }
 
     private void saveDiscoveredFileInfo(DiscoveredFile discoveredFile) {
         if (!repository.existsById(discoveredFile.getId())) {
             repository.save(discoveredFile);
-            messageService.sendMessage(FileDiscoveryMessageTopics.FILE_DISCOVERY.toString(), discoveredFile);
+            messageService.sendDiscoveredFile(discoveredFile);
             log.info("Discovered new file: {} (game: {})",
                     discoveredFile.getId().getUrl(), discoveredFile.getGameTitle());
         }

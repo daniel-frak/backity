@@ -7,8 +7,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
 import dev.codesoapbox.backity.core.logs.domain.model.LogCreatedMessage;
-import dev.codesoapbox.backity.core.logs.domain.model.LogsMessageTopics;
-import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
+import dev.codesoapbox.backity.core.logs.domain.services.LogMessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -32,7 +31,7 @@ class LogbackLogServiceTest {
     private LogbackLogService logService;
 
     @Mock
-    private MessageService messageService;
+    private LogMessageService messageService;
 
     @BeforeAll
     static void beforeAll() {
@@ -74,7 +73,7 @@ class LogbackLogServiceTest {
 
         log.info(logMessage);
 
-        verify(messageService).sendMessage(LogsMessageTopics.LOGS.toString(), LogCreatedMessage.of(logMessage, MAX_LOGS));
+        verify(messageService).sendLogCreated(LogCreatedMessage.of(logMessage, MAX_LOGS));
     }
 
     @Test

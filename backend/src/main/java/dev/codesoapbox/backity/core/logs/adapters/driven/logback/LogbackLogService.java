@@ -7,9 +7,8 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.OutputStreamAppender;
 import dev.codesoapbox.backity.core.logs.domain.model.LogCreatedMessage;
-import dev.codesoapbox.backity.core.logs.domain.model.LogsMessageTopics;
+import dev.codesoapbox.backity.core.logs.domain.services.LogMessageService;
 import dev.codesoapbox.backity.core.logs.domain.services.LogService;
-import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
@@ -24,11 +23,11 @@ public class LogbackLogService implements LogService {
     // https://stackoverflow.com/a/25189932
     private static final Pattern ANSI_PATTERN = Pattern.compile("\\e\\[[\\d;]*[^\\d;]");
 
-    private final MessageService messageService;
+    private final LogMessageService messageService;
     private final InMemoryLimitedLogbackAppender logAppender;
     private final PatternLayout layout;
 
-    public LogbackLogService(MessageService messageService, Integer maxLogs) {
+    public LogbackLogService(LogMessageService messageService, Integer maxLogs) {
         this.messageService = messageService;
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger logger = createLogger();
@@ -38,8 +37,7 @@ public class LogbackLogService implements LogService {
     }
 
     private void onLogEvent(ILoggingEvent event) {
-        messageService.sendMessage(LogsMessageTopics.LOGS.toString(),
-                LogCreatedMessage.of(getLogMessage(event), logAppender.getMaxLogs()));
+        messageService.sendLogCreated(LogCreatedMessage.of(getLogMessage(event), logAppender.getMaxLogs()));
     }
 
     private Logger createLogger() {

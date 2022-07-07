@@ -4,9 +4,7 @@ import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
 import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.DownloadStatus;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
-import dev.codesoapbox.backity.core.files.downloading.domain.model.messages.FileDownloadMessageTopics;
 import dev.codesoapbox.backity.core.files.downloading.domain.repositories.EnqueuedFileDownloadRepository;
-import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +17,7 @@ public class FileDownloadQueue {
 
     private final DiscoveredFileRepository discoveredFileRepository;
     private final EnqueuedFileDownloadRepository downloadRepository;
-    private final MessageService messageService;
+    private final FileDownloadMessageService messageService;
 
     @Transactional
     public void enqueue(DiscoveredFile discoveredFile) {
@@ -49,13 +47,13 @@ public class FileDownloadQueue {
     public void acknowledgeSuccess(EnqueuedFileDownload enqueuedFileDownload) {
         enqueuedFileDownload.setStatus(DownloadStatus.DOWNLOADED);
         downloadRepository.save(enqueuedFileDownload);
-        messageService.sendMessage(FileDownloadMessageTopics.DOWNLOAD_FINISHED.toString(), enqueuedFileDownload);
+        messageService.sendDownloadFinished(enqueuedFileDownload);
     }
 
     public void acknowledgeFailed(EnqueuedFileDownload enqueuedFileDownload, String reason) {
         enqueuedFileDownload.fail(reason);
         downloadRepository.save(enqueuedFileDownload);
-        messageService.sendMessage(FileDownloadMessageTopics.DOWNLOAD_FINISHED.toString(), enqueuedFileDownload);
+        messageService.sendDownloadFinished(enqueuedFileDownload);
     }
 
     public Page<EnqueuedFileDownload> findAllQueued(Pageable pageable) {
@@ -69,7 +67,7 @@ public class FileDownloadQueue {
     public void markInProgress(EnqueuedFileDownload enqueuedFileDownload) {
         enqueuedFileDownload.setStatus(DownloadStatus.IN_PROGRESS);
         downloadRepository.save(enqueuedFileDownload);
-        messageService.sendMessage(FileDownloadMessageTopics.DOWNLOAD_STARTED.toString(), enqueuedFileDownload);
+        messageService.sendDownloadStarted(enqueuedFileDownload);
     }
 
     public Page<EnqueuedFileDownload> findAllProcessed(Pageable pageable) {

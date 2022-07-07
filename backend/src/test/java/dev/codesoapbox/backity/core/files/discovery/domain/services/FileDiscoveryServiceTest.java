@@ -3,10 +3,8 @@ package dev.codesoapbox.backity.core.files.discovery.domain.services;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFileId;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.ProgressInfo;
-import dev.codesoapbox.backity.core.files.discovery.domain.model.messages.FileDiscoveryMessageTopics;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.discovery.domain.repositories.DiscoveredFileRepository;
-import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
 import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +39,7 @@ class FileDiscoveryServiceTest {
     private DiscoveredFileRepository repository;
 
     @Mock
-    private MessageService messageService;
+    private FileDiscoveryMessageService messageService;
 
     @BeforeEach
     void setUp() {
@@ -67,9 +65,9 @@ class FileDiscoveryServiceTest {
 
         List<FileDiscoveryProgress> progressList = new ArrayList<>();
         doAnswer(inv -> {
-            progressList.add(inv.getArgument(1));
+            progressList.add(inv.getArgument(0));
             return null;
-        }).when(messageService).sendMessage(eq(FileDiscoveryMessageTopics.FILE_DISCOVERY_PROGRESS.toString()), any());
+        }).when(messageService).sendProgress(any());
         fileDiscoveryService = new FileDiscoveryService(singletonList(sourceFileDiscoveryService),
                 repository, messageService);
 
@@ -80,7 +78,7 @@ class FileDiscoveryServiceTest {
         sourceFileDiscoveryService.simulateFileDiscovery(discoveredFile);
 
         verify(repository).save(discoveredFile);
-        verify(messageService).sendMessage(FileDiscoveryMessageTopics.FILE_DISCOVERY.toString(), discoveredFile);
+        verify(messageService).sendDiscoveredFile(discoveredFile);
         assertEquals(1, progressList.size());
     }
 
@@ -99,7 +97,7 @@ class FileDiscoveryServiceTest {
         sourceFileDiscoveryService.simulateFileDiscovery(discoveredFile);
 
         verify(repository, never()).save(any());
-        verify(messageService, never()).sendMessage(eq(FileDiscoveryMessageTopics.FILE_DISCOVERY.toString()), any());
+        verify(messageService, never()).sendDiscoveredFile(any());
     }
 
     @Test

@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.files.discovery.adapters.driven.persistence.
 import dev.codesoapbox.backity.core.files.discovery.config.FileDiscoveryBeanConfig;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
 import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFileId;
-import dev.codesoapbox.backity.core.shared.domain.services.MessageService;
+import dev.codesoapbox.backity.core.files.discovery.domain.services.FileDiscoveryMessageService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class H2DbControllerTest {
     private DiscoveredFileJpaRepository discoveredFileJpaRepository;
 
     @MockBean
-    private MessageService messageService;
+    private FileDiscoveryMessageService messageService;
 
     @BeforeEach
     void setUp() throws IOException {
