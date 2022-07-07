@@ -30,13 +30,13 @@
       </button>
 
       <div class="gutters-1">
-        <ng-container *ngFor="let status of getStatuses()">
+        <div *ngFor="let status of getStatuses()">
           <button (click)="discoverFilesFor(status.source)"
                   [disabled]="status.inProgress"
                   class="btn btn-secondary btn-sm mt-2 me-3">
             Discover new files for {{ status.source }}
           </button>
-        </ng-container>
+        </div>
       </div>
 
       <hr *ngIf="discoveryOngoing()">
