@@ -8,7 +8,6 @@ import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileD
 import dev.codesoapbox.backity.core.files.downloading.domain.repositories.EnqueuedFileDownloadRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -48,16 +47,8 @@ class FileDownloadQueueTest {
                 .size("someSize")
                 .build();
 
-        fileDownloadQueue.enqueue(discoveredFile);
-
-        assertTrue(discoveredFile.isEnqueued());
-        verify(discoveredFileRepository).save(discoveredFile);
-
-        ArgumentCaptor<EnqueuedFileDownload> enqueuedFileDownloadCaptor = ArgumentCaptor.forClass(EnqueuedFileDownload.class);
-        verify(downloadRepository).save(enqueuedFileDownloadCaptor.capture());
-
         EnqueuedFileDownload expectedEnqueuedFileDownload = EnqueuedFileDownload.builder()
-                .id(enqueuedFileDownloadCaptor.getValue().getId())
+                .id(null)
                 .source("someSource")
                 .url("someUrl")
                 .name("someName")
@@ -67,7 +58,11 @@ class FileDownloadQueueTest {
                 .status(DownloadStatus.WAITING)
                 .build();
 
-        assertEquals(expectedEnqueuedFileDownload, enqueuedFileDownloadCaptor.getValue());
+        fileDownloadQueue.enqueue(discoveredFile);
+
+        assertTrue(discoveredFile.isEnqueued());
+        verify(discoveredFileRepository).save(discoveredFile);
+        verify(downloadRepository).save(expectedEnqueuedFileDownload);
     }
 
     @Test
