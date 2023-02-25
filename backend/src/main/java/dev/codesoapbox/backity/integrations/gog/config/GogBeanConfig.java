@@ -1,5 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.config;
 
+import dev.codesoapbox.backity.core.files.downloading.domain.model.messages.FileDownloadProgress;
+import dev.codesoapbox.backity.core.files.downloading.domain.services.FileDownloadMessageService;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.FileManager;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.GogFileDiscoveryService;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.GogFileDownloader;
@@ -44,8 +46,11 @@ public class GogBeanConfig {
     }
 
     @Bean
-    UrlFileDownloader enqueuedFileDownloader(FileManager fileManager) {
-        return new UrlFileDownloader(fileManager, i -> log.info("File download progress: " + i));
+    UrlFileDownloader enqueuedFileDownloader(FileManager fileManager,
+                                             FileDownloadMessageService fileDownloadMessageService) {
+        return new UrlFileDownloader(fileManager,
+                i -> fileDownloadMessageService.sendProgress(
+                        new FileDownloadProgress(i.percentage(), i.timeLeft().toSeconds())));
     }
 
     @Bean

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 public enum FileDownloadMessageTopics {
 
     DOWNLOAD_STARTED("/topic/downloads/started"),
+    DOWNLOAD_PROGRESS("/topic/downloads/progress"),
     DOWNLOAD_FINISHED("/topic/downloads/finished");
 
     private final String value;

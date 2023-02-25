@@ -9,15 +9,14 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import {Sort} from './sort';
+import {FileDownloadProgressTimeLeftUnits} from './fileDownloadProgressTimeLeftUnits';
 
 
-export interface Pageable {
-    offset?: number;
-    sort?: Sort;
-    pageSize?: number;
-    pageNumber?: number;
-    unpaged?: boolean;
-    paged?: boolean;
+export interface FileDownloadProgressTimeLeft {
+    seconds?: number;
+    nano?: number;
+    negative?: boolean;
+    zero?: boolean;
+    units?: Array<FileDownloadProgressTimeLeftUnits>;
 }
 

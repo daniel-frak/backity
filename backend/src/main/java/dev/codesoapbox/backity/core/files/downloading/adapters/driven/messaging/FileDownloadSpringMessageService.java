@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.files.downloading.adapters.driven.messaging;
 
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
+import dev.codesoapbox.backity.core.files.downloading.domain.model.messages.FileDownloadProgress;
 import dev.codesoapbox.backity.core.files.downloading.domain.services.FileDownloadMessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,11 @@ public class FileDownloadSpringMessageService implements FileDownloadMessageServ
     @Override
     public void sendDownloadStarted(EnqueuedFileDownload payload) {
         sendMessage(FileDownloadMessageTopics.DOWNLOAD_STARTED.toString(), payload);
+    }
+
+    @Override
+    public void sendProgress(FileDownloadProgress payload) {
+        sendMessage(FileDownloadMessageTopics.DOWNLOAD_PROGRESS.toString(), payload);
     }
 
     private void sendMessage(String topic, Object payload) {

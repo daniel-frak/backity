@@ -11,10 +11,11 @@
  */
 
 
-export type FileDownloadMessageTopics = '/topic/downloads/started' | '/topic/downloads/finished';
+export type FileDownloadMessageTopics = '/topic/downloads/started' | '/topic/downloads/progress' | '/topic/downloads/finished';
 
 export const FileDownloadMessageTopics = {
     Started: '/topic/downloads/started' as FileDownloadMessageTopics,
+    Progress: '/topic/downloads/progress' as FileDownloadMessageTopics,
     Finished: '/topic/downloads/finished' as FileDownloadMessageTopics
 };
 

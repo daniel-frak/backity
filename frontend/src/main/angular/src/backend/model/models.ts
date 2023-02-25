@@ -5,6 +5,7 @@ export * from './fileDiscoveryMessageTopics';
 export * from './fileDiscoveryProgress';
 export * from './fileDiscoveryStatus';
 export * from './fileDownloadMessageTopics';
+export * from './fileDownloadProgress';
 export * from './gameDetailsResponse';
 export * from './gameFileDetailsResponse';
 export * from './logCreatedMessage';

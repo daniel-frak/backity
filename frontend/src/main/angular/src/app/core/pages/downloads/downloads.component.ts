@@ -4,6 +4,7 @@ import {
   DownloadStatus,
   EnqueuedFileDownload,
   FileDownloadMessageTopics,
+  FileDownloadProgress,
   PageEnqueuedFileDownload
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
@@ -20,6 +21,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   enqueuedDownloads?: PageEnqueuedFileDownload;
   processedFiles?: PageEnqueuedFileDownload;
   currentDownload?: EnqueuedFileDownload;
+  downloadProgress?: FileDownloadProgress;
   filesAreLoading: boolean = false;
   DownloadStatus = DownloadStatus;
 
@@ -35,6 +37,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
       client.subscribe(FileDownloadMessageTopics.Started, p => this.onDownloadStartedReceived(p)),
+      client.subscribe(FileDownloadMessageTopics.Progress, p => this.onDownloadProgressReceived(p)),
       client.subscribe(FileDownloadMessageTopics.Finished, () => this.onDownloadFinishedReceived())
     ))
 
@@ -43,6 +46,10 @@ export class DownloadsComponent implements OnInit, OnDestroy {
 
   private onDownloadStartedReceived(payload: IMessage) {
     this.currentDownload = JSON.parse(payload.body);
+  }
+
+  private onDownloadProgressReceived(payload: IMessage) {
+    this.downloadProgress = JSON.parse(payload.body);
   }
 
   private onDownloadFinishedReceived() {

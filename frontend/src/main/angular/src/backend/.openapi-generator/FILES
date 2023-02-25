@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 README.md
 api.module.ts
 api/api.ts
@@ -20,6 +19,7 @@ model/fileDiscoveryMessageTopics.ts
 model/fileDiscoveryProgress.ts
 model/fileDiscoveryStatus.ts
 model/fileDownloadMessageTopics.ts
+model/fileDownloadProgress.ts
 model/gameDetailsResponse.ts
 model/gameFileDetailsResponse.ts
 model/logCreatedMessage.ts

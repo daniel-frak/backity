@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.files.downloading.adapters.driven.messaging
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.DownloadStatus;
 import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
+import dev.codesoapbox.backity.core.files.downloading.domain.model.messages.FileDownloadProgress;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,7 +25,7 @@ class FileDownloadSpringMessageServiceTest {
     private SimpMessagingTemplate simpMessagingTemplate;
 
     @Test
-    void sendDownloadStarted() throws JsonProcessingException {
+    void shouldSendDownloadStarted() throws JsonProcessingException {
         var expectedPayload = """
                 {
                   "id": 123,
@@ -58,7 +59,25 @@ class FileDownloadSpringMessageServiceTest {
     }
 
     @Test
-    void sendDownloadFinished() throws JsonProcessingException {
+    void shouldSendDownloadProgress() throws JsonProcessingException {
+        var expectedPayload = """
+                {
+                  "percentage": 25,
+                  "timeLeftSeconds": 1234
+                }
+                """;
+
+        assertSendsMessage(simpMessagingTemplate, expectedPayload,
+                FileDownloadMessageTopics.DOWNLOAD_PROGRESS.toString(),
+                () -> fileDownloadSpringMessageService.sendProgress(
+                        new FileDownloadProgress(
+                                25,
+                                1234L
+                        )));
+    }
+
+    @Test
+    void shouldSendDownloadFinished() throws JsonProcessingException {
         var expectedPayload = """
                 {
                   "id": 123,

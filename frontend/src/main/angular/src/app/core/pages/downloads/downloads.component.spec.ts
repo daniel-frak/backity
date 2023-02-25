@@ -10,7 +10,7 @@ import {Client} from "@stomp/stompjs";
 import {ReplaySubject} from "rxjs";
 import {messageCallbackType} from "@stomp/stompjs/src/types";
 import {StompHeaders} from "@stomp/stompjs/src/stomp-headers";
-import {DownloadsClient, EnqueuedFileDownload, FileDownloadMessageTopics} from "@backend";
+import {DownloadsClient, EnqueuedFileDownload, FileDownloadMessageTopics, FileDownloadProgress} from "@backend";
 import {By} from "@angular/platform-browser";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
 
@@ -18,6 +18,7 @@ describe('DownloadsComponent', () => {
   let component: DownloadsComponent;
   let fixture: ComponentFixture<DownloadsComponent>;
   let startSubscriptions: Function[];
+  let progressSubscriptions: Function[];
   let finishSubscriptions: Function[];
   const downloadsClientMock = {
     currentlyDownloading: undefined,
@@ -36,6 +37,7 @@ describe('DownloadsComponent', () => {
 
   beforeEach(async () => {
     startSubscriptions = [];
+    progressSubscriptions = [];
     finishSubscriptions = [];
     downloadsClientMock.currentlyDownloading = undefined;
     downloadsClientMock.processedFiles = undefined;
@@ -45,6 +47,9 @@ describe('DownloadsComponent', () => {
       ): any => {
         if (destination == FileDownloadMessageTopics.Started) {
           startSubscriptions.push(callback);
+        }
+        if (destination == FileDownloadMessageTopics.Progress) {
+          progressSubscriptions.push(callback);
         }
         if (destination == FileDownloadMessageTopics.Finished) {
           finishSubscriptions.push(callback);
@@ -102,6 +107,10 @@ describe('DownloadsComponent', () => {
     expect(startSubscriptions.length).toBe(1);
   });
 
+  it('should subscribe to download progress', () => {
+    expect(progressSubscriptions.length).toBe(1);
+  });
+
   it('should subscribe to download finish', () => {
     expect(finishSubscriptions.length).toBe(1);
   });
@@ -112,6 +121,15 @@ describe('DownloadsComponent', () => {
     };
     startSubscriptions[0]({body: JSON.stringify(expectedDownload)})
     expect(component.currentDownload).toEqual(expectedDownload);
+  });
+
+  it('should set download progress', () => {
+    const expectedProgress: FileDownloadProgress = {
+      percentage: 25,
+      timeLeftSeconds: 1234
+    };
+    progressSubscriptions[0]({body: JSON.stringify(expectedProgress)})
+    expect(component.downloadProgress).toEqual(expectedProgress);
   });
 
   it('should unset current download on finish', () => {
