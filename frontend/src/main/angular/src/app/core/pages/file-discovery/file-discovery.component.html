@@ -85,6 +85,9 @@
       <ng-template app-table-column="File name" let-item>
         {{asFile(item).name}}
       </ng-template>
+      <ng-template app-table-column="Version" let-item>
+        {{asFile(item).version}}
+      </ng-template>
       <ng-template app-table-column="Size" let-item>
         {{asFile(item).size}}
       </ng-template>
