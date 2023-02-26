@@ -24,8 +24,8 @@ import java.time.LocalDateTime;
 public class GameFileVersion {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "enqueued_file_generator")
-    @SequenceGenerator(name = "enqueued_file_generator", sequenceName = "seq_enqueued_file")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "game_file_version_generator")
+    @SequenceGenerator(name = "game_file_version_generator", sequenceName = "seq_game_file_version")
     private Long id;
 
     @NotNull

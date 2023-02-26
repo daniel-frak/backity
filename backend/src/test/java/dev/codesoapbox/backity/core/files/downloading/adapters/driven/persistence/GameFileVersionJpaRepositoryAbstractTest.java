@@ -49,36 +49,36 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
 
     private void persistTestEnqueuedFiles() {
         entityManager.getTransaction().begin();
-        entityManager.createNativeQuery("ALTER SEQUENCE seq_enqueued_file RESTART WITH 1").executeUpdate();
+        entityManager.createNativeQuery("ALTER SEQUENCE seq_game_file_version RESTART WITH 1").executeUpdate();
         entityManager.createNativeQuery("""                         
                         INSERT INTO GAME_FILE_VERSION
                         (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_enqueued_file'), 'someSource1', 'someUrl1', 'someName1', 'someGameTitle1', 
+                        (NEXTVAL('seq_game_file_version'), 'someSource1', 'someUrl1', 'someName1', 'someGameTitle1', 
                         'someVersion1', 'someSize1', '2022-04-29T14:15:53', 'ENQUEUED_FOR_DOWNLOAD', 'someFailedReason1');
                         
                         INSERT INTO GAME_FILE_VERSION
                         (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_enqueued_file'), 'someSource2', 'someUrl2', 'someName2', 'someGameTitle2', 
+                        (NEXTVAL('seq_game_file_version'), 'someSource2', 'someUrl2', 'someName2', 'someGameTitle2', 
                         'someVersion2', 'someSize2', '2022-05-29T14:15:53', 'DOWNLOADED', 'someFailedReason2');
                         
                         INSERT INTO GAME_FILE_VERSION
                         (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_enqueued_file'), 'someSource3', 'someUrl3', 'someName3', 'someGameTitle3',
+                        (NEXTVAL('seq_game_file_version'), 'someSource3', 'someUrl3', 'someName3', 'someGameTitle3',
                          'someVersion3', 'someSize3', '2022-06-29T14:15:53', 'ENQUEUED_FOR_DOWNLOAD', 'someFailedReason3');
                         
                         INSERT INTO GAME_FILE_VERSION
                         (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_enqueued_file'), 'someSource4', 'someUrl4', 'someName4', 'someGameTitle4',
+                        (NEXTVAL('seq_game_file_version'), 'someSource4', 'someUrl4', 'someName4', 'someGameTitle4',
                          'someVersion4', 'someSize4', '2022-07-29T14:15:53', 'DOWNLOAD_FAILED', 'someFailedReason4');
                         
                         INSERT INTO GAME_FILE_VERSION
                         (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_enqueued_file'), 'someSource5', 'someUrl5', 'someName5', 'someGameTitle5', 
+                        (NEXTVAL('seq_game_file_version'), 'someSource5', 'someUrl5', 'someName5', 'someGameTitle5', 
                         'someVersion5', 'someSize5', '2022-08-29T14:15:53', 'DOWNLOAD_IN_PROGRESS', 'someFailedReason5');
                         
                         INSERT INTO GAME_FILE_VERSION
                         (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_enqueued_file'), 'someSource6', 'someUrl6', 'someName6', 'someGameTitle6', 
+                        (NEXTVAL('seq_game_file_version'), 'someSource6', 'someUrl6', 'someName6', 'someGameTitle6', 
                         'someVersion6', 'someSize6', '2022-08-29T14:16:43', 'DISCOVERED', 'someFailedReason6');
                 """).executeUpdate();
         entityManager.getTransaction().commit();
