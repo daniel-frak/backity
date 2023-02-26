@@ -1,12 +1,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
-  DiscoveredFile,
   DownloadsClient,
+  DownloadStatus,
   FileDiscoveryClient,
   FileDiscoveryMessageTopics,
   FileDiscoveryProgress,
   FileDiscoveryStatus,
-  PageDiscoveredFile
+  GameFileVersion,
+  PageGameFileVersion
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
@@ -21,8 +22,8 @@ import {throwError} from "rxjs";
 })
 export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
-  discoveredFiles?: PageDiscoveredFile;
-  newestDiscovered?: DiscoveredFile;
+  discoveredFiles?: PageGameFileVersion;
+  newestDiscovered?: GameFileVersion;
   newDiscoveredCount: number = 0;
   infoIsLoading: boolean = false;
   filesAreLoading: boolean = false;
@@ -38,11 +39,11 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
               private readonly messageService: MessagesService) {
   }
 
-  asFile = (file: DiscoveredFile) => file;
+  asFile = (file: GameFileVersion) => file;
 
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
-      client.subscribe(FileDiscoveryMessageTopics.Discovery, p => this.onDiscoveredFileReceived(p)),
+      client.subscribe(FileDiscoveryMessageTopics.Discovery, p => this.onGameFileVersionReceived(p)),
       client.subscribe(FileDiscoveryMessageTopics.DiscoveryStatus, p => this.onDiscoveryStatusChanged(p)),
       client.subscribe(FileDiscoveryMessageTopics.DiscoveryProgress, p => this.onProgressUpdated(p))
     ))
@@ -52,7 +53,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     this.refreshDiscoveredFiles();
   }
 
-  private onDiscoveredFileReceived(payload: IMessage) {
+  private onGameFileVersionReceived(payload: IMessage) {
     this.newestDiscovered = JSON.parse(payload.body);
     this.newDiscoveredCount++;
   }
@@ -90,7 +91,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
       .subscribe(df => this.updateDiscoveredFiles(df));
   }
 
-  private updateDiscoveredFiles(df: PageDiscoveredFile) {
+  private updateDiscoveredFiles(df: PageGameFileVersion) {
     this.discoveredFiles = df;
     this.newDiscoveredCount = 0;
     this.filesAreLoading = false;
@@ -108,12 +109,12 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     });
   }
 
-  enqueueFile(file: DiscoveredFile) {
-    file.enqueued = true;
+  enqueueFile(file: GameFileVersion) {
+    file.status = DownloadStatus.Waiting;
     console.info("Enqueuing: " + file.id);
-    this.downloadsClient.download(file.id as string)
+    this.downloadsClient.download(file.id as number)
       .pipe(catchError(e => {
-        file.enqueued = false;
+        file.status = DownloadStatus.Discovered;
         return throwError(e);
       }))
       .subscribe(() => {

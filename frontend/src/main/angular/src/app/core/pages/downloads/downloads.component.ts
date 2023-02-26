@@ -2,10 +2,10 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   DownloadsClient,
   DownloadStatus,
-  EnqueuedFileDownload,
   FileDownloadMessageTopics,
   FileDownloadProgress,
-  PageEnqueuedFileDownload
+  GameFileVersion,
+  PageGameFileVersion
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
@@ -18,9 +18,9 @@ import {IMessage} from "@stomp/stompjs";
 })
 export class DownloadsComponent implements OnInit, OnDestroy {
 
-  enqueuedDownloads?: PageEnqueuedFileDownload;
-  processedFiles?: PageEnqueuedFileDownload;
-  currentDownload?: EnqueuedFileDownload;
+  enqueuedDownloads?: PageGameFileVersion;
+  processedFiles?: PageGameFileVersion;
+  currentDownload?: GameFileVersion;
   downloadProgress?: FileDownloadProgress;
   filesAreLoading: boolean = false;
   DownloadStatus = DownloadStatus;
@@ -32,7 +32,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
               private readonly messageService: MessagesService) {
   }
 
-  asFile = (file: EnqueuedFileDownload) => file;
+  asFile = (file: GameFileVersion) => file;
 
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(

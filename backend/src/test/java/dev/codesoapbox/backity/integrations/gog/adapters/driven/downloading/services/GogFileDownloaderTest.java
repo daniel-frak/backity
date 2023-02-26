@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services;
 
-import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedWebClient;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import org.junit.jupiter.api.Test;
@@ -32,15 +32,15 @@ class GogFileDownloaderTest {
 
     @Test
     void shouldDownloadGameFile() throws IOException {
-        EnqueuedFileDownload enqueuedFileDownload = EnqueuedFileDownload.builder()
+        GameFileVersion gameFileVersion = GameFileVersion.builder()
                 .gameTitle("some game")
                 .url("someUrl")
                 .build();
         String tempFilePath = "someTempFilePath";
 
-        gogFileDownloader.downloadGameFile(enqueuedFileDownload, tempFilePath);
+        gogFileDownloader.downloadGameFile(gameFileVersion, tempFilePath);
 
-        verify(urlFileDownloader).downloadGameFile(gogEmbedClient, enqueuedFileDownload.getUrl(), tempFilePath);
+        verify(urlFileDownloader).downloadGameFile(gogEmbedClient, gameFileVersion.getUrl(), tempFilePath);
     }
 
     @Test

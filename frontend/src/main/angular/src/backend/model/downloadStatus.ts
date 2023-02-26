@@ -11,9 +11,10 @@
  */
 
 
-export type DownloadStatus = 'WAITING' | 'IN_PROGRESS' | 'DOWNLOADED' | 'FAILED';
+export type DownloadStatus = 'DISCOVERED' | 'WAITING' | 'IN_PROGRESS' | 'DOWNLOADED' | 'FAILED';
 
 export const DownloadStatus = {
+    Discovered: 'DISCOVERED' as DownloadStatus,
     Waiting: 'WAITING' as DownloadStatus,
     InProgress: 'IN_PROGRESS' as DownloadStatus,
     Downloaded: 'DOWNLOADED' as DownloadStatus,

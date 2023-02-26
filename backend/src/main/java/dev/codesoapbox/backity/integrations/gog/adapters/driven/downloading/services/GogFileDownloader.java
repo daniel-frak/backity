@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services;
 
-import dev.codesoapbox.backity.core.files.downloading.domain.model.EnqueuedFileDownload;
-import dev.codesoapbox.backity.core.files.downloading.domain.services.SourceFileDownloader;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.downloading.services.SourceFileDownloader;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedWebClient;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import lombok.Getter;
@@ -22,8 +22,8 @@ public class GogFileDownloader implements SourceFileDownloader {
     private final String source = "GOG";
 
     @Override
-    public void downloadGameFile(EnqueuedFileDownload enqueuedFileDownload, String tempFilePath) throws IOException {
-        urlFileDownloader.downloadGameFile(gogEmbedClient, enqueuedFileDownload.getUrl(), tempFilePath);
+    public void downloadGameFile(GameFileVersion gameFileVersion, String tempFilePath) throws IOException {
+        urlFileDownloader.downloadGameFile(gogEmbedClient, gameFileVersion.getUrl(), tempFilePath);
     }
 
     @Override

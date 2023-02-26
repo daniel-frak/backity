@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed;
 
-import dev.codesoapbox.backity.core.files.downloading.domain.services.DownloadProgress;
-import dev.codesoapbox.backity.core.files.downloading.domain.services.FileSizeAccumulator;
+import dev.codesoapbox.backity.core.files.domain.downloading.services.DownloadProgress;
+import dev.codesoapbox.backity.core.files.domain.downloading.services.FileSizeAccumulator;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.FileBufferProvider;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameDownloadRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameListRequestFailedException;

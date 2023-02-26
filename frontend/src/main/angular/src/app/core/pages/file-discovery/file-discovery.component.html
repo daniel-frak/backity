@@ -94,7 +94,7 @@
                    let-item>
         <ng-container *ngFor="let file of [asFile(item)]">
           <button (click)="enqueueFile(file)"
-                  [disabled]="file.enqueued"
+                  [disabled]="file.status != 'DISCOVERED'"
                   class="btn btn-primary">
             Enqueue
           </button>

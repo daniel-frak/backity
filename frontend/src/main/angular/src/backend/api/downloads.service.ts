@@ -16,7 +16,7 @@ import {HttpClient, HttpEvent, HttpHeaders, HttpParameterCodec, HttpParams, Http
 import {CustomHttpParameterCodec} from '../encoder';
 import {Observable} from 'rxjs';
 
-import {EnqueuedFileDownload, PageEnqueuedFileDownload} from '../model/models';
+import {GameFileVersion, PageGameFileVersion} from '../model/models';
 
 import {BASE_PATH} from '../variables';
 import {Configuration} from '../configuration';
@@ -85,16 +85,16 @@ export class DownloadsClient {
     /**
      * Enqueue file
      * Adds a discovered file to the download queue
-     * @param discoveredFileUniqueId
+     * @param gameFileVersionId
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public download(discoveredFileUniqueId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
-    public download(discoveredFileUniqueId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
-    public download(discoveredFileUniqueId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
-    public download(discoveredFileUniqueId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
-        if (discoveredFileUniqueId === null || discoveredFileUniqueId === undefined) {
-            throw new Error('Required parameter discoveredFileUniqueId was null or undefined when calling download.');
+    public download(gameFileVersionId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
+    public download(gameFileVersionId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
+    public download(gameFileVersionId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
+    public download(gameFileVersionId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
+        if (gameFileVersionId === null || gameFileVersionId === undefined) {
+            throw new Error('Required parameter gameFileVersionId was null or undefined when calling download.');
         }
 
         let headers = this.defaultHeaders;
@@ -116,7 +116,7 @@ export class DownloadsClient {
             responseType_ = 'text';
         }
 
-        return this.httpClient.get<any>(`${this.configuration.basePath}/api/downloads/enqueue/${encodeURIComponent(String(discoveredFileUniqueId))}`,
+        return this.httpClient.get<any>(`${this.configuration.basePath}/api/downloads/enqueue/${encodeURIComponent(String(gameFileVersionId))}`,
             {
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
@@ -136,9 +136,9 @@ export class DownloadsClient {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getCurrentlyDownloading(page?: number, size?: number, sort?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<EnqueuedFileDownload>;
-    public getCurrentlyDownloading(page?: number, size?: number, sort?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<EnqueuedFileDownload>>;
-    public getCurrentlyDownloading(page?: number, size?: number, sort?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<EnqueuedFileDownload>>;
+    public getCurrentlyDownloading(page?: number, size?: number, sort?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<GameFileVersion>;
+    public getCurrentlyDownloading(page?: number, size?: number, sort?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<GameFileVersion>>;
+    public getCurrentlyDownloading(page?: number, size?: number, sort?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<GameFileVersion>>;
     public getCurrentlyDownloading(page?: number, size?: number, sort?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
@@ -177,7 +177,7 @@ export class DownloadsClient {
             responseType_ = 'text';
         }
 
-        return this.httpClient.get<EnqueuedFileDownload>(`${this.configuration.basePath}/api/downloads/current`,
+        return this.httpClient.get<GameFileVersion>(`${this.configuration.basePath}/api/downloads/current`,
             {
                 params: queryParameters,
                 responseType: <any>responseType_,
@@ -198,9 +198,9 @@ export class DownloadsClient {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getProcessedFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<PageEnqueuedFileDownload>;
-    public getProcessedFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<PageEnqueuedFileDownload>>;
-    public getProcessedFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<PageEnqueuedFileDownload>>;
+    public getProcessedFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<PageGameFileVersion>;
+    public getProcessedFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<PageGameFileVersion>>;
+    public getProcessedFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<PageGameFileVersion>>;
     public getProcessedFiles(page?: number, size?: number, sort?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
@@ -239,7 +239,7 @@ export class DownloadsClient {
             responseType_ = 'text';
         }
 
-        return this.httpClient.get<PageEnqueuedFileDownload>(`${this.configuration.basePath}/api/downloads/processed`,
+        return this.httpClient.get<PageGameFileVersion>(`${this.configuration.basePath}/api/downloads/processed`,
             {
                 params: queryParameters,
                 responseType: <any>responseType_,
@@ -260,9 +260,9 @@ export class DownloadsClient {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getQueueItems(page?: number, size?: number, sort?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<PageEnqueuedFileDownload>;
-    public getQueueItems(page?: number, size?: number, sort?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<PageEnqueuedFileDownload>>;
-    public getQueueItems(page?: number, size?: number, sort?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<PageEnqueuedFileDownload>>;
+    public getQueueItems(page?: number, size?: number, sort?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<PageGameFileVersion>;
+    public getQueueItems(page?: number, size?: number, sort?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<PageGameFileVersion>>;
+    public getQueueItems(page?: number, size?: number, sort?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<PageGameFileVersion>>;
     public getQueueItems(page?: number, size?: number, sort?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
@@ -301,7 +301,7 @@ export class DownloadsClient {
             responseType_ = 'text';
         }
 
-        return this.httpClient.get<PageEnqueuedFileDownload>(`${this.configuration.basePath}/api/downloads/queue`,
+        return this.httpClient.get<PageGameFileVersion>(`${this.configuration.basePath}/api/downloads/queue`,
             {
                 params: queryParameters,
                 responseType: <any>responseType_,

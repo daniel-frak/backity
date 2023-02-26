@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.downloading.fakes;
 
-import dev.codesoapbox.backity.core.files.downloading.domain.services.FileManager;
+import dev.codesoapbox.backity.core.files.domain.downloading.services.FileManager;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

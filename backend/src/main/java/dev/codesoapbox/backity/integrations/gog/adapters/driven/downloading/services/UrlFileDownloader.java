@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services;
 
-import dev.codesoapbox.backity.core.files.discovery.domain.model.ProgressInfo;
-import dev.codesoapbox.backity.core.files.downloading.domain.services.DownloadProgress;
-import dev.codesoapbox.backity.core.files.downloading.domain.services.FileManager;
+import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
+import dev.codesoapbox.backity.core.files.domain.downloading.services.DownloadProgress;
+import dev.codesoapbox.backity.core.files.domain.downloading.services.FileManager;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileDownloadException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

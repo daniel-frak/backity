@@ -1,10 +1,8 @@
 package dev.codesoapbox.backity.core.shared.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.files.discovery.adapters.driven.persistence.DiscoveredFileJpaRepository;
-import dev.codesoapbox.backity.core.files.discovery.config.FileDiscoveryBeanConfig;
-import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
-import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFileId;
-import dev.codesoapbox.backity.core.files.discovery.domain.services.FileDiscoveryMessageService;
+import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVersionJpaRepository;
+import dev.codesoapbox.backity.core.files.config.FileDownloadBeanConfig;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.File;
@@ -27,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = H2DbController.class, properties = "h2dump.path=test_dump.sql")
-@Import(FileDiscoveryBeanConfig.class)
+@Import(FileDownloadBeanConfig.class)
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 class H2DbControllerTest {
@@ -39,10 +38,10 @@ class H2DbControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private DiscoveredFileJpaRepository discoveredFileJpaRepository;
+    private GameFileVersionJpaRepository gameFileVersionRepository;
 
     @MockBean
-    private FileDiscoveryMessageService messageService;
+    private SimpMessagingTemplate messageService;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -60,10 +59,12 @@ class H2DbControllerTest {
 
     @Test
     void shouldDumpSql() throws Exception {
-        DiscoveredFile discoveredFile = DiscoveredFile.builder()
-                .id(new DiscoveredFileId("someUrl", "someVersion"))
+        GameFileVersion gameFileVersion = GameFileVersion.builder()
+                .id(1L)
+                .url("someUrl")
+                .version("someVersion")
                 .build();
-        discoveredFileJpaRepository.save(discoveredFile);
+        gameFileVersionRepository.save(gameFileVersion);
 
         mockMvc.perform(get("/api/h2/dump"))
                 .andDo(print())
@@ -71,7 +72,7 @@ class H2DbControllerTest {
 
         var dumpContents = readTestDump();
 
-        assertTrue(dumpContents.contains("INSERT INTO \"PUBLIC\".\"DISCOVERED_FILE\" VALUES"));
+        assertTrue(dumpContents.contains("INSERT INTO \"PUBLIC\".\"GAME_FILE_VERSION\" VALUES"));
     }
 
     private String readTestDump() throws IOException {

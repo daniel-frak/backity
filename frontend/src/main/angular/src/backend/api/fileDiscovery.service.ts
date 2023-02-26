@@ -16,7 +16,7 @@ import {HttpClient, HttpEvent, HttpHeaders, HttpParameterCodec, HttpParams, Http
 import {CustomHttpParameterCodec} from '../encoder';
 import {Observable} from 'rxjs';
 
-import {FileDiscoveryStatus, PageDiscoveredFile} from '../model/models';
+import {FileDiscoveryStatus, PageGameFileVersion} from '../model/models';
 
 import {BASE_PATH} from '../variables';
 import {Configuration} from '../configuration';
@@ -132,9 +132,9 @@ export class FileDiscoveryClient {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<PageDiscoveredFile>;
-    public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<PageDiscoveredFile>>;
-    public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<PageDiscoveredFile>>;
+    public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<PageGameFileVersion>;
+    public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpResponse<PageGameFileVersion>>;
+    public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*'}): Observable<HttpEvent<PageGameFileVersion>>;
     public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
@@ -173,7 +173,7 @@ export class FileDiscoveryClient {
             responseType_ = 'text';
         }
 
-        return this.httpClient.get<PageDiscoveredFile>(`${this.configuration.basePath}/api/discovered-files`,
+        return this.httpClient.get<PageGameFileVersion>(`${this.configuration.basePath}/api/discovered-files`,
             {
                 params: queryParameters,
                 responseType: <any>responseType_,

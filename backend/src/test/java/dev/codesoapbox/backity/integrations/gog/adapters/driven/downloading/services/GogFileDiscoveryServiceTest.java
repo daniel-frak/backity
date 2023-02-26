@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services;
 
-import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFile;
-import dev.codesoapbox.backity.core.files.discovery.domain.model.DiscoveredFileId;
-import dev.codesoapbox.backity.core.files.discovery.domain.model.ProgressInfo;
+import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.DownloadStatus;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
@@ -32,23 +32,23 @@ class GogFileDiscoveryServiceTest {
     void shouldDiscoverNewFiles() {
         mockFileDiscovery();
 
-        List<DiscoveredFile> discoveredFiles = new ArrayList<>();
-        gogFileDiscoveryService.startFileDiscovery(discoveredFiles::add);
+        List<GameFileVersion> gameFileVersions = new ArrayList<>();
+        gogFileDiscoveryService.startFileDiscovery(gameFileVersions::add);
 
-        var expectedDiscoveredFiles = List.of(
-                new DiscoveredFile(new DiscoveredFileId("someUrl1", "1.0.0"), null, "GOG",
-                        "fileName1", "Game 2", "100 KB", null, null,
-                        false, false),
-                new DiscoveredFile(new DiscoveredFileId("someUrl2", "2.0.0"), null, "GOG",
-                        "fileName2", "Game 2", "200 KB", null, null,
-                        false, false),
-                new DiscoveredFile(new DiscoveredFileId("someUrl3", "3.0.0"), null, "GOG",
-                        "fileName3", "Game 4", "300 KB", null, null,
-                        false, false)
+        var expectedGameFileVersions = List.of(
+                new GameFileVersion(1L, "GOG", "someUrl1", "fileName1", "Game 2",
+                        "1.0.0", "100 KB", null, null,
+                        DownloadStatus.DISCOVERED, null),
+                new GameFileVersion(2L, "GOG", "someUrl2", "fileName2", "Game 2",
+                        "2.0.0", "200 KB", null, null,
+                        DownloadStatus.DISCOVERED, null),
+                new GameFileVersion(3L, "GOG", "someUrl3", "fileName3", "Game 4",
+                        "3.0.0", "300 KB", null, null,
+                        DownloadStatus.DISCOVERED, null)
         );
-        fixExpectedIds(expectedDiscoveredFiles, discoveredFiles);
+        fixExpectedIds(expectedGameFileVersions, gameFileVersions);
 
-        assertEquals(expectedDiscoveredFiles, discoveredFiles);
+        assertEquals(expectedGameFileVersions, gameFileVersions);
     }
 
     private void mockFileDiscovery() {
@@ -83,10 +83,10 @@ class GogFileDiscoveryServiceTest {
                 .thenReturn(game4Details);
     }
 
-    private void fixExpectedIds(List<DiscoveredFile> expectedDiscoveredFiles, List<DiscoveredFile> discoveredFiles) {
-        if (expectedDiscoveredFiles.size() == discoveredFiles.size()) {
-            for (int i = 0; i < discoveredFiles.size(); i++) {
-                expectedDiscoveredFiles.get(i).setUniqueId(discoveredFiles.get(i).getUniqueId());
+    private void fixExpectedIds(List<GameFileVersion> expectedGameFileVersions, List<GameFileVersion> GameFileVersions) {
+        if (expectedGameFileVersions.size() == GameFileVersions.size()) {
+            for (int i = 0; i < GameFileVersions.size(); i++) {
+                expectedGameFileVersions.get(i).setId(GameFileVersions.get(i).getId());
             }
         }
     }
@@ -101,10 +101,10 @@ class GogFileDiscoveryServiceTest {
                     return List.of(gameId1, "gameId2", "gameId3", "gameId4");
                 });
 
-        List<DiscoveredFile> discoveredFiles = new ArrayList<>();
-        gogFileDiscoveryService.startFileDiscovery(discoveredFiles::add);
+        List<GameFileVersion> GameFileVersions = new ArrayList<>();
+        gogFileDiscoveryService.startFileDiscovery(GameFileVersions::add);
 
-        assertEquals(0, discoveredFiles.size());
+        assertEquals(0, GameFileVersions.size());
         verify(gogEmbedClient, never()).getGameDetails(any());
     }
 
@@ -124,10 +124,10 @@ class GogFileDiscoveryServiceTest {
                     return game1Details;
                 });
 
-        List<DiscoveredFile> discoveredFiles = new ArrayList<>();
-        gogFileDiscoveryService.startFileDiscovery(discoveredFiles::add);
+        List<GameFileVersion> GameFileVersions = new ArrayList<>();
+        gogFileDiscoveryService.startFileDiscovery(GameFileVersions::add);
 
-        assertEquals(1, discoveredFiles.size());
+        assertEquals(1, GameFileVersions.size());
         verify(gogEmbedClient, times(1)).getGameDetails(any());
     }
 
