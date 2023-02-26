@@ -28,3 +28,5 @@
 run-sonar.sh
 /games/
 /app.log**
+*.mv.db
+*.trace.db
