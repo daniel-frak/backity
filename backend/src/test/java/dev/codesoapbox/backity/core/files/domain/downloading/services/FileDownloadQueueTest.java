@@ -13,8 +13,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -81,7 +79,7 @@ class FileDownloadQueueTest {
                 .id(1L)
                 .build();
 
-        fileDownloadQueue.acknowledgeSuccess(eq(enqueuedFileDownload), anyString());
+        fileDownloadQueue.acknowledgeSuccess(enqueuedFileDownload, null);
 
         assertEquals(FileStatus.DOWNLOADED, enqueuedFileDownload.getStatus());
 
