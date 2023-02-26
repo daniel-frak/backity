@@ -36,13 +36,13 @@ class GogFileDiscoveryServiceTest {
         gogFileDiscoveryService.startFileDiscovery(gameFileVersions::add);
 
         var expectedGameFileVersions = List.of(
-                new GameFileVersion(1L, "GOG", "someUrl1", "fileName1", "Game 2", null,
+                new GameFileVersion(1L, "GOG", "someUrl1", "fileName1", null, "Game 2",
                         "1.0.0", "100 KB", null, null,
                         FileStatus.DISCOVERED, null),
-                new GameFileVersion(2L, "GOG", "someUrl2", "fileName2", "Game 2", null,
+                new GameFileVersion(2L, "GOG", "someUrl2", "fileName2", null, "Game 2",
                         "2.0.0", "200 KB", null, null,
                         FileStatus.DISCOVERED, null),
-                new GameFileVersion(3L, "GOG", "someUrl3", "fileName3", "Game 4", null,
+                new GameFileVersion(3L, "GOG", "someUrl3", "fileName3", null, "Game 4",
                         "3.0.0", "300 KB", null, null,
                         FileStatus.DISCOVERED, null)
         );
