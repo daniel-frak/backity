@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.domain.downloading.services;
 
-import dev.codesoapbox.backity.core.files.domain.downloading.model.DownloadStatus;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.FileStatus;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.downloading.repositories.GameFileVersionRepository;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ class FileDownloadQueueTest {
                 .gameTitle("someGameTitle")
                 .version("someVersion")
                 .size("someSize")
-                .status(DownloadStatus.WAITING)
+                .status(FileStatus.ENQUEUED_FOR_DOWNLOAD)
                 .build();
 
         fileDownloadQueue.enqueue(gameFileVersion);
@@ -81,7 +81,7 @@ class FileDownloadQueueTest {
 
         fileDownloadQueue.acknowledgeSuccess(enqueuedFileDownload);
 
-        assertEquals(DownloadStatus.DOWNLOADED, enqueuedFileDownload.getStatus());
+        assertEquals(FileStatus.DOWNLOADED, enqueuedFileDownload.getStatus());
 
         verify(downloadRepository).save(enqueuedFileDownload);
         verify(messageService).sendDownloadFinished(enqueuedFileDownload);
@@ -95,7 +95,7 @@ class FileDownloadQueueTest {
 
         fileDownloadQueue.acknowledgeFailed(enqueuedFileDownload, "someFailedReason");
 
-        assertEquals(DownloadStatus.FAILED, enqueuedFileDownload.getStatus());
+        assertEquals(FileStatus.DOWNLOAD_FAILED, enqueuedFileDownload.getStatus());
         assertEquals("someFailedReason", enqueuedFileDownload.getFailedReason());
 
         verify(downloadRepository).save(enqueuedFileDownload);
@@ -110,7 +110,7 @@ class FileDownloadQueueTest {
 
         fileDownloadQueue.markInProgress(enqueuedFileDownload);
 
-        assertEquals(DownloadStatus.IN_PROGRESS, enqueuedFileDownload.getStatus());
+        assertEquals(FileStatus.DOWNLOAD_IN_PROGRESS, enqueuedFileDownload.getStatus());
 
         verify(downloadRepository).save(enqueuedFileDownload);
         verify(messageService).sendDownloadStarted(enqueuedFileDownload);

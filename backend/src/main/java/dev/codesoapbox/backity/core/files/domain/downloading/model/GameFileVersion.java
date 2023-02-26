@@ -56,12 +56,12 @@ public class GameFileVersion {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    private DownloadStatus status;
+    private FileStatus status;
     
     private String failedReason;
 
     public void fail(String failedReason) {
-        this.status = DownloadStatus.FAILED;
+        this.status = FileStatus.DOWNLOAD_FAILED;
         this.failedReason = failedReason;
     }
 }

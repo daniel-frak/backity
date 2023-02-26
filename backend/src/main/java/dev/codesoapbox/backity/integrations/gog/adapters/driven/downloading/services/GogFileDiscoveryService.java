@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.ser
 import dev.codesoapbox.backity.core.files.domain.discovery.model.IncrementalProgressTracker;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.domain.discovery.services.SourceFileDiscoveryService;
-import dev.codesoapbox.backity.core.files.domain.downloading.model.DownloadStatus;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.FileStatus;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileDetailsResponse;
@@ -68,7 +68,7 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
         gameFile.setName(fileDetails.getName());
         gameFile.setGameTitle(details.getTitle());
         gameFile.setSize(fileDetails.getSize());
-        gameFile.setStatus(DownloadStatus.DISCOVERED);
+        gameFile.setStatus(FileStatus.DISCOVERED);
         return gameFile;
     }
 

@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import {DownloadStatus} from './downloadStatus';
+import {FileStatus} from './fileStatus';
 
 
 export interface GameFileVersion {
@@ -22,7 +22,7 @@ export interface GameFileVersion {
     size?: string;
     dateCreated?: string;
     dateModified?: string;
-    status?: DownloadStatus;
+    status?: FileStatus;
     failedReason?: string;
 }
 

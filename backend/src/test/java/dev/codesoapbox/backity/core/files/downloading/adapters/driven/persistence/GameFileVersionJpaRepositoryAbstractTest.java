@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.files.downloading.adapters.driven.persisten
 
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVersionJpaRepository;
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVersionSpringRepository;
-import dev.codesoapbox.backity.core.files.domain.downloading.model.DownloadStatus;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.FileStatus;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,11 +49,12 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
 
     private void persistTestEnqueuedFiles() {
         entityManager.getTransaction().begin();
+        entityManager.createNativeQuery("ALTER SEQUENCE seq_enqueued_file RESTART WITH 1").executeUpdate();
         entityManager.createNativeQuery("""                         
                         INSERT INTO GAME_FILE_VERSION
                         (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
                         (NEXTVAL('seq_enqueued_file'), 'someSource1', 'someUrl1', 'someName1', 'someGameTitle1', 
-                        'someVersion1', 'someSize1', '2022-04-29T14:15:53', 'WAITING', 'someFailedReason1');
+                        'someVersion1', 'someSize1', '2022-04-29T14:15:53', 'ENQUEUED_FOR_DOWNLOAD', 'someFailedReason1');
                         
                         INSERT INTO GAME_FILE_VERSION
                         (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
@@ -63,17 +64,17 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                         INSERT INTO GAME_FILE_VERSION
                         (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
                         (NEXTVAL('seq_enqueued_file'), 'someSource3', 'someUrl3', 'someName3', 'someGameTitle3',
-                         'someVersion3', 'someSize3', '2022-06-29T14:15:53', 'WAITING', 'someFailedReason3');
+                         'someVersion3', 'someSize3', '2022-06-29T14:15:53', 'ENQUEUED_FOR_DOWNLOAD', 'someFailedReason3');
                         
                         INSERT INTO GAME_FILE_VERSION
                         (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
                         (NEXTVAL('seq_enqueued_file'), 'someSource4', 'someUrl4', 'someName4', 'someGameTitle4',
-                         'someVersion4', 'someSize4', '2022-07-29T14:15:53', 'FAILED', 'someFailedReason4');
+                         'someVersion4', 'someSize4', '2022-07-29T14:15:53', 'DOWNLOAD_FAILED', 'someFailedReason4');
                         
                         INSERT INTO GAME_FILE_VERSION
                         (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
                         (NEXTVAL('seq_enqueued_file'), 'someSource5', 'someUrl5', 'someName5', 'someGameTitle5', 
-                        'someVersion5', 'someSize5', '2022-08-29T14:15:53', 'IN_PROGRESS', 'someFailedReason5');
+                        'someVersion5', 'someSize5', '2022-08-29T14:15:53', 'DOWNLOAD_IN_PROGRESS', 'someFailedReason5');
                         
                         INSERT INTO GAME_FILE_VERSION
                         (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
@@ -103,7 +104,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                 .version("someVersion1")
                 .size("someSize1")
                 .dateCreated(LocalDateTime.parse("2022-04-29T14:15:53"))
-                .status(DownloadStatus.WAITING)
+                .status(FileStatus.ENQUEUED_FOR_DOWNLOAD)
                 .failedReason("someFailedReason1")
                 .build();
         assertEquals(expectedResult, result.get());
@@ -124,7 +125,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                         .version("someVersion1")
                         .size("someSize1")
                         .dateCreated(LocalDateTime.parse("2022-04-29T14:15:53"))
-                        .status(DownloadStatus.WAITING)
+                        .status(FileStatus.ENQUEUED_FOR_DOWNLOAD)
                         .failedReason("someFailedReason1")
                         .build(),
                 GameFileVersion.builder()
@@ -136,7 +137,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                         .version("someVersion3")
                         .size("someSize3")
                         .dateCreated(LocalDateTime.parse("2022-06-29T14:15:53"))
-                        .status(DownloadStatus.WAITING)
+                        .status(FileStatus.ENQUEUED_FOR_DOWNLOAD)
                         .failedReason("someFailedReason3")
                         .build()
         );
@@ -153,7 +154,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                         .gameTitle("someGameTitleNew")
                         .version("someVersionNew")
                         .size("someSizeNew")
-                        .status(DownloadStatus.WAITING)
+                        .status(FileStatus.ENQUEUED_FOR_DOWNLOAD)
                         .failedReason("someFailedReasonNew")
                         .build();
 
@@ -183,7 +184,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                 .version("someVersion5")
                 .size("someSize5")
                 .dateCreated(LocalDateTime.parse("2022-08-29T14:15:53"))
-                .status(DownloadStatus.IN_PROGRESS)
+                .status(FileStatus.DOWNLOAD_IN_PROGRESS)
                 .failedReason("someFailedReason5")
                 .build();
         assertEquals(expectedResult, result.get());
@@ -204,7 +205,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                         .version("someVersion2")
                         .size("someSize2")
                         .dateCreated(LocalDateTime.parse("2022-05-29T14:15:53"))
-                        .status(DownloadStatus.DOWNLOADED)
+                        .status(FileStatus.DOWNLOADED)
                         .failedReason("someFailedReason2")
                         .build(),
                 GameFileVersion.builder()
@@ -216,7 +217,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                         .version("someVersion4")
                         .size("someSize4")
                         .dateCreated(LocalDateTime.parse("2022-07-29T14:15:53"))
-                        .status(DownloadStatus.FAILED)
+                        .status(FileStatus.DOWNLOAD_FAILED)
                         .failedReason("someFailedReason4")
                         .build()
         );
@@ -248,7 +249,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                 .version("someVersion1")
                 .size("someSize1")
                 .dateCreated(LocalDateTime.parse("2022-04-29T14:15:53"))
-                .status(DownloadStatus.WAITING)
+                .status(FileStatus.ENQUEUED_FOR_DOWNLOAD)
                 .failedReason("someFailedReason1")
                 .build();
         assertThat(result.get())
@@ -271,7 +272,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                         .version("someVersion6")
                         .size("someSize6")
                         .dateCreated(LocalDateTime.parse("2022-08-29T14:16:43"))
-                        .status(DownloadStatus.DISCOVERED)
+                        .status(FileStatus.DISCOVERED)
                         .failedReason("someFailedReason6")
                         .build()
         );

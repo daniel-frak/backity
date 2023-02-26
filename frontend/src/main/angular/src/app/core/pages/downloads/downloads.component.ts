@@ -1,9 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   DownloadsClient,
-  DownloadStatus,
   FileDownloadMessageTopics,
   FileDownloadProgress,
+  FileStatus,
   GameFileVersion,
   PageGameFileVersion
 } from "@backend";
@@ -23,7 +23,7 @@ export class DownloadsComponent implements OnInit, OnDestroy {
   currentDownload?: GameFileVersion;
   downloadProgress?: FileDownloadProgress;
   filesAreLoading: boolean = false;
-  DownloadStatus = DownloadStatus;
+  FileStatus = FileStatus;
 
   private pageSize = 20;
   private readonly stompSubscriptions: StompSubscription[] = [];

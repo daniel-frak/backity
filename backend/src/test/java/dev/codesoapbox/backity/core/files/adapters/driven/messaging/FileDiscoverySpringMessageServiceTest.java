@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.files.adapters.driven.messaging;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
-import dev.codesoapbox.backity.core.files.domain.downloading.model.DownloadStatus;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.FileStatus;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -88,7 +88,7 @@ class FileDiscoverySpringMessageServiceTest {
                                 "someSize",
                                 LocalDateTime.MIN,
                                 LocalDateTime.MAX,
-                                DownloadStatus.DISCOVERED,
+                                FileStatus.DISCOVERED,
                                 "someReason"
                         )));
     }

@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.files.domain.downloading.model.DownloadStatus;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.FileStatus;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.downloading.repositories.GameFileVersionRepository;
 import dev.codesoapbox.backity.core.files.domain.downloading.services.FileDownloadQueue;
@@ -50,7 +50,7 @@ class FileDownloadControllerTest {
                 .version("someVersion")
                 .size("someSize")
                 .dateCreated(LocalDateTime.parse("2022-04-29T14:15:53"))
-                .status(DownloadStatus.FAILED)
+                .status(FileStatus.DOWNLOAD_FAILED)
                 .failedReason("someFailedReason")
                 .build();
 
@@ -67,7 +67,7 @@ class FileDownloadControllerTest {
                   "version": "someVersion",
                   "size": "someSize",
                   "dateCreated": "2022-04-29T14:15:53",
-                  "status": "FAILED",
+                  "status": "DOWNLOAD_FAILED",
                   "failedReason": "someFailedReason"
                 }""";
 
@@ -88,7 +88,7 @@ class FileDownloadControllerTest {
                 .version("someVersion")
                 .size("someSize")
                 .dateCreated(LocalDateTime.parse("2022-04-29T14:15:53"))
-                .status(DownloadStatus.WAITING)
+                .status(FileStatus.ENQUEUED_FOR_DOWNLOAD)
                 .build();
 
         Pageable pageable = Pageable.ofSize(1);
@@ -107,7 +107,7 @@ class FileDownloadControllerTest {
                       "version": "someVersion",
                       "size": "someSize",
                       "dateCreated": "2022-04-29T14:15:53",
-                      "status": "WAITING",
+                      "status": "ENQUEUED_FOR_DOWNLOAD",
                       "failedReason": null
                     }
                   ],
@@ -155,7 +155,7 @@ class FileDownloadControllerTest {
                 .version("someVersion")
                 .size("someSize")
                 .dateCreated(LocalDateTime.parse("2022-04-29T14:15:53"))
-                .status(DownloadStatus.DOWNLOADED)
+                .status(FileStatus.DOWNLOADED)
                 .build();
 
         Pageable pageable = Pageable.ofSize(1);

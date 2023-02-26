@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.domain.downloading.services;
 
-import dev.codesoapbox.backity.core.files.domain.downloading.model.DownloadStatus;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.FileStatus;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.downloading.repositories.GameFileVersionRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ public class FileDownloadQueue {
     @Transactional
     public void enqueue(GameFileVersion gameFileVersion) {
 
-        gameFileVersion.setStatus(DownloadStatus.WAITING);
+        gameFileVersion.setStatus(FileStatus.ENQUEUED_FOR_DOWNLOAD);
         gameFileVersionRepository.save(gameFileVersion);
     }
 
@@ -27,7 +27,7 @@ public class FileDownloadQueue {
     }
 
     public void acknowledgeSuccess(GameFileVersion gameFileVersion) {
-        gameFileVersion.setStatus(DownloadStatus.DOWNLOADED);
+        gameFileVersion.setStatus(FileStatus.DOWNLOADED);
         gameFileVersionRepository.save(gameFileVersion);
         messageService.sendDownloadFinished(gameFileVersion);
     }
@@ -39,7 +39,7 @@ public class FileDownloadQueue {
     }
 
     public void markInProgress(GameFileVersion gameFileVersion) {
-        gameFileVersion.setStatus(DownloadStatus.IN_PROGRESS);
+        gameFileVersion.setStatus(FileStatus.DOWNLOAD_IN_PROGRESS);
         gameFileVersionRepository.save(gameFileVersion);
         messageService.sendDownloadStarted(gameFileVersion);
     }

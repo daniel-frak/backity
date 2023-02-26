@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.model;
 
-import dev.codesoapbox.backity.core.files.domain.downloading.model.DownloadStatus;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.FileStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -19,6 +19,6 @@ public class GameFileVersionJson {
     private String size;
     private LocalDateTime dateCreated;
     private LocalDateTime dateModified;
-    private DownloadStatus status;
+    private FileStatus status;
     private String failedReason;
 }

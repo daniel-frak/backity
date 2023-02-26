@@ -13,6 +13,6 @@ class GameFileVersionTest {
         enqueuedFileDownload.fail("someFailedReason");
 
         assertEquals("someFailedReason", enqueuedFileDownload.getFailedReason());
-        assertEquals(DownloadStatus.FAILED, enqueuedFileDownload.getStatus());
+        assertEquals(FileStatus.DOWNLOAD_FAILED, enqueuedFileDownload.getStatus());
     }
 }

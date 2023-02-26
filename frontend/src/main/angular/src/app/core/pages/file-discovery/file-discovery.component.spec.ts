@@ -12,11 +12,11 @@ import {TableComponent} from "@app/shared/components/table/table.component";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {
   DownloadsClient,
-  DownloadStatus,
   FileDiscoveryClient,
   FileDiscoveryMessageTopics,
   FileDiscoveryProgress,
   FileDiscoveryStatus,
+  FileStatus,
   GameFileVersion,
   PageGameFileVersion
 } from "@backend";
@@ -188,7 +188,7 @@ describe('FileDiscoveryComponent', () => {
     downloadsClientMock.download.and.returnValue(observableMock);
 
     component.enqueueFile(file);
-    expect(file.status).toEqual(DownloadStatus.Waiting);
+    expect(file.status).toEqual(FileStatus.EnqueuedForDownload);
     expect(observableMock.subscribe).toHaveBeenCalled();
     expect(console.info).toHaveBeenCalled();
   });
@@ -234,13 +234,13 @@ describe('FileDiscoveryComponent', () => {
     observableMock.pipe.and.returnValue(observableMock);
 
     downloadsClientMock.download.and.returnValue(new Observable(subscriber => {
-      expect(file.status).toEqual(DownloadStatus.Waiting);
+      expect(file.status).toEqual(FileStatus.EnqueuedForDownload);
       subscriber.error(expectedError);
     }));
 
     component.enqueueFile(file);
 
-    expect(file.status).toEqual(DownloadStatus.Discovered);
+    expect(file.status).toEqual(FileStatus.Discovered);
     expect(console.error).toHaveBeenCalled();
     expect(console.info).toHaveBeenCalled();
   });

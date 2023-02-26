@@ -13,12 +13,12 @@ configuration.ts
 encoder.ts
 git_push.sh
 index.ts
-model/downloadStatus.ts
 model/fileDiscoveryMessageTopics.ts
 model/fileDiscoveryProgress.ts
 model/fileDiscoveryStatus.ts
 model/fileDownloadMessageTopics.ts
 model/fileDownloadProgress.ts
+model/fileStatus.ts
 model/gameDetailsResponse.ts
 model/gameFileDetailsResponse.ts
 model/gameFileVersion.ts

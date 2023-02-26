@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.files.adapters.driven.messaging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import dev.codesoapbox.backity.core.files.domain.downloading.model.DownloadStatus;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.FileStatus;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.messages.FileDownloadProgress;
 import org.junit.jupiter.api.Test;
@@ -37,7 +37,7 @@ class FileDownloadSpringMessageServiceTest {
                   "size": "someSize",
                   "dateCreated": "-999999999-01-01T00:00:00",
                   "dateModified":"+999999999-12-31T23:59:59.999999999",
-                  "status": "IN_PROGRESS",
+                  "status": "DOWNLOAD_IN_PROGRESS",
                   "failedReason": "someFailedReason"
                 }
                 """;
@@ -55,7 +55,7 @@ class FileDownloadSpringMessageServiceTest {
                                 "someSize",
                                 LocalDateTime.MIN,
                                 LocalDateTime.MAX,
-                                DownloadStatus.IN_PROGRESS,
+                                FileStatus.DOWNLOAD_IN_PROGRESS,
                                 "someFailedReason"
                         )));
     }
@@ -91,7 +91,7 @@ class FileDownloadSpringMessageServiceTest {
                   "size": "someSize",
                   "dateCreated": "-999999999-01-01T00:00:00",
                   "dateModified":"+999999999-12-31T23:59:59.999999999",
-                  "status": "IN_PROGRESS",
+                  "status": "DOWNLOAD_IN_PROGRESS",
                   "failedReason": "someFailedReason"
                 }
                 """;
@@ -109,7 +109,7 @@ class FileDownloadSpringMessageServiceTest {
                                 "someSize",
                                 LocalDateTime.MIN,
                                 LocalDateTime.MAX,
-                                DownloadStatus.IN_PROGRESS,
+                                FileStatus.DOWNLOAD_IN_PROGRESS,
                                 "someFailedReason"
                         )));
     }

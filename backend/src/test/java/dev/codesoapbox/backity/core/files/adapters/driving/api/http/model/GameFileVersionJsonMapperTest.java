@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.model;
 
-import dev.codesoapbox.backity.core.files.domain.downloading.model.DownloadStatus;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.FileStatus;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +21,7 @@ class GameFileVersionJsonMapperTest {
         domain.setVersion("someVersion");
         domain.setSize("someSize");
         domain.setDateCreated(LocalDateTime.parse("2007-12-03T10:15:30"));
-        domain.setStatus(DownloadStatus.DOWNLOADED);
+        domain.setStatus(FileStatus.DOWNLOADED);
         domain.setFailedReason("someFailedReason");
 
         var result = GameFileVersionJsonMapper.INSTANCE.toJson(domain);
@@ -34,7 +34,7 @@ class GameFileVersionJsonMapperTest {
         assertEquals("someVersion", result.getVersion());
         assertEquals("someSize", result.getSize());
         assertEquals(LocalDateTime.parse("2007-12-03T10:15:30"), result.getDateCreated());
-        assertEquals(DownloadStatus.DOWNLOADED, result.getStatus());
+        assertEquals(FileStatus.DOWNLOADED, result.getStatus());
         assertEquals("someFailedReason", result.getFailedReason());
     }
 }

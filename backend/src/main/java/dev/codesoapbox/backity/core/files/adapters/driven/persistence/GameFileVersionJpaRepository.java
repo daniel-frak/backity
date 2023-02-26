@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.adapters.driven.persistence;
 
-import dev.codesoapbox.backity.core.files.domain.downloading.model.DownloadStatus;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.FileStatus;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.downloading.repositories.GameFileVersionRepository;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class GameFileVersionJpaRepository implements GameFileVersionRepository {
 
     @Override
     public Optional<GameFileVersion> findCurrentlyDownloading() {
-        return springRepository.findByStatus(DownloadStatus.IN_PROGRESS);
+        return springRepository.findByStatus(FileStatus.DOWNLOAD_IN_PROGRESS);
     }
 
     @Override
@@ -53,6 +53,6 @@ public class GameFileVersionJpaRepository implements GameFileVersionRepository {
 
     @Override
     public Page<GameFileVersion> findAllDiscovered(Pageable pageable) {
-        return springRepository.findAllByStatus(pageable, DownloadStatus.DISCOVERED);
+        return springRepository.findAllByStatus(pageable, FileStatus.DISCOVERED);
     }
 }

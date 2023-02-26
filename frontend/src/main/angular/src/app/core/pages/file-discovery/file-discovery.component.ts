@@ -1,11 +1,11 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   DownloadsClient,
-  DownloadStatus,
   FileDiscoveryClient,
   FileDiscoveryMessageTopics,
   FileDiscoveryProgress,
   FileDiscoveryStatus,
+  FileStatus,
   GameFileVersion,
   PageGameFileVersion
 } from "@backend";
@@ -110,11 +110,11 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   }
 
   enqueueFile(file: GameFileVersion) {
-    file.status = DownloadStatus.Waiting;
+    file.status = FileStatus.EnqueuedForDownload;
     console.info("Enqueuing: " + file.id);
     this.downloadsClient.download(file.id as number)
       .pipe(catchError(e => {
-        file.status = DownloadStatus.Discovered;
+        file.status = FileStatus.Discovered;
         return throwError(e);
       }))
       .subscribe(() => {

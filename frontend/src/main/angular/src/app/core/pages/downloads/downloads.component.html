@@ -62,7 +62,7 @@
                    let-item>
         <ng-container *ngFor="let file of [asFile(item)]">
           <button (click)="removeFromQueue(file.id)"
-                  *ngIf="file.status == DownloadStatus.Waiting" class="btn btn-primary">
+                  *ngIf="file.status == FileStatus.EnqueuedForDownload" class="btn btn-primary">
             Cancel
           </button>
         </ng-container>
@@ -82,11 +82,11 @@
       <ng-template app-table-column="Status" let-item>
         <ng-container *ngFor="let file of [asFile(item)]">
           <span
-            [ngClass]="{'bg-success': file.status == DownloadStatus.Downloaded,
-             'bg-danger': file.status != DownloadStatus.Downloaded}"
+            [ngClass]="{'bg-success': file.status == FileStatus.Downloaded,
+             'bg-danger': file.status != FileStatus.Downloaded}"
             class="badge">
-            <i [ngClass]="{'bi bi-check-circle': file.status == DownloadStatus.Downloaded,
-             'bi bi-x-circle': file.status != DownloadStatus.Downloaded}"
+            <i [ngClass]="{'bi bi-check-circle': file.status == FileStatus.Downloaded,
+             'bi bi-x-circle': file.status != FileStatus.Downloaded}"
                aria-hidden="true"
                class="me-1">
             </i>

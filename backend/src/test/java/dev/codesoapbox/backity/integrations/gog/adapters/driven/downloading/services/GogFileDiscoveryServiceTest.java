@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services;
 
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
-import dev.codesoapbox.backity.core.files.domain.downloading.model.DownloadStatus;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.FileStatus;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileDetailsResponse;
@@ -38,13 +38,13 @@ class GogFileDiscoveryServiceTest {
         var expectedGameFileVersions = List.of(
                 new GameFileVersion(1L, "GOG", "someUrl1", "fileName1", "Game 2",
                         "1.0.0", "100 KB", null, null,
-                        DownloadStatus.DISCOVERED, null),
+                        FileStatus.DISCOVERED, null),
                 new GameFileVersion(2L, "GOG", "someUrl2", "fileName2", "Game 2",
                         "2.0.0", "200 KB", null, null,
-                        DownloadStatus.DISCOVERED, null),
+                        FileStatus.DISCOVERED, null),
                 new GameFileVersion(3L, "GOG", "someUrl3", "fileName3", "Game 4",
                         "3.0.0", "300 KB", null, null,
-                        DownloadStatus.DISCOVERED, null)
+                        FileStatus.DISCOVERED, null)
         );
         fixExpectedIds(expectedGameFileVersions, gameFileVersions);
 
