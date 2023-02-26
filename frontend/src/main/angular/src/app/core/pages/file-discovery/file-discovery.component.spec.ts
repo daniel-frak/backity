@@ -51,10 +51,10 @@ describe('FileDiscoveryComponent', () => {
         }
       });
 
-    fileDiscoveryClientMock = createSpyObj(FileDiscoveryClient, ['getStatuses', 'getGameFileVersions',
+    fileDiscoveryClientMock = createSpyObj(FileDiscoveryClient, ['getStatuses', 'getDiscoveredFiles',
       'discover', 'stopDiscovery']);
     fileDiscoveryClientMock.getStatuses.and.returnValue({subscribe: (s: (f: any) => any) => s([])});
-    fileDiscoveryClientMock.getGameFileVersions.and.returnValue({subscribe: (s: (f: any) => any) => s([])});
+    fileDiscoveryClientMock.getDiscoveredFiles.and.returnValue({subscribe: (s: (f: any) => any) => s([])});
 
     downloadsClientMock = createSpyObj(DownloadsClient, ['download']);
 
@@ -111,7 +111,7 @@ describe('FileDiscoveryComponent', () => {
     };
 
     fileDiscoveryClientMock.getStatuses.and.returnValue({subscribe: (s: (f: any) => any) => s([newStatus])});
-    fileDiscoveryClientMock.getGameFileVersions.and
+    fileDiscoveryClientMock.getDiscoveredFiles.and
       .returnValue({subscribe: (s: (f: any) => any) => s(expectedGameFileVersions)});
 
     component.ngOnInit();
