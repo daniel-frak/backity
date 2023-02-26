@@ -24,7 +24,7 @@ public class UrlFileDownloader {
     private final FileManager fileManager;
     private final Consumer<ProgressInfo> progressInfoConsumer;
 
-    public void downloadGameFile(FileBufferProvider fileBufferProvider, String url, String tempFilePath)
+    public String downloadGameFile(FileBufferProvider fileBufferProvider, String url, String tempFilePath)
             throws IOException {
         var targetFileName = new AtomicReference<String>();
         var progress = new DownloadProgress();
@@ -35,7 +35,9 @@ public class UrlFileDownloader {
         log.info("Downloaded file {} to {}", url, tempFilePath);
 
         validateDownloadedFileSize(tempFilePath, progress.getContentLengthBytes());
-        fileManager.renameFile(tempFilePath, targetFileName.get());
+
+        // @TODO Write test for return value
+        return fileManager.renameFile(tempFilePath, targetFileName.get());
     }
 
     private void writeToDisk(Flux<DataBuffer> dataBufferFlux, String tempFilePath, DownloadProgress progress)

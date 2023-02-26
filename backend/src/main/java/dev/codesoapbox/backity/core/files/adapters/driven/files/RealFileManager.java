@@ -23,12 +23,15 @@ public class RealFileManager implements FileManager {
     }
 
     @Override
-    public void renameFile(String fullFilePath, String targetFileName) throws IOException {
+    public String renameFile(String fullFilePath, String targetFileName) throws IOException {
         Path originalPath = Paths.get(fullFilePath);
         Path newPath = Paths.get(extractDirectory(fullFilePath) + File.separator + targetFileName);
 
         Files.move(originalPath, newPath, StandardCopyOption.REPLACE_EXISTING);
         log.info("Renamed file {} to {}", originalPath, newPath);
+
+        // @TODO Write test for return value
+        return newPath.toAbsolutePath().toString();
     }
 
     @Override

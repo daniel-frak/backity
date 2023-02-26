@@ -88,6 +88,9 @@
       <ng-template app-table-column="Size" let-item>
         {{asFile(item).size}}
       </ng-template>
+      <ng-template app-table-column="Path" style="max-width: 5%" let-item>
+        <span class="file-path">{{asFile(item).filePath}}</span>
+      </ng-template>
       <ng-template app-table-column="Status" let-item>
         <ng-container *ngFor="let file of [asFile(item)]">
           <span

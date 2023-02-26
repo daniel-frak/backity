@@ -15,4 +15,14 @@ class GameFileVersionTest {
         assertEquals("someFailedReason", enqueuedFileDownload.getFailedReason());
         assertEquals(FileStatus.DOWNLOAD_FAILED, enqueuedFileDownload.getStatus());
     }
+
+    @Test
+    void shouldMarkAsDownloaded() {
+        var enqueuedFileDownload = new GameFileVersion();
+
+        enqueuedFileDownload.markAsDownloaded("someFilePath");
+
+        assertEquals("someFilePath", enqueuedFileDownload.getFilePath());
+        assertEquals(FileStatus.DOWNLOADED, enqueuedFileDownload.getStatus());
+    }
 }

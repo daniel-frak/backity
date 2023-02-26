@@ -17,6 +17,7 @@ export interface GameFileVersion {
     source?: string;
     url?: string;
     name?: string;
+    filePath?: string;
     gameTitle?: string;
     version?: string;
     size?: string;

@@ -83,6 +83,7 @@ class FileDiscoverySpringMessageServiceTest {
                                 "someSource",
                                 "someUrl",
                                 "someName",
+                                "someFilePath",
                                 "someGameTitle",
                                 "someVersion",
                                 "someSize",

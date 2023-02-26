@@ -35,8 +35,8 @@ public class FileDownloadQueueProcessor {
 
         try {
             fileDownloadQueue.markInProgress(gameFileVersion);
-            fileDownloader.downloadGameFile(gameFileVersion);
-            fileDownloadQueue.acknowledgeSuccess(gameFileVersion);
+            String filePath = fileDownloader.downloadGameFile(gameFileVersion);
+            fileDownloadQueue.acknowledgeSuccess(gameFileVersion, filePath);
         } catch (RuntimeException e) {
             log.error("An error occurred while trying to process enqueued file (id: {})",
                     gameFileVersion.getId(), e);

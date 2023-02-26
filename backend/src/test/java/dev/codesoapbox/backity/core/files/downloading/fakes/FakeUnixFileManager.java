@@ -43,8 +43,9 @@ public class FakeUnixFileManager implements FileManager {
     }
 
     @Override
-    public void renameFile(String filePath, String fileName) {
+    public String renameFile(String filePath, String fileName) {
         filesRenamed.put(filePath, fileName);
+        return filePath;
     }
 
     @Override

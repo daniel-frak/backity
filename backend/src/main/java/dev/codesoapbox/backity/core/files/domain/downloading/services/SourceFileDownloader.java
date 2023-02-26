@@ -8,7 +8,7 @@ public interface SourceFileDownloader {
 
     String getSource();
 
-    void downloadGameFile(GameFileVersion gameFileVersion, String tempFilePath) throws IOException;
+    String downloadGameFile(GameFileVersion gameFileVersion, String tempFilePath) throws IOException;
 
     boolean isReady();
 }

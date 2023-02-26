@@ -32,7 +32,7 @@ public class FileDownloader {
                 .collect(Collectors.toMap(SourceFileDownloader::getSource, d -> d));
     }
 
-    public void downloadGameFile(GameFileVersion gameFileVersion) {
+    public String downloadGameFile(GameFileVersion gameFileVersion) {
         log.info("Downloading game file {} (url={})...", gameFileVersion.getId(), gameFileVersion.getUrl());
 
         try {
@@ -41,8 +41,8 @@ public class FileDownloader {
             String tempFilePath = filePathProvider.createTemporaryFilePath(
                     gameFileVersion.getSource(), gameFileVersion.getGameTitle());
             validateEnoughFreeSpaceOnDisk(tempFilePath, gameFileVersion.getSize());
-
-            downloadToDisk(gameFileVersion, tempFilePath);
+            // @TODO Write test for return value
+            return downloadToDisk(gameFileVersion, tempFilePath);
         } catch (IOException | RuntimeException e) {
             throw new FileDownloadFailedException(gameFileVersion, e);
         }
@@ -61,9 +61,10 @@ public class FileDownloader {
         }
     }
 
-    private void downloadToDisk(GameFileVersion gameFileVersion, String tempFilePath) throws IOException {
+    private String downloadToDisk(GameFileVersion gameFileVersion, String tempFilePath) throws IOException {
         SourceFileDownloader sourceDownloader = getSourceDownloader(gameFileVersion.getSource());
-        sourceDownloader.downloadGameFile(gameFileVersion, tempFilePath);
+        // @TODO Write test for return value
+        return sourceDownloader.downloadGameFile(gameFileVersion, tempFilePath);
     }
 
     private SourceFileDownloader getSourceDownloader(String source) {

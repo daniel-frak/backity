@@ -9,7 +9,7 @@ public interface FileManager {
 
     void createDirectories(String filePath) throws IOException;
 
-    void renameFile(String filePath, String fileName) throws IOException;
+    String renameFile(String filePath, String fileName) throws IOException;
 
     OutputStream getOutputStream(String path) throws IOException;
 }

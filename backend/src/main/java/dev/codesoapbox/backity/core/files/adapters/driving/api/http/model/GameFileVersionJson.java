@@ -14,6 +14,7 @@ public class GameFileVersionJson {
     private String source;
     private String url;
     private String name;
+    private String filePath;
     private String gameTitle;
     private String version;
     private String size;

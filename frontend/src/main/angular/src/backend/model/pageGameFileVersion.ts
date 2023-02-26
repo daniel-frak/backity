@@ -21,10 +21,10 @@ export interface PageGameFileVersion {
     content?: Array<GameFileVersion>;
     number?: number;
     sort?: Sort;
-    first?: boolean;
-    last?: boolean;
     numberOfElements?: number;
     pageable?: Pageable;
+    first?: boolean;
+    last?: boolean;
     empty?: boolean;
 }
 

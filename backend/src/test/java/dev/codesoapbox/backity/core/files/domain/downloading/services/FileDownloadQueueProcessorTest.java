@@ -32,12 +32,14 @@ class FileDownloadQueueProcessorTest {
                 .thenReturn(Optional.of(enqueuedFileDownload));
         when(fileDownloader.isReadyFor(enqueuedFileDownload))
                 .thenReturn(true);
+        when(fileDownloader.downloadGameFile(enqueuedFileDownload))
+                .thenReturn("someFilePath");
 
         fileDownloadQueueProcessor.processQueue();
 
         verify(fileDownloadQueue).markInProgress(enqueuedFileDownload);
         verify(fileDownloader).downloadGameFile(enqueuedFileDownload);
-        verify(fileDownloadQueue).acknowledgeSuccess(enqueuedFileDownload);
+        verify(fileDownloadQueue).acknowledgeSuccess(enqueuedFileDownload, "someFilePath");
         assertNull(fileDownloadQueueProcessor.enqueuedFileDownloadReference.get());
     }
 

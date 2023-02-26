@@ -37,6 +37,8 @@ public class GameFileVersion {
     @NotNull
     private String name;
 
+    private String filePath;
+
     @NotNull
     private String gameTitle;
 
@@ -63,5 +65,10 @@ public class GameFileVersion {
     public void fail(String failedReason) {
         this.status = FileStatus.DOWNLOAD_FAILED;
         this.failedReason = failedReason;
+    }
+
+    public void markAsDownloaded(String filePath) {
+        this.filePath = filePath;
+        this.status = FileStatus.DOWNLOADED;
     }
 }

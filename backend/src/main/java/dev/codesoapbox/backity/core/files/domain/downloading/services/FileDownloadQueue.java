@@ -26,8 +26,8 @@ public class FileDownloadQueue {
         return gameFileVersionRepository.findOldestWaitingForDownload();
     }
 
-    public void acknowledgeSuccess(GameFileVersion gameFileVersion) {
-        gameFileVersion.setStatus(FileStatus.DOWNLOADED);
+    public void acknowledgeSuccess(GameFileVersion gameFileVersion, String filePath) {
+        gameFileVersion.markAsDownloaded(filePath);
         gameFileVersionRepository.save(gameFileVersion);
         messageService.sendDownloadFinished(gameFileVersion);
     }
