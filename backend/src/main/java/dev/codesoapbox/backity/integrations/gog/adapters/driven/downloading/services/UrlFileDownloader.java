@@ -47,6 +47,7 @@ public class UrlFileDownloader {
 
             DataBufferUtils
                     .write(dataBufferFlux, progress.getTrackedOutputStream(outputStream))
+                    .map(DataBufferUtils::release)
                     .blockLast();
         } catch (FileNotFoundException e) {
             throw new FileDownloadException("Unable to create file", e);

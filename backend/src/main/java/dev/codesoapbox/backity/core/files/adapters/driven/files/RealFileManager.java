@@ -40,6 +40,11 @@ public class RealFileManager implements FileManager {
         return Files.newOutputStream(path);
     }
 
+    @Override
+    public void deleteIfExists(String path) throws IOException {
+        Files.deleteIfExists(Path.of(path));
+    }
+
     private String extractDirectory(String path) {
         return path.substring(0, path.lastIndexOf(File.separator));
     }

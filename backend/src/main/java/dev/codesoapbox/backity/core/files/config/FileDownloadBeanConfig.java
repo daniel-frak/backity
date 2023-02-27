@@ -28,9 +28,11 @@ public class FileDownloadBeanConfig {
     }
 
     @Bean
-    FileDownloader fileDownloader(FilePathProvider filePathProvider, List<SourceFileDownloader> fileDownloaders,
+    FileDownloader fileDownloader(FilePathProvider filePathProvider,
+                                  GameFileVersionRepository gameFileVersionRepository,
+                                  List<SourceFileDownloader> fileDownloaders,
                                   FileManager fileManager) {
-        return new FileDownloader(filePathProvider, fileManager, fileDownloaders);
+        return new FileDownloader(filePathProvider, gameFileVersionRepository, fileManager, fileDownloaders);
     }
 
     @Bean

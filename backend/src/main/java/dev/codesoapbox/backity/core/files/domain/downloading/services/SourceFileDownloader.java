@@ -8,6 +8,9 @@ public interface SourceFileDownloader {
 
     String getSource();
 
+    /**
+     * @return the path of the downloaded file
+     */
     String downloadGameFile(GameFileVersion gameFileVersion, String tempFilePath) throws IOException;
 
     boolean isReady();

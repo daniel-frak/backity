@@ -12,4 +12,7 @@ public interface FileManager {
     String renameFile(String filePath, String fileName) throws IOException;
 
     OutputStream getOutputStream(String path) throws IOException;
+
+    void deleteIfExists(String path) throws IOException;
+
 }

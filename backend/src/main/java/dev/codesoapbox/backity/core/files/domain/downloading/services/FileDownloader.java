@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.files.domain.downloading.exceptions.FileDown
 import dev.codesoapbox.backity.core.files.domain.downloading.exceptions.GameFileDownloadUrlEmptyException;
 import dev.codesoapbox.backity.core.files.domain.downloading.exceptions.NotEnoughFreeSpaceException;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.downloading.repositories.GameFileVersionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 
@@ -21,17 +22,22 @@ import java.util.stream.Collectors;
 public class FileDownloader {
 
     private final FilePathProvider filePathProvider;
+    private final GameFileVersionRepository gameFileVersionRepository;
     private final FileManager fileManager;
     private final Map<String, SourceFileDownloader> sourceFileDownloaders;
 
-    public FileDownloader(FilePathProvider filePathProvider, FileManager fileManager,
-                          List<SourceFileDownloader> sourceFileDownloaders) {
+    public FileDownloader(FilePathProvider filePathProvider, GameFileVersionRepository gameFileVersionRepository,
+                          FileManager fileManager, List<SourceFileDownloader> sourceFileDownloaders) {
         this.filePathProvider = filePathProvider;
+        this.gameFileVersionRepository = gameFileVersionRepository;
         this.fileManager = fileManager;
         this.sourceFileDownloaders = sourceFileDownloaders.stream()
                 .collect(Collectors.toMap(SourceFileDownloader::getSource, d -> d));
     }
 
+    /**
+     * @return the absolute file path of the downloaded file
+     */
     public String downloadGameFile(GameFileVersion gameFileVersion) {
         log.info("Downloading game file {} (url={})...", gameFileVersion.getId(), gameFileVersion.getUrl());
 
@@ -40,12 +46,33 @@ public class FileDownloader {
 
             String tempFilePath = filePathProvider.createTemporaryFilePath(
                     gameFileVersion.getSource(), gameFileVersion.getGameTitle());
+
             validateEnoughFreeSpaceOnDisk(tempFilePath, gameFileVersion.getSize());
-            // @TODO Write test for return value
-            return downloadToDisk(gameFileVersion, tempFilePath);
+
+            try {
+                updateFilePath(gameFileVersion, tempFilePath);
+                return downloadToDisk(gameFileVersion, tempFilePath);
+            } catch (IOException e) {
+                tryToCleanUpAfterFailedDownload(gameFileVersion, tempFilePath);
+                throw e;
+            }
         } catch (IOException | RuntimeException e) {
             throw new FileDownloadFailedException(gameFileVersion, e);
         }
+    }
+
+    private void tryToCleanUpAfterFailedDownload(GameFileVersion gameFileVersion,
+                                                        String tempFilePath) throws IOException {
+        fileManager.deleteIfExists(tempFilePath);
+        if (tempFilePath.equals(gameFileVersion.getFilePath())) {
+            gameFileVersion.setFilePath(null);
+            gameFileVersionRepository.save(gameFileVersion);
+        }
+    }
+
+    private void updateFilePath(GameFileVersion gameFileVersion, String tempFilePath) {
+        gameFileVersion.setFilePath(tempFilePath);
+        gameFileVersionRepository.save(gameFileVersion);
     }
 
     private void validateFileDownload(GameFileVersion gameFileVersion) {
@@ -61,9 +88,11 @@ public class FileDownloader {
         }
     }
 
+    /**
+     * @return the path of the downloaded file
+     */
     private String downloadToDisk(GameFileVersion gameFileVersion, String tempFilePath) throws IOException {
         SourceFileDownloader sourceDownloader = getSourceDownloader(gameFileVersion.getSource());
-        // @TODO Write test for return value
         return sourceDownloader.downloadGameFile(gameFileVersion, tempFilePath);
     }
 

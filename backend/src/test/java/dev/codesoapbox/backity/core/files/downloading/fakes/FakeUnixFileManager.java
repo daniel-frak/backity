@@ -21,6 +21,7 @@ public class FakeUnixFileManager implements FileManager {
     private Set<String> pathsCheckedForSize = new HashSet<>();
     private Set<String> directoriesCreated = new HashSet<>();
     private Map<String, String> filesRenamed = new HashMap<>();
+    private Set<String> filesDeleted = new HashSet<>();
 
     public FakeUnixFileManager(long availableSizeInBytes) {
         this.availableSizeInBytes = availableSizeInBytes;
@@ -53,6 +54,11 @@ public class FakeUnixFileManager implements FileManager {
         return new ByteArrayOutputStream();
     }
 
+    @Override
+    public void deleteIfExists(String path) {
+        filesDeleted.add(path);
+    }
+
     public boolean freeSpaceWasCheckedFor(String path) {
         return pathsCheckedForSize.stream()
                 .anyMatch(p -> p.contains(fixSeparatorChar(path)));
@@ -61,5 +67,9 @@ public class FakeUnixFileManager implements FileManager {
     public boolean directoryWasCreated(String path) {
         return directoriesCreated.stream()
                 .anyMatch(p -> p.contains(fixSeparatorChar(path)));
+    }
+
+    public boolean fileWasDeleted(String path) {
+        return filesDeleted.contains(path);
     }
 }

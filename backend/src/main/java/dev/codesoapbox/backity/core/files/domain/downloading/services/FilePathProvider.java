@@ -23,6 +23,9 @@ public class FilePathProvider {
                 .replace("\\", File.separator);
     }
 
+    /**
+     * @return the path that was created
+     */
     public String createTemporaryFilePath(String source, String gameTitle) throws IOException {
         String tempFileName = "TEMP_" + UUID.randomUUID();
         String tempFilePath = getFilePath(gameTitle, tempFileName, source);

@@ -23,6 +23,9 @@
         <ng-template app-table-column="Size" let-item>
           {{asFile(item).size}}
         </ng-template>
+        <ng-template app-table-column="Path" style="max-width: 5%" let-item>
+          <span class="file-path">{{asFile(item).filePath}}</span>
+        </ng-template>
         <ng-template app-table-column="Progress">
           <ng-container *ngIf="downloadProgress">
             <span class="progress">
