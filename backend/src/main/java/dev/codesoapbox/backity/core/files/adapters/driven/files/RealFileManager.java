@@ -45,6 +45,11 @@ public class RealFileManager implements FileManager {
         Files.deleteIfExists(Path.of(path));
     }
 
+    @Override
+    public String getSeparator() {
+        return File.separator;
+    }
+
     private String extractDirectory(String path) {
         return path.substring(0, path.lastIndexOf(File.separator));
     }

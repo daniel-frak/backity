@@ -2,7 +2,6 @@ package dev.codesoapbox.backity.core.files.domain.downloading.services;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -11,16 +10,18 @@ public class FilePathProvider {
 
     final String defaultPathTemplate;
     private final FileManager fileManager;
+    private final String separator;
 
     public FilePathProvider(String defaultPathTemplate, FileManager fileManager) {
+        this.separator = fileManager.getSeparator();
         this.defaultPathTemplate = replaceWithCorrectFileSeparator(defaultPathTemplate);
         this.fileManager = fileManager;
     }
 
     private String replaceWithCorrectFileSeparator(String defaultPathTemplate) {
         return defaultPathTemplate
-                .replace("/", File.separator)
-                .replace("\\", File.separator);
+                .replace("/", separator)
+                .replace("\\", separator);
     }
 
     /**
@@ -50,7 +51,7 @@ public class FilePathProvider {
     }
 
     private String extractDirectory(String path) {
-        int indexOfLastSeparator = path.lastIndexOf(File.separator);
+        int indexOfLastSeparator = path.lastIndexOf(separator);
 
         if (indexOfLastSeparator == -1) {
             return null;

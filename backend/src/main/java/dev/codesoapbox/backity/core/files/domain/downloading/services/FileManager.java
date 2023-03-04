@@ -15,4 +15,6 @@ public interface FileManager {
 
     void deleteIfExists(String path) throws IOException;
 
+    String getSeparator();
+
 }

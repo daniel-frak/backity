@@ -11,7 +11,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class FilePathProviderTest {
 
@@ -58,9 +57,8 @@ class FilePathProviderTest {
     void shouldCreateTemporaryFilePathWhenNoSeparatorFound() throws IOException {
         var source = "someSource";
         var gameTitle = "some: GameTitle";
-        var fileManager = mock(FileManager.class);
 
-        filePathProvider = new FilePathProvider("{FILENAME}", fileManager);
+        filePathProvider = new FilePathProvider("{FILENAME}", fakeUnixFileManager);
 
         String result = filePathProvider.createTemporaryFilePath(source, gameTitle);
 
@@ -68,7 +66,7 @@ class FilePathProviderTest {
 
         assertFalse(result.contains(File.separator));
         assertEquals(expectedPath, result.replace("\\", "/"));
-        verify(fileManager, never()).createDirectories(any());
+        assertFalse(fakeUnixFileManager.anyDirectoriesWereCreated());
     }
 
     private String extractFileName(String result) {

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -59,6 +60,11 @@ public class FakeUnixFileManager implements FileManager {
         filesDeleted.add(path);
     }
 
+    @Override
+    public String getSeparator() {
+        return File.separator;
+    }
+
     public boolean freeSpaceWasCheckedFor(String path) {
         return pathsCheckedForSize.stream()
                 .anyMatch(p -> p.contains(fixSeparatorChar(path)));
@@ -67,6 +73,10 @@ public class FakeUnixFileManager implements FileManager {
     public boolean directoryWasCreated(String path) {
         return directoriesCreated.stream()
                 .anyMatch(p -> p.contains(fixSeparatorChar(path)));
+    }
+
+    public boolean anyDirectoriesWereCreated() {
+        return !directoriesCreated.isEmpty();
     }
 
     public boolean fileWasDeleted(String path) {
