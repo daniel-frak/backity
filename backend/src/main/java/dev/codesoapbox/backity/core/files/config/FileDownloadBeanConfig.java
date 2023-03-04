@@ -46,14 +46,9 @@ public class FileDownloadBeanConfig {
     }
 
     @Bean
-    FileDownloadQueue fileDownloadQueue(GameFileVersionRepository downloadRepository,
-                                        FileDownloadMessageService messageService) {
-        return new FileDownloadQueue(downloadRepository, messageService);
-    }
-
-    @Bean
-    FileDownloadQueueProcessor fileDownloadQueueScheduler(FileDownloadQueue fileDownloadQueue,
-                                                          FileDownloader fileDownloader) {
-        return new FileDownloadQueueProcessor(fileDownloadQueue, fileDownloader);
+    EnqueuedFileDownloadProcessor fileDownloadQueueScheduler(GameFileVersionRepository gameFileVersionRepository,
+                                                             FileDownloader fileDownloader,
+                                                             FileDownloadMessageService fileDownloadMessageService) {
+        return new EnqueuedFileDownloadProcessor(gameFileVersionRepository, fileDownloader, fileDownloadMessageService);
     }
 }

@@ -3,7 +3,6 @@ package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers
 import dev.codesoapbox.backity.core.files.domain.downloading.model.FileStatus;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.downloading.repositories.GameFileVersionRepository;
-import dev.codesoapbox.backity.core.files.domain.downloading.services.FileDownloadQueue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static java.util.Collections.singletonList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -35,9 +35,6 @@ class FileDownloadControllerTest {
 
     @MockBean
     private GameFileVersionRepository gameFileVersionRepository;
-
-    @MockBean
-    private FileDownloadQueue fileDownloadQueue;
 
     @Test
     void shouldGetCurrentlyDownloading() throws Exception {
@@ -212,7 +209,7 @@ class FileDownloadControllerTest {
     }
 
     @Test
-    void shouldDownload() throws Exception {
+    void shouldEnqueueForDownload() throws Exception {
         Long id = 1L;
 
         GameFileVersion gameFileVersion = GameFileVersion.builder()
@@ -226,7 +223,8 @@ class FileDownloadControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        verify(fileDownloadQueue).enqueue(gameFileVersion);
+        assertEquals(FileStatus.ENQUEUED_FOR_DOWNLOAD, gameFileVersion.getStatus());
+        verify(gameFileVersionRepository).save(gameFileVersion);
     }
 
     @Test
@@ -240,7 +238,7 @@ class FileDownloadControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest());
 
-        verify(fileDownloadQueue, never()).enqueue(any());
+        verify(gameFileVersionRepository, never()).save(any());
         assertTrue(capturedOutput.getOut().contains(
                 "Could not enqueue file. Game file version not found: 123"));
     }

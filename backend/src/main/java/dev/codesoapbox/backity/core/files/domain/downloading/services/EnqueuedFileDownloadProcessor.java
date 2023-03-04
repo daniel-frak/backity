@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.files.domain.downloading.services;
 
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.downloading.repositories.GameFileVersionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -8,11 +9,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @RequiredArgsConstructor
-public class FileDownloadQueueProcessor {
+public class EnqueuedFileDownloadProcessor {
 
-    private final FileDownloadQueue fileDownloadQueue;
+    private final GameFileVersionRepository gameFileVersionRepository;
     private final FileDownloader fileDownloader;
+    private final FileDownloadMessageService messageService;
 
+    // @TODO Refactor this so the processQueue method doesn't have to be synchronized
     final AtomicReference<GameFileVersion> enqueuedFileDownloadReference = new AtomicReference<>();
 
     public synchronized void processQueue() {
@@ -20,7 +23,7 @@ public class FileDownloadQueueProcessor {
             return;
         }
 
-        fileDownloadQueue.getOldestWaiting()
+        gameFileVersionRepository.findOldestWaitingForDownload()
                 .ifPresent(this::processEnqueuedFileDownload);
     }
 
@@ -34,13 +37,13 @@ public class FileDownloadQueueProcessor {
         log.info("Downloading enqueued file {}", gameFileVersion.getUrl());
 
         try {
-            fileDownloadQueue.markInProgress(gameFileVersion);
-            String filePath = fileDownloader.downloadGameFile(gameFileVersion);
-            fileDownloadQueue.acknowledgeSuccess(gameFileVersion, filePath);
+            messageService.sendDownloadStarted(gameFileVersion);
+            fileDownloader.downloadGameFile(gameFileVersion);
+            messageService.sendDownloadFinished(gameFileVersion);
         } catch (RuntimeException e) {
             log.error("An error occurred while trying to process enqueued file (id: {})",
                     gameFileVersion.getId(), e);
-            fileDownloadQueue.acknowledgeFailed(gameFileVersion, e.getMessage());
+            messageService.sendDownloadFinished(gameFileVersion);
         } finally {
             enqueuedFileDownloadReference.set(null);
         }

@@ -62,6 +62,10 @@ public class GameFileVersion {
     
     private String failedReason;
 
+    public void enqueue() {
+        this.status = FileStatus.ENQUEUED_FOR_DOWNLOAD;
+    }
+
     public void fail(String failedReason) {
         this.status = FileStatus.DOWNLOAD_FAILED;
         this.failedReason = failedReason;

@@ -4,7 +4,6 @@ import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFi
 import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileVersionJsonMapper;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.downloading.repositories.GameFileVersionRepository;
-import dev.codesoapbox.backity.core.files.domain.downloading.services.FileDownloadQueue;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,7 +28,6 @@ import java.util.Optional;
 public class FileDownloadController {
 
     private final GameFileVersionRepository gameFileVersionRepository;
-    private final FileDownloadQueue fileDownloadQueue;
 
     @Operation(summary = "List queue items", description = "Returns the file currently being downloaded")
     @PageableAsQueryParam
@@ -64,7 +62,8 @@ public class FileDownloadController {
         Optional<GameFileVersion> gameFileVersion = gameFileVersionRepository.findById(gameFileVersionId);
 
         if (gameFileVersion.isPresent()) {
-            fileDownloadQueue.enqueue(gameFileVersion.get());
+            gameFileVersion.get().enqueue();
+            gameFileVersionRepository.save(gameFileVersion.get());
             return ResponseEntity.ok().build();
         }
 

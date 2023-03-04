@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.files.domain.downloading.services;
 import dev.codesoapbox.backity.core.files.domain.downloading.exceptions.FileDownloadFailedException;
 import dev.codesoapbox.backity.core.files.domain.downloading.exceptions.GameFileDownloadUrlEmptyException;
 import dev.codesoapbox.backity.core.files.domain.downloading.exceptions.NotEnoughFreeSpaceException;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.FileStatus;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.downloading.repositories.GameFileVersionRepository;
 import dev.codesoapbox.backity.core.files.downloading.fakes.FakeUnixFileManager;
@@ -12,11 +13,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.*;
@@ -61,20 +64,28 @@ class FileDownloaderTest {
         var tempFilePath = "someFileDir/someFile";
         var expectedFilePath = "finalFilePath";
 
+        List<FileStatus> savedFileStatuses = new ArrayList<>();
+        List<String> savedFilePaths = new ArrayList<>();
+        when(gameFileVersionRepository.save(any()))
+                .then(a -> {
+                    GameFileVersion argument = a.getArgument(0, GameFileVersion.class);
+                    savedFileStatuses.add(argument.getStatus());
+                    savedFilePaths.add(argument.getFilePath());
+                    return argument;
+                });
+
         when(filePathProvider.createTemporaryFilePath(source, gameTitle))
                 .thenReturn(tempFilePath);
         when(sourceFileDownloader.downloadGameFile(gameFileVersion, tempFilePath))
                 .thenReturn(expectedFilePath);
 
-        String result = fileDownloader.downloadGameFile(gameFileVersion);
+        fileDownloader.downloadGameFile(gameFileVersion);
 
         assertTrue(fileManager.freeSpaceWasCheckedFor(tempFilePath));
 
-        ArgumentCaptor<GameFileVersion> gameFileVersionArgumentCaptor = ArgumentCaptor.forClass(GameFileVersion.class);
-        verify(gameFileVersionRepository).save(gameFileVersionArgumentCaptor.capture());
-        assertEquals(tempFilePath, gameFileVersionArgumentCaptor.getValue().getFilePath());
-
-        assertEquals(expectedFilePath, result);
+        assertEquals(List.of(FileStatus.DOWNLOAD_IN_PROGRESS, FileStatus.DOWNLOAD_IN_PROGRESS, FileStatus.DOWNLOADED),
+                savedFileStatuses);
+        assertEquals(Arrays.asList(null, tempFilePath, expectedFilePath), savedFilePaths);
     }
 
     @Test

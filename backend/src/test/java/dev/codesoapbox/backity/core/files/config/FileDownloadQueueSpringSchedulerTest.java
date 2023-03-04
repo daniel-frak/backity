@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.config;
 
-import dev.codesoapbox.backity.core.files.domain.downloading.services.FileDownloadQueueProcessor;
+import dev.codesoapbox.backity.core.files.domain.downloading.services.EnqueuedFileDownloadProcessor;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -18,13 +18,13 @@ import static org.mockito.Mockito.verify;
 class FileDownloadQueueSpringSchedulerTest {
 
     @MockBean
-    private FileDownloadQueueProcessor fileDownloadQueueProcessor;
+    private EnqueuedFileDownloadProcessor enqueuedFileDownloadProcessor;
 
     @Test
     void shouldProcessQueueOnSchedule() {
         await()
                 .pollInterval(Duration.ofMillis(5))
                 .atMost(Duration.ofMillis(100))
-                .untilAsserted(() -> verify(fileDownloadQueueProcessor, atLeastOnce()).processQueue());
+                .untilAsserted(() -> verify(enqueuedFileDownloadProcessor, atLeastOnce()).processQueue());
     }
 }
