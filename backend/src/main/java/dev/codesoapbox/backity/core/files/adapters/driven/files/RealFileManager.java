@@ -23,15 +23,41 @@ public class RealFileManager implements FileManager {
     }
 
     @Override
-    public String renameFile(String fullFilePath, String targetFileName) throws IOException {
+    public String renameFileAddingSuffixIfExists(String fullFilePath, String targetFileName) throws IOException {
         Path originalPath = Paths.get(fullFilePath);
-        Path newPath = Paths.get(extractDirectory(fullFilePath) + File.separator + targetFileName);
+        String fileName = getUniqueFileName(extractDirectory(fullFilePath), targetFileName);
+        Path newPath = Paths.get(extractDirectory(fullFilePath) + File.separator + fileName);
 
         Files.move(originalPath, newPath, StandardCopyOption.REPLACE_EXISTING);
         log.info("Renamed file {} to {}", originalPath, newPath);
 
         // @TODO Write test for return value
         return newPath.toAbsolutePath().toString();
+    }
+
+    private String getUniqueFileName(String directory, String fileName) {
+        StringBuilder baseName = new StringBuilder(getBaseName(fileName));
+        String targetBaseName = baseName.toString();
+        String extension = "";
+        if (baseName.length() < fileName.length()) {
+            extension = fileName.substring(baseName.length());
+        }
+        int counter = 1;
+
+        while (Files.exists(Paths.get(directory + getSeparator() + targetBaseName + extension))) {
+            targetBaseName = baseName + "_" + counter;
+            counter++;
+        }
+
+        return targetBaseName + extension;
+    }
+
+    private String getBaseName(String fileName) {
+        int dotIndex = fileName.lastIndexOf(".");
+        if (dotIndex != -1) {
+            return fileName.substring(0, dotIndex);
+        }
+        return fileName;
     }
 
     @Override

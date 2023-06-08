@@ -1,7 +1,9 @@
 <div *ngIf="newestDiscovered">
   <div class="text-truncate"><span class="fw-bold">Game title:</span> {{newestDiscovered.gameTitle}}
   </div>
-  <div class="text-truncate"><span class="fw-bold">File name:</span> {{newestDiscovered.name}}</div>
+  <div class="text-truncate"><span class="fw-bold">File name:</span>
+    {{newestDiscovered.title}} - {{newestDiscovered.originalFileName}}
+  </div>
   <div class="text-truncate"><span class="fw-bold">Size:</span> {{newestDiscovered.size}}</div>
 </div>
 <ng-container *ngIf="!newestDiscovered">

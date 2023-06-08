@@ -35,7 +35,10 @@ public class GameFileVersion {
     private String url;
 
     @NotNull
-    private String name;
+    private String title;
+
+    @NotNull
+    private String originalFileName;
 
     private String filePath;
 

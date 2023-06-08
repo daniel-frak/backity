@@ -42,7 +42,7 @@ class FileDownloadControllerTest {
                 .id(1L)
                 .source("someSource")
                 .url("someUrl")
-                .name("someName")
+                .title("someName")
                 .gameTitle("someGameTitle")
                 .version("someVersion")
                 .size("someSize")
@@ -59,7 +59,7 @@ class FileDownloadControllerTest {
                   "id": 1,
                   "source": "someSource",
                   "url": "someUrl",
-                  "name": "someName",
+                  "title": "someName",
                   "gameTitle": "someGameTitle",
                   "version": "someVersion",
                   "size": "someSize",
@@ -80,7 +80,7 @@ class FileDownloadControllerTest {
                 .id(1L)
                 .source("someSource")
                 .url("someUrl")
-                .name("someName")
+                .title("someName")
                 .gameTitle("someGameTitle")
                 .version("someVersion")
                 .size("someSize")
@@ -99,7 +99,7 @@ class FileDownloadControllerTest {
                       "id": 1,
                       "source": "someSource",
                       "url": "someUrl",
-                      "name": "someName",
+                      "title": "someName",
                       "gameTitle": "someGameTitle",
                       "version": "someVersion",
                       "size": "someSize",
@@ -147,7 +147,7 @@ class FileDownloadControllerTest {
                 .id(1L)
                 .source("someSource")
                 .url("someUrl")
-                .name("someName")
+                .title("someName")
                 .gameTitle("someGameTitle")
                 .version("someVersion")
                 .size("someSize")
@@ -166,7 +166,7 @@ class FileDownloadControllerTest {
                        "id": 1,
                        "source": "someSource",
                        "url": "someUrl",
-                       "name": "someName",
+                       "title": "someName",
                        "gameTitle": "someGameTitle",
                        "version": "someVersion",
                        "size": "someSize",

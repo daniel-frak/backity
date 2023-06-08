@@ -4,10 +4,8 @@ import dev.codesoapbox.backity.core.files.domain.downloading.services.DownloadPr
 import org.springframework.core.io.buffer.DataBuffer;
 import reactor.core.publisher.Flux;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 public interface FileBufferProvider {
 
-    Flux<DataBuffer> getFileBuffer(String gameFileUrl, AtomicReference<String> targetFileName,
+    Flux<DataBuffer> getFileBuffer(String gameFileUrl,
                                    DownloadProgress progress);
 }

@@ -2,11 +2,14 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.ser
 
 import dev.codesoapbox.backity.core.files.adapters.driven.files.RealFileManager;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.FileStatus;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.downloading.services.DownloadProgress;
 import dev.codesoapbox.backity.core.files.domain.downloading.services.FileManager;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileDownloadException;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,9 +26,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,14 +49,23 @@ class UrlFileDownloaderTest {
     @Test
     void shouldDownloadGameFileWithProgressTracking(@TempDir Path tempDir) throws IOException {
         urlFileDownloader = new UrlFileDownloader(new RealFileManager(), progressHistory::add);
-        String gameFileUrl = "someUrl";
+        GameFileVersion gameFileVersion = mockGameFileVersion("someUrl");
         FileBufferProviderStub fileBufferProvider = new FileBufferProviderStub();
 
-        urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileUrl,
+        urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileVersion,
                 tempDir + File.separator + "tempFile");
 
-        assertTrue(new File(tempDir + File.separator + fileBufferProvider.getFileName()).exists());
+        assertTrue(new File(tempDir + File.separator + gameFileVersion.getOriginalFileName()).exists());
         assertEquals(100, progressHistory.get(0).percentage());
+    }
+
+    @NotNull
+    private static GameFileVersion mockGameFileVersion(String gameFileUrl) {
+        return new GameFileVersion(1L, "someSource", gameFileUrl, "someName",
+                "someFileName",
+                "someFilePath", "someGameTitle", "someVersion", "someSize",
+                LocalDateTime.now(), LocalDateTime.now(),
+                FileStatus.DISCOVERED, null);
     }
 
     @Test
@@ -62,26 +74,27 @@ class UrlFileDownloaderTest {
         urlFileDownloader = new UrlFileDownloader(fileManager, i -> {
         });
 
-        String gameFileUrl = "someUrl";
+        GameFileVersion gameFileVersion = mockGameFileVersion("someUrl");
         FileBufferProviderStub fileBufferProvider = new FileBufferProviderStub();
 
         doThrow(new FileNotFoundException())
                 .when(fileManager).getOutputStream(any());
 
         var exception = assertThrows(FileDownloadException.class,
-                () -> urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileUrl, "badFilePath"));
+                () -> urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileVersion,
+                        "badFilePath"));
         assertTrue(exception.getMessage().contains("Unable to create file"));
     }
 
     @Test
     void downloadGameFileShouldThrowWhenFileSizeIsInvalid(@TempDir Path tempDir) {
         urlFileDownloader = new UrlFileDownloader(new RealFileManager(), progressHistory::add);
-        String gameFileUrl = "someUrl";
+        GameFileVersion gameFileVersion = mockGameFileVersion("someUrl");
         FileBufferProviderStub fileBufferProvider = new FileBufferProviderStub();
         fileBufferProvider.setGiveIncorrectFileSize(true);
 
         var exception = assertThrows(FileDownloadException.class,
-                () -> urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileUrl,
+                () -> urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileVersion,
                         tempDir + File.separator + "tempFile"));
         assertTrue(exception.getMessage().contains("The downloaded size of"));
     }
@@ -93,10 +106,9 @@ class UrlFileDownloaderTest {
         private boolean giveIncorrectFileSize;
 
         @Override
-        public Flux<DataBuffer> getFileBuffer(String gameFileUrl, AtomicReference<String> targetFileName,
+        public Flux<DataBuffer> getFileBuffer(String gameFileUrl,
                                               DownloadProgress progress) {
             byte[] bytes = "abcd".getBytes(StandardCharsets.UTF_8);
-            targetFileName.set(getFileName());
             if (giveIncorrectFileSize) {
                 progress.startTracking(bytes.length + 1);
             } else {
@@ -104,10 +116,6 @@ class UrlFileDownloaderTest {
             }
             DefaultDataBuffer dataBuffer = DefaultDataBufferFactory.sharedInstance.wrap(ByteBuffer.wrap(bytes));
             return Flux.just(dataBuffer);
-        }
-
-        public String getFileName() {
-            return "targetFileName";
         }
     }
 }

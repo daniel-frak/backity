@@ -24,7 +24,7 @@ public class GogFileDownloader implements SourceFileDownloader {
     @Override
     public String downloadGameFile(GameFileVersion gameFileVersion, String tempFilePath) throws IOException {
         // @TODO Write test for return value
-        return urlFileDownloader.downloadGameFile(gogEmbedClient, gameFileVersion.getUrl(), tempFilePath);
+        return urlFileDownloader.downloadGameFile(gogEmbedClient, gameFileVersion, tempFilePath);
     }
 
     @Override

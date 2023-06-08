@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.ser
 import dev.codesoapbox.backity.core.files.domain.downloading.services.DownloadProgress;
 import dev.codesoapbox.backity.core.files.domain.downloading.services.FileSizeAccumulator;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.FileBufferProvider;
+import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileDiscoveryException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameDownloadRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameListRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
@@ -19,11 +20,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -107,12 +109,21 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
                 .block();
 
         if (details != null) {
+            setFileNames(details);
+
             log.debug("Retrieved game details for game: {} (#{})", details.getTitle(), gameId);
         } else if (!loggedError.get()) {
             log.error("Could not retrieve game details for game id: {}. Response was empty.", gameId);
         }
 
         return details;
+    }
+
+    private void setFileNames(GameDetailsResponse details) {
+        for (GameFileDetailsResponse fileDetails : details.getFiles()) {
+            String fileName = getFileName(fileDetails.getManualUrl());
+            fileDetails.setFileTitle(fileName);
+        }
     }
 
     private GameDetailsResponse extractGameDetails(GogGameDetailsResponse response) {
@@ -148,7 +159,15 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
         gameFileDetails.setName((String) d.get("name"));
         gameFileDetails.setVersion(getVersion((String) d.get("version")));
         gameFileDetails.setSize((String) d.get("size"));
+
         return gameFileDetails;
+    }
+
+    private String getFileName(String fileUrl) {
+        return webClientEmbed.head()
+                .uri(fileUrl)
+                .header(HEADER_AUTHORIZATION, getBearerToken())
+                .exchangeToMono(response -> Mono.just(extractFileNameFromResponse(response))).block();
     }
 
     private String getVersion(String version) {
@@ -159,17 +178,14 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
     }
 
     @Override
-    public Flux<DataBuffer> getFileBuffer(String gameFileUrl, AtomicReference<String> targetFileName,
+    public Flux<DataBuffer> getFileBuffer(String gameFileUrl,
                                           DownloadProgress progress) {
         return webClientEmbed.get()
                 .uri(gameFileUrl)
                 .header(HEADER_AUTHORIZATION, getBearerToken())
                 .exchangeToFlux(response -> {
                     verifyResponseIsSuccessful(response, gameFileUrl);
-
-                    targetFileName.set(extractFileNameFromResponse(response));
                     progress.startTracking(extractSizeInBytes(response));
-
                     return response.bodyToFlux(DataBuffer.class);
                 });
     }
@@ -179,8 +195,17 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
     }
 
     private String extractFileNameFromResponse(ClientResponse response) {
-        String url = response.headers().header("Final-location").get(0);
-        return extractFileNameFromUrl(url);
+        try {
+            String url = response.headers().header("Final-location").get(0);
+            String fileName = extractFileNameFromUrl(url);
+            if (fileName.isBlank()) {
+                throw new FileDiscoveryException("Could not extract file name from response");
+            }
+            return fileName;
+        } catch (RuntimeException e) {
+            throw new FileDiscoveryException("Response did not have Final-location header");
+        }
+
     }
 
     private void verifyResponseIsSuccessful(ClientResponse response, String gameFileUrl) {
@@ -191,7 +216,8 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
     }
 
     private String extractFileNameFromUrl(String url) {
-        String fileNameTemp = url.substring(url.lastIndexOf('/') + 1);
+        String decodedUrl = URLDecoder.decode(url, StandardCharsets.UTF_8);
+        String fileNameTemp = decodedUrl.substring(decodedUrl.lastIndexOf('/') + 1);
         if (fileNameTemp.contains("?")) {
             return fileNameTemp.substring(0, fileNameTemp.indexOf("?"));
         }

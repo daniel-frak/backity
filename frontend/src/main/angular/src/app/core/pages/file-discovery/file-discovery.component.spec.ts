@@ -106,7 +106,7 @@ describe('FileDiscoveryComponent', () => {
     };
     const expectedGameFileVersions: PageGameFileVersion = {
       content: [{
-        name: 'someGameFileVersion'
+        title: 'someGameFileVersion'
       }]
     };
 
@@ -136,7 +136,7 @@ describe('FileDiscoveryComponent', () => {
 
   it('should set newest discovered and increment discovered count on new discovery', () => {
     const expectedGameFileVersion: GameFileVersion = {
-      name: 'someGameFileVersion'
+      title: 'someGameFileVersion'
     };
     discoveredSubscriptions[0]({body: JSON.stringify(expectedGameFileVersion)})
     expect(component.newestDiscovered).toEqual(expectedGameFileVersion);
@@ -180,7 +180,7 @@ describe('FileDiscoveryComponent', () => {
   it('should enqueue file', () => {
     spyOn(console, 'info');
     const file: GameFileVersion = {
-      name: 'someGameFileVersion'
+      title: 'someGameFileVersion'
     };
     const observableMock: any = createSpyObj('Observable', ['subscribe', 'pipe']);
     observableMock.pipe.and.returnValue(observableMock);
@@ -227,7 +227,7 @@ describe('FileDiscoveryComponent', () => {
     spyOn(console, 'info');
     spyOn(console, 'error');
     const file: GameFileVersion = {
-      name: 'someGameFileVersion'
+      title: 'someGameFileVersion'
     };
     const expectedError = new Error("error1");
     const observableMock: any = createSpyObj('Observable', ['subscribe', 'pipe']);

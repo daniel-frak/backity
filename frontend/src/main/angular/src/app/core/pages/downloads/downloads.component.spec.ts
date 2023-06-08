@@ -117,7 +117,7 @@ describe('DownloadsComponent', () => {
 
   it('should set current download on start', () => {
     const expectedDownload: GameFileVersion = {
-      name: 'someDownload'
+      title: 'someDownload'
     };
     startSubscriptions[0]({body: JSON.stringify(expectedDownload)})
     expect(component.currentDownload).toEqual(expectedDownload);
@@ -134,7 +134,7 @@ describe('DownloadsComponent', () => {
 
   it('should unset current download on finish', () => {
     component.currentDownload = {
-      name: 'someDownload'
+      title: 'someDownload'
     };
     finishSubscriptions[0]();
     expect(component.currentDownload).toBeUndefined();

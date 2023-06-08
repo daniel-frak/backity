@@ -52,7 +52,7 @@ class FileDiscoveryControllerTest {
                       "url": "someUrl",
                       "version": "someVersion",
                       "source": null,
-                      "name": null,
+                      "title": null,
                       "gameTitle": null,
                       "size": null,
                       "dateCreated": null,

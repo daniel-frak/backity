@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 
 @Slf4j
 public class FileDiscoveryService {
@@ -56,7 +57,24 @@ public class FileDiscoveryService {
         changeDiscoveryStatus(discoveryService, true);
 
         CompletableFuture.runAsync(() -> discoveryService.startFileDiscovery(this::saveDiscoveredFileInfo))
-                .whenComplete((v, t) -> changeDiscoveryStatus(discoveryService, false));
+                .whenComplete(getCompletedFileDiscoveryHandler().handle(discoveryService));
+    }
+
+    CompletedFileDiscoveryHandler getCompletedFileDiscoveryHandler() {
+        return new CompletedFileDiscoveryHandler();
+    }
+
+    class CompletedFileDiscoveryHandler {
+
+        BiConsumer<Void, Throwable> handle(SourceFileDiscoveryService discoveryService) {
+            return (v, e) -> {
+                if (e != null) {
+                    log.error("An exception occurred while running file discovery", e);
+                }
+                changeDiscoveryStatus(discoveryService, false);
+            };
+        }
+
     }
 
     private boolean alreadyInProgress(SourceFileDiscoveryService discoveryService) {

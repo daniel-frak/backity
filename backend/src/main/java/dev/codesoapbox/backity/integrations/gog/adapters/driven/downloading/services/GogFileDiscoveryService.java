@@ -65,7 +65,8 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
         gameFile.setUrl(fileDetails.getManualUrl());
         gameFile.setVersion(fileDetails.getVersion());
         gameFile.setSource("GOG");
-        gameFile.setName(fileDetails.getName());
+        gameFile.setTitle(fileDetails.getName());
+        gameFile.setOriginalFileName(fileDetails.getFileTitle());
         gameFile.setGameTitle(details.getTitle());
         gameFile.setSize(fileDetails.getSize());
         gameFile.setStatus(FileStatus.DISCOVERED);

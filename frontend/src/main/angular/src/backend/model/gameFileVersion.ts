@@ -16,7 +16,8 @@ export interface GameFileVersion {
     id?: number;
     source?: string;
     url?: string;
-    name?: string;
+    title?: string;
+    originalFileName?: string;
     filePath?: string;
     gameTitle?: string;
     version?: string;

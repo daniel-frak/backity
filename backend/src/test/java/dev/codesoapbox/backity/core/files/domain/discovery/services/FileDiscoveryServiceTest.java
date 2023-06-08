@@ -5,11 +5,14 @@ import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDi
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.downloading.repositories.GameFileVersionRepository;
 import lombok.Getter;
+import lombok.Setter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -22,11 +25,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import static java.util.Collections.singletonList;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(OutputCaptureExtension.class)
 @ExtendWith(MockitoExtension.class)
 class FileDiscoveryServiceTest {
 
@@ -51,7 +55,22 @@ class FileDiscoveryServiceTest {
     void shouldStartFileDiscovery() {
         fileDiscoveryService.startFileDiscovery();
 
+        assertThat(fileDiscoveryService.getStatuses().size()).isOne();
         assertTrue(fileDiscoveryService.getStatuses().get(0).isInProgress());
+    }
+
+    @Test
+    void CompletedFileDiscoveryHandlerShouldLogExceptionAndChangeStatusOnFailure(CapturedOutput capturedOutput) {
+        FileDiscoveryService.CompletedFileDiscoveryHandler handler =
+                fileDiscoveryService.getCompletedFileDiscoveryHandler();
+
+        handler.handle(sourceFileDiscoveryService).accept(null, new RuntimeException("test exception"));
+
+        assertThat(capturedOutput.getAll())
+                .contains("test exception");
+
+        assertThat(fileDiscoveryService.getStatuses().size()).isOne();
+        assertFalse(fileDiscoveryService.getStatuses().get(0).isInProgress());
     }
 
     @Test
@@ -153,6 +172,9 @@ class FileDiscoveryServiceTest {
         @Getter
         private final AtomicInteger timesTriggered = new AtomicInteger();
 
+        @Setter
+        private RuntimeException exception;
+
         public boolean hasBeenTriggered() {
             return timesTriggered.get() > 0;
         }
@@ -173,6 +195,9 @@ class FileDiscoveryServiceTest {
         @SuppressWarnings("StatementWithEmptyBody")
         @Override
         public void startFileDiscovery(Consumer<GameFileVersion> gameFileVersionConsumer) {
+            if (exception != null) {
+                throw exception;
+            }
             this.gameFileVersionConsumer.set(gameFileVersionConsumer);
             timesTriggered.incrementAndGet();
 

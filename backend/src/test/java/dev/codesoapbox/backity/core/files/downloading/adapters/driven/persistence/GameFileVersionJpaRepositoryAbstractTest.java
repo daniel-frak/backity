@@ -52,32 +52,32 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
         entityManager.createNativeQuery("ALTER SEQUENCE seq_game_file_version RESTART WITH 1").executeUpdate();
         entityManager.createNativeQuery("""                         
                         INSERT INTO GAME_FILE_VERSION
-                        (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
+                        (id, source, url, title, game_title, version, size, date_created, status, failed_reason) VALUES
                         (NEXTVAL('seq_game_file_version'), 'someSource1', 'someUrl1', 'someName1', 'someGameTitle1', 
                         'someVersion1', 'someSize1', '2022-04-29T14:15:53', 'ENQUEUED_FOR_DOWNLOAD', 'someFailedReason1');
                         
                         INSERT INTO GAME_FILE_VERSION
-                        (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
+                        (id, source, url, title, game_title, version, size, date_created, status, failed_reason) VALUES
                         (NEXTVAL('seq_game_file_version'), 'someSource2', 'someUrl2', 'someName2', 'someGameTitle2', 
                         'someVersion2', 'someSize2', '2022-05-29T14:15:53', 'DOWNLOADED', 'someFailedReason2');
                         
                         INSERT INTO GAME_FILE_VERSION
-                        (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
+                        (id, source, url, title, game_title, version, size, date_created, status, failed_reason) VALUES
                         (NEXTVAL('seq_game_file_version'), 'someSource3', 'someUrl3', 'someName3', 'someGameTitle3',
                          'someVersion3', 'someSize3', '2022-06-29T14:15:53', 'ENQUEUED_FOR_DOWNLOAD', 'someFailedReason3');
                         
                         INSERT INTO GAME_FILE_VERSION
-                        (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
+                        (id, source, url, title, game_title, version, size, date_created, status, failed_reason) VALUES
                         (NEXTVAL('seq_game_file_version'), 'someSource4', 'someUrl4', 'someName4', 'someGameTitle4',
                          'someVersion4', 'someSize4', '2022-07-29T14:15:53', 'DOWNLOAD_FAILED', 'someFailedReason4');
                         
                         INSERT INTO GAME_FILE_VERSION
-                        (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
+                        (id, source, url, title, game_title, version, size, date_created, status, failed_reason) VALUES
                         (NEXTVAL('seq_game_file_version'), 'someSource5', 'someUrl5', 'someName5', 'someGameTitle5', 
                         'someVersion5', 'someSize5', '2022-08-29T14:15:53', 'DOWNLOAD_IN_PROGRESS', 'someFailedReason5');
                         
                         INSERT INTO GAME_FILE_VERSION
-                        (id, source, url, name, game_title, version, size, date_created, status, failed_reason) VALUES
+                        (id, source, url, title, game_title, version, size, date_created, status, failed_reason) VALUES
                         (NEXTVAL('seq_game_file_version'), 'someSource6', 'someUrl6', 'someName6', 'someGameTitle6', 
                         'someVersion6', 'someSize6', '2022-08-29T14:16:43', 'DISCOVERED', 'someFailedReason6');
                 """).executeUpdate();
@@ -99,7 +99,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                 .id(result.get().getId())
                 .source("someSource1")
                 .url("someUrl1")
-                .name("someName1")
+                .title("someName1")
                 .gameTitle("someGameTitle1")
                 .version("someVersion1")
                 .size("someSize1")
@@ -120,7 +120,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                         .id(result.getContent().get(0).getId())
                         .source("someSource1")
                         .url("someUrl1")
-                        .name("someName1")
+                        .title("someName1")
                         .gameTitle("someGameTitle1")
                         .version("someVersion1")
                         .size("someSize1")
@@ -132,7 +132,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                         .id(result.getContent().get(1).getId())
                         .source("someSource3")
                         .url("someUrl3")
-                        .name("someName3")
+                        .title("someName3")
                         .gameTitle("someGameTitle3")
                         .version("someVersion3")
                         .size("someSize3")
@@ -150,7 +150,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                 GameFileVersion.builder()
                         .source("someSourceNew")
                         .url("someUrlNew")
-                        .name("someNameNew")
+                        .title("someNameNew")
                         .gameTitle("someGameTitleNew")
                         .version("someVersionNew")
                         .size("someSizeNew")
@@ -179,7 +179,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                 .id(result.get().getId())
                 .source("someSource5")
                 .url("someUrl5")
-                .name("someName5")
+                .title("someName5")
                 .gameTitle("someGameTitle5")
                 .version("someVersion5")
                 .size("someSize5")
@@ -200,7 +200,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                         .id(result.getContent().get(0).getId())
                         .source("someSource2")
                         .url("someUrl2")
-                        .name("someName2")
+                        .title("someName2")
                         .gameTitle("someGameTitle2")
                         .version("someVersion2")
                         .size("someSize2")
@@ -212,7 +212,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                         .id(result.getContent().get(1).getId())
                         .source("someSource4")
                         .url("someUrl4")
-                        .name("someName4")
+                        .title("someName4")
                         .gameTitle("someGameTitle4")
                         .version("someVersion4")
                         .size("someSize4")
@@ -244,7 +244,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                 .id(result.get().getId())
                 .source("someSource1")
                 .url("someUrl1")
-                .name("someName1")
+                .title("someName1")
                 .gameTitle("someGameTitle1")
                 .version("someVersion1")
                 .size("someSize1")
@@ -267,7 +267,7 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
                         .id(result.getContent().get(0).getId())
                         .source("someSource6")
                         .url("someUrl6")
-                        .name("someName6")
+                        .title("someName6")
                         .gameTitle("someGameTitle6")
                         .version("someVersion6")
                         .size("someSize6")

@@ -15,7 +15,7 @@
           {{asFile(item).gameTitle}}
         </ng-template>
         <ng-template app-table-column="File name" let-item>
-          {{asFile(item).name}}
+          {{asFile(item).title}} - {{asFile(item).originalFileName}}
         </ng-template>
         <ng-template app-table-column="Version" let-item>
           {{asFile(item).version}}
@@ -57,7 +57,7 @@
         {{asFile(item).gameTitle}}
       </ng-template>
       <ng-template app-table-column="File name" let-item>
-        {{asFile(item).name}}
+        {{asFile(item).title}}
       </ng-template>
       <ng-template app-table-column="Version" let-item>
         {{asFile(item).version}}
@@ -83,7 +83,7 @@
         {{asFile(item).gameTitle}}
       </ng-template>
       <ng-template app-table-column="File name" let-item>
-        {{asFile(item).name}}
+        {{asFile(item).title}}
       </ng-template>
       <ng-template app-table-column="Version" let-item>
         {{asFile(item).version}}

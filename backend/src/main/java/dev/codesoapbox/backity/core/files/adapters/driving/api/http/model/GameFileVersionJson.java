@@ -13,7 +13,8 @@ public class GameFileVersionJson {
     private Long id;
     private String source;
     private String url;
-    private String name;
+    private String title;
+    private String originalFileName;
     private String filePath;
     private String gameTitle;
     private String version;

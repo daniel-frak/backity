@@ -15,16 +15,16 @@ import {Sort} from './sort';
 
 
 export interface PageGameFileVersion {
-    totalPages?: number;
     totalElements?: number;
+    totalPages?: number;
     size?: number;
     content?: Array<GameFileVersion>;
     number?: number;
     sort?: Sort;
-    numberOfElements?: number;
-    pageable?: Pageable;
     first?: boolean;
     last?: boolean;
+    numberOfElements?: number;
+    pageable?: Pageable;
     empty?: boolean;
 }
 

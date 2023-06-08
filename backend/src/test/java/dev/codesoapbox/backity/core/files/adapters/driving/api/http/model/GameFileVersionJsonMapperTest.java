@@ -16,7 +16,8 @@ class GameFileVersionJsonMapperTest {
         domain.setId(1L);
         domain.setSource("someSource");
         domain.setUrl("someUrl");
-        domain.setName("someName");
+        domain.setTitle("someName");
+        domain.setOriginalFileName("someFileName");
         domain.setGameTitle("someGameTitle");
         domain.setVersion("someVersion");
         domain.setSize("someSize");
@@ -29,7 +30,8 @@ class GameFileVersionJsonMapperTest {
         assertEquals(1L, result.getId());
         assertEquals("someSource", result.getSource());
         assertEquals("someUrl", result.getUrl());
-        assertEquals("someName", result.getName());
+        assertEquals("someName", result.getTitle());
+        assertEquals("someFileName", result.getOriginalFileName());
         assertEquals("someGameTitle", result.getGameTitle());
         assertEquals("someVersion", result.getVersion());
         assertEquals("someSize", result.getSize());

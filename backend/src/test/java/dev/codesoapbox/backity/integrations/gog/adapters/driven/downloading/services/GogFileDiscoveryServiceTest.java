@@ -36,13 +36,16 @@ class GogFileDiscoveryServiceTest {
         gogFileDiscoveryService.startFileDiscovery(gameFileVersions::add);
 
         var expectedGameFileVersions = List.of(
-                new GameFileVersion(1L, "GOG", "someUrl1", "fileName1", null, "Game 2",
+                new GameFileVersion(1L, "GOG", "someUrl1", "fileSimpleName1", "fileName1",
+                        null, "Game 2",
                         "1.0.0", "100 KB", null, null,
                         FileStatus.DISCOVERED, null),
-                new GameFileVersion(2L, "GOG", "someUrl2", "fileName2", null, "Game 2",
+                new GameFileVersion(2L, "GOG", "someUrl2", "fileSimpleName2", "fileName2",
+                        null, "Game 2",
                         "2.0.0", "200 KB", null, null,
                         FileStatus.DISCOVERED, null),
-                new GameFileVersion(3L, "GOG", "someUrl3", "fileName3", null, "Game 4",
+                new GameFileVersion(3L, "GOG", "someUrl3", "fileSimpleName3", "fileName3",
+                        null, "Game 4",
                         "3.0.0", "300 KB", null, null,
                         FileStatus.DISCOVERED, null)
         );
@@ -62,13 +65,16 @@ class GogFileDiscoveryServiceTest {
 
         var game2Details = new GameDetailsResponse("Game 2", null, null,
                 null, List.of(
-                new GameFileDetailsResponse("1.0.0", "someUrl1", "fileName1", "100 KB"),
-                new GameFileDetailsResponse("2.0.0", "someUrl2", "fileName2", "200 KB")
+                new GameFileDetailsResponse("1.0.0", "someUrl1", "fileSimpleName1", "100 KB",
+                        "fileName1"),
+                new GameFileDetailsResponse("2.0.0", "someUrl2", "fileSimpleName2", "200 KB",
+                        "fileName2")
         ), null);
 
         var game4Details = new GameDetailsResponse("Game 4", null, null,
                 null, List.of(
-                new GameFileDetailsResponse("3.0.0", "someUrl3", "fileName3", "300 KB")
+                new GameFileDetailsResponse("3.0.0", "someUrl3", "fileSimpleName3", "300 KB",
+                        "fileName3")
         ), null);
 
         when(gogEmbedClient.getLibraryGameIds())
@@ -113,7 +119,8 @@ class GogFileDiscoveryServiceTest {
         var gameId1 = "gameId1";
         var game1Details = new GameDetailsResponse("Game 1", null, null,
                 null, List.of(
-                new GameFileDetailsResponse("3.0.0", "someUrl3", "fileName3", "300 KB")
+                new GameFileDetailsResponse("3.0.0", "someUrl3", "fileName3", "300 KB",
+                        "setup.exe")
         ), null);
 
         when(gogEmbedClient.getLibraryGameIds())

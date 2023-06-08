@@ -45,8 +45,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class GogEmbedWebClientTest {
 
+    protected static final String ACCESS_TOKEN = "someAccessToken";
+
     @RegisterExtension
-    private static final WireMockExtension wireMockEmbed = WireMockExtension.newInstance()
+    static final WireMockExtension wireMockEmbed = WireMockExtension.newInstance()
             .options(new WireMockConfiguration()
                     .useChunkedTransferEncoding(Options.ChunkedEncodingPolicy.NEVER)
                     .dynamicPort())
@@ -65,6 +67,7 @@ class GogEmbedWebClientTest {
         defaultLogLevel = logger.getLevel();
     }
 
+
     @AfterEach
     void tearDown() {
         Logger logger = (Logger) LoggerFactory.getLogger(GogEmbedWebClient.class);
@@ -78,6 +81,9 @@ class GogEmbedWebClientTest {
                 .build();
 
         gogEmbedClient = new GogEmbedWebClient(webClientEmbed, authService);
+
+        when(authService.getAccessToken())
+                .thenReturn(ACCESS_TOKEN);
     }
 
     @Test
@@ -85,16 +91,8 @@ class GogEmbedWebClientTest {
         Logger logger = (Logger) LoggerFactory.getLogger(GogEmbedWebClient.class);
         logger.setLevel(Level.DEBUG);
 
-        var accessToken = "someAccessToken";
-
-        when(authService.getAccessToken())
-                .thenReturn(accessToken);
-
-        wireMockEmbed.stubFor(get(urlPathEqualTo("/account/gameDetails/someGameId.json"))
-                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + accessToken))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withBodyFile("example_gog_game_details_response.json")));
+        stubGameEndpoint("example_gog_game_details_response.json");
+        stubGameFileEndpoint("/downlink/unreal_tournament_2004_ece/en1installer3");
 
         GameDetailsResponse result = gogEmbedClient.getGameDetails("someGameId");
 
@@ -102,7 +100,8 @@ class GogEmbedWebClientTest {
                 "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
                 "someCdKey", "someTextInformation", singletonList(new GameFileDetailsResponse(
                 "someVersion", "/downlink/unreal_tournament_2004_ece/en1installer3",
-                "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)", "1 MB")),
+                "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)", "1 MB",
+                "en1installer3")),
                 "someChangelog");
 
         assertEquals(expectedResult, result);
@@ -110,21 +109,28 @@ class GogEmbedWebClientTest {
                 "Retrieved game details for game: Unreal Tournament 2004 Editor's Choice Edition (#someGameId)"));
     }
 
+    private static void stubGameEndpoint(String responseJson) {
+        wireMockEmbed.stubFor(get("/account/gameDetails/someGameId.json")
+                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
+                .willReturn(aResponse()
+                        .withHeader("Content-Type", "application/json")
+                        .withBodyFile(responseJson)));
+    }
+
+    private static void stubGameFileEndpoint(String url) {
+        wireMockEmbed.stubFor(head(urlPathEqualTo(url))
+                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
+                .willReturn(aResponse()
+                        .withHeader("Content-Disposition", "filename=setup.exe")));
+    }
+
     @Test
     void shouldGetGameDetailsWhenVersionIsNull() {
         Logger logger = (Logger) LoggerFactory.getLogger(GogEmbedWebClient.class);
         logger.setLevel(Level.DEBUG);
 
-        var accessToken = "someAccessToken";
-
-        when(authService.getAccessToken())
-                .thenReturn(accessToken);
-
-        wireMockEmbed.stubFor(get(urlPathEqualTo("/account/gameDetails/someGameId.json"))
-                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + accessToken))
-                .willReturn(aResponse()
-                        .withHeader("Content-Type", "application/json")
-                        .withBodyFile("example_gog_game_details_response_null_version.json")));
+        stubGameEndpoint("example_gog_game_details_response_null_version.json");
+        stubGameFileEndpoint("/downlink/unreal_tournament_2004_ece/en1installer3");
 
         GameDetailsResponse result = gogEmbedClient.getGameDetails("someGameId");
 
@@ -132,7 +138,8 @@ class GogEmbedWebClientTest {
                 "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
                 "someCdKey", "someTextInformation", singletonList(new GameFileDetailsResponse(
                 "unknown", "/downlink/unreal_tournament_2004_ece/en1installer3",
-                "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)", "1 MB")),
+                "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)", "1 MB",
+                "en1installer3")),
                 "someChangelog");
 
         assertEquals(expectedResult, result);
@@ -140,13 +147,8 @@ class GogEmbedWebClientTest {
 
     @Test
     void shouldGetGameDetailsWhenDownloadsAreNull() {
-        var accessToken = "someAccessToken";
-
-        when(authService.getAccessToken())
-                .thenReturn(accessToken);
-
         wireMockEmbed.stubFor(get(urlPathEqualTo("/account/gameDetails/someGameId.json"))
-                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + accessToken))
+                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile("example_gog_game_details_response_null_downloads.json")));
@@ -162,13 +164,8 @@ class GogEmbedWebClientTest {
 
     @Test
     void getGameDetailsShouldNotThrowWhenRequestFails(CapturedOutput capturedOutput) {
-        var accessToken = "someAccessToken";
-
-        when(authService.getAccessToken())
-                .thenReturn(accessToken);
-
         wireMockEmbed.stubFor(get(urlPathEqualTo("/account/gameDetails/someGameId.json"))
-                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + accessToken))
+                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(500)));
 
@@ -180,13 +177,8 @@ class GogEmbedWebClientTest {
 
     @Test
     void getGameDetailsShouldNotThrowWhenRequestReturnsNull(CapturedOutput capturedOutput) {
-        var accessToken = "someAccessToken";
-
-        when(authService.getAccessToken())
-                .thenReturn(accessToken);
-
         wireMockEmbed.stubFor(get(urlPathEqualTo("/account/gameDetails/someGameId.json"))
-                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + accessToken))
+                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")));
 
@@ -198,28 +190,25 @@ class GogEmbedWebClientTest {
 
     @Test
     void shouldGetLibrarySize() {
-        var accessToken = "someAccessToken";
-
-        when(authService.getAccessToken())
-                .thenReturn(accessToken);
-
         wireMockEmbed.stubFor(get(urlPathEqualTo("/user/data/games"))
-                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + accessToken))
+                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile("example_gog_game_ids_response.json")));
 
         wireMockEmbed.stubFor(get(urlPathEqualTo("/account/gameDetails/1.json"))
-                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + accessToken))
+                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile("example_gog_game_details_response.json")));
 
         wireMockEmbed.stubFor(get(urlPathEqualTo("/account/gameDetails/2.json"))
-                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + accessToken))
+                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile("example_gog_game_details_response.json")));
+
+        stubGameFileEndpoint("/downlink/unreal_tournament_2004_ece/en1installer3");
 
         var result = gogEmbedClient.getLibrarySize();
         assertEquals("2000000 bytes", result);
@@ -227,14 +216,10 @@ class GogEmbedWebClientTest {
 
     @Test
     void shouldGetLibraryGameIds() {
-        var accessToken = "someAccessToken";
         var expectedIds = List.of("1", "2");
 
-        when(authService.getAccessToken())
-                .thenReturn(accessToken);
-
         wireMockEmbed.stubFor(get(urlPathEqualTo("/user/data/games"))
-                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + accessToken))
+                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile("example_gog_game_ids_response.json")));
@@ -246,13 +231,8 @@ class GogEmbedWebClientTest {
 
     @Test
     void getLibraryGameIdsShouldReturnEmptyListIfGameIdsAreNull() {
-        var accessToken = "someAccessToken";
-
-        when(authService.getAccessToken())
-                .thenReturn(accessToken);
-
         wireMockEmbed.stubFor(get(urlPathEqualTo("/user/data/games"))
-                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + accessToken))
+                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")));
 
@@ -263,13 +243,8 @@ class GogEmbedWebClientTest {
 
     @Test
     void getLibraryGameIdsShouldThrowIfRequestFails() {
-        var accessToken = "someAccessToken";
-
-        when(authService.getAccessToken())
-                .thenReturn(accessToken);
-
         wireMockEmbed.stubFor(get(urlPathEqualTo("/user/data/games"))
-                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + accessToken))
+                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(500)));
 
@@ -280,18 +255,15 @@ class GogEmbedWebClientTest {
     void shouldGetFileBufferWithWorkingRedirectsUpdatingTargetFileNameAndSizeAndProgress() {
         var expectedResult = "abcd";
         var expectedFileName = "someFile.exe";
-        var accessToken = "someAccessToken";
+        var ACCESS_TOKEN = "someAccessToken";
         var targetFileName = new AtomicReference<String>();
         var progress = new DownloadProgress();
         var progressHistory = new ArrayList<ProgressInfo>();
         var outputStream = new ByteArrayOutputStream();
         progress.subscribeToProgress(progressHistory::add);
 
-        when(authService.getAccessToken())
-                .thenReturn(accessToken);
-
         wireMockEmbed.stubFor(get(urlPathEqualTo("/someUrl1"))
-                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + accessToken))
+                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                 .willReturn(aResponse()
                         .withHeader("Location", "/someUrl2")
                         .withStatus(302)));
@@ -307,13 +279,12 @@ class GogEmbedWebClientTest {
                         .withStatus(200)));
 
         Flux<DataBuffer> dataBufferFlux = gogEmbedClient
-                .getFileBuffer("/someUrl1", targetFileName, progress);
+                .getFileBuffer("/someUrl1", progress);
         DataBufferUtils.write(dataBufferFlux, progress.getTrackedOutputStream(outputStream)).blockFirst();
 
         String result = outputStream.toString();
 
         assertEquals(expectedResult, result);
-        assertEquals(expectedFileName, targetFileName.get());
         assertEquals(4, progress.getContentLengthBytes());
         assertEquals(1, progressHistory.size());
         assertEquals(100, progressHistory.get(0).percentage());
@@ -323,18 +294,13 @@ class GogEmbedWebClientTest {
     void shouldGetFileBufferWithWorkingRedirectsUpdatingTargetFileNameAndSizeAndProgressForFinalUrlWithQueryParams() {
         var expectedResult = "abcd";
         var expectedFileName = "someFile.exe";
-        var accessToken = "someAccessToken";
-        var targetFileName = new AtomicReference<String>();
         var progress = new DownloadProgress();
         var progressHistory = new ArrayList<ProgressInfo>();
         var outputStream = new ByteArrayOutputStream();
         progress.subscribeToProgress(progressHistory::add);
 
-        when(authService.getAccessToken())
-                .thenReturn(accessToken);
-
         wireMockEmbed.stubFor(get(urlPathEqualTo("/someUrl1"))
-                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + accessToken))
+                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                 .willReturn(aResponse()
                         .withHeader("Location", "/someUrl2")
                         .withStatus(302)));
@@ -351,13 +317,12 @@ class GogEmbedWebClientTest {
                         .withStatus(200)));
 
         Flux<DataBuffer> dataBufferFlux = gogEmbedClient
-                .getFileBuffer("/someUrl1", targetFileName, progress);
+                .getFileBuffer("/someUrl1", progress);
         DataBufferUtils.write(dataBufferFlux, progress.getTrackedOutputStream(outputStream)).blockFirst();
 
         String result = outputStream.toString();
 
         assertEquals(expectedResult, result);
-        assertEquals(expectedFileName, targetFileName.get());
         assertEquals(4, progress.getContentLengthBytes());
         assertEquals(1, progressHistory.size());
         assertEquals(100, progressHistory.get(0).percentage());
@@ -365,21 +330,16 @@ class GogEmbedWebClientTest {
 
     @Test
     void getFileBufferShouldThrowIfRequestFails() {
-        var accessToken = "someAccessToken";
-        var targetFileName = new AtomicReference<String>();
         var progress = new DownloadProgress();
 
-        when(authService.getAccessToken())
-                .thenReturn(accessToken);
-
         wireMockEmbed.stubFor(get(urlPathEqualTo("/someUrl1"))
-                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + accessToken))
+                .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                 .willReturn(aResponse()
                         .withStatus(500)));
 
         @SuppressWarnings("ReactiveStreamsUnusedPublisher")
         Flux<DataBuffer> dataBufferFlux = gogEmbedClient
-                .getFileBuffer("/someUrl1", targetFileName, progress);
+                .getFileBuffer("/someUrl1", progress);
 
         assertThrows(GameDownloadRequestFailedException.class, dataBufferFlux::blockFirst);
     }

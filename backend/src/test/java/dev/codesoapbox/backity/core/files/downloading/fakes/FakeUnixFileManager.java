@@ -45,7 +45,7 @@ public class FakeUnixFileManager implements FileManager {
     }
 
     @Override
-    public String renameFile(String filePath, String fileName) {
+    public String renameFileAddingSuffixIfExists(String filePath, String fileName) {
         filesRenamed.put(filePath, fileName);
         return filePath;
     }

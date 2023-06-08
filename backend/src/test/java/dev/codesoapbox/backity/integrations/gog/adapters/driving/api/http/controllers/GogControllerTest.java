@@ -67,7 +67,8 @@ class GogControllerTest {
                         "1.0.0",
                         "someUrl",
                         "someFileName",
-                        "someFileSize"
+                        "someFileSize",
+                        "setup.exe"
                 )),
                 "someChangelog"
         );

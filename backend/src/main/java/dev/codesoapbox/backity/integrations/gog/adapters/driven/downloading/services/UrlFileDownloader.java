@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services;
 
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
+import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.downloading.services.DownloadProgress;
 import dev.codesoapbox.backity.core.files.domain.downloading.services.FileManager;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileDownloadException;
@@ -14,7 +15,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 @Slf4j
@@ -24,20 +24,18 @@ public class UrlFileDownloader {
     private final FileManager fileManager;
     private final Consumer<ProgressInfo> progressInfoConsumer;
 
-    public String downloadGameFile(FileBufferProvider fileBufferProvider, String url, String tempFilePath)
-            throws IOException {
-        var targetFileName = new AtomicReference<String>();
+    public String downloadGameFile(FileBufferProvider fileBufferProvider, GameFileVersion gameFileVersion,
+                                   String tempFilePath) throws IOException {
         var progress = new DownloadProgress();
-        Flux<DataBuffer> dataBufferFlux = fileBufferProvider.getFileBuffer(url, targetFileName, progress);
-
+        Flux<DataBuffer> dataBufferFlux = fileBufferProvider.getFileBuffer(gameFileVersion.getUrl(), progress);
         writeToDisk(dataBufferFlux, tempFilePath, progress);
 
-        log.info("Downloaded file {} to {}", url, tempFilePath);
+        log.info("Downloaded file {} to {}", gameFileVersion, tempFilePath);
 
         validateDownloadedFileSize(tempFilePath, progress.getContentLengthBytes());
 
         // @TODO Write test for return value
-        return fileManager.renameFile(tempFilePath, targetFileName.get());
+        return fileManager.renameFileAddingSuffixIfExists(tempFilePath, gameFileVersion.getOriginalFileName());
     }
 
     private void writeToDisk(Flux<DataBuffer> dataBufferFlux, String tempFilePath, DownloadProgress progress)

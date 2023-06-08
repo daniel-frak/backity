@@ -40,7 +40,7 @@ class GogFileDownloaderTest {
 
         gogFileDownloader.downloadGameFile(gameFileVersion, tempFilePath);
 
-        verify(urlFileDownloader).downloadGameFile(gogEmbedClient, gameFileVersion.getUrl(), tempFilePath);
+        verify(urlFileDownloader).downloadGameFile(gogEmbedClient, gameFileVersion, tempFilePath);
     }
 
     @Test
