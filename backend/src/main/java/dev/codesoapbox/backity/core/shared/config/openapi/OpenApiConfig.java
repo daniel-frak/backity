@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.AllArgsConstructor;
 import org.reflections.Reflections;
@@ -68,13 +67,7 @@ public class OpenApiConfig {
         return new Info()
                 .title(properties.getProjectTitle())
                 .description(properties.getProjectDescription())
-                .version(properties.getProjectVersion()).license(getLicense());
-    }
-
-    private License getLicense() {
-        return new License()
-                .name("Unlicense")
-                .url("https://unlicense.org/");
+                .version(properties.getProjectVersion());
     }
 
     private Server getLocalhostServer() {
