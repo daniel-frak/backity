@@ -145,7 +145,7 @@ describe('DownloadsComponent', () => {
       content: [
         {
           gameTitle: "Some queued game",
-          name: "queuedGame.exe",
+          title: "queuedGame.exe",
           size: "1 GB"
         }
       ]
@@ -154,14 +154,14 @@ describe('DownloadsComponent', () => {
       content: [
         {
           gameTitle: "Some processed game",
-          name: "processedGame.exe",
+          title: "processedGame.exe",
           size: "2 GB"
         }
       ]
     };
     downloadsClientMock.currentlyDownloading = {
       gameTitle: "Some current game",
-      name: "currentGame.exe",
+      title: "currentGame.exe",
       size: "3 GB"
     };
 

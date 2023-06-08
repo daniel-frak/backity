@@ -4,6 +4,8 @@ import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVe
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVersionSpringRepository;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.FileStatus;
 import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -162,11 +161,11 @@ abstract class GameFileVersionJpaRepositoryAbstractTest {
 
         assertNotNull(result.getId());
         assertNotNull(result.getDateCreated());
-        BigInteger recordCount = (BigInteger) entityManager.createNativeQuery(
+        Long recordCount = (Long) entityManager.createNativeQuery(
                         "SELECT COUNT(*) FROM GAME_FILE_VERSION f" +
                                 " WHERE f.id = '" + result.getId() + "';")
                 .getSingleResult();
-        assertEquals(BigInteger.ONE, recordCount);
+        assertEquals(1, recordCount);
     }
 
     @Test

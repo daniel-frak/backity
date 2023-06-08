@@ -27,4 +27,7 @@ export interface GameFileVersion {
     status?: FileStatus;
     failedReason?: string;
 }
+export namespace GameFileVersion {
+}
+
 

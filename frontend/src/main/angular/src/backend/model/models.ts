@@ -10,6 +10,6 @@ export * from './gameFileVersion';
 export * from './logCreatedMessage';
 export * from './logsMessageTopics';
 export * from './pageGameFileVersion';
-export * from './pageable';
+export * from './pageableObject';
 export * from './refreshTokenResponse';
-export * from './sort';
+export * from './sortObject';

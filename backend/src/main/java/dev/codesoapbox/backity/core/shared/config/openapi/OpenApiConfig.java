@@ -8,8 +8,8 @@ import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.AllArgsConstructor;
 import org.reflections.Reflections;
-import org.springdoc.core.SpringDocUtils;
-import org.springdoc.core.customizers.OpenApiCustomiser;
+import org.springdoc.core.customizers.OpenApiCustomizer;
+import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -84,7 +84,7 @@ public class OpenApiConfig {
     }
 
     @Bean
-    public OpenApiCustomiser addAdditionalClasses(Reflections reflections) {
+    public OpenApiCustomizer addAdditionalClasses(Reflections reflections) {
         return new OpenApiAdditionalSchemaProvider(reflections);
     }
 }

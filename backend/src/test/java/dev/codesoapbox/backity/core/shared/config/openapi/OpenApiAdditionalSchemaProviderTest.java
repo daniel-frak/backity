@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.shared.config.openapi;
 import dev.codesoapbox.backity.core.shared.domain.IncludeInDocumentation;
 import org.junit.jupiter.api.Test;
 import org.reflections.Reflections;
-import org.springdoc.core.customizers.OpenApiCustomiser;
+import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -41,7 +41,7 @@ class OpenApiAdditionalSchemaProviderTest {
     public static class OpenApiTestConfig {
         @Bean
         @ConditionalOnMissingBean
-        public OpenApiCustomiser addAdditionalClasses(Reflections reflections) {
+        public OpenApiCustomizer addAdditionalClasses(Reflections reflections) {
             return new OpenApiAdditionalSchemaProvider(reflections);
         }
 

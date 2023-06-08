@@ -26,7 +26,8 @@ model/logCreatedMessage.ts
 model/logsMessageTopics.ts
 model/models.ts
 model/pageGameFileVersion.ts
-model/pageable.ts
+model/pageableObject.ts
 model/refreshTokenResponse.ts
-model/sort.ts
+model/sortObject.ts
+param.ts
 variables.ts

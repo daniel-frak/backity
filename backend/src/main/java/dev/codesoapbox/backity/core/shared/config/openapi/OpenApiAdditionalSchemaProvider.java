@@ -7,7 +7,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.reflections.Reflections;
-import org.springdoc.core.customizers.OpenApiCustomiser;
+import org.springdoc.core.customizers.OpenApiCustomizer;
 
 import java.util.Map;
 import java.util.stream.Stream;
@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  * @see IncludeInDocumentation
  */
 @RequiredArgsConstructor
-public class OpenApiAdditionalSchemaProvider implements OpenApiCustomiser {
+public class OpenApiAdditionalSchemaProvider implements OpenApiCustomizer {
 
     private final Reflections reflections;
 

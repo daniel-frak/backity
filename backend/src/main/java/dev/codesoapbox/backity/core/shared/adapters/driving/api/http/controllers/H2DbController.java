@@ -2,12 +2,11 @@ package dev.codesoapbox.backity.core.shared.adapters.driving.api.http.controller
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.persistence.EntityManager;
 
 @Tag(name = "H2 Database", description = "Operations specific to a H2 Database")
 @RestController

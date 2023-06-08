@@ -9,22 +9,22 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import {Pageable} from './pageable';
+import {PageableObject} from './pageableObject';
 import {GameFileVersion} from './gameFileVersion';
-import {Sort} from './sort';
+import {SortObject} from './sortObject';
 
 
 export interface PageGameFileVersion {
-    totalElements?: number;
     totalPages?: number;
+    totalElements?: number;
     size?: number;
     content?: Array<GameFileVersion>;
     number?: number;
-    sort?: Sort;
+    sort?: SortObject;
     first?: boolean;
     last?: boolean;
+    pageable?: PageableObject;
     numberOfElements?: number;
-    pageable?: Pageable;
     empty?: boolean;
 }
 

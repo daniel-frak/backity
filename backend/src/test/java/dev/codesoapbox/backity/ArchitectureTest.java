@@ -8,13 +8,12 @@ import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.library.dependencies.SliceRule;
 import dev.codesoapbox.backity.testing.archunit.AdapterPackagesOnlyAccessedByTheirConfigCondition;
 import dev.codesoapbox.backity.testing.archunit.AdaptersShouldNotDependOnOtherAdaptersCondition;
+import jakarta.persistence.Entity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.Repository;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.persistence.Entity;
 
 import static com.tngtech.archunit.base.DescribedPredicate.not;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.*;
@@ -45,7 +44,7 @@ class ArchitectureTest {
     private static final String CONTROLLER_PACKAGE = "..adapters.driving.api.http.controllers..";
     private static final String SPRING_PACKAGE = "org.springframework..";
     private static final String SPRING_DATA_PACKAGE = "org.springframework.data..";
-    private static final LayeredArchitecture LAYERS = layeredArchitecture()
+    private static final LayeredArchitecture LAYERS = layeredArchitecture().consideringAllDependencies()
             .layer(DOMAIN_LAYER).definedBy(DOMAIN_PACKAGE)
             .layer(ADAPTER_LAYER).definedBy("..adapters..")
             .layer(CONFIG_LAYER).definedBy(CONFIG_PACKAGE);

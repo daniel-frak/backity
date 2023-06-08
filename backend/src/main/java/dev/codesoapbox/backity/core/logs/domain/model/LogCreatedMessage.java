@@ -1,9 +1,8 @@
 package dev.codesoapbox.backity.core.logs.domain.model;
 
 import dev.codesoapbox.backity.core.shared.domain.IncludeInDocumentation;
+import jakarta.validation.constraints.NotNull;
 import lombok.Value;
-
-import javax.validation.constraints.NotNull;
 
 @IncludeInDocumentation
 @Value(staticConstructor = "of")
