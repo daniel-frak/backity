@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(GameController.class)
 @Import(GameHttpBeanConfig.class)
-class GameControllerTest {
+class GameControllerIT {
 
     @Autowired
     private MockMvc mockMvc;

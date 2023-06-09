@@ -16,31 +16,38 @@ import java.util.Optional;
 public class GameFileVersionJpaBackupRepository implements GameFileVersionBackupRepository {
 
     private final GameFileVersionSpringRepository springRepository;
+    private final JpaGameFileVersionBackupMapper mapper;
 
     @Override
     public Optional<GameFileVersionBackup> findOldestWaitingForDownload() {
         return springRepository.findAllWaitingForDownload(PageRequest.of(0, 1)).get()
-                .findFirst();
+                .findFirst()
+                .map(mapper::toModel);
     }
 
     @Override
     public Page<GameFileVersionBackup> findAllWaitingForDownload(Pageable pageable) {
-        return springRepository.findAllWaitingForDownload(pageable);
+        return springRepository.findAllWaitingForDownload(pageable)
+                .map(mapper::toModel);
     }
 
     @Override
     public GameFileVersionBackup save(GameFileVersionBackup gameFileVersionBackup) {
-        return springRepository.save(gameFileVersionBackup);
+        JpaGameFileVersionBackup entity = mapper.toEntity(gameFileVersionBackup);
+        JpaGameFileVersionBackup savedEntity = springRepository.save(entity);
+        return mapper.toModel(savedEntity);
     }
 
     @Override
     public Optional<GameFileVersionBackup> findCurrentlyDownloading() {
-        return springRepository.findByStatus(FileBackupStatus.IN_PROGRESS);
+        return springRepository.findByStatus(FileBackupStatus.IN_PROGRESS)
+                .map(mapper::toModel);
     }
 
     @Override
     public Page<GameFileVersionBackup> findAllProcessed(Pageable pageable) {
-        return springRepository.findAllProcessed(pageable);
+        return springRepository.findAllProcessed(pageable)
+                .map(mapper::toModel);
     }
 
     @Override
@@ -50,16 +57,21 @@ public class GameFileVersionJpaBackupRepository implements GameFileVersionBackup
 
     @Override
     public Optional<GameFileVersionBackup> findById(Long id) {
-        return springRepository.findById(id);
+        return springRepository.findById(id)
+                .map(mapper::toModel);
     }
 
     @Override
     public Page<GameFileVersionBackup> findAllDiscovered(Pageable pageable) {
-        return springRepository.findAllByStatus(pageable, FileBackupStatus.DISCOVERED);
+        return springRepository.findAllByStatus(pageable, FileBackupStatus.DISCOVERED)
+                .map(mapper::toModel);
     }
 
     @Override
-    public List<GameFileVersionBackup> findAllByGameId(GameId id) {
-        return springRepository.findAllByGameId(id.value().toString());
+    public List<GameFileVersionBackup> findAllByGameId(GameId gameId) {
+        String gameIdString = gameId.value().toString();
+        return springRepository.findAllByGameId(gameIdString).stream()
+                .map(mapper::toModel)
+                .toList();
     }
 }

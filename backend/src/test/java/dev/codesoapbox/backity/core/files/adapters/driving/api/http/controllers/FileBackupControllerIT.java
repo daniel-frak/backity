@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(OutputCaptureExtension.class)
 @WebMvcTest(FileBackupController.class)
-class FileBackupControllerTest {
+class FileBackupControllerIT {
 
     @Autowired
     private MockMvc mockMvc;

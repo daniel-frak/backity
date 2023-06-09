@@ -17,7 +17,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-abstract class GameJpaRepositoryAbstractTest {
+abstract class GameJpaRepositoryAbstractIT {
 
     private static final JpaGameMapper MAPPER = Mappers.getMapper(JpaGameMapper.class);
 

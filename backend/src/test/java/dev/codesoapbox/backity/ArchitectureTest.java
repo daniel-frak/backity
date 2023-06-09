@@ -16,7 +16,8 @@ import org.springframework.data.repository.Repository;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.tngtech.archunit.base.DescribedPredicate.not;
-import static com.tngtech.archunit.core.domain.JavaClass.Predicates.*;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.equivalentTo;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
 import static com.tngtech.archunit.core.domain.properties.CanBeAnnotated.Predicates.annotatedWith;
 import static com.tngtech.archunit.core.domain.properties.HasName.Predicates.nameEndingWith;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
@@ -109,16 +110,6 @@ class ArchitectureTest {
                     .and(not(equivalentTo(Page.class)))
                     .and(not(equivalentTo(PageImpl.class)))
                     .and(not(equivalentTo(Pageable.class))));
-
-    /*
-    This should be removed in the future, once Spring Data dependencies are removed from the domain
-     */
-    @ArchTest
-    static final ArchRule domainEntitiesAndRepositoriesShouldNotDependOnSpringExceptForData = noClasses().that()
-            .resideInAPackage(DOMAIN_PACKAGE)
-            .and(simpleNameEndingWith("Foo").or(annotatedWith(Entity.class)))
-            .should().dependOnClassesThat(resideInAPackage(SPRING_PACKAGE)
-                    .and(not(resideInAPackage(SPRING_DATA_PACKAGE))));
 
     @ArchTest
     static final ArchRule repositoryImplementationsShouldResideInCorrectPackage = classes().that()

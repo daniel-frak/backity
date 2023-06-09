@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.files.backup.adapters.driven.persistence;
 
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVersionJpaBackupRepository;
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVersionSpringRepository;
+import dev.codesoapbox.backity.core.files.adapters.driven.persistence.JpaGameFileVersionBackupMapper;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
@@ -10,6 +11,7 @@ import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +24,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-abstract class GameFileVersionBackupJpaRepositoryAbstractTest {
+abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
 
     private GameFileVersionJpaBackupRepository gameFileVersionJpaRepository;
 
@@ -36,7 +38,8 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractTest {
 
     @BeforeEach
     void setUp() {
-        gameFileVersionJpaRepository = new GameFileVersionJpaBackupRepository(gameFileVersionSpringRepository);
+        JpaGameFileVersionBackupMapper mapper = Mappers.getMapper(JpaGameFileVersionBackupMapper.class);
+        gameFileVersionJpaRepository = new GameFileVersionJpaBackupRepository(gameFileVersionSpringRepository, mapper);
         entityManager = entityManagerFactory.createEntityManager();
         cleanDatabase();
         persistTestEnqueuedFiles();
