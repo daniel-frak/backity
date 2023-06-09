@@ -63,7 +63,8 @@ class UrlFileBackupServiceTest {
     private static GameFileVersionBackup mockGameFileVersion(String gameFileUrl) {
         return new GameFileVersionBackup(1L, "someSource", gameFileUrl, "someName",
                 "someFileName",
-                "someFilePath", "someGameTitle", "someVersion", "someSize",
+                "someFilePath", "someGameTitle",
+                "someGameId", "someVersion", "someSize",
                 LocalDateTime.now(), LocalDateTime.now(),
                 FileBackupStatus.DISCOVERED, null);
     }

@@ -20,6 +20,7 @@ class GameDetailsJsonResponseMapperTest {
         gameFileDetailsResponse.setVersion("someVersion");
         gameFileDetailsResponse.setManualUrl("someManualUrl");
         gameFileDetailsResponse.setName("someName");
+        gameFileDetailsResponse.setFileTitle("someFileTitle");
         gameFileDetailsResponse.setSize("someSize");
         domain.setFiles(singletonList(gameFileDetailsResponse));
         domain.setChangelog("someChangelog");
@@ -33,6 +34,7 @@ class GameDetailsJsonResponseMapperTest {
         assertEquals("someVersion", result.getFiles().get(0).getVersion());
         assertEquals("someManualUrl", result.getFiles().get(0).getManualUrl());
         assertEquals("someName", result.getFiles().get(0).getName());
+        assertEquals("someFileTitle", result.getFiles().get(0).getFileTitle());
         assertEquals("someSize", result.getFiles().get(0).getSize());
         assertEquals("someChangelog", result.getChangelog());
     }

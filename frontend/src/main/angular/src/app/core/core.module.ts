@@ -24,6 +24,8 @@ import {RouterModule} from "@angular/router";
 import {SettingsSideNavComponent} from './pages/settings/settings-layout/settings-side-nav/settings-side-nav.component';
 import {FilesComponent} from "@app/core/pages/settings/files/files.component";
 import {ThemeComponent} from './pages/theme/theme.component';
+import {GamesComponent} from './pages/games/games.component';
+import {FileStatusBadgeComponent} from './pages/games/file-status-badge/file-status-badge.component';
 
 @NgModule({
   declarations: [
@@ -37,7 +39,9 @@ import {ThemeComponent} from './pages/theme/theme.component';
     SettingsLayoutComponent,
     SettingsSideNavComponent,
     FilesComponent,
-    ThemeComponent
+    ThemeComponent,
+    GamesComponent,
+    FileStatusBadgeComponent
   ],
   imports: [
     SharedModule,

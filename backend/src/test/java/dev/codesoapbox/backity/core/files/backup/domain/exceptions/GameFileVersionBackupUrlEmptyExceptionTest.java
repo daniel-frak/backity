@@ -11,7 +11,7 @@ class GameFileVersionBackupUrlEmptyExceptionTest {
     void shouldGetMessage() {
         var exception = new FileBackupUrlEmptyException(1L);
 
-        assertEquals("Game file url was null or empty for GameFileVersion with id: 1",
+        assertEquals("Game file url was null or empty for GameFileVersionBackup with id: 1",
                 exception.getMessage());
     }
 }

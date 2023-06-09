@@ -45,6 +45,8 @@ public class GameFileVersionBackup {
     @NotNull
     private String gameTitle;
 
+    @NotNull String gameId;
+
     @NotNull
     private String version;
 

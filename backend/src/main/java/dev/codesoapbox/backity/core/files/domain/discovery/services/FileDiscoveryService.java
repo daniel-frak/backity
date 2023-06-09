@@ -5,6 +5,8 @@ import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVer
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
+import dev.codesoapbox.backity.core.files.domain.game.Game;
+import dev.codesoapbox.backity.core.files.domain.game.GameRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -17,14 +19,17 @@ import java.util.function.BiConsumer;
 public class FileDiscoveryService {
 
     private final List<SourceFileDiscoveryService> discoveryServices;
-    private final GameFileVersionBackupRepository repository;
+    private final GameRepository gameRepository;
+    private final GameFileVersionBackupRepository fileRepository;
     private final FileDiscoveryMessageService messageService;
     private final Map<String, Boolean> discoveryStatuses = new ConcurrentHashMap<>();
 
     public FileDiscoveryService(List<SourceFileDiscoveryService> discoveryServices,
-                                GameFileVersionBackupRepository repository, FileDiscoveryMessageService messageService) {
+                                GameRepository gameRepository,
+                                GameFileVersionBackupRepository fileRepository, FileDiscoveryMessageService messageService) {
         this.discoveryServices = discoveryServices;
-        this.repository = repository;
+        this.gameRepository = gameRepository;
+        this.fileRepository = fileRepository;
         this.messageService = messageService;
 
         discoveryServices.forEach(s -> {
@@ -91,12 +96,24 @@ public class FileDiscoveryService {
     }
 
     private void saveDiscoveredFileInfo(GameFileVersionBackup gameFileVersionBackup) {
-        if (!repository.existsByUrlAndVersion(gameFileVersionBackup.getUrl(), gameFileVersionBackup.getVersion())) {
-            repository.save(gameFileVersionBackup);
+        var game = getGameOrCreateNew(gameFileVersionBackup);
+        gameFileVersionBackup.setGameId(game.getId().value().toString());
+
+        if (!fileRepository.existsByUrlAndVersion(gameFileVersionBackup.getUrl(), gameFileVersionBackup.getVersion())) {
+            fileRepository.save(gameFileVersionBackup);
             messageService.sendDiscoveredFile(gameFileVersionBackup);
-            log.info("Discovered new file: {} (game: {})",
+            log.info("Discovered new file: {} (gameId: {})",
                     gameFileVersionBackup.getUrl(), gameFileVersionBackup.getGameTitle());
         }
+    }
+
+    private Game getGameOrCreateNew(GameFileVersionBackup gameFileVersionBackup) {
+        return gameRepository.findByTitle(gameFileVersionBackup.getGameTitle())
+                .orElseGet(() -> {
+                    var newGame = Game.createNew(gameFileVersionBackup.getGameTitle());
+                    gameRepository.save(newGame);
+                    return newGame;
+                });
     }
 
     public void stopFileDiscovery() {

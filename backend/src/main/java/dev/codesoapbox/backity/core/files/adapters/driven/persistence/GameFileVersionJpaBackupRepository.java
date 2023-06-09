@@ -3,11 +3,13 @@ package dev.codesoapbox.backity.core.files.adapters.driven.persistence;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
+import dev.codesoapbox.backity.core.files.domain.game.GameId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -54,5 +56,10 @@ public class GameFileVersionJpaBackupRepository implements GameFileVersionBackup
     @Override
     public Page<GameFileVersionBackup> findAllDiscovered(Pageable pageable) {
         return springRepository.findAllByStatus(pageable, FileBackupStatus.DISCOVERED);
+    }
+
+    @Override
+    public List<GameFileVersionBackup> findAllByGameId(GameId id) {
+        return springRepository.findAllByGameId(id.value().toString());
     }
 }

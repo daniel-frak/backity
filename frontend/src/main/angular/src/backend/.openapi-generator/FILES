@@ -7,6 +7,7 @@ api/backups.service.ts
 api/fileDiscovery.service.ts
 api/gOG.service.ts
 api/gOGAuthentication.service.ts
+api/games.service.ts
 api/h2Database.service.ts
 api/logs.service.ts
 configuration.ts
@@ -22,10 +23,12 @@ model/fileDiscoveryStatus.ts
 model/gameDetailsResponse.ts
 model/gameFileDetailsResponse.ts
 model/gameFileVersionBackup.ts
+model/gameWithFiles.ts
 model/logCreatedMessage.ts
 model/logsMessageTopics.ts
 model/models.ts
 model/pageGameFileVersionBackup.ts
+model/pageGameWithFiles.ts
 model/pageableObject.ts
 model/refreshTokenResponse.ts
 model/sortObject.ts

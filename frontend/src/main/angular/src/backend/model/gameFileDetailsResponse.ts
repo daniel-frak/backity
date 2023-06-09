@@ -16,5 +16,6 @@ export interface GameFileDetailsResponse {
     manualUrl?: string;
     name?: string;
     size?: string;
+    fileTitle?: string;
 }
 

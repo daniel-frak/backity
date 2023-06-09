@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBac
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
+import dev.codesoapbox.backity.core.files.domain.game.GameRepository;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +40,10 @@ class FileDiscoveryServiceTest {
     private FakeSourceFileDiscoveryService sourceFileDiscoveryService;
 
     @Mock
-    private GameFileVersionBackupRepository repository;
+    private GameRepository gameRepository;
+
+    @Mock
+    private GameFileVersionBackupRepository fileRepository;
 
     @Mock
     private FileDiscoveryMessageService messageService;
@@ -48,7 +52,7 @@ class FileDiscoveryServiceTest {
     void setUp() {
         sourceFileDiscoveryService = new FakeSourceFileDiscoveryService();
         fileDiscoveryService = new FileDiscoveryService(singletonList(sourceFileDiscoveryService),
-                repository, messageService);
+                gameRepository, fileRepository, messageService);
     }
 
     @Test
@@ -77,10 +81,11 @@ class FileDiscoveryServiceTest {
     void startFileDiscoveryShouldSaveDiscoveredFilesAndSendMessages() {
         GameFileVersionBackup gameFileVersionBackup = new GameFileVersionBackup();
         gameFileVersionBackup.setId(1L);
+        gameFileVersionBackup.setGameTitle("someGameTitle");
         gameFileVersionBackup.setUrl("someUrl");
         gameFileVersionBackup.setVersion("someVersion");
 
-        when(repository.existsByUrlAndVersion(gameFileVersionBackup.getUrl(), gameFileVersionBackup.getVersion()))
+        when(fileRepository.existsByUrlAndVersion(gameFileVersionBackup.getUrl(), gameFileVersionBackup.getVersion()))
                 .thenReturn(false);
 
         List<FileDiscoveryProgress> progressList = new ArrayList<>();
@@ -89,7 +94,7 @@ class FileDiscoveryServiceTest {
             return null;
         }).when(messageService).sendProgress(any());
         fileDiscoveryService = new FileDiscoveryService(singletonList(sourceFileDiscoveryService),
-                repository, messageService);
+                gameRepository, fileRepository, messageService);
 
         fileDiscoveryService.startFileDiscovery();
 
@@ -97,7 +102,7 @@ class FileDiscoveryServiceTest {
                 .until(sourceFileDiscoveryService::hasBeenTriggered);
         sourceFileDiscoveryService.simulateFileDiscovery(gameFileVersionBackup);
 
-        verify(repository).save(gameFileVersionBackup);
+        verify(fileRepository).save(gameFileVersionBackup);
         verify(messageService).sendDiscoveredFile(gameFileVersionBackup);
         assertEquals(1, progressList.size());
     }
@@ -106,10 +111,11 @@ class FileDiscoveryServiceTest {
     void startFileDiscoveryShouldNotSaveDiscoveredFileIfAlreadyExists() {
         var gameFileVersionBackup = new GameFileVersionBackup();
         gameFileVersionBackup.setId(1L);
+        gameFileVersionBackup.setGameTitle("someGameTitle");
         gameFileVersionBackup.setUrl("someUrl");
         gameFileVersionBackup.setVersion("someVersion");
 
-        when(repository.existsByUrlAndVersion(gameFileVersionBackup.getUrl(), gameFileVersionBackup.getVersion()))
+        when(fileRepository.existsByUrlAndVersion(gameFileVersionBackup.getUrl(), gameFileVersionBackup.getVersion()))
                 .thenReturn(true);
 
         fileDiscoveryService.startFileDiscovery();
@@ -118,7 +124,7 @@ class FileDiscoveryServiceTest {
                 .until(sourceFileDiscoveryService::hasBeenTriggered);
         sourceFileDiscoveryService.simulateFileDiscovery(gameFileVersionBackup);
 
-        verify(repository, never()).save(any());
+        verify(fileRepository, never()).save(any());
         verify(messageService, never()).sendDiscoveredFile(any());
     }
 

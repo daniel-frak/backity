@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.shared.adapters.driving.api.http.controller
 
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVersionJpaBackupRepository;
 import dev.codesoapbox.backity.core.files.config.FileBackupBeanConfig;
+import dev.codesoapbox.backity.core.files.config.FileManagementBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = H2DbController.class, properties = "h2dump.path=test_dump.sql")
-@Import(FileBackupBeanConfig.class)
+@Import({FileManagementBeanConfig.class, FileBackupBeanConfig.class})
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 class H2DbControllerTest {
@@ -72,7 +73,7 @@ class H2DbControllerTest {
 
         var dumpContents = readTestDump();
 
-        assertTrue(dumpContents.contains("INSERT INTO \"PUBLIC\".\"GAME_FILE_VERSION\" VALUES"));
+        assertTrue(dumpContents.contains("INSERT INTO \"PUBLIC\".\"GAME_FILE_VERSION_BACKUP\" VALUES"));
     }
 
     private String readTestDump() throws IOException {

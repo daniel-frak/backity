@@ -64,11 +64,11 @@ class FileBackupControllerTest {
                   "version": "someVersion",
                   "size": "someSize",
                   "dateCreated": "2022-04-29T14:15:53",
-                  "status": "DOWNLOAD_FAILED",
+                  "status": "FAILED",
                   "failedReason": "someFailedReason"
                 }""";
 
-        mockMvc.perform(get("/api/downloads/current"))
+        mockMvc.perform(get("/api/backups/current"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
@@ -104,7 +104,7 @@ class FileBackupControllerTest {
                       "version": "someVersion",
                       "size": "someSize",
                       "dateCreated": "2022-04-29T14:15:53",
-                      "status": "ENQUEUED_FOR_DOWNLOAD",
+                      "status": "ENQUEUED",
                       "failedReason": null
                     }
                   ],
@@ -135,7 +135,7 @@ class FileBackupControllerTest {
                   "empty": false
                 }""";
 
-        mockMvc.perform(get("/api/downloads/queue?size=1"))
+        mockMvc.perform(get("/api/backups/queue?size=1"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
@@ -171,7 +171,7 @@ class FileBackupControllerTest {
                        "version": "someVersion",
                        "size": "someSize",
                        "dateCreated": "2022-04-29T14:15:53",
-                       "status": "DOWNLOADED",
+                       "status": "SUCCESS",
                        "failedReason": null
                      }
                    ],
@@ -202,7 +202,7 @@ class FileBackupControllerTest {
                    "empty": false
                  }""";
 
-        mockMvc.perform(get("/api/downloads/processed?size=1"))
+        mockMvc.perform(get("/api/backups/processed?size=1"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
@@ -219,7 +219,7 @@ class FileBackupControllerTest {
         when(gameFileVersionBackupRepository.findById(id))
                 .thenReturn(Optional.of(gameFileVersionBackup));
 
-        mockMvc.perform(get("/api/downloads/enqueue/" + id))
+        mockMvc.perform(get("/api/backups/enqueue/" + id))
                 .andDo(print())
                 .andExpect(status().isOk());
 
@@ -234,7 +234,7 @@ class FileBackupControllerTest {
         when(gameFileVersionBackupRepository.findById(id))
                 .thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/api/downloads/enqueue/" + id))
+        mockMvc.perform(get("/api/backups/enqueue/" + id))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
 

@@ -20,6 +20,7 @@ export interface GameFileVersionBackup {
     originalFileName?: string;
     filePath?: string;
     gameTitle?: string;
+    gameId?: string;
     version?: string;
     size?: string;
     dateCreated?: string;

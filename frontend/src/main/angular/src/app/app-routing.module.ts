@@ -9,6 +9,7 @@ import {SettingsLayoutComponent} from "@app/core/pages/settings/settings-layout/
 import {ContainedLayoutComponent} from "@app/shared/layout/contained-layout/contained-layout.component";
 import {FilesComponent} from "@app/core/pages/settings/files/files.component";
 import {ThemeComponent} from "@app/core/pages/theme/theme.component";
+import {GamesComponent} from "@app/core/pages/games/games.component";
 
 const routes: Routes = [
   {
@@ -23,6 +24,7 @@ const routes: Routes = [
           {path: 'auth', component: AuthComponent},
           {path: 'file-discovery', component: FileDiscoveryComponent},
           {path: 'file-backup', component: FileBackupComponent},
+          {path: 'games', component: GamesComponent},
           {path: 'logs', component: LogsComponent},
           {
             path: 'theme',

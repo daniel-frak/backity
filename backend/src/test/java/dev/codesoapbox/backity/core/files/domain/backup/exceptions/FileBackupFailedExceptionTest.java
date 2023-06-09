@@ -15,7 +15,7 @@ class FileBackupFailedExceptionTest {
 
         var exception = new FileBackupFailedException(enqueuedFileDownload, null);
 
-        assertEquals("Could not download game file 1", exception.getMessage());
+        assertEquals("Could not back up game file 1", exception.getMessage());
     }
 
     @Test

@@ -31,7 +31,7 @@ describe('FileDiscoveryComponent', () => {
   let discoveryChangedSubscriptions: Function[];
   let discoveryProgressSubscriptions: Function[];
   let fileDiscoveryClientMock: any;
-  let BackupsClientMock: any;
+  let backupsClientMock: any;
 
   beforeEach(async () => {
     discoveredSubscriptions = [];
@@ -56,7 +56,7 @@ describe('FileDiscoveryComponent', () => {
     fileDiscoveryClientMock.getStatuses.and.returnValue({subscribe: (s: (f: any) => any) => s([])});
     fileDiscoveryClientMock.getDiscoveredFiles.and.returnValue({subscribe: (s: (f: any) => any) => s([])});
 
-    BackupsClientMock = createSpyObj(BackupsClient, ['download']);
+    backupsClientMock = createSpyObj(BackupsClient, ['download']);
 
     await TestBed.configureTestingModule({
       declarations: [
@@ -80,7 +80,7 @@ describe('FileDiscoveryComponent', () => {
         },
         {
           provide: BackupsClient,
-          useValue: BackupsClientMock
+          useValue: backupsClientMock
         }
       ]
     })
@@ -135,11 +135,11 @@ describe('FileDiscoveryComponent', () => {
   });
 
   it('should set newest discovered and increment discovered count on new discovery', () => {
-    const expectedGameFileVersion: GameFileVersionBackup = {
+    const expectedGameFileVersionBackup: GameFileVersionBackup = {
       title: 'someGameFileVersion'
     };
-    discoveredSubscriptions[0]({body: JSON.stringify(expectedGameFileVersion)})
-    expect(component.newestDiscovered).toEqual(expectedGameFileVersion);
+    discoveredSubscriptions[0]({body: JSON.stringify(expectedGameFileVersionBackup)})
+    expect(component.newestDiscovered).toEqual(expectedGameFileVersionBackup);
     expect(component.newDiscoveredCount).toEqual(1);
   });
 
@@ -185,7 +185,7 @@ describe('FileDiscoveryComponent', () => {
     const observableMock: any = createSpyObj('Observable', ['subscribe', 'pipe']);
     observableMock.pipe.and.returnValue(observableMock);
 
-    BackupsClientMock.download.and.returnValue(observableMock);
+    backupsClientMock.download.and.returnValue(observableMock);
 
     component.enqueueFile(file);
     expect(file.status).toEqual(FileBackupStatus.Enqueued);
@@ -233,7 +233,7 @@ describe('FileDiscoveryComponent', () => {
     const observableMock: any = createSpyObj('Observable', ['subscribe', 'pipe']);
     observableMock.pipe.and.returnValue(observableMock);
 
-    BackupsClientMock.download.and.returnValue(new Observable(subscriber => {
+    backupsClientMock.download.and.returnValue(new Observable(subscriber => {
       expect(file.status).toEqual(FileBackupStatus.Enqueued);
       subscriber.error(expectedError);
     }));

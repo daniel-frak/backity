@@ -10,7 +10,7 @@ class GameBackupRequestFailedExceptionTest {
     void shouldGetMessage() {
         var exception = new GameBackupRequestFailedException("someUrl", "someMessage");
 
-        assertEquals("An error occurred while downloading game file: someUrl. someMessage",
+        assertEquals("An error occurred while backing up game file: someUrl. someMessage",
                 exception.getMessage());
     }
 

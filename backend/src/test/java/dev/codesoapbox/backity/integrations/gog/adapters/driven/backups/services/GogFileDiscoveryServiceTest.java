@@ -38,14 +38,17 @@ class GogFileDiscoveryServiceTest {
         var expectedGameFileVersions = List.of(
                 new GameFileVersionBackup(1L, "GOG", "someUrl1", "fileSimpleName1", "fileName1",
                         null, "Game 2",
+                        null,
                         "1.0.0", "100 KB", null, null,
                         FileBackupStatus.DISCOVERED, null),
                 new GameFileVersionBackup(2L, "GOG", "someUrl2", "fileSimpleName2", "fileName2",
                         null, "Game 2",
+                        null,
                         "2.0.0", "200 KB", null, null,
                         FileBackupStatus.DISCOVERED, null),
                 new GameFileVersionBackup(3L, "GOG", "someUrl3", "fileSimpleName3", "fileName3",
                         null, "Game 4",
+                        null,
                         "3.0.0", "300 KB", null, null,
                         FileBackupStatus.DISCOVERED, null)
         );

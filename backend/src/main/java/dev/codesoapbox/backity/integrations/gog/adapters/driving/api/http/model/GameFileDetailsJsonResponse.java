@@ -15,4 +15,5 @@ public class GameFileDetailsJsonResponse {
     private String manualUrl;
     private String name;
     private String size;
+    private String fileTitle;
 }

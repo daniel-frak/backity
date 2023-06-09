@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface GameFileVersionSpringRepository extends JpaRepository<GameFileVersionBackup, Long> {
@@ -30,4 +31,6 @@ public interface GameFileVersionSpringRepository extends JpaRepository<GameFileV
     boolean existsByUrlAndVersion(String url, String version);
 
     Page<GameFileVersionBackup> findAllByStatus(Pageable pageable, FileBackupStatus status);
+
+    List<GameFileVersionBackup> findAllByGameId(String gameId);
 }

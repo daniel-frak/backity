@@ -20,7 +20,7 @@ describe('DownloadsComponent', () => {
   let startSubscriptions: Function[];
   let progressSubscriptions: Function[];
   let finishSubscriptions: Function[];
-  const BackupsClientMock = {
+  const backupsClientMock = {
     currentlyDownloading: undefined,
     processedFiles: undefined,
     queueItems: undefined,
@@ -39,9 +39,9 @@ describe('DownloadsComponent', () => {
     startSubscriptions = [];
     progressSubscriptions = [];
     finishSubscriptions = [];
-    BackupsClientMock.currentlyDownloading = undefined;
-    BackupsClientMock.processedFiles = undefined;
-    BackupsClientMock.queueItems = undefined;
+    backupsClientMock.currentlyDownloading = undefined;
+    backupsClientMock.processedFiles = undefined;
+    backupsClientMock.queueItems = undefined;
     const clientMock: Client = {
       subscribe: (destination: string, callback: messageCallbackType, headers: StompHeaders = {}
       ): any => {
@@ -86,7 +86,7 @@ describe('DownloadsComponent', () => {
         },
         {
           provide: BackupsClient,
-          useValue: BackupsClientMock
+          useValue: backupsClientMock
         }
       ]
     })
@@ -141,7 +141,7 @@ describe('DownloadsComponent', () => {
   });
 
   it('should refresh', () => {
-    BackupsClientMock.queueItems = {
+    backupsClientMock.queueItems = {
       content: [
         {
           gameTitle: "Some queued game",
@@ -150,7 +150,7 @@ describe('DownloadsComponent', () => {
         }
       ]
     };
-    BackupsClientMock.processedFiles = {
+    backupsClientMock.processedFiles = {
       content: [
         {
           gameTitle: "Some processed game",
@@ -159,7 +159,7 @@ describe('DownloadsComponent', () => {
         }
       ]
     };
-    BackupsClientMock.currentlyDownloading = {
+    backupsClientMock.currentlyDownloading = {
       gameTitle: "Some current game",
       title: "currentGame.exe",
       size: "3 GB"
@@ -168,9 +168,9 @@ describe('DownloadsComponent', () => {
     component.refresh();
     fixture.detectChanges();
 
-    expect(component.enqueuedDownloads).toBe(BackupsClientMock.queueItems);
-    expect(component.processedFiles).toBe(BackupsClientMock.processedFiles);
-    expect(component.currentDownload).toBe(BackupsClientMock.currentlyDownloading);
+    expect(component.enqueuedDownloads).toBe(backupsClientMock.queueItems);
+    expect(component.processedFiles).toBe(backupsClientMock.processedFiles);
+    expect(component.currentDownload).toBe(backupsClientMock.currentlyDownloading);
 
     const currentlyDownloadingTable = fixture.debugElement.query(By.css('#currently-downloading'));
     expect(currentlyDownloadingTable.nativeElement.textContent).toContain("Some current game");
