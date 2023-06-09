@@ -35,7 +35,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   private readonly stompSubscriptions: StompSubscription[] = [];
 
   constructor(private readonly fileDiscoveryClient: FileDiscoveryClient,
-              private readonly BackupsClient: BackupsClient,
+              private readonly backupsClient: BackupsClient,
               private readonly messageService: MessagesService) {
   }
 
@@ -112,7 +112,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   enqueueFile(file: GameFileVersionBackup) {
     file.status = FileBackupStatus.Enqueued;
     console.info("Enqueuing: " + file.id);
-    this.BackupsClient.download(file.id as number)
+    this.backupsClient.download(file.id as number)
       .pipe(catchError(e => {
         file.status = FileBackupStatus.Discovered;
         return throwError(e);

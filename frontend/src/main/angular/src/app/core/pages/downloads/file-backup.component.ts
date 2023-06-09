@@ -28,7 +28,7 @@ export class FileBackupComponent implements OnInit, OnDestroy {
   private pageSize = 20;
   private readonly stompSubscriptions: StompSubscription[] = [];
 
-  constructor(private readonly BackupsClient: BackupsClient,
+  constructor(private readonly backupsClient: BackupsClient,
               private readonly messageService: MessagesService) {
   }
 
@@ -62,18 +62,18 @@ export class FileBackupComponent implements OnInit, OnDestroy {
     const size = this.pageSize;
     const sort = ["dateCreated,desc"];
 
-    this.BackupsClient.getQueueItems(page, size, sort)
+    this.backupsClient.getQueueItems(page, size, sort)
       .subscribe(d => {
         this.enqueuedDownloads = d;
 
-        this.BackupsClient.getProcessedFiles()
+        this.backupsClient.getProcessedFiles()
           .subscribe(f => {
             this.processedFiles = f;
             this.filesAreLoading = false;
           })
       });
 
-    this.BackupsClient.getCurrentlyProcessing()
+    this.backupsClient.getCurrentlyProcessing()
       .subscribe(d => this.currentDownload = d);
   }
 

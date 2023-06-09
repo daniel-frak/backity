@@ -24,7 +24,7 @@ describe('DownloadsComponent', () => {
     currentlyDownloading: undefined,
     processedFiles: undefined,
     queueItems: undefined,
-    getCurrentlyDownloading(page?: number, size?: number, sort?: string[]): any {
+    getCurrentlyProcessing(page?: number, size?: number, sort?: string[]): any {
       return {subscribe: (s: (f: any) => any) => s(this.currentlyDownloading)};
     },
     getProcessedFiles(page?: number, size?: number, sort?: string[]): any {

@@ -14,7 +14,7 @@ export class GamesComponent implements OnInit {
   gameWithFilesPage?: PageGameWithFiles;
 
   constructor(private readonly gamesClient: GamesClient,
-              private readonly BackupsClient: BackupsClient) {
+              private readonly backupsClient: BackupsClient) {
   }
 
   ngOnInit(): void {
@@ -33,7 +33,7 @@ export class GamesComponent implements OnInit {
   backUp(file: GameFileVersionBackup) {
     file.status = FileBackupStatus.Enqueued;
     console.info("Enqueuing backup: " + file.id);
-    this.BackupsClient.download(file.id as number)
+    this.backupsClient.download(file.id as number)
       .pipe(catchError(e => {
         file.status = FileBackupStatus.Discovered;
         return throwError(e);
