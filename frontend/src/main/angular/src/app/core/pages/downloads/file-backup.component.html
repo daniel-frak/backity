@@ -1,0 +1,115 @@
+<app-page-header title="File backup">
+  Here you can see the backup queue.
+</app-page-header>
+
+<div class="card mt-3">
+  <div class="card-body" id="currently-downloading">
+    <h2 class="card-title">Currently backing up</h2>
+
+    <ng-container *ngIf="!currentDownload">
+      Nothing is currently being backed up.
+    </ng-container>
+    <ng-container *ngIf="currentDownload">
+      <app-table [content]="{content: [currentDownload]}" [isLoading]="filesAreLoading">
+        <ng-template app-table-column="Game title" let-item>
+          {{asFile(item).gameTitle}}
+        </ng-template>
+        <ng-template app-table-column="File name" let-item>
+          {{asFile(item).title}} - {{asFile(item).originalFileName}}
+        </ng-template>
+        <ng-template app-table-column="Version" let-item>
+          {{asFile(item).version}}
+        </ng-template>
+        <ng-template app-table-column="Size" let-item>
+          {{asFile(item).size}}
+        </ng-template>
+        <ng-template app-table-column="Path" style="max-width: 5%" let-item>
+          <span class="file-path">{{asFile(item).filePath}}</span>
+        </ng-template>
+        <ng-template app-table-column="Progress">
+          <ng-container *ngIf="downloadProgress">
+            <span class="progress">
+              <div aria-valuemax="100" aria-valuemin="0" [attr.aria-valuenow]="downloadProgress.percentage"
+                   class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                   [ngStyle]="{width: downloadProgress.percentage + '%'}">{{downloadProgress.percentage + '%'}}</div>
+            </span>
+            (time left: {{(downloadProgress.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC'}})
+          </ng-container>
+        </ng-template>
+      </app-table>
+    </ng-container>
+  </div>
+</div>
+
+<div class="card mt-3">
+  <div class="card-body">
+    <h2 class="card-title">Queue</h2>
+    <p>
+      <button (click)="refresh()"
+              [disabled]="filesAreLoading"
+              class="btn btn-secondary">
+        Refresh
+      </button>
+    </p>
+
+    <app-table [content]="enqueuedDownloads" [isLoading]="filesAreLoading" caption="Backup queue" id="download-queue">
+      <ng-template app-table-column="Game title" let-item>
+        {{asFile(item).gameTitle}}
+      </ng-template>
+      <ng-template app-table-column="File name" let-item>
+        {{asFile(item).title}}
+      </ng-template>
+      <ng-template app-table-column="Version" let-item>
+        {{asFile(item).version}}
+      </ng-template>
+      <ng-template app-table-column="Size" let-item>
+        {{asFile(item).size}}
+      </ng-template>
+      <ng-template app-table-column="Actions"
+                   append-class="text-end"
+                   hide-title-on-mobile
+                   let-item>
+        <ng-container *ngFor="let file of [asFile(item)]">
+          <button (click)="removeFromQueue(file.id)"
+                  *ngIf="file.status == FileBackupStatus.Enqueued" class="btn btn-primary">
+            Cancel
+          </button>
+        </ng-container>
+      </ng-template>
+    </app-table>
+
+    <app-table [content]="processedFiles" [isLoading]="filesAreLoading" caption="Processed files" id="processed-files">
+      <ng-template app-table-column="Game title" let-item>
+        {{asFile(item).gameTitle}}
+      </ng-template>
+      <ng-template app-table-column="File name" let-item>
+        {{asFile(item).title}}
+      </ng-template>
+      <ng-template app-table-column="Version" let-item>
+        {{asFile(item).version}}
+      </ng-template>
+      <ng-template app-table-column="Size" let-item>
+        {{asFile(item).size}}
+      </ng-template>
+      <ng-template app-table-column="Path" style="max-width: 5%" let-item>
+        <span class="file-path">{{asFile(item).filePath}}</span>
+      </ng-template>
+      <ng-template app-table-column="Status" let-item>
+        <ng-container *ngFor="let file of [asFile(item)]">
+          <span
+            [ngClass]="{'bg-success': file.status == FileBackupStatus.Success,
+             'bg-danger': file.status != FileBackupStatus.Success}"
+            class="badge">
+            <i [ngClass]="{'bi bi-check-circle': file.status == FileBackupStatus.Success,
+             'bi bi-x-circle': file.status != FileBackupStatus.Success}"
+               aria-hidden="true"
+               class="me-1">
+            </i>
+
+            {{file.status}}
+          </span>
+        </ng-container>
+      </ng-template>
+    </app-table>
+  </div>
+</div>

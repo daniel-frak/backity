@@ -1,14 +1,14 @@
 package dev.codesoapbox.backity.integrations.gog.config;
 
-import dev.codesoapbox.backity.core.files.domain.downloading.model.messages.FileDownloadProgress;
-import dev.codesoapbox.backity.core.files.domain.downloading.services.FileDownloadMessageService;
-import dev.codesoapbox.backity.core.files.domain.downloading.services.FileManager;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.GogFileDiscoveryService;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.GogFileDownloader;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.UrlFileDownloader;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth.GogAuthClient;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.auth.GogAuthSpringService;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.downloading.services.embed.GogEmbedWebClient;
+import dev.codesoapbox.backity.core.files.domain.backup.model.messages.FileBackupProgress;
+import dev.codesoapbox.backity.core.files.domain.backup.services.FileBackupMessageService;
+import dev.codesoapbox.backity.core.files.domain.backup.services.FileManager;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.GogFileBackupService;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.GogFileDiscoveryService;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.UrlFileDownloader;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.auth.GogAuthClient;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.auth.GogAuthSpringService;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.embed.GogEmbedWebClient;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -47,16 +47,16 @@ public class GogBeanConfig {
 
     @Bean
     UrlFileDownloader enqueuedFileDownloader(FileManager fileManager,
-                                             FileDownloadMessageService fileDownloadMessageService) {
+                                             FileBackupMessageService fileBackupMessageService) {
         return new UrlFileDownloader(fileManager,
-                i -> fileDownloadMessageService.sendProgress(
-                        new FileDownloadProgress(i.percentage(), i.timeLeft().toSeconds())));
+                i -> fileBackupMessageService.sendProgress(
+                        new FileBackupProgress(i.percentage(), i.timeLeft().toSeconds())));
     }
 
     @Bean
-    GogFileDownloader gogFileDownloader(GogEmbedWebClient gogEmbedClient, GogAuthService authService,
-                                        UrlFileDownloader urlFileDownloader) {
-        return new GogFileDownloader(gogEmbedClient, authService, urlFileDownloader);
+    GogFileBackupService gogFileDownloader(GogEmbedWebClient gogEmbedClient, GogAuthService authService,
+                                           UrlFileDownloader urlFileDownloader) {
+        return new GogFileBackupService(gogEmbedClient, authService, urlFileDownloader);
     }
 
     @Bean

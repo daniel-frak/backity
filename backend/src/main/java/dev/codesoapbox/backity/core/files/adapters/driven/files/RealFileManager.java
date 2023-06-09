@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.adapters.driven.files;
 
-import dev.codesoapbox.backity.core.files.domain.downloading.services.FileManager;
+import dev.codesoapbox.backity.core.files.domain.backup.services.FileManager;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;

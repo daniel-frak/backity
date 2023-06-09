@@ -1,13 +1,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
-  DownloadsClient,
+  BackupsClient,
+  FileBackupStatus,
   FileDiscoveryClient,
   FileDiscoveryMessageTopics,
   FileDiscoveryProgress,
   FileDiscoveryStatus,
-  FileStatus,
-  GameFileVersion,
-  PageGameFileVersion
+  GameFileVersionBackup,
+  PageGameFileVersionBackup
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
@@ -22,8 +22,8 @@ import {throwError} from "rxjs";
 })
 export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
-  discoveredFiles?: PageGameFileVersion;
-  newestDiscovered?: GameFileVersion;
+  discoveredFiles?: PageGameFileVersionBackup;
+  newestDiscovered?: GameFileVersionBackup;
   newDiscoveredCount: number = 0;
   infoIsLoading: boolean = false;
   filesAreLoading: boolean = false;
@@ -35,11 +35,11 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   private readonly stompSubscriptions: StompSubscription[] = [];
 
   constructor(private readonly fileDiscoveryClient: FileDiscoveryClient,
-              private readonly downloadsClient: DownloadsClient,
+              private readonly BackupsClient: BackupsClient,
               private readonly messageService: MessagesService) {
   }
 
-  asFile = (file: GameFileVersion) => file;
+  asFile = (file: GameFileVersionBackup) => file;
 
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
@@ -91,7 +91,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
       .subscribe(df => this.updateDiscoveredFiles(df));
   }
 
-  private updateDiscoveredFiles(df: PageGameFileVersion) {
+  private updateDiscoveredFiles(df: PageGameFileVersionBackup) {
     this.discoveredFiles = df;
     this.newDiscoveredCount = 0;
     this.filesAreLoading = false;
@@ -109,12 +109,12 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     });
   }
 
-  enqueueFile(file: GameFileVersion) {
-    file.status = FileStatus.EnqueuedForDownload;
+  enqueueFile(file: GameFileVersionBackup) {
+    file.status = FileBackupStatus.Enqueued;
     console.info("Enqueuing: " + file.id);
-    this.downloadsClient.download(file.id as number)
+    this.BackupsClient.download(file.id as number)
       .pipe(catchError(e => {
-        file.status = FileStatus.Discovered;
+        file.status = FileBackupStatus.Discovered;
         return throwError(e);
       }))
       .subscribe(() => {

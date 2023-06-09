@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers;
 
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
 import dev.codesoapbox.backity.core.files.domain.discovery.services.FileDiscoveryService;
-import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
-import dev.codesoapbox.backity.core.files.domain.downloading.repositories.GameFileVersionRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,11 +30,11 @@ class FileDiscoveryControllerTest {
     private FileDiscoveryService fileDiscoveryService;
 
     @MockBean
-    private GameFileVersionRepository repository;
+    private GameFileVersionBackupRepository repository;
 
     @Test
     void shouldGetDiscoveredFiles() throws Exception {
-        GameFileVersion gameFileVersion = GameFileVersion.builder()
+        GameFileVersionBackup gameFileVersionBackup = GameFileVersionBackup.builder()
                 .id(1L)
                 .url("someUrl")
                 .version("someVersion")
@@ -42,7 +42,7 @@ class FileDiscoveryControllerTest {
 
         Pageable pageable = Pageable.ofSize(1);
         when(repository.findAllDiscovered(pageable))
-                .thenReturn(new PageImpl<>(singletonList(gameFileVersion), pageable, 2));
+                .thenReturn(new PageImpl<>(singletonList(gameFileVersionBackup), pageable, 2));
 
         var expectedJson = """
                 {

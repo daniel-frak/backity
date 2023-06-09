@@ -11,14 +11,14 @@ import {
 import {TableComponent} from "@app/shared/components/table/table.component";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {
-  DownloadsClient,
+  BackupsClient,
+  FileBackupStatus,
   FileDiscoveryClient,
   FileDiscoveryMessageTopics,
   FileDiscoveryProgress,
   FileDiscoveryStatus,
-  FileStatus,
-  GameFileVersion,
-  PageGameFileVersion
+  GameFileVersionBackup,
+  PageGameFileVersionBackup
 } from "@backend";
 import {Observable} from "rxjs";
 import {MessageTesting} from "@app/shared/testing/message-testing";
@@ -31,7 +31,7 @@ describe('FileDiscoveryComponent', () => {
   let discoveryChangedSubscriptions: Function[];
   let discoveryProgressSubscriptions: Function[];
   let fileDiscoveryClientMock: any;
-  let downloadsClientMock: any;
+  let BackupsClientMock: any;
 
   beforeEach(async () => {
     discoveredSubscriptions = [];
@@ -56,7 +56,7 @@ describe('FileDiscoveryComponent', () => {
     fileDiscoveryClientMock.getStatuses.and.returnValue({subscribe: (s: (f: any) => any) => s([])});
     fileDiscoveryClientMock.getDiscoveredFiles.and.returnValue({subscribe: (s: (f: any) => any) => s([])});
 
-    downloadsClientMock = createSpyObj(DownloadsClient, ['download']);
+    BackupsClientMock = createSpyObj(BackupsClient, ['download']);
 
     await TestBed.configureTestingModule({
       declarations: [
@@ -79,8 +79,8 @@ describe('FileDiscoveryComponent', () => {
           useValue: fileDiscoveryClientMock
         },
         {
-          provide: DownloadsClient,
-          useValue: downloadsClientMock
+          provide: BackupsClient,
+          useValue: BackupsClientMock
         }
       ]
     })
@@ -104,7 +104,7 @@ describe('FileDiscoveryComponent', () => {
       source: 'someSource',
       inProgress: true
     };
-    const expectedGameFileVersions: PageGameFileVersion = {
+    const expectedGameFileVersions: PageGameFileVersionBackup = {
       content: [{
         title: 'someGameFileVersion'
       }]
@@ -135,7 +135,7 @@ describe('FileDiscoveryComponent', () => {
   });
 
   it('should set newest discovered and increment discovered count on new discovery', () => {
-    const expectedGameFileVersion: GameFileVersion = {
+    const expectedGameFileVersion: GameFileVersionBackup = {
       title: 'someGameFileVersion'
     };
     discoveredSubscriptions[0]({body: JSON.stringify(expectedGameFileVersion)})
@@ -179,16 +179,16 @@ describe('FileDiscoveryComponent', () => {
 
   it('should enqueue file', () => {
     spyOn(console, 'info');
-    const file: GameFileVersion = {
+    const file: GameFileVersionBackup = {
       title: 'someGameFileVersion'
     };
     const observableMock: any = createSpyObj('Observable', ['subscribe', 'pipe']);
     observableMock.pipe.and.returnValue(observableMock);
 
-    downloadsClientMock.download.and.returnValue(observableMock);
+    BackupsClientMock.download.and.returnValue(observableMock);
 
     component.enqueueFile(file);
-    expect(file.status).toEqual(FileStatus.EnqueuedForDownload);
+    expect(file.status).toEqual(FileBackupStatus.Enqueued);
     expect(observableMock.subscribe).toHaveBeenCalled();
     expect(console.info).toHaveBeenCalled();
   });
@@ -226,21 +226,21 @@ describe('FileDiscoveryComponent', () => {
   it('should dequeue file when enqueueFile throws', () => {
     spyOn(console, 'info');
     spyOn(console, 'error');
-    const file: GameFileVersion = {
+    const file: GameFileVersionBackup = {
       title: 'someGameFileVersion'
     };
     const expectedError = new Error("error1");
     const observableMock: any = createSpyObj('Observable', ['subscribe', 'pipe']);
     observableMock.pipe.and.returnValue(observableMock);
 
-    downloadsClientMock.download.and.returnValue(new Observable(subscriber => {
-      expect(file.status).toEqual(FileStatus.EnqueuedForDownload);
+    BackupsClientMock.download.and.returnValue(new Observable(subscriber => {
+      expect(file.status).toEqual(FileBackupStatus.Enqueued);
       subscriber.error(expectedError);
     }));
 
     component.enqueueFile(file);
 
-    expect(file.status).toEqual(FileStatus.Discovered);
+    expect(file.status).toEqual(FileBackupStatus.Discovered);
     expect(console.error).toHaveBeenCalled();
     expect(console.info).toHaveBeenCalled();
   });

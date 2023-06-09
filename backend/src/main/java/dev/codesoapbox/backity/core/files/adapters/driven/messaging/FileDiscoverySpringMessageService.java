@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.core.files.adapters.driven.messaging;
 
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
 import dev.codesoapbox.backity.core.files.domain.discovery.services.FileDiscoveryMessageService;
-import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -30,7 +30,7 @@ public class FileDiscoverySpringMessageService implements FileDiscoveryMessageSe
     }
 
     @Override
-    public void sendDiscoveredFile(GameFileVersion payload) {
+    public void sendDiscoveredFile(GameFileVersionBackup payload) {
         sendMessage(FileDiscoveryMessageTopics.FILE_DISCOVERY.toString(), payload);
     }
 }

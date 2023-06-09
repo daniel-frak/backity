@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.shared.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVersionJpaRepository;
-import dev.codesoapbox.backity.core.files.config.FileDownloadBeanConfig;
-import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVersionJpaBackupRepository;
+import dev.codesoapbox.backity.core.files.config.FileBackupBeanConfig;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = H2DbController.class, properties = "h2dump.path=test_dump.sql")
-@Import(FileDownloadBeanConfig.class)
+@Import(FileBackupBeanConfig.class)
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 class H2DbControllerTest {
@@ -38,7 +38,7 @@ class H2DbControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private GameFileVersionJpaRepository gameFileVersionRepository;
+    private GameFileVersionJpaBackupRepository gameFileVersionRepository;
 
     @MockBean
     private SimpMessagingTemplate messageService;
@@ -59,12 +59,12 @@ class H2DbControllerTest {
 
     @Test
     void shouldDumpSql() throws Exception {
-        GameFileVersion gameFileVersion = GameFileVersion.builder()
+        GameFileVersionBackup gameFileVersionBackup = GameFileVersionBackup.builder()
                 .id(1L)
                 .url("someUrl")
                 .version("someVersion")
                 .build();
-        gameFileVersionRepository.save(gameFileVersion);
+        gameFileVersionRepository.save(gameFileVersionBackup);
 
         mockMvc.perform(get("/api/h2/dump"))
                 .andDo(print())

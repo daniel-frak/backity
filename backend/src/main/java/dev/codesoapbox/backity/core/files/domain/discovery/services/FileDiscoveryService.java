@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.files.domain.discovery.services;
 
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
-import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
-import dev.codesoapbox.backity.core.files.domain.downloading.repositories.GameFileVersionRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -17,12 +17,12 @@ import java.util.function.BiConsumer;
 public class FileDiscoveryService {
 
     private final List<SourceFileDiscoveryService> discoveryServices;
-    private final GameFileVersionRepository repository;
+    private final GameFileVersionBackupRepository repository;
     private final FileDiscoveryMessageService messageService;
     private final Map<String, Boolean> discoveryStatuses = new ConcurrentHashMap<>();
 
     public FileDiscoveryService(List<SourceFileDiscoveryService> discoveryServices,
-                                GameFileVersionRepository repository, FileDiscoveryMessageService messageService) {
+                                GameFileVersionBackupRepository repository, FileDiscoveryMessageService messageService) {
         this.discoveryServices = discoveryServices;
         this.repository = repository;
         this.messageService = messageService;
@@ -90,12 +90,12 @@ public class FileDiscoveryService {
         messageService.sendStatus(new FileDiscoveryStatus(discoveryService.getSource(), status));
     }
 
-    private void saveDiscoveredFileInfo(GameFileVersion gameFileVersion) {
-        if (!repository.existsByUrlAndVersion(gameFileVersion.getUrl(), gameFileVersion.getVersion())) {
-            repository.save(gameFileVersion);
-            messageService.sendDiscoveredFile(gameFileVersion);
+    private void saveDiscoveredFileInfo(GameFileVersionBackup gameFileVersionBackup) {
+        if (!repository.existsByUrlAndVersion(gameFileVersionBackup.getUrl(), gameFileVersionBackup.getVersion())) {
+            repository.save(gameFileVersionBackup);
+            messageService.sendDiscoveredFile(gameFileVersionBackup);
             log.info("Discovered new file: {} (game: {})",
-                    gameFileVersion.getUrl(), gameFileVersion.getGameTitle());
+                    gameFileVersionBackup.getUrl(), gameFileVersionBackup.getGameTitle());
         }
     }
 

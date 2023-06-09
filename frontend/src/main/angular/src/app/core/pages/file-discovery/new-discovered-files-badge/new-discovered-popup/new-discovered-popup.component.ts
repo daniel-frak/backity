@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {GameFileVersion} from "@backend";
+import {GameFileVersionBackup} from "@backend";
 
 @Component({
   selector: 'app-new-discovered-popup',
@@ -9,7 +9,7 @@ import {GameFileVersion} from "@backend";
 export class NewDiscoveredPopupComponent implements OnInit {
 
   @Input()
-  newestDiscovered?: GameFileVersion;
+  newestDiscovered?: GameFileVersionBackup;
 
   constructor() { }
 

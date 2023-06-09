@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.files.domain.discovery.services;
 
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
-import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
 
 public interface FileDiscoveryMessageService {
 
@@ -10,5 +10,5 @@ public interface FileDiscoveryMessageService {
 
     void sendProgress(FileDiscoveryProgress payload);
 
-    void sendDiscoveredFile(GameFileVersion payload);
+    void sendDiscoveredFile(GameFileVersionBackup payload);
 }

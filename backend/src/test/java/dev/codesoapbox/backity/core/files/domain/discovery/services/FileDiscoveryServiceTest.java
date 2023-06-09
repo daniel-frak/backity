@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.core.files.domain.discovery.services;
 
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
-import dev.codesoapbox.backity.core.files.domain.downloading.model.GameFileVersion;
-import dev.codesoapbox.backity.core.files.domain.downloading.repositories.GameFileVersionRepository;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,7 +39,7 @@ class FileDiscoveryServiceTest {
     private FakeSourceFileDiscoveryService sourceFileDiscoveryService;
 
     @Mock
-    private GameFileVersionRepository repository;
+    private GameFileVersionBackupRepository repository;
 
     @Mock
     private FileDiscoveryMessageService messageService;
@@ -75,12 +75,12 @@ class FileDiscoveryServiceTest {
 
     @Test
     void startFileDiscoveryShouldSaveDiscoveredFilesAndSendMessages() {
-        GameFileVersion gameFileVersion = new GameFileVersion();
-        gameFileVersion.setId(1L);
-        gameFileVersion.setUrl("someUrl");
-        gameFileVersion.setVersion("someVersion");
+        GameFileVersionBackup gameFileVersionBackup = new GameFileVersionBackup();
+        gameFileVersionBackup.setId(1L);
+        gameFileVersionBackup.setUrl("someUrl");
+        gameFileVersionBackup.setVersion("someVersion");
 
-        when(repository.existsByUrlAndVersion(gameFileVersion.getUrl(), gameFileVersion.getVersion()))
+        when(repository.existsByUrlAndVersion(gameFileVersionBackup.getUrl(), gameFileVersionBackup.getVersion()))
                 .thenReturn(false);
 
         List<FileDiscoveryProgress> progressList = new ArrayList<>();
@@ -95,28 +95,28 @@ class FileDiscoveryServiceTest {
 
         await().atMost(2, TimeUnit.SECONDS)
                 .until(sourceFileDiscoveryService::hasBeenTriggered);
-        sourceFileDiscoveryService.simulateFileDiscovery(gameFileVersion);
+        sourceFileDiscoveryService.simulateFileDiscovery(gameFileVersionBackup);
 
-        verify(repository).save(gameFileVersion);
-        verify(messageService).sendDiscoveredFile(gameFileVersion);
+        verify(repository).save(gameFileVersionBackup);
+        verify(messageService).sendDiscoveredFile(gameFileVersionBackup);
         assertEquals(1, progressList.size());
     }
 
     @Test
     void startFileDiscoveryShouldNotSaveDiscoveredFileIfAlreadyExists() {
-        var gameFileVersion = new GameFileVersion();
-        gameFileVersion.setId(1L);
-        gameFileVersion.setUrl("someUrl");
-        gameFileVersion.setVersion("someVersion");
+        var gameFileVersionBackup = new GameFileVersionBackup();
+        gameFileVersionBackup.setId(1L);
+        gameFileVersionBackup.setUrl("someUrl");
+        gameFileVersionBackup.setVersion("someVersion");
 
-        when(repository.existsByUrlAndVersion(gameFileVersion.getUrl(), gameFileVersion.getVersion()))
+        when(repository.existsByUrlAndVersion(gameFileVersionBackup.getUrl(), gameFileVersionBackup.getVersion()))
                 .thenReturn(true);
 
         fileDiscoveryService.startFileDiscovery();
 
         await().atMost(2, TimeUnit.SECONDS)
                 .until(sourceFileDiscoveryService::hasBeenTriggered);
-        sourceFileDiscoveryService.simulateFileDiscovery(gameFileVersion);
+        sourceFileDiscoveryService.simulateFileDiscovery(gameFileVersionBackup);
 
         verify(repository, never()).save(any());
         verify(messageService, never()).sendDiscoveredFile(any());
@@ -164,7 +164,7 @@ class FileDiscoveryServiceTest {
     private static class FakeSourceFileDiscoveryService implements SourceFileDiscoveryService {
 
         private final AtomicBoolean shouldFinish = new AtomicBoolean(false);
-        private final AtomicReference<Consumer<GameFileVersion>> gameFileVersionConsumer = new AtomicReference<>();
+        private final AtomicReference<Consumer<GameFileVersionBackup>> gameFileVersionConsumer = new AtomicReference<>();
 
         @Getter
         private int stoppedTimes = 0;
@@ -179,8 +179,8 @@ class FileDiscoveryServiceTest {
             return timesTriggered.get() > 0;
         }
 
-        public void simulateFileDiscovery(GameFileVersion gameFileVersion) {
-            gameFileVersionConsumer.get().accept(gameFileVersion);
+        public void simulateFileDiscovery(GameFileVersionBackup gameFileVersionBackup) {
+            gameFileVersionConsumer.get().accept(gameFileVersionBackup);
         }
 
         public void complete() {
@@ -194,7 +194,7 @@ class FileDiscoveryServiceTest {
 
         @SuppressWarnings("StatementWithEmptyBody")
         @Override
-        public void startFileDiscovery(Consumer<GameFileVersion> gameFileVersionConsumer) {
+        public void startFileDiscovery(Consumer<GameFileVersionBackup> gameFileVersionConsumer) {
             if (exception != null) {
                 throw exception;
             }
