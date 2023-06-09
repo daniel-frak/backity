@@ -64,7 +64,7 @@ class UrlFileBackupServiceTest {
         return new GameFileVersionBackup(1L, "someSource", gameFileUrl, "someName",
                 "someFileName",
                 "someFilePath", "someGameTitle",
-                "someGameId", "someVersion", "someSize",
+                "someGameId", "someVersion", "100 KB",
                 LocalDateTime.now(), LocalDateTime.now(),
                 FileBackupStatus.DISCOVERED, null);
     }

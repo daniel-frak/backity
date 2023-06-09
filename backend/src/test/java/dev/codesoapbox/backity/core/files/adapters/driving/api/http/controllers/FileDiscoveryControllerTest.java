@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers;
 
+import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
@@ -34,11 +35,10 @@ class FileDiscoveryControllerIT {
 
     @Test
     void shouldGetDiscoveredFiles() throws Exception {
-        GameFileVersionBackup gameFileVersionBackup = GameFileVersionBackup.builder()
-                .id(1L)
-                .url("someUrl")
-                .version("someVersion")
-                .build();
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                null, null, "someGameId", "someVersion", "100 KB", null,
+                null, FileBackupStatus.DISCOVERED, null);
 
         Pageable pageable = Pageable.ofSize(1);
         when(repository.findAllDiscovered(pageable))
@@ -51,10 +51,10 @@ class FileDiscoveryControllerIT {
                       "id": 1,
                       "url": "someUrl",
                       "version": "someVersion",
-                      "source": null,
-                      "title": null,
+                      "source": "someSource",
+                      "title": "someTitle",
                       "gameTitle": null,
-                      "size": null,
+                      "size": "100 KB",
                       "dateCreated": null,
                       "dateModified": null
                     }

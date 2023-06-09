@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.files.domain.discovery.services;
 
+import dev.codesoapbox.backity.core.files.domain.backup.model.DiscoveredGameFile;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
@@ -95,22 +96,21 @@ public class FileDiscoveryService {
         messageService.sendStatus(new FileDiscoveryStatus(discoveryService.getSource(), status));
     }
 
-    private void saveDiscoveredFileInfo(GameFileVersionBackup gameFileVersionBackup) {
-        var game = getGameOrCreateNew(gameFileVersionBackup);
-        gameFileVersionBackup.setGameId(game.getId().value().toString());
+    private void saveDiscoveredFileInfo(DiscoveredGameFile discoveredGameFile) {
+        Game game = getGameOrCreateNew(discoveredGameFile);
+        GameFileVersionBackup gameFile = discoveredGameFile.associateWith(game);
 
-        if (!fileRepository.existsByUrlAndVersion(gameFileVersionBackup.getUrl(), gameFileVersionBackup.getVersion())) {
-            fileRepository.save(gameFileVersionBackup);
-            messageService.sendDiscoveredFile(gameFileVersionBackup);
-            log.info("Discovered new file: {} (gameId: {})",
-                    gameFileVersionBackup.getUrl(), gameFileVersionBackup.getGameTitle());
+        if (!fileRepository.existsByUrlAndVersion(gameFile.getUrl(), gameFile.getVersion())) {
+            fileRepository.save(gameFile);
+            messageService.sendDiscoveredFile(gameFile);
+            log.info("Discovered new file: {} (gameId: {})", gameFile.getUrl(), gameFile.getGameTitle());
         }
     }
 
-    private Game getGameOrCreateNew(GameFileVersionBackup gameFileVersionBackup) {
-        return gameRepository.findByTitle(gameFileVersionBackup.getGameTitle())
+    private Game getGameOrCreateNew(DiscoveredGameFile discoveredGameFile) {
+        return gameRepository.findByTitle(discoveredGameFile.gameTitle())
                 .orElseGet(() -> {
-                    var newGame = Game.createNew(gameFileVersionBackup.getGameTitle());
+                    var newGame = Game.createNew(discoveredGameFile.gameTitle());
                     gameRepository.save(newGame);
                     return newGame;
                 });

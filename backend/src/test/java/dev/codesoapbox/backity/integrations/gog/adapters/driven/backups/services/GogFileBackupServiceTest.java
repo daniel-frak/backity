@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
+import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.embed.GogEmbedWebClient;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
@@ -32,10 +33,10 @@ class GogFileBackupServiceTest {
 
     @Test
     void shouldDownloadGameFile() throws IOException {
-        GameFileVersionBackup gameFileVersionBackup = GameFileVersionBackup.builder()
-                .gameTitle("some game")
-                .url("someUrl")
-                .build();
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                null, null, "someGameId", "someVersion", "100 KB", null,
+                null, FileBackupStatus.DISCOVERED, null);
         String tempFilePath = "someTempFilePath";
 
         gogFileDownloader.backUpGameFile(gameFileVersionBackup, tempFilePath);

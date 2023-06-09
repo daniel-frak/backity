@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -56,40 +57,46 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
         entityManager.createNativeQuery("ALTER SEQUENCE seq_game_file_version_backup RESTART WITH 1").executeUpdate();
         entityManager.createNativeQuery("""                         
                         INSERT INTO GAME_FILE_VERSION_BACKUP
-                        (id, source, url, title, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_game_file_version_backup'), 'someSource1', 'someUrl1', 'someName1', 'someGameTitle1',
+                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
+                        (NEXTVAL('seq_game_file_version_backup'), 'someSource1', 'someUrl1', 'someTitle1', 
+                        'someOriginalFileName1', 'someGameTitle1',
                         '1eec1c19-25bf-4094-b926-84b5bb8fa281' ,
                         'someVersion1', 'someSize1', '2022-04-29T14:15:53', 'ENQUEUED', 'someFailedReason1');
                         
                         INSERT INTO GAME_FILE_VERSION_BACKUP
-                        (id, source, url, title, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_game_file_version_backup'), 'someSource2', 'someUrl2', 'someName2', 'someGameTitle2', 
+                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
+                        (NEXTVAL('seq_game_file_version_backup'), 'someSource2', 'someUrl2', 'someTitle2', 
+                        'someOriginalFileName2', 'someGameTitle2', 
                         '1eec1c19-25bf-4094-b926-84b5bb8fa281',
                         'someVersion2', 'someSize2', '2022-05-29T14:15:53', 'SUCCESS', 'someFailedReason2');
                         
                         INSERT INTO GAME_FILE_VERSION_BACKUP
-                        (id, source, url, title, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_game_file_version_backup'), 'someSource3', 'someUrl3', 'someName3', 'someGameTitle3', 
+                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
+                        (NEXTVAL('seq_game_file_version_backup'), 'someSource3', 'someUrl3', 'someTitle3', 
+                        'someOriginalFileName3', 'someGameTitle3', 
                         '5bdd248a-c3aa-487a-8479-0bfdb32f7ae5',
                          'someVersion3', 'someSize3', '2022-06-29T14:15:53', 'ENQUEUED', 'someFailedReason3');
                         
                         INSERT INTO GAME_FILE_VERSION_BACKUP
-                        (id, source, url, title, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_game_file_version_backup'), 'someSource4', 'someUrl4', 'someName4', 'someGameTitle4',
+                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
+                        (NEXTVAL('seq_game_file_version_backup'), 'someSource4', 'someUrl4', 'someTitle4', 
+                        'someOriginalFileName4', 'someGameTitle4',
                          '5bdd248a-c3aa-487a-8479-0bfdb32f7ae5',
                          'someVersion4', 'someSize4', '2022-07-29T14:15:53', 'FAILED', 'someFailedReason4');
                         
                         INSERT INTO GAME_FILE_VERSION_BACKUP
-                        (id, source, url, title, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_game_file_version_backup'), 'someSource5', 'someUrl5', 'someName5', 'someGameTitle5',
+                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
+                        (NEXTVAL('seq_game_file_version_backup'), 'someSource5', 'someUrl5', 'someTitle5', 
+                        'someOriginalFileName5', 'someGameTitle5',
                          '1eec1c19-25bf-4094-b926-84b5bb8fa281',
                         'someVersion5', 'someSize5', '2022-08-29T14:15:53', 'IN_PROGRESS', 'someFailedReason5');
                         
                         INSERT INTO GAME_FILE_VERSION_BACKUP
-                        (id, source, url, title, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_game_file_version_backup'), 'someSource6', 'someUrl6', 'someName6', 'someGameTitle6',
+                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
+                        (NEXTVAL('seq_game_file_version_backup'), 'someSource6', 'someUrl6', 'someTitle6', 
+                        'someOriginalFileName6', 'someGameTitle6',
                          '1eec1c19-25bf-4094-b926-84b5bb8fa281',
-                        'someVersion6', 'someSize6', '2022-08-29T14:16:43', 'DISCOVERED', 'someFailedReason6');
+                        'someVersion6', 'someSize6', '2022-09-29T14:16:43', 'DISCOVERED', 'someFailedReason6');
                 """).executeUpdate();
         entityManager.getTransaction().commit();
     }
@@ -105,19 +112,12 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
 
         assertTrue(result.isPresent());
         assertNotNull(result.get().getId());
-        var expectedResult = GameFileVersionBackup.builder()
-                .id(result.get().getId())
-                .source("someSource1")
-                .url("someUrl1")
-                .title("someName1")
-                .gameId(result.get().getGameId())
-                .gameTitle("someGameTitle1")
-                .version("someVersion1")
-                .size("someSize1")
-                .dateCreated(LocalDateTime.parse("2022-04-29T14:15:53"))
-                .status(FileBackupStatus.ENQUEUED)
-                .failedReason("someFailedReason1")
-                .build();
+
+        var expectedResult = new GameFileVersionBackup(
+                1L, "someSource1", "someUrl1", "someTitle1", "someOriginalFileName1",
+                null, "someGameTitle1", result.get().getGameId(), "someVersion1", "someSize1",
+                LocalDateTime.parse("2022-04-29T14:15:53"),
+                null, FileBackupStatus.ENQUEUED, "someFailedReason1");
         assertEquals(expectedResult, result.get());
     }
 
@@ -127,49 +127,29 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
 
         assertNotNull(result.getContent().get(0).getId());
         var expectedResult = List.of(
-                GameFileVersionBackup.builder()
-                        .id(result.getContent().get(0).getId())
-                        .source("someSource1")
-                        .url("someUrl1")
-                        .title("someName1")
-                        .gameId(result.getContent().get(0).getGameId())
-                        .gameTitle("someGameTitle1")
-                        .version("someVersion1")
-                        .size("someSize1")
-                        .dateCreated(LocalDateTime.parse("2022-04-29T14:15:53"))
-                        .status(FileBackupStatus.ENQUEUED)
-                        .failedReason("someFailedReason1")
-                        .build(),
-                GameFileVersionBackup.builder()
-                        .id(result.getContent().get(1).getId())
-                        .source("someSource3")
-                        .url("someUrl3")
-                        .title("someName3")
-                        .gameId(result.getContent().get(1).getGameId())
-                        .gameTitle("someGameTitle3")
-                        .version("someVersion3")
-                        .size("someSize3")
-                        .dateCreated(LocalDateTime.parse("2022-06-29T14:15:53"))
-                        .status(FileBackupStatus.ENQUEUED)
-                        .failedReason("someFailedReason3")
-                        .build()
+                new GameFileVersionBackup(
+                        result.getContent().get(0).getId(), "someSource1", "someUrl1", "someTitle1",
+                        "someOriginalFileName1", null, "someGameTitle1",
+                        result.getContent().get(0).getGameId(), "someVersion1", "someSize1",
+                        LocalDateTime.parse("2022-04-29T14:15:53"),
+                        null, FileBackupStatus.ENQUEUED, "someFailedReason1"),
+                new GameFileVersionBackup(
+                        result.getContent().get(1).getId(), "someSource3", "someUrl3", "someTitle3",
+                        "someOriginalFileName3", null, "someGameTitle3",
+                        result.getContent().get(1).getGameId(), "someVersion3", "someSize3",
+                        LocalDateTime.parse("2022-06-29T14:15:53"), null, FileBackupStatus.ENQUEUED,
+                        "someFailedReason3")
         );
         assertEquals(expectedResult, result.getContent());
     }
 
     @Test
     void shouldSave() {
-        var newEnqueuedFileDownload =
-                GameFileVersionBackup.builder()
-                        .source("someSourceNew")
-                        .url("someUrlNew")
-                        .title("someNameNew")
-                        .gameTitle("someGameTitleNew")
-                        .version("someVersionNew")
-                        .size("someSizeNew")
-                        .status(FileBackupStatus.ENQUEUED)
-                        .failedReason("someFailedReasonNew")
-                        .build();
+        var newEnqueuedFileDownload = new GameFileVersionBackup(
+                1L, "someSourceNew", "someUrlNew", "someTitleNew", "someOriginalFileNameNew",
+                null, "someGameTitleNew", GameId.newInstance().value().toString(),
+                "someVersionNew", "someSizeNew", LocalDateTime.parse("2022-04-29T14:15:53"),
+                null, FileBackupStatus.ENQUEUED, "someFailedReasonNew");
 
         var result = gameFileVersionJpaRepository.save(newEnqueuedFileDownload);
 
@@ -188,19 +168,12 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
 
         assertTrue(result.isPresent());
         assertNotNull(result.get().getId());
-        GameFileVersionBackup expectedResult = GameFileVersionBackup.builder()
-                .id(result.get().getId())
-                .gameId(result.get().getGameId())
-                .source("someSource5")
-                .url("someUrl5")
-                .title("someName5")
-                .gameTitle("someGameTitle5")
-                .version("someVersion5")
-                .size("someSize5")
-                .dateCreated(LocalDateTime.parse("2022-08-29T14:15:53"))
-                .status(FileBackupStatus.IN_PROGRESS)
-                .failedReason("someFailedReason5")
-                .build();
+
+        var expectedResult = new GameFileVersionBackup(
+                result.get().getId(), "someSource5", "someUrl5", "someTitle5",
+                "someOriginalFileName5", null, "someGameTitle5", result.get().getGameId(),
+                "someVersion5", "someSize5", LocalDateTime.parse("2022-08-29T14:15:53"),
+                null, FileBackupStatus.IN_PROGRESS, "someFailedReason5");
         assertEquals(expectedResult, result.get());
     }
 
@@ -210,32 +183,18 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
 
         assertNotNull(result.getContent().get(0).getId());
         var expectedResult = List.of(
-                GameFileVersionBackup.builder()
-                        .id(result.getContent().get(0).getId())
-                        .source("someSource2")
-                        .url("someUrl2")
-                        .title("someName2")
-                        .gameId(result.getContent().get(0).getGameId())
-                        .gameTitle("someGameTitle2")
-                        .version("someVersion2")
-                        .size("someSize2")
-                        .dateCreated(LocalDateTime.parse("2022-05-29T14:15:53"))
-                        .status(FileBackupStatus.SUCCESS)
-                        .failedReason("someFailedReason2")
-                        .build(),
-                GameFileVersionBackup.builder()
-                        .id(result.getContent().get(1).getId())
-                        .source("someSource4")
-                        .url("someUrl4")
-                        .title("someName4")
-                        .gameId(result.getContent().get(1).getGameId())
-                        .gameTitle("someGameTitle4")
-                        .version("someVersion4")
-                        .size("someSize4")
-                        .dateCreated(LocalDateTime.parse("2022-07-29T14:15:53"))
-                        .status(FileBackupStatus.FAILED)
-                        .failedReason("someFailedReason4")
-                        .build()
+                new GameFileVersionBackup(
+                        result.getContent().get(0).getId(), "someSource2", "someUrl2", "someTitle2",
+                        "someOriginalFileName2", null, "someGameTitle2",
+                        result.getContent().get(0).getGameId(), "someVersion2", "someSize2",
+                        LocalDateTime.parse("2022-05-29T14:15:53"),
+                        null, FileBackupStatus.SUCCESS, "someFailedReason2"),
+                new GameFileVersionBackup(
+                        result.getContent().get(1).getId(), "someSource4", "someUrl4", "someTitle4",
+                        "someOriginalFileName4", null, "someGameTitle4",
+                        result.getContent().get(1).getGameId(), "someVersion4", "someSize4",
+                        LocalDateTime.parse("2022-07-29T14:15:53"),
+                        null, FileBackupStatus.FAILED, "someFailedReason4")
         );
         assertEquals(expectedResult, result.getContent());
     }
@@ -256,19 +215,11 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
 
         assertTrue(result.isPresent());
 
-        var expectedResult = GameFileVersionBackup.builder()
-                .id(result.get().getId())
-                .source("someSource1")
-                .url("someUrl1")
-                .title("someName1")
-                .gameId(result.get().getGameId())
-                .gameTitle("someGameTitle1")
-                .version("someVersion1")
-                .size("someSize1")
-                .dateCreated(LocalDateTime.parse("2022-04-29T14:15:53"))
-                .status(FileBackupStatus.ENQUEUED)
-                .failedReason("someFailedReason1")
-                .build();
+        var expectedResult = new GameFileVersionBackup(
+                result.get().getId(), "someSource1", "someUrl1", "someTitle1",
+                "someOriginalFileName1", null, "someGameTitle1", result.get().getGameId(),
+                "someVersion1", "someSize1", LocalDateTime.parse("2022-04-29T14:15:53"),
+                null, FileBackupStatus.ENQUEUED, "someFailedReason1");
         assertThat(result.get())
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResult);
@@ -279,22 +230,13 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
         Page<GameFileVersionBackup> result = gameFileVersionJpaRepository.findAllDiscovered(Pageable.unpaged());
 
         assertNotNull(result.getContent().get(0).getId());
-        var expectedResult = List.of(
-                GameFileVersionBackup.builder()
-                        .id(result.getContent().get(0).getId())
-                        .source("someSource6")
-                        .url("someUrl6")
-                        .title("someName6")
-                        .gameId(result.getContent().get(0).getGameId())
-                        .gameTitle("someGameTitle6")
-                        .version("someVersion6")
-                        .size("someSize6")
-                        .dateCreated(LocalDateTime.parse("2022-08-29T14:16:43"))
-                        .status(FileBackupStatus.DISCOVERED)
-                        .failedReason("someFailedReason6")
-                        .build()
-        );
-        assertEquals(expectedResult, result.getContent());
+        var expectedResult = new GameFileVersionBackup(
+                result.getContent().get(0).getId(), "someSource6", "someUrl6", "someTitle6",
+                "someOriginalFileName6", null, "someGameTitle6",
+                result.getContent().get(0).getGameId(), "someVersion6", "someSize6", 
+                LocalDateTime.parse("2022-09-29T14:16:43"), null, FileBackupStatus.DISCOVERED,
+                "someFailedReason6");
+        assertEquals(singletonList(expectedResult), result.getContent());
     }
 
     @Test

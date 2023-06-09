@@ -8,7 +8,10 @@ class GameFileVersionBackupTest {
 
     @Test
     void shouldFail() {
-        var enqueuedFileDownload = new GameFileVersionBackup();
+        var enqueuedFileDownload = new GameFileVersionBackup(
+                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                null, null, "someGameId", "someVersion", "100 KB", null,
+                null, FileBackupStatus.DISCOVERED, null);
 
         enqueuedFileDownload.fail("someFailedReason");
 
@@ -18,7 +21,10 @@ class GameFileVersionBackupTest {
 
     @Test
     void shouldMarkAsDownloaded() {
-        var enqueuedFileDownload = new GameFileVersionBackup();
+        var enqueuedFileDownload = new GameFileVersionBackup(
+                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                null, null, "someGameId", "someVersion", "100 KB", null,
+                null, FileBackupStatus.DISCOVERED, null);
 
         enqueuedFileDownload.markAsDownloaded("someFilePath");
 

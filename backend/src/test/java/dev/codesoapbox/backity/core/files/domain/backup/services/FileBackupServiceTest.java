@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -55,12 +54,11 @@ class FileBackupServiceTest {
     void shouldDownloadGameFile() throws IOException {
         String source = sourceFileBackupService.getSource();
         var gameTitle = "someGameTitle";
-        var gameFileVersionBackup = GameFileVersionBackup.builder()
-                .gameTitle(gameTitle)
-                .source(source)
-                .url("someUrl")
-                .size("5 KB")
-                .build();
+
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, source, "someUrl", "someTitle", "someOriginalFileName",
+                null, gameTitle, "someGameId", "someVersion", "5 KB", null,
+                null, FileBackupStatus.DISCOVERED, null);
         var tempFilePath = "someFileDir/someFile";
         var expectedFilePath = "finalFilePath";
 
@@ -92,12 +90,10 @@ class FileBackupServiceTest {
     void shouldTryToRemoveTempFileAndRethrowWrappedOnIOException() throws IOException {
         String source = sourceFileBackupService.getSource();
         var gameTitle = "someGameTitle";
-        var gameFileVersionBackup = GameFileVersionBackup.builder()
-                .gameTitle(gameTitle)
-                .source(source)
-                .url("someUrl")
-                .size("5 KB")
-                .build();
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, source, "someUrl", "someTitle", "someOriginalFileName",
+                null, gameTitle, "someGameId", "someVersion", "5 KB", null,
+                null, FileBackupStatus.DISCOVERED, null);
         var tempFilePath = "someFileDir/someFile";
 
         when(filePathProvider.createTemporaryFilePath(source, gameTitle))
@@ -113,12 +109,12 @@ class FileBackupServiceTest {
     }
 
     @ParameterizedTest
-    @NullSource
     @ValueSource(strings = {"", " "})
-    void downloadGameFileShouldThrowIfUrlIsNullOrEmpty(String url) {
-        GameFileVersionBackup gameFileVersionBackup = GameFileVersionBackup.builder()
-                .url(url)
-                .build();
+    void downloadGameFileShouldThrowIfUrlIsEmpty(String url) {
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, "someSource", url, "someTitle", "someOriginalFileName",
+                null, null, "someGameId", "someVersion", "5 KB", null,
+                null, FileBackupStatus.DISCOVERED, null);
 
         FileBackupFailedException exception = assertThrows(FileBackupFailedException.class,
                 () -> fileBackupService.backUpGameFile(gameFileVersionBackup));
@@ -129,12 +125,10 @@ class FileBackupServiceTest {
     void downloadGameFileShouldThrowIfSourceDownloaderNotFound() throws IOException {
         var source = "nonExistentSource";
         var gameTitle = "someGameTitle";
-        var gameFileVersionBackup = GameFileVersionBackup.builder()
-                .gameTitle(gameTitle)
-                .source(source)
-                .url("someUrl")
-                .size("5 KB")
-                .build();
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, source, "someUrl", "someTitle", "someOriginalFileName",
+                null, gameTitle, "someGameId", "someVersion", "5 KB", null,
+                null, FileBackupStatus.DISCOVERED, null);
         var tempFilePath = "someFileDir/someFile";
 
         lenient().when(filePathProvider.createTemporaryFilePath(eq(source), eq(gameTitle)))
@@ -150,12 +144,10 @@ class FileBackupServiceTest {
     void downloadGameFileShouldThrowIfIOExceptionOccurs() throws IOException {
         var source = sourceFileBackupService.getSource();
         var gameTitle = "someGameTitle";
-        var gameFileVersionBackup = GameFileVersionBackup.builder()
-                .gameTitle(gameTitle)
-                .source(source)
-                .url("someUrl")
-                .size("5 KB")
-                .build();
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, source, "someUrl", "someTitle", "someOriginalFileName",
+                null, gameTitle, "someGameId", "someVersion", "5 KB", null,
+                null, FileBackupStatus.DISCOVERED, null);
 
         when(filePathProvider.createTemporaryFilePath(source, gameTitle))
                 .thenThrow(new IOException());
@@ -169,12 +161,10 @@ class FileBackupServiceTest {
     void downloadGameFileShouldThrowIfNotEnoughFreeSpace() throws IOException {
         var source = sourceFileBackupService.getSource();
         var gameTitle = "someGameTitle";
-        var gameFileVersionBackup = GameFileVersionBackup.builder()
-                .gameTitle(gameTitle)
-                .source(source)
-                .url("someUrl")
-                .size("5 KB")
-                .build();
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, source, "someUrl", "someTitle", "someOriginalFileName",
+                null, gameTitle, "someGameId", "someVersion", "5 KB", null,
+                null, FileBackupStatus.DISCOVERED, null);
         var tempFilePath = "someFileDir/someFile";
 
         when(filePathProvider.createTemporaryFilePath(source, gameTitle))
@@ -189,9 +179,10 @@ class FileBackupServiceTest {
 
     @Test
     void isReadyForShouldReturnTrueIfFileIsReadyToDownload() {
-        var gameFileVersionBackup = GameFileVersionBackup.builder()
-                .source(sourceFileBackupService.getSource())
-                .build();
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                null, null, "someGameId", "someVersion", "5 KB", null,
+                null, FileBackupStatus.DISCOVERED, null);
 
         when(sourceFileBackupService.isReady())
                 .thenReturn(true);
@@ -201,9 +192,10 @@ class FileBackupServiceTest {
 
     @Test
     void isReadyForShouldReturnFalseIfFileIsNotReadyToDownload() {
-        var gameFileVersionBackup = GameFileVersionBackup.builder()
-                .source(sourceFileBackupService.getSource())
-                .build();
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                null, null, "someGameId", "someVersion", "5 KB", null,
+                null, FileBackupStatus.DISCOVERED, null);
 
         when(sourceFileBackupService.isReady())
                 .thenReturn(false);

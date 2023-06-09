@@ -12,30 +12,26 @@ class GameFileVersionBackupJsonMapperTest {
 
     @Test
     void shouldMapToJson() {
-        var domain = new GameFileVersionBackup();
-        domain.setId(1L);
-        domain.setSource("someSource");
-        domain.setUrl("someUrl");
-        domain.setTitle("someName");
-        domain.setOriginalFileName("someFileName");
-        domain.setGameTitle("someGameTitle");
-        domain.setVersion("someVersion");
-        domain.setSize("someSize");
-        domain.setDateCreated(LocalDateTime.parse("2007-12-03T10:15:30"));
-        domain.setStatus(FileBackupStatus.SUCCESS);
-        domain.setFailedReason("someFailedReason");
+        var domain = new GameFileVersionBackup(
+                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                "someFilePath", "someGameTitle", "someGameId", "someVersion",
+                "100 KB",
+                LocalDateTime.parse("2022-04-29T14:15:53"),
+                LocalDateTime.parse("2023-04-29T14:15:53"), FileBackupStatus.SUCCESS,
+                "someFailedReason");
 
         var result = GameFileVersionJsonMapper.INSTANCE.toJson(domain);
 
         assertEquals(1L, result.getId());
         assertEquals("someSource", result.getSource());
         assertEquals("someUrl", result.getUrl());
-        assertEquals("someName", result.getTitle());
-        assertEquals("someFileName", result.getOriginalFileName());
+        assertEquals("someTitle", result.getTitle());
+        assertEquals("someOriginalFileName", result.getOriginalFileName());
         assertEquals("someGameTitle", result.getGameTitle());
         assertEquals("someVersion", result.getVersion());
-        assertEquals("someSize", result.getSize());
-        assertEquals(LocalDateTime.parse("2007-12-03T10:15:30"), result.getDateCreated());
+        assertEquals("100 KB", result.getSize());
+        assertEquals(LocalDateTime.parse("2022-04-29T14:15:53"), result.getDateCreated());
+        assertEquals(LocalDateTime.parse("2023-04-29T14:15:53"), result.getDateModified());
         assertEquals(FileBackupStatus.SUCCESS, result.getStatus());
         assertEquals("someFailedReason", result.getFailedReason());
     }

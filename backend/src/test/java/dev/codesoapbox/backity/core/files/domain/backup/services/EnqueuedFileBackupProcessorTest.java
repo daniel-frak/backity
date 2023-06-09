@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.files.domain.backup.services;
 
+import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,10 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldProcessEnqueuedFileDownloadIfNotCurrentlyDownloading() {
-        var gameFileVersionBackup = GameFileVersionBackup.builder().build();
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                null, null, "someGameId", "someVersion", "100 KB",
+                null, null, FileBackupStatus.DISCOVERED, null);
 
         when(gameFileVersionBackupRepository.findOldestWaitingForDownload())
                 .thenReturn(Optional.of(gameFileVersionBackup));
@@ -47,7 +51,10 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldFailGracefully() {
-        var gameFileVersionBackup = GameFileVersionBackup.builder().build();
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                null, null, "someGameId", "someVersion", "100 KB",
+                null, null, FileBackupStatus.DISCOVERED, null);
 
         when(gameFileVersionBackupRepository.findOldestWaitingForDownload())
                 .thenReturn(Optional.of(gameFileVersionBackup));
@@ -66,7 +73,10 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldDoNothingIfSourceDownloaderNotReady() {
-        var gameFileVersionBackup = GameFileVersionBackup.builder().build();
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                null, null, "someGameId", "someVersion", "100 KB",
+                null, null, FileBackupStatus.DISCOVERED, null);
 
         when(gameFileVersionBackupRepository.findOldestWaitingForDownload())
                 .thenReturn(Optional.of(gameFileVersionBackup));
@@ -80,7 +90,11 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldDoNothingIfCurrentlyDownloading() {
-        enqueuedFileBackupProcessor.enqueuedFileBackupReference.set(new GameFileVersionBackup());
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                null, null, "someGameId", "someVersion", "100 KB",
+                null, null, FileBackupStatus.DISCOVERED, null);
+        enqueuedFileBackupProcessor.enqueuedFileBackupReference.set(gameFileVersionBackup);
 
         enqueuedFileBackupProcessor.processQueue();
 

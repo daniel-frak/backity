@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.files.application;
 
+import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
@@ -39,8 +40,10 @@ class GameFacadeTest {
     void shouldGetGamesWithFiles() {
         var pageable = PageRequest.of(0, 2);
         Game game = Game.createNew("Test game");
-        GameFileVersionBackup gameFile = new GameFileVersionBackup();
-        gameFile.setTitle("Test file");
+        var gameFile = new GameFileVersionBackup(
+                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                null, null, "someGameId", "someVersion", "100 KB",
+                null, null, FileBackupStatus.DISCOVERED, null);
         List<GameFileVersionBackup> gameFiles = singletonList(gameFile);
 
         when(gameRepository.findAll(pageable))

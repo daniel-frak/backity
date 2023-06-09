@@ -38,18 +38,11 @@ class FileBackupControllerIT {
 
     @Test
     void shouldGetCurrentlyDownloading() throws Exception {
-        GameFileVersionBackup gameFileVersionBackup = GameFileVersionBackup.builder()
-                .id(1L)
-                .source("someSource")
-                .url("someUrl")
-                .title("someName")
-                .gameTitle("someGameTitle")
-                .version("someVersion")
-                .size("someSize")
-                .dateCreated(LocalDateTime.parse("2022-04-29T14:15:53"))
-                .status(FileBackupStatus.FAILED)
-                .failedReason("someFailedReason")
-                .build();
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                null, "someGameTitle", "someGameId", "someVersion", "100 KB",
+                LocalDateTime.parse("2022-04-29T14:15:53"),
+                null, FileBackupStatus.IN_PROGRESS, "someFailedReason");
 
         when(gameFileVersionBackupRepository.findCurrentlyDownloading())
                 .thenReturn(Optional.of(gameFileVersionBackup));
@@ -59,12 +52,12 @@ class FileBackupControllerIT {
                   "id": 1,
                   "source": "someSource",
                   "url": "someUrl",
-                  "title": "someName",
+                  "title": "someTitle",
                   "gameTitle": "someGameTitle",
                   "version": "someVersion",
-                  "size": "someSize",
+                  "size": "100 KB",
                   "dateCreated": "2022-04-29T14:15:53",
-                  "status": "FAILED",
+                  "status": "IN_PROGRESS",
                   "failedReason": "someFailedReason"
                 }""";
 
@@ -76,17 +69,11 @@ class FileBackupControllerIT {
 
     @Test
     void shouldGetQueueItems() throws Exception {
-        GameFileVersionBackup gameFileVersionBackup = GameFileVersionBackup.builder()
-                .id(1L)
-                .source("someSource")
-                .url("someUrl")
-                .title("someName")
-                .gameTitle("someGameTitle")
-                .version("someVersion")
-                .size("someSize")
-                .dateCreated(LocalDateTime.parse("2022-04-29T14:15:53"))
-                .status(FileBackupStatus.ENQUEUED)
-                .build();
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                null, "someGameTitle", "someGameId", "someVersion", "100 KB",
+                LocalDateTime.parse("2022-04-29T14:15:53"),
+                null, FileBackupStatus.ENQUEUED, null);
 
         Pageable pageable = Pageable.ofSize(1);
         when(gameFileVersionBackupRepository.findAllWaitingForDownload(pageable))
@@ -99,10 +86,10 @@ class FileBackupControllerIT {
                       "id": 1,
                       "source": "someSource",
                       "url": "someUrl",
-                      "title": "someName",
+                      "title": "someTitle",
                       "gameTitle": "someGameTitle",
                       "version": "someVersion",
-                      "size": "someSize",
+                      "size": "100 KB",
                       "dateCreated": "2022-04-29T14:15:53",
                       "status": "ENQUEUED",
                       "failedReason": null
@@ -143,17 +130,11 @@ class FileBackupControllerIT {
 
     @Test
     void shouldGetProcessedFiles() throws Exception {
-        GameFileVersionBackup gameFileVersionBackup = GameFileVersionBackup.builder()
-                .id(1L)
-                .source("someSource")
-                .url("someUrl")
-                .title("someName")
-                .gameTitle("someGameTitle")
-                .version("someVersion")
-                .size("someSize")
-                .dateCreated(LocalDateTime.parse("2022-04-29T14:15:53"))
-                .status(FileBackupStatus.SUCCESS)
-                .build();
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                null, "someGameTitle", "someGameId", "someVersion", "100 KB",
+                LocalDateTime.parse("2022-04-29T14:15:53"),
+                null, FileBackupStatus.SUCCESS, null);
 
         Pageable pageable = Pageable.ofSize(1);
         when(gameFileVersionBackupRepository.findAllProcessed(pageable))
@@ -166,10 +147,10 @@ class FileBackupControllerIT {
                        "id": 1,
                        "source": "someSource",
                        "url": "someUrl",
-                       "title": "someName",
+                       "title": "someTitle",
                        "gameTitle": "someGameTitle",
                        "version": "someVersion",
-                       "size": "someSize",
+                       "size": "100 KB",
                        "dateCreated": "2022-04-29T14:15:53",
                        "status": "SUCCESS",
                        "failedReason": null
@@ -212,9 +193,10 @@ class FileBackupControllerIT {
     void shouldEnqueueForDownload() throws Exception {
         Long id = 1L;
 
-        GameFileVersionBackup gameFileVersionBackup = GameFileVersionBackup.builder()
-                .id(id)
-                .build();
+        var gameFileVersionBackup = new GameFileVersionBackup(
+                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                null, null, "someGameId", "someVersion", "100 KB",
+                null, null, FileBackupStatus.DISCOVERED, null);
 
         when(gameFileVersionBackupRepository.findById(id))
                 .thenReturn(Optional.of(gameFileVersionBackup));

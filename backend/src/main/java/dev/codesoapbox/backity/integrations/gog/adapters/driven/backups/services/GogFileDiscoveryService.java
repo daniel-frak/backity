@@ -1,7 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
+import dev.codesoapbox.backity.core.files.domain.backup.model.DiscoveredGameFile;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.IncrementalProgressTracker;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.domain.discovery.services.SourceFileDiscoveryService;
@@ -33,7 +32,7 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
     private IncrementalProgressTracker progressTracker;
 
     @Override
-    public void startFileDiscovery(Consumer<GameFileVersionBackup> gameFileConsumer) {
+    public void startFileDiscovery(Consumer<DiscoveredGameFile> gameFileConsumer) {
         log.info("Discovering new files...");
 
         shouldStopFileDiscovery.set(false);
@@ -50,27 +49,27 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
                 });
     }
 
-    private void processFiles(Consumer<GameFileVersionBackup> discoveredFileConsumer, GameDetailsResponse details) {
+    private void processFiles(Consumer<DiscoveredGameFile> discoveredFileConsumer, GameDetailsResponse details) {
         if (details == null || details.getFiles() == null) {
             return;
         }
         details.getFiles().forEach(fileDetails -> {
-            GameFileVersionBackup gameFileVersionBackup = mapToGameFileVersion(details, fileDetails);
-            discoveredFileConsumer.accept(gameFileVersionBackup);
+            DiscoveredGameFile discoveredGameFile = mapToDiscoveredGameFile(details, fileDetails);
+            discoveredFileConsumer.accept(discoveredGameFile);
         });
     }
 
-    private GameFileVersionBackup mapToGameFileVersion(GameDetailsResponse details, GameFileDetailsResponse fileDetails) {
-        var gameFile = new GameFileVersionBackup();
-        gameFile.setUrl(fileDetails.getManualUrl());
-        gameFile.setVersion(fileDetails.getVersion());
-        gameFile.setSource("GOG");
-        gameFile.setTitle(fileDetails.getName());
-        gameFile.setOriginalFileName(fileDetails.getFileTitle());
-        gameFile.setGameTitle(details.getTitle());
-        gameFile.setSize(fileDetails.getSize());
-        gameFile.setStatus(FileBackupStatus.DISCOVERED);
-        return gameFile;
+    private DiscoveredGameFile mapToDiscoveredGameFile(GameDetailsResponse gameDetails,
+                                                       GameFileDetailsResponse fileDetails) {
+        return new DiscoveredGameFile(
+                "GOG",
+                gameDetails.getTitle(),
+                fileDetails.getName(),
+                fileDetails.getVersion(),
+                fileDetails.getManualUrl(),
+                fileDetails.getFileTitle(),
+                fileDetails.getSize()
+        );
     }
 
     private void incrementProgress() {

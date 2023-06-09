@@ -1,10 +1,8 @@
 package dev.codesoapbox.backity.core.files.domain.backup.model;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.time.LocalDateTime;
 
@@ -12,46 +10,39 @@ import java.time.LocalDateTime;
  * A version of a game file, either not yet downloaded, already downloaded or anything in-between.
  */
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class GameFileVersionBackup {
 
-    @NotNull
     private Long id;
 
-    @NotNull
+    @NonNull
     private String source;
 
-    @NotNull
+    @NonNull
     private String url;
 
-    @NotNull
+    @NonNull
     private String title;
 
-    @NotNull
+    @NonNull
     private String originalFileName;
 
     private String filePath;
-
-    @NotNull
     private String gameTitle;
 
-    @NotNull String gameId;
+    @NonNull
+    private String gameId;
 
-    @NotNull
+    @NonNull
     private String version;
 
-    @NotNull
+    @NonNull
     private String size;
 
-    @NotNull
     private LocalDateTime dateCreated;
-
-    @NotNull
     private LocalDateTime dateModified;
 
-    @NotNull
+    @NonNull
     private FileBackupStatus status;
 
     private String failedReason;
