@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.service
 import dev.codesoapbox.backity.core.files.adapters.driven.files.RealFileManager;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.core.files.domain.backup.services.BackupProgress;
 import dev.codesoapbox.backity.core.files.domain.backup.services.FileManager;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
@@ -29,6 +30,7 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -61,7 +63,8 @@ class UrlFileBackupServiceTest {
 
     @NotNull
     private static GameFileDetails mockGameFileDetails(String gameFileUrl) {
-        return new GameFileDetails(1L, "someSource", gameFileUrl, "someName",
+        return new GameFileDetails(new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                "someSource", gameFileUrl, "someName",
                 "someFileName",
                 "someFilePath", "someGameTitle",
                 "someGameId", "someVersion", "100 KB",

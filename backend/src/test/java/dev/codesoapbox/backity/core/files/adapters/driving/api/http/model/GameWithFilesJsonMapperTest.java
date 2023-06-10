@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.files.adapters.driving.api.http.model;
 import dev.codesoapbox.backity.core.files.application.GameWithFiles;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
 import org.junit.jupiter.api.Test;
@@ -20,19 +21,20 @@ class GameWithFilesJsonMapperTest {
 
     @Test
     void shouldMapToDto() {
-        GameId id = new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"));
+        var gameId = new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"));
+        var gameFileStringId = "acde26d7-33c7-42ee-be16-bca91a604b48";
         var model = new GameWithFiles(
-                new Game(id, "Test Game"),
+                new Game(gameId, "Test Game"),
                 singletonList(
                         new GameFileDetails(
-                                1L,
+                                new GameFileDetailsId(UUID.fromString(gameFileStringId)),
                                 "someSource",
                                 "someUrl",
                                 "someTitle",
                                 "someOriginalFileName",
                                 "someFilePath",
                                 "someGameTitle",
-                                id.value().toString(),
+                                gameId.value().toString(),
                                 "someVersion",
                                 "100 KB",
                                 LocalDateTime.parse("2022-04-29T14:15:53"),
@@ -46,18 +48,18 @@ class GameWithFilesJsonMapperTest {
         GameWithFilesJson result = MAPPER.toDto(model);
 
         var expectedResult = new GameWithFilesJson(
-                id.value().toString(),
+                gameId.value().toString(),
                 "Test Game",
                 singletonList(
                         new GameFileDetailsJson(
-                                1L,
+                                gameFileStringId,
                                 "someSource",
                                 "someUrl",
                                 "someTitle",
                                 "someOriginalFileName",
                                 "someFilePath",
                                 "someGameTitle",
-                                id.value().toString(),
+                                gameId.value().toString(),
                                 "someVersion",
                                 "100 KB",
                                 LocalDateTime.parse("2022-04-29T14:15:53"),

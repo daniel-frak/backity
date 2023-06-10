@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
 import dev.codesoapbox.backity.core.files.domain.discovery.services.FileDiscoveryService;
@@ -12,6 +13,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.UUID;
 
 import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.verify;
@@ -36,7 +39,8 @@ class FileDiscoveryControllerIT {
     @Test
     void shouldGetDiscoveredFiles() throws Exception {
         var gameFileVersionBackup = new GameFileDetails(
-                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
 
@@ -48,7 +52,7 @@ class FileDiscoveryControllerIT {
                 {
                   "content": [
                     {
-                      "id": 1,
+                      "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
                       "url": "someUrl",
                       "version": "someVersion",
                       "source": "someSource",

@@ -13,7 +13,7 @@
       </div>
       <div class="gutters-1">
         <app-new-discovered-files-badge [newDiscoveredCount]="newDiscoveredCount"
-                                        [newestDiscovered]="newestDiscovered">
+                                        [newestDiscovered]="newestDiscovered!">
         </app-new-discovered-files-badge>
       </div>
 
@@ -78,7 +78,7 @@
       </div>
     </div>
 
-    <app-table [content]="discoveredFiles" [isLoading]="filesAreLoading">
+    <app-table [content]="discoveredFiles!" [isLoading]="filesAreLoading">
       <ng-template app-table-column="Game title" let-item>
         {{asFile(item).gameTitle}}
       </ng-template>

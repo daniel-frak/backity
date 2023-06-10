@@ -33,7 +33,7 @@ export class GamesComponent implements OnInit {
   backUp(file: GameFileDetails) {
     file.backupStatus = FileBackupStatus.Enqueued;
     console.info("Enqueuing backup: " + file.id);
-    this.backupsClient.download(file.id as number)
+    this.backupsClient.download(file.id!)
       .pipe(catchError(e => {
         file.backupStatus = FileBackupStatus.Discovered;
         return throwError(e);
@@ -43,24 +43,24 @@ export class GamesComponent implements OnInit {
         file, err));
   }
 
-  cancelBackup(fileId?: number) {
+  cancelBackup(fileId: string) {
     console.error("Removing from queue not yet implemented");
   }
 
-  deleteBackup(fileId?: number) {
+  deleteBackup(fileId: string) {
     console.error("Deleting backups not yet implemented");
   }
 
 
-  viewFilePath(fileId?: number) {
+  viewFilePath(fileId: string) {
     console.error("Viewing file paths not yet implemented");
   }
 
-  download(fileId?: number) {
+  download(fileId: string) {
     console.error("Downloading files not yet implemented");
   }
 
-  viewError(fileId?: number) {
+  viewError(fileId: string) {
     console.error("Viewing errors not yet implemented");
   }
 

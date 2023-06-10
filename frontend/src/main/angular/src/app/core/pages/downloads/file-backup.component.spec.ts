@@ -184,7 +184,7 @@ describe('DownloadsComponent', () => {
 
   it('should log a warn when removeFromQueue is called', () => {
     spyOn(console, 'error');
-    component.removeFromQueue(123);
+    component.removeFromQueue("someGameFileId");
     expect(console.error).toHaveBeenCalled();
   })
 });

@@ -2,6 +2,8 @@ package dev.codesoapbox.backity.core.files.domain.backup.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GameFileDetailsTest {
@@ -9,7 +11,8 @@ class GameFileDetailsTest {
     @Test
     void shouldFail() {
         var enqueuedFileDownload = new GameFileDetails(
-                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
 
@@ -22,7 +25,8 @@ class GameFileDetailsTest {
     @Test
     void shouldMarkAsDownloaded() {
         var enqueuedFileDownload = new GameFileDetails(
-                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
 

@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.files.domain.backup.exceptions.FileBackupUrl
 import dev.codesoapbox.backity.core.files.domain.backup.exceptions.NotEnoughFreeSpaceException;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,7 +58,8 @@ class FileBackupServiceTest {
         var gameTitle = "someGameTitle";
 
         var gameFileVersionBackup = new GameFileDetails(
-                1L, source, "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                source, "someUrl", "someTitle", "someOriginalFileName",
                 null, gameTitle, "someGameId", "someVersion", "5 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
         var tempFilePath = "someFileDir/someFile";
@@ -91,7 +94,8 @@ class FileBackupServiceTest {
         String source = sourceFileBackupService.getSource();
         var gameTitle = "someGameTitle";
         var gameFileVersionBackup = new GameFileDetails(
-                1L, source, "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                source, "someUrl", "someTitle", "someOriginalFileName",
                 null, gameTitle, "someGameId", "someVersion", "5 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
         var tempFilePath = "someFileDir/someFile";
@@ -112,7 +116,8 @@ class FileBackupServiceTest {
     @ValueSource(strings = {"", " "})
     void downloadGameFileShouldThrowIfUrlIsEmpty(String url) {
         var gameFileVersionBackup = new GameFileDetails(
-                1L, "someSource", url, "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                "someSource", url, "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "5 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
 
@@ -126,7 +131,8 @@ class FileBackupServiceTest {
         var source = "nonExistentSource";
         var gameTitle = "someGameTitle";
         var gameFileVersionBackup = new GameFileDetails(
-                1L, source, "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                source, "someUrl", "someTitle", "someOriginalFileName",
                 null, gameTitle, "someGameId", "someVersion", "5 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
         var tempFilePath = "someFileDir/someFile";
@@ -145,7 +151,8 @@ class FileBackupServiceTest {
         var source = sourceFileBackupService.getSource();
         var gameTitle = "someGameTitle";
         var gameFileVersionBackup = new GameFileDetails(
-                1L, source, "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                source, "someUrl", "someTitle", "someOriginalFileName",
                 null, gameTitle, "someGameId", "someVersion", "5 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
 
@@ -162,7 +169,8 @@ class FileBackupServiceTest {
         var source = sourceFileBackupService.getSource();
         var gameTitle = "someGameTitle";
         var gameFileVersionBackup = new GameFileDetails(
-                1L, source, "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                source, "someUrl", "someTitle", "someOriginalFileName",
                 null, gameTitle, "someGameId", "someVersion", "5 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
         var tempFilePath = "someFileDir/someFile";
@@ -180,7 +188,8 @@ class FileBackupServiceTest {
     @Test
     void isReadyForShouldReturnTrueIfFileIsReadyToDownload() {
         var gameFileVersionBackup = new GameFileDetails(
-                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "5 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
 
@@ -193,7 +202,8 @@ class FileBackupServiceTest {
     @Test
     void isReadyForShouldReturnFalseIfFileIsNotReadyToDownload() {
         var gameFileVersionBackup = new GameFileDetails(
-                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "5 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
 

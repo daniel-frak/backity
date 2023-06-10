@@ -2,6 +2,8 @@ package dev.codesoapbox.backity.core.files.adapters.driven.persistence;
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -12,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class GameFileDetailsJpaRepository implements dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository {
+public class GameFileDetailsJpaRepository implements GameFileDetailsRepository {
 
     private final GameFileDetailsSpringRepository springRepository;
     private final JpaGameFileDetailsMapper mapper;
@@ -55,8 +57,8 @@ public class GameFileDetailsJpaRepository implements dev.codesoapbox.backity.cor
     }
 
     @Override
-    public Optional<GameFileDetails> findById(Long id) {
-        return springRepository.findById(id)
+    public Optional<GameFileDetails> findById(GameFileDetailsId id) {
+        return springRepository.findById(id.value())
                 .map(mapper::toModel);
     }
 

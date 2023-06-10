@@ -52,7 +52,7 @@
       </button>
     </p>
 
-    <app-table [content]="enqueuedDownloads" [isLoading]="filesAreLoading" caption="Backup queue" id="download-queue">
+    <app-table [content]="enqueuedDownloads!" [isLoading]="filesAreLoading" caption="Backup queue" id="download-queue">
       <ng-template app-table-column="Game title" let-item>
         {{asFile(item).gameTitle}}
       </ng-template>
@@ -70,7 +70,7 @@
                    hide-title-on-mobile
                    let-item>
         <ng-container *ngFor="let file of [asFile(item)]">
-          <button (click)="removeFromQueue(file.id)"
+          <button (click)="removeFromQueue(file.id!)"
                   *ngIf="file.backupStatus == FileBackupStatus.Enqueued" class="btn btn-primary">
             Cancel
           </button>
@@ -78,7 +78,7 @@
       </ng-template>
     </app-table>
 
-    <app-table [content]="processedFiles" [isLoading]="filesAreLoading" caption="Processed files" id="processed-files">
+    <app-table [content]="processedFiles!" [isLoading]="filesAreLoading" caption="Processed files" id="processed-files">
       <ng-template app-table-column="Game title" let-item>
         {{asFile(item).gameTitle}}
       </ng-template>

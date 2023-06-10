@@ -6,6 +6,7 @@ export * from './fileDiscoveryProgress';
 export * from './fileDiscoveryStatus';
 export * from './gameDetailsResponse';
 export * from './gameFileDetails';
+export * from './gameFileDetailsMessage';
 export * from './gameFileDetailsResponse';
 export * from './gameWithFiles';
 export * from './logCreatedMessage';

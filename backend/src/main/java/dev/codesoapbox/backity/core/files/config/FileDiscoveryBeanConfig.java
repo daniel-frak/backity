@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.files.config;
 
 import dev.codesoapbox.backity.core.files.adapters.driven.messaging.FileDiscoverySpringMessageService;
+import dev.codesoapbox.backity.core.files.adapters.driven.messaging.model.GameFileDetailsMessageMapper;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.services.FileDiscoveryMessageService;
 import dev.codesoapbox.backity.core.files.domain.discovery.services.FileDiscoveryService;
@@ -17,7 +18,7 @@ public class FileDiscoveryBeanConfig {
 
     @Bean
     FileDiscoveryMessageService fileDiscoveryMessageService(SimpMessagingTemplate simpMessagingTemplate) {
-        return new FileDiscoverySpringMessageService(simpMessagingTemplate);
+        return new FileDiscoverySpringMessageService(simpMessagingTemplate, GameFileDetailsMessageMapper.INSTANCE);
     }
 
     @Bean

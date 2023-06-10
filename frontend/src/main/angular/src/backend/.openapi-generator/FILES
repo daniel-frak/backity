@@ -22,6 +22,7 @@ model/fileDiscoveryProgress.ts
 model/fileDiscoveryStatus.ts
 model/gameDetailsResponse.ts
 model/gameFileDetails.ts
+model/gameFileDetailsMessage.ts
 model/gameFileDetailsResponse.ts
 model/gameWithFiles.ts
 model/logCreatedMessage.ts

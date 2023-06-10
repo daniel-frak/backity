@@ -8,8 +8,9 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface GameFileDetailsSpringRepository extends JpaRepository<JpaGameFileDetails, Long> {
+public interface GameFileDetailsSpringRepository extends JpaRepository<JpaGameFileDetails, UUID> {
 
     // @TODO Remove unnecessary duplications of findAllByStatus
     @Query("SELECT f FROM GameFileDetails f" +

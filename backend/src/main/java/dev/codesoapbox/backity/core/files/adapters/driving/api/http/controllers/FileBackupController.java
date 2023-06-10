@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers
 import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileDetailsJson;
 import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileDetailsJsonMapper;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Tag(name = "Backups", description = "Everything to do with downloading discovered files")
 @RestController
@@ -58,9 +60,10 @@ public class FileBackupController {
     // @TODO Should be POST
     @Operation(summary = "Enqueue file", description = "Adds a discovered file to the download queue")
     @GetMapping("enqueue/{gameFileVersionId}")
-    public ResponseEntity<Void> download(@PathVariable Long gameFileVersionId) {
+    public ResponseEntity<Void> download(@PathVariable String gameFileVersionId) {
+        // @TODO Return illegal argument if can't construct id
         Optional<GameFileDetails> gameFileVersionBackup = gameFileDetailsRepository
-                .findById(gameFileVersionId);
+                .findById(new GameFileDetailsId(UUID.fromString(gameFileVersionId)));
 
         if (gameFileVersionBackup.isPresent()) {
             gameFileVersionBackup.get().enqueue();

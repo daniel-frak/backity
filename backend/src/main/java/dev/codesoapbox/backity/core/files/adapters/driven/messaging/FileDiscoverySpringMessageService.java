@@ -1,5 +1,7 @@
 package dev.codesoapbox.backity.core.files.adapters.driven.messaging;
 
+import dev.codesoapbox.backity.core.files.adapters.driven.messaging.model.GameFileDetailsMessage;
+import dev.codesoapbox.backity.core.files.adapters.driven.messaging.model.GameFileDetailsMessageMapper;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
@@ -13,6 +15,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 public class FileDiscoverySpringMessageService implements FileDiscoveryMessageService {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final GameFileDetailsMessageMapper gameFileDetailsMessageMapper;
 
     @Override
     public void sendStatus(FileDiscoveryStatus payload) {
@@ -30,7 +33,8 @@ public class FileDiscoverySpringMessageService implements FileDiscoveryMessageSe
     }
 
     @Override
-    public void sendDiscoveredFile(GameFileDetails payload) {
+    public void sendDiscoveredFile(GameFileDetails gameFileDetails) {
+        GameFileDetailsMessage payload = gameFileDetailsMessageMapper.toMessage(gameFileDetails);
         sendMessage(FileDiscoveryMessageTopics.FILE_DISCOVERY.toString(), payload);
     }
 }

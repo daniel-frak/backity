@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.service
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.embed.GogEmbedWebClient;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
@@ -34,7 +36,8 @@ class GogFileBackupServiceTest {
     @Test
     void shouldDownloadGameFile() throws IOException {
         var gameFileVersionBackup = new GameFileDetails(
-                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
         String tempFilePath = "someTempFilePath";

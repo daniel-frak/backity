@@ -18,6 +18,7 @@ import {
   FileDiscoveryProgress,
   FileDiscoveryStatus,
   GameFileDetails,
+  GameFileDetailsMessage,
   PageGameFileDetails
 } from "@backend";
 import {Observable} from "rxjs";
@@ -135,11 +136,11 @@ describe('FileDiscoveryComponent', () => {
   });
 
   it('should set newest discovered and increment discovered count on new discovery', () => {
-    const expectedGameFileDetails: GameFileDetails = {
+    const expectedGameFileDetailsMessage: GameFileDetailsMessage = {
       title: 'someGameFileDetails'
     };
-    discoveredSubscriptions[0]({body: JSON.stringify(expectedGameFileDetails)})
-    expect(component.newestDiscovered).toEqual(expectedGameFileDetails);
+    discoveredSubscriptions[0]({body: JSON.stringify(expectedGameFileDetailsMessage)})
+    expect(component.newestDiscovered).toEqual(expectedGameFileDetailsMessage);
     expect(component.newDiscoveredCount).toEqual(1);
   });
 

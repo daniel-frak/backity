@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.files.adapters.driving.api.http.model;
+package dev.codesoapbox.backity.core.files.adapters.driven.messaging.model;
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
@@ -6,11 +6,11 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public abstract class GameFileDetailsJsonMapper {
+public abstract class GameFileDetailsMessageMapper {
 
-    public static final GameFileDetailsJsonMapper INSTANCE = Mappers.getMapper(GameFileDetailsJsonMapper.class);
+    public static final GameFileDetailsMessageMapper INSTANCE = Mappers.getMapper(GameFileDetailsMessageMapper.class);
 
-    public abstract GameFileDetailsJson toJson(GameFileDetails domain);
+    public abstract GameFileDetailsMessage toMessage(GameFileDetails domain);
 
     protected String toString(GameFileDetailsId id) {
         return id.value().toString();

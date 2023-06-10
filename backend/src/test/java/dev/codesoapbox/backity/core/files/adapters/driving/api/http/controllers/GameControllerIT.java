@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.files.application.GameWithFiles;
 import dev.codesoapbox.backity.core.files.config.GameHttpBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
 import org.junit.jupiter.api.Test;
@@ -39,21 +40,22 @@ class GameControllerIT {
 
     @Test
     void shouldGetGames() throws Exception {
-        GameId id = new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"));
+        var gameId = new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"));
         Pageable pageable = PageRequest.of(1, 2);
+        var gameFileStringId = "acde26d7-33c7-42ee-be16-bca91a604b48";
         Page<GameWithFiles> gameWithFilesPage = new PageImpl<>(singletonList(
                 new GameWithFiles(
-                        new Game(id, "Test Game"),
+                        new Game(gameId, "Test Game"),
                         singletonList(
                                 new GameFileDetails(
-                                        1L,
+                                        new GameFileDetailsId(UUID.fromString(gameFileStringId)),
                                         "someSource",
                                         "someUrl",
                                         "someTitle",
                                         "someOriginalFileName",
                                         "someFilePath",
                                         "someGameTitle",
-                                        id.value().toString(),
+                                        gameId.value().toString(),
                                         "someVersion",
                                         "100 KB",
                                         LocalDateTime.parse("2022-04-29T14:15:53"),
@@ -75,7 +77,7 @@ class GameControllerIT {
                                 "id": "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
                                 "title": "Test Game",
                                 "gameFiles": [{
-                                    "id": 1,
+                                    "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
                                     "source": "someSource",
                                     "url": "someUrl",
                                     "title": "someTitle",

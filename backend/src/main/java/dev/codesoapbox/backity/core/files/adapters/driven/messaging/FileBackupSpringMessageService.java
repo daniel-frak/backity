@@ -1,5 +1,7 @@
 package dev.codesoapbox.backity.core.files.adapters.driven.messaging;
 
+import dev.codesoapbox.backity.core.files.adapters.driven.messaging.model.GameFileDetailsMessage;
+import dev.codesoapbox.backity.core.files.adapters.driven.messaging.model.GameFileDetailsMessageMapper;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.messages.FileBackupProgress;
 import dev.codesoapbox.backity.core.files.domain.backup.services.FileBackupMessageService;
@@ -12,9 +14,11 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 public class FileBackupSpringMessageService implements FileBackupMessageService {
 
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final GameFileDetailsMessageMapper gameFileDetailsMessageMapper;
 
     @Override
-    public void sendBackupStarted(GameFileDetails payload) {
+    public void sendBackupStarted(GameFileDetails gameFileDetails) {
+        GameFileDetailsMessage payload = gameFileDetailsMessageMapper.toMessage(gameFileDetails);
         sendMessage(FileBackupMessageTopics.DOWNLOAD_STARTED.toString(), payload);
     }
 
@@ -29,7 +33,8 @@ public class FileBackupSpringMessageService implements FileBackupMessageService 
     }
 
     @Override
-    public void sendBackupFinished(GameFileDetails payload) {
+    public void sendBackupFinished(GameFileDetails gameFileDetails) {
+        GameFileDetailsMessage payload = gameFileDetailsMessageMapper.toMessage(gameFileDetails);
         sendMessage(FileBackupMessageTopics.DOWNLOAD_FINISHED.toString(), payload);
     }
 }

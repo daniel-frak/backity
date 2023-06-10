@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.files.config.FileBackupBeanConfig;
 import dev.codesoapbox.backity.core.files.config.FileManagementBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -63,7 +65,8 @@ class H2DbControllerTest {
     @Test
     void shouldDumpSql() throws Exception {
         var gameFileVersionBackup = new GameFileDetails(
-                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB",
                 LocalDateTime.parse("2022-04-29T14:15:53"),
                 null, FileBackupStatus.DISCOVERED, null);

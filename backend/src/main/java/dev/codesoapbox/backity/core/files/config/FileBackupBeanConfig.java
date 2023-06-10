@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.files.config;
 
 import dev.codesoapbox.backity.core.files.adapters.driven.messaging.FileBackupSpringMessageService;
+import dev.codesoapbox.backity.core.files.adapters.driven.messaging.model.GameFileDetailsMessageMapper;
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileDetailsJpaRepository;
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileDetailsSpringRepository;
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.JpaGameFileDetailsMapper;
@@ -37,7 +38,7 @@ public class FileBackupBeanConfig {
 
     @Bean
     FileBackupMessageService fileDownloadMessageService(SimpMessagingTemplate simpMessagingTemplate) {
-        return new FileBackupSpringMessageService(simpMessagingTemplate);
+        return new FileBackupSpringMessageService(simpMessagingTemplate, GameFileDetailsMessageMapper.INSTANCE);
     }
 
     @Bean

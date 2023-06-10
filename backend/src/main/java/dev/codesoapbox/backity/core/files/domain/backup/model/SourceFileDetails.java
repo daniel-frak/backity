@@ -3,6 +3,8 @@ package dev.codesoapbox.backity.core.files.domain.backup.model;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import lombok.NonNull;
 
+import java.util.UUID;
+
 public record SourceFileDetails(
         @NonNull String sourceId,
         @NonNull String originalGameTitle,
@@ -14,7 +16,7 @@ public record SourceFileDetails(
 ) {
     public GameFileDetails associateWith(Game game) {
         return new GameFileDetails(
-                null,
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
                 sourceId,
                 url,
                 fileTitle,

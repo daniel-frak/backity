@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.files.domain.backup.repositories;
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +23,7 @@ public interface GameFileDetailsRepository {
 
     boolean existsByUrlAndVersion(String url, String version);
 
-    Optional<GameFileDetails> findById(Long id);
+    Optional<GameFileDetails> findById(GameFileDetailsId id);
 
     Page<GameFileDetails> findAllDiscovered(Pageable pageable);
 

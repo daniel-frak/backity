@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class GameFileDetails {
 
-    private Long id;
+    @NonNull
+    private GameFileDetailsId id;
 
     @NonNull
     private String source;

@@ -57,7 +57,7 @@ describe('GamesComponent', () => {
         id: "someGameId",
         title: "someGameTitle",
         gameFiles: [{
-          id: 1,
+          id: "someGameFileId",
           source: "someSource",
           title: "someFileTitle"
         }]
@@ -77,30 +77,30 @@ describe('GamesComponent', () => {
   });
 
   it('should back up game file and set its status to Enqueued', () => {
-    const mockFile: GameFileDetails = { id: 1, backupStatus: FileBackupStatus.Discovered };
+    const mockFile: GameFileDetails = { id: "someGameFileId", backupStatus: FileBackupStatus.Discovered };
     (backupsClient.download as jasmine.Spy).and.returnValue(of(null));
 
     component.backUp(mockFile);
 
     expect(mockFile.backupStatus).toBe(FileBackupStatus.Enqueued);
-    expect(backupsClient.download).toHaveBeenCalledWith(mockFile.id as number);
+    expect(backupsClient.download).toHaveBeenCalledWith(mockFile.id!);
   });
 
   it('should set file status to Discovered when backup fails', () => {
-    const mockFile: GameFileDetails = { id: 1, backupStatus: FileBackupStatus.Discovered };
+    const mockFile: GameFileDetails = { id: "someGameFileId", backupStatus: FileBackupStatus.Discovered };
     const mockError = new Error('Backup error');
     (backupsClient.download as jasmine.Spy).and.returnValue(throwError(mockError));
 
     component.backUp(mockFile);
 
     expect(mockFile.backupStatus).toBe(FileBackupStatus.Discovered);
-    expect(backupsClient.download).toHaveBeenCalledWith(mockFile.id as number);
+    expect(backupsClient.download).toHaveBeenCalledWith(mockFile.id!);
   });
 
   it('should log an error when canceling backup', () => {
     spyOn(console, 'error');
 
-    component.cancelBackup();
+    component.cancelBackup("someGameFileId");
 
     expect(console.error).toHaveBeenCalledWith('Removing from queue not yet implemented');
   });
@@ -108,7 +108,7 @@ describe('GamesComponent', () => {
   it('should log an error when deleting backup', () => {
     spyOn(console, 'error');
 
-    component.deleteBackup();
+    component.deleteBackup("someGameFileId");
 
     expect(console.error).toHaveBeenCalledWith('Deleting backups not yet implemented');
   });
@@ -116,7 +116,7 @@ describe('GamesComponent', () => {
   it('should log an error when viewing file path', () => {
     spyOn(console, 'error');
 
-    component.viewFilePath();
+    component.viewFilePath("someGameFileId");
 
     expect(console.error).toHaveBeenCalledWith('Viewing file paths not yet implemented');
   });
@@ -124,7 +124,7 @@ describe('GamesComponent', () => {
   it('should log an error when downloading file', () => {
     spyOn(console, 'error');
 
-    component.download();
+    component.download("someGameFileId");
 
     expect(console.error).toHaveBeenCalledWith('Downloading files not yet implemented');
   });
@@ -132,13 +132,13 @@ describe('GamesComponent', () => {
   it('should log an error when viewing error', () => {
     spyOn(console, 'error');
 
-    component.viewError();
+    component.viewError("someGameFileId");
 
     expect(console.error).toHaveBeenCalledWith('Viewing errors not yet implemented');
   });
 
   it('should set file status to Discovered and log error when backup fails', () => {
-    const mockFile: GameFileDetails = { id: 1, backupStatus: FileBackupStatus.Discovered };
+    const mockFile: GameFileDetails = { id: "someGameFileId", backupStatus: FileBackupStatus.Discovered };
     const mockError = new Error('Backup error');
     (backupsClient.download as jasmine.Spy).and.returnValue(throwError(mockError));
     spyOn(console, 'error');
@@ -146,7 +146,7 @@ describe('GamesComponent', () => {
     component.backUp(mockFile);
 
     expect(mockFile.backupStatus).toBe(FileBackupStatus.Discovered);
-    expect(backupsClient.download).toHaveBeenCalledWith(mockFile.id as number);
+    expect(backupsClient.download).toHaveBeenCalledWith(mockFile.id!);
     expect(console.error).toHaveBeenCalledWith(
       `An error occurred while trying to enqueue a file (${mockFile})`,
       mockFile,

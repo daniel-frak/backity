@@ -7,6 +7,7 @@ import {
   FileDiscoveryProgress,
   FileDiscoveryStatus,
   GameFileDetails,
+  GameFileDetailsMessage,
   PageGameFileDetails
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
@@ -23,7 +24,7 @@ import {throwError} from "rxjs";
 export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
   discoveredFiles?: PageGameFileDetails;
-  newestDiscovered?: GameFileDetails;
+  newestDiscovered?: GameFileDetailsMessage;
   newDiscoveredCount: number = 0;
   infoIsLoading: boolean = false;
   filesAreLoading: boolean = false;
@@ -112,7 +113,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   enqueueFile(file: GameFileDetails) {
     file.backupStatus = FileBackupStatus.Enqueued;
     console.info("Enqueuing: " + file.id);
-    this.backupsClient.download(file.id as number)
+    this.backupsClient.download(file.id!)
       .pipe(catchError(e => {
         file.backupStatus = FileBackupStatus.Discovered;
         return throwError(e);

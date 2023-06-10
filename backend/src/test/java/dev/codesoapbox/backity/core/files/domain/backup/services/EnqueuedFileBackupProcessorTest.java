@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.files.domain.backup.services;
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
@@ -32,7 +34,8 @@ class EnqueuedFileBackupProcessorTest {
     @Test
     void shouldProcessEnqueuedFileDownloadIfNotCurrentlyDownloading() {
         var gameFileVersionBackup = new GameFileDetails(
-                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB",
                 null, null, FileBackupStatus.DISCOVERED, null);
 
@@ -52,7 +55,8 @@ class EnqueuedFileBackupProcessorTest {
     @Test
     void shouldFailGracefully() {
         var gameFileVersionBackup = new GameFileDetails(
-                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB",
                 null, null, FileBackupStatus.DISCOVERED, null);
 
@@ -74,7 +78,8 @@ class EnqueuedFileBackupProcessorTest {
     @Test
     void shouldDoNothingIfSourceDownloaderNotReady() {
         var gameFileVersionBackup = new GameFileDetails(
-                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB",
                 null, null, FileBackupStatus.DISCOVERED, null);
 
@@ -91,7 +96,8 @@ class EnqueuedFileBackupProcessorTest {
     @Test
     void shouldDoNothingIfCurrentlyDownloading() {
         var gameFileVersionBackup = new GameFileDetails(
-                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB",
                 null, null, FileBackupStatus.DISCOVERED, null);
         enqueuedFileBackupProcessor.enqueuedFileBackupReference.set(gameFileVersionBackup);

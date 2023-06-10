@@ -1,29 +1,37 @@
 package dev.codesoapbox.backity.core.files.adapters.driven.messaging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import dev.codesoapbox.backity.core.files.adapters.driven.messaging.model.GameFileDetailsMessageMapper;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static dev.codesoapbox.backity.testing.assertions.SimpMessagingAssertions.assertSendsMessage;
 
 @ExtendWith(MockitoExtension.class)
 class FileDiscoverySpringMessageServiceTest {
 
-    @InjectMocks
     private FileDiscoverySpringMessageService fileDiscoverySpringMessageService;
 
     @Mock
     private SimpMessagingTemplate simpMessagingTemplate;
+
+    @BeforeEach
+    void setUp() {
+        fileDiscoverySpringMessageService = new FileDiscoverySpringMessageService(simpMessagingTemplate,
+                GameFileDetailsMessageMapper.INSTANCE);
+    }
 
     @Test
     void shouldSendStatus() throws JsonProcessingException {
@@ -61,7 +69,7 @@ class FileDiscoverySpringMessageServiceTest {
     void shouldSendDiscoveredFile() throws JsonProcessingException {
         var expectedPayload = """
                 {
-                  "id": 1,
+                  "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
                   "source": "someSource",
                   "url": "someUrl",
                   "title": "someName",
@@ -82,7 +90,7 @@ class FileDiscoverySpringMessageServiceTest {
                 FileDiscoveryMessageTopics.FILE_DISCOVERY.toString(),
                 () -> fileDiscoverySpringMessageService.sendDiscoveredFile(
                         new GameFileDetails(
-                                1L,
+                                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
                                 "someSource",
                                 "someUrl",
                                 "someName",

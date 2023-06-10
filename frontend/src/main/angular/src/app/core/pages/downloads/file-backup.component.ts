@@ -77,7 +77,7 @@ export class FileBackupComponent implements OnInit, OnDestroy {
       .subscribe(d => this.currentDownload = d);
   }
 
-  removeFromQueue(fileId?: number) {
+  removeFromQueue(fileId?: string) {
     console.error("Removing from queue not yet implemented");
   }
 

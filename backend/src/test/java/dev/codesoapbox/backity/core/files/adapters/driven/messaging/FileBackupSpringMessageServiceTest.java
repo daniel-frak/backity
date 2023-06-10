@@ -1,34 +1,42 @@
 package dev.codesoapbox.backity.core.files.adapters.driven.messaging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import dev.codesoapbox.backity.core.files.adapters.driven.messaging.model.GameFileDetailsMessageMapper;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.core.files.domain.backup.model.messages.FileBackupProgress;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static dev.codesoapbox.backity.testing.assertions.SimpMessagingAssertions.assertSendsMessage;
 
 @ExtendWith(MockitoExtension.class)
 class FileBackupSpringMessageServiceTest {
 
-    @InjectMocks
     private FileBackupSpringMessageService fileDownloadSpringMessageService;
 
     @Mock
     private SimpMessagingTemplate simpMessagingTemplate;
 
+    @BeforeEach
+    void setUp() {
+        fileDownloadSpringMessageService = new FileBackupSpringMessageService(simpMessagingTemplate,
+                GameFileDetailsMessageMapper.INSTANCE);
+    }
+
     @Test
     void shouldSendBackupStarted() throws JsonProcessingException {
         var expectedPayload = """
                 {
-                  "id": 123,
+                  "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
                   "source": "someSource",
                   "url": "someUrl",
                   "title": "someName",
@@ -49,7 +57,7 @@ class FileBackupSpringMessageServiceTest {
                 FileBackupMessageTopics.DOWNLOAD_STARTED.toString(),
                 () -> fileDownloadSpringMessageService.sendBackupStarted(
                         new GameFileDetails(
-                                123L,
+                                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
                                 "someSource",
                                 "someUrl",
                                 "someName",
@@ -88,7 +96,7 @@ class FileBackupSpringMessageServiceTest {
     void shouldSendBackupFinished() throws JsonProcessingException {
         var expectedPayload = """
                 {
-                  "id": 123,
+                  "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
                   "source": "someSource",
                   "url": "someUrl",
                   "title": "someName",
@@ -109,7 +117,7 @@ class FileBackupSpringMessageServiceTest {
                 FileBackupMessageTopics.DOWNLOAD_FINISHED.toString(),
                 () -> fileDownloadSpringMessageService.sendBackupFinished(
                         new GameFileDetails(
-                                123L,
+                                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
                                 "someSource",
                                 "someUrl",
                                 "someName",

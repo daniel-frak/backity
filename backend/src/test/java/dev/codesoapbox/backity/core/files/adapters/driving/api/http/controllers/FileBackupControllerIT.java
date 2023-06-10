@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -39,7 +41,8 @@ class FileBackupControllerIT {
     @Test
     void shouldGetCurrentlyDownloading() throws Exception {
         var gameFileVersionBackup = new GameFileDetails(
-                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, "someGameTitle", "someGameId", "someVersion", "100 KB",
                 LocalDateTime.parse("2022-04-29T14:15:53"),
                 null, FileBackupStatus.IN_PROGRESS, "someFailedReason");
@@ -49,7 +52,7 @@ class FileBackupControllerIT {
 
         var expectedJson = """
                 {
-                  "id": 1,
+                  "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
                   "source": "someSource",
                   "url": "someUrl",
                   "title": "someTitle",
@@ -70,7 +73,8 @@ class FileBackupControllerIT {
     @Test
     void shouldGetQueueItems() throws Exception {
         var gameFileVersionBackup = new GameFileDetails(
-                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, "someGameTitle", "someGameId", "someVersion", "100 KB",
                 LocalDateTime.parse("2022-04-29T14:15:53"),
                 null, FileBackupStatus.ENQUEUED, null);
@@ -83,7 +87,7 @@ class FileBackupControllerIT {
                 {
                   "content": [
                     {
-                      "id": 1,
+                      "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
                       "source": "someSource",
                       "url": "someUrl",
                       "title": "someTitle",
@@ -131,7 +135,8 @@ class FileBackupControllerIT {
     @Test
     void shouldGetProcessedFiles() throws Exception {
         var gameFileVersionBackup = new GameFileDetails(
-                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, "someGameTitle", "someGameId", "someVersion", "100 KB",
                 LocalDateTime.parse("2022-04-29T14:15:53"),
                 null, FileBackupStatus.SUCCESS, null);
@@ -144,7 +149,7 @@ class FileBackupControllerIT {
                 {
                    "content": [
                      {
-                       "id": 1,
+                       "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
                        "source": "someSource",
                        "url": "someUrl",
                        "title": "someTitle",
@@ -191,17 +196,18 @@ class FileBackupControllerIT {
 
     @Test
     void shouldEnqueueForDownload() throws Exception {
-        Long id = 1L;
+        String stringUuid = "acde26d7-33c7-42ee-be16-bca91a604b48";
+        UUID uuid = UUID.fromString(stringUuid);
 
         var gameFileVersionBackup = new GameFileDetails(
-                1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
+                new GameFileDetailsId(uuid), "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB",
                 null, null, FileBackupStatus.DISCOVERED, null);
 
-        when(gameFileDetailsRepository.findById(id))
+        when(gameFileDetailsRepository.findById(new GameFileDetailsId(uuid)))
                 .thenReturn(Optional.of(gameFileVersionBackup));
 
-        mockMvc.perform(get("/api/backups/enqueue/" + id))
+        mockMvc.perform(get("/api/backups/enqueue/" + stringUuid))
                 .andDo(print())
                 .andExpect(status().isOk());
 
@@ -211,17 +217,17 @@ class FileBackupControllerIT {
 
     @Test
     void shouldNotDownloadWhenFileNotFound(CapturedOutput capturedOutput) throws Exception {
-        Long id = 123L;
+        String stringUuid = "acde26d7-33c7-42ee-be16-bca91a604b48";
 
-        when(gameFileDetailsRepository.findById(id))
+        when(gameFileDetailsRepository.findById(new GameFileDetailsId(UUID.fromString(stringUuid))))
                 .thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/api/backups/enqueue/" + id))
+        mockMvc.perform(get("/api/backups/enqueue/" + stringUuid))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
 
         verify(gameFileDetailsRepository, never()).save(any());
         assertTrue(capturedOutput.getOut().contains(
-                "Could not enqueue file. Game file version not found: 123"));
+                "Could not enqueue file. Game file version not found: acde26d7-33c7-42ee-be16-bca91a604b48"));
     }
 }
