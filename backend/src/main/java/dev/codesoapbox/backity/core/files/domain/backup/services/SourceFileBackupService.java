@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.domain.backup.services;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 
 import java.io.IOException;
 
@@ -11,7 +11,7 @@ public interface SourceFileBackupService {
     /**
      * @return the path of the downloaded file
      */
-    String backUpGameFile(GameFileVersion gameFileVersion, String tempFilePath) throws IOException;
+    String backUpGameFile(GameFileDetails gameFileDetails, String tempFilePath) throws IOException;
 
     boolean isReady();
 }

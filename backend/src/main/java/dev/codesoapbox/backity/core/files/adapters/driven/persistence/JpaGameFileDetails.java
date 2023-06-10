@@ -16,17 +16,17 @@ import java.time.LocalDateTime;
 /**
  * A version of a game file, either not yet downloaded, already downloaded or anything in-between.
  */
-@Entity(name = "GameFileVersion")
+@Entity(name = "GameFileDetails")
 @EntityListeners(AuditingEntityListener.class)
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class JpaGameFileVersion {
+public class JpaGameFileDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "game_file_version_generator")
-    @SequenceGenerator(name = "game_file_version_generator", sequenceName = "seq_game_file_version")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "game_file_details_generator")
+    @SequenceGenerator(name = "game_file_details_generator", sequenceName = "seq_game_file_details")
     private Long id;
 
     @NotNull

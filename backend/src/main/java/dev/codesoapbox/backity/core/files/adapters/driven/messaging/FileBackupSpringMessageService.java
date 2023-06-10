@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.adapters.driven.messaging;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.messages.FileBackupProgress;
 import dev.codesoapbox.backity.core.files.domain.backup.services.FileBackupMessageService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ public class FileBackupSpringMessageService implements FileBackupMessageService 
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
-    public void sendBackupStarted(GameFileVersion payload) {
+    public void sendBackupStarted(GameFileDetails payload) {
         sendMessage(FileBackupMessageTopics.DOWNLOAD_STARTED.toString(), payload);
     }
 
@@ -29,7 +29,7 @@ public class FileBackupSpringMessageService implements FileBackupMessageService 
     }
 
     @Override
-    public void sendBackupFinished(GameFileVersion payload) {
+    public void sendBackupFinished(GameFileDetails payload) {
         sendMessage(FileBackupMessageTopics.DOWNLOAD_FINISHED.toString(), payload);
     }
 }

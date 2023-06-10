@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.shared.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVersionJpaRepository;
+import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileDetailsJpaRepository;
 import dev.codesoapbox.backity.core.files.config.FileBackupBeanConfig;
 import dev.codesoapbox.backity.core.files.config.FileManagementBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ class H2DbControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private GameFileVersionJpaRepository gameFileVersionRepository;
+    private GameFileDetailsJpaRepository gameFileVersionRepository;
 
     @MockBean
     private SimpMessagingTemplate messageService;
@@ -62,7 +62,7 @@ class H2DbControllerTest {
 
     @Test
     void shouldDumpSql() throws Exception {
-        var gameFileVersionBackup = new GameFileVersion(
+        var gameFileVersionBackup = new GameFileDetails(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB",
                 LocalDateTime.parse("2022-04-29T14:15:53"),
@@ -75,7 +75,7 @@ class H2DbControllerTest {
 
         var dumpContents = readTestDump();
 
-        assertTrue(dumpContents.contains("INSERT INTO \"PUBLIC\".\"GAME_FILE_VERSION\" VALUES"));
+        assertTrue(dumpContents.contains("INSERT INTO \"PUBLIC\".\"GAME_FILE_DETAILS\" VALUES"));
     }
 
     private String readTestDump() throws IOException {

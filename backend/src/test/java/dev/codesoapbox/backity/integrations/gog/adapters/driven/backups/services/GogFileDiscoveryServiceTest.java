@@ -34,7 +34,7 @@ class GogFileDiscoveryServiceTest {
         List<SourceFileDetails> gameFileVersionBackups = new ArrayList<>();
         gogFileDiscoveryService.startFileDiscovery(gameFileVersionBackups::add);
 
-        var expectedGameFileVersions = List.of(
+        var expectedGameFileDetailss = List.of(
                 new SourceFileDetails("GOG", "Game 2", "fileSimpleName1", "1.0.0",
                         "someUrl1", "fileName1", "100 KB"),
                 new SourceFileDetails("GOG", "Game 2", "fileSimpleName2", "2.0.0",
@@ -43,7 +43,7 @@ class GogFileDiscoveryServiceTest {
                         "someUrl3", "fileName3", "300 KB")
         );
 
-        assertEquals(expectedGameFileVersions, gameFileVersionBackups);
+        assertEquals(expectedGameFileDetailss, gameFileVersionBackups);
     }
 
     private void mockFileDiscovery() {

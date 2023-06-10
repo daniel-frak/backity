@@ -4,8 +4,8 @@ import dev.codesoapbox.backity.core.files.domain.backup.exceptions.FileBackupFai
 import dev.codesoapbox.backity.core.files.domain.backup.exceptions.FileBackupUrlEmptyException;
 import dev.codesoapbox.backity.core.files.domain.backup.exceptions.NotEnoughFreeSpaceException;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
-import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionRepository;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 
@@ -23,48 +23,48 @@ import java.util.stream.Collectors;
 public class FileBackupService {
 
     private final FilePathProvider filePathProvider;
-    private final GameFileVersionRepository gameFileVersionRepository;
+    private final GameFileDetailsRepository gameFileDetailsRepository;
     private final FileManager fileManager;
     private final Map<String, SourceFileBackupService> sourceFileDownloaders;
 
-    public FileBackupService(FilePathProvider filePathProvider, GameFileVersionRepository gameFileVersionRepository,
+    public FileBackupService(FilePathProvider filePathProvider, GameFileDetailsRepository gameFileDetailsRepository,
                              FileManager fileManager, List<SourceFileBackupService> sourceFileBackupServices) {
         this.filePathProvider = filePathProvider;
-        this.gameFileVersionRepository = gameFileVersionRepository;
+        this.gameFileDetailsRepository = gameFileDetailsRepository;
         this.fileManager = fileManager;
         this.sourceFileDownloaders = sourceFileBackupServices.stream()
                 .collect(Collectors.toMap(SourceFileBackupService::getSource, d -> d));
     }
 
-    public void backUpGameFile(GameFileVersion gameFileVersion) {
-        log.info("Backing up game file {} (url={})...", gameFileVersion.getId(), gameFileVersion.getUrl());
+    public void backUpGameFile(GameFileDetails gameFileDetails) {
+        log.info("Backing up game file {} (url={})...", gameFileDetails.getId(), gameFileDetails.getUrl());
 
         try {
-            markInProgress(gameFileVersion);
-            validateReadyForDownload(gameFileVersion);
-            String tempFilePath = createTemporaryFilePath(gameFileVersion);
-            validateEnoughFreeSpaceOnDisk(tempFilePath, gameFileVersion.getSize());
-            tryToBackUp(gameFileVersion, tempFilePath);
+            markInProgress(gameFileDetails);
+            validateReadyForDownload(gameFileDetails);
+            String tempFilePath = createTemporaryFilePath(gameFileDetails);
+            validateEnoughFreeSpaceOnDisk(tempFilePath, gameFileDetails.getSize());
+            tryToBackUp(gameFileDetails, tempFilePath);
         } catch (IOException | RuntimeException e) {
-            markFailed(gameFileVersion, e);
-            throw new FileBackupFailedException(gameFileVersion, e);
+            markFailed(gameFileDetails, e);
+            throw new FileBackupFailedException(gameFileDetails, e);
         }
     }
 
-    private void markInProgress(GameFileVersion gameFileVersion) {
-        gameFileVersion.setBackupStatus(FileBackupStatus.IN_PROGRESS);
-        gameFileVersionRepository.save(gameFileVersion);
+    private void markInProgress(GameFileDetails gameFileDetails) {
+        gameFileDetails.setBackupStatus(FileBackupStatus.IN_PROGRESS);
+        gameFileDetailsRepository.save(gameFileDetails);
     }
 
-    private void validateReadyForDownload(GameFileVersion gameFileVersion) {
-        if (Strings.isBlank(gameFileVersion.getUrl())) {
-            throw new FileBackupUrlEmptyException(gameFileVersion.getId());
+    private void validateReadyForDownload(GameFileDetails gameFileDetails) {
+        if (Strings.isBlank(gameFileDetails.getUrl())) {
+            throw new FileBackupUrlEmptyException(gameFileDetails.getId());
         }
     }
 
-    private String createTemporaryFilePath(GameFileVersion gameFileVersion) throws IOException {
+    private String createTemporaryFilePath(GameFileDetails gameFileDetails) throws IOException {
         return filePathProvider.createTemporaryFilePath(
-                gameFileVersion.getSource(), gameFileVersion.getGameTitle());
+                gameFileDetails.getSource(), gameFileDetails.getGameTitle());
     }
 
     private void validateEnoughFreeSpaceOnDisk(String filePath, String size) {
@@ -75,41 +75,41 @@ public class FileBackupService {
         }
     }
 
-    private void tryToBackUp(GameFileVersion gameFileVersion, String tempFilePath) throws IOException {
+    private void tryToBackUp(GameFileDetails gameFileDetails, String tempFilePath) throws IOException {
         try {
-            updateFilePath(gameFileVersion, tempFilePath);
-            String downloadedPath = downloadToDisk(gameFileVersion, tempFilePath);
-            markDownloaded(gameFileVersion, downloadedPath);
+            updateFilePath(gameFileDetails, tempFilePath);
+            String downloadedPath = downloadToDisk(gameFileDetails, tempFilePath);
+            markDownloaded(gameFileDetails, downloadedPath);
         } catch (IOException e) {
-            tryToCleanUpAfterFailedDownload(gameFileVersion, tempFilePath);
+            tryToCleanUpAfterFailedDownload(gameFileDetails, tempFilePath);
             throw e;
         }
     }
 
-    private void updateFilePath(GameFileVersion gameFileVersion, String tempFilePath) {
-        gameFileVersion.setFilePath(tempFilePath);
-        gameFileVersionRepository.save(gameFileVersion);
+    private void updateFilePath(GameFileDetails gameFileDetails, String tempFilePath) {
+        gameFileDetails.setFilePath(tempFilePath);
+        gameFileDetailsRepository.save(gameFileDetails);
     }
 
     /**
      * @return the path of the downloaded file
      */
-    private String downloadToDisk(GameFileVersion gameFileVersion, String tempFilePath) throws IOException {
-        SourceFileBackupService sourceDownloader = getSourceDownloader(gameFileVersion.getSource());
-        return sourceDownloader.backUpGameFile(gameFileVersion, tempFilePath);
+    private String downloadToDisk(GameFileDetails gameFileDetails, String tempFilePath) throws IOException {
+        SourceFileBackupService sourceDownloader = getSourceDownloader(gameFileDetails.getSource());
+        return sourceDownloader.backUpGameFile(gameFileDetails, tempFilePath);
     }
 
-    private void markDownloaded(GameFileVersion gameFileVersion, String downloadedPath) {
-        gameFileVersion.markAsDownloaded(downloadedPath);
-        gameFileVersionRepository.save(gameFileVersion);
+    private void markDownloaded(GameFileDetails gameFileDetails, String downloadedPath) {
+        gameFileDetails.markAsDownloaded(downloadedPath);
+        gameFileDetailsRepository.save(gameFileDetails);
     }
 
-    private void tryToCleanUpAfterFailedDownload(GameFileVersion gameFileVersion,
+    private void tryToCleanUpAfterFailedDownload(GameFileDetails gameFileDetails,
                                                  String tempFilePath) throws IOException {
         fileManager.deleteIfExists(tempFilePath);
-        if (tempFilePath.equals(gameFileVersion.getFilePath())) {
-            gameFileVersion.setFilePath(null);
-            gameFileVersionRepository.save(gameFileVersion);
+        if (tempFilePath.equals(gameFileDetails.getFilePath())) {
+            gameFileDetails.setFilePath(null);
+            gameFileDetailsRepository.save(gameFileDetails);
         }
     }
 
@@ -121,12 +121,12 @@ public class FileBackupService {
         return sourceFileDownloaders.get(source);
     }
 
-    private void markFailed(GameFileVersion gameFileVersion, Exception e) {
-        gameFileVersion.fail(e.getMessage());
-        gameFileVersionRepository.save(gameFileVersion);
+    private void markFailed(GameFileDetails gameFileDetails, Exception e) {
+        gameFileDetails.fail(e.getMessage());
+        gameFileDetailsRepository.save(gameFileDetails);
     }
 
-    public boolean isReadyFor(GameFileVersion gameFileVersion) {
-        return getSourceDownloader(gameFileVersion.getSource()).isReady();
+    public boolean isReadyFor(GameFileDetails gameFileDetails) {
+        return getSourceDownloader(gameFileDetails.getSource()).isReady();
     }
 }

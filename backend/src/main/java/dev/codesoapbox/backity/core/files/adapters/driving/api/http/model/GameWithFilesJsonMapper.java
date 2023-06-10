@@ -5,7 +5,7 @@ import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(uses = {GameFileVersionJsonMapper.class, GameIdJsonMapper.class})
+@Mapper(uses = {GameFileDetailsJsonMapper.class, GameIdJsonMapper.class})
 public abstract class GameWithFilesJsonMapper {
 
     @Mapping(target = ".", source = "game")

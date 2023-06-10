@@ -9,12 +9,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import {GameFileVersion} from './gameFileVersion';
+import {GameFileDetails} from './gameFileDetails';
 
 
 export interface GameWithFiles {
     id?: string;
     title?: string;
-    gameFiles?: Array<GameFileVersion>;
+    gameFiles?: Array<GameFileDetails>;
 }
 

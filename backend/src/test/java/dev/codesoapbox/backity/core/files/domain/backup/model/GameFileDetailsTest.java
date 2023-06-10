@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class GameFileVersionTest {
+class GameFileDetailsTest {
 
     @Test
     void shouldFail() {
-        var enqueuedFileDownload = new GameFileVersion(
+        var enqueuedFileDownload = new GameFileDetails(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
@@ -21,7 +21,7 @@ class GameFileVersionTest {
 
     @Test
     void shouldMarkAsDownloaded() {
-        var enqueuedFileDownload = new GameFileVersion(
+        var enqueuedFileDownload = new GameFileDetails(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);

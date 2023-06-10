@@ -4,8 +4,8 @@ import {
   FileBackupMessageTopics,
   FileBackupProgress,
   FileBackupStatus,
-  GameFileVersion,
-  PageGameFileVersion
+  GameFileDetails,
+  PageGameFileDetails
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
@@ -18,9 +18,9 @@ import {IMessage} from "@stomp/stompjs";
 })
 export class FileBackupComponent implements OnInit, OnDestroy {
 
-  enqueuedDownloads?: PageGameFileVersion;
-  processedFiles?: PageGameFileVersion;
-  currentDownload?: GameFileVersion;
+  enqueuedDownloads?: PageGameFileDetails;
+  processedFiles?: PageGameFileDetails;
+  currentDownload?: GameFileDetails;
   downloadProgress?: FileBackupProgress;
   filesAreLoading: boolean = false;
   FileBackupStatus = FileBackupStatus;
@@ -32,7 +32,7 @@ export class FileBackupComponent implements OnInit, OnDestroy {
               private readonly messageService: MessagesService) {
   }
 
-  asFile = (file: GameFileVersion) => file;
+  asFile = (file: GameFileDetails) => file;
 
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(

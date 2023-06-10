@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.files.adapters.driven.persistence;
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -9,13 +9,13 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JpaGameFileVersionVersionMapperTest {
+class JpaGameFileDetailsDetailsMapperTest {
 
-    private final JpaGameFileVersionMapper MAPPER = Mappers.getMapper(JpaGameFileVersionMapper.class);
+    private final JpaGameFileDetailsMapper MAPPER = Mappers.getMapper(JpaGameFileDetailsMapper.class);
 
     @Test
     void shouldMapToEntity() {
-        var model = new GameFileVersion(
+        var model = new GameFileDetails(
                 123L,
                 "someSource",
                 "someUrl",
@@ -32,9 +32,9 @@ class JpaGameFileVersionVersionMapperTest {
                 "someFailedReason"
         );
 
-        JpaGameFileVersion result = MAPPER.toEntity(model);
+        JpaGameFileDetails result = MAPPER.toEntity(model);
 
-        var expectedResult = new JpaGameFileVersion(
+        var expectedResult = new JpaGameFileDetails(
                 123L,
                 "someSource",
                 "someUrl",
@@ -57,7 +57,7 @@ class JpaGameFileVersionVersionMapperTest {
 
     @Test
     void shouldMapToModel() {
-        var model = new JpaGameFileVersion(
+        var model = new JpaGameFileDetails(
                 123L,
                 "someSource",
                 "someUrl",
@@ -74,9 +74,9 @@ class JpaGameFileVersionVersionMapperTest {
                 "someFailedReason"
         );
 
-        GameFileVersion result = MAPPER.toModel(model);
+        GameFileDetails result = MAPPER.toModel(model);
 
-        var expectedResult = new GameFileVersion(
+        var expectedResult = new GameFileDetails(
                 123L,
                 "someSource",
                 "someUrl",

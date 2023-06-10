@@ -10,21 +10,21 @@
  * Do not edit the class manually.
  */
 import {PageableObject} from './pageableObject';
-import {GameFileVersion} from './gameFileVersion';
+import {GameFileDetails} from './gameFileDetails';
 import {SortObject} from './sortObject';
 
 
-export interface PageGameFileVersion {
-    totalElements?: number;
+export interface PageGameFileDetails {
     totalPages?: number;
+    totalElements?: number;
     size?: number;
-    content?: Array<GameFileVersion>;
+    content?: Array<GameFileDetails>;
     number?: number;
     sort?: SortObject;
+    numberOfElements?: number;
     first?: boolean;
     last?: boolean;
     pageable?: PageableObject;
-    numberOfElements?: number;
     empty?: boolean;
 }
 

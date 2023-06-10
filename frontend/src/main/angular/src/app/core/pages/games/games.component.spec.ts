@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GamesComponent} from './games.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {BackupsClient, FileBackupStatus, GameFileVersion, GamesClient, PageGameWithFiles} from "@backend";
+import {BackupsClient, FileBackupStatus, GameFileDetails, GamesClient, PageGameWithFiles} from "@backend";
 import {of, throwError} from "rxjs";
 import {PageHeaderStubComponent} from "@app/shared/components/page-header/page-header.component.stub";
 import {TableComponent} from "@app/shared/components/table/table.component";
@@ -77,7 +77,7 @@ describe('GamesComponent', () => {
   });
 
   it('should back up game file and set its status to Enqueued', () => {
-    const mockFile: GameFileVersion = { id: 1, backupStatus: FileBackupStatus.Discovered };
+    const mockFile: GameFileDetails = { id: 1, backupStatus: FileBackupStatus.Discovered };
     (backupsClient.download as jasmine.Spy).and.returnValue(of(null));
 
     component.backUp(mockFile);
@@ -87,7 +87,7 @@ describe('GamesComponent', () => {
   });
 
   it('should set file status to Discovered when backup fails', () => {
-    const mockFile: GameFileVersion = { id: 1, backupStatus: FileBackupStatus.Discovered };
+    const mockFile: GameFileDetails = { id: 1, backupStatus: FileBackupStatus.Discovered };
     const mockError = new Error('Backup error');
     (backupsClient.download as jasmine.Spy).and.returnValue(throwError(mockError));
 
@@ -138,7 +138,7 @@ describe('GamesComponent', () => {
   });
 
   it('should set file status to Discovered and log error when backup fails', () => {
-    const mockFile: GameFileVersion = { id: 1, backupStatus: FileBackupStatus.Discovered };
+    const mockFile: GameFileDetails = { id: 1, backupStatus: FileBackupStatus.Discovered };
     const mockError = new Error('Backup error');
     (backupsClient.download as jasmine.Spy).and.returnValue(throwError(mockError));
     spyOn(console, 'error');

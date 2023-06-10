@@ -12,7 +12,7 @@
 import {FileBackupStatus} from './fileBackupStatus';
 
 
-export interface GameFileVersion {
+export interface GameFileDetails {
     id?: number;
     source?: string;
     url?: string;
@@ -28,7 +28,7 @@ export interface GameFileVersion {
     backupStatus?: FileBackupStatus;
     backupFailedReason?: string;
 }
-export namespace GameFileVersion {
+export namespace GameFileDetails {
 }
 
 

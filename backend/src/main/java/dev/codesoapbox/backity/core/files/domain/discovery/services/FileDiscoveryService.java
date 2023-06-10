@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.files.domain.discovery.services;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.SourceFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionRepository;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
@@ -21,13 +21,13 @@ public class FileDiscoveryService {
 
     private final List<SourceFileDiscoveryService> discoveryServices;
     private final GameRepository gameRepository;
-    private final GameFileVersionRepository fileRepository;
+    private final GameFileDetailsRepository fileRepository;
     private final FileDiscoveryMessageService messageService;
     private final Map<String, Boolean> discoveryStatuses = new ConcurrentHashMap<>();
 
     public FileDiscoveryService(List<SourceFileDiscoveryService> discoveryServices,
                                 GameRepository gameRepository,
-                                GameFileVersionRepository fileRepository, FileDiscoveryMessageService messageService) {
+                                GameFileDetailsRepository fileRepository, FileDiscoveryMessageService messageService) {
         this.discoveryServices = discoveryServices;
         this.gameRepository = gameRepository;
         this.fileRepository = fileRepository;
@@ -98,12 +98,12 @@ public class FileDiscoveryService {
 
     private void saveDiscoveredFileInfo(SourceFileDetails sourceFileDetails) {
         Game game = getGameOrCreateNew(sourceFileDetails);
-        GameFileVersion gameFileVersion = sourceFileDetails.associateWith(game);
+        GameFileDetails gameFileDetails = sourceFileDetails.associateWith(game);
 
-        if (!fileRepository.existsByUrlAndVersion(gameFileVersion.getUrl(), gameFileVersion.getVersion())) {
-            fileRepository.save(gameFileVersion);
-            messageService.sendDiscoveredFile(gameFileVersion);
-            log.info("Discovered new file: {} (gameId: {})", gameFileVersion.getUrl(), gameFileVersion.getGameTitle());
+        if (!fileRepository.existsByUrlAndVersion(gameFileDetails.getUrl(), gameFileDetails.getVersion())) {
+            fileRepository.save(gameFileDetails);
+            messageService.sendDiscoveredFile(gameFileDetails);
+            log.info("Discovered new file: {} (gameId: {})", gameFileDetails.getUrl(), gameFileDetails.getGameTitle());
         }
     }
 

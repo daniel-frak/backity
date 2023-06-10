@@ -6,8 +6,8 @@ import {
   FileDiscoveryMessageTopics,
   FileDiscoveryProgress,
   FileDiscoveryStatus,
-  GameFileVersion,
-  PageGameFileVersion
+  GameFileDetails,
+  PageGameFileDetails
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
@@ -22,8 +22,8 @@ import {throwError} from "rxjs";
 })
 export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
-  discoveredFiles?: PageGameFileVersion;
-  newestDiscovered?: GameFileVersion;
+  discoveredFiles?: PageGameFileDetails;
+  newestDiscovered?: GameFileDetails;
   newDiscoveredCount: number = 0;
   infoIsLoading: boolean = false;
   filesAreLoading: boolean = false;
@@ -39,11 +39,11 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
               private readonly messageService: MessagesService) {
   }
 
-  asFile = (file: GameFileVersion) => file;
+  asFile = (file: GameFileDetails) => file;
 
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
-      client.subscribe(FileDiscoveryMessageTopics.Discovery, p => this.onGameFileVersionReceived(p)),
+      client.subscribe(FileDiscoveryMessageTopics.Discovery, p => this.onGameFileDetailsReceived(p)),
       client.subscribe(FileDiscoveryMessageTopics.DiscoveryStatus, p => this.onDiscoveryStatusChanged(p)),
       client.subscribe(FileDiscoveryMessageTopics.DiscoveryProgress, p => this.onProgressUpdated(p))
     ))
@@ -53,7 +53,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     this.refreshDiscoveredFiles();
   }
 
-  private onGameFileVersionReceived(payload: IMessage) {
+  private onGameFileDetailsReceived(payload: IMessage) {
     this.newestDiscovered = JSON.parse(payload.body);
     this.newDiscoveredCount++;
   }
@@ -91,7 +91,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
       .subscribe(df => this.updateDiscoveredFiles(df));
   }
 
-  private updateDiscoveredFiles(df: PageGameFileVersion) {
+  private updateDiscoveredFiles(df: PageGameFileDetails) {
     this.discoveredFiles = df;
     this.newDiscoveredCount = 0;
     this.filesAreLoading = false;
@@ -109,7 +109,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     });
   }
 
-  enqueueFile(file: GameFileVersion) {
+  enqueueFile(file: GameFileDetails) {
     file.backupStatus = FileBackupStatus.Enqueued;
     console.info("Enqueuing: " + file.id);
     this.backupsClient.download(file.id as number)

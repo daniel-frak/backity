@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.files.application.GameFacade;
 import dev.codesoapbox.backity.core.files.application.GameWithFiles;
 import dev.codesoapbox.backity.core.files.config.GameHttpBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ class GameControllerIT {
                 new GameWithFiles(
                         new Game(id, "Test Game"),
                         singletonList(
-                                new GameFileVersion(
+                                new GameFileDetails(
                                         1L,
                                         "someSource",
                                         "someUrl",

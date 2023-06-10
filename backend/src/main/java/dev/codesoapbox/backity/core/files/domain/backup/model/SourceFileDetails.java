@@ -12,8 +12,8 @@ public record SourceFileDetails(
         @NonNull String originalFileName,
         @NonNull String size
 ) {
-    public GameFileVersion associateWith(Game game) {
-        return new GameFileVersion(
+    public GameFileDetails associateWith(Game game) {
+        return new GameFileDetails(
                 null,
                 sourceId,
                 url,

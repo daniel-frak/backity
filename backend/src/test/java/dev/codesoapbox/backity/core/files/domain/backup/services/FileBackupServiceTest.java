@@ -5,8 +5,8 @@ import dev.codesoapbox.backity.core.files.domain.backup.exceptions.FileBackupFai
 import dev.codesoapbox.backity.core.files.domain.backup.exceptions.FileBackupUrlEmptyException;
 import dev.codesoapbox.backity.core.files.domain.backup.exceptions.NotEnoughFreeSpaceException;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
-import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionRepository;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +34,7 @@ class FileBackupServiceTest {
     private FilePathProvider filePathProvider;
 
     @Mock
-    private GameFileVersionRepository gameFileVersionRepository;
+    private GameFileDetailsRepository gameFileDetailsRepository;
 
     @Mock
     private SourceFileBackupService sourceFileBackupService;
@@ -46,7 +46,7 @@ class FileBackupServiceTest {
         when(sourceFileBackupService.getSource())
                 .thenReturn("someSource");
         fileManager = new FakeUnixFileManager(5000);
-        fileBackupService = new FileBackupService(filePathProvider, gameFileVersionRepository, fileManager,
+        fileBackupService = new FileBackupService(filePathProvider, gameFileDetailsRepository, fileManager,
                 singletonList(sourceFileBackupService));
     }
 
@@ -55,7 +55,7 @@ class FileBackupServiceTest {
         String source = sourceFileBackupService.getSource();
         var gameTitle = "someGameTitle";
 
-        var gameFileVersionBackup = new GameFileVersion(
+        var gameFileVersionBackup = new GameFileDetails(
                 1L, source, "someUrl", "someTitle", "someOriginalFileName",
                 null, gameTitle, "someGameId", "someVersion", "5 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
@@ -64,9 +64,9 @@ class FileBackupServiceTest {
 
         List<FileBackupStatus> savedFileBackupStatuses = new ArrayList<>();
         List<String> savedFilePaths = new ArrayList<>();
-        when(gameFileVersionRepository.save(any()))
+        when(gameFileDetailsRepository.save(any()))
                 .then(a -> {
-                    GameFileVersion argument = a.getArgument(0, GameFileVersion.class);
+                    GameFileDetails argument = a.getArgument(0, GameFileDetails.class);
                     savedFileBackupStatuses.add(argument.getBackupStatus());
                     savedFilePaths.add(argument.getFilePath());
                     return argument;
@@ -90,7 +90,7 @@ class FileBackupServiceTest {
     void shouldTryToRemoveTempFileAndRethrowWrappedOnIOException() throws IOException {
         String source = sourceFileBackupService.getSource();
         var gameTitle = "someGameTitle";
-        var gameFileVersionBackup = new GameFileVersion(
+        var gameFileVersionBackup = new GameFileDetails(
                 1L, source, "someUrl", "someTitle", "someOriginalFileName",
                 null, gameTitle, "someGameId", "someVersion", "5 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
@@ -111,7 +111,7 @@ class FileBackupServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", " "})
     void downloadGameFileShouldThrowIfUrlIsEmpty(String url) {
-        var gameFileVersionBackup = new GameFileVersion(
+        var gameFileVersionBackup = new GameFileDetails(
                 1L, "someSource", url, "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "5 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
@@ -125,7 +125,7 @@ class FileBackupServiceTest {
     void downloadGameFileShouldThrowIfSourceDownloaderNotFound() throws IOException {
         var source = "nonExistentSource";
         var gameTitle = "someGameTitle";
-        var gameFileVersionBackup = new GameFileVersion(
+        var gameFileVersionBackup = new GameFileDetails(
                 1L, source, "someUrl", "someTitle", "someOriginalFileName",
                 null, gameTitle, "someGameId", "someVersion", "5 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
@@ -144,7 +144,7 @@ class FileBackupServiceTest {
     void downloadGameFileShouldThrowIfIOExceptionOccurs() throws IOException {
         var source = sourceFileBackupService.getSource();
         var gameTitle = "someGameTitle";
-        var gameFileVersionBackup = new GameFileVersion(
+        var gameFileVersionBackup = new GameFileDetails(
                 1L, source, "someUrl", "someTitle", "someOriginalFileName",
                 null, gameTitle, "someGameId", "someVersion", "5 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
@@ -161,7 +161,7 @@ class FileBackupServiceTest {
     void downloadGameFileShouldThrowIfNotEnoughFreeSpace() throws IOException {
         var source = sourceFileBackupService.getSource();
         var gameTitle = "someGameTitle";
-        var gameFileVersionBackup = new GameFileVersion(
+        var gameFileVersionBackup = new GameFileDetails(
                 1L, source, "someUrl", "someTitle", "someOriginalFileName",
                 null, gameTitle, "someGameId", "someVersion", "5 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
@@ -179,7 +179,7 @@ class FileBackupServiceTest {
 
     @Test
     void isReadyForShouldReturnTrueIfFileIsReadyToDownload() {
-        var gameFileVersionBackup = new GameFileVersion(
+        var gameFileVersionBackup = new GameFileDetails(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "5 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
@@ -192,7 +192,7 @@ class FileBackupServiceTest {
 
     @Test
     void isReadyForShouldReturnFalseIfFileIsNotReadyToDownload() {
-        var gameFileVersionBackup = new GameFileVersion(
+        var gameFileVersionBackup = new GameFileDetails(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "5 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);

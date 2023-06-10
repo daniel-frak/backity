@@ -21,13 +21,13 @@ model/fileDiscoveryMessageTopics.ts
 model/fileDiscoveryProgress.ts
 model/fileDiscoveryStatus.ts
 model/gameDetailsResponse.ts
+model/gameFileDetails.ts
 model/gameFileDetailsResponse.ts
-model/gameFileVersion.ts
 model/gameWithFiles.ts
 model/logCreatedMessage.ts
 model/logsMessageTopics.ts
 model/models.ts
-model/pageGameFileVersion.ts
+model/pageGameFileDetails.ts
 model/pageGameWithFiles.ts
 model/pageableObject.ts
 model/refreshTokenResponse.ts

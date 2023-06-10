@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.files.adapters.driven.messaging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
 import org.junit.jupiter.api.Test;
@@ -81,7 +81,7 @@ class FileDiscoverySpringMessageServiceTest {
         assertSendsMessage(simpMessagingTemplate, expectedPayload,
                 FileDiscoveryMessageTopics.FILE_DISCOVERY.toString(),
                 () -> fileDiscoverySpringMessageService.sendDiscoveredFile(
-                        new GameFileVersion(
+                        new GameFileDetails(
                                 1L,
                                 "someSource",
                                 "someUrl",

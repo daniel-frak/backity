@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Schema(name = "GameFileVersion")
+@Schema(name = "GameFileDetails")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GameFileVersionJson {
+public class GameFileDetailsJson {
 
     private Long id;
     private String source;

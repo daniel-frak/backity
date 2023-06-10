@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.files.domain.discovery.services;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.SourceFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionRepository;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
@@ -47,7 +47,7 @@ class FileDiscoveryServiceTest {
     private GameRepository gameRepository;
 
     @Mock
-    private GameFileVersionRepository fileRepository;
+    private GameFileDetailsRepository fileRepository;
 
     @Mock
     private FileDiscoveryMessageService messageService;
@@ -88,7 +88,7 @@ class FileDiscoveryServiceTest {
                 "someSource", gameTitle, "someTitle", "someVersion", "someUrl",
                 "someOriginalFileName", "100 KB");
         var game = new Game(GameId.newInstance(), gameTitle);
-        GameFileVersion gameFileVersion = discoveredGameFile.associateWith(game);
+        GameFileDetails gameFileDetails = discoveredGameFile.associateWith(game);
 
         when(gameRepository.findByTitle(gameTitle))
                 .thenReturn(Optional.of(game));
@@ -110,8 +110,8 @@ class FileDiscoveryServiceTest {
                 .until(sourceFileDiscoveryService::hasBeenTriggered);
         sourceFileDiscoveryService.simulateFileDiscovery(discoveredGameFile);
 
-        verify(fileRepository).save(gameFileVersion);
-        verify(messageService).sendDiscoveredFile(gameFileVersion);
+        verify(fileRepository).save(gameFileDetails);
+        verify(messageService).sendDiscoveredFile(gameFileDetails);
         assertEquals(1, progressList.size());
     }
 
