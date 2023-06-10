@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.DiscoveredGameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.model.SourceFileDetails;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileDetailsResponse;
@@ -31,15 +31,15 @@ class GogFileDiscoveryServiceTest {
     void shouldDiscoverNewFiles() {
         mockFileDiscovery();
 
-        List<DiscoveredGameFileVersion> gameFileVersionBackups = new ArrayList<>();
+        List<SourceFileDetails> gameFileVersionBackups = new ArrayList<>();
         gogFileDiscoveryService.startFileDiscovery(gameFileVersionBackups::add);
 
         var expectedGameFileVersions = List.of(
-                new DiscoveredGameFileVersion("GOG", "Game 2", "fileSimpleName1", "1.0.0",
+                new SourceFileDetails("GOG", "Game 2", "fileSimpleName1", "1.0.0",
                         "someUrl1", "fileName1", "100 KB"),
-                new DiscoveredGameFileVersion("GOG", "Game 2", "fileSimpleName2", "2.0.0",
+                new SourceFileDetails("GOG", "Game 2", "fileSimpleName2", "2.0.0",
                         "someUrl2", "fileName2", "200 KB"),
-                new DiscoveredGameFileVersion("GOG", "Game 4", "fileSimpleName3", "3.0.0",
+                new SourceFileDetails("GOG", "Game 4", "fileSimpleName3", "3.0.0",
                         "someUrl3", "fileName3", "300 KB")
         );
 
@@ -91,7 +91,7 @@ class GogFileDiscoveryServiceTest {
                     return List.of(gameId1, "gameId2", "gameId3", "gameId4");
                 });
 
-        List<DiscoveredGameFileVersion> gameFileVersionBackups = new ArrayList<>();
+        List<SourceFileDetails> gameFileVersionBackups = new ArrayList<>();
         gogFileDiscoveryService.startFileDiscovery(gameFileVersionBackups::add);
 
         assertEquals(0, gameFileVersionBackups.size());
@@ -115,7 +115,7 @@ class GogFileDiscoveryServiceTest {
                     return game1Details;
                 });
 
-        List<DiscoveredGameFileVersion> gameFileVersionBackups = new ArrayList<>();
+        List<SourceFileDetails> gameFileVersionBackups = new ArrayList<>();
         gogFileDiscoveryService.startFileDiscovery(gameFileVersionBackups::add);
 
         assertEquals(1, gameFileVersionBackups.size());

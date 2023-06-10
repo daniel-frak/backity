@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.files.domain.discovery.services;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.DiscoveredGameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.model.SourceFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
@@ -58,7 +58,7 @@ public class FileDiscoveryService {
             return;
         }
 
-        log.info("Discovering files for source: {}", discoveryService.getSource());
+        log.info("Discovering files for sourceId: {}", discoveryService.getSource());
 
         changeDiscoveryStatus(discoveryService, true);
 
@@ -96,9 +96,9 @@ public class FileDiscoveryService {
         messageService.sendStatus(new FileDiscoveryStatus(discoveryService.getSource(), status));
     }
 
-    private void saveDiscoveredFileInfo(DiscoveredGameFileVersion discoveredGameFileVersion) {
-        Game game = getGameOrCreateNew(discoveredGameFileVersion);
-        GameFileVersion gameFileVersion = discoveredGameFileVersion.associateWith(game);
+    private void saveDiscoveredFileInfo(SourceFileDetails sourceFileDetails) {
+        Game game = getGameOrCreateNew(sourceFileDetails);
+        GameFileVersion gameFileVersion = sourceFileDetails.associateWith(game);
 
         if (!fileRepository.existsByUrlAndVersion(gameFileVersion.getUrl(), gameFileVersion.getVersion())) {
             fileRepository.save(gameFileVersion);
@@ -107,10 +107,10 @@ public class FileDiscoveryService {
         }
     }
 
-    private Game getGameOrCreateNew(DiscoveredGameFileVersion discoveredGameFileVersion) {
-        return gameRepository.findByTitle(discoveredGameFileVersion.gameTitle())
+    private Game getGameOrCreateNew(SourceFileDetails sourceFileDetails) {
+        return gameRepository.findByTitle(sourceFileDetails.originalGameTitle())
                 .orElseGet(() -> {
-                    var newGame = Game.createNew(discoveredGameFileVersion.gameTitle());
+                    var newGame = Game.createNew(sourceFileDetails.originalGameTitle());
                     gameRepository.save(newGame);
                     return newGame;
                 });
@@ -128,7 +128,7 @@ public class FileDiscoveryService {
             return;
         }
 
-        log.info("Stopping discovery for source: {}", discoveryService.getSource());
+        log.info("Stopping discovery for sourceId: {}", discoveryService.getSource());
 
         discoveryService.stopFileDiscovery();
     }

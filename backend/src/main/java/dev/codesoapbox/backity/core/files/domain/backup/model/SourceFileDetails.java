@@ -3,10 +3,10 @@ package dev.codesoapbox.backity.core.files.domain.backup.model;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import lombok.NonNull;
 
-public record DiscoveredGameFileVersion(
-        @NonNull String source,
-        @NonNull String gameTitle,
-        @NonNull String title,
+public record SourceFileDetails(
+        @NonNull String sourceId,
+        @NonNull String originalGameTitle,
+        @NonNull String fileTitle,
         @NonNull String version,
         @NonNull String url,
         @NonNull String originalFileName,
@@ -15,12 +15,12 @@ public record DiscoveredGameFileVersion(
     public GameFileVersion associateWith(Game game) {
         return new GameFileVersion(
                 null,
-                source,
+                sourceId,
                 url,
-                title,
+                fileTitle,
                 originalFileName,
                 null,
-                gameTitle,
+                originalGameTitle,
                 game.getId().value().toString(),
                 version,
                 size,

@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.files.domain.discovery.services;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.DiscoveredGameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.model.SourceFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
@@ -84,7 +84,7 @@ class FileDiscoveryServiceTest {
     @Test
     void startFileDiscoveryShouldSaveDiscoveredFilesAndSendMessages() {
         var gameTitle = "someGameTitle";
-        var discoveredGameFile = new DiscoveredGameFileVersion(
+        var discoveredGameFile = new SourceFileDetails(
                 "someSource", gameTitle, "someTitle", "someVersion", "someUrl",
                 "someOriginalFileName", "100 KB");
         var game = new Game(GameId.newInstance(), gameTitle);
@@ -117,7 +117,7 @@ class FileDiscoveryServiceTest {
 
     @Test
     void startFileDiscoveryShouldNotSaveDiscoveredFileIfAlreadyExists() {
-        DiscoveredGameFileVersion gameFileVersionBackup = new DiscoveredGameFileVersion(
+        SourceFileDetails gameFileVersionBackup = new SourceFileDetails(
                 "someSource", "someGameTitle", "someTitle", "someVersion", "someUrl",
                 "someOriginalFileName", "100 KB");
 
@@ -176,7 +176,7 @@ class FileDiscoveryServiceTest {
     private static class FakeSourceFileDiscoveryService implements SourceFileDiscoveryService {
 
         private final AtomicBoolean shouldFinish = new AtomicBoolean(false);
-        private final AtomicReference<Consumer<DiscoveredGameFileVersion>> gameFileVersionConsumer = new AtomicReference<>();
+        private final AtomicReference<Consumer<SourceFileDetails>> gameFileVersionConsumer = new AtomicReference<>();
 
         @Getter
         private int stoppedTimes = 0;
@@ -191,8 +191,8 @@ class FileDiscoveryServiceTest {
             return timesTriggered.get() > 0;
         }
 
-        public void simulateFileDiscovery(DiscoveredGameFileVersion discoveredGameFileVersion) {
-            gameFileVersionConsumer.get().accept(discoveredGameFileVersion);
+        public void simulateFileDiscovery(SourceFileDetails sourceFileDetails) {
+            gameFileVersionConsumer.get().accept(sourceFileDetails);
         }
 
         public void complete() {
@@ -206,7 +206,7 @@ class FileDiscoveryServiceTest {
 
         @SuppressWarnings("StatementWithEmptyBody")
         @Override
-        public void startFileDiscovery(Consumer<DiscoveredGameFileVersion> gameFileVersionConsumer) {
+        public void startFileDiscovery(Consumer<SourceFileDetails> gameFileVersionConsumer) {
             if (exception != null) {
                 throw exception;
             }

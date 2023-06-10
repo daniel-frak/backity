@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.DiscoveredGameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.model.SourceFileDetails;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.IncrementalProgressTracker;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.domain.discovery.services.SourceFileDiscoveryService;
@@ -32,7 +32,7 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
     private IncrementalProgressTracker progressTracker;
 
     @Override
-    public void startFileDiscovery(Consumer<DiscoveredGameFileVersion> gameFileConsumer) {
+    public void startFileDiscovery(Consumer<SourceFileDetails> gameFileConsumer) {
         log.info("Discovering new files...");
 
         shouldStopFileDiscovery.set(false);
@@ -49,19 +49,19 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
                 });
     }
 
-    private void processFiles(Consumer<DiscoveredGameFileVersion> discoveredFileConsumer, GameDetailsResponse details) {
+    private void processFiles(Consumer<SourceFileDetails> discoveredFileConsumer, GameDetailsResponse details) {
         if (details == null || details.getFiles() == null) {
             return;
         }
         details.getFiles().forEach(fileDetails -> {
-            DiscoveredGameFileVersion discoveredGameFileVersion = mapToDiscoveredGameFile(details, fileDetails);
-            discoveredFileConsumer.accept(discoveredGameFileVersion);
+            SourceFileDetails sourceFileDetails = mapToDiscoveredGameFile(details, fileDetails);
+            discoveredFileConsumer.accept(sourceFileDetails);
         });
     }
 
-    private DiscoveredGameFileVersion mapToDiscoveredGameFile(GameDetailsResponse gameDetails,
-                                                              GameFileDetailsResponse fileDetails) {
-        return new DiscoveredGameFileVersion(
+    private SourceFileDetails mapToDiscoveredGameFile(GameDetailsResponse gameDetails,
+                                                      GameFileDetailsResponse fileDetails) {
+        return new SourceFileDetails(
                 "GOG",
                 gameDetails.getTitle(),
                 fileDetails.getName(),

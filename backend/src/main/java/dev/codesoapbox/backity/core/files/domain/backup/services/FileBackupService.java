@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Wrapper for all source file downloaders.
+ * Wrapper for all sourceId file downloaders.
  * <p>
  * Downloads files from remote servers.
  */
@@ -115,7 +115,7 @@ public class FileBackupService {
 
     private SourceFileBackupService getSourceDownloader(String source) {
         if (!sourceFileDownloaders.containsKey(source)) {
-            throw new IllegalArgumentException("File downloader for source not found: " + source);
+            throw new IllegalArgumentException("File downloader for sourceId not found: " + source);
         }
 
         return sourceFileDownloaders.get(source);
