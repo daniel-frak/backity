@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.files.adapters.driven.persistence.game.GameJ
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.game.JpaGameMapper;
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.game.JpaGameSpringRepository;
 import dev.codesoapbox.backity.core.files.application.GameFacade;
-import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionRepository;
 import dev.codesoapbox.backity.core.files.domain.game.GameRepository;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +20,7 @@ public class GameBeanConfig {
     }
 
     @Bean
-    GameFacade gameFacade(GameRepository gameRepository, GameFileVersionBackupRepository gameFileRepository) {
+    GameFacade gameFacade(GameRepository gameRepository, GameFileVersionRepository gameFileRepository) {
         return new GameFacade(gameRepository, gameFileRepository);
     }
 }

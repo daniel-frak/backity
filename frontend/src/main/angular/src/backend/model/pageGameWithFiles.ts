@@ -15,8 +15,8 @@ import {GameWithFiles} from './gameWithFiles';
 
 
 export interface PageGameWithFiles {
-    totalPages?: number;
     totalElements?: number;
+    totalPages?: number;
     size?: number;
     content?: Array<GameWithFiles>;
     number?: number;

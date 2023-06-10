@@ -71,7 +71,7 @@
                    let-item>
         <ng-container *ngFor="let file of [asFile(item)]">
           <button (click)="removeFromQueue(file.id)"
-                  *ngIf="file.status == FileBackupStatus.Enqueued" class="btn btn-primary">
+                  *ngIf="file.backupStatus == FileBackupStatus.Enqueued" class="btn btn-primary">
             Cancel
           </button>
         </ng-container>
@@ -97,16 +97,16 @@
       <ng-template app-table-column="Status" let-item>
         <ng-container *ngFor="let file of [asFile(item)]">
           <span
-            [ngClass]="{'bg-success': file.status == FileBackupStatus.Success,
-             'bg-danger': file.status != FileBackupStatus.Success}"
+            [ngClass]="{'bg-success': file.backupStatus == FileBackupStatus.Success,
+             'bg-danger': file.backupStatus != FileBackupStatus.Success}"
             class="badge">
-            <i [ngClass]="{'bi bi-check-circle': file.status == FileBackupStatus.Success,
-             'bi bi-x-circle': file.status != FileBackupStatus.Success}"
+            <i [ngClass]="{'bi bi-check-circle': file.backupStatus == FileBackupStatus.Success,
+             'bi bi-x-circle': file.backupStatus != FileBackupStatus.Success}"
                aria-hidden="true"
                class="me-1">
             </i>
 
-            {{file.status}}
+            {{file.backupStatus}}
           </span>
         </ng-container>
       </ng-template>

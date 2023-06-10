@@ -27,7 +27,7 @@ import {Observable} from 'rxjs';
 // @ts-ignore
 import {FileDiscoveryStatus} from '../model/fileDiscoveryStatus';
 // @ts-ignore
-import {PageGameFileVersionBackup} from '../model/pageGameFileVersionBackup';
+import {PageGameFileVersion} from '../model/pageGameFileVersion';
 
 // @ts-ignore
 import {BASE_PATH, COLLECTION_FORMATS} from '../variables';
@@ -161,9 +161,9 @@ export class FileDiscoveryClient {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageGameFileVersionBackup>;
-    public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageGameFileVersionBackup>>;
-    public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageGameFileVersionBackup>>;
+    public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageGameFileVersion>;
+    public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageGameFileVersion>>;
+    public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageGameFileVersion>>;
     public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
@@ -214,7 +214,7 @@ export class FileDiscoveryClient {
         }
 
         let localVarPath = `/api/discovered-files`;
-        return this.httpClient.request<PageGameFileVersionBackup>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<PageGameFileVersion>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,

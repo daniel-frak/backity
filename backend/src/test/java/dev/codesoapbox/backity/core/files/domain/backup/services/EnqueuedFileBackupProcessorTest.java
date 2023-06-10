@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.files.domain.backup.services;
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
-import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +21,7 @@ class EnqueuedFileBackupProcessorTest {
     private EnqueuedFileBackupProcessor enqueuedFileBackupProcessor;
 
     @Mock
-    private GameFileVersionBackupRepository gameFileVersionBackupRepository;
+    private GameFileVersionRepository gameFileVersionRepository;
 
     @Mock
     private FileBackupService fileBackupService;
@@ -31,12 +31,12 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldProcessEnqueuedFileDownloadIfNotCurrentlyDownloading() {
-        var gameFileVersionBackup = new GameFileVersionBackup(
+        var gameFileVersionBackup = new GameFileVersion(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB",
                 null, null, FileBackupStatus.DISCOVERED, null);
 
-        when(gameFileVersionBackupRepository.findOldestWaitingForDownload())
+        when(gameFileVersionRepository.findOldestWaitingForDownload())
                 .thenReturn(Optional.of(gameFileVersionBackup));
         when(fileBackupService.isReadyFor(gameFileVersionBackup))
                 .thenReturn(true);
@@ -51,12 +51,12 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldFailGracefully() {
-        var gameFileVersionBackup = new GameFileVersionBackup(
+        var gameFileVersionBackup = new GameFileVersion(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB",
                 null, null, FileBackupStatus.DISCOVERED, null);
 
-        when(gameFileVersionBackupRepository.findOldestWaitingForDownload())
+        when(gameFileVersionRepository.findOldestWaitingForDownload())
                 .thenReturn(Optional.of(gameFileVersionBackup));
         when(fileBackupService.isReadyFor(gameFileVersionBackup))
                 .thenReturn(true);
@@ -73,12 +73,12 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldDoNothingIfSourceDownloaderNotReady() {
-        var gameFileVersionBackup = new GameFileVersionBackup(
+        var gameFileVersionBackup = new GameFileVersion(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB",
                 null, null, FileBackupStatus.DISCOVERED, null);
 
-        when(gameFileVersionBackupRepository.findOldestWaitingForDownload())
+        when(gameFileVersionRepository.findOldestWaitingForDownload())
                 .thenReturn(Optional.of(gameFileVersionBackup));
         when(fileBackupService.isReadyFor(gameFileVersionBackup))
                 .thenReturn(false);
@@ -90,7 +90,7 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldDoNothingIfCurrentlyDownloading() {
-        var gameFileVersionBackup = new GameFileVersionBackup(
+        var gameFileVersionBackup = new GameFileVersion(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB",
                 null, null, FileBackupStatus.DISCOVERED, null);

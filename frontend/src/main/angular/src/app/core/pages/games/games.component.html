@@ -27,25 +27,25 @@
       <!--        {{asGameFile(item).filePath}}-->
       <!--      </ng-template>-->
       <ng-template app-table-column="Status" let-item>
-        <app-file-status-badge [status]="asGameFile(item).status"></app-file-status-badge>
+        <app-file-status-badge [status]="asGameFile(item).backupStatus"></app-file-status-badge>
       </ng-template>
       <ng-template app-table-column="Actions" let-item>
         <div style="text-align: right">
           <button class="btn btn-sm btn-primary" (click)="backUp(asGameFile(item))"
-                  *ngIf="asGameFile(item).status == FileBackupStatus.Discovered">
+                  *ngIf="asGameFile(item).backupStatus == FileBackupStatus.Discovered">
             <i class="bi bi-cloud-download" aria-hidden="true"></i>
             Back up
           </button>
           <button class="btn btn-sm btn-secondary" (click)="cancelBackup(asGameFile(item).id)"
-                  *ngIf="asGameFile(item).status == FileBackupStatus.Enqueued">
+                  *ngIf="asGameFile(item).backupStatus == FileBackupStatus.Enqueued">
             Cancel backup
           </button>
           <button class="btn btn-sm btn-secondary" (click)="viewFilePath(asGameFile(item).id)"
-          *ngIf="asGameFile(item).status == FileBackupStatus.Failed">
+          *ngIf="asGameFile(item).backupStatus == FileBackupStatus.Failed">
             <i class="bi bi-bug" aria-hidden="true"></i>
             View error
           </button>
-          <ng-container *ngIf="asGameFile(item).status == FileBackupStatus.Success">
+          <ng-container *ngIf="asGameFile(item).backupStatus == FileBackupStatus.Success">
             <button class="btn btn-sm btn-primary" (click)="download(asGameFile(item).id)">
               <i class="bi bi-download" aria-hidden="true"></i>
               Download

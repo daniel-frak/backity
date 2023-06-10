@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.files.adapters.driving.api.http.model;
 
 import dev.codesoapbox.backity.core.files.application.GameWithFiles;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class GameWithFilesJsonMapperTest {
         var model = new GameWithFiles(
                 new Game(id, "Test Game"),
                 singletonList(
-                        new GameFileVersionBackup(
+                        new GameFileVersion(
                                 1L,
                                 "someSource",
                                 "someUrl",
@@ -49,7 +49,7 @@ class GameWithFilesJsonMapperTest {
                 id.value().toString(),
                 "Test Game",
                 singletonList(
-                        new GameFileVersionBackupJson(
+                        new GameFileVersionJson(
                                 1L,
                                 "someSource",
                                 "someUrl",

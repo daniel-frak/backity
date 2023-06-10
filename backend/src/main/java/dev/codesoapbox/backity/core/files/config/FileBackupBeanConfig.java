@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.files.config;
 
 import dev.codesoapbox.backity.core.files.adapters.driven.messaging.FileBackupSpringMessageService;
-import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVersionJpaBackupRepository;
+import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVersionJpaRepository;
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVersionSpringRepository;
-import dev.codesoapbox.backity.core.files.adapters.driven.persistence.JpaGameFileVersionBackupMapper;
-import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
+import dev.codesoapbox.backity.core.files.adapters.driven.persistence.JpaGameFileVersionMapper;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionRepository;
 import dev.codesoapbox.backity.core.files.domain.backup.services.*;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
@@ -18,21 +18,21 @@ public class FileBackupBeanConfig {
 
     @Bean
     FileBackupService fileDownloader(FilePathProvider filePathProvider,
-                                     GameFileVersionBackupRepository gameFileVersionBackupRepository,
+                                     GameFileVersionRepository gameFileVersionRepository,
                                      List<SourceFileBackupService> fileDownloaders,
                                      FileManager fileManager) {
-        return new FileBackupService(filePathProvider, gameFileVersionBackupRepository, fileManager, fileDownloaders);
+        return new FileBackupService(filePathProvider, gameFileVersionRepository, fileManager, fileDownloaders);
     }
 
     @Bean
-    JpaGameFileVersionBackupMapper jpaGameFileVersionBackupMapper() {
-        return Mappers.getMapper(JpaGameFileVersionBackupMapper.class);
+    JpaGameFileVersionMapper jpaGameFileVersionMapper() {
+        return Mappers.getMapper(JpaGameFileVersionMapper.class);
     }
 
     @Bean
-    GameFileVersionBackupRepository gameFileVersionRepository(GameFileVersionSpringRepository springRepository,
-                                                              JpaGameFileVersionBackupMapper mapper) {
-        return new GameFileVersionJpaBackupRepository(springRepository, mapper);
+    GameFileVersionRepository gameFileVersionRepository(GameFileVersionSpringRepository springRepository,
+                                                        JpaGameFileVersionMapper mapper) {
+        return new GameFileVersionJpaRepository(springRepository, mapper);
     }
 
     @Bean
@@ -41,9 +41,9 @@ public class FileBackupBeanConfig {
     }
 
     @Bean
-    EnqueuedFileBackupProcessor fileDownloadQueueScheduler(GameFileVersionBackupRepository gameFileVersionBackupRepository,
+    EnqueuedFileBackupProcessor fileDownloadQueueScheduler(GameFileVersionRepository gameFileVersionRepository,
                                                            FileBackupService fileBackupService,
                                                            FileBackupMessageService fileBackupMessageService) {
-        return new EnqueuedFileBackupProcessor(gameFileVersionBackupRepository, fileBackupService, fileBackupMessageService);
+        return new EnqueuedFileBackupProcessor(gameFileVersionRepository, fileBackupService, fileBackupMessageService);
     }
 }

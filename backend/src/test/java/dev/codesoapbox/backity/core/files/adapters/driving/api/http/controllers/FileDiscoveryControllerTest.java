@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
-import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
 import dev.codesoapbox.backity.core.files.domain.discovery.services.FileDiscoveryService;
 import org.junit.jupiter.api.Test;
@@ -31,11 +31,11 @@ class FileDiscoveryControllerIT {
     private FileDiscoveryService fileDiscoveryService;
 
     @MockBean
-    private GameFileVersionBackupRepository repository;
+    private GameFileVersionRepository repository;
 
     @Test
     void shouldGetDiscoveredFiles() throws Exception {
-        var gameFileVersionBackup = new GameFileVersionBackup(
+        var gameFileVersionBackup = new GameFileVersion(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);

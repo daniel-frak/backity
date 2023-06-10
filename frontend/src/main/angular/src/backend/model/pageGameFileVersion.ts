@@ -10,15 +10,15 @@
  * Do not edit the class manually.
  */
 import {PageableObject} from './pageableObject';
+import {GameFileVersion} from './gameFileVersion';
 import {SortObject} from './sortObject';
-import {GameFileVersionBackup} from './gameFileVersionBackup';
 
 
-export interface PageGameFileVersionBackup {
-    totalPages?: number;
+export interface PageGameFileVersion {
     totalElements?: number;
+    totalPages?: number;
     size?: number;
-    content?: Array<GameFileVersionBackup>;
+    content?: Array<GameFileVersion>;
     number?: number;
     sort?: SortObject;
     first?: boolean;

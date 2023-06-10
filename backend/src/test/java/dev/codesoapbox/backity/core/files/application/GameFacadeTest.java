@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.files.application;
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
-import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionRepository;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +27,7 @@ class GameFacadeTest {
     private GameRepository gameRepository;
 
     @Mock
-    private GameFileVersionBackupRepository gameFileRepository;
+    private GameFileVersionRepository gameFileRepository;
 
     private GameFacade gameFacade;
 
@@ -40,20 +40,20 @@ class GameFacadeTest {
     void shouldGetGamesWithFiles() {
         var pageable = PageRequest.of(0, 2);
         Game game = Game.createNew("Test game");
-        var gameFile = new GameFileVersionBackup(
+        var gameFile = new GameFileVersion(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB",
                 null, null, FileBackupStatus.DISCOVERED, null);
-        List<GameFileVersionBackup> gameFiles = singletonList(gameFile);
+        List<GameFileVersion> gameFileVersions = singletonList(gameFile);
 
         when(gameRepository.findAll(pageable))
                 .thenReturn(new PageImpl<>(singletonList(game)));
         when(gameFileRepository.findAllByGameId(game.getId()))
-                .thenReturn(gameFiles);
+                .thenReturn(gameFileVersions);
 
         Page<GameWithFiles> result = gameFacade.getGamesWithFiles(pageable);
 
-        Page<GameWithFiles> expectedResult = new PageImpl<>(singletonList(new GameWithFiles(game, gameFiles)));
+        Page<GameWithFiles> expectedResult = new PageImpl<>(singletonList(new GameWithFiles(game, gameFileVersions)));
         assertThat(result)
                 .usingRecursiveComparison().isEqualTo(expectedResult);
     }

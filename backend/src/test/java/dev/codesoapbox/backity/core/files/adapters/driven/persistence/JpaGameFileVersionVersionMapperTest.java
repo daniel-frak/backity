@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.files.adapters.driven.persistence;
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -9,13 +9,13 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JpaGameFileVersionBackupMapperTest {
+class JpaGameFileVersionVersionMapperTest {
 
-    private final JpaGameFileVersionBackupMapper MAPPER = Mappers.getMapper(JpaGameFileVersionBackupMapper.class);
+    private final JpaGameFileVersionMapper MAPPER = Mappers.getMapper(JpaGameFileVersionMapper.class);
 
     @Test
     void shouldMapToEntity() {
-        var model = new GameFileVersionBackup(
+        var model = new GameFileVersion(
                 123L,
                 "someSource",
                 "someUrl",
@@ -32,9 +32,9 @@ class JpaGameFileVersionBackupMapperTest {
                 "someFailedReason"
         );
 
-        JpaGameFileVersionBackup result = MAPPER.toEntity(model);
+        JpaGameFileVersion result = MAPPER.toEntity(model);
 
-        var expectedResult = new JpaGameFileVersionBackup(
+        var expectedResult = new JpaGameFileVersion(
                 123L,
                 "someSource",
                 "someUrl",
@@ -57,7 +57,7 @@ class JpaGameFileVersionBackupMapperTest {
 
     @Test
     void shouldMapToModel() {
-        var model = new JpaGameFileVersionBackup(
+        var model = new JpaGameFileVersion(
                 123L,
                 "someSource",
                 "someUrl",
@@ -74,9 +74,9 @@ class JpaGameFileVersionBackupMapperTest {
                 "someFailedReason"
         );
 
-        GameFileVersionBackup result = MAPPER.toModel(model);
+        GameFileVersion result = MAPPER.toModel(model);
 
-        var expectedResult = new GameFileVersionBackup(
+        var expectedResult = new GameFileVersion(
                 123L,
                 "someSource",
                 "someUrl",

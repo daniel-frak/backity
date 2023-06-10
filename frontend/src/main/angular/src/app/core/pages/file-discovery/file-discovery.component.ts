@@ -6,8 +6,8 @@ import {
   FileDiscoveryMessageTopics,
   FileDiscoveryProgress,
   FileDiscoveryStatus,
-  GameFileVersionBackup,
-  PageGameFileVersionBackup
+  GameFileVersion,
+  PageGameFileVersion
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
@@ -22,8 +22,8 @@ import {throwError} from "rxjs";
 })
 export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
-  discoveredFiles?: PageGameFileVersionBackup;
-  newestDiscovered?: GameFileVersionBackup;
+  discoveredFiles?: PageGameFileVersion;
+  newestDiscovered?: GameFileVersion;
   newDiscoveredCount: number = 0;
   infoIsLoading: boolean = false;
   filesAreLoading: boolean = false;
@@ -39,7 +39,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
               private readonly messageService: MessagesService) {
   }
 
-  asFile = (file: GameFileVersionBackup) => file;
+  asFile = (file: GameFileVersion) => file;
 
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
@@ -91,7 +91,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
       .subscribe(df => this.updateDiscoveredFiles(df));
   }
 
-  private updateDiscoveredFiles(df: PageGameFileVersionBackup) {
+  private updateDiscoveredFiles(df: PageGameFileVersion) {
     this.discoveredFiles = df;
     this.newDiscoveredCount = 0;
     this.filesAreLoading = false;
@@ -109,12 +109,12 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     });
   }
 
-  enqueueFile(file: GameFileVersionBackup) {
-    file.status = FileBackupStatus.Enqueued;
+  enqueueFile(file: GameFileVersion) {
+    file.backupStatus = FileBackupStatus.Enqueued;
     console.info("Enqueuing: " + file.id);
     this.backupsClient.download(file.id as number)
       .pipe(catchError(e => {
-        file.status = FileBackupStatus.Discovered;
+        file.backupStatus = FileBackupStatus.Discovered;
         return throwError(e);
       }))
       .subscribe(() => {

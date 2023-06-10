@@ -97,7 +97,7 @@
                    let-item>
         <ng-container *ngFor="let file of [asFile(item)]">
           <button (click)="enqueueFile(file)"
-                  [disabled]="file.status != 'DISCOVERED'"
+                  [disabled]="file.backupStatus != 'DISCOVERED'"
                   class="btn btn-primary">
             Back up
           </button>

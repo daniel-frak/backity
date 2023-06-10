@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.service
 
 import dev.codesoapbox.backity.core.files.adapters.driven.files.RealFileManager;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.backup.services.BackupProgress;
 import dev.codesoapbox.backity.core.files.domain.backup.services.FileManager;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
@@ -49,19 +49,19 @@ class UrlFileBackupServiceTest {
     @Test
     void shouldDownloadGameFileWithProgressTracking(@TempDir Path tempDir) throws IOException {
         urlFileDownloader = new UrlFileDownloader(new RealFileManager(), progressHistory::add);
-        GameFileVersionBackup gameFileVersionBackup = mockGameFileVersion("someUrl");
+        GameFileVersion gameFileVersion = mockGameFileVersion("someUrl");
         FileBufferProviderStub fileBufferProvider = new FileBufferProviderStub();
 
-        urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileVersionBackup,
+        urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileVersion,
                 tempDir + File.separator + "tempFile");
 
-        assertTrue(new File(tempDir + File.separator + gameFileVersionBackup.getOriginalFileName()).exists());
+        assertTrue(new File(tempDir + File.separator + gameFileVersion.getOriginalFileName()).exists());
         assertEquals(100, progressHistory.get(0).percentage());
     }
 
     @NotNull
-    private static GameFileVersionBackup mockGameFileVersion(String gameFileUrl) {
-        return new GameFileVersionBackup(1L, "someSource", gameFileUrl, "someName",
+    private static GameFileVersion mockGameFileVersion(String gameFileUrl) {
+        return new GameFileVersion(1L, "someSource", gameFileUrl, "someName",
                 "someFileName",
                 "someFilePath", "someGameTitle",
                 "someGameId", "someVersion", "100 KB",
@@ -75,14 +75,14 @@ class UrlFileBackupServiceTest {
         urlFileDownloader = new UrlFileDownloader(fileManager, i -> {
         });
 
-        GameFileVersionBackup gameFileVersionBackup = mockGameFileVersion("someUrl");
+        GameFileVersion gameFileVersion = mockGameFileVersion("someUrl");
         FileBufferProviderStub fileBufferProvider = new FileBufferProviderStub();
 
         doThrow(new FileNotFoundException())
                 .when(fileManager).getOutputStream(any());
 
         var exception = assertThrows(FileBackupException.class,
-                () -> urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileVersionBackup,
+                () -> urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileVersion,
                         "badFilePath"));
         assertTrue(exception.getMessage().contains("Unable to create file"));
     }
@@ -90,12 +90,12 @@ class UrlFileBackupServiceTest {
     @Test
     void downloadGameFileShouldThrowWhenFileSizeIsInvalid(@TempDir Path tempDir) {
         urlFileDownloader = new UrlFileDownloader(new RealFileManager(), progressHistory::add);
-        GameFileVersionBackup gameFileVersionBackup = mockGameFileVersion("someUrl");
+        GameFileVersion gameFileVersion = mockGameFileVersion("someUrl");
         FileBufferProviderStub fileBufferProvider = new FileBufferProviderStub();
         fileBufferProvider.setGiveIncorrectFileSize(true);
 
         var exception = assertThrows(FileBackupException.class,
-                () -> urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileVersionBackup,
+                () -> urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileVersion,
                         tempDir + File.separator + "tempFile"));
         assertTrue(exception.getMessage().contains("The downloaded size of"));
     }

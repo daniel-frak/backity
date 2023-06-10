@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
-import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,17 +34,17 @@ class FileBackupControllerIT {
     private MockMvc mockMvc;
 
     @MockBean
-    private GameFileVersionBackupRepository gameFileVersionBackupRepository;
+    private GameFileVersionRepository gameFileVersionRepository;
 
     @Test
     void shouldGetCurrentlyDownloading() throws Exception {
-        var gameFileVersionBackup = new GameFileVersionBackup(
+        var gameFileVersionBackup = new GameFileVersion(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, "someGameTitle", "someGameId", "someVersion", "100 KB",
                 LocalDateTime.parse("2022-04-29T14:15:53"),
                 null, FileBackupStatus.IN_PROGRESS, "someFailedReason");
 
-        when(gameFileVersionBackupRepository.findCurrentlyDownloading())
+        when(gameFileVersionRepository.findCurrentlyDownloading())
                 .thenReturn(Optional.of(gameFileVersionBackup));
 
         var expectedJson = """
@@ -57,8 +57,8 @@ class FileBackupControllerIT {
                   "version": "someVersion",
                   "size": "100 KB",
                   "dateCreated": "2022-04-29T14:15:53",
-                  "status": "IN_PROGRESS",
-                  "failedReason": "someFailedReason"
+                  "backupStatus": "IN_PROGRESS",
+                  "backupFailedReason": "someFailedReason"
                 }""";
 
         mockMvc.perform(get("/api/backups/current"))
@@ -69,14 +69,14 @@ class FileBackupControllerIT {
 
     @Test
     void shouldGetQueueItems() throws Exception {
-        var gameFileVersionBackup = new GameFileVersionBackup(
+        var gameFileVersionBackup = new GameFileVersion(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, "someGameTitle", "someGameId", "someVersion", "100 KB",
                 LocalDateTime.parse("2022-04-29T14:15:53"),
                 null, FileBackupStatus.ENQUEUED, null);
 
         Pageable pageable = Pageable.ofSize(1);
-        when(gameFileVersionBackupRepository.findAllWaitingForDownload(pageable))
+        when(gameFileVersionRepository.findAllWaitingForDownload(pageable))
                 .thenReturn(new PageImpl<>(singletonList(gameFileVersionBackup), pageable, 2));
 
         var expectedJson = """
@@ -91,8 +91,8 @@ class FileBackupControllerIT {
                       "version": "someVersion",
                       "size": "100 KB",
                       "dateCreated": "2022-04-29T14:15:53",
-                      "status": "ENQUEUED",
-                      "failedReason": null
+                      "backupStatus": "ENQUEUED",
+                      "backupFailedReason": null
                     }
                   ],
                   "pageable": {
@@ -130,14 +130,14 @@ class FileBackupControllerIT {
 
     @Test
     void shouldGetProcessedFiles() throws Exception {
-        var gameFileVersionBackup = new GameFileVersionBackup(
+        var gameFileVersionBackup = new GameFileVersion(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, "someGameTitle", "someGameId", "someVersion", "100 KB",
                 LocalDateTime.parse("2022-04-29T14:15:53"),
                 null, FileBackupStatus.SUCCESS, null);
 
         Pageable pageable = Pageable.ofSize(1);
-        when(gameFileVersionBackupRepository.findAllProcessed(pageable))
+        when(gameFileVersionRepository.findAllProcessed(pageable))
                 .thenReturn(new PageImpl<>(singletonList(gameFileVersionBackup), pageable, 2));
 
         var expectedJson = """
@@ -152,8 +152,8 @@ class FileBackupControllerIT {
                        "version": "someVersion",
                        "size": "100 KB",
                        "dateCreated": "2022-04-29T14:15:53",
-                       "status": "SUCCESS",
-                       "failedReason": null
+                       "backupStatus": "SUCCESS",
+                       "backupFailedReason": null
                      }
                    ],
                    "pageable": {
@@ -193,34 +193,34 @@ class FileBackupControllerIT {
     void shouldEnqueueForDownload() throws Exception {
         Long id = 1L;
 
-        var gameFileVersionBackup = new GameFileVersionBackup(
+        var gameFileVersionBackup = new GameFileVersion(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB",
                 null, null, FileBackupStatus.DISCOVERED, null);
 
-        when(gameFileVersionBackupRepository.findById(id))
+        when(gameFileVersionRepository.findById(id))
                 .thenReturn(Optional.of(gameFileVersionBackup));
 
         mockMvc.perform(get("/api/backups/enqueue/" + id))
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        assertEquals(FileBackupStatus.ENQUEUED, gameFileVersionBackup.getStatus());
-        verify(gameFileVersionBackupRepository).save(gameFileVersionBackup);
+        assertEquals(FileBackupStatus.ENQUEUED, gameFileVersionBackup.getBackupStatus());
+        verify(gameFileVersionRepository).save(gameFileVersionBackup);
     }
 
     @Test
     void shouldNotDownloadWhenFileNotFound(CapturedOutput capturedOutput) throws Exception {
         Long id = 123L;
 
-        when(gameFileVersionBackupRepository.findById(id))
+        when(gameFileVersionRepository.findById(id))
                 .thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/backups/enqueue/" + id))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
 
-        verify(gameFileVersionBackupRepository, never()).save(any());
+        verify(gameFileVersionRepository, never()).save(any());
         assertTrue(capturedOutput.getOut().contains(
                 "Could not enqueue file. Game file version not found: 123"));
     }

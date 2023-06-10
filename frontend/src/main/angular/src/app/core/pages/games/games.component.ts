@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {BackupsClient, FileBackupStatus, GameFileVersionBackup, GamesClient, PageGameWithFiles} from "@backend";
+import {BackupsClient, FileBackupStatus, GameFileVersion, GamesClient, PageGameWithFiles} from "@backend";
 import {catchError} from "rxjs/operators";
 import {throwError} from "rxjs";
 
@@ -30,12 +30,12 @@ export class GamesComponent implements OnInit {
       });
   }
 
-  backUp(file: GameFileVersionBackup) {
-    file.status = FileBackupStatus.Enqueued;
+  backUp(file: GameFileVersion) {
+    file.backupStatus = FileBackupStatus.Enqueued;
     console.info("Enqueuing backup: " + file.id);
     this.backupsClient.download(file.id as number)
       .pipe(catchError(e => {
-        file.status = FileBackupStatus.Discovered;
+        file.backupStatus = FileBackupStatus.Discovered;
         return throwError(e);
       }))
       .subscribe(() => {
@@ -64,6 +64,6 @@ export class GamesComponent implements OnInit {
     console.error("Viewing errors not yet implemented");
   }
 
-  asGameFile = (game: GameFileVersionBackup) => game;
+  asGameFile = (game: GameFileVersion) => game;
   public readonly FileBackupStatus = FileBackupStatus;
 }

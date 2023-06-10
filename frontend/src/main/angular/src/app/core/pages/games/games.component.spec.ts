@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GamesComponent} from './games.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {BackupsClient, FileBackupStatus, GameFileVersionBackup, GamesClient, PageGameWithFiles} from "@backend";
+import {BackupsClient, FileBackupStatus, GameFileVersion, GamesClient, PageGameWithFiles} from "@backend";
 import {of, throwError} from "rxjs";
 import {PageHeaderStubComponent} from "@app/shared/components/page-header/page-header.component.stub";
 import {TableComponent} from "@app/shared/components/table/table.component";
@@ -77,23 +77,23 @@ describe('GamesComponent', () => {
   });
 
   it('should back up game file and set its status to Enqueued', () => {
-    const mockFile: GameFileVersionBackup = { id: 1, status: FileBackupStatus.Discovered };
+    const mockFile: GameFileVersion = { id: 1, backupStatus: FileBackupStatus.Discovered };
     (backupsClient.download as jasmine.Spy).and.returnValue(of(null));
 
     component.backUp(mockFile);
 
-    expect(mockFile.status).toBe(FileBackupStatus.Enqueued);
+    expect(mockFile.backupStatus).toBe(FileBackupStatus.Enqueued);
     expect(backupsClient.download).toHaveBeenCalledWith(mockFile.id as number);
   });
 
   it('should set file status to Discovered when backup fails', () => {
-    const mockFile: GameFileVersionBackup = { id: 1, status: FileBackupStatus.Discovered };
+    const mockFile: GameFileVersion = { id: 1, backupStatus: FileBackupStatus.Discovered };
     const mockError = new Error('Backup error');
     (backupsClient.download as jasmine.Spy).and.returnValue(throwError(mockError));
 
     component.backUp(mockFile);
 
-    expect(mockFile.status).toBe(FileBackupStatus.Discovered);
+    expect(mockFile.backupStatus).toBe(FileBackupStatus.Discovered);
     expect(backupsClient.download).toHaveBeenCalledWith(mockFile.id as number);
   });
 
@@ -138,14 +138,14 @@ describe('GamesComponent', () => {
   });
 
   it('should set file status to Discovered and log error when backup fails', () => {
-    const mockFile: GameFileVersionBackup = { id: 1, status: FileBackupStatus.Discovered };
+    const mockFile: GameFileVersion = { id: 1, backupStatus: FileBackupStatus.Discovered };
     const mockError = new Error('Backup error');
     (backupsClient.download as jasmine.Spy).and.returnValue(throwError(mockError));
     spyOn(console, 'error');
 
     component.backUp(mockFile);
 
-    expect(mockFile.status).toBe(FileBackupStatus.Discovered);
+    expect(mockFile.backupStatus).toBe(FileBackupStatus.Discovered);
     expect(backupsClient.download).toHaveBeenCalledWith(mockFile.id as number);
     expect(console.error).toHaveBeenCalledWith(
       `An error occurred while trying to enqueue a file (${mockFile})`,

@@ -22,12 +22,12 @@ model/fileDiscoveryProgress.ts
 model/fileDiscoveryStatus.ts
 model/gameDetailsResponse.ts
 model/gameFileDetailsResponse.ts
-model/gameFileVersionBackup.ts
+model/gameFileVersion.ts
 model/gameWithFiles.ts
 model/logCreatedMessage.ts
 model/logsMessageTopics.ts
 model/models.ts
-model/pageGameFileVersionBackup.ts
+model/pageGameFileVersion.ts
 model/pageGameWithFiles.ts
 model/pageableObject.ts
 model/refreshTokenResponse.ts

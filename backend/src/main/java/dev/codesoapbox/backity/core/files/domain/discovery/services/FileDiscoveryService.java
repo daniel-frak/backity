@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.files.domain.discovery.services;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.DiscoveredGameFile;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
-import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
+import dev.codesoapbox.backity.core.files.domain.backup.model.DiscoveredGameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
@@ -21,13 +21,13 @@ public class FileDiscoveryService {
 
     private final List<SourceFileDiscoveryService> discoveryServices;
     private final GameRepository gameRepository;
-    private final GameFileVersionBackupRepository fileRepository;
+    private final GameFileVersionRepository fileRepository;
     private final FileDiscoveryMessageService messageService;
     private final Map<String, Boolean> discoveryStatuses = new ConcurrentHashMap<>();
 
     public FileDiscoveryService(List<SourceFileDiscoveryService> discoveryServices,
                                 GameRepository gameRepository,
-                                GameFileVersionBackupRepository fileRepository, FileDiscoveryMessageService messageService) {
+                                GameFileVersionRepository fileRepository, FileDiscoveryMessageService messageService) {
         this.discoveryServices = discoveryServices;
         this.gameRepository = gameRepository;
         this.fileRepository = fileRepository;
@@ -96,21 +96,21 @@ public class FileDiscoveryService {
         messageService.sendStatus(new FileDiscoveryStatus(discoveryService.getSource(), status));
     }
 
-    private void saveDiscoveredFileInfo(DiscoveredGameFile discoveredGameFile) {
-        Game game = getGameOrCreateNew(discoveredGameFile);
-        GameFileVersionBackup gameFile = discoveredGameFile.associateWith(game);
+    private void saveDiscoveredFileInfo(DiscoveredGameFileVersion discoveredGameFileVersion) {
+        Game game = getGameOrCreateNew(discoveredGameFileVersion);
+        GameFileVersion gameFileVersion = discoveredGameFileVersion.associateWith(game);
 
-        if (!fileRepository.existsByUrlAndVersion(gameFile.getUrl(), gameFile.getVersion())) {
-            fileRepository.save(gameFile);
-            messageService.sendDiscoveredFile(gameFile);
-            log.info("Discovered new file: {} (gameId: {})", gameFile.getUrl(), gameFile.getGameTitle());
+        if (!fileRepository.existsByUrlAndVersion(gameFileVersion.getUrl(), gameFileVersion.getVersion())) {
+            fileRepository.save(gameFileVersion);
+            messageService.sendDiscoveredFile(gameFileVersion);
+            log.info("Discovered new file: {} (gameId: {})", gameFileVersion.getUrl(), gameFileVersion.getGameTitle());
         }
     }
 
-    private Game getGameOrCreateNew(DiscoveredGameFile discoveredGameFile) {
-        return gameRepository.findByTitle(discoveredGameFile.gameTitle())
+    private Game getGameOrCreateNew(DiscoveredGameFileVersion discoveredGameFileVersion) {
+        return gameRepository.findByTitle(discoveredGameFileVersion.gameTitle())
                 .orElseGet(() -> {
-                    var newGame = Game.createNew(discoveredGameFile.gameTitle());
+                    var newGame = Game.createNew(discoveredGameFileVersion.gameTitle());
                     gameRepository.save(newGame);
                     return newGame;
                 });

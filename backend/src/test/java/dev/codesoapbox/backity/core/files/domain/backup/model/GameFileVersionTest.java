@@ -4,24 +4,24 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class GameFileVersionBackupTest {
+class GameFileVersionTest {
 
     @Test
     void shouldFail() {
-        var enqueuedFileDownload = new GameFileVersionBackup(
+        var enqueuedFileDownload = new GameFileVersion(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
 
         enqueuedFileDownload.fail("someFailedReason");
 
-        assertEquals("someFailedReason", enqueuedFileDownload.getFailedReason());
-        assertEquals(FileBackupStatus.FAILED, enqueuedFileDownload.getStatus());
+        assertEquals("someFailedReason", enqueuedFileDownload.getBackupFailedReason());
+        assertEquals(FileBackupStatus.FAILED, enqueuedFileDownload.getBackupStatus());
     }
 
     @Test
     void shouldMarkAsDownloaded() {
-        var enqueuedFileDownload = new GameFileVersionBackup(
+        var enqueuedFileDownload = new GameFileVersion(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 null, null, "someGameId", "someVersion", "100 KB", null,
                 null, FileBackupStatus.DISCOVERED, null);
@@ -29,6 +29,6 @@ class GameFileVersionBackupTest {
         enqueuedFileDownload.markAsDownloaded("someFilePath");
 
         assertEquals("someFilePath", enqueuedFileDownload.getFilePath());
-        assertEquals(FileBackupStatus.SUCCESS, enqueuedFileDownload.getStatus());
+        assertEquals(FileBackupStatus.SUCCESS, enqueuedFileDownload.getBackupStatus());
     }
 }

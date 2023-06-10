@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Schema(name = "GameFileVersionBackup")
+@Schema(name = "GameFileVersion")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GameFileVersionBackupJson {
+public class GameFileVersionJson {
 
     private Long id;
     private String source;
@@ -26,6 +26,6 @@ public class GameFileVersionBackupJson {
     private String size;
     private LocalDateTime dateCreated;
     private LocalDateTime dateModified;
-    private FileBackupStatus status;
-    private String failedReason;
+    private FileBackupStatus backupStatus;
+    private String backupFailedReason;
 }

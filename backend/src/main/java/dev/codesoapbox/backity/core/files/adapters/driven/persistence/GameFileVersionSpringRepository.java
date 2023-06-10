@@ -9,27 +9,27 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface GameFileVersionSpringRepository extends JpaRepository<JpaGameFileVersionBackup, Long> {
+public interface GameFileVersionSpringRepository extends JpaRepository<JpaGameFileVersion, Long> {
 
     // @TODO Remove unnecessary duplications of findAllByStatus
-    @Query("SELECT f FROM GameFileVersionBackup f" +
-            " WHERE f.status = dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus.ENQUEUED" +
+    @Query("SELECT f FROM GameFileVersion f" +
+            " WHERE f.backupStatus = dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus.ENQUEUED" +
             " ORDER BY f.dateCreated ASC")
-    Page<JpaGameFileVersionBackup> findAllWaitingForDownload(Pageable pageable);
+    Page<JpaGameFileVersion> findAllWaitingForDownload(Pageable pageable);
 
-    Optional<JpaGameFileVersionBackup> findByStatus(FileBackupStatus status);
+    Optional<JpaGameFileVersion> findByBackupStatus(FileBackupStatus status);
 
-    @Query("SELECT f FROM GameFileVersionBackup f" +
-            " WHERE f.status IN (" +
+    @Query("SELECT f FROM GameFileVersion f" +
+            " WHERE f.backupStatus IN (" +
             " dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus.SUCCESS," +
             " dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus.FAILED" +
             ")" +
             " ORDER BY f.dateCreated ASC")
-    Page<JpaGameFileVersionBackup> findAllProcessed(Pageable pageable);
+    Page<JpaGameFileVersion> findAllProcessed(Pageable pageable);
 
     boolean existsByUrlAndVersion(String url, String version);
 
-    Page<JpaGameFileVersionBackup> findAllByStatus(Pageable pageable, FileBackupStatus status);
+    Page<JpaGameFileVersion> findAllByBackupStatus(Pageable pageable, FileBackupStatus status);
 
-    List<JpaGameFileVersionBackup> findAllByGameId(String gameId);
+    List<JpaGameFileVersion> findAllByGameId(String gameId);
 }

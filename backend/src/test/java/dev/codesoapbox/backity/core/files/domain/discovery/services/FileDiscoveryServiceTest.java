@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.files.domain.discovery.services;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.DiscoveredGameFile;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
-import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
+import dev.codesoapbox.backity.core.files.domain.backup.model.DiscoveredGameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
@@ -47,7 +47,7 @@ class FileDiscoveryServiceTest {
     private GameRepository gameRepository;
 
     @Mock
-    private GameFileVersionBackupRepository fileRepository;
+    private GameFileVersionRepository fileRepository;
 
     @Mock
     private FileDiscoveryMessageService messageService;
@@ -84,11 +84,11 @@ class FileDiscoveryServiceTest {
     @Test
     void startFileDiscoveryShouldSaveDiscoveredFilesAndSendMessages() {
         var gameTitle = "someGameTitle";
-        var discoveredGameFile = new DiscoveredGameFile(
+        var discoveredGameFile = new DiscoveredGameFileVersion(
                 "someSource", gameTitle, "someTitle", "someVersion", "someUrl",
                 "someOriginalFileName", "100 KB");
         var game = new Game(GameId.newInstance(), gameTitle);
-        GameFileVersionBackup gameFile = discoveredGameFile.associateWith(game);
+        GameFileVersion gameFileVersion = discoveredGameFile.associateWith(game);
 
         when(gameRepository.findByTitle(gameTitle))
                 .thenReturn(Optional.of(game));
@@ -110,14 +110,14 @@ class FileDiscoveryServiceTest {
                 .until(sourceFileDiscoveryService::hasBeenTriggered);
         sourceFileDiscoveryService.simulateFileDiscovery(discoveredGameFile);
 
-        verify(fileRepository).save(gameFile);
-        verify(messageService).sendDiscoveredFile(gameFile);
+        verify(fileRepository).save(gameFileVersion);
+        verify(messageService).sendDiscoveredFile(gameFileVersion);
         assertEquals(1, progressList.size());
     }
 
     @Test
     void startFileDiscoveryShouldNotSaveDiscoveredFileIfAlreadyExists() {
-        DiscoveredGameFile gameFileVersionBackup = new DiscoveredGameFile(
+        DiscoveredGameFileVersion gameFileVersionBackup = new DiscoveredGameFileVersion(
                 "someSource", "someGameTitle", "someTitle", "someVersion", "someUrl",
                 "someOriginalFileName", "100 KB");
 
@@ -176,7 +176,7 @@ class FileDiscoveryServiceTest {
     private static class FakeSourceFileDiscoveryService implements SourceFileDiscoveryService {
 
         private final AtomicBoolean shouldFinish = new AtomicBoolean(false);
-        private final AtomicReference<Consumer<DiscoveredGameFile>> gameFileVersionConsumer = new AtomicReference<>();
+        private final AtomicReference<Consumer<DiscoveredGameFileVersion>> gameFileVersionConsumer = new AtomicReference<>();
 
         @Getter
         private int stoppedTimes = 0;
@@ -191,8 +191,8 @@ class FileDiscoveryServiceTest {
             return timesTriggered.get() > 0;
         }
 
-        public void simulateFileDiscovery(DiscoveredGameFile discoveredGameFile) {
-            gameFileVersionConsumer.get().accept(discoveredGameFile);
+        public void simulateFileDiscovery(DiscoveredGameFileVersion discoveredGameFileVersion) {
+            gameFileVersionConsumer.get().accept(discoveredGameFileVersion);
         }
 
         public void complete() {
@@ -206,7 +206,7 @@ class FileDiscoveryServiceTest {
 
         @SuppressWarnings("StatementWithEmptyBody")
         @Override
-        public void startFileDiscovery(Consumer<DiscoveredGameFile> gameFileVersionConsumer) {
+        public void startFileDiscovery(Consumer<DiscoveredGameFileVersion> gameFileVersionConsumer) {
             if (exception != null) {
                 throw exception;
             }

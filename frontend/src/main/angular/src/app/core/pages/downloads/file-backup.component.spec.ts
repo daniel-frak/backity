@@ -10,7 +10,7 @@ import {Client} from "@stomp/stompjs";
 import {ReplaySubject} from "rxjs";
 import {messageCallbackType} from "@stomp/stompjs/src/types";
 import {StompHeaders} from "@stomp/stompjs/src/stomp-headers";
-import {BackupsClient, FileBackupMessageTopics, FileBackupProgress, GameFileVersionBackup} from "@backend";
+import {BackupsClient, FileBackupMessageTopics, FileBackupProgress, GameFileVersion} from "@backend";
 import {By} from "@angular/platform-browser";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
 
@@ -116,7 +116,7 @@ describe('DownloadsComponent', () => {
   });
 
   it('should set current download on start', () => {
-    const expectedDownload: GameFileVersionBackup = {
+    const expectedDownload: GameFileVersion = {
       title: 'someDownload'
     };
     startSubscriptions[0]({body: JSON.stringify(expectedDownload)})

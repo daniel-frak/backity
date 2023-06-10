@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.files.adapters.driven.messaging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.backup.model.messages.FileBackupProgress;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,15 +40,15 @@ class FileBackupSpringMessageServiceTest {
                   "size": "100 KB",
                   "dateCreated": "-999999999-01-01T00:00:00",
                   "dateModified":"+999999999-12-31T23:59:59.999999999",
-                  "status": "IN_PROGRESS",
-                  "failedReason": "someFailedReason"
+                  "backupStatus": "IN_PROGRESS",
+                  "backupFailedReason": "someFailedReason"
                 }
                 """;
 
         assertSendsMessage(simpMessagingTemplate, expectedPayload,
                 FileBackupMessageTopics.DOWNLOAD_STARTED.toString(),
                 () -> fileDownloadSpringMessageService.sendBackupStarted(
-                        new GameFileVersionBackup(
+                        new GameFileVersion(
                                 123L,
                                 "someSource",
                                 "someUrl",
@@ -100,15 +100,15 @@ class FileBackupSpringMessageServiceTest {
                   "size": "100 KB",
                   "dateCreated": "-999999999-01-01T00:00:00",
                   "dateModified":"+999999999-12-31T23:59:59.999999999",
-                  "status": "IN_PROGRESS",
-                  "failedReason": "someFailedReason"
+                  "backupStatus": "IN_PROGRESS",
+                  "backupFailedReason": "someFailedReason"
                 }
                 """;
 
         assertSendsMessage(simpMessagingTemplate, expectedPayload,
                 FileBackupMessageTopics.DOWNLOAD_FINISHED.toString(),
                 () -> fileDownloadSpringMessageService.sendBackupFinished(
-                        new GameFileVersionBackup(
+                        new GameFileVersion(
                                 123L,
                                 "someSource",
                                 "someUrl",

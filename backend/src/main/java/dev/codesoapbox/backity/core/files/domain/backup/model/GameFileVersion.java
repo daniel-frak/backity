@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @AllArgsConstructor
-public class GameFileVersionBackup {
+public class GameFileVersion {
 
     private Long id;
 
@@ -43,21 +43,21 @@ public class GameFileVersionBackup {
     private LocalDateTime dateModified;
 
     @NonNull
-    private FileBackupStatus status;
+    private FileBackupStatus backupStatus;
 
-    private String failedReason;
+    private String backupFailedReason;
 
     public void enqueue() {
-        this.status = FileBackupStatus.ENQUEUED;
+        this.backupStatus = FileBackupStatus.ENQUEUED;
     }
 
     public void fail(String failedReason) {
-        this.status = FileBackupStatus.FAILED;
-        this.failedReason = failedReason;
+        this.backupStatus = FileBackupStatus.FAILED;
+        this.backupFailedReason = failedReason;
     }
 
     public void markAsDownloaded(String filePath) {
         this.filePath = filePath;
-        this.status = FileBackupStatus.SUCCESS;
+        this.backupStatus = FileBackupStatus.SUCCESS;
     }
 }

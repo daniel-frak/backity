@@ -1,18 +1,18 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.model;
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class GameFileVersionBackupJsonMapperTest {
+class GameFileVersionJsonMapperTest {
 
     @Test
     void shouldMapToJson() {
-        var domain = new GameFileVersionBackup(
+        var domain = new GameFileVersion(
                 1L, "someSource", "someUrl", "someTitle", "someOriginalFileName",
                 "someFilePath", "someGameTitle", "someGameId", "someVersion",
                 "100 KB",
@@ -32,7 +32,7 @@ class GameFileVersionBackupJsonMapperTest {
         assertEquals("100 KB", result.getSize());
         assertEquals(LocalDateTime.parse("2022-04-29T14:15:53"), result.getDateCreated());
         assertEquals(LocalDateTime.parse("2023-04-29T14:15:53"), result.getDateModified());
-        assertEquals(FileBackupStatus.SUCCESS, result.getStatus());
-        assertEquals("someFailedReason", result.getFailedReason());
+        assertEquals(FileBackupStatus.SUCCESS, result.getBackupStatus());
+        assertEquals("someFailedReason", result.getBackupFailedReason());
     }
 }

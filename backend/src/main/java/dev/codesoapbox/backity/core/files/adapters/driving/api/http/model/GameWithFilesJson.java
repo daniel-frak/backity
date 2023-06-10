@@ -8,6 +8,6 @@ import java.util.List;
 public record GameWithFilesJson(
         String id,
         String title,
-        List<GameFileVersionBackupJson> gameFiles
+        List<GameFileVersionJson> gameFiles
 ) {
 }

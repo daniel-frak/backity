@@ -2,9 +2,9 @@ package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers
 
 import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.FileDiscoveryStatusJson;
 import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.FileDiscoveryStatusJsonMapper;
-import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileVersionBackupJson;
+import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileVersionJson;
 import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileVersionJsonMapper;
-import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.services.FileDiscoveryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,13 +26,13 @@ import java.util.List;
 public class FileDiscoveryController {
 
     private final FileDiscoveryService fileDiscoveryService;
-    private final GameFileVersionBackupRepository repository;
+    private final GameFileVersionRepository repository;
 
     @Operation(summary = "List discovered files",
             description = "Returns a paginated list of discovered files which were not yet added to the download queue")
     @PageableAsQueryParam
     @GetMapping
-    public Page<GameFileVersionBackupJson> getDiscoveredFiles(@Parameter(hidden = true) Pageable pageable) {
+    public Page<GameFileVersionJson> getDiscoveredFiles(@Parameter(hidden = true) Pageable pageable) {
         return repository.findAllDiscovered(pageable)
                 .map(GameFileVersionJsonMapper.INSTANCE::toJson);
     }

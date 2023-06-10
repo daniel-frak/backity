@@ -17,8 +17,8 @@ import {
   FileDiscoveryMessageTopics,
   FileDiscoveryProgress,
   FileDiscoveryStatus,
-  GameFileVersionBackup,
-  PageGameFileVersionBackup
+  GameFileVersion,
+  PageGameFileVersion
 } from "@backend";
 import {Observable} from "rxjs";
 import {MessageTesting} from "@app/shared/testing/message-testing";
@@ -104,7 +104,7 @@ describe('FileDiscoveryComponent', () => {
       source: 'someSource',
       inProgress: true
     };
-    const expectedGameFileVersions: PageGameFileVersionBackup = {
+    const expectedGameFileVersions: PageGameFileVersion = {
       content: [{
         title: 'someGameFileVersion'
       }]
@@ -135,11 +135,11 @@ describe('FileDiscoveryComponent', () => {
   });
 
   it('should set newest discovered and increment discovered count on new discovery', () => {
-    const expectedGameFileVersionBackup: GameFileVersionBackup = {
+    const expectedGameFileVersion: GameFileVersion = {
       title: 'someGameFileVersion'
     };
-    discoveredSubscriptions[0]({body: JSON.stringify(expectedGameFileVersionBackup)})
-    expect(component.newestDiscovered).toEqual(expectedGameFileVersionBackup);
+    discoveredSubscriptions[0]({body: JSON.stringify(expectedGameFileVersion)})
+    expect(component.newestDiscovered).toEqual(expectedGameFileVersion);
     expect(component.newDiscoveredCount).toEqual(1);
   });
 
@@ -179,7 +179,7 @@ describe('FileDiscoveryComponent', () => {
 
   it('should enqueue file', () => {
     spyOn(console, 'info');
-    const file: GameFileVersionBackup = {
+    const file: GameFileVersion = {
       title: 'someGameFileVersion'
     };
     const observableMock: any = createSpyObj('Observable', ['subscribe', 'pipe']);
@@ -188,7 +188,7 @@ describe('FileDiscoveryComponent', () => {
     backupsClientMock.download.and.returnValue(observableMock);
 
     component.enqueueFile(file);
-    expect(file.status).toEqual(FileBackupStatus.Enqueued);
+    expect(file.backupStatus).toEqual(FileBackupStatus.Enqueued);
     expect(observableMock.subscribe).toHaveBeenCalled();
     expect(console.info).toHaveBeenCalled();
   });
@@ -226,7 +226,7 @@ describe('FileDiscoveryComponent', () => {
   it('should dequeue file when enqueueFile throws', () => {
     spyOn(console, 'info');
     spyOn(console, 'error');
-    const file: GameFileVersionBackup = {
+    const file: GameFileVersion = {
       title: 'someGameFileVersion'
     };
     const expectedError = new Error("error1");
@@ -234,13 +234,13 @@ describe('FileDiscoveryComponent', () => {
     observableMock.pipe.and.returnValue(observableMock);
 
     backupsClientMock.download.and.returnValue(new Observable(subscriber => {
-      expect(file.status).toEqual(FileBackupStatus.Enqueued);
+      expect(file.backupStatus).toEqual(FileBackupStatus.Enqueued);
       subscriber.error(expectedError);
     }));
 
     component.enqueueFile(file);
 
-    expect(file.status).toEqual(FileBackupStatus.Discovered);
+    expect(file.backupStatus).toEqual(FileBackupStatus.Discovered);
     expect(console.error).toHaveBeenCalled();
     expect(console.info).toHaveBeenCalled();
   });

@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileVersionBackupJson;
+import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileVersionJson;
 import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileVersionJsonMapper;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
-import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionBackupRepository;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileVersionRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,13 +27,13 @@ import java.util.Optional;
 @Slf4j
 public class FileBackupController {
 
-    private final GameFileVersionBackupRepository gameFileVersionBackupRepository;
+    private final GameFileVersionRepository gameFileVersionRepository;
 
     @Operation(summary = "List queue items", description = "Returns the file currently being downloaded")
     @PageableAsQueryParam
     @GetMapping("current")
-    public GameFileVersionBackupJson getCurrentlyProcessing() {
-        return gameFileVersionBackupRepository.findCurrentlyDownloading()
+    public GameFileVersionJson getCurrentlyProcessing() {
+        return gameFileVersionRepository.findCurrentlyDownloading()
                 .map(GameFileVersionJsonMapper.INSTANCE::toJson)
                 .orElse(null);
     }
@@ -41,8 +41,8 @@ public class FileBackupController {
     @Operation(summary = "List queue items", description = "Returns a paginated list of all downloads in the queue")
     @PageableAsQueryParam
     @GetMapping("queue")
-    public Page<GameFileVersionBackupJson> getQueueItems(@Parameter(hidden = true) Pageable pageable) {
-        return gameFileVersionBackupRepository.findAllWaitingForDownload(pageable)
+    public Page<GameFileVersionJson> getQueueItems(@Parameter(hidden = true) Pageable pageable) {
+        return gameFileVersionRepository.findAllWaitingForDownload(pageable)
                 .map(GameFileVersionJsonMapper.INSTANCE::toJson);
     }
 
@@ -50,8 +50,8 @@ public class FileBackupController {
             description = "Returns a paginated list of all processed files (downloaded or failed)")
     @PageableAsQueryParam
     @GetMapping("processed")
-    public Page<GameFileVersionBackupJson> getProcessedFiles(@Parameter(hidden = true) Pageable pageable) {
-        return gameFileVersionBackupRepository.findAllProcessed(pageable)
+    public Page<GameFileVersionJson> getProcessedFiles(@Parameter(hidden = true) Pageable pageable) {
+        return gameFileVersionRepository.findAllProcessed(pageable)
                 .map(GameFileVersionJsonMapper.INSTANCE::toJson);
     }
 
@@ -59,12 +59,12 @@ public class FileBackupController {
     @Operation(summary = "Enqueue file", description = "Adds a discovered file to the download queue")
     @GetMapping("enqueue/{gameFileVersionId}")
     public ResponseEntity<Void> download(@PathVariable Long gameFileVersionId) {
-        Optional<GameFileVersionBackup> gameFileVersionBackup = gameFileVersionBackupRepository
+        Optional<GameFileVersion> gameFileVersionBackup = gameFileVersionRepository
                 .findById(gameFileVersionId);
 
         if (gameFileVersionBackup.isPresent()) {
             gameFileVersionBackup.get().enqueue();
-            gameFileVersionBackupRepository.save(gameFileVersionBackup.get());
+            gameFileVersionRepository.save(gameFileVersionBackup.get());
             return ResponseEntity.ok().build();
         }
 

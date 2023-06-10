@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.files.backup.adapters.driven.persistence;
 
-import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVersionJpaBackupRepository;
+import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVersionJpaRepository;
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileVersionSpringRepository;
-import dev.codesoapbox.backity.core.files.adapters.driven.persistence.JpaGameFileVersionBackupMapper;
+import dev.codesoapbox.backity.core.files.adapters.driven.persistence.JpaGameFileVersionMapper;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -25,9 +25,9 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
+abstract class GameFileVersionJpaRepositoryAbstractIT {
 
-    private GameFileVersionJpaBackupRepository gameFileVersionJpaRepository;
+    private GameFileVersionJpaRepository gameFileVersionJpaRepository;
 
     @Autowired
     private GameFileVersionSpringRepository gameFileVersionSpringRepository;
@@ -39,8 +39,8 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
 
     @BeforeEach
     void setUp() {
-        JpaGameFileVersionBackupMapper mapper = Mappers.getMapper(JpaGameFileVersionBackupMapper.class);
-        gameFileVersionJpaRepository = new GameFileVersionJpaBackupRepository(gameFileVersionSpringRepository, mapper);
+        JpaGameFileVersionMapper mapper = Mappers.getMapper(JpaGameFileVersionMapper.class);
+        gameFileVersionJpaRepository = new GameFileVersionJpaRepository(gameFileVersionSpringRepository, mapper);
         entityManager = entityManagerFactory.createEntityManager();
         cleanDatabase();
         persistTestEnqueuedFiles();
@@ -48,52 +48,52 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
 
     private void cleanDatabase() {
         entityManager.getTransaction().begin();
-        entityManager.createNativeQuery("DELETE FROM GAME_FILE_VERSION_BACKUP;").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM GAME_FILE_VERSION;").executeUpdate();
         entityManager.getTransaction().commit();
     }
 
     private void persistTestEnqueuedFiles() {
         entityManager.getTransaction().begin();
-        entityManager.createNativeQuery("ALTER SEQUENCE seq_game_file_version_backup RESTART WITH 1").executeUpdate();
+        entityManager.createNativeQuery("ALTER SEQUENCE seq_game_file_version RESTART WITH 1").executeUpdate();
         entityManager.createNativeQuery("""                         
-                        INSERT INTO GAME_FILE_VERSION_BACKUP
-                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_game_file_version_backup'), 'someSource1', 'someUrl1', 'someTitle1', 
+                        INSERT INTO GAME_FILE_VERSION
+                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, backup_status, backup_failed_reason) VALUES
+                        (NEXTVAL('seq_game_file_version'), 'someSource1', 'someUrl1', 'someTitle1', 
                         'someOriginalFileName1', 'someGameTitle1',
                         '1eec1c19-25bf-4094-b926-84b5bb8fa281' ,
                         'someVersion1', 'someSize1', '2022-04-29T14:15:53', 'ENQUEUED', 'someFailedReason1');
                         
-                        INSERT INTO GAME_FILE_VERSION_BACKUP
-                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_game_file_version_backup'), 'someSource2', 'someUrl2', 'someTitle2', 
+                        INSERT INTO GAME_FILE_VERSION
+                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, backup_status, backup_failed_reason) VALUES
+                        (NEXTVAL('seq_game_file_version'), 'someSource2', 'someUrl2', 'someTitle2', 
                         'someOriginalFileName2', 'someGameTitle2', 
                         '1eec1c19-25bf-4094-b926-84b5bb8fa281',
                         'someVersion2', 'someSize2', '2022-05-29T14:15:53', 'SUCCESS', 'someFailedReason2');
                         
-                        INSERT INTO GAME_FILE_VERSION_BACKUP
-                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_game_file_version_backup'), 'someSource3', 'someUrl3', 'someTitle3', 
+                        INSERT INTO GAME_FILE_VERSION
+                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, backup_status, backup_failed_reason) VALUES
+                        (NEXTVAL('seq_game_file_version'), 'someSource3', 'someUrl3', 'someTitle3', 
                         'someOriginalFileName3', 'someGameTitle3', 
                         '5bdd248a-c3aa-487a-8479-0bfdb32f7ae5',
                          'someVersion3', 'someSize3', '2022-06-29T14:15:53', 'ENQUEUED', 'someFailedReason3');
                         
-                        INSERT INTO GAME_FILE_VERSION_BACKUP
-                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_game_file_version_backup'), 'someSource4', 'someUrl4', 'someTitle4', 
+                        INSERT INTO GAME_FILE_VERSION
+                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, backup_status, backup_failed_reason) VALUES
+                        (NEXTVAL('seq_game_file_version'), 'someSource4', 'someUrl4', 'someTitle4', 
                         'someOriginalFileName4', 'someGameTitle4',
                          '5bdd248a-c3aa-487a-8479-0bfdb32f7ae5',
                          'someVersion4', 'someSize4', '2022-07-29T14:15:53', 'FAILED', 'someFailedReason4');
                         
-                        INSERT INTO GAME_FILE_VERSION_BACKUP
-                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_game_file_version_backup'), 'someSource5', 'someUrl5', 'someTitle5', 
+                        INSERT INTO GAME_FILE_VERSION
+                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, backup_status, backup_failed_reason) VALUES
+                        (NEXTVAL('seq_game_file_version'), 'someSource5', 'someUrl5', 'someTitle5', 
                         'someOriginalFileName5', 'someGameTitle5',
                          '1eec1c19-25bf-4094-b926-84b5bb8fa281',
                         'someVersion5', 'someSize5', '2022-08-29T14:15:53', 'IN_PROGRESS', 'someFailedReason5');
                         
-                        INSERT INTO GAME_FILE_VERSION_BACKUP
-                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, status, failed_reason) VALUES
-                        (NEXTVAL('seq_game_file_version_backup'), 'someSource6', 'someUrl6', 'someTitle6', 
+                        INSERT INTO GAME_FILE_VERSION
+                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, backup_status, backup_failed_reason) VALUES
+                        (NEXTVAL('seq_game_file_version'), 'someSource6', 'someUrl6', 'someTitle6', 
                         'someOriginalFileName6', 'someGameTitle6',
                          '1eec1c19-25bf-4094-b926-84b5bb8fa281',
                         'someVersion6', 'someSize6', '2022-09-29T14:16:43', 'DISCOVERED', 'someFailedReason6');
@@ -108,12 +108,12 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindOldestWaitingForDownload() {
-        Optional<GameFileVersionBackup> result = gameFileVersionJpaRepository.findOldestWaitingForDownload();
+        Optional<GameFileVersion> result = gameFileVersionJpaRepository.findOldestWaitingForDownload();
 
         assertTrue(result.isPresent());
         assertNotNull(result.get().getId());
 
-        var expectedResult = new GameFileVersionBackup(
+        var expectedResult = new GameFileVersion(
                 1L, "someSource1", "someUrl1", "someTitle1", "someOriginalFileName1",
                 null, "someGameTitle1", result.get().getGameId(), "someVersion1", "someSize1",
                 LocalDateTime.parse("2022-04-29T14:15:53"),
@@ -123,17 +123,17 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindAllWaitingForDownload() {
-        Page<GameFileVersionBackup> result = gameFileVersionJpaRepository.findAllWaitingForDownload(Pageable.unpaged());
+        Page<GameFileVersion> result = gameFileVersionJpaRepository.findAllWaitingForDownload(Pageable.unpaged());
 
         assertNotNull(result.getContent().get(0).getId());
         var expectedResult = List.of(
-                new GameFileVersionBackup(
+                new GameFileVersion(
                         result.getContent().get(0).getId(), "someSource1", "someUrl1", "someTitle1",
                         "someOriginalFileName1", null, "someGameTitle1",
                         result.getContent().get(0).getGameId(), "someVersion1", "someSize1",
                         LocalDateTime.parse("2022-04-29T14:15:53"),
                         null, FileBackupStatus.ENQUEUED, "someFailedReason1"),
-                new GameFileVersionBackup(
+                new GameFileVersion(
                         result.getContent().get(1).getId(), "someSource3", "someUrl3", "someTitle3",
                         "someOriginalFileName3", null, "someGameTitle3",
                         result.getContent().get(1).getGameId(), "someVersion3", "someSize3",
@@ -145,7 +145,7 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
 
     @Test
     void shouldSave() {
-        var newEnqueuedFileDownload = new GameFileVersionBackup(
+        var newEnqueuedFileDownload = new GameFileVersion(
                 1L, "someSourceNew", "someUrlNew", "someTitleNew", "someOriginalFileNameNew",
                 null, "someGameTitleNew", GameId.newInstance().value().toString(),
                 "someVersionNew", "someSizeNew", LocalDateTime.parse("2022-04-29T14:15:53"),
@@ -156,7 +156,7 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
         assertNotNull(result.getId());
         assertNotNull(result.getDateCreated());
         Long recordCount = (Long) entityManager.createNativeQuery(
-                        "SELECT COUNT(*) FROM GAME_FILE_VERSION_BACKUP f" +
+                        "SELECT COUNT(*) FROM GAME_FILE_VERSION f" +
                                 " WHERE f.id = '" + result.getId() + "';")
                 .getSingleResult();
         assertEquals(1, recordCount);
@@ -164,12 +164,12 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindCurrentlyDownloading() {
-        Optional<GameFileVersionBackup> result = gameFileVersionJpaRepository.findCurrentlyDownloading();
+        Optional<GameFileVersion> result = gameFileVersionJpaRepository.findCurrentlyDownloading();
 
         assertTrue(result.isPresent());
         assertNotNull(result.get().getId());
 
-        var expectedResult = new GameFileVersionBackup(
+        var expectedResult = new GameFileVersion(
                 result.get().getId(), "someSource5", "someUrl5", "someTitle5",
                 "someOriginalFileName5", null, "someGameTitle5", result.get().getGameId(),
                 "someVersion5", "someSize5", LocalDateTime.parse("2022-08-29T14:15:53"),
@@ -179,17 +179,17 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindAllProcessed() {
-        Page<GameFileVersionBackup> result = gameFileVersionJpaRepository.findAllProcessed(Pageable.unpaged());
+        Page<GameFileVersion> result = gameFileVersionJpaRepository.findAllProcessed(Pageable.unpaged());
 
         assertNotNull(result.getContent().get(0).getId());
         var expectedResult = List.of(
-                new GameFileVersionBackup(
+                new GameFileVersion(
                         result.getContent().get(0).getId(), "someSource2", "someUrl2", "someTitle2",
                         "someOriginalFileName2", null, "someGameTitle2",
                         result.getContent().get(0).getGameId(), "someVersion2", "someSize2",
                         LocalDateTime.parse("2022-05-29T14:15:53"),
                         null, FileBackupStatus.SUCCESS, "someFailedReason2"),
-                new GameFileVersionBackup(
+                new GameFileVersion(
                         result.getContent().get(1).getId(), "someSource4", "someUrl4", "someTitle4",
                         "someOriginalFileName4", null, "someGameTitle4",
                         result.getContent().get(1).getGameId(), "someVersion4", "someSize4",
@@ -211,11 +211,11 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindById() {
-        Optional<GameFileVersionBackup> result = gameFileVersionJpaRepository.findById(1L);
+        Optional<GameFileVersion> result = gameFileVersionJpaRepository.findById(1L);
 
         assertTrue(result.isPresent());
 
-        var expectedResult = new GameFileVersionBackup(
+        var expectedResult = new GameFileVersion(
                 result.get().getId(), "someSource1", "someUrl1", "someTitle1",
                 "someOriginalFileName1", null, "someGameTitle1", result.get().getGameId(),
                 "someVersion1", "someSize1", LocalDateTime.parse("2022-04-29T14:15:53"),
@@ -227,10 +227,10 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindAllDiscovered() {
-        Page<GameFileVersionBackup> result = gameFileVersionJpaRepository.findAllDiscovered(Pageable.unpaged());
+        Page<GameFileVersion> result = gameFileVersionJpaRepository.findAllDiscovered(Pageable.unpaged());
 
         assertNotNull(result.getContent().get(0).getId());
-        var expectedResult = new GameFileVersionBackup(
+        var expectedResult = new GameFileVersion(
                 result.getContent().get(0).getId(), "someSource6", "someUrl6", "someTitle6",
                 "someOriginalFileName6", null, "someGameTitle6",
                 result.getContent().get(0).getGameId(), "someVersion6", "someSize6", 
@@ -242,7 +242,7 @@ abstract class GameFileVersionBackupJpaRepositoryAbstractIT {
     @Test
     void shouldFindByGameId() {
         GameId id = new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"));
-        List<GameFileVersionBackup> result = gameFileVersionJpaRepository.findAllByGameId(id);
+        List<GameFileVersion> result = gameFileVersionJpaRepository.findAllByGameId(id);
 
         assertThat(result).hasSize(2);
     }

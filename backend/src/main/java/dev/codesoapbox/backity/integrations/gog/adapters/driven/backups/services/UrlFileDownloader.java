@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersionBackup;
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileVersion;
 import dev.codesoapbox.backity.core.files.domain.backup.services.BackupProgress;
 import dev.codesoapbox.backity.core.files.domain.backup.services.FileManager;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
@@ -24,18 +24,18 @@ public class UrlFileDownloader {
     private final FileManager fileManager;
     private final Consumer<ProgressInfo> progressInfoConsumer;
 
-    public String downloadGameFile(FileBufferProvider fileBufferProvider, GameFileVersionBackup gameFileVersionBackup,
+    public String downloadGameFile(FileBufferProvider fileBufferProvider, GameFileVersion gameFileVersion,
                                    String tempFilePath) throws IOException {
         var progress = new BackupProgress();
-        Flux<DataBuffer> dataBufferFlux = fileBufferProvider.getFileBuffer(gameFileVersionBackup.getUrl(), progress);
+        Flux<DataBuffer> dataBufferFlux = fileBufferProvider.getFileBuffer(gameFileVersion.getUrl(), progress);
         writeToDisk(dataBufferFlux, tempFilePath, progress);
 
-        log.info("Downloaded file {} to {}", gameFileVersionBackup, tempFilePath);
+        log.info("Downloaded file {} to {}", gameFileVersion, tempFilePath);
 
         validateDownloadedFileSize(tempFilePath, progress.getContentLengthBytes());
 
         // @TODO Write test for return value
-        return fileManager.renameFileAddingSuffixIfExists(tempFilePath, gameFileVersionBackup.getOriginalFileName());
+        return fileManager.renameFileAddingSuffixIfExists(tempFilePath, gameFileVersion.getOriginalFileName());
     }
 
     private void writeToDisk(Flux<DataBuffer> dataBufferFlux, String tempFilePath, BackupProgress progress)
