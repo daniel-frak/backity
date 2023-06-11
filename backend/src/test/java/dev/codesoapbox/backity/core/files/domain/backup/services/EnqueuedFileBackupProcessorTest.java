@@ -31,7 +31,7 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldProcessEnqueuedFileDownloadIfNotCurrentlyDownloading() {
-        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
 
         when(gameFileDetailsRepository.findOldestWaitingForDownload())
                 .thenReturn(Optional.of(gameFileDetails));
@@ -48,7 +48,7 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldFailGracefully() {
-        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
 
         when(gameFileDetailsRepository.findOldestWaitingForDownload())
                 .thenReturn(Optional.of(gameFileDetails));
@@ -67,7 +67,7 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldDoNothingIfSourceDownloaderNotReady() {
-        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
 
         when(gameFileDetailsRepository.findOldestWaitingForDownload())
                 .thenReturn(Optional.of(gameFileDetails));
@@ -81,7 +81,7 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldDoNothingIfCurrentlyDownloading() {
-        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
         enqueuedFileBackupProcessor.enqueuedFileBackupReference.set(gameFileDetails);
 
         enqueuedFileBackupProcessor.processQueue();

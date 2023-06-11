@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers;
 
+import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
@@ -34,7 +35,7 @@ class FileDiscoveryControllerIT {
 
     @Test
     void shouldGetDiscoveredFiles() throws Exception {
-        var gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
 
         Pageable pageable = Pageable.ofSize(1);
         when(repository.findAllDiscovered(pageable))
@@ -47,16 +48,16 @@ class FileDiscoveryControllerIT {
                       "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
                       "gameId": "1eec1c19-25bf-4094-b926-84b5bb8fa281",
                       "sourceFileDetails": {
-                        "sourceId": "someSourceId1",
-                        "originalGameTitle": "someOriginalGameTitle1",
-                        "fileTitle": "someFileTitle1",
-                        "version": "someVersion1",
-                        "url": "someUrl1",
-                        "originalFileName": "someOriginalFileName1",
+                        "sourceId": "someSourceId",
+                        "originalGameTitle": "someOriginalGameTitle",
+                        "fileTitle": "someFileTitle",
+                        "version": "someVersion",
+                        "url": "someUrl",
+                        "originalFileName": "someOriginalFileName",
                         "size": "5 KB"
                       },
                       "backupDetails": {
-                        "status": "ENQUEUED",
+                        "status": "DISCOVERED",
                         "failedReason": null,
                         "filePath": null
                       },

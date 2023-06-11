@@ -13,13 +13,13 @@ class GameFileDetailsMessageMapperTest {
 
     @Test
     void shouldMapToMessage() {
-        GameFileDetails domain = TestGameFileDetails.FULL_GAME_FILE_DETAILS.get();
+        GameFileDetails domain = TestGameFileDetails.full().build();
 
         GameFileDetailsMessage result = GameFileDetailsMessageMapper.INSTANCE.toMessage(domain);
 
         var expectedResult = new GameFileDetailsMessage(
                 "acde26d7-33c7-42ee-be16-bca91a604b48",
-                "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
+                "1eec1c19-25bf-4094-b926-84b5bb8fa281",
                 new SourceFileDetailsMessage(
                         "someSourceId",
                         "someOriginalGameTitle",

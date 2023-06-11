@@ -40,7 +40,7 @@ class FileBackupControllerIT {
 
     @Test
     void shouldGetCurrentlyDownloading() throws Exception {
-        GameFileDetails gameFileDetails = TestGameFileDetails.FULL_GAME_FILE_DETAILS.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.full().build();
 
         when(gameFileDetailsRepository.findCurrentlyDownloading())
                 .thenReturn(Optional.of(gameFileDetails));
@@ -48,7 +48,7 @@ class FileBackupControllerIT {
         var expectedJson = """
                 {
                       "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
-                      "gameId": "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
+                      "gameId": "1eec1c19-25bf-4094-b926-84b5bb8fa281",
                       "sourceFileDetails": {
                         "sourceId": "someSourceId",
                         "originalGameTitle": "someOriginalGameTitle",
@@ -75,7 +75,7 @@ class FileBackupControllerIT {
 
     @Test
     void shouldGetQueueItems() throws Exception {
-        GameFileDetails gameFileDetails = TestGameFileDetails.FULL_GAME_FILE_DETAILS.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.full().build();
 
         Pageable pageable = Pageable.ofSize(1);
         when(gameFileDetailsRepository.findAllWaitingForDownload(pageable))
@@ -86,7 +86,7 @@ class FileBackupControllerIT {
                   "content": [
                      {
                       "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
-                      "gameId": "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
+                      "gameId": "1eec1c19-25bf-4094-b926-84b5bb8fa281",
                       "sourceFileDetails": {
                         "sourceId": "someSourceId",
                         "originalGameTitle": "someOriginalGameTitle",
@@ -140,7 +140,7 @@ class FileBackupControllerIT {
 
     @Test
     void shouldGetProcessedFiles() throws Exception {
-        GameFileDetails gameFileDetails = TestGameFileDetails.FULL_GAME_FILE_DETAILS.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.full().build();
 
         Pageable pageable = Pageable.ofSize(1);
         when(gameFileDetailsRepository.findAllProcessed(pageable))
@@ -151,7 +151,7 @@ class FileBackupControllerIT {
                    "content": [
                      {
                       "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
-                      "gameId": "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
+                      "gameId": "1eec1c19-25bf-4094-b926-84b5bb8fa281",
                       "sourceFileDetails": {
                         "sourceId": "someSourceId",
                         "originalGameTitle": "someOriginalGameTitle",
@@ -208,7 +208,7 @@ class FileBackupControllerIT {
         String stringUuid = "acde26d7-33c7-42ee-be16-bca91a604b48";
         UUID uuid = UUID.fromString(stringUuid);
 
-        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
 
         when(gameFileDetailsRepository.findById(new GameFileDetailsId(uuid)))
                 .thenReturn(Optional.of(gameFileDetails));

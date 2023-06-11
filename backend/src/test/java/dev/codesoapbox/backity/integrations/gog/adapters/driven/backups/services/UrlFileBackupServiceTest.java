@@ -47,7 +47,7 @@ class UrlFileBackupServiceTest {
     @Test
     void shouldDownloadGameFileWithProgressTracking(@TempDir Path tempDir) throws IOException {
         urlFileDownloader = new UrlFileDownloader(new RealFileManager(), progressHistory::add);
-        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
         FileBufferProviderStub fileBufferProvider = new FileBufferProviderStub();
 
         urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileDetails,
@@ -64,7 +64,7 @@ class UrlFileBackupServiceTest {
         urlFileDownloader = new UrlFileDownloader(fileManager, i -> {
         });
 
-        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
         FileBufferProviderStub fileBufferProvider = new FileBufferProviderStub();
 
         doThrow(new FileNotFoundException())
@@ -79,7 +79,7 @@ class UrlFileBackupServiceTest {
     @Test
     void downloadGameFileShouldThrowWhenFileSizeIsInvalid(@TempDir Path tempDir) {
         urlFileDownloader = new UrlFileDownloader(new RealFileManager(), progressHistory::add);
-        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
         FileBufferProviderStub fileBufferProvider = new FileBufferProviderStub();
         fileBufferProvider.setGiveIncorrectFileSize(true);
 

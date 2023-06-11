@@ -8,7 +8,7 @@ class GameFileDetailsTest {
 
     @Test
     void shouldFail() {
-        var gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
 
         gameFileDetails.fail("someFailedReason");
 
@@ -18,11 +18,11 @@ class GameFileDetailsTest {
 
     @Test
     void shouldMarkAsDownloaded() {
-        var enqueuedFileDownload = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
 
-        enqueuedFileDownload.markAsDownloaded("someFilePath");
+        gameFileDetails.markAsDownloaded("someFilePath");
 
-        assertEquals("someFilePath", enqueuedFileDownload.getBackupDetails().getFilePath());
-        assertEquals(FileBackupStatus.SUCCESS, enqueuedFileDownload.getBackupDetails().getStatus());
+        assertEquals("someFilePath", gameFileDetails.getBackupDetails().getFilePath());
+        assertEquals(FileBackupStatus.SUCCESS, gameFileDetails.getBackupDetails().getStatus());
     }
 }

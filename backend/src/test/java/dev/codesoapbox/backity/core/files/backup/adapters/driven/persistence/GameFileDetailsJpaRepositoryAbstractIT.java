@@ -20,10 +20,10 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 abstract class GameFileDetailsJpaRepositoryAbstractIT {
 
@@ -36,6 +36,36 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
     private EntityManagerFactory entityManagerFactory;
 
     private EntityManager entityManager;
+
+    private static final Supplier<GameFileDetails> GAME_FILE_DETAILS_1 = () -> TestGameFileDetails.enqueued()
+            .id(new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")))
+            .gameId(new GameId(UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281")))
+            .build();
+
+    private static final Supplier<GameFileDetails> GAME_FILE_DETAILS_2 = () -> TestGameFileDetails.successful()
+            .id(new GameFileDetailsId(UUID.fromString("a6adc122-df20-4e2c-a975-7d4af7104704")))
+            .gameId(new GameId(UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281")))
+            .build();
+
+    private static final Supplier<GameFileDetails> GAME_FILE_DETAILS_3 = () -> TestGameFileDetails.enqueued()
+            .id(new GameFileDetailsId(UUID.fromString("0d4d181c-9a77-4146-bbd6-40f7d4453b5f")))
+            .gameId(new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5")))
+            .build();
+
+    private static final Supplier<GameFileDetails> GAME_FILE_DETAILS_4 = () -> TestGameFileDetails.failed()
+            .id(new GameFileDetailsId(UUID.fromString("568afe65-018b-40fc-a8b4-481ded571ff8")))
+            .gameId(new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5")))
+            .build();
+
+    private static final Supplier<GameFileDetails> GAME_FILE_DETAILS_5 = () -> TestGameFileDetails.inProgress()
+            .id(new GameFileDetailsId(UUID.fromString("0a2a4b8d-f02e-4e3e-a3da-f47e1ea6aa30")))
+            .gameId(new GameId(UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281")))
+            .build();
+
+    private static final Supplier<GameFileDetails> GAME_FILE_DETAILS_6 = () -> TestGameFileDetails.discovered()
+            .id(new GameFileDetailsId(UUID.fromString("3d65af79-a558-4f23-88bd-3c04e977e63f")))
+            .gameId(new GameId(UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281")))
+            .build();
 
     @BeforeEach
     void setUp() {
@@ -67,50 +97,52 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
                         INSERT INTO GAME_FILE_DETAILS
                         (id, source_id, url, file_title, original_file_name, original_game_title, game_id, 
                         version, size, date_created, date_modified, status, failed_reason) VALUES
-                        ('acde26d7-33c7-42ee-be16-bca91a604b48', 'someSourceId1', 'someUrl1', 'someFileTitle1', 
-                        'someOriginalFileName1', 'someOriginalGameTitle1',
+                        ('acde26d7-33c7-42ee-be16-bca91a604b48', 'someSourceId', 'someUrl', 'someFileTitle', 
+                        'someOriginalFileName', 'someOriginalGameTitle',
                         '1eec1c19-25bf-4094-b926-84b5bb8fa281' ,
-                        'someVersion1', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'ENQUEUED', null);
+                        'someVersion', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'ENQUEUED', null);
                         
                         INSERT INTO GAME_FILE_DETAILS
                         (id, source_id, url, file_title, original_file_name, original_game_title, game_id,
-                         version, size, date_created, date_modified, status, failed_reason) VALUES
-                        ('a6adc122-df20-4e2c-a975-7d4af7104704', 'someSourceId2', 'someUrl2', 'someFileTitle2', 
-                        'someOriginalFileName2', 'someOriginalGameTitle2', 
+                         version, size, date_created, date_modified, status, failed_reason, file_path) VALUES
+                        ('a6adc122-df20-4e2c-a975-7d4af7104704', 'someSourceId', 'someUrl', 'someFileTitle', 
+                        'someOriginalFileName', 'someOriginalGameTitle', 
                         '1eec1c19-25bf-4094-b926-84b5bb8fa281',
-                        'someVersion2', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'SUCCESS', null);
+                        'someVersion', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'SUCCESS', null,
+                        'someFilePath');
                         
                         INSERT INTO GAME_FILE_DETAILS
                         (id, source_id, url, file_title, original_file_name, original_game_title, game_id,
                          version, size, date_created, date_modified, status, failed_reason) VALUES
-                        ('0d4d181c-9a77-4146-bbd6-40f7d4453b5f', 'someSourceId3', 'someUrl3', 'someFileTitle3', 
-                        'someOriginalFileName3', 'someOriginalGameTitle3', 
+                        ('0d4d181c-9a77-4146-bbd6-40f7d4453b5f', 'someSourceId', 'someUrl', 'someFileTitle', 
+                        'someOriginalFileName', 'someOriginalGameTitle', 
                         '5bdd248a-c3aa-487a-8479-0bfdb32f7ae5',
-                         'someVersion3', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'ENQUEUED', null);
+                         'someVersion', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'ENQUEUED', null);
                         
                         INSERT INTO GAME_FILE_DETAILS
                         (id, source_id, url, file_title, original_file_name, original_game_title, game_id,
                          version, size, date_created, date_modified, status, failed_reason) VALUES
-                        ('568afe65-018b-40fc-a8b4-481ded571ff8', 'someSourceId4', 'someUrl4', 'someFileTitle4', 
-                        'someOriginalFileName4', 'someOriginalGameTitle4',
+                        ('568afe65-018b-40fc-a8b4-481ded571ff8', 'someSourceId', 'someUrl', 'someFileTitle', 
+                        'someOriginalFileName', 'someOriginalGameTitle',
                          '5bdd248a-c3aa-487a-8479-0bfdb32f7ae5',
-                         'someVersion4', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'FAILED', null);
+                         'someVersion', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'FAILED', 'someFailedReason');
                         
                         INSERT INTO GAME_FILE_DETAILS
                         (id, source_id, url, file_title, original_file_name, original_game_title, game_id, 
-                        version, size, date_created, date_modified, status, failed_reason) VALUES
-                        ('0a2a4b8d-f02e-4e3e-a3da-f47e1ea6aa30', 'someSourceId5', 'someUrl5', 'someFileTitle5', 
-                        'someOriginalFileName5', 'someOriginalGameTitle5',
+                        version, size, date_created, date_modified, status, failed_reason, file_path) VALUES
+                        ('0a2a4b8d-f02e-4e3e-a3da-f47e1ea6aa30', 'someSourceId', 'someUrl', 'someFileTitle', 
+                        'someOriginalFileName', 'someOriginalGameTitle',
                          '1eec1c19-25bf-4094-b926-84b5bb8fa281',
-                        'someVersion5', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'IN_PROGRESS', null);
+                        'someVersion', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'IN_PROGRESS', null,
+                        'tempFilePath');
                         
                         INSERT INTO GAME_FILE_DETAILS
                         (id, source_id, url, file_title, original_file_name, original_game_title, game_id,
                          version, size, date_created, date_modified, status, failed_reason) VALUES
-                        ('3d65af79-a558-4f23-88bd-3c04e977e63f', 'someSourceId6', 'someUrl6', 'someFileTitle6', 
-                        'someOriginalFileName6', 'someOriginalGameTitle6',
+                        ('3d65af79-a558-4f23-88bd-3c04e977e63f', 'someSourceId', 'someUrl', 'someFileTitle', 
+                        'someOriginalFileName', 'someOriginalGameTitle',
                          '1eec1c19-25bf-4094-b926-84b5bb8fa281',
-                        'someVersion6', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'DISCOVERED', null);
+                        'someVersion', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'DISCOVERED', null);
                 """).executeUpdate();
         entityManager.getTransaction().commit();
     }
@@ -124,72 +156,64 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
     void shouldFindOldestWaitingForDownload() {
         Optional<GameFileDetails> result = gameFileVersionJpaRepository.findOldestWaitingForDownload();
 
-        assertTrue(result.isPresent());
-        assertNotNull(result.get().getId());
-
-        var expectedResult = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
-        assertEquals(expectedResult, result.get());
+        assertThat(result)
+                .hasValueSatisfying(r -> assertThat(r).usingRecursiveComparison().isEqualTo(GAME_FILE_DETAILS_1.get()));
     }
 
     @Test
     void shouldFindAllWaitingForDownload() {
         Page<GameFileDetails> result = gameFileVersionJpaRepository.findAllWaitingForDownload(Pageable.unpaged());
 
-        assertNotNull(result.getContent().get(0).getId());
         var expectedResult = List.of(
-                TestGameFileDetails.GAME_FILE_DETAILS_1.get(),
-                TestGameFileDetails.GAME_FILE_DETAILS_3.get()
+                GAME_FILE_DETAILS_1.get(),
+                GAME_FILE_DETAILS_3.get()
         );
-        assertEquals(expectedResult, result.getContent());
+        assertThat(result.getContent()).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
     @Test
     void shouldSave() {
-        var newGameFileDetails = TestGameFileDetails.FULL_GAME_FILE_DETAILS.get();
+        GameFileDetails newGameFileDetails = TestGameFileDetails.full().build();
 
-        var result = gameFileVersionJpaRepository.save(newGameFileDetails);
+        GameFileDetails result = gameFileVersionJpaRepository.save(newGameFileDetails);
 
-        assertNotNull(result.getId());
-        assertNotNull(result.getDateCreated());
+        assertThat(result).usingRecursiveComparison()
+                .ignoringFields("dateCreated", "dateModified")
+                .isEqualTo(newGameFileDetails);
         Long recordCount = (Long) entityManager.createNativeQuery(
                         "SELECT COUNT(*) FROM GAME_FILE_DETAILS f" +
                                 " WHERE f.id = '" + result.getId().value() + "';")
                 .getSingleResult();
-        assertEquals(1, recordCount);
+        assertThat(recordCount).isOne();
     }
 
     @Test
     void shouldFindCurrentlyDownloading() {
         Optional<GameFileDetails> result = gameFileVersionJpaRepository.findCurrentlyDownloading();
 
-        assertTrue(result.isPresent());
-        assertNotNull(result.get().getId());
-
-        var expectedResult = TestGameFileDetails.GAME_FILE_DETAILS_5.get();
-        assertEquals(expectedResult, result.get());
+        assertThat(result)
+                .hasValueSatisfying(r -> assertThat(r).usingRecursiveComparison().isEqualTo(GAME_FILE_DETAILS_5.get()));
     }
 
     @Test
     void shouldFindAllProcessed() {
         Page<GameFileDetails> result = gameFileVersionJpaRepository.findAllProcessed(Pageable.unpaged());
 
-        assertNotNull(result.getContent().get(0).getId());
         var expectedResult = List.of(
-
-                TestGameFileDetails.GAME_FILE_DETAILS_2.get(),
-                TestGameFileDetails.GAME_FILE_DETAILS_4.get()
+                GAME_FILE_DETAILS_2.get(),
+                GAME_FILE_DETAILS_4.get()
         );
-        assertEquals(expectedResult, result.getContent());
+        assertThat(result.getContent()).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
     @Test
     void shouldFindIfExistsByUrlAndVersion() {
         boolean existsActual = gameFileVersionJpaRepository.existsByUrlAndVersion(
-                "someUrl2", "someVersion2");
+                "someUrl", "someVersion");
         boolean existsMissing = gameFileVersionJpaRepository.existsByUrlAndVersion(
-                "someUrl2", "fakeVersion");
-        assertTrue(existsActual);
-        assertFalse(existsMissing);
+                "someUrl", "fakeVersion");
+        assertThat(existsActual).isTrue();
+        assertThat(existsMissing).isFalse();
     }
 
     @Test
@@ -197,19 +221,16 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
         GameFileDetailsId id = new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48"));
         Optional<GameFileDetails> result = gameFileVersionJpaRepository.findById(id);
 
-        var expectedResult = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
-        assertThat(result.get())
-                .usingRecursiveComparison()
-                .isEqualTo(expectedResult);
+        assertThat(result)
+                .hasValueSatisfying(r -> assertThat(r).usingRecursiveComparison().isEqualTo(GAME_FILE_DETAILS_1.get()));
     }
 
     @Test
     void shouldFindAllDiscovered() {
         Page<GameFileDetails> result = gameFileVersionJpaRepository.findAllDiscovered(Pageable.unpaged());
 
-        assertNotNull(result.getContent().get(0).getId());
-        var expectedResult = TestGameFileDetails.GAME_FILE_DETAILS_6.get();
-        assertEquals(singletonList(expectedResult), result.getContent());
+        var expectedResult = singletonList(GAME_FILE_DETAILS_6.get());
+        assertThat(result.getContent()).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
     @Test

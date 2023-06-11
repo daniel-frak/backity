@@ -18,7 +18,7 @@ class JpaGameFileDetailsDetailsMapperTest {
 
     @Test
     void shouldMapToEntity() {
-        GameFileDetails model = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        GameFileDetails model = TestGameFileDetails.discovered().build();
 
         JpaGameFileDetails result = MAPPER.toEntity(model);
 
@@ -28,16 +28,16 @@ class JpaGameFileDetailsDetailsMapperTest {
                 UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48"),
                 jpaGame,
                 new JpaSourceFileDetails(
-                        "someSourceId1",
-                        "someOriginalGameTitle1",
-                        "someFileTitle1",
-                        "someVersion1",
-                        "someUrl1",
-                        "someOriginalFileName1",
+                        "someSourceId",
+                        "someOriginalGameTitle",
+                        "someFileTitle",
+                        "someVersion",
+                        "someUrl",
+                        "someOriginalFileName",
                         "5 KB"
                 ),
                 new JpaBackupDetails(
-                        FileBackupStatus.ENQUEUED,
+                        FileBackupStatus.DISCOVERED,
                         null,
                         null
                 ),
@@ -58,16 +58,16 @@ class JpaGameFileDetailsDetailsMapperTest {
                 UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48"),
                 jpaGame,
                 new JpaSourceFileDetails(
-                        "someSourceId1",
-                        "someOriginalGameTitle1",
-                        "someFileTitle1",
-                        "someVersion1",
-                        "someUrl1",
-                        "someOriginalFileName1",
+                        "someSourceId",
+                        "someOriginalGameTitle",
+                        "someFileTitle",
+                        "someVersion",
+                        "someUrl",
+                        "someOriginalFileName",
                         "5 KB"
                 ),
                 new JpaBackupDetails(
-                        FileBackupStatus.ENQUEUED,
+                        FileBackupStatus.DISCOVERED,
                         null,
                         null
                 ),
@@ -77,7 +77,7 @@ class JpaGameFileDetailsDetailsMapperTest {
 
         GameFileDetails result = MAPPER.toModel(model);
 
-        var expectedResult = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        var expectedResult = TestGameFileDetails.discovered().build();
 
         assertThat(result)
                 .usingRecursiveComparison().isEqualTo(expectedResult);

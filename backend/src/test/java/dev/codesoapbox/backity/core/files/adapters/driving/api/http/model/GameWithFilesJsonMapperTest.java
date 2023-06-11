@@ -20,11 +20,11 @@ class GameWithFilesJsonMapperTest {
 
     @Test
     void shouldMapToDto() {
-        var gameId = new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"));
+        var gameId = new GameId(UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281"));
         var gameFileStringId = "acde26d7-33c7-42ee-be16-bca91a604b48";
         var model = new GameWithFiles(
                 new Game(gameId, "Test Game"),
-                singletonList(TestGameFileDetails.FULL_GAME_FILE_DETAILS.get())
+                singletonList(TestGameFileDetails.full().build())
         );
 
         GameWithFilesJson result = MAPPER.toDto(model);

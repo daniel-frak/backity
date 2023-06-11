@@ -33,7 +33,7 @@ class GogFileBackupServiceTest {
 
     @Test
     void shouldDownloadGameFile() throws IOException {
-        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
         String tempFilePath = "someTempFilePath";
 
         gogFileDownloader.backUpGameFile(gameFileDetails, tempFilePath);

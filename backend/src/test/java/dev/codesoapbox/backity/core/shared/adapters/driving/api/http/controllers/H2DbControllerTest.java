@@ -67,7 +67,7 @@ class H2DbControllerTest {
 
     @Test
     void shouldDumpSql() throws Exception {
-        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
         Game game = new Game(gameFileDetails.getGameId(), "Test game");
         gameRepository.save(game);
         gameFileVersionRepository.save(gameFileDetails);

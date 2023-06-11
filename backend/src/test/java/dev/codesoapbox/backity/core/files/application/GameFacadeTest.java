@@ -40,7 +40,7 @@ class GameFacadeTest {
     void shouldGetGamesWithFiles() {
         var pageable = PageRequest.of(0, 2);
         Game game = Game.createNew("Test game");
-        var gameFile = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        var gameFile = TestGameFileDetails.discovered().build();
         List<GameFileDetails> gameFileDetails = singletonList(gameFile);
 
         when(gameRepository.findAll(pageable))

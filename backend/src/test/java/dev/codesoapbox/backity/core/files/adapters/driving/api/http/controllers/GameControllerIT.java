@@ -40,7 +40,7 @@ class GameControllerIT {
     void shouldGetGames() throws Exception {
         var gameId = new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"));
         Pageable pageable = PageRequest.of(1, 2);
-        GameFileDetails gameFileDetails = TestGameFileDetails.FULL_GAME_FILE_DETAILS.get();
+        GameFileDetails gameFileDetails = TestGameFileDetails.full().build();
         Page<GameWithFiles> gameWithFilesPage = new PageImpl<>(singletonList(
                 new GameWithFiles(
                         new Game(gameId, "Test Game"),
@@ -59,7 +59,7 @@ class GameControllerIT {
                                 "title": "Test Game",
                                 "gameFiles": [{
                                   "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
-                                  "gameId": "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
+                                  "gameId": "1eec1c19-25bf-4094-b926-84b5bb8fa281",
                                   "sourceFileDetails": {
                                     "sourceId": "someSourceId",
                                     "originalGameTitle": "someOriginalGameTitle",
