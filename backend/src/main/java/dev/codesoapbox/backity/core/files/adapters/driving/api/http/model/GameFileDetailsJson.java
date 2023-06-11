@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.model;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,17 +14,9 @@ import java.time.LocalDateTime;
 public class GameFileDetailsJson {
 
     private String id;
-    private String source;
-    private String url;
-    private String title;
-    private String originalFileName;
-    private String filePath;
-    private String gameTitle;
     private String gameId;
-    private String version;
-    private String size;
+    private SourceFileDetailsJson sourceFileDetails;
+    private BackupDetailsJson backupDetails;
     private LocalDateTime dateCreated;
     private LocalDateTime dateModified;
-    private FileBackupStatus backupStatus;
-    private String backupFailedReason;
 }

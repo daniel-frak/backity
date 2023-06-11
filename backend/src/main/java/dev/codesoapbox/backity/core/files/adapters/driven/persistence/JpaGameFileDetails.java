@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.adapters.driven.persistence;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
+import dev.codesoapbox.backity.core.files.adapters.driven.persistence.game.JpaGame;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -28,30 +28,15 @@ public class JpaGameFileDetails {
     @Id
     private UUID id;
 
-    @NotNull
-    private String source;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_id", referencedColumnName = "id")
+    private JpaGame game;
 
-    @NotNull
-    private String url;
+    @Embedded
+    private JpaSourceFileDetails sourceFileDetails;
 
-    @NotNull
-    private String title;
-
-    @NotNull
-    private String originalFileName;
-
-    private String filePath;
-
-    @NotNull
-    private String gameTitle;
-
-    @NotNull String gameId;
-
-    @NotNull
-    private String version;
-
-    @NotNull
-    private String size;
+    @Embedded
+    private JpaBackupDetails backupDetails;
 
     @NotNull
     @CreatedDate
@@ -60,10 +45,4 @@ public class JpaGameFileDetails {
     @NotNull
     @LastModifiedDate
     private LocalDateTime dateModified;
-
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private FileBackupStatus backupStatus;
-
-    private String backupFailedReason;
 }

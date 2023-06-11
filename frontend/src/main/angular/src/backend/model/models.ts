@@ -1,3 +1,5 @@
+export * from './backupDetails';
+export * from './backupDetailsMessage';
 export * from './fileBackupMessageTopics';
 export * from './fileBackupProgress';
 export * from './fileBackupStatus';
@@ -16,3 +18,5 @@ export * from './pageGameWithFiles';
 export * from './pageableObject';
 export * from './refreshTokenResponse';
 export * from './sortObject';
+export * from './sourceFileDetails';
+export * from './sourceFileDetailsMessage';

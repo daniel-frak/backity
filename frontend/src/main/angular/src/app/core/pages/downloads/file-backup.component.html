@@ -12,19 +12,19 @@
     <ng-container *ngIf="currentDownload">
       <app-table [content]="{content: [currentDownload]}" [isLoading]="filesAreLoading">
         <ng-template app-table-column="Game title" let-item>
-          {{asFile(item).gameTitle}}
+          {{asFile(item).sourceFileDetails!.originalGameTitle}}
         </ng-template>
         <ng-template app-table-column="File name" let-item>
-          {{asFile(item).title}} - {{asFile(item).originalFileName}}
+          {{asFile(item).sourceFileDetails!.fileTitle}} - {{asFile(item).sourceFileDetails!.originalFileName}}
         </ng-template>
         <ng-template app-table-column="Version" let-item>
-          {{asFile(item).version}}
+          {{asFile(item).sourceFileDetails!.version}}
         </ng-template>
         <ng-template app-table-column="Size" let-item>
-          {{asFile(item).size}}
+          {{asFile(item).sourceFileDetails!.size}}
         </ng-template>
         <ng-template app-table-column="Path" style="max-width: 5%" let-item>
-          <span class="file-path">{{asFile(item).filePath}}</span>
+          <span class="file-path">{{asFile(item).backupDetails!.filePath}}</span>
         </ng-template>
         <ng-template app-table-column="Progress">
           <ng-container *ngIf="downloadProgress">
@@ -53,17 +53,17 @@
     </p>
 
     <app-table [content]="enqueuedDownloads!" [isLoading]="filesAreLoading" caption="Backup queue" id="download-queue">
-      <ng-template app-table-column="Game title" let-item>
-        {{asFile(item).gameTitle}}
+      <ng-template app-table-column="Source game title" let-item>
+        {{asFile(item).sourceFileDetails!.originalGameTitle}}
       </ng-template>
-      <ng-template app-table-column="File name" let-item>
-        {{asFile(item).title}}
+      <ng-template app-table-column="Source file name" let-item>
+        {{asFile(item).sourceFileDetails!.originalFileName}}
       </ng-template>
       <ng-template app-table-column="Version" let-item>
-        {{asFile(item).version}}
+        {{asFile(item).sourceFileDetails!.version}}
       </ng-template>
       <ng-template app-table-column="Size" let-item>
-        {{asFile(item).size}}
+        {{asFile(item).sourceFileDetails!.size}}
       </ng-template>
       <ng-template app-table-column="Actions"
                    append-class="text-end"
@@ -71,7 +71,7 @@
                    let-item>
         <ng-container *ngFor="let file of [asFile(item)]">
           <button (click)="removeFromQueue(file.id!)"
-                  *ngIf="file.backupStatus == FileBackupStatus.Enqueued" class="btn btn-primary">
+                  *ngIf="file.backupDetails?.status == FileBackupStatus.Enqueued" class="btn btn-primary">
             Cancel
           </button>
         </ng-container>
@@ -80,33 +80,33 @@
 
     <app-table [content]="processedFiles!" [isLoading]="filesAreLoading" caption="Processed files" id="processed-files">
       <ng-template app-table-column="Game title" let-item>
-        {{asFile(item).gameTitle}}
+        {{asFile(item).sourceFileDetails!.originalGameTitle}}
       </ng-template>
       <ng-template app-table-column="File name" let-item>
-        {{asFile(item).title}}
+        {{asFile(item).sourceFileDetails!.fileTitle}}
       </ng-template>
       <ng-template app-table-column="Version" let-item>
-        {{asFile(item).version}}
+        {{asFile(item).sourceFileDetails!.version}}
       </ng-template>
       <ng-template app-table-column="Size" let-item>
-        {{asFile(item).size}}
+        {{asFile(item).sourceFileDetails!.size}}
       </ng-template>
       <ng-template app-table-column="Path" style="max-width: 5%" let-item>
-        <span class="file-path">{{asFile(item).filePath}}</span>
+        <span class="file-path">{{asFile(item).backupDetails!.filePath}}</span>
       </ng-template>
       <ng-template app-table-column="Status" let-item>
         <ng-container *ngFor="let file of [asFile(item)]">
           <span
-            [ngClass]="{'bg-success': file.backupStatus == FileBackupStatus.Success,
-             'bg-danger': file.backupStatus != FileBackupStatus.Success}"
+            [ngClass]="{'bg-success': file.backupDetails?.status == FileBackupStatus.Success,
+             'bg-danger': file.backupDetails?.status != FileBackupStatus.Success}"
             class="badge">
-            <i [ngClass]="{'bi bi-check-circle': file.backupStatus == FileBackupStatus.Success,
-             'bi bi-x-circle': file.backupStatus != FileBackupStatus.Success}"
+            <i [ngClass]="{'bi bi-check-circle': file.backupDetails?.status == FileBackupStatus.Success,
+             'bi bi-x-circle': file.backupDetails?.status != FileBackupStatus.Success}"
                aria-hidden="true"
                class="me-1">
             </i>
 
-            {{file.backupStatus}}
+            {{file.backupDetails?.status}}
           </span>
         </ng-container>
       </ng-template>

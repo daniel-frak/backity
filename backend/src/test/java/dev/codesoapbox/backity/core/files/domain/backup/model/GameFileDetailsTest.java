@@ -2,37 +2,27 @@ package dev.codesoapbox.backity.core.files.domain.backup.model;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GameFileDetailsTest {
 
     @Test
     void shouldFail() {
-        var enqueuedFileDownload = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                "someSource", "someUrl", "someTitle", "someOriginalFileName",
-                null, null, "someGameId", "someVersion", "100 KB", null,
-                null, FileBackupStatus.DISCOVERED, null);
+        var gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
 
-        enqueuedFileDownload.fail("someFailedReason");
+        gameFileDetails.fail("someFailedReason");
 
-        assertEquals("someFailedReason", enqueuedFileDownload.getBackupFailedReason());
-        assertEquals(FileBackupStatus.FAILED, enqueuedFileDownload.getBackupStatus());
+        assertEquals("someFailedReason", gameFileDetails.getBackupDetails().getFailedReason());
+        assertEquals(FileBackupStatus.FAILED, gameFileDetails.getBackupDetails().getStatus());
     }
 
     @Test
     void shouldMarkAsDownloaded() {
-        var enqueuedFileDownload = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                "someSource", "someUrl", "someTitle", "someOriginalFileName",
-                null, null, "someGameId", "someVersion", "100 KB", null,
-                null, FileBackupStatus.DISCOVERED, null);
+        var enqueuedFileDownload = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
 
         enqueuedFileDownload.markAsDownloaded("someFilePath");
 
-        assertEquals("someFilePath", enqueuedFileDownload.getFilePath());
-        assertEquals(FileBackupStatus.SUCCESS, enqueuedFileDownload.getBackupStatus());
+        assertEquals("someFilePath", enqueuedFileDownload.getBackupDetails().getFilePath());
+        assertEquals(FileBackupStatus.SUCCESS, enqueuedFileDownload.getBackupDetails().getStatus());
     }
 }

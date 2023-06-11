@@ -41,7 +41,7 @@ public class GameFileDetailsJpaRepository implements GameFileDetailsRepository {
 
     @Override
     public Optional<GameFileDetails> findCurrentlyDownloading() {
-        return springRepository.findByBackupStatus(FileBackupStatus.IN_PROGRESS)
+        return springRepository.findByBackupDetailsStatus(FileBackupStatus.IN_PROGRESS)
                 .map(mapper::toModel);
     }
 
@@ -53,7 +53,7 @@ public class GameFileDetailsJpaRepository implements GameFileDetailsRepository {
 
     @Override
     public boolean existsByUrlAndVersion(String url, String version) {
-        return springRepository.existsByUrlAndVersion(url, version);
+        return springRepository.existsBySourceFileDetailsUrlAndSourceFileDetailsVersion(url, version);
     }
 
     @Override
@@ -64,14 +64,13 @@ public class GameFileDetailsJpaRepository implements GameFileDetailsRepository {
 
     @Override
     public Page<GameFileDetails> findAllDiscovered(Pageable pageable) {
-        return springRepository.findAllByBackupStatus(pageable, FileBackupStatus.DISCOVERED)
+        return springRepository.findAllByBackupDetailsStatus(pageable, FileBackupStatus.DISCOVERED)
                 .map(mapper::toModel);
     }
 
     @Override
     public List<GameFileDetails> findAllByGameId(GameId gameId) {
-        String gameIdString = gameId.value().toString();
-        return springRepository.findAllByGameId(gameIdString).stream()
+        return springRepository.findAllByGameId(gameId.value()).stream()
                 .map(mapper::toModel)
                 .toList();
     }

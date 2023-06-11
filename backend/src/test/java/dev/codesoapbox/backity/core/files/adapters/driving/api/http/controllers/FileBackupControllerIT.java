@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
+import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +16,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,29 +40,32 @@ class FileBackupControllerIT {
 
     @Test
     void shouldGetCurrentlyDownloading() throws Exception {
-        var gameFileVersionBackup = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                "someSource", "someUrl", "someTitle", "someOriginalFileName",
-                null, "someGameTitle", "someGameId", "someVersion", "100 KB",
-                LocalDateTime.parse("2022-04-29T14:15:53"),
-                null, FileBackupStatus.IN_PROGRESS, "someFailedReason");
+        GameFileDetails gameFileDetails = TestGameFileDetails.FULL_GAME_FILE_DETAILS.get();
 
         when(gameFileDetailsRepository.findCurrentlyDownloading())
-                .thenReturn(Optional.of(gameFileVersionBackup));
+                .thenReturn(Optional.of(gameFileDetails));
 
         var expectedJson = """
                 {
-                  "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
-                  "source": "someSource",
-                  "url": "someUrl",
-                  "title": "someTitle",
-                  "gameTitle": "someGameTitle",
-                  "version": "someVersion",
-                  "size": "100 KB",
-                  "dateCreated": "2022-04-29T14:15:53",
-                  "backupStatus": "IN_PROGRESS",
-                  "backupFailedReason": "someFailedReason"
-                }""";
+                      "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
+                      "gameId": "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
+                      "sourceFileDetails": {
+                        "sourceId": "someSourceId",
+                        "originalGameTitle": "someOriginalGameTitle",
+                        "fileTitle": "someFileTitle",
+                        "version": "someVersion",
+                        "url": "someUrl",
+                        "originalFileName": "someOriginalFileName",
+                        "size": "5 KB"
+                      },
+                      "backupDetails": {
+                        "status": "DISCOVERED",
+                        "failedReason": "someFailedReason",
+                        "filePath": "someFilePath"
+                      },
+                      "dateCreated": "2022-04-29T14:15:53",
+                      "dateModified": "2023-04-29T14:15:53"
+                    }""";
 
         mockMvc.perform(get("/api/backups/current"))
                 .andDo(print())
@@ -72,31 +75,34 @@ class FileBackupControllerIT {
 
     @Test
     void shouldGetQueueItems() throws Exception {
-        var gameFileVersionBackup = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                "someSource", "someUrl", "someTitle", "someOriginalFileName",
-                null, "someGameTitle", "someGameId", "someVersion", "100 KB",
-                LocalDateTime.parse("2022-04-29T14:15:53"),
-                null, FileBackupStatus.ENQUEUED, null);
+        GameFileDetails gameFileDetails = TestGameFileDetails.FULL_GAME_FILE_DETAILS.get();
 
         Pageable pageable = Pageable.ofSize(1);
         when(gameFileDetailsRepository.findAllWaitingForDownload(pageable))
-                .thenReturn(new PageImpl<>(singletonList(gameFileVersionBackup), pageable, 2));
+                .thenReturn(new PageImpl<>(singletonList(gameFileDetails), pageable, 2));
 
         var expectedJson = """
                 {
                   "content": [
-                    {
+                     {
                       "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
-                      "source": "someSource",
-                      "url": "someUrl",
-                      "title": "someTitle",
-                      "gameTitle": "someGameTitle",
-                      "version": "someVersion",
-                      "size": "100 KB",
+                      "gameId": "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
+                      "sourceFileDetails": {
+                        "sourceId": "someSourceId",
+                        "originalGameTitle": "someOriginalGameTitle",
+                        "fileTitle": "someFileTitle",
+                        "version": "someVersion",
+                        "url": "someUrl",
+                        "originalFileName": "someOriginalFileName",
+                        "size": "5 KB"
+                      },
+                      "backupDetails": {
+                        "status": "DISCOVERED",
+                        "failedReason": "someFailedReason",
+                        "filePath": "someFilePath"
+                      },
                       "dateCreated": "2022-04-29T14:15:53",
-                      "backupStatus": "ENQUEUED",
-                      "backupFailedReason": null
+                      "dateModified": "2023-04-29T14:15:53"
                     }
                   ],
                   "pageable": {
@@ -134,32 +140,35 @@ class FileBackupControllerIT {
 
     @Test
     void shouldGetProcessedFiles() throws Exception {
-        var gameFileVersionBackup = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                "someSource", "someUrl", "someTitle", "someOriginalFileName",
-                null, "someGameTitle", "someGameId", "someVersion", "100 KB",
-                LocalDateTime.parse("2022-04-29T14:15:53"),
-                null, FileBackupStatus.SUCCESS, null);
+        GameFileDetails gameFileDetails = TestGameFileDetails.FULL_GAME_FILE_DETAILS.get();
 
         Pageable pageable = Pageable.ofSize(1);
         when(gameFileDetailsRepository.findAllProcessed(pageable))
-                .thenReturn(new PageImpl<>(singletonList(gameFileVersionBackup), pageable, 2));
+                .thenReturn(new PageImpl<>(singletonList(gameFileDetails), pageable, 2));
 
         var expectedJson = """
                 {
                    "content": [
                      {
-                       "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
-                       "source": "someSource",
-                       "url": "someUrl",
-                       "title": "someTitle",
-                       "gameTitle": "someGameTitle",
-                       "version": "someVersion",
-                       "size": "100 KB",
-                       "dateCreated": "2022-04-29T14:15:53",
-                       "backupStatus": "SUCCESS",
-                       "backupFailedReason": null
-                     }
+                      "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
+                      "gameId": "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
+                      "sourceFileDetails": {
+                        "sourceId": "someSourceId",
+                        "originalGameTitle": "someOriginalGameTitle",
+                        "fileTitle": "someFileTitle",
+                        "version": "someVersion",
+                        "url": "someUrl",
+                        "originalFileName": "someOriginalFileName",
+                        "size": "5 KB"
+                      },
+                      "backupDetails": {
+                        "status": "DISCOVERED",
+                        "failedReason": "someFailedReason",
+                        "filePath": "someFilePath"
+                      },
+                      "dateCreated": "2022-04-29T14:15:53",
+                      "dateModified": "2023-04-29T14:15:53"
+                    }
                    ],
                    "pageable": {
                      "sort": {
@@ -199,20 +208,17 @@ class FileBackupControllerIT {
         String stringUuid = "acde26d7-33c7-42ee-be16-bca91a604b48";
         UUID uuid = UUID.fromString(stringUuid);
 
-        var gameFileVersionBackup = new GameFileDetails(
-                new GameFileDetailsId(uuid), "someSource", "someUrl", "someTitle", "someOriginalFileName",
-                null, null, "someGameId", "someVersion", "100 KB",
-                null, null, FileBackupStatus.DISCOVERED, null);
+        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
 
         when(gameFileDetailsRepository.findById(new GameFileDetailsId(uuid)))
-                .thenReturn(Optional.of(gameFileVersionBackup));
+                .thenReturn(Optional.of(gameFileDetails));
 
         mockMvc.perform(get("/api/backups/enqueue/" + stringUuid))
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        assertEquals(FileBackupStatus.ENQUEUED, gameFileVersionBackup.getBackupStatus());
-        verify(gameFileDetailsRepository).save(gameFileVersionBackup);
+        assertEquals(FileBackupStatus.ENQUEUED, gameFileDetails.getBackupDetails().getStatus());
+        verify(gameFileDetailsRepository).save(gameFileDetails);
     }
 
     @Test

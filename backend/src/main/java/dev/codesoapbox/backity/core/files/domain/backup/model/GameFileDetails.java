@@ -1,7 +1,9 @@
 package dev.codesoapbox.backity.core.files.domain.backup.model;
 
+import dev.codesoapbox.backity.core.files.domain.game.GameId;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 import java.time.LocalDateTime;
@@ -11,54 +13,48 @@ import java.time.LocalDateTime;
  */
 @Data
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class GameFileDetails {
 
     @NonNull
+    @EqualsAndHashCode.Include
     private GameFileDetailsId id;
 
     @NonNull
-    private String source;
+    private GameId gameId;
 
     @NonNull
-    private String url;
+    private SourceFileDetails sourceFileDetails;
 
     @NonNull
-    private String title;
-
-    @NonNull
-    private String originalFileName;
-
-    private String filePath;
-    private String gameTitle;
-
-    @NonNull
-    private String gameId;
-
-    @NonNull
-    private String version;
-
-    @NonNull
-    private String size;
+    private BackupDetails backupDetails;
 
     private LocalDateTime dateCreated;
     private LocalDateTime dateModified;
 
-    @NonNull
-    private FileBackupStatus backupStatus;
-
-    private String backupFailedReason;
-
     public void enqueue() {
-        this.backupStatus = FileBackupStatus.ENQUEUED;
+        backupDetails.setStatus(FileBackupStatus.ENQUEUED);
     }
 
     public void fail(String failedReason) {
-        this.backupStatus = FileBackupStatus.FAILED;
-        this.backupFailedReason = failedReason;
+        backupDetails.setStatus(FileBackupStatus.FAILED);
+        backupDetails.setFailedReason(failedReason);
+    }
+
+    public void markAsInProgress() {
+        backupDetails.setStatus(FileBackupStatus.IN_PROGRESS);
     }
 
     public void markAsDownloaded(String filePath) {
-        this.filePath = filePath;
-        this.backupStatus = FileBackupStatus.SUCCESS;
+        backupDetails.setFilePath(filePath);
+        backupDetails.setStatus(FileBackupStatus.SUCCESS);
+    }
+
+    public void updateFilePath(String filePath) {
+        backupDetails.setFilePath(filePath);
+    }
+
+    public void clearFilePath() {
+        backupDetails.setFilePath(null);
     }
 }

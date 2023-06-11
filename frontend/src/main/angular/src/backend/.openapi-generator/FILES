@@ -14,6 +14,8 @@ configuration.ts
 encoder.ts
 git_push.sh
 index.ts
+model/backupDetails.ts
+model/backupDetailsMessage.ts
 model/fileBackupMessageTopics.ts
 model/fileBackupProgress.ts
 model/fileBackupStatus.ts
@@ -33,5 +35,7 @@ model/pageGameWithFiles.ts
 model/pageableObject.ts
 model/refreshTokenResponse.ts
 model/sortObject.ts
+model/sourceFileDetails.ts
+model/sourceFileDetailsMessage.ts
 param.ts
 variables.ts

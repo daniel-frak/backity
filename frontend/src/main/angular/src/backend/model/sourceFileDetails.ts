@@ -11,9 +11,13 @@
  */
 
 
-export interface SortObject { 
-    empty?: boolean;
-    unsorted?: boolean;
-    sorted?: boolean;
+export interface SourceFileDetails { 
+    sourceId?: string;
+    originalGameTitle?: string;
+    fileTitle?: string;
+    version?: string;
+    url?: string;
+    originalFileName?: string;
+    size?: string;
 }
 

@@ -3,9 +3,8 @@ package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers
 import dev.codesoapbox.backity.core.files.application.GameFacade;
 import dev.codesoapbox.backity.core.files.application.GameWithFiles;
 import dev.codesoapbox.backity.core.files.config.GameHttpBeanConfig;
-import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
+import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
 import org.junit.jupiter.api.Test;
@@ -19,7 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static java.util.Collections.singletonList;
@@ -42,28 +40,11 @@ class GameControllerIT {
     void shouldGetGames() throws Exception {
         var gameId = new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"));
         Pageable pageable = PageRequest.of(1, 2);
-        var gameFileStringId = "acde26d7-33c7-42ee-be16-bca91a604b48";
+        GameFileDetails gameFileDetails = TestGameFileDetails.FULL_GAME_FILE_DETAILS.get();
         Page<GameWithFiles> gameWithFilesPage = new PageImpl<>(singletonList(
                 new GameWithFiles(
                         new Game(gameId, "Test Game"),
-                        singletonList(
-                                new GameFileDetails(
-                                        new GameFileDetailsId(UUID.fromString(gameFileStringId)),
-                                        "someSource",
-                                        "someUrl",
-                                        "someTitle",
-                                        "someOriginalFileName",
-                                        "someFilePath",
-                                        "someGameTitle",
-                                        gameId.value().toString(),
-                                        "someVersion",
-                                        "100 KB",
-                                        LocalDateTime.parse("2022-04-29T14:15:53"),
-                                        LocalDateTime.parse("2022-04-29T14:15:53"),
-                                        FileBackupStatus.DISCOVERED,
-                                        "someFailReason"
-                                )
-                        )
+                        singletonList(gameFileDetails)
                 )
         ));
         when(gameFacade.getGamesWithFiles(pageable))
@@ -77,20 +58,24 @@ class GameControllerIT {
                                 "id": "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
                                 "title": "Test Game",
                                 "gameFiles": [{
-                                    "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
-                                    "source": "someSource",
-                                    "url": "someUrl",
-                                    "title": "someTitle",
-                                    "originalFileName": "someOriginalFileName",
-                                    "filePath": "someFilePath",
-                                    "gameTitle": "someGameTitle",
-                                    "gameId": "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
+                                  "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
+                                  "gameId": "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
+                                  "sourceFileDetails": {
+                                    "sourceId": "someSourceId",
+                                    "originalGameTitle": "someOriginalGameTitle",
+                                    "fileTitle": "someFileTitle",
                                     "version": "someVersion",
-                                    "size": "100 KB",
-                                    "dateCreated": "2022-04-29T14:15:53",
-                                    "dateModified": "2022-04-29T14:15:53",
-                                    "backupStatus": "DISCOVERED",
-                                    "backupFailedReason": "someFailReason"
+                                    "url": "someUrl",
+                                    "originalFileName": "someOriginalFileName",
+                                    "size": "5 KB"
+                                  },
+                                  "backupDetails": {
+                                    "status": "DISCOVERED",
+                                    "failedReason": "someFailedReason",
+                                    "filePath": "someFilePath"
+                                  },
+                                  "dateCreated": "2022-04-29T14:15:53",
+                                  "dateModified": "2023-04-29T14:15:53"
                                 }]
                             }]
                         }

@@ -4,10 +4,9 @@ import dev.codesoapbox.backity.core.files.backup.fakes.FakeUnixFileManager;
 import dev.codesoapbox.backity.core.files.domain.backup.exceptions.FileBackupFailedException;
 import dev.codesoapbox.backity.core.files.domain.backup.exceptions.FileBackupUrlEmptyException;
 import dev.codesoapbox.backity.core.files.domain.backup.exceptions.NotEnoughFreeSpaceException;
-import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
+import dev.codesoapbox.backity.core.files.domain.backup.model.*;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
+import dev.codesoapbox.backity.core.files.domain.game.GameId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,7 +46,7 @@ class FileBackupServiceTest {
     @BeforeEach
     void setUp() {
         when(sourceFileBackupService.getSource())
-                .thenReturn("someSource");
+                .thenReturn("someSourceId1");
         fileManager = new FakeUnixFileManager(5000);
         fileBackupService = new FileBackupService(filePathProvider, gameFileDetailsRepository, fileManager,
                 singletonList(sourceFileBackupService));
@@ -55,13 +55,7 @@ class FileBackupServiceTest {
     @Test
     void shouldDownloadGameFile() throws IOException {
         String source = sourceFileBackupService.getSource();
-        var gameTitle = "someGameTitle";
-
-        var gameFileVersionBackup = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                source, "someUrl", "someTitle", "someOriginalFileName",
-                null, gameTitle, "someGameId", "someVersion", "5 KB", null,
-                null, FileBackupStatus.DISCOVERED, null);
+        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
         var tempFilePath = "someFileDir/someFile";
         var expectedFilePath = "finalFilePath";
 
@@ -70,17 +64,18 @@ class FileBackupServiceTest {
         when(gameFileDetailsRepository.save(any()))
                 .then(a -> {
                     GameFileDetails argument = a.getArgument(0, GameFileDetails.class);
-                    savedFileBackupStatuses.add(argument.getBackupStatus());
-                    savedFilePaths.add(argument.getFilePath());
+                    savedFileBackupStatuses.add(argument.getBackupDetails().getStatus());
+                    savedFilePaths.add(argument.getBackupDetails().getFilePath());
                     return argument;
                 });
 
-        when(filePathProvider.createTemporaryFilePath(source, gameTitle))
+        when(filePathProvider.createTemporaryFilePath(source,
+                gameFileDetails.getSourceFileDetails().originalGameTitle()))
                 .thenReturn(tempFilePath);
-        when(sourceFileBackupService.backUpGameFile(gameFileVersionBackup, tempFilePath))
+        when(sourceFileBackupService.backUpGameFile(gameFileDetails, tempFilePath))
                 .thenReturn(expectedFilePath);
 
-        fileBackupService.backUpGameFile(gameFileVersionBackup);
+        fileBackupService.backUpGameFile(gameFileDetails);
 
         assertTrue(fileManager.freeSpaceWasCheckedFor(tempFilePath));
 
@@ -92,22 +87,18 @@ class FileBackupServiceTest {
     @Test
     void shouldTryToRemoveTempFileAndRethrowWrappedOnIOException() throws IOException {
         String source = sourceFileBackupService.getSource();
-        var gameTitle = "someGameTitle";
-        var gameFileVersionBackup = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                source, "someUrl", "someTitle", "someOriginalFileName",
-                null, gameTitle, "someGameId", "someVersion", "5 KB", null,
-                null, FileBackupStatus.DISCOVERED, null);
+        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
         var tempFilePath = "someFileDir/someFile";
 
-        when(filePathProvider.createTemporaryFilePath(source, gameTitle))
+        when(filePathProvider.createTemporaryFilePath(source,
+                gameFileDetails.getSourceFileDetails().originalGameTitle()))
                 .thenReturn(tempFilePath);
         IOException coreException = new IOException("someMessage");
-        when(sourceFileBackupService.backUpGameFile(gameFileVersionBackup, tempFilePath))
+        when(sourceFileBackupService.backUpGameFile(gameFileDetails, tempFilePath))
                 .thenThrow(coreException);
 
         var exception = assertThrows(FileBackupFailedException.class,
-                () -> fileBackupService.backUpGameFile(gameFileVersionBackup));
+                () -> fileBackupService.backUpGameFile(gameFileDetails));
         assertEquals(coreException, exception.getCause());
         assertTrue(fileManager.fileWasDeleted(tempFilePath));
     }
@@ -115,101 +106,116 @@ class FileBackupServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", " "})
     void downloadGameFileShouldThrowIfUrlIsEmpty(String url) {
-        var gameFileVersionBackup = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                "someSource", url, "someTitle", "someOriginalFileName",
-                null, null, "someGameId", "someVersion", "5 KB", null,
-                null, FileBackupStatus.DISCOVERED, null);
-
+        GameFileDetails gameFileDetails = createGameFileDetails("someSourceId", url);
         FileBackupFailedException exception = assertThrows(FileBackupFailedException.class,
-                () -> fileBackupService.backUpGameFile(gameFileVersionBackup));
+                () -> fileBackupService.backUpGameFile(gameFileDetails));
         assertEquals(FileBackupUrlEmptyException.class, exception.getCause().getClass());
+    }
+
+    private GameFileDetails createGameFileDetails(String sourceId, String url) {
+        return new GameFileDetails(
+                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
+                new GameId(UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281")),
+                new SourceFileDetails(
+                        sourceId,
+                        "someOriginalGameTitle1",
+                        "someFileTitle1",
+                        "someVersion1",
+                        url,
+                        "someOriginalFileName1",
+                        "5 KB"
+                ),
+                new BackupDetails(
+                        FileBackupStatus.ENQUEUED,
+                        null,
+                        null
+                ),
+                LocalDateTime.parse("2022-04-29T14:15:53"),
+                LocalDateTime.parse("2023-04-29T14:15:53")
+        );
     }
 
     @Test
     void downloadGameFileShouldThrowIfSourceDownloaderNotFound() throws IOException {
-        var source = "nonExistentSource";
-        var gameTitle = "someGameTitle";
-        var gameFileVersionBackup = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                source, "someUrl", "someTitle", "someOriginalFileName",
-                null, gameTitle, "someGameId", "someVersion", "5 KB", null,
-                null, FileBackupStatus.DISCOVERED, null);
+        var sourceId = "nonExistentSource1";
+        var gameFileDetails = createGameFileDetails(sourceId, "someUrl");
         var tempFilePath = "someFileDir/someFile";
 
-        lenient().when(filePathProvider.createTemporaryFilePath(eq(source), eq(gameTitle)))
+        lenient().when(filePathProvider.createTemporaryFilePath(eq(sourceId),
+                        eq(gameFileDetails.getSourceFileDetails().originalGameTitle())))
                 .thenReturn(tempFilePath);
 
         FileBackupFailedException exception = assertThrows(FileBackupFailedException.class,
-                () -> fileBackupService.backUpGameFile(gameFileVersionBackup));
+                () -> fileBackupService.backUpGameFile(gameFileDetails));
         assertEquals(IllegalArgumentException.class, exception.getCause().getClass());
-
     }
 
     @Test
     void downloadGameFileShouldThrowIfIOExceptionOccurs() throws IOException {
-        var source = sourceFileBackupService.getSource();
-        var gameTitle = "someGameTitle";
-        var gameFileVersionBackup = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                source, "someUrl", "someTitle", "someOriginalFileName",
-                null, gameTitle, "someGameId", "someVersion", "5 KB", null,
-                null, FileBackupStatus.DISCOVERED, null);
+        var sourceId = sourceFileBackupService.getSource();
+        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        gameFileDetails.setSourceFileDetails(new SourceFileDetails(
+                sourceId,
+                gameFileDetails.getSourceFileDetails().originalGameTitle(),
+                gameFileDetails.getSourceFileDetails().fileTitle(),
+                gameFileDetails.getSourceFileDetails().version(),
+                gameFileDetails.getSourceFileDetails().url(),
+                gameFileDetails.getSourceFileDetails().originalFileName(),
+                gameFileDetails.getSourceFileDetails().size()
+        ));
 
-        when(filePathProvider.createTemporaryFilePath(source, gameTitle))
+        when(filePathProvider.createTemporaryFilePath(sourceId,
+                gameFileDetails.getSourceFileDetails().originalGameTitle()))
                 .thenThrow(new IOException());
 
         FileBackupFailedException exception = assertThrows(FileBackupFailedException.class,
-                () -> fileBackupService.backUpGameFile(gameFileVersionBackup));
+                () -> fileBackupService.backUpGameFile(gameFileDetails));
         assertEquals(IOException.class, exception.getCause().getClass());
     }
 
     @Test
     void downloadGameFileShouldThrowIfNotEnoughFreeSpace() throws IOException {
-        var source = sourceFileBackupService.getSource();
-        var gameTitle = "someGameTitle";
-        var gameFileVersionBackup = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                source, "someUrl", "someTitle", "someOriginalFileName",
-                null, gameTitle, "someGameId", "someVersion", "5 KB", null,
-                null, FileBackupStatus.DISCOVERED, null);
+        var sourceId = sourceFileBackupService.getSource();
+        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        gameFileDetails.setSourceFileDetails(new SourceFileDetails(
+                sourceId,
+                gameFileDetails.getSourceFileDetails().originalGameTitle(),
+                gameFileDetails.getSourceFileDetails().fileTitle(),
+                gameFileDetails.getSourceFileDetails().version(),
+                gameFileDetails.getSourceFileDetails().url(),
+                gameFileDetails.getSourceFileDetails().originalFileName(),
+                gameFileDetails.getSourceFileDetails().size()
+        ));
         var tempFilePath = "someFileDir/someFile";
 
-        when(filePathProvider.createTemporaryFilePath(source, gameTitle))
+        when(filePathProvider.createTemporaryFilePath(sourceId,
+                gameFileDetails.getSourceFileDetails().originalGameTitle()))
                 .thenReturn(tempFilePath);
 
         fileManager.setAvailableSizeInBytes(0);
 
         FileBackupFailedException exception = assertThrows(FileBackupFailedException.class,
-                () -> fileBackupService.backUpGameFile(gameFileVersionBackup));
+                () -> fileBackupService.backUpGameFile(gameFileDetails));
         assertEquals(NotEnoughFreeSpaceException.class, exception.getCause().getClass());
     }
 
     @Test
     void isReadyForShouldReturnTrueIfFileIsReadyToDownload() {
-        var gameFileVersionBackup = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                "someSource", "someUrl", "someTitle", "someOriginalFileName",
-                null, null, "someGameId", "someVersion", "5 KB", null,
-                null, FileBackupStatus.DISCOVERED, null);
+        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
 
         when(sourceFileBackupService.isReady())
                 .thenReturn(true);
 
-        assertTrue(fileBackupService.isReadyFor(gameFileVersionBackup));
+        assertTrue(fileBackupService.isReadyFor(gameFileDetails));
     }
 
     @Test
     void isReadyForShouldReturnFalseIfFileIsNotReadyToDownload() {
-        var gameFileVersionBackup = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                "someSource", "someUrl", "someTitle", "someOriginalFileName",
-                null, null, "someGameId", "someVersion", "5 KB", null,
-                null, FileBackupStatus.DISCOVERED, null);
+        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
 
         when(sourceFileBackupService.isReady())
                 .thenReturn(false);
 
-        assertFalse(fileBackupService.isReadyFor(gameFileVersionBackup));
+        assertFalse(fileBackupService.isReadyFor(gameFileDetails));
     }
 }

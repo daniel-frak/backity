@@ -1,16 +1,14 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
 import dev.codesoapbox.backity.core.files.adapters.driven.files.RealFileManager;
-import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
+import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.services.BackupProgress;
 import dev.codesoapbox.backity.core.files.domain.backup.services.FileManager;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileBackupException;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,10 +25,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,25 +47,15 @@ class UrlFileBackupServiceTest {
     @Test
     void shouldDownloadGameFileWithProgressTracking(@TempDir Path tempDir) throws IOException {
         urlFileDownloader = new UrlFileDownloader(new RealFileManager(), progressHistory::add);
-        GameFileDetails gameFileDetails = mockGameFileDetails("someUrl");
+        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
         FileBufferProviderStub fileBufferProvider = new FileBufferProviderStub();
 
         urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileDetails,
                 tempDir + File.separator + "tempFile");
 
-        assertTrue(new File(tempDir + File.separator + gameFileDetails.getOriginalFileName()).exists());
+        assertTrue(new File(tempDir + File.separator
+                + gameFileDetails.getSourceFileDetails().originalFileName()).exists());
         assertEquals(100, progressHistory.get(0).percentage());
-    }
-
-    @NotNull
-    private static GameFileDetails mockGameFileDetails(String gameFileUrl) {
-        return new GameFileDetails(new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                "someSource", gameFileUrl, "someName",
-                "someFileName",
-                "someFilePath", "someGameTitle",
-                "someGameId", "someVersion", "100 KB",
-                LocalDateTime.now(), LocalDateTime.now(),
-                FileBackupStatus.DISCOVERED, null);
     }
 
     @Test
@@ -78,7 +64,7 @@ class UrlFileBackupServiceTest {
         urlFileDownloader = new UrlFileDownloader(fileManager, i -> {
         });
 
-        GameFileDetails gameFileDetails = mockGameFileDetails("someUrl");
+        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
         FileBufferProviderStub fileBufferProvider = new FileBufferProviderStub();
 
         doThrow(new FileNotFoundException())
@@ -93,7 +79,7 @@ class UrlFileBackupServiceTest {
     @Test
     void downloadGameFileShouldThrowWhenFileSizeIsInvalid(@TempDir Path tempDir) {
         urlFileDownloader = new UrlFileDownloader(new RealFileManager(), progressHistory::add);
-        GameFileDetails gameFileDetails = mockGameFileDetails("someUrl");
+        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
         FileBufferProviderStub fileBufferProvider = new FileBufferProviderStub();
         fileBufferProvider.setGiveIncorrectFileSize(true);
 

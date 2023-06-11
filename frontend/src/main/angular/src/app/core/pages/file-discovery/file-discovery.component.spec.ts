@@ -105,20 +105,22 @@ describe('FileDiscoveryComponent', () => {
       source: 'someSource',
       inProgress: true
     };
-    const expectedGameFileDetailss: PageGameFileDetails = {
+    const expectedGameFileDetails: PageGameFileDetails = {
       content: [{
-        title: 'someGameFileDetails'
+        sourceFileDetails: {
+          fileTitle: 'someGameFileDetails'
+        }
       }]
     };
 
     fileDiscoveryClientMock.getStatuses.and.returnValue({subscribe: (s: (f: any) => any) => s([newStatus])});
     fileDiscoveryClientMock.getDiscoveredFiles.and
-      .returnValue({subscribe: (s: (f: any) => any) => s(expectedGameFileDetailss)});
+      .returnValue({subscribe: (s: (f: any) => any) => s(expectedGameFileDetails)});
 
     component.ngOnInit();
 
     expect(component.discoveryStatusBySource.get('someSource')).toBeTrue();
-    expect(component.discoveredFiles).toEqual(expectedGameFileDetailss);
+    expect(component.discoveredFiles).toEqual(expectedGameFileDetails);
     expect(component.newDiscoveredCount).toBe(0);
     expect(component.filesAreLoading).toBeFalse();
   });
@@ -137,7 +139,9 @@ describe('FileDiscoveryComponent', () => {
 
   it('should set newest discovered and increment discovered count on new discovery', () => {
     const expectedGameFileDetailsMessage: GameFileDetailsMessage = {
-      title: 'someGameFileDetails'
+      sourceFileDetails: {
+        fileTitle: 'someGameFileDetails'
+      }
     };
     discoveredSubscriptions[0]({body: JSON.stringify(expectedGameFileDetailsMessage)})
     expect(component.newestDiscovered).toEqual(expectedGameFileDetailsMessage);
@@ -181,7 +185,12 @@ describe('FileDiscoveryComponent', () => {
   it('should enqueue file', () => {
     spyOn(console, 'info');
     const file: GameFileDetails = {
-      title: 'someGameFileDetails'
+      sourceFileDetails: {
+        fileTitle: 'someGameFileDetails'
+      },
+      backupDetails: {
+        status: "DISCOVERED"
+      }
     };
     const observableMock: any = createSpyObj('Observable', ['subscribe', 'pipe']);
     observableMock.pipe.and.returnValue(observableMock);
@@ -189,7 +198,7 @@ describe('FileDiscoveryComponent', () => {
     backupsClientMock.download.and.returnValue(observableMock);
 
     component.enqueueFile(file);
-    expect(file.backupStatus).toEqual(FileBackupStatus.Enqueued);
+    expect(file.backupDetails?.status).toEqual(FileBackupStatus.Enqueued);
     expect(observableMock.subscribe).toHaveBeenCalled();
     expect(console.info).toHaveBeenCalled();
   });
@@ -228,20 +237,25 @@ describe('FileDiscoveryComponent', () => {
     spyOn(console, 'info');
     spyOn(console, 'error');
     const file: GameFileDetails = {
-      title: 'someGameFileDetails'
+      sourceFileDetails: {
+        fileTitle: 'someGameFileDetails'
+      },
+      backupDetails: {
+        status: "DISCOVERED"
+      }
     };
     const expectedError = new Error("error1");
     const observableMock: any = createSpyObj('Observable', ['subscribe', 'pipe']);
     observableMock.pipe.and.returnValue(observableMock);
 
     backupsClientMock.download.and.returnValue(new Observable(subscriber => {
-      expect(file.backupStatus).toEqual(FileBackupStatus.Enqueued);
+      expect(file.backupDetails?.status).toEqual(FileBackupStatus.Enqueued);
       subscriber.error(expectedError);
     }));
 
     component.enqueueFile(file);
 
-    expect(file.backupStatus).toEqual(FileBackupStatus.Discovered);
+    expect(file.backupDetails?.status).toEqual(FileBackupStatus.Discovered);
     expect(console.error).toHaveBeenCalled();
     expect(console.info).toHaveBeenCalled();
   });

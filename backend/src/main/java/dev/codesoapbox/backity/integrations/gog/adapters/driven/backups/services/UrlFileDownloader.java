@@ -27,7 +27,8 @@ public class UrlFileDownloader {
     public String downloadGameFile(FileBufferProvider fileBufferProvider, GameFileDetails gameFileDetails,
                                    String tempFilePath) throws IOException {
         var progress = new BackupProgress();
-        Flux<DataBuffer> dataBufferFlux = fileBufferProvider.getFileBuffer(gameFileDetails.getUrl(), progress);
+        String url = gameFileDetails.getSourceFileDetails().url();
+        Flux<DataBuffer> dataBufferFlux = fileBufferProvider.getFileBuffer(url, progress);
         writeToDisk(dataBufferFlux, tempFilePath, progress);
 
         log.info("Downloaded file {} to {}", gameFileDetails, tempFilePath);
@@ -35,7 +36,8 @@ public class UrlFileDownloader {
         validateDownloadedFileSize(tempFilePath, progress.getContentLengthBytes());
 
         // @TODO Write test for return value
-        return fileManager.renameFileAddingSuffixIfExists(tempFilePath, gameFileDetails.getOriginalFileName());
+        String originalFileName = gameFileDetails.getSourceFileDetails().originalFileName();
+        return fileManager.renameFileAddingSuffixIfExists(tempFilePath, originalFileName);
     }
 
     private void writeToDisk(Flux<DataBuffer> dataBufferFlux, String tempFilePath, BackupProgress progress)

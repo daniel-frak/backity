@@ -15,15 +15,15 @@ import {GameWithFiles} from './gameWithFiles';
 
 
 export interface PageGameWithFiles {
-    totalElements?: number;
     totalPages?: number;
+    totalElements?: number;
     size?: number;
     content?: Array<GameWithFiles>;
     number?: number;
     sort?: SortObject;
+    numberOfElements?: number;
     first?: boolean;
     last?: boolean;
-    numberOfElements?: number;
     pageable?: PageableObject;
     empty?: boolean;
 }

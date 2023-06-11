@@ -34,7 +34,7 @@ public class EnqueuedFileBackupProcessor {
 
         enqueuedFileBackupReference.set(gameFileDetails);
 
-        log.info("Backing up enqueued file {}", gameFileDetails.getUrl());
+        log.info("Backing up enqueued file {}", gameFileDetails.getSourceFileDetails().url());
 
         try {
             messageService.sendBackupStarted(gameFileDetails);

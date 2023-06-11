@@ -5,7 +5,7 @@ import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper
+@Mapper(uses = GameIdJsonMapper.class)
 public abstract class GameFileDetailsJsonMapper {
 
     public static final GameFileDetailsJsonMapper INSTANCE = Mappers.getMapper(GameFileDetailsJsonMapper.class);

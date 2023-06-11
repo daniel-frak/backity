@@ -27,9 +27,13 @@ public class OpenApiAdditionalSchemaProvider implements OpenApiCustomizer {
     public void customise(OpenAPI openApi) {
         Map<String, Schema> schemas = openApi.getComponents()
                 .getSchemas();
-
         ModelConverters modelConverters = ModelConverters.getInstance();
-        getAdditionalClasses().forEach(c -> schemas.putAll(modelConverters.read(c)));
+        getAdditionalClasses().forEach(c -> {
+            Map<String, Schema> schemasToAdd = ModelConverters.getInstance()
+                    .resolveAsResolvedSchema(new AnnotatedType(c))
+                    .referencedSchemas;
+            schemas.putAll(schemasToAdd);
+        });
         getAdditionalEnums().forEach(e -> schemas.putAll(readEnumSchema(modelConverters, e)));
     }
 

@@ -9,26 +9,16 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import {FileBackupStatus} from './fileBackupStatus';
+import {SourceFileDetails} from './sourceFileDetails';
+import {BackupDetails} from './backupDetails';
 
 
 export interface GameFileDetails {
     id?: string;
-    source?: string;
-    url?: string;
-    title?: string;
-    originalFileName?: string;
-    filePath?: string;
-    gameTitle?: string;
     gameId?: string;
-    version?: string;
-    size?: string;
+    sourceFileDetails?: SourceFileDetails;
+    backupDetails?: BackupDetails;
     dateCreated?: string;
     dateModified?: string;
-    backupStatus?: FileBackupStatus;
-    backupFailedReason?: string;
 }
-export namespace GameFileDetails {
-}
-
 

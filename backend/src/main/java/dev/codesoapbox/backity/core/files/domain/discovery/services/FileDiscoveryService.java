@@ -100,10 +100,12 @@ public class FileDiscoveryService {
         Game game = getGameOrCreateNew(sourceFileDetails);
         GameFileDetails gameFileDetails = sourceFileDetails.associateWith(game);
 
-        if (!fileRepository.existsByUrlAndVersion(gameFileDetails.getUrl(), gameFileDetails.getVersion())) {
+        if (!fileRepository.existsByUrlAndVersion(gameFileDetails.getSourceFileDetails().url(),
+                gameFileDetails.getSourceFileDetails().version())) {
             fileRepository.save(gameFileDetails);
             messageService.sendDiscoveredFile(gameFileDetails);
-            log.info("Discovered new file: {} (gameId: {})", gameFileDetails.getUrl(), gameFileDetails.getGameTitle());
+            log.info("Discovered new file: {} (gameId: {})", gameFileDetails.getSourceFileDetails().url(),
+                    gameFileDetails.getGameId().value());
         }
     }
 

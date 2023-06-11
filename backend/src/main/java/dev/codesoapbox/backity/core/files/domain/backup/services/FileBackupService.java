@@ -3,7 +3,6 @@ package dev.codesoapbox.backity.core.files.domain.backup.services;
 import dev.codesoapbox.backity.core.files.domain.backup.exceptions.FileBackupFailedException;
 import dev.codesoapbox.backity.core.files.domain.backup.exceptions.FileBackupUrlEmptyException;
 import dev.codesoapbox.backity.core.files.domain.backup.exceptions.NotEnoughFreeSpaceException;
-import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -37,13 +36,14 @@ public class FileBackupService {
     }
 
     public void backUpGameFile(GameFileDetails gameFileDetails) {
-        log.info("Backing up game file {} (url={})...", gameFileDetails.getId(), gameFileDetails.getUrl());
+        log.info("Backing up game file {} (url={})...", gameFileDetails.getId(),
+                gameFileDetails.getSourceFileDetails().url());
 
         try {
             markInProgress(gameFileDetails);
             validateReadyForDownload(gameFileDetails);
             String tempFilePath = createTemporaryFilePath(gameFileDetails);
-            validateEnoughFreeSpaceOnDisk(tempFilePath, gameFileDetails.getSize());
+            validateEnoughFreeSpaceOnDisk(tempFilePath, gameFileDetails.getSourceFileDetails().size());
             tryToBackUp(gameFileDetails, tempFilePath);
         } catch (IOException | RuntimeException e) {
             markFailed(gameFileDetails, e);
@@ -52,19 +52,21 @@ public class FileBackupService {
     }
 
     private void markInProgress(GameFileDetails gameFileDetails) {
-        gameFileDetails.setBackupStatus(FileBackupStatus.IN_PROGRESS);
+        gameFileDetails.markAsInProgress();
         gameFileDetailsRepository.save(gameFileDetails);
     }
 
     private void validateReadyForDownload(GameFileDetails gameFileDetails) {
-        if (Strings.isBlank(gameFileDetails.getUrl())) {
+        if (Strings.isBlank(gameFileDetails.getSourceFileDetails().url())) {
             throw new FileBackupUrlEmptyException(gameFileDetails.getId());
         }
     }
 
     private String createTemporaryFilePath(GameFileDetails gameFileDetails) throws IOException {
         return filePathProvider.createTemporaryFilePath(
-                gameFileDetails.getSource(), gameFileDetails.getGameTitle());
+                gameFileDetails.getSourceFileDetails().sourceId(),
+                // @TODO Get game title from Game?
+                gameFileDetails.getSourceFileDetails().originalGameTitle());
     }
 
     private void validateEnoughFreeSpaceOnDisk(String filePath, String size) {
@@ -87,7 +89,7 @@ public class FileBackupService {
     }
 
     private void updateFilePath(GameFileDetails gameFileDetails, String tempFilePath) {
-        gameFileDetails.setFilePath(tempFilePath);
+        gameFileDetails.updateFilePath(tempFilePath);
         gameFileDetailsRepository.save(gameFileDetails);
     }
 
@@ -95,7 +97,8 @@ public class FileBackupService {
      * @return the path of the downloaded file
      */
     private String downloadToDisk(GameFileDetails gameFileDetails, String tempFilePath) throws IOException {
-        SourceFileBackupService sourceDownloader = getSourceDownloader(gameFileDetails.getSource());
+        String sourceId = gameFileDetails.getSourceFileDetails().sourceId();
+        SourceFileBackupService sourceDownloader = getSourceDownloader(sourceId);
         return sourceDownloader.backUpGameFile(gameFileDetails, tempFilePath);
     }
 
@@ -107,18 +110,18 @@ public class FileBackupService {
     private void tryToCleanUpAfterFailedDownload(GameFileDetails gameFileDetails,
                                                  String tempFilePath) throws IOException {
         fileManager.deleteIfExists(tempFilePath);
-        if (tempFilePath.equals(gameFileDetails.getFilePath())) {
-            gameFileDetails.setFilePath(null);
+        if (tempFilePath.equals(gameFileDetails.getBackupDetails().getFilePath())) {
+            gameFileDetails.clearFilePath();
             gameFileDetailsRepository.save(gameFileDetails);
         }
     }
 
-    private SourceFileBackupService getSourceDownloader(String source) {
-        if (!sourceFileDownloaders.containsKey(source)) {
-            throw new IllegalArgumentException("File downloader for sourceId not found: " + source);
+    private SourceFileBackupService getSourceDownloader(String sourceId) {
+        if (!sourceFileDownloaders.containsKey(sourceId)) {
+            throw new IllegalArgumentException("File downloader for sourceId not found: " + sourceId);
         }
 
-        return sourceFileDownloaders.get(source);
+        return sourceFileDownloaders.get(sourceId);
     }
 
     private void markFailed(GameFileDetails gameFileDetails, Exception e) {
@@ -127,6 +130,6 @@ public class FileBackupService {
     }
 
     public boolean isReadyFor(GameFileDetails gameFileDetails) {
-        return getSourceDownloader(gameFileDetails.getSource()).isReady();
+        return getSourceDownloader(gameFileDetails.getSourceFileDetails().sourceId()).isReady();
     }
 }

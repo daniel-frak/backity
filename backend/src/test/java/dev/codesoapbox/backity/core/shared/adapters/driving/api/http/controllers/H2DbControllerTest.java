@@ -3,9 +3,11 @@ package dev.codesoapbox.backity.core.shared.adapters.driving.api.http.controller
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileDetailsJpaRepository;
 import dev.codesoapbox.backity.core.files.config.FileBackupBeanConfig;
 import dev.codesoapbox.backity.core.files.config.FileManagementBeanConfig;
-import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
+import dev.codesoapbox.backity.core.files.config.GameBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
+import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.game.Game;
+import dev.codesoapbox.backity.core.files.domain.game.GameRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,8 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = H2DbController.class, properties = "h2dump.path=test_dump.sql")
-@Import({FileManagementBeanConfig.class, FileBackupBeanConfig.class})
+@Import({FileManagementBeanConfig.class, FileBackupBeanConfig.class, GameBeanConfig.class})
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 class H2DbControllerTest {
@@ -41,6 +41,9 @@ class H2DbControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private GameRepository gameRepository;
 
     @Autowired
     private GameFileDetailsJpaRepository gameFileVersionRepository;
@@ -64,13 +67,10 @@ class H2DbControllerTest {
 
     @Test
     void shouldDumpSql() throws Exception {
-        var gameFileVersionBackup = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                "someSource", "someUrl", "someTitle", "someOriginalFileName",
-                null, null, "someGameId", "someVersion", "100 KB",
-                LocalDateTime.parse("2022-04-29T14:15:53"),
-                null, FileBackupStatus.DISCOVERED, null);
-        gameFileVersionRepository.save(gameFileVersionBackup);
+        GameFileDetails gameFileDetails = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
+        Game game = new Game(gameFileDetails.getGameId(), "Test game");
+        gameRepository.save(game);
+        gameFileVersionRepository.save(gameFileDetails);
 
         mockMvc.perform(get("/api/h2/dump"))
                 .andDo(print())

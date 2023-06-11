@@ -9,26 +9,16 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import {FileBackupStatus} from './fileBackupStatus';
+import {BackupDetailsMessage} from './backupDetailsMessage';
+import {SourceFileDetailsMessage} from './sourceFileDetailsMessage';
 
 
 export interface GameFileDetailsMessage {
     id?: string;
-    source?: string;
-    url?: string;
-    title?: string;
-    originalFileName?: string;
-    filePath?: string;
-    gameTitle?: string;
     gameId?: string;
-    version?: string;
-    size?: string;
+    sourceFileDetails?: SourceFileDetailsMessage;
+    backupDetails?: BackupDetailsMessage;
     dateCreated?: string;
     dateModified?: string;
-    backupStatus?: FileBackupStatus;
-    backupFailedReason?: string;
 }
-export namespace GameFileDetailsMessage {
-}
-
 

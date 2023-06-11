@@ -1,8 +1,7 @@
 package dev.codesoapbox.backity.core.files.application;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
+import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameRepository;
@@ -16,7 +15,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
-import java.util.UUID;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,11 +40,7 @@ class GameFacadeTest {
     void shouldGetGamesWithFiles() {
         var pageable = PageRequest.of(0, 2);
         Game game = Game.createNew("Test game");
-        var gameFile = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                "someSource", "someUrl", "someTitle", "someOriginalFileName",
-                null, null, "someGameId", "someVersion", "100 KB",
-                null, null, FileBackupStatus.DISCOVERED, null);
+        var gameFile = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
         List<GameFileDetails> gameFileDetails = singletonList(gameFile);
 
         when(gameRepository.findAll(pageable))

@@ -3,9 +3,9 @@ package dev.codesoapbox.backity.core.files.backup.adapters.driven.persistence;
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileDetailsJpaRepository;
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileDetailsSpringRepository;
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.JpaGameFileDetailsMapper;
-import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
+import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,53 +49,68 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
     private void cleanDatabase() {
         entityManager.getTransaction().begin();
         entityManager.createNativeQuery("DELETE FROM GAME_FILE_DETAILS;").executeUpdate();
+        entityManager.createNativeQuery("DELETE FROM GAME;").executeUpdate();
         entityManager.getTransaction().commit();
     }
 
     private void persistTestEnqueuedFiles() {
         entityManager.getTransaction().begin();
+        entityManager.createNativeQuery("""
+                INSERT INTO GAME
+                (id, title, date_created, date_modified) VALUES
+                ('1eec1c19-25bf-4094-b926-84b5bb8fa281', 'Test Game 1', '2022-04-29T14:15:53', '2022-04-29T14:15:53');
+                INSERT INTO GAME
+                (id, title, date_created, date_modified) VALUES
+                ('5bdd248a-c3aa-487a-8479-0bfdb32f7ae5', 'Test Game 1', '2022-04-29T14:15:53', '2022-04-29T14:15:53');
+                """).executeUpdate();
         entityManager.createNativeQuery("""                         
                         INSERT INTO GAME_FILE_DETAILS
-                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, backup_status, backup_failed_reason) VALUES
-                        ('acde26d7-33c7-42ee-be16-bca91a604b48', 'someSource1', 'someUrl1', 'someTitle1', 
-                        'someOriginalFileName1', 'someGameTitle1',
+                        (id, source_id, url, file_title, original_file_name, original_game_title, game_id, 
+                        version, size, date_created, date_modified, status, failed_reason) VALUES
+                        ('acde26d7-33c7-42ee-be16-bca91a604b48', 'someSourceId1', 'someUrl1', 'someFileTitle1', 
+                        'someOriginalFileName1', 'someOriginalGameTitle1',
                         '1eec1c19-25bf-4094-b926-84b5bb8fa281' ,
-                        'someVersion1', 'someSize1', '2022-04-29T14:15:53', 'ENQUEUED', 'someFailedReason1');
+                        'someVersion1', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'ENQUEUED', null);
                         
                         INSERT INTO GAME_FILE_DETAILS
-                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, backup_status, backup_failed_reason) VALUES
-                        ('a6adc122-df20-4e2c-a975-7d4af7104704', 'someSource2', 'someUrl2', 'someTitle2', 
-                        'someOriginalFileName2', 'someGameTitle2', 
+                        (id, source_id, url, file_title, original_file_name, original_game_title, game_id,
+                         version, size, date_created, date_modified, status, failed_reason) VALUES
+                        ('a6adc122-df20-4e2c-a975-7d4af7104704', 'someSourceId2', 'someUrl2', 'someFileTitle2', 
+                        'someOriginalFileName2', 'someOriginalGameTitle2', 
                         '1eec1c19-25bf-4094-b926-84b5bb8fa281',
-                        'someVersion2', 'someSize2', '2022-05-29T14:15:53', 'SUCCESS', 'someFailedReason2');
+                        'someVersion2', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'SUCCESS', null);
                         
                         INSERT INTO GAME_FILE_DETAILS
-                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, backup_status, backup_failed_reason) VALUES
-                        ('0d4d181c-9a77-4146-bbd6-40f7d4453b5f', 'someSource3', 'someUrl3', 'someTitle3', 
-                        'someOriginalFileName3', 'someGameTitle3', 
+                        (id, source_id, url, file_title, original_file_name, original_game_title, game_id,
+                         version, size, date_created, date_modified, status, failed_reason) VALUES
+                        ('0d4d181c-9a77-4146-bbd6-40f7d4453b5f', 'someSourceId3', 'someUrl3', 'someFileTitle3', 
+                        'someOriginalFileName3', 'someOriginalGameTitle3', 
                         '5bdd248a-c3aa-487a-8479-0bfdb32f7ae5',
-                         'someVersion3', 'someSize3', '2022-06-29T14:15:53', 'ENQUEUED', 'someFailedReason3');
+                         'someVersion3', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'ENQUEUED', null);
                         
                         INSERT INTO GAME_FILE_DETAILS
-                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, backup_status, backup_failed_reason) VALUES
-                        ('568afe65-018b-40fc-a8b4-481ded571ff8', 'someSource4', 'someUrl4', 'someTitle4', 
-                        'someOriginalFileName4', 'someGameTitle4',
+                        (id, source_id, url, file_title, original_file_name, original_game_title, game_id,
+                         version, size, date_created, date_modified, status, failed_reason) VALUES
+                        ('568afe65-018b-40fc-a8b4-481ded571ff8', 'someSourceId4', 'someUrl4', 'someFileTitle4', 
+                        'someOriginalFileName4', 'someOriginalGameTitle4',
                          '5bdd248a-c3aa-487a-8479-0bfdb32f7ae5',
-                         'someVersion4', 'someSize4', '2022-07-29T14:15:53', 'FAILED', 'someFailedReason4');
+                         'someVersion4', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'FAILED', null);
                         
                         INSERT INTO GAME_FILE_DETAILS
-                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, backup_status, backup_failed_reason) VALUES
-                        ('0a2a4b8d-f02e-4e3e-a3da-f47e1ea6aa30', 'someSource5', 'someUrl5', 'someTitle5', 
-                        'someOriginalFileName5', 'someGameTitle5',
+                        (id, source_id, url, file_title, original_file_name, original_game_title, game_id, 
+                        version, size, date_created, date_modified, status, failed_reason) VALUES
+                        ('0a2a4b8d-f02e-4e3e-a3da-f47e1ea6aa30', 'someSourceId5', 'someUrl5', 'someFileTitle5', 
+                        'someOriginalFileName5', 'someOriginalGameTitle5',
                          '1eec1c19-25bf-4094-b926-84b5bb8fa281',
-                        'someVersion5', 'someSize5', '2022-08-29T14:15:53', 'IN_PROGRESS', 'someFailedReason5');
+                        'someVersion5', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'IN_PROGRESS', null);
                         
                         INSERT INTO GAME_FILE_DETAILS
-                        (id, source, url, title, original_file_name, game_title, game_id, version, size, date_created, backup_status, backup_failed_reason) VALUES
-                        ('3d65af79-a558-4f23-88bd-3c04e977e63f', 'someSource6', 'someUrl6', 'someTitle6', 
-                        'someOriginalFileName6', 'someGameTitle6',
+                        (id, source_id, url, file_title, original_file_name, original_game_title, game_id,
+                         version, size, date_created, date_modified, status, failed_reason) VALUES
+                        ('3d65af79-a558-4f23-88bd-3c04e977e63f', 'someSourceId6', 'someUrl6', 'someFileTitle6', 
+                        'someOriginalFileName6', 'someOriginalGameTitle6',
                          '1eec1c19-25bf-4094-b926-84b5bb8fa281',
-                        'someVersion6', 'someSize6', '2022-09-29T14:16:43', 'DISCOVERED', 'someFailedReason6');
+                        'someVersion6', '5 KB', '2022-04-29T14:15:53', '2023-04-29T14:15:53', 'DISCOVERED', null);
                 """).executeUpdate();
         entityManager.getTransaction().commit();
     }
@@ -113,12 +127,7 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
         assertTrue(result.isPresent());
         assertNotNull(result.get().getId());
 
-        var expectedResult = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                "someSource1", "someUrl1", "someTitle1", "someOriginalFileName1",
-                null, "someGameTitle1", result.get().getGameId(), "someVersion1", "someSize1",
-                LocalDateTime.parse("2022-04-29T14:15:53"),
-                null, FileBackupStatus.ENQUEUED, "someFailedReason1");
+        var expectedResult = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
         assertEquals(expectedResult, result.get());
     }
 
@@ -128,32 +137,17 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
 
         assertNotNull(result.getContent().get(0).getId());
         var expectedResult = List.of(
-                new GameFileDetails(
-                        result.getContent().get(0).getId(), "someSource1", "someUrl1", "someTitle1",
-                        "someOriginalFileName1", null, "someGameTitle1",
-                        result.getContent().get(0).getGameId(), "someVersion1", "someSize1",
-                        LocalDateTime.parse("2022-04-29T14:15:53"),
-                        null, FileBackupStatus.ENQUEUED, "someFailedReason1"),
-                new GameFileDetails(
-                        result.getContent().get(1).getId(), "someSource3", "someUrl3", "someTitle3",
-                        "someOriginalFileName3", null, "someGameTitle3",
-                        result.getContent().get(1).getGameId(), "someVersion3", "someSize3",
-                        LocalDateTime.parse("2022-06-29T14:15:53"), null, FileBackupStatus.ENQUEUED,
-                        "someFailedReason3")
+                TestGameFileDetails.GAME_FILE_DETAILS_1.get(),
+                TestGameFileDetails.GAME_FILE_DETAILS_3.get()
         );
         assertEquals(expectedResult, result.getContent());
     }
 
     @Test
     void shouldSave() {
-        var newEnqueuedFileDownload = new GameFileDetails(
-                new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")),
-                "someSourceNew", "someUrlNew", "someTitleNew", "someOriginalFileNameNew",
-                null, "someGameTitleNew", GameId.newInstance().value().toString(),
-                "someVersionNew", "someSizeNew", LocalDateTime.parse("2022-04-29T14:15:53"),
-                null, FileBackupStatus.ENQUEUED, "someFailedReasonNew");
+        var newGameFileDetails = TestGameFileDetails.FULL_GAME_FILE_DETAILS.get();
 
-        var result = gameFileVersionJpaRepository.save(newEnqueuedFileDownload);
+        var result = gameFileVersionJpaRepository.save(newGameFileDetails);
 
         assertNotNull(result.getId());
         assertNotNull(result.getDateCreated());
@@ -171,11 +165,7 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
         assertTrue(result.isPresent());
         assertNotNull(result.get().getId());
 
-        var expectedResult = new GameFileDetails(
-                result.get().getId(), "someSource5", "someUrl5", "someTitle5",
-                "someOriginalFileName5", null, "someGameTitle5", result.get().getGameId(),
-                "someVersion5", "someSize5", LocalDateTime.parse("2022-08-29T14:15:53"),
-                null, FileBackupStatus.IN_PROGRESS, "someFailedReason5");
+        var expectedResult = TestGameFileDetails.GAME_FILE_DETAILS_5.get();
         assertEquals(expectedResult, result.get());
     }
 
@@ -185,18 +175,9 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
 
         assertNotNull(result.getContent().get(0).getId());
         var expectedResult = List.of(
-                new GameFileDetails(
-                        result.getContent().get(0).getId(), "someSource2", "someUrl2", "someTitle2",
-                        "someOriginalFileName2", null, "someGameTitle2",
-                        result.getContent().get(0).getGameId(), "someVersion2", "someSize2",
-                        LocalDateTime.parse("2022-05-29T14:15:53"),
-                        null, FileBackupStatus.SUCCESS, "someFailedReason2"),
-                new GameFileDetails(
-                        result.getContent().get(1).getId(), "someSource4", "someUrl4", "someTitle4",
-                        "someOriginalFileName4", null, "someGameTitle4",
-                        result.getContent().get(1).getGameId(), "someVersion4", "someSize4",
-                        LocalDateTime.parse("2022-07-29T14:15:53"),
-                        null, FileBackupStatus.FAILED, "someFailedReason4")
+
+                TestGameFileDetails.GAME_FILE_DETAILS_2.get(),
+                TestGameFileDetails.GAME_FILE_DETAILS_4.get()
         );
         assertEquals(expectedResult, result.getContent());
     }
@@ -216,13 +197,7 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
         GameFileDetailsId id = new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48"));
         Optional<GameFileDetails> result = gameFileVersionJpaRepository.findById(id);
 
-        assertTrue(result.isPresent());
-
-        var expectedResult = new GameFileDetails(
-                result.get().getId(), "someSource1", "someUrl1", "someTitle1",
-                "someOriginalFileName1", null, "someGameTitle1", result.get().getGameId(),
-                "someVersion1", "someSize1", LocalDateTime.parse("2022-04-29T14:15:53"),
-                null, FileBackupStatus.ENQUEUED, "someFailedReason1");
+        var expectedResult = TestGameFileDetails.GAME_FILE_DETAILS_1.get();
         assertThat(result.get())
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResult);
@@ -233,12 +208,7 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
         Page<GameFileDetails> result = gameFileVersionJpaRepository.findAllDiscovered(Pageable.unpaged());
 
         assertNotNull(result.getContent().get(0).getId());
-        var expectedResult = new GameFileDetails(
-                result.getContent().get(0).getId(), "someSource6", "someUrl6", "someTitle6",
-                "someOriginalFileName6", null, "someGameTitle6",
-                result.getContent().get(0).getGameId(), "someVersion6", "someSize6", 
-                LocalDateTime.parse("2022-09-29T14:16:43"), null, FileBackupStatus.DISCOVERED,
-                "someFailedReason6");
+        var expectedResult = TestGameFileDetails.GAME_FILE_DETAILS_6.get();
         assertEquals(singletonList(expectedResult), result.getContent());
     }
 

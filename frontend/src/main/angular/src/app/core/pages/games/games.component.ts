@@ -31,11 +31,11 @@ export class GamesComponent implements OnInit {
   }
 
   backUp(file: GameFileDetails) {
-    file.backupStatus = FileBackupStatus.Enqueued;
+    file.backupDetails!.status = FileBackupStatus.Enqueued;
     console.info("Enqueuing backup: " + file.id);
     this.backupsClient.download(file.id!)
       .pipe(catchError(e => {
-        file.backupStatus = FileBackupStatus.Discovered;
+        file.backupDetails!.status = FileBackupStatus.Discovered;
         return throwError(e);
       }))
       .subscribe(() => {
