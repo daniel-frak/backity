@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class JpaSourceFileDetails {
+public class SourceFileDetailsJpaEntity {
 
     private String sourceId;
     private String originalGameTitle;

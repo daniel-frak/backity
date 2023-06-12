@@ -10,18 +10,18 @@ import org.mapstruct.NullValueCheckStrategy;
 import java.util.UUID;
 
 @Mapper(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
-public abstract class JpaGameMapper {
+public abstract class GameJpaEntityMapper {
 
     @Mapping(target = "dateCreated", ignore = true)
     @Mapping(target = "dateModified", ignore = true)
-    public abstract JpaGame toEntity(Game model);
+    public abstract GameJpaEntity toEntity(Game model);
 
     protected UUID toUuid(GameId id) {
         return id.value();
     }
 
     @BeanMapping(ignoreUnmappedSourceProperties = {"dateCreated", "dateModified"})
-    public abstract Game toDomain(JpaGame entity);
+    public abstract Game toDomain(GameJpaEntity entity);
 
     protected GameId toId(UUID uuid) {
         return new GameId(uuid);

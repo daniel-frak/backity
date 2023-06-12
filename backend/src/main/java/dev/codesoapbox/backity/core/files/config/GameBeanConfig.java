@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.files.config;
 
+import dev.codesoapbox.backity.core.files.adapters.driven.persistence.game.GameJpaEntityMapper;
+import dev.codesoapbox.backity.core.files.adapters.driven.persistence.game.GameJpaEntitySpringRepository;
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.game.GameJpaRepository;
-import dev.codesoapbox.backity.core.files.adapters.driven.persistence.game.JpaGameMapper;
-import dev.codesoapbox.backity.core.files.adapters.driven.persistence.game.JpaGameSpringRepository;
 import dev.codesoapbox.backity.core.files.application.GameFacade;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.game.GameRepository;
@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Configuration;
 public class GameBeanConfig {
 
     @Bean
-    GameRepository gameRepository(JpaGameSpringRepository springRepository) {
-        JpaGameMapper mapper = Mappers.getMapper(JpaGameMapper.class);
+    GameRepository gameRepository(GameJpaEntitySpringRepository springRepository) {
+        GameJpaEntityMapper mapper = Mappers.getMapper(GameJpaEntityMapper.class);
         return new GameJpaRepository(springRepository, mapper);
     }
 

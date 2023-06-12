@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class JpaBackupDetails {
+public class BackupDetailsJpaEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING)

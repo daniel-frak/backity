@@ -19,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 abstract class GameJpaRepositoryAbstractIT {
 
-    private static final JpaGameMapper MAPPER = Mappers.getMapper(JpaGameMapper.class);
+    private static final GameJpaEntityMapper MAPPER = Mappers.getMapper(GameJpaEntityMapper.class);
 
     @Autowired
-    private JpaGameSpringRepository springRepository;
+    private GameJpaEntitySpringRepository springRepository;
 
     @Autowired
     private EntityManagerFactory entityManagerFactory;

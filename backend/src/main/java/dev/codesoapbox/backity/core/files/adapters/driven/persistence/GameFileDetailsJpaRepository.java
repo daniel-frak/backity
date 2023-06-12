@@ -17,7 +17,7 @@ import java.util.Optional;
 public class GameFileDetailsJpaRepository implements GameFileDetailsRepository {
 
     private final GameFileDetailsSpringRepository springRepository;
-    private final JpaGameFileDetailsMapper mapper;
+    private final GameFileDetailsJpaEntityMapper mapper;
 
     @Override
     public Optional<GameFileDetails> findOldestWaitingForDownload() {
@@ -34,8 +34,8 @@ public class GameFileDetailsJpaRepository implements GameFileDetailsRepository {
 
     @Override
     public GameFileDetails save(GameFileDetails gameFileDetails) {
-        JpaGameFileDetails entity = mapper.toEntity(gameFileDetails);
-        JpaGameFileDetails savedEntity = springRepository.save(entity);
+        GameFileDetailsJpaEntity entity = mapper.toEntity(gameFileDetails);
+        GameFileDetailsJpaEntity savedEntity = springRepository.save(entity);
         return mapper.toModel(savedEntity);
     }
 

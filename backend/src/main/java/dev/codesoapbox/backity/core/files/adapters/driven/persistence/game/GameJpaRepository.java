@@ -13,8 +13,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class GameJpaRepository implements GameRepository {
 
-    private final JpaGameSpringRepository springRepository;
-    private final JpaGameMapper mapper;
+    private final GameJpaEntitySpringRepository springRepository;
+    private final GameJpaEntityMapper mapper;
 
     @Transactional
     @Override

@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.files.backup.adapters.driven.persistence;
 
+import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileDetailsJpaEntityMapper;
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileDetailsJpaRepository;
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileDetailsSpringRepository;
-import dev.codesoapbox.backity.core.files.adapters.driven.persistence.JpaGameFileDetailsMapper;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
@@ -69,7 +69,7 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
 
     @BeforeEach
     void setUp() {
-        JpaGameFileDetailsMapper mapper = Mappers.getMapper(JpaGameFileDetailsMapper.class);
+        GameFileDetailsJpaEntityMapper mapper = Mappers.getMapper(GameFileDetailsJpaEntityMapper.class);
         gameFileVersionJpaRepository = new GameFileDetailsJpaRepository(gameFileDetailsSpringRepository, mapper);
         entityManager = entityManagerFactory.createEntityManager();
         cleanDatabase();

@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.adapters.driven.persistence;
 
-import dev.codesoapbox.backity.core.files.adapters.driven.persistence.game.JpaGame;
+import dev.codesoapbox.backity.core.files.adapters.driven.persistence.game.GameJpaEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -23,20 +23,20 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class JpaGameFileDetails {
+public class GameFileDetailsJpaEntity {
 
     @Id
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "game_id", referencedColumnName = "id")
-    private JpaGame game;
+    private GameJpaEntity game;
 
     @Embedded
-    private JpaSourceFileDetails sourceFileDetails;
+    private SourceFileDetailsJpaEntity sourceFileDetails;
 
     @Embedded
-    private JpaBackupDetails backupDetails;
+    private BackupDetailsJpaEntity backupDetails;
 
     @NotNull
     @CreatedDate

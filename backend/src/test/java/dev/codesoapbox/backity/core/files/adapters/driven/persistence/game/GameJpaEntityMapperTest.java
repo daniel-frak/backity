@@ -9,9 +9,9 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JpaGameMapperTest {
+class GameJpaEntityMapperTest {
 
-    private final JpaGameMapper mapper = Mappers.getMapper(JpaGameMapper.class);
+    private final GameJpaEntityMapper mapper = Mappers.getMapper(GameJpaEntityMapper.class);
     @Test
     void shouldMapToEntity() {
         var uuid = UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5");
@@ -20,7 +20,7 @@ class JpaGameMapperTest {
 
         var result = mapper.toEntity(game);
 
-        var expectedResult = new JpaGame();
+        var expectedResult = new GameJpaEntity();
         expectedResult.setId(uuid);
         expectedResult.setTitle(title);
 

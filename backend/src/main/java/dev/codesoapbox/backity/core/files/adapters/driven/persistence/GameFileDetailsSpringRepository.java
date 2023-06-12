@@ -10,15 +10,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface GameFileDetailsSpringRepository extends JpaRepository<JpaGameFileDetails, UUID> {
+public interface GameFileDetailsSpringRepository extends JpaRepository<GameFileDetailsJpaEntity, UUID> {
 
     // @TODO Remove unnecessary duplications of findAllByStatus
     @Query("SELECT f FROM GameFileDetails f" +
             " WHERE f.backupDetails.status = dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus.ENQUEUED" +
             " ORDER BY f.dateCreated ASC")
-    Page<JpaGameFileDetails> findAllWaitingForDownload(Pageable pageable);
+    Page<GameFileDetailsJpaEntity> findAllWaitingForDownload(Pageable pageable);
 
-    Optional<JpaGameFileDetails> findByBackupDetailsStatus(FileBackupStatus status);
+    Optional<GameFileDetailsJpaEntity> findByBackupDetailsStatus(FileBackupStatus status);
 
     @Query("SELECT f FROM GameFileDetails f" +
             " WHERE f.backupDetails.status IN (" +
@@ -26,11 +26,11 @@ public interface GameFileDetailsSpringRepository extends JpaRepository<JpaGameFi
             " dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus.FAILED" +
             ")" +
             " ORDER BY f.dateCreated ASC")
-    Page<JpaGameFileDetails> findAllProcessed(Pageable pageable);
+    Page<GameFileDetailsJpaEntity> findAllProcessed(Pageable pageable);
 
     boolean existsBySourceFileDetailsUrlAndSourceFileDetailsVersion(String url, String version);
 
-    Page<JpaGameFileDetails> findAllByBackupDetailsStatus(Pageable pageable, FileBackupStatus status);
+    Page<GameFileDetailsJpaEntity> findAllByBackupDetailsStatus(Pageable pageable, FileBackupStatus status);
 
-    List<JpaGameFileDetails> findAllByGameId(UUID gameId);
+    List<GameFileDetailsJpaEntity> findAllByGameId(UUID gameId);
 }

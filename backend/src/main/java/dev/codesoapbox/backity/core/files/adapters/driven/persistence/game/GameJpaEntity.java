@@ -17,7 +17,7 @@ import java.util.UUID;
 @EntityListeners(AuditingEntityListener.class)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class JpaGame {
+public class GameJpaEntity {
 
     @Id
     @EqualsAndHashCode.Include

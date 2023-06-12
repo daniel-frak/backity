@@ -9,13 +9,13 @@ import org.mapstruct.Mapping;
 import java.util.UUID;
 
 @Mapper
-public abstract class JpaGameFileDetailsMapper {
+public abstract class GameFileDetailsJpaEntityMapper {
 
     @Mapping(target = "game.id", source = "gameId")
-    public abstract JpaGameFileDetails toEntity(GameFileDetails model);
+    public abstract GameFileDetailsJpaEntity toEntity(GameFileDetails model);
 
     @Mapping(target = "gameId", source = "game.id")
-    public abstract GameFileDetails toModel(JpaGameFileDetails entity);
+    public abstract GameFileDetails toModel(GameFileDetailsJpaEntity entity);
 
     protected UUID toUuid(GameId id) {
         return id.value();

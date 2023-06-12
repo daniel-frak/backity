@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.adapters.driven.persistence;
 
-import dev.codesoapbox.backity.core.files.adapters.driven.persistence.game.JpaGame;
+import dev.codesoapbox.backity.core.files.adapters.driven.persistence.game.GameJpaEntity;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
@@ -12,22 +12,22 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class JpaGameFileDetailsDetailsMapperTest {
+class GameFileDetailsDetailsMapperTestJpaEntity {
 
-    private final JpaGameFileDetailsMapper MAPPER = Mappers.getMapper(JpaGameFileDetailsMapper.class);
+    private final GameFileDetailsJpaEntityMapper MAPPER = Mappers.getMapper(GameFileDetailsJpaEntityMapper.class);
 
     @Test
     void shouldMapToEntity() {
         GameFileDetails model = TestGameFileDetails.discovered().build();
 
-        JpaGameFileDetails result = MAPPER.toEntity(model);
+        GameFileDetailsJpaEntity result = MAPPER.toEntity(model);
 
-        JpaGame jpaGame = new JpaGame();
-        jpaGame.setId(UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281"));
-        var expectedResult = new JpaGameFileDetails(
+        GameJpaEntity gameJpaEntity = new GameJpaEntity();
+        gameJpaEntity.setId(UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281"));
+        var expectedResult = new GameFileDetailsJpaEntity(
                 UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48"),
-                jpaGame,
-                new JpaSourceFileDetails(
+                gameJpaEntity,
+                new SourceFileDetailsJpaEntity(
                         "someSourceId",
                         "someOriginalGameTitle",
                         "someFileTitle",
@@ -36,7 +36,7 @@ class JpaGameFileDetailsDetailsMapperTest {
                         "someOriginalFileName",
                         "5 KB"
                 ),
-                new JpaBackupDetails(
+                new BackupDetailsJpaEntity(
                         FileBackupStatus.DISCOVERED,
                         null,
                         null
@@ -51,13 +51,13 @@ class JpaGameFileDetailsDetailsMapperTest {
 
     @Test
     void shouldMapToModel() {
-        JpaGame jpaGame = new JpaGame();
-        jpaGame.setId(UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281"));
+        GameJpaEntity gameJpaEntity = new GameJpaEntity();
+        gameJpaEntity.setId(UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281"));
 
-        var model = new JpaGameFileDetails(
+        var model = new GameFileDetailsJpaEntity(
                 UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48"),
-                jpaGame,
-                new JpaSourceFileDetails(
+                gameJpaEntity,
+                new SourceFileDetailsJpaEntity(
                         "someSourceId",
                         "someOriginalGameTitle",
                         "someFileTitle",
@@ -66,7 +66,7 @@ class JpaGameFileDetailsDetailsMapperTest {
                         "someOriginalFileName",
                         "5 KB"
                 ),
-                new JpaBackupDetails(
+                new BackupDetailsJpaEntity(
                         FileBackupStatus.DISCOVERED,
                         null,
                         null
