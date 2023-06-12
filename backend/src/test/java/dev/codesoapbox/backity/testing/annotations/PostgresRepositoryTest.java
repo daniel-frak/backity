@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.testing.containers.PostgresContainerInitializer;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.lang.annotation.ElementType;
@@ -18,5 +19,6 @@ import java.lang.annotation.Target;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("postgres")
 @ContextConfiguration(initializers = {PostgresContainerInitializer.class})
+@TestPropertySource(properties = {"spring.jpa.hibernate.ddl-auto=validate"})
 public @interface PostgresRepositoryTest {
 }
