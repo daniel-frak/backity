@@ -2,12 +2,8 @@ package dev.codesoapbox.backity.core.files.config;
 
 import dev.codesoapbox.backity.core.files.adapters.driven.messaging.FileBackupSpringMessageService;
 import dev.codesoapbox.backity.core.files.adapters.driven.messaging.model.GameFileDetailsMessageMapper;
-import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileDetailsJpaEntityMapper;
-import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileDetailsJpaRepository;
-import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileDetailsSpringRepository;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.backup.services.*;
-import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -23,17 +19,6 @@ public class FileBackupBeanConfig {
                                      List<SourceFileBackupService> fileDownloaders,
                                      FileManager fileManager) {
         return new FileBackupService(filePathProvider, gameFileDetailsSpringRepository, fileManager, fileDownloaders);
-    }
-
-    @Bean
-    GameFileDetailsJpaEntityMapper jpaGameFileDetailsMapper() {
-        return Mappers.getMapper(GameFileDetailsJpaEntityMapper.class);
-    }
-
-    @Bean
-    GameFileDetailsRepository gameFileVersionRepository(GameFileDetailsSpringRepository springRepository,
-                                                        GameFileDetailsJpaEntityMapper mapper) {
-        return new GameFileDetailsJpaRepository(springRepository, mapper);
     }
 
     @Bean

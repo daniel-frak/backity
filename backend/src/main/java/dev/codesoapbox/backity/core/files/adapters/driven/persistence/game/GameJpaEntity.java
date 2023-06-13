@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.files.adapters.driven.persistence.game;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
@@ -24,6 +25,7 @@ public class GameJpaEntity {
     private UUID id;
 
     @NotNull
+    @Column(unique = true)
     private String title;
 
     @NotNull

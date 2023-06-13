@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.files.config;
+package dev.codesoapbox.backity.core.files.config.game;
 
 import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameWithFilesJsonMapper;
 import org.mapstruct.factory.Mappers;

@@ -1,11 +1,12 @@
 package dev.codesoapbox.backity.core.shared.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.files.adapters.driven.persistence.GameFileDetailsJpaRepository;
 import dev.codesoapbox.backity.core.files.config.FileBackupBeanConfig;
 import dev.codesoapbox.backity.core.files.config.FileManagementBeanConfig;
-import dev.codesoapbox.backity.core.files.config.GameBeanConfig;
+import dev.codesoapbox.backity.core.files.config.game.GameJpaRepositoryBeanConfig;
+import dev.codesoapbox.backity.core.files.config.gamefiledetails.GameFileDetailsJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
+import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameRepository;
 import org.junit.jupiter.api.AfterEach;
@@ -31,7 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = H2DbController.class, properties = "h2dump.path=test_dump.sql")
-@Import({FileManagementBeanConfig.class, FileBackupBeanConfig.class, GameBeanConfig.class})
+@Import({FileManagementBeanConfig.class, FileBackupBeanConfig.class,
+        GameJpaRepositoryBeanConfig.class, GameFileDetailsJpaRepositoryBeanConfig.class})
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 class H2DbControllerTest {
@@ -46,7 +48,7 @@ class H2DbControllerTest {
     private GameRepository gameRepository;
 
     @Autowired
-    private GameFileDetailsJpaRepository gameFileVersionRepository;
+    private GameFileDetailsRepository gameFileDetailsRepository;
 
     @MockBean
     private SimpMessagingTemplate messageService;
@@ -70,7 +72,7 @@ class H2DbControllerTest {
         GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
         Game game = new Game(gameFileDetails.getGameId(), "Test game");
         gameRepository.save(game);
-        gameFileVersionRepository.save(gameFileDetails);
+        gameFileDetailsRepository.save(gameFileDetails);
 
         mockMvc.perform(get("/api/h2/dump"))
                 .andDo(print())

@@ -14,12 +14,12 @@ import java.util.Optional;
 public class GameJpaRepository implements GameRepository {
 
     private final GameJpaEntitySpringRepository springRepository;
-    private final GameJpaEntityMapper mapper;
+    private final GameJpaEntityMapper entityMapper;
 
     @Transactional
     @Override
     public void save(Game game) {
-        var entity = mapper.toEntity(game);
+        var entity = entityMapper.toEntity(game);
 
         springRepository.save(entity);
     }
@@ -28,19 +28,19 @@ public class GameJpaRepository implements GameRepository {
     @Override
     public Optional<Game> findByTitle(String title) {
         return springRepository.findByTitle(title)
-                .map(mapper::toDomain);
+                .map(entityMapper::toDomain);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Optional<Game> findById(GameId id) {
         return springRepository.findById(id.value())
-                .map(mapper::toDomain);
+                .map(entityMapper::toDomain);
     }
 
     @Override
     public Page<Game> findAll(Pageable pageable) {
         return springRepository.findAll(pageable)
-                .map(mapper::toDomain);
+                .map(entityMapper::toDomain);
     }
 }

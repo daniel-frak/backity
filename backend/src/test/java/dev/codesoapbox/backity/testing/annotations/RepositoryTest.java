@@ -14,5 +14,7 @@ import java.lang.annotation.Target;
 @DataJpaTest
 @EnableJpaAuditing
 @DirtiesContext
+// Enable this once Liquibase is added:
+//@TestPropertySource(properties = {"spring.jpa.hibernate.ddl-auto=validate"})
 public @interface RepositoryTest {
 }

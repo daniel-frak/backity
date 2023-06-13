@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers
 
 import dev.codesoapbox.backity.core.files.application.GameFacade;
 import dev.codesoapbox.backity.core.files.application.GameWithFiles;
-import dev.codesoapbox.backity.core.files.config.GameHttpBeanConfig;
+import dev.codesoapbox.backity.core.files.config.game.GameHttpBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
