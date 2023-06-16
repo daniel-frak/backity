@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -22,7 +24,6 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @Import(GameJpaRepositoryBeanConfig.class)
 @Transactional
@@ -60,7 +61,9 @@ abstract class GameJpaRepositoryAbstractIT {
     private void persistTestData() {
         Stream.of(GAME_1.get(), GAME_2.get(), GAME_3.get())
                 .map(entityMapper::toEntity)
-                .forEach(entityManager::persistAndFlush);
+                .forEach(entityManager::persist);
+        entityManager.flush();
+        entityManager.clear();
     }
 
     @Test
@@ -68,9 +71,10 @@ abstract class GameJpaRepositoryAbstractIT {
         var game = Game.createNew("New Title");
 
         jpaRepository.save(game);
+        entityManager.flush();
 
-        GameJpaEntity persistedGame = entityManager.find(GameJpaEntity.class, game.getId().value());
-        assertThat(entityMapper.toDomain(persistedGame)).usingRecursiveComparison()
+        GameJpaEntity persistedEntity = entityManager.find(GameJpaEntity.class, game.getId().value());
+        assertThat(entityMapper.toDomain(persistedEntity)).usingRecursiveComparison()
                 .isEqualTo(game);
     }
 
@@ -91,9 +95,11 @@ abstract class GameJpaRepositoryAbstractIT {
         game.setTitle("New Title");
 
         jpaRepository.save(game);
+        entityManager.flush();
 
-        GameJpaEntity persistedGame = entityManager.find(GameJpaEntity.class, game.getId().value());
-        assertThat(persistedGame).usingRecursiveComparison()
+        GameJpaEntity persistedEntity = entityManager.find(GameJpaEntity.class, game.getId().value());
+        assertThat(persistedEntity).usingRecursiveComparison()
+                .ignoringFields("dateCreated", "dateModified")
                 .isEqualTo(entityMapper.toEntity(game));
     }
 
@@ -103,8 +109,8 @@ abstract class GameJpaRepositoryAbstractIT {
 
         Optional<Game> foundGameOpt = jpaRepository.findById(game.getId());
 
-        assertThat(foundGameOpt)
-                .hasValueSatisfying(foundGame -> assertThat(foundGame).usingRecursiveComparison().isEqualTo(game));
+        assertThat(foundGameOpt).get().usingRecursiveComparison()
+                .isEqualTo(game);
     }
 
     @Test
@@ -113,21 +119,17 @@ abstract class GameJpaRepositoryAbstractIT {
 
         Optional<Game> foundGameOpt = jpaRepository.findByTitle(game.getTitle());
 
-        assertThat(foundGameOpt)
-                .hasValueSatisfying(foundGame -> assertThat(foundGame).usingRecursiveComparison().isEqualTo(game));
+        assertThat(foundGameOpt).get().usingRecursiveComparison()
+                .isEqualTo(game);
     }
 
     @Test
     void shouldFindAllPaginated() {
-        Page<Game> result = jpaRepository.findAll(PageRequest.of(0, 2));
+        Pageable pageable = PageRequest.of(0, 2);
+        Page<Game> result = jpaRepository.findAll(pageable);
 
-        assertThat(result.getContent())
-                .usingRecursiveComparison().isEqualTo(List.of(GAME_1.get(), GAME_2.get()));
-        assertAll("Page information",
-                () -> assertThat(result.getTotalElements()).isEqualTo(3),
-                () -> assertThat(result.getTotalPages()).isEqualTo(2),
-                () -> assertThat(result.getSize()).isEqualTo(2),
-                () -> assertThat(result.getNumber()).isZero(),
-                () -> assertThat(result.getNumberOfElements()).isEqualTo(2));
+        Page<Game> expectedResult = new PageImpl<>(List.of(GAME_1.get(), GAME_2.get()), pageable, 3);
+        assertThat(result).usingRecursiveComparison()
+                .isEqualTo(expectedResult);
     }
 }

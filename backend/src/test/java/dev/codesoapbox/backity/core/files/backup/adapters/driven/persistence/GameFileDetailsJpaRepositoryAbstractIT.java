@@ -10,10 +10,13 @@ import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetail
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,37 +84,35 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
                 .map(entityMapper::toEntity)
                 .toList();
         persistAssociatedGames(gameFileDetailsEntities);
-        gameFileDetailsEntities.forEach(entityManager::persistAndFlush);
+        gameFileDetailsEntities.forEach(entityManager::persist);
+        entityManager.flush();
+        entityManager.clear();
     }
 
     private void persistAssociatedGames(List<GameFileDetailsJpaEntity> gameFileDetailsEntities) {
         gameFileDetailsEntities.stream()
                 .map(GameFileDetailsJpaEntity::getGame)
                 .distinct()
-                .forEach(entityManager::persistAndFlush);
+                .forEach(entityManager::persist);
+        entityManager.flush();
     }
 
     @Test
     void shouldFindOldestWaitingForDownload() {
         Optional<GameFileDetails> result = gameFileVersionJpaRepository.findOldestWaitingForDownload();
 
-        assertThat(result)
-                .hasValueSatisfying(r -> assertThat(r)
-                        .usingRecursiveComparison()
-                        .ignoringFields("dateCreated", "dateModified")
-                        .isEqualTo(GAME_FILE_DETAILS_1.get()));
+        assertThat(result).get().usingRecursiveComparison()
+                .ignoringFields("dateCreated", "dateModified")
+                .isEqualTo(GAME_FILE_DETAILS_1.get());
     }
 
     @Test
     void shouldFindAllWaitingForDownload() {
         Page<GameFileDetails> result = gameFileVersionJpaRepository.findAllWaitingForDownload(Pageable.unpaged());
 
-        var expectedResult = List.of(
-                GAME_FILE_DETAILS_1.get(),
-                GAME_FILE_DETAILS_3.get()
-        );
-        assertThat(result.getContent())
-                .usingRecursiveComparison()
+        Page<GameFileDetails> expectedResult = new PageImpl<>(
+                List.of(GAME_FILE_DETAILS_1.get(), GAME_FILE_DETAILS_3.get()), Pageable.unpaged(), 2);
+        assertThat(result).usingRecursiveComparison()
                 .ignoringFields("dateCreated", "dateModified")
                 .isEqualTo(expectedResult);
     }
@@ -121,6 +122,7 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
         GameFileDetails newGameFileDetails = TestGameFileDetails.full().build();
 
         GameFileDetails result = gameFileVersionJpaRepository.save(newGameFileDetails);
+        entityManager.flush();
 
         assertThat(result)
                 .usingRecursiveComparison()
@@ -142,17 +144,16 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
     void shouldFindCurrentlyDownloading() {
         Optional<GameFileDetails> result = gameFileVersionJpaRepository.findCurrentlyDownloading();
 
-        assertThat(result)
-                .hasValueSatisfying(r -> assertThat(r).usingRecursiveComparison()
-                        .ignoringFields("dateCreated", "dateModified")
-                        .isEqualTo(GAME_FILE_DETAILS_5.get()));
+        assertThat(result).get().usingRecursiveComparison()
+                .ignoringFields("dateCreated", "dateModified")
+                .isEqualTo(GAME_FILE_DETAILS_5.get());
     }
 
     @Test
     void shouldFindAllProcessed() {
         Page<GameFileDetails> result = gameFileVersionJpaRepository.findAllProcessed(Pageable.unpaged());
 
-        var expectedResult = List.of(
+        List<GameFileDetails> expectedResult = List.of(
                 GAME_FILE_DETAILS_2.get(),
                 GAME_FILE_DETAILS_4.get()
         );
@@ -162,32 +163,30 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
                 .isEqualTo(expectedResult);
     }
 
-    @Test
-    void shouldFindIfExistsByUrlAndVersion() {
-        boolean existsActual = gameFileVersionJpaRepository.existsByUrlAndVersion(
-                "someUrl", "someVersion");
-        boolean existsMissing = gameFileVersionJpaRepository.existsByUrlAndVersion(
-                "someUrl", "fakeVersion");
-        assertThat(existsActual).isTrue();
-        assertThat(existsMissing).isFalse();
+    @ParameterizedTest(name = "should return {1} for version={0}")
+    @CsvSource(value = {"someVersion,true", "fakeVersion,false"})
+    void existsByUrlAndVersion(String version, boolean shouldFind) {
+        boolean exists = gameFileVersionJpaRepository.existsByUrlAndVersion("someUrl", version);
+
+        assertThat(exists).isEqualTo(shouldFind);
     }
 
     @Test
     void shouldFindById() {
         GameFileDetailsId id = new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48"));
+
         Optional<GameFileDetails> result = gameFileVersionJpaRepository.findById(id);
 
-        assertThat(result)
-                .hasValueSatisfying(r -> assertThat(r).usingRecursiveComparison()
-                        .ignoringFields("dateCreated", "dateModified")
-                        .isEqualTo(GAME_FILE_DETAILS_1.get()));
+        assertThat(result).get().usingRecursiveComparison()
+                .ignoringFields("dateCreated", "dateModified")
+                .isEqualTo(GAME_FILE_DETAILS_1.get());
     }
 
     @Test
     void shouldFindAllDiscovered() {
         Page<GameFileDetails> result = gameFileVersionJpaRepository.findAllDiscovered(Pageable.unpaged());
 
-        var expectedResult = singletonList(GAME_FILE_DETAILS_6.get());
+        List<GameFileDetails> expectedResult = singletonList(GAME_FILE_DETAILS_6.get());
         assertThat(result.getContent())
                 .usingRecursiveComparison()
                 .ignoringFields("dateCreated", "dateModified")
@@ -196,7 +195,7 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindByGameId() {
-        GameId id = new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"));
+        var id = new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"));
         List<GameFileDetails> result = gameFileVersionJpaRepository.findAllByGameId(id);
 
         assertThat(result).hasSize(2);
