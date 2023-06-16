@@ -3,7 +3,6 @@ package dev.codesoapbox.backity.core.files.adapters.driven.persistence.game;
 import dev.codesoapbox.backity.core.files.config.game.GameJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
-import dev.codesoapbox.backity.core.files.domain.game.TestGame;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +21,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static dev.codesoapbox.backity.core.files.domain.game.TestGame.aGame;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -38,17 +38,17 @@ abstract class GameJpaRepositoryAbstractIT {
     @Autowired
     private GameJpaEntityMapper entityMapper;
 
-    private static final Supplier<Game> GAME_1 = () -> TestGame.aGame()
+    private static final Supplier<Game> GAME_1 = () -> aGame()
             .withId(new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5")))
             .withTitle("Test Game 1")
             .build();
 
-    private static final Supplier<Game> GAME_2 = () -> TestGame.aGame()
+    private static final Supplier<Game> GAME_2 = () -> aGame()
             .withId(new GameId(UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281")))
             .withTitle("Test Game 2")
             .build();
 
-    private static final Supplier<Game> GAME_3 = () -> TestGame.aGame()
+    private static final Supplier<Game> GAME_3 = () -> aGame()
             .withId(new GameId(UUID.fromString("a811e5ad-f964-47de-a3fe-73f276918970")))
             .withTitle("Test Game 3")
             .build();
@@ -68,20 +68,28 @@ abstract class GameJpaRepositoryAbstractIT {
 
     @Test
     void shouldSave() {
-        var game = Game.createNew("New Title");
+        Game game = aGame()
+                .withId(GameId.newInstance())
+                .withTitle("New Title")
+                .build();
 
         jpaRepository.save(game);
         entityManager.flush();
 
         GameJpaEntity persistedEntity = entityManager.find(GameJpaEntity.class, game.getId().value());
-        assertThat(entityMapper.toDomain(persistedEntity)).usingRecursiveComparison()
+        assertThat(entityMapper.toDomain(persistedEntity))
+                .hasNoNullFieldsOrProperties()
+                .usingRecursiveComparison()
                 .isEqualTo(game);
     }
 
     @Test
     void shouldNotSaveWhenGameWithTitleAlreadyExists() {
         String existingTitle = GAME_1.get().getTitle();
-        var game = Game.createNew(existingTitle);
+        Game game = aGame()
+                .withId(GameId.newInstance())
+                .withTitle(existingTitle)
+                .build();
 
         jpaRepository.save(game);
 
@@ -91,7 +99,7 @@ abstract class GameJpaRepositoryAbstractIT {
 
     @Test
     void shouldModify() {
-        var game = GAME_1.get();
+        Game game = GAME_1.get();
         game.setTitle("New Title");
 
         jpaRepository.save(game);

@@ -133,6 +133,7 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
                 newGameFileDetails.getId().value());
         assertThat(persistedEntity)
                 .extracting(entity -> entityMapper.toModel(entity))
+                .hasNoNullFieldsOrProperties()
                 .usingRecursiveComparison()
                 .ignoringFields("dateCreated", "dateModified")
                 .isEqualTo(newGameFileDetails);
