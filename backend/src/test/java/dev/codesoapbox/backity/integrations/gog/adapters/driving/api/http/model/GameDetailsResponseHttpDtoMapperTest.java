@@ -3,11 +3,15 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileDetailsResponse;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GameDetailsResponseHttpDtoMapperTest {
+
+    private static final GameDetailsResponseHttpDtoMapper MAPPER =
+            Mappers.getMapper(GameDetailsResponseHttpDtoMapper.class);
 
     @Test
     void shouldMapToDto() {
@@ -25,7 +29,7 @@ class GameDetailsResponseHttpDtoMapperTest {
         domain.setFiles(singletonList(gameFileDetailsResponse));
         domain.setChangelog("someChangelog");
 
-        var result = GameDetailsResponseHttpDtoMapper.INSTANCE.toDto(domain);
+        var result = MAPPER.toDto(domain);
 
         assertEquals("someTitle", result.getTitle());
         assertEquals("someBackgroundImage", result.getBackgroundImage());

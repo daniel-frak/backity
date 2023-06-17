@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers;
 
+import dev.codesoapbox.backity.core.files.config.FileDiscoveryControllerBeanConfig;
 import dev.codesoapbox.backity.core.files.config.gamefiledetails.GameFileDetailsControllerBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
@@ -25,7 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(FileDiscoveryController.class)
-@Import({SharedControllerBeanConfig.class, GameFileDetailsControllerBeanConfig.class})
+@Import({SharedControllerBeanConfig.class, GameFileDetailsControllerBeanConfig.class,
+        FileDiscoveryControllerBeanConfig.class})
 class FileDiscoveryControllerIT {
 
     @Autowired

@@ -8,6 +8,7 @@ import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDi
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -25,8 +26,8 @@ class FileDiscoverySpringMessageServiceTest {
 
     @BeforeEach
     void setUp() {
-        fileDiscoverySpringMessageService = new FileDiscoverySpringMessageService(simpMessagingTemplate,
-                GameFileDetailsMessageMapper.INSTANCE);
+        GameFileDetailsMessageMapper mapper = Mappers.getMapper(GameFileDetailsMessageMapper.class);
+        fileDiscoverySpringMessageService = new FileDiscoverySpringMessageService(simpMessagingTemplate, mapper);
     }
 
     @Test

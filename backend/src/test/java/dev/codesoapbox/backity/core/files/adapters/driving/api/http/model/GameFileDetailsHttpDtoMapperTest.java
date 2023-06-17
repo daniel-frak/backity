@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.files.adapters.driving.api.http.model;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 
@@ -11,11 +12,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class GameFileDetailsHttpDtoMapperTest {
 
+    private static final GameFileDetailsHttpDtoMapper MAPPER = Mappers.getMapper(GameFileDetailsHttpDtoMapper.class);
+
     @Test
     void shouldMapToDto() {
         GameFileDetails domain = full().build();
 
-        GameFileDetailsHttpDto result = GameFileDetailsHttpDtoMapper.INSTANCE.toDto(domain);
+        GameFileDetailsHttpDto result = MAPPER.toDto(domain);
 
         var expectedResult = new GameFileDetailsHttpDto(
                 "acde26d7-33c7-42ee-be16-bca91a604b48",

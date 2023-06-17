@@ -15,7 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(GogAuthController.class)
-class GogAuthControllerTest {
+class GogAuthControllerIT {
 
     @Autowired
     private MockMvc mockMvc;

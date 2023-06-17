@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GogController {
 
     private final GogEmbedClient gogEmbedClient;
+    private final GameDetailsResponseHttpDtoMapper gameDetailsResponseMapper;
 
     @Operation(summary = "Get library size", description = "Returns the size of the user's GOG library")
     @GetMapping("library/size")
@@ -30,6 +31,6 @@ public class GogController {
     @Operation(summary = "Get game details", description = "Returns the details of a game")
     @GetMapping("games/{id}")
     public GameDetailsResponseHttpDto getGameDetails(@PathVariable String id) {
-        return GameDetailsResponseHttpDtoMapper.INSTANCE.toDto(gogEmbedClient.getGameDetails(id));
+        return gameDetailsResponseMapper.toDto(gogEmbedClient.getGameDetails(id));
     }
 }

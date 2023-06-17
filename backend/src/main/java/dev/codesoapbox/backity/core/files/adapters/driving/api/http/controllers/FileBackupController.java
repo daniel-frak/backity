@@ -39,7 +39,7 @@ public class FileBackupController {
     @GetMapping("current")
     public GameFileDetailsHttpDto getCurrentlyProcessing() {
         return gameFileDetailsRepository.findCurrentlyDownloading()
-                .map(GameFileDetailsHttpDtoMapper.INSTANCE::toDto)
+                .map(gameFileDetailsMapper::toDto)
                 .orElse(null);
     }
 

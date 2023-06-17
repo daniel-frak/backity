@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.files.adapters.driven.messaging.model;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 
@@ -11,11 +12,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class GameFileDetailsMessageMapperTest {
 
+    private static final GameFileDetailsMessageMapper MAPPER = Mappers.getMapper(GameFileDetailsMessageMapper.class);
+
     @Test
     void shouldMapToMessage() {
         GameFileDetails domain = full().build();
 
-        GameFileDetailsMessage result = GameFileDetailsMessageMapper.INSTANCE.toMessage(domain);
+        GameFileDetailsMessage result = MAPPER.toMessage(domain);
 
         var expectedResult = new GameFileDetailsMessage(
                 "acde26d7-33c7-42ee-be16-bca91a604b48",

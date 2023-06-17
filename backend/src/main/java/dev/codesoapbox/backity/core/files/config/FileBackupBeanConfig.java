@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.files.adapters.driven.messaging.FileBackupSp
 import dev.codesoapbox.backity.core.files.adapters.driven.messaging.model.GameFileDetailsMessageMapper;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.backup.services.*;
+import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -23,7 +24,8 @@ public class FileBackupBeanConfig {
 
     @Bean
     FileBackupMessageService fileDownloadMessageService(SimpMessagingTemplate simpMessagingTemplate) {
-        return new FileBackupSpringMessageService(simpMessagingTemplate, GameFileDetailsMessageMapper.INSTANCE);
+        GameFileDetailsMessageMapper mapper = Mappers.getMapper(GameFileDetailsMessageMapper.class);
+        return new FileBackupSpringMessageService(simpMessagingTemplate, mapper);
     }
 
     @Bean

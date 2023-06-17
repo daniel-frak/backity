@@ -32,6 +32,7 @@ public class FileDiscoveryController {
     private final PageHttpDtoMapper pageMapper;
     private final PaginationHttpDtoMapper paginationMapper;
     private final GameFileDetailsHttpDtoMapper gameFileDetailsMapper;
+    private final FileDiscoveryStatusHttpDtoMapper fileDiscoveryStatusMapper;
 
     @Operation(summary = "List discovered files",
             description = "Returns a paginated list of discovered files which were not yet added to the download queue")
@@ -58,7 +59,7 @@ public class FileDiscoveryController {
     @GetMapping("statuses")
     public List<FileDiscoveryStatusHttpDto> getStatuses() {
         return fileDiscoveryService.getStatuses().stream()
-                .map(FileDiscoveryStatusHttpDtoMapper.INSTANCE::toDto)
+                .map(fileDiscoveryStatusMapper::toDto)
                 .toList();
     }
 }

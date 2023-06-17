@@ -7,6 +7,7 @@ import dev.codesoapbox.backity.core.files.domain.discovery.services.FileDiscover
 import dev.codesoapbox.backity.core.files.domain.discovery.services.FileDiscoveryService;
 import dev.codesoapbox.backity.core.files.domain.discovery.services.SourceFileDiscoveryService;
 import dev.codesoapbox.backity.core.files.domain.game.GameRepository;
+import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -18,7 +19,8 @@ public class FileDiscoveryBeanConfig {
 
     @Bean
     FileDiscoveryMessageService fileDiscoveryMessageService(SimpMessagingTemplate simpMessagingTemplate) {
-        return new FileDiscoverySpringMessageService(simpMessagingTemplate, GameFileDetailsMessageMapper.INSTANCE);
+        GameFileDetailsMessageMapper mapper = Mappers.getMapper(GameFileDetailsMessageMapper.class);
+        return new FileDiscoverySpringMessageService(simpMessagingTemplate, mapper);
     }
 
     @Bean
