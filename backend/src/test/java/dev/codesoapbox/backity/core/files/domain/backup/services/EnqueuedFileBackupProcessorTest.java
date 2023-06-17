@@ -1,7 +1,6 @@
 package dev.codesoapbox.backity.core.files.domain.backup.services;
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails.discovered;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
@@ -31,7 +31,7 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldProcessEnqueuedFileDownloadIfNotCurrentlyDownloading() {
-        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
+        GameFileDetails gameFileDetails = discovered().build();
 
         when(gameFileDetailsRepository.findOldestWaitingForDownload())
                 .thenReturn(Optional.of(gameFileDetails));
@@ -48,7 +48,7 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldFailGracefully() {
-        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
+        GameFileDetails gameFileDetails = discovered().build();
 
         when(gameFileDetailsRepository.findOldestWaitingForDownload())
                 .thenReturn(Optional.of(gameFileDetails));
@@ -67,7 +67,7 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldDoNothingIfSourceDownloaderNotReady() {
-        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
+        GameFileDetails gameFileDetails = discovered().build();
 
         when(gameFileDetailsRepository.findOldestWaitingForDownload())
                 .thenReturn(Optional.of(gameFileDetails));
@@ -81,7 +81,7 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldDoNothingIfCurrentlyDownloading() {
-        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
+        GameFileDetails gameFileDetails = discovered().build();
         enqueuedFileBackupProcessor.enqueuedFileBackupReference.set(gameFileDetails);
 
         enqueuedFileBackupProcessor.processQueue();

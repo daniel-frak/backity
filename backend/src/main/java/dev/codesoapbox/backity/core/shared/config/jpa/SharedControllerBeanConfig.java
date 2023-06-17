@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.shared.config.jpa;
 
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageJsonMapper;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PaginationJsonMapper;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageHttpDtoMapper;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PaginationHttpDtoMapper;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,12 +10,12 @@ import org.springframework.context.annotation.Configuration;
 public class SharedControllerBeanConfig {
 
     @Bean
-    public PageJsonMapper pageJsonMapper() {
-        return Mappers.getMapper(PageJsonMapper.class);
+    public PageHttpDtoMapper pageHttpDtoMapper() {
+        return Mappers.getMapper(PageHttpDtoMapper.class);
     }
 
     @Bean
-    public PaginationJsonMapper paginationJsonMapper() {
-        return Mappers.getMapper(PaginationJsonMapper.class);
+    public PaginationHttpDtoMapper paginationHttpDtoMapper() {
+        return Mappers.getMapper(PaginationHttpDtoMapper.class);
     }
 }

@@ -5,10 +5,10 @@ import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(uses = {GameFileDetailsJsonMapper.class, GameIdJsonMapper.class})
-public abstract class GameWithFilesJsonMapper {
+@Mapper(uses = {GameFileDetailsHttpDtoMapper.class, GameIdHttpDtoMapper.class})
+public abstract class GameWithFilesHttpDtoMapper {
 
     @Mapping(target = ".", source = "game")
     @BeanMapping(ignoreUnmappedSourceProperties = "game")
-    public abstract GameWithFilesJson toDto(GameWithFiles model);
+    public abstract GameWithFilesHttpDto toDto(GameWithFiles model);
 }

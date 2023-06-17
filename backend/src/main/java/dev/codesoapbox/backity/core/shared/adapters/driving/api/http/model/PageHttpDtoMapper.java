@@ -6,14 +6,14 @@ import org.mapstruct.Mapper;
 import java.util.function.Function;
 
 @Mapper
-public abstract class PageJsonMapper {
+public abstract class PageHttpDtoMapper {
 
     // These casts are safe because the public method signature guarantees type safety.
     @SuppressWarnings("unchecked")
-    public <T, U> PageJson<U> toJson(Page<T> page, Function<T, U> contentMapper) {
+    public <T, U> PageHttpDto<U> toDto(Page<T> page, Function<T, U> contentMapper) {
         Page<U> mappedPage = page.map(contentMapper);
-        return (PageJson<U>) toJsonInternal((Page<Object>) mappedPage);
+        return (PageHttpDto<U>) toDtoInternal((Page<Object>) mappedPage);
     }
 
-    protected abstract PageJson<Object> toJsonInternal(Page<Object> page);
+    protected abstract PageHttpDto<Object> toDtoInternal(Page<Object> page);
 }

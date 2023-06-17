@@ -1,13 +1,13 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameWithFilesJson;
-import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameWithFilesJsonMapper;
+import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameWithFilesHttpDto;
+import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameWithFilesHttpDtoMapper;
 import dev.codesoapbox.backity.core.files.application.GameFacade;
 import dev.codesoapbox.backity.core.files.application.GameWithFiles;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageJson;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageJsonMapper;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PaginationJson;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PaginationJsonMapper;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageHttpDto;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageHttpDtoMapper;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PaginationHttpDto;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PaginationHttpDtoMapper;
 import dev.codesoapbox.backity.core.shared.domain.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,14 +25,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class GameController {
 
     private final GameFacade gameFacade;
-    private final GameWithFilesJsonMapper mapper;
-    private final PaginationJsonMapper paginationMapper;
-    private final PageJsonMapper pageJsonMapper;
+    private final GameWithFilesHttpDtoMapper mapper;
+    private final PaginationHttpDtoMapper paginationMapper;
+    private final PageHttpDtoMapper pageHttpDtoMapper;
 
     @Operation(summary = "Get games", description = "Returns a paginated list of discovered games")
     @GetMapping
-    public PageJson<GameWithFilesJson> getGames(PaginationJson pagination) {
+    public PageHttpDto<GameWithFilesHttpDto> getGames(PaginationHttpDto pagination) {
         Page<GameWithFiles> gamesWithFiles = gameFacade.getGamesWithFiles(paginationMapper.toModel(pagination));
-        return pageJsonMapper.toJson(gamesWithFiles, mapper::toDto);
+        return pageHttpDtoMapper.toDto(gamesWithFiles, mapper::toDto);
     }
 }

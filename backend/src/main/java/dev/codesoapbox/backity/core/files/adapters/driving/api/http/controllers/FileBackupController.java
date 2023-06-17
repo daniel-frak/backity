@@ -1,14 +1,14 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileDetailsJson;
-import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileDetailsJsonMapper;
+import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileDetailsHttpDto;
+import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileDetailsHttpDtoMapper;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageJson;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageJsonMapper;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PaginationJson;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PaginationJsonMapper;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageHttpDto;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageHttpDtoMapper;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PaginationHttpDto;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PaginationHttpDtoMapper;
 import dev.codesoapbox.backity.core.shared.domain.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,33 +31,33 @@ import java.util.UUID;
 public class FileBackupController {
 
     private final GameFileDetailsRepository gameFileDetailsRepository;
-    private final GameFileDetailsJsonMapper gameFileDetailsMapper;
-    private final PaginationJsonMapper paginationMapper;
-    private final PageJsonMapper pageMapper;
+    private final GameFileDetailsHttpDtoMapper gameFileDetailsMapper;
+    private final PaginationHttpDtoMapper paginationMapper;
+    private final PageHttpDtoMapper pageMapper;
 
     @Operation(summary = "List queue items", description = "Returns the file currently being downloaded")
     @GetMapping("current")
-    public GameFileDetailsJson getCurrentlyProcessing() {
+    public GameFileDetailsHttpDto getCurrentlyProcessing() {
         return gameFileDetailsRepository.findCurrentlyDownloading()
-                .map(GameFileDetailsJsonMapper.INSTANCE::toJson)
+                .map(GameFileDetailsHttpDtoMapper.INSTANCE::toDto)
                 .orElse(null);
     }
 
     @Operation(summary = "List queue items", description = "Returns a paginated list of all downloads in the queue")
     @GetMapping("queue")
-    public PageJson<GameFileDetailsJson> getQueueItems(PaginationJson pagination) {
+    public PageHttpDto<GameFileDetailsHttpDto> getQueueItems(PaginationHttpDto pagination) {
         Page<GameFileDetails> foundPage =
                 gameFileDetailsRepository.findAllWaitingForDownload(paginationMapper.toModel(pagination));
-        return pageMapper.toJson(foundPage, gameFileDetailsMapper::toJson);
+        return pageMapper.toDto(foundPage, gameFileDetailsMapper::toDto);
     }
 
     @Operation(summary = "List queue items",
             description = "Returns a paginated list of all processed files (downloaded or failed)")
     @GetMapping("processed")
-    public PageJson<GameFileDetailsJson> getProcessedFiles(PaginationJson pagination) {
+    public PageHttpDto<GameFileDetailsHttpDto> getProcessedFiles(PaginationHttpDto pagination) {
         Page<GameFileDetails> foundPage =
                 gameFileDetailsRepository.findAllProcessed(paginationMapper.toModel(pagination));
-        return pageMapper.toJson(foundPage, gameFileDetailsMapper::toJson);
+        return pageMapper.toDto(foundPage, gameFileDetailsMapper::toDto);
     }
 
     // @TODO Should be POST

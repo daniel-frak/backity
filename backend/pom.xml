@@ -26,12 +26,12 @@
     </properties>
 
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>dev.codesoapbox</groupId>-->
-<!--            <artifactId>frontend</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--            <scope>runtime</scope>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>dev.codesoapbox</groupId>
+            <artifactId>frontend</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
 
         <!-- Spring Boot Misc. -->
         <dependency>

@@ -2,25 +2,25 @@ package dev.codesoapbox.backity.core.files.adapters.driving.api.http.model;
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
+import static dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails.full;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class GameFileDetailsJsonMapperTest {
+class GameFileDetailsHttpDtoMapperTest {
 
     @Test
-    void shouldMapToJson() {
-        GameFileDetails domain = TestGameFileDetails.full().build();
+    void shouldMapToDto() {
+        GameFileDetails domain = full().build();
 
-        GameFileDetailsJson result = GameFileDetailsJsonMapper.INSTANCE.toJson(domain);
+        GameFileDetailsHttpDto result = GameFileDetailsHttpDtoMapper.INSTANCE.toDto(domain);
 
-        var expectedResult = new GameFileDetailsJson(
+        var expectedResult = new GameFileDetailsHttpDto(
                 "acde26d7-33c7-42ee-be16-bca91a604b48",
                 "1eec1c19-25bf-4094-b926-84b5bb8fa281",
-                new SourceFileDetailsJson(
+                new SourceFileDetailsHttpDto(
                         "someSourceId",
                         "someOriginalGameTitle",
                         "someFileTitle",
@@ -29,7 +29,7 @@ class GameFileDetailsJsonMapperTest {
                         "someOriginalFileName",
                         "5 KB"
                 ),
-                new BackupDetailsJson(
+                new BackupDetailsHttpDto(
                         FileBackupStatus.DISCOVERED,
                         "someFailedReason",
                         "someFilePath"

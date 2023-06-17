@@ -5,7 +5,7 @@ import java.util.List;
 /**
 This class doesn't have {@code @Schema(name="Page")} on it because it would break generics in OpenAPI.
  */
-public record PageJson<T>(
+public record PageHttpDto<T>(
         List<T> content,
         int size,
         int totalPages,

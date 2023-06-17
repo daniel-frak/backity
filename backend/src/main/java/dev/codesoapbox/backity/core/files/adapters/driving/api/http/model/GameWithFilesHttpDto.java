@@ -5,9 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
 @Schema(name = "GameWithFiles")
-public record GameWithFilesJson(
+public record GameWithFilesHttpDto(
         String id,
         String title,
-        List<GameFileDetailsJson> gameFiles
+        List<GameFileDetailsHttpDto> gameFiles
 ) {
 }

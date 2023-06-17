@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.config.game;
 
-import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameWithFilesJsonMapper;
+import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameWithFilesHttpDtoMapper;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class GameControllerBeanConfig {
 
     @Bean
-    GameWithFilesJsonMapper gameWithFilesJsonMapper() {
-        return Mappers.getMapper(GameWithFilesJsonMapper.class);
+    GameWithFilesHttpDtoMapper gameWithFilesHttpDtoMapper() {
+        return Mappers.getMapper(GameWithFilesHttpDtoMapper.class);
     }
 }

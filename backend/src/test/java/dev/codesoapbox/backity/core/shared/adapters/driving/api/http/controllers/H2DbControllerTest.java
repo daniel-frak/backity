@@ -5,7 +5,6 @@ import dev.codesoapbox.backity.core.files.config.FileManagementBeanConfig;
 import dev.codesoapbox.backity.core.files.config.game.GameJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.files.config.gamefiledetails.GameFileDetailsJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameRepository;
@@ -27,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import static dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails.discovered;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -71,7 +71,7 @@ class H2DbControllerTest {
 
     @Test
     void shouldDumpSql() throws Exception {
-        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
+        GameFileDetails gameFileDetails = discovered().build();
         Game game = new Game(gameFileDetails.getGameId(), "Test game");
         gameRepository.save(game);
         gameFileDetailsRepository.save(gameFileDetails);

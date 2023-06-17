@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Schema(name = "FileDiscoveryStatus")
 @Data
-public class FileDiscoveryStatusJson {
+public class FileDiscoveryStatusHttpDto {
 
     private String source;
     private boolean isInProgress;

@@ -1,16 +1,16 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.FileDiscoveryStatusJson;
-import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.FileDiscoveryStatusJsonMapper;
-import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileDetailsJson;
-import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileDetailsJsonMapper;
+import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.FileDiscoveryStatusHttpDto;
+import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.FileDiscoveryStatusHttpDtoMapper;
+import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileDetailsHttpDto;
+import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFileDetailsHttpDtoMapper;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.services.FileDiscoveryService;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageJson;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageJsonMapper;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PaginationJson;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PaginationJsonMapper;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageHttpDto;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageHttpDtoMapper;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PaginationHttpDto;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PaginationHttpDtoMapper;
 import dev.codesoapbox.backity.core.shared.domain.Page;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,16 +29,16 @@ public class FileDiscoveryController {
 
     private final FileDiscoveryService fileDiscoveryService;
     private final GameFileDetailsRepository repository;
-    private final PageJsonMapper pageMapper;
-    private final PaginationJsonMapper paginationMapper;
-    private final GameFileDetailsJsonMapper gameFileDetailsMapper;
+    private final PageHttpDtoMapper pageMapper;
+    private final PaginationHttpDtoMapper paginationMapper;
+    private final GameFileDetailsHttpDtoMapper gameFileDetailsMapper;
 
     @Operation(summary = "List discovered files",
             description = "Returns a paginated list of discovered files which were not yet added to the download queue")
     @GetMapping
-    public PageJson<GameFileDetailsJson> getDiscoveredFiles(PaginationJson pagination) {
+    public PageHttpDto<GameFileDetailsHttpDto> getDiscoveredFiles(PaginationHttpDto pagination) {
         Page<GameFileDetails> gameFiles = repository.findAllDiscovered(paginationMapper.toModel(pagination));
-        return pageMapper.toJson(gameFiles, gameFileDetailsMapper::toJson);
+        return pageMapper.toDto(gameFiles, gameFileDetailsMapper::toDto);
     }
 
     @Operation(summary = "Start file discovery", description = "Starts the process of file discovery")
@@ -56,9 +56,9 @@ public class FileDiscoveryController {
     @Operation(summary = "List discovery statuses",
             description = "Returns a list of discovery statuses for every remote client")
     @GetMapping("statuses")
-    public List<FileDiscoveryStatusJson> getStatuses() {
+    public List<FileDiscoveryStatusHttpDto> getStatuses() {
         return fileDiscoveryService.getStatuses().stream()
-                .map(FileDiscoveryStatusJsonMapper.INSTANCE::toJson)
+                .map(FileDiscoveryStatusHttpDtoMapper.INSTANCE::toDto)
                 .toList();
     }
 }

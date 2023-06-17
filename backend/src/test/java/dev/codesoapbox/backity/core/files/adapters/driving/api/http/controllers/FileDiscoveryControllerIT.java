@@ -1,8 +1,7 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.files.config.gamefiledetails.GameFileDetailsJsonBeanConfig;
+import dev.codesoapbox.backity.core.files.config.gamefiledetails.GameFileDetailsControllerBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
 import dev.codesoapbox.backity.core.files.domain.discovery.services.FileDiscoveryService;
@@ -16,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails.discovered;
 import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(FileDiscoveryController.class)
-@Import({SharedControllerBeanConfig.class, GameFileDetailsJsonBeanConfig.class})
+@Import({SharedControllerBeanConfig.class, GameFileDetailsControllerBeanConfig.class})
 class FileDiscoveryControllerIT {
 
     @Autowired
@@ -39,7 +39,7 @@ class FileDiscoveryControllerIT {
 
     @Test
     void shouldGetDiscoveredFiles() throws Exception {
-        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
+        GameFileDetails gameFileDetails = discovered().build();
 
         var pagination = new Pagination(0, 1);
         when(repository.findAllDiscovered(pagination))

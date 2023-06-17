@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class GameDetailsJsonResponseMapperTest {
+class GameDetailsResponseHttpDtoMapperTest {
 
     @Test
-    void shouldMapToJson() {
+    void shouldMapToDto() {
         var domain = new GameDetailsResponse();
         domain.setTitle("someTitle");
         domain.setBackgroundImage("someBackgroundImage");
@@ -25,7 +25,7 @@ class GameDetailsJsonResponseMapperTest {
         domain.setFiles(singletonList(gameFileDetailsResponse));
         domain.setChangelog("someChangelog");
 
-        var result = GameDetailsJsonResponseMapper.INSTANCE.toJson(domain);
+        var result = GameDetailsResponseHttpDtoMapper.INSTANCE.toDto(domain);
 
         assertEquals("someTitle", result.getTitle());
         assertEquals("someBackgroundImage", result.getBackgroundImage());

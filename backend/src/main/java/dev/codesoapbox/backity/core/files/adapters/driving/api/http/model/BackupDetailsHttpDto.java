@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(name = "BackupDetails")
-public record BackupDetailsJson(
+public record BackupDetailsHttpDto(
 
         FileBackupStatus status,
         String failedReason,

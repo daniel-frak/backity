@@ -8,18 +8,18 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class PageJsonMapperTest {
+class PageHttpDtoMapperTest {
 
-    private static final PageJsonMapper MAPPER = Mappers.getMapper(PageJsonMapper.class);
+    private static final PageHttpDtoMapper MAPPER = Mappers.getMapper(PageHttpDtoMapper.class);
 
     @Test
-    void shouldMapToJson() {
+    void shouldMapToDto() {
         Page<Integer> page = new Page<>(List.of(99), 4, 3,
                 2, 1, 0);
 
-        PageJson<String> result = MAPPER.toJson(page, c -> c + "_mapped");
+        PageHttpDto<String> result = MAPPER.toDto(page, c -> c + "_mapped");
 
-        PageJson<String> expectedResult = new PageJson<>(List.of("99_mapped"),
+        PageHttpDto<String> expectedResult = new PageHttpDto<>(List.of("99_mapped"),
                 4, 3, 2, 1, 0);
         assertThat(result).usingRecursiveComparison()
                 .isEqualTo(expectedResult);

@@ -2,7 +2,6 @@ package dev.codesoapbox.backity.core.files.adapters.driving.api.http.model;
 
 import dev.codesoapbox.backity.core.files.application.GameWithFiles;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
-import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
 import org.junit.jupiter.api.Test;
@@ -11,12 +10,13 @@ import org.mapstruct.factory.Mappers;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails.full;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class GameWithFilesJsonMapperTest {
+class GameWithFilesHttpDtoMapperTest {
 
-    private static final GameWithFilesJsonMapper MAPPER = Mappers.getMapper(GameWithFilesJsonMapper.class);
+    private static final GameWithFilesHttpDtoMapper MAPPER = Mappers.getMapper(GameWithFilesHttpDtoMapper.class);
 
     @Test
     void shouldMapToDto() {
@@ -24,19 +24,19 @@ class GameWithFilesJsonMapperTest {
         var gameFileStringId = "acde26d7-33c7-42ee-be16-bca91a604b48";
         var model = new GameWithFiles(
                 new Game(gameId, "Test Game"),
-                singletonList(TestGameFileDetails.full().build())
+                singletonList(full().build())
         );
 
-        GameWithFilesJson result = MAPPER.toDto(model);
+        GameWithFilesHttpDto result = MAPPER.toDto(model);
 
-        var expectedResult = new GameWithFilesJson(
+        var expectedResult = new GameWithFilesHttpDto(
                 gameId.value().toString(),
                 "Test Game",
                 singletonList(
-                        new GameFileDetailsJson(
+                        new GameFileDetailsHttpDto(
                                 gameFileStringId,
                                 gameId.value().toString(),
-                                new SourceFileDetailsJson(
+                                new SourceFileDetailsHttpDto(
                                         "someSourceId",
                                         "someOriginalGameTitle",
                                         "someFileTitle",
@@ -45,7 +45,7 @@ class GameWithFilesJsonMapperTest {
                                         "someOriginalFileName",
                                         "5 KB"
                                 ),
-                                new BackupDetailsJson(
+                                new BackupDetailsHttpDto(
                                         FileBackupStatus.DISCOVERED,
                                         "someFailedReason",
                                         "someFilePath"

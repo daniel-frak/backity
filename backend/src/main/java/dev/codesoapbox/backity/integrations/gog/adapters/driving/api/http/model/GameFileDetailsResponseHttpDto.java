@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GameFileDetailsJsonResponse {
+public class GameFileDetailsResponseHttpDto {
 
     private String version;
     private String manualUrl;

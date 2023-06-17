@@ -5,9 +5,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface FileDiscoveryStatusJsonMapper {
+public interface FileDiscoveryStatusHttpDtoMapper {
 
-    FileDiscoveryStatusJsonMapper INSTANCE = Mappers.getMapper(FileDiscoveryStatusJsonMapper.class);
+    FileDiscoveryStatusHttpDtoMapper INSTANCE = Mappers.getMapper(FileDiscoveryStatusHttpDtoMapper.class);
 
-    FileDiscoveryStatusJson toJson(FileDiscoveryStatus domain);
+    FileDiscoveryStatusHttpDto toDto(FileDiscoveryStatus domain);
 }

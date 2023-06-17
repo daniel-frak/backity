@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model.RefreshTokenJsonResponse;
+import dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model.RefreshTokenResponseHttpDto;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,9 +20,9 @@ public class GogAuthController {
 
     @Operation(summary = "Authenticate", description = "Returns a refresh token based on a code")
     @GetMapping
-    public RefreshTokenJsonResponse authenticate(@RequestParam("code") String code) {
+    public RefreshTokenResponseHttpDto authenticate(@RequestParam("code") String code) {
         authService.authenticate(code);
-        return RefreshTokenJsonResponse.of(authService.getRefreshToken());
+        return RefreshTokenResponseHttpDto.of(authService.getRefreshToken());
     }
 
     @Operation(summary = "Check authentication",
@@ -34,8 +34,8 @@ public class GogAuthController {
 
     @Operation(summary = "Refresh access token", description = "Refreshes the access token using a refresh token")
     @GetMapping("refresh")
-    public RefreshTokenJsonResponse refreshAccessToken(@RequestParam("refresh_token") String refreshToken) {
+    public RefreshTokenResponseHttpDto refreshAccessToken(@RequestParam("refresh_token") String refreshToken) {
         authService.refresh(refreshToken);
-        return RefreshTokenJsonResponse.of(authService.getRefreshToken());
+        return RefreshTokenResponseHttpDto.of(authService.getRefreshToken());
     }
 }

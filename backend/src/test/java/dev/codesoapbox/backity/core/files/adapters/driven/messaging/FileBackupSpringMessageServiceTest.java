@@ -3,7 +3,6 @@ package dev.codesoapbox.backity.core.files.adapters.driven.messaging;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.codesoapbox.backity.core.files.adapters.driven.messaging.model.GameFileDetailsMessageMapper;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.messages.FileBackupProgress;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import static dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails.enqueued;
+import static dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails.successful;
 import static dev.codesoapbox.backity.testing.assertions.SimpMessagingAssertions.assertSendsMessage;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +54,7 @@ class FileBackupSpringMessageServiceTest {
                 }
                 """;
 
-        GameFileDetails expectedFileDetails = TestGameFileDetails.enqueued()
+        GameFileDetails expectedFileDetails = enqueued()
                 .build();
 
         assertSendsMessage(simpMessagingTemplate, expectedPayload,
@@ -105,7 +106,7 @@ class FileBackupSpringMessageServiceTest {
                 }
                 """;
 
-        GameFileDetails gameFileDetails = TestGameFileDetails.successful()
+        GameFileDetails gameFileDetails = successful()
                 .build();
 
         assertSendsMessage(simpMessagingTemplate, expectedPayload,

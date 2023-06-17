@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.files.config.gamefiledetails.GameFileDetailsJsonBeanConfig;
+import dev.codesoapbox.backity.core.files.config.gamefiledetails.GameFileDetailsControllerBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(OutputCaptureExtension.class)
 @WebMvcTest(FileBackupController.class)
-@Import({SharedControllerBeanConfig.class, GameFileDetailsJsonBeanConfig.class})
+@Import({SharedControllerBeanConfig.class, GameFileDetailsControllerBeanConfig.class})
 class FileBackupControllerIT {
 
     @Autowired

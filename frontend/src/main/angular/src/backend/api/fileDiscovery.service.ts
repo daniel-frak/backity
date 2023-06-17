@@ -27,7 +27,7 @@ import {Observable} from 'rxjs';
 // @ts-ignore
 import {FileDiscoveryStatus} from '../model/fileDiscoveryStatus';
 // @ts-ignore
-import {PageJsonGameFileDetails} from '../model/pageJsonGameFileDetails';
+import {PageHttpDtoGameFileDetails} from '../model/pageHttpDtoGameFileDetails';
 // @ts-ignore
 import {Pagination} from '../model/pagination';
 
@@ -161,9 +161,9 @@ export class FileDiscoveryClient {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getDiscoveredFiles(pagination: Pagination, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageJsonGameFileDetails>;
-    public getDiscoveredFiles(pagination: Pagination, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageJsonGameFileDetails>>;
-    public getDiscoveredFiles(pagination: Pagination, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageJsonGameFileDetails>>;
+    public getDiscoveredFiles(pagination: Pagination, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageHttpDtoGameFileDetails>;
+    public getDiscoveredFiles(pagination: Pagination, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageHttpDtoGameFileDetails>>;
+    public getDiscoveredFiles(pagination: Pagination, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageHttpDtoGameFileDetails>>;
     public getDiscoveredFiles(pagination: Pagination, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         if (pagination === null || pagination === undefined) {
             throw new Error('Required parameter pagination was null or undefined when calling getDiscoveredFiles.');
@@ -207,7 +207,7 @@ export class FileDiscoveryClient {
         }
 
         let localVarPath = `/api/discovered-files`;
-        return this.httpClient.request<PageJsonGameFileDetails>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<PageHttpDtoGameFileDetails>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,

@@ -6,7 +6,7 @@ import lombok.Value;
 
 @Schema(name = "RefreshTokenResponse")
 @Value(staticConstructor = "of")
-public class RefreshTokenJsonResponse {
+public class RefreshTokenResponseHttpDto {
 
     @JsonProperty("refresh_token")
     String refreshToken;

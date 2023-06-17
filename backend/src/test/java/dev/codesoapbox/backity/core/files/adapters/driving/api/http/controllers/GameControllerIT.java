@@ -4,7 +4,6 @@ import dev.codesoapbox.backity.core.files.application.GameFacade;
 import dev.codesoapbox.backity.core.files.application.GameWithFiles;
 import dev.codesoapbox.backity.core.files.config.game.GameControllerBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
 import dev.codesoapbox.backity.core.shared.config.jpa.SharedControllerBeanConfig;
@@ -19,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
+import static dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails.full;
 import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -39,7 +39,7 @@ class GameControllerIT {
     void shouldGetGames() throws Exception {
         var gameId = new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"));
         Pagination pagination = new Pagination(0, 2);
-        GameFileDetails gameFileDetails = TestGameFileDetails.full().build();
+        GameFileDetails gameFileDetails = full().build();
         Page<GameWithFiles> gameWithFilesPage = new Page<>(singletonList(
                 new GameWithFiles(
                         new Game(gameId, "Test Game"),

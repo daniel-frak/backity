@@ -5,9 +5,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 @Mapper
-public interface GameDetailsJsonResponseMapper {
+public interface GameDetailsResponseHttpDtoMapper {
 
-    GameDetailsJsonResponseMapper INSTANCE = Mappers.getMapper(GameDetailsJsonResponseMapper.class);
+    GameDetailsResponseHttpDtoMapper INSTANCE = Mappers.getMapper(GameDetailsResponseHttpDtoMapper.class);
 
-    GameDetailsJsonResponse toJson(GameDetailsResponse domain);
+    GameDetailsResponseHttpDto toDto(GameDetailsResponse domain);
 }

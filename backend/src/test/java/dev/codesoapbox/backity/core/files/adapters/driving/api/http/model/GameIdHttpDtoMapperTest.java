@@ -7,16 +7,16 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class GameIdJsonMapperTest {
+class GameIdHttpDtoMapperTest {
 
-    private final GameIdJsonMapper MAPPER = new GameIdJsonMapper();
+    private final GameIdHttpDtoMapper MAPPER = new GameIdHttpDtoMapper();
 
     @Test
-    void shouldMapToJson() {
+    void shouldMapToDto() {
         String idString = "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5";
         GameId id = new GameId(UUID.fromString(idString));
 
-        String result = MAPPER.toJson(id);
+        String result = MAPPER.toDto(id);
 
         assertThat(result)
                 .isEqualTo(idString);
@@ -24,7 +24,7 @@ class GameIdJsonMapperTest {
 
     @Test
     void shouldReturnNullGivenNull() {
-        assertThat(MAPPER.toJson(null))
+        assertThat(MAPPER.toDto(null))
                 .isNull();
     }
 }

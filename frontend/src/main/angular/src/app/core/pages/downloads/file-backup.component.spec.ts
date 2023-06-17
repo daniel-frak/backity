@@ -7,7 +7,7 @@ import {TableComponent} from "@app/shared/components/table/table.component";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {of} from "rxjs";
-import {BackupsClient, FileBackupStatus, GameFileDetails, PageJsonGameFileDetails} from "@backend";
+import {BackupsClient, FileBackupStatus, GameFileDetails, PageHttpDtoGameFileDetails} from "@backend";
 import {By} from "@angular/platform-browser";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
 
@@ -17,7 +17,7 @@ describe('DownloadsComponent', () => {
   let backupsClient: jasmine.SpyObj<BackupsClient>;
   let messagesService: jasmine.SpyObj<MessagesService>;
 
-  const enqueuedDownloads: PageJsonGameFileDetails = {
+  const enqueuedDownloads: PageHttpDtoGameFileDetails = {
     content: [{
       id: "someGameFileId",
       sourceFileDetails: {
@@ -30,7 +30,7 @@ describe('DownloadsComponent', () => {
       }
     }]
   };
-  const processedFiles: PageJsonGameFileDetails = {
+  const processedFiles: PageHttpDtoGameFileDetails = {
     content: [{
       id: "someGameFileId",
       sourceFileDetails: {

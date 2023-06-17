@@ -5,9 +5,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper
-public abstract class PaginationJsonMapper {
+public abstract class PaginationHttpDtoMapper {
 
     @Mapping(target = "pageSize", source = "size")
     @Mapping(target = "pageNumber", source = "page", defaultValue = "0")
-    public abstract Pagination toModel(PaginationJson pagination);
+    public abstract Pagination toModel(PaginationHttpDto pagination);
 }

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {BackupsClient, FileBackupStatus, GameFileDetails, GamesClient, PageJsonGameWithFiles} from "@backend";
+import {BackupsClient, FileBackupStatus, GameFileDetails, GamesClient, PageHttpDtoGameWithFiles} from "@backend";
 import {catchError} from "rxjs/operators";
 import {throwError} from "rxjs";
 
@@ -11,7 +11,7 @@ import {throwError} from "rxjs";
 export class GamesComponent implements OnInit {
 
   gamesAreLoading: boolean = true;
-  gameWithFilesPage?: PageJsonGameWithFiles;
+  gameWithFilesPage?: PageHttpDtoGameWithFiles;
 
   constructor(private readonly gamesClient: GamesClient,
               private readonly backupsClient: BackupsClient) {

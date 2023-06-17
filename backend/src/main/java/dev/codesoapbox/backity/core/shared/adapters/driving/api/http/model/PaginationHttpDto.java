@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
 @Schema(name = "Pagination")
-public record PaginationJson(
+public record PaginationHttpDto(
         @PositiveOrZero
         Integer page,
         @Positive

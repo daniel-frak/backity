@@ -6,13 +6,13 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class FileDiscoveryStatusJsonMapperTest {
+class FileDiscoveryStatusHttpDtoMapperTest {
 
     @Test
-    void shouldMapToJson() {
+    void shouldMapToDto() {
         var domain = new FileDiscoveryStatus("someSource", true);
 
-        var result = FileDiscoveryStatusJsonMapper.INSTANCE.toJson(domain);
+        var result = FileDiscoveryStatusHttpDtoMapper.INSTANCE.toDto(domain);
 
         assertEquals("someSource", result.getSource());
         assertTrue(result.isInProgress());

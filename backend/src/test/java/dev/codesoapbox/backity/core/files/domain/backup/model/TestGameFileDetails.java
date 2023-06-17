@@ -50,6 +50,10 @@ public class TestGameFileDetails {
     @lombok.Builder.Default
     private LocalDateTime dateModified = LocalDateTime.parse("2023-04-29T14:15:53");
 
+    public static Builder discovered() {
+        return new Builder();
+    }
+
     public static Builder full() {
         return discovered()
                 .backupFailedReason("someFailedReason")

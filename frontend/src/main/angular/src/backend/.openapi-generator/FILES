@@ -30,8 +30,8 @@ model/gameWithFiles.ts
 model/logCreatedMessage.ts
 model/logsMessageTopics.ts
 model/models.ts
-model/pageJsonGameFileDetails.ts
-model/pageJsonGameWithFiles.ts
+model/pageHttpDtoGameFileDetails.ts
+model/pageHttpDtoGameWithFiles.ts
 model/pagination.ts
 model/refreshTokenResponse.ts
 model/sourceFileDetails.ts

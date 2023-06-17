@@ -5,12 +5,12 @@ import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(uses = GameIdJsonMapper.class)
-public abstract class GameFileDetailsJsonMapper {
+@Mapper(uses = GameIdHttpDtoMapper.class)
+public abstract class GameFileDetailsHttpDtoMapper {
 
-    public static final GameFileDetailsJsonMapper INSTANCE = Mappers.getMapper(GameFileDetailsJsonMapper.class);
+    public static final GameFileDetailsHttpDtoMapper INSTANCE = Mappers.getMapper(GameFileDetailsHttpDtoMapper.class);
 
-    public abstract GameFileDetailsJson toJson(GameFileDetails domain);
+    public abstract GameFileDetailsHttpDto toDto(GameFileDetails domain);
 
     protected String toString(GameFileDetailsId id) {
         return id.value().toString();

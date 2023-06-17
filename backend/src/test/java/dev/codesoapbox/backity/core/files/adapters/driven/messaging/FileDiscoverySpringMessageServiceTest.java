@@ -3,7 +3,6 @@ package dev.codesoapbox.backity.core.files.adapters.driven.messaging;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.codesoapbox.backity.core.files.adapters.driven.messaging.model.GameFileDetailsMessageMapper;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import static dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails.discovered;
 import static dev.codesoapbox.backity.testing.assertions.SimpMessagingAssertions.assertSendsMessage;
 
 @ExtendWith(MockitoExtension.class)
@@ -86,7 +86,7 @@ class FileDiscoverySpringMessageServiceTest {
                 }
                 """;
 
-        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
+        GameFileDetails gameFileDetails = discovered().build();
 
         assertSendsMessage(simpMessagingTemplate, expectedPayload,
                 FileDiscoveryMessageTopics.FILE_DISCOVERY.toString(),

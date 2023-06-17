@@ -3,13 +3,13 @@ package dev.codesoapbox.backity.core.files.adapters.driven.persistence;
 import dev.codesoapbox.backity.core.files.adapters.driven.persistence.game.GameJpaEntity;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails.discovered;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GameFileDetailsDetailsMapperTestJpaEntity {
@@ -18,7 +18,7 @@ class GameFileDetailsDetailsMapperTestJpaEntity {
 
     @Test
     void shouldMapToEntity() {
-        GameFileDetails model = TestGameFileDetails.discovered().build();
+        GameFileDetails model = discovered().build();
 
         GameFileDetailsJpaEntity result = MAPPER.toEntity(model);
 
@@ -77,7 +77,7 @@ class GameFileDetailsDetailsMapperTestJpaEntity {
 
         GameFileDetails result = MAPPER.toModel(model);
 
-        var expectedResult = TestGameFileDetails.discovered().build();
+        var expectedResult = discovered().build();
 
         assertThat(result)
                 .usingRecursiveComparison().isEqualTo(expectedResult);

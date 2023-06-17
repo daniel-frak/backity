@@ -11,12 +11,12 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GameFileDetailsJson {
+public class GameFileDetailsHttpDto {
 
     private String id;
     private String gameId;
-    private SourceFileDetailsJson sourceFileDetails;
-    private BackupDetailsJson backupDetails;
+    private SourceFileDetailsHttpDto sourceFileDetails;
+    private BackupDetailsHttpDto backupDetails;
     private LocalDateTime dateCreated;
     private LocalDateTime dateModified;
 }

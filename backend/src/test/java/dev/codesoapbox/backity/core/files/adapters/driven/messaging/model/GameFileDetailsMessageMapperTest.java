@@ -2,18 +2,18 @@ package dev.codesoapbox.backity.core.files.adapters.driven.messaging.model;
 
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
+import static dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails.full;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GameFileDetailsMessageMapperTest {
 
     @Test
     void shouldMapToMessage() {
-        GameFileDetails domain = TestGameFileDetails.full().build();
+        GameFileDetails domain = full().build();
 
         GameFileDetailsMessage result = GameFileDetailsMessageMapper.INSTANCE.toMessage(domain);
 

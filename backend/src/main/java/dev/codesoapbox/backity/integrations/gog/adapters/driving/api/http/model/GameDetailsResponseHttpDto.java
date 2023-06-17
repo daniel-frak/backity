@@ -11,12 +11,12 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GameDetailsJsonResponse {
+public class GameDetailsResponseHttpDto {
 
     private String title;
     private String backgroundImage;
     private String cdKey;
     private String textInformation;
-    private List<GameFileDetailsJsonResponse> files;
+    private List<GameFileDetailsResponseHttpDto> files;
     private String changelog;
 }
