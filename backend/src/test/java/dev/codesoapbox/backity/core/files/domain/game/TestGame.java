@@ -14,6 +14,10 @@ public final class TestGame {
     @lombok.Builder.Default
     private String title = "Test Game";
 
+    public static TestGame.Builder aGame() {
+        return new Builder();
+    }
+
     public static class Builder {
 
         public Game build() {

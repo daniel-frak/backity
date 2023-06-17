@@ -11,9 +11,8 @@
  */
 
 
-export interface SortObject { 
-    empty?: boolean;
-    unsorted?: boolean;
-    sorted?: boolean;
+export interface Pagination { 
+    page?: number;
+    size?: number;
 }
 

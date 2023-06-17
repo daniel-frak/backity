@@ -7,7 +7,7 @@ import {TableComponent} from "@app/shared/components/table/table.component";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {of} from "rxjs";
-import {BackupsClient, FileBackupStatus, GameFileDetails, PageGameFileDetails} from "@backend";
+import {BackupsClient, FileBackupStatus, GameFileDetails, PageJsonGameFileDetails} from "@backend";
 import {By} from "@angular/platform-browser";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
 
@@ -17,7 +17,7 @@ describe('DownloadsComponent', () => {
   let backupsClient: jasmine.SpyObj<BackupsClient>;
   let messagesService: jasmine.SpyObj<MessagesService>;
 
-  const enqueuedDownloads: PageGameFileDetails = {
+  const enqueuedDownloads: PageJsonGameFileDetails = {
     content: [{
       id: "someGameFileId",
       sourceFileDetails: {
@@ -30,7 +30,7 @@ describe('DownloadsComponent', () => {
       }
     }]
   };
-  const processedFiles: PageGameFileDetails = {
+  const processedFiles: PageJsonGameFileDetails = {
     content: [{
       id: "someGameFileId",
       sourceFileDetails: {
@@ -113,7 +113,10 @@ describe('DownloadsComponent', () => {
     fixture.detectChanges();
 
     expect(backupsClient.getQueueItems)
-      .toHaveBeenCalledWith(0, component['pageSize'], ['dateCreated,desc']);
+      .toHaveBeenCalledWith({
+        page: 0,
+        size: component['pageSize']
+      });
     expect(component.enqueuedDownloads).toEqual(enqueuedDownloads);
     expect(backupsClient.getProcessedFiles).toHaveBeenCalled();
     expect(component.processedFiles).toEqual(processedFiles);

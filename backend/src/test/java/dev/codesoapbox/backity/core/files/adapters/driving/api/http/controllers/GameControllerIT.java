@@ -2,20 +2,19 @@ package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers
 
 import dev.codesoapbox.backity.core.files.application.GameFacade;
 import dev.codesoapbox.backity.core.files.application.GameWithFiles;
-import dev.codesoapbox.backity.core.files.config.game.GameHttpBeanConfig;
+import dev.codesoapbox.backity.core.files.config.game.GameControllerBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
+import dev.codesoapbox.backity.core.shared.config.jpa.SharedControllerBeanConfig;
+import dev.codesoapbox.backity.core.shared.domain.Page;
+import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
@@ -27,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(GameController.class)
-@Import(GameHttpBeanConfig.class)
+@Import({GameControllerBeanConfig.class, SharedControllerBeanConfig.class})
 class GameControllerIT {
 
     @Autowired
@@ -39,18 +38,18 @@ class GameControllerIT {
     @Test
     void shouldGetGames() throws Exception {
         var gameId = new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"));
-        Pageable pageable = PageRequest.of(1, 2);
+        Pagination pagination = new Pagination(0, 2);
         GameFileDetails gameFileDetails = TestGameFileDetails.full().build();
-        Page<GameWithFiles> gameWithFilesPage = new PageImpl<>(singletonList(
+        Page<GameWithFiles> gameWithFilesPage = new Page<>(singletonList(
                 new GameWithFiles(
                         new Game(gameId, "Test Game"),
                         singletonList(gameFileDetails)
                 )
-        ));
-        when(gameFacade.getGamesWithFiles(pageable))
+        ), 1, 2, 3, 4, 5);
+        when(gameFacade.getGamesWithFiles(pagination))
                 .thenReturn(gameWithFilesPage);
 
-        mockMvc.perform(get("/api/games?page=1&size=2"))
+        mockMvc.perform(get("/api/games?page=0&size=2"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("""
                         {

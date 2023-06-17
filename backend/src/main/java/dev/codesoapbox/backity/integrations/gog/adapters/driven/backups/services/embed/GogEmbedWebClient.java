@@ -211,7 +211,7 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
     private void verifyResponseIsSuccessful(ClientResponse response, String gameFileUrl) {
         if (!response.statusCode().is2xxSuccessful()) {
             throw new GameBackupRequestFailedException(gameFileUrl,
-                    "Http status code was: " + response.rawStatusCode());
+                    "Http status code was: " + response.statusCode().value());
         }
     }
 

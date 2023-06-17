@@ -8,7 +8,7 @@ import {
   FileDiscoveryStatus,
   GameFileDetails,
   GameFileDetailsMessage,
-  PageGameFileDetails
+  PageJsonGameFileDetails
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
@@ -23,7 +23,7 @@ import {throwError} from "rxjs";
 })
 export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
-  discoveredFiles?: PageGameFileDetails;
+  discoveredFiles?: PageJsonGameFileDetails;
   newestDiscovered?: GameFileDetailsMessage;
   newDiscoveredCount: number = 0;
   infoIsLoading: boolean = false;
@@ -87,12 +87,14 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     this.filesAreLoading = true;
     const page = 0;
     const size = this.pageSize;
-    const sort = ["dateCreated,desc"];
-    this.fileDiscoveryClient.getDiscoveredFiles(page, size, sort)
+    this.fileDiscoveryClient.getDiscoveredFiles({
+      page: page,
+      size: size
+    })
       .subscribe(df => this.updateDiscoveredFiles(df));
   }
 
-  private updateDiscoveredFiles(df: PageGameFileDetails) {
+  private updateDiscoveredFiles(df: PageJsonGameFileDetails) {
     this.discoveredFiles = df;
     this.newDiscoveredCount = 0;
     this.filesAreLoading = false;

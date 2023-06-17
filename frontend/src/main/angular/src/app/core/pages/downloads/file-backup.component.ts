@@ -5,7 +5,7 @@ import {
   FileBackupProgress,
   FileBackupStatus,
   GameFileDetails,
-  PageGameFileDetails
+  PageJsonGameFileDetails
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
@@ -18,8 +18,8 @@ import {IMessage} from "@stomp/stompjs";
 })
 export class FileBackupComponent implements OnInit, OnDestroy {
 
-  enqueuedDownloads?: PageGameFileDetails;
-  processedFiles?: PageGameFileDetails;
+  enqueuedDownloads?: PageJsonGameFileDetails;
+  processedFiles?: PageJsonGameFileDetails;
   currentDownload?: GameFileDetails;
   downloadProgress?: FileBackupProgress;
   filesAreLoading: boolean = false;
@@ -60,13 +60,18 @@ export class FileBackupComponent implements OnInit, OnDestroy {
     this.filesAreLoading = true;
     const page = 0;
     const size = this.pageSize;
-    const sort = ["dateCreated,desc"];
 
-    this.backupsClient.getQueueItems(page, size, sort)
+    this.backupsClient.getQueueItems({
+      page: page,
+      size: size
+    })
       .subscribe(d => {
         this.enqueuedDownloads = d;
 
-        this.backupsClient.getProcessedFiles()
+        this.backupsClient.getProcessedFiles({
+          page: 0,
+          size: 20
+        })
           .subscribe(f => {
             this.processedFiles = f;
             this.filesAreLoading = false;

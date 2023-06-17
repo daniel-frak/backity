@@ -28,7 +28,8 @@ public class AdapterPackagesOnlyAccessedByTheirConfigCondition extends ArchCondi
             String expectedConfigPackage = getExpectedConfigPackage(adaptersPackage);
 
             boolean satisfied = originPackageName.startsWith(expectedAdapterPackage)
-                    || originPackageName.startsWith(expectedConfigPackage);
+                    || originPackageName.startsWith(expectedConfigPackage)
+                    || targetPackageName.contains("shared.adapters");
 
             events.add(new SimpleConditionEvent(access, satisfied, access.getDescription()));
         });

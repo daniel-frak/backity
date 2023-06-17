@@ -19,7 +19,7 @@ import {
   FileDiscoveryStatus,
   GameFileDetails,
   GameFileDetailsMessage,
-  PageGameFileDetails
+  PageJsonGameFileDetails
 } from "@backend";
 import {Observable} from "rxjs";
 import {MessageTesting} from "@app/shared/testing/message-testing";
@@ -105,7 +105,7 @@ describe('FileDiscoveryComponent', () => {
       source: 'someSource',
       inProgress: true
     };
-    const expectedGameFileDetails: PageGameFileDetails = {
+    const expectedGameFileDetails: PageJsonGameFileDetails = {
       content: [{
         sourceFileDetails: {
           fileTitle: 'someGameFileDetails'

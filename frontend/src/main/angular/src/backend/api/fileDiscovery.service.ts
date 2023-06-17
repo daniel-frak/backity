@@ -27,7 +27,9 @@ import {Observable} from 'rxjs';
 // @ts-ignore
 import {FileDiscoveryStatus} from '../model/fileDiscoveryStatus';
 // @ts-ignore
-import {PageGameFileDetails} from '../model/pageGameFileDetails';
+import {PageJsonGameFileDetails} from '../model/pageJsonGameFileDetails';
+// @ts-ignore
+import {Pagination} from '../model/pagination';
 
 // @ts-ignore
 import {BASE_PATH, COLLECTION_FORMATS} from '../variables';
@@ -155,31 +157,22 @@ export class FileDiscoveryClient {
     /**
      * List discovered files
      * Returns a paginated list of discovered files which were not yet added to the download queue
-     * @param page Zero-based page index (0..N)
-     * @param size The size of the page to be returned
-     * @param sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+     * @param pagination
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageGameFileDetails>;
-    public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageGameFileDetails>>;
-    public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageGameFileDetails>>;
-    public getDiscoveredFiles(page?: number, size?: number, sort?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public getDiscoveredFiles(pagination: Pagination, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageJsonGameFileDetails>;
+    public getDiscoveredFiles(pagination: Pagination, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageJsonGameFileDetails>>;
+    public getDiscoveredFiles(pagination: Pagination, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageJsonGameFileDetails>>;
+    public getDiscoveredFiles(pagination: Pagination, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        if (pagination === null || pagination === undefined) {
+            throw new Error('Required parameter pagination was null or undefined when calling getDiscoveredFiles.');
+        }
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (page !== undefined && page !== null) {
+        if (pagination !== undefined && pagination !== null) {
           localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>page, 'page');
-        }
-        if (size !== undefined && size !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>size, 'size');
-        }
-        if (sort) {
-            sort.forEach((element) => {
-                localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-                  <any>element, 'sort');
-            })
+            <any>pagination, 'pagination');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -214,7 +207,7 @@ export class FileDiscoveryClient {
         }
 
         let localVarPath = `/api/discovered-files`;
-        return this.httpClient.request<PageGameFileDetails>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<PageJsonGameFileDetails>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,

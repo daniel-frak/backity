@@ -3,16 +3,15 @@ package dev.codesoapbox.backity.core.files.adapters.driven.persistence.game;
 import dev.codesoapbox.backity.core.files.config.game.GameJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
+import dev.codesoapbox.backity.core.shared.config.jpa.SharedJpaRepositoryConfig;
+import dev.codesoapbox.backity.core.shared.domain.Page;
+import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -25,7 +24,7 @@ import static dev.codesoapbox.backity.core.files.domain.game.TestGame.aGame;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@Import(GameJpaRepositoryBeanConfig.class)
+@Import({SharedJpaRepositoryConfig.class, GameJpaRepositoryBeanConfig.class})
 @Transactional
 abstract class GameJpaRepositoryAbstractIT {
 
@@ -61,7 +60,7 @@ abstract class GameJpaRepositoryAbstractIT {
     private void persistTestData() {
         Stream.of(GAME_1.get(), GAME_2.get(), GAME_3.get())
                 .map(entityMapper::toEntity)
-                .forEach(entityManager::persist);
+                .forEach(entityManager::persistAndFlush);
         entityManager.flush();
         entityManager.clear();
     }
@@ -133,10 +132,11 @@ abstract class GameJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindAllPaginated() {
-        Pageable pageable = PageRequest.of(0, 2);
+        Pagination pageable = new Pagination(0, 2);
         Page<Game> result = jpaRepository.findAll(pageable);
 
-        Page<Game> expectedResult = new PageImpl<>(List.of(GAME_1.get(), GAME_2.get()), pageable, 3);
+        Page<Game> expectedResult = new Page<>(List.of(GAME_1.get(), GAME_2.get()), 2, 2, 3,
+                2, 0);
         assertThat(result).usingRecursiveComparison()
                 .isEqualTo(expectedResult);
     }

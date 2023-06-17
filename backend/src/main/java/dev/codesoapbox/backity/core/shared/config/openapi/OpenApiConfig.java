@@ -8,15 +8,13 @@ import io.swagger.v3.oas.models.servers.Server;
 import lombok.AllArgsConstructor;
 import org.reflections.Reflections;
 import org.springdoc.core.customizers.OpenApiCustomizer;
-import org.springdoc.core.utils.SpringDocUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
 
 import java.util.Arrays;
-import java.util.Collections;
+
+import static java.util.Collections.singletonList;
 
 @Configuration
 @OpenAPIDefinition
@@ -31,24 +29,6 @@ public class OpenApiConfig {
 
     private final Environment environment;
 
-    /**
-     * Springdoc Pageable support temporarily disabled until a bug is fixed where the Pageable schema in responses is
-     * invalid:
-     * <p>
-     * https://github.com/springdoc/springdoc-openapi/issues/1215#issuecomment-880558978
-     * <p>
-     * For now, make sure to document every endpoint using Pageable with {@code @PageableAsQueryParam}
-     * and add {@code @Parameter(hidden = true)} to the {@code Pageable} parameter, like so:
-     * <pre>{@code @PageableAsQueryParam
-     * @GetMapping
-     * public Page<SomeObject> someEndpoint(@Parameter(hidden = true) Pageable pageable) {...}
-     * }</pre>
-     */
-    @EventListener(ContextRefreshedEvent.class)
-    public void contextRefreshedEvent() {
-        SpringDocUtils.getConfig().disableReplacement(org.springframework.data.domain.Pageable.class);
-    }
-
     @Bean
     public OpenAPI customOpenAPI(OpenApiProperties properties) {
         var openApi = new OpenAPI()
@@ -57,7 +37,7 @@ public class OpenApiConfig {
 
         if (Arrays.asList(environment.getActiveProfiles()).contains(CODE_GENERATION_PROFILE)) {
             var server = getLocalhostServer();
-            openApi.setServers(Collections.singletonList(server));
+            openApi.setServers(singletonList(server));
         }
 
         return openApi;

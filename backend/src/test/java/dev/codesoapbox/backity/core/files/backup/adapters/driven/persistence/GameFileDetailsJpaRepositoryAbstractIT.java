@@ -8,6 +8,9 @@ import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
+import dev.codesoapbox.backity.core.shared.config.jpa.SharedJpaRepositoryConfig;
+import dev.codesoapbox.backity.core.shared.domain.Page;
+import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,9 +18,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Import(GameFileDetailsJpaRepositoryBeanConfig.class)
+@Import({SharedJpaRepositoryConfig.class, GameFileDetailsJpaRepositoryBeanConfig.class})
 @Transactional
 abstract class GameFileDetailsJpaRepositoryAbstractIT {
 
@@ -108,13 +108,18 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindAllWaitingForDownload() {
-        Page<GameFileDetails> result = gameFileVersionJpaRepository.findAllWaitingForDownload(Pageable.unpaged());
+        var pagination = new Pagination(0, 2);
+        Page<GameFileDetails> result = gameFileVersionJpaRepository.findAllWaitingForDownload(pagination);
 
-        Page<GameFileDetails> expectedResult = new PageImpl<>(
-                List.of(GAME_FILE_DETAILS_1.get(), GAME_FILE_DETAILS_3.get()), Pageable.unpaged(), 2);
+        Page<GameFileDetails> expectedResult = new Page<>(
+                List.of(GAME_FILE_DETAILS_1.get(), GAME_FILE_DETAILS_3.get()),
+                2, 1, 2, 2, 0);
         assertThat(result).usingRecursiveComparison()
-                .ignoringFields("dateCreated", "dateModified")
+                .ignoringFields("content")
                 .isEqualTo(expectedResult);
+        assertThat(result.content())
+                .usingRecursiveFieldByFieldElementComparatorIgnoringFields("dateCreated", "dateModified")
+                .isEqualTo(expectedResult.content());
     }
 
     @Test
@@ -152,13 +157,14 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindAllProcessed() {
-        Page<GameFileDetails> result = gameFileVersionJpaRepository.findAllProcessed(Pageable.unpaged());
+        var pagination = new Pagination(0, 2);
+        Page<GameFileDetails> result = gameFileVersionJpaRepository.findAllProcessed(pagination);
 
         List<GameFileDetails> expectedResult = List.of(
                 GAME_FILE_DETAILS_2.get(),
                 GAME_FILE_DETAILS_4.get()
         );
-        assertThat(result.getContent())
+        assertThat(result.content())
                 .usingRecursiveComparison()
                 .ignoringFields("dateCreated", "dateModified")
                 .isEqualTo(expectedResult);
@@ -185,10 +191,11 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindAllDiscovered() {
-        Page<GameFileDetails> result = gameFileVersionJpaRepository.findAllDiscovered(Pageable.unpaged());
+        var pagination = new Pagination(0, 2);
+        Page<GameFileDetails> result = gameFileVersionJpaRepository.findAllDiscovered(pagination);
 
         List<GameFileDetails> expectedResult = singletonList(GAME_FILE_DETAILS_6.get());
-        assertThat(result.getContent())
+        assertThat(result.content())
                 .usingRecursiveComparison()
                 .ignoringFields("dateCreated", "dateModified")
                 .isEqualTo(expectedResult);

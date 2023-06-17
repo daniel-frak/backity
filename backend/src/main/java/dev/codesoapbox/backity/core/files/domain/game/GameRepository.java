@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.files.domain.game;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import dev.codesoapbox.backity.core.shared.domain.Page;
+import dev.codesoapbox.backity.core.shared.domain.Pagination;
 
 import java.util.Optional;
 
@@ -13,5 +13,5 @@ public interface GameRepository {
 
     Optional<Game> findById(GameId id);
 
-    Page<Game> findAll(Pageable pageable);
+    Page<Game> findAll(Pagination pagination);
 }

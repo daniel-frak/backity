@@ -1,10 +1,13 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers;
 
+import dev.codesoapbox.backity.core.files.config.gamefiledetails.GameFileDetailsJsonBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.backup.model.FileBackupStatus;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
-import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
+import dev.codesoapbox.backity.core.shared.config.jpa.SharedControllerBeanConfig;
+import dev.codesoapbox.backity.core.shared.domain.Page;
+import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +15,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 import java.util.UUID;
 
+import static dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails.discovered;
+import static dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails.full;
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(OutputCaptureExtension.class)
 @WebMvcTest(FileBackupController.class)
+@Import({SharedControllerBeanConfig.class, GameFileDetailsJsonBeanConfig.class})
 class FileBackupControllerIT {
 
     @Autowired
@@ -40,7 +45,7 @@ class FileBackupControllerIT {
 
     @Test
     void shouldGetCurrentlyDownloading() throws Exception {
-        GameFileDetails gameFileDetails = TestGameFileDetails.full().build();
+        GameFileDetails gameFileDetails = full().build();
 
         when(gameFileDetailsRepository.findCurrentlyDownloading())
                 .thenReturn(Optional.of(gameFileDetails));
@@ -75,11 +80,12 @@ class FileBackupControllerIT {
 
     @Test
     void shouldGetQueueItems() throws Exception {
-        GameFileDetails gameFileDetails = TestGameFileDetails.full().build();
+        GameFileDetails gameFileDetails = full().build();
 
-        Pageable pageable = Pageable.ofSize(1);
-        when(gameFileDetailsRepository.findAllWaitingForDownload(pageable))
-                .thenReturn(new PageImpl<>(singletonList(gameFileDetails), pageable, 2));
+        var pagination = new Pagination(0, 1);
+        when(gameFileDetailsRepository.findAllWaitingForDownload(pagination))
+                .thenReturn(new Page<>(singletonList(gameFileDetails),
+                        4, 3, 2, 1, 0));
 
         var expectedJson = """
                 {
@@ -105,31 +111,11 @@ class FileBackupControllerIT {
                       "dateModified": "2023-04-29T14:15:53"
                     }
                   ],
-                  "pageable": {
-                    "sort": {
-                      "empty": true,
-                      "sorted": false,
-                      "unsorted": true
-                    },
-                    "offset": 0,
-                    "pageNumber": 0,
-                    "pageSize": 1,
-                    "paged": true,
-                    "unpaged": false
-                  },
+                  "size": 4,
+                  "totalPages": 3,
                   "totalElements": 2,
-                  "totalPages": 2,
-                  "last": false,
-                  "size": 1,
-                  "number": 0,
-                  "sort": {
-                    "empty": true,
-                    "sorted": false,
-                    "unsorted": true
-                  },
-                  "numberOfElements": 1,
-                  "first": true,
-                  "empty": false
+                  "pageSize": 1,
+                  "pageNumber": 0
                 }""";
 
         mockMvc.perform(get("/api/backups/queue?size=1"))
@@ -140,11 +126,12 @@ class FileBackupControllerIT {
 
     @Test
     void shouldGetProcessedFiles() throws Exception {
-        GameFileDetails gameFileDetails = TestGameFileDetails.full().build();
+        GameFileDetails gameFileDetails = full().build();
 
-        Pageable pageable = Pageable.ofSize(1);
-        when(gameFileDetailsRepository.findAllProcessed(pageable))
-                .thenReturn(new PageImpl<>(singletonList(gameFileDetails), pageable, 2));
+        var pagination = new Pagination(0, 1);
+        when(gameFileDetailsRepository.findAllProcessed(pagination))
+                .thenReturn(new Page<>(singletonList(gameFileDetails),
+                        4, 3, 2, 1, 0));
 
         var expectedJson = """
                 {
@@ -170,31 +157,11 @@ class FileBackupControllerIT {
                       "dateModified": "2023-04-29T14:15:53"
                     }
                    ],
-                   "pageable": {
-                     "sort": {
-                       "empty": true,
-                       "sorted": false,
-                       "unsorted": true
-                     },
-                     "offset": 0,
-                     "pageNumber": 0,
-                     "pageSize": 1,
-                     "unpaged": false,
-                     "paged": true
-                   },
-                   "last": false,
-                   "totalPages": 2,
-                   "totalElements": 2,
-                   "size": 1,
-                   "number": 0,
-                   "sort": {
-                     "empty": true,
-                     "sorted": false,
-                     "unsorted": true
-                   },
-                   "first": true,
-                   "numberOfElements": 1,
-                   "empty": false
+                  "size": 4,
+                  "totalPages": 3,
+                  "totalElements": 2,
+                  "pageSize": 1,
+                  "pageNumber": 0
                  }""";
 
         mockMvc.perform(get("/api/backups/processed?size=1"))
@@ -205,10 +172,10 @@ class FileBackupControllerIT {
 
     @Test
     void shouldEnqueueForDownload() throws Exception {
-        String stringUuid = "acde26d7-33c7-42ee-be16-bca91a604b48";
-        UUID uuid = UUID.fromString(stringUuid);
+        var stringUuid = "acde26d7-33c7-42ee-be16-bca91a604b48";
+        var uuid = UUID.fromString(stringUuid);
 
-        GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
+        GameFileDetails gameFileDetails = discovered().build();
 
         when(gameFileDetailsRepository.findById(new GameFileDetailsId(uuid)))
                 .thenReturn(Optional.of(gameFileDetails));
@@ -223,7 +190,7 @@ class FileBackupControllerIT {
 
     @Test
     void shouldNotDownloadWhenFileNotFound(CapturedOutput capturedOutput) throws Exception {
-        String stringUuid = "acde26d7-33c7-42ee-be16-bca91a604b48";
+        var stringUuid = "acde26d7-33c7-42ee-be16-bca91a604b48";
 
         when(gameFileDetailsRepository.findById(new GameFileDetailsId(UUID.fromString(stringUuid))))
                 .thenReturn(Optional.empty());

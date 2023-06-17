@@ -27,7 +27,9 @@ import {Observable} from 'rxjs';
 // @ts-ignore
 import {GameFileDetails} from '../model/gameFileDetails';
 // @ts-ignore
-import {PageGameFileDetails} from '../model/pageGameFileDetails';
+import {PageJsonGameFileDetails} from '../model/pageJsonGameFileDetails';
+// @ts-ignore
+import {Pagination} from '../model/pagination';
 
 // @ts-ignore
 import {BASE_PATH, COLLECTION_FORMATS} from '../variables';
@@ -159,32 +161,13 @@ export class BackupsClient {
     /**
      * List queue items
      * Returns the file currently being downloaded
-     * @param page Zero-based page index (0..N)
-     * @param size The size of the page to be returned
-     * @param sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getCurrentlyProcessing(page?: number, size?: number, sort?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<GameFileDetails>;
-    public getCurrentlyProcessing(page?: number, size?: number, sort?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<GameFileDetails>>;
-    public getCurrentlyProcessing(page?: number, size?: number, sort?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<GameFileDetails>>;
-    public getCurrentlyProcessing(page?: number, size?: number, sort?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (page !== undefined && page !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>page, 'page');
-        }
-        if (size !== undefined && size !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>size, 'size');
-        }
-        if (sort) {
-            sort.forEach((element) => {
-                localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-                  <any>element, 'sort');
-            })
-        }
+    public getCurrentlyProcessing(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<GameFileDetails>;
+    public getCurrentlyProcessing(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<GameFileDetails>>;
+    public getCurrentlyProcessing(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<GameFileDetails>>;
+    public getCurrentlyProcessing(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -221,7 +204,6 @@ export class BackupsClient {
         return this.httpClient.request<GameFileDetails>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -234,31 +216,22 @@ export class BackupsClient {
     /**
      * List queue items
      * Returns a paginated list of all processed files (downloaded or failed)
-     * @param page Zero-based page index (0..N)
-     * @param size The size of the page to be returned
-     * @param sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+     * @param pagination
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getProcessedFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageGameFileDetails>;
-    public getProcessedFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageGameFileDetails>>;
-    public getProcessedFiles(page?: number, size?: number, sort?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageGameFileDetails>>;
-    public getProcessedFiles(page?: number, size?: number, sort?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public getProcessedFiles(pagination: Pagination, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageJsonGameFileDetails>;
+    public getProcessedFiles(pagination: Pagination, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageJsonGameFileDetails>>;
+    public getProcessedFiles(pagination: Pagination, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageJsonGameFileDetails>>;
+    public getProcessedFiles(pagination: Pagination, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        if (pagination === null || pagination === undefined) {
+            throw new Error('Required parameter pagination was null or undefined when calling getProcessedFiles.');
+        }
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (page !== undefined && page !== null) {
+        if (pagination !== undefined && pagination !== null) {
           localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>page, 'page');
-        }
-        if (size !== undefined && size !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>size, 'size');
-        }
-        if (sort) {
-            sort.forEach((element) => {
-                localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-                  <any>element, 'sort');
-            })
+            <any>pagination, 'pagination');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -293,7 +266,7 @@ export class BackupsClient {
         }
 
         let localVarPath = `/api/backups/processed`;
-        return this.httpClient.request<PageGameFileDetails>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<PageJsonGameFileDetails>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
@@ -309,31 +282,22 @@ export class BackupsClient {
     /**
      * List queue items
      * Returns a paginated list of all downloads in the queue
-     * @param page Zero-based page index (0..N)
-     * @param size The size of the page to be returned
-     * @param sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+     * @param pagination
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getQueueItems(page?: number, size?: number, sort?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageGameFileDetails>;
-    public getQueueItems(page?: number, size?: number, sort?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageGameFileDetails>>;
-    public getQueueItems(page?: number, size?: number, sort?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageGameFileDetails>>;
-    public getQueueItems(page?: number, size?: number, sort?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public getQueueItems(pagination: Pagination, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageJsonGameFileDetails>;
+    public getQueueItems(pagination: Pagination, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageJsonGameFileDetails>>;
+    public getQueueItems(pagination: Pagination, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageJsonGameFileDetails>>;
+    public getQueueItems(pagination: Pagination, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        if (pagination === null || pagination === undefined) {
+            throw new Error('Required parameter pagination was null or undefined when calling getQueueItems.');
+        }
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (page !== undefined && page !== null) {
+        if (pagination !== undefined && pagination !== null) {
           localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>page, 'page');
-        }
-        if (size !== undefined && size !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>size, 'size');
-        }
-        if (sort) {
-            sort.forEach((element) => {
-                localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-                  <any>element, 'sort');
-            })
+            <any>pagination, 'pagination');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -368,7 +332,7 @@ export class BackupsClient {
         }
 
         let localVarPath = `/api/backups/queue`;
-        return this.httpClient.request<PageGameFileDetails>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<PageJsonGameFileDetails>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,

@@ -4,9 +4,9 @@ import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameRepository;
+import dev.codesoapbox.backity.core.shared.domain.Page;
+import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -16,8 +16,8 @@ public class GameFacade {
     private final GameRepository gameRepository;
     private final GameFileDetailsRepository gameFileRepository;
 
-    public Page<GameWithFiles> getGamesWithFiles(Pageable pageable) {
-        Page<Game> games = gameRepository.findAll(pageable);
+    public Page<GameWithFiles> getGamesWithFiles(Pagination pagination) {
+        Page<Game> games = gameRepository.findAll(pagination);
         return games.map(this::findFiles);
     }
 

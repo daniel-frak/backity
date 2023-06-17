@@ -5,14 +5,14 @@ import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetail
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameRepository;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageJson;
+import dev.codesoapbox.backity.core.shared.domain.Page;
+import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -38,19 +38,20 @@ class GameFacadeTest {
 
     @Test
     void shouldGetGamesWithFiles() {
-        var pageable = PageRequest.of(0, 2);
+        var pageable = new Pagination(0, 2);
         Game game = Game.createNew("Test game");
         var gameFile = TestGameFileDetails.discovered().build();
         List<GameFileDetails> gameFileDetails = singletonList(gameFile);
 
         when(gameRepository.findAll(pageable))
-                .thenReturn(new PageImpl<>(singletonList(game)));
+                .thenReturn(new Page<>(singletonList(game), 1, 2, 3, 4, 5));
         when(gameFileRepository.findAllByGameId(game.getId()))
                 .thenReturn(gameFileDetails);
 
         Page<GameWithFiles> result = gameFacade.getGamesWithFiles(pageable);
 
-        Page<GameWithFiles> expectedResult = new PageImpl<>(singletonList(new GameWithFiles(game, gameFileDetails)));
+        PageJson<GameWithFiles> expectedResult = new PageJson<>(singletonList(new GameWithFiles(game, gameFileDetails)),
+                1, 2, 3, 4, 5);
         assertThat(result)
                 .usingRecursiveComparison().isEqualTo(expectedResult);
     }

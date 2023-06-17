@@ -25,7 +25,9 @@ import {CustomHttpParameterCodec} from '../encoder';
 import {Observable} from 'rxjs';
 
 // @ts-ignore
-import {PageGameWithFiles} from '../model/pageGameWithFiles';
+import {PageJsonGameWithFiles} from '../model/pageJsonGameWithFiles';
+// @ts-ignore
+import {Pagination} from '../model/pagination';
 
 // @ts-ignore
 import {BASE_PATH, COLLECTION_FORMATS} from '../variables';
@@ -99,31 +101,22 @@ export class GamesClient {
     /**
      * Get games
      * Returns a paginated list of discovered games
-     * @param page Zero-based page index (0..N)
-     * @param size The size of the page to be returned
-     * @param sort Sorting criteria in the format: property,(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+     * @param pagination
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getGames(page?: number, size?: number, sort?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageGameWithFiles>;
-    public getGames(page?: number, size?: number, sort?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageGameWithFiles>>;
-    public getGames(page?: number, size?: number, sort?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageGameWithFiles>>;
-    public getGames(page?: number, size?: number, sort?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public getGames(pagination: Pagination, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageJsonGameWithFiles>;
+    public getGames(pagination: Pagination, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageJsonGameWithFiles>>;
+    public getGames(pagination: Pagination, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageJsonGameWithFiles>>;
+    public getGames(pagination: Pagination, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        if (pagination === null || pagination === undefined) {
+            throw new Error('Required parameter pagination was null or undefined when calling getGames.');
+        }
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (page !== undefined && page !== null) {
+        if (pagination !== undefined && pagination !== null) {
           localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>page, 'page');
-        }
-        if (size !== undefined && size !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>size, 'size');
-        }
-        if (sort) {
-            sort.forEach((element) => {
-                localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-                  <any>element, 'sort');
-            })
+            <any>pagination, 'pagination');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -158,7 +151,7 @@ export class GamesClient {
         }
 
         let localVarPath = `/api/games`;
-        return this.httpClient.request<PageGameWithFiles>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<PageJsonGameWithFiles>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,

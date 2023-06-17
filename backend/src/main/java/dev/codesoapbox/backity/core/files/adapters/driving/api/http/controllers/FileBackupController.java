@@ -5,14 +5,15 @@ import dev.codesoapbox.backity.core.files.adapters.driving.api.http.model.GameFi
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageJson;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageJsonMapper;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PaginationJson;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PaginationJsonMapper;
+import dev.codesoapbox.backity.core.shared.domain.Page;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.converters.models.PageableAsQueryParam;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,9 +31,11 @@ import java.util.UUID;
 public class FileBackupController {
 
     private final GameFileDetailsRepository gameFileDetailsRepository;
+    private final GameFileDetailsJsonMapper gameFileDetailsMapper;
+    private final PaginationJsonMapper paginationMapper;
+    private final PageJsonMapper pageMapper;
 
     @Operation(summary = "List queue items", description = "Returns the file currently being downloaded")
-    @PageableAsQueryParam
     @GetMapping("current")
     public GameFileDetailsJson getCurrentlyProcessing() {
         return gameFileDetailsRepository.findCurrentlyDownloading()
@@ -41,20 +44,20 @@ public class FileBackupController {
     }
 
     @Operation(summary = "List queue items", description = "Returns a paginated list of all downloads in the queue")
-    @PageableAsQueryParam
     @GetMapping("queue")
-    public Page<GameFileDetailsJson> getQueueItems(@Parameter(hidden = true) Pageable pageable) {
-        return gameFileDetailsRepository.findAllWaitingForDownload(pageable)
-                .map(GameFileDetailsJsonMapper.INSTANCE::toJson);
+    public PageJson<GameFileDetailsJson> getQueueItems(PaginationJson pagination) {
+        Page<GameFileDetails> foundPage =
+                gameFileDetailsRepository.findAllWaitingForDownload(paginationMapper.toModel(pagination));
+        return pageMapper.toJson(foundPage, gameFileDetailsMapper::toJson);
     }
 
     @Operation(summary = "List queue items",
             description = "Returns a paginated list of all processed files (downloaded or failed)")
-    @PageableAsQueryParam
     @GetMapping("processed")
-    public Page<GameFileDetailsJson> getProcessedFiles(@Parameter(hidden = true) Pageable pageable) {
-        return gameFileDetailsRepository.findAllProcessed(pageable)
-                .map(GameFileDetailsJsonMapper.INSTANCE::toJson);
+    public PageJson<GameFileDetailsJson> getProcessedFiles(PaginationJson pagination) {
+        Page<GameFileDetails> foundPage =
+                gameFileDetailsRepository.findAllProcessed(paginationMapper.toModel(pagination));
+        return pageMapper.toJson(foundPage, gameFileDetailsMapper::toJson);
     }
 
     // @TODO Should be POST

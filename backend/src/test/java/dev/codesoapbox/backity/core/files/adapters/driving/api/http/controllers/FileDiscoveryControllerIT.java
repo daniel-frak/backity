@@ -1,16 +1,19 @@
 package dev.codesoapbox.backity.core.files.adapters.driving.api.http.controllers;
 
+import dev.codesoapbox.backity.core.files.config.gamefiledetails.GameFileDetailsJsonBeanConfig;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
 import dev.codesoapbox.backity.core.files.domain.discovery.services.FileDiscoveryService;
+import dev.codesoapbox.backity.core.shared.config.jpa.SharedControllerBeanConfig;
+import dev.codesoapbox.backity.core.shared.domain.Page;
+import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static java.util.Collections.singletonList;
@@ -22,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(FileDiscoveryController.class)
+@Import({SharedControllerBeanConfig.class, GameFileDetailsJsonBeanConfig.class})
 class FileDiscoveryControllerIT {
 
     @Autowired
@@ -37,9 +41,10 @@ class FileDiscoveryControllerIT {
     void shouldGetDiscoveredFiles() throws Exception {
         GameFileDetails gameFileDetails = TestGameFileDetails.discovered().build();
 
-        Pageable pageable = Pageable.ofSize(1);
-        when(repository.findAllDiscovered(pageable))
-                .thenReturn(new PageImpl<>(singletonList(gameFileDetails), pageable, 2));
+        var pagination = new Pagination(0, 1);
+        when(repository.findAllDiscovered(pagination))
+                .thenReturn(new Page<>(singletonList(gameFileDetails),
+                        4, 3, 2, 1, 0));
 
         var expectedJson = """
                 {
@@ -65,31 +70,11 @@ class FileDiscoveryControllerIT {
                       "dateModified": "2023-04-29T14:15:53"
                     }
                   ],
-                  "pageable": {
-                     "sort": {
-                       "empty": true,
-                       "sorted": false,
-                       "unsorted": true
-                     },
-                     "offset": 0,
-                     "pageNumber": 0,
-                     "pageSize": 1,
-                     "unpaged": false,
-                     "paged": true
-                   },
-                  "totalPages": 2,
+                  "size": 4,
+                  "totalPages": 3,
                   "totalElements": 2,
-                  "last": false,
-                  "size": 1,
-                  "number": 0,
-                  "sort": {
-                    "empty": true,
-                    "unsorted": true,
-                    "sorted": false
-                  },
-                  "first": true,
-                  "numberOfElements": 1,
-                  "empty": false
+                  "pageSize": 1,
+                  "pageNumber": 0
                 }""";
 
         mockMvc.perform(get("/api/discovered-files?size=1"))
@@ -118,7 +103,7 @@ class FileDiscoveryControllerIT {
 
     @Test
     void shouldGetStatuses() throws Exception {
-        FileDiscoveryStatus status = new FileDiscoveryStatus("someSource", true);
+        var status = new FileDiscoveryStatus("someSource", true);
 
         when(fileDiscoveryService.getStatuses())
                 .thenReturn(singletonList(status));

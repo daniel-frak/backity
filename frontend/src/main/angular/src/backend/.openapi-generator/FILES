@@ -30,11 +30,10 @@ model/gameWithFiles.ts
 model/logCreatedMessage.ts
 model/logsMessageTopics.ts
 model/models.ts
-model/pageGameFileDetails.ts
-model/pageGameWithFiles.ts
-model/pageableObject.ts
+model/pageJsonGameFileDetails.ts
+model/pageJsonGameWithFiles.ts
+model/pagination.ts
 model/refreshTokenResponse.ts
-model/sortObject.ts
 model/sourceFileDetails.ts
 model/sourceFileDetailsMessage.ts
 param.ts

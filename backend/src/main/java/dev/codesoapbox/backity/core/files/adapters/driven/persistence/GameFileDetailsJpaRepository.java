@@ -5,10 +5,14 @@ import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
 import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetailsId;
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.game.GameId;
+import dev.codesoapbox.backity.core.shared.adapters.driven.persistence.PageEntityMapper;
+import dev.codesoapbox.backity.core.shared.adapters.driven.persistence.PaginationEntityMapper;
+import dev.codesoapbox.backity.core.shared.domain.Page;
+import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,39 +20,48 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class GameFileDetailsJpaRepository implements GameFileDetailsRepository {
 
-    private final GameFileDetailsSpringRepository springRepository;
-    private final GameFileDetailsJpaEntityMapper mapper;
+    private static final Sort SORT_BY_DATE_CREATED_ASC = Sort.by(Sort.Direction.ASC, "dateCreated");
+
+    private final GameFileDetailsJpaEntitySpringRepository springRepository;
+    private final GameFileDetailsJpaEntityMapper entityMapper;
+    private final PageEntityMapper pageMapper;
+    private final PaginationEntityMapper paginationMapper;
 
     @Override
     public Optional<GameFileDetails> findOldestWaitingForDownload() {
-        return springRepository.findAllWaitingForDownload(PageRequest.of(0, 1)).get()
+        PageRequest pageable = PageRequest.of(0, 1, SORT_BY_DATE_CREATED_ASC);
+        return springRepository.findAllWaitingForDownload(pageable).get()
                 .findFirst()
-                .map(mapper::toModel);
+                .map(entityMapper::toModel);
     }
 
     @Override
-    public Page<GameFileDetails> findAllWaitingForDownload(Pageable pageable) {
-        return springRepository.findAllWaitingForDownload(pageable)
-                .map(mapper::toModel);
+    public Page<GameFileDetails> findAllWaitingForDownload(Pagination pagination) {
+        Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_DATE_CREATED_ASC);
+        org.springframework.data.domain.Page<GameFileDetailsJpaEntity> foundPage =
+                springRepository.findAllWaitingForDownload(pageable);
+        return pageMapper.toDomain(foundPage, entityMapper::toModel);
     }
 
     @Override
     public GameFileDetails save(GameFileDetails gameFileDetails) {
-        GameFileDetailsJpaEntity entity = mapper.toEntity(gameFileDetails);
+        GameFileDetailsJpaEntity entity = entityMapper.toEntity(gameFileDetails);
         GameFileDetailsJpaEntity savedEntity = springRepository.save(entity);
-        return mapper.toModel(savedEntity);
+        return entityMapper.toModel(savedEntity);
     }
 
     @Override
     public Optional<GameFileDetails> findCurrentlyDownloading() {
         return springRepository.findByBackupDetailsStatus(FileBackupStatus.IN_PROGRESS)
-                .map(mapper::toModel);
+                .map(entityMapper::toModel);
     }
 
     @Override
-    public Page<GameFileDetails> findAllProcessed(Pageable pageable) {
-        return springRepository.findAllProcessed(pageable)
-                .map(mapper::toModel);
+    public Page<GameFileDetails> findAllProcessed(Pagination pagination) {
+        Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_DATE_CREATED_ASC);
+        org.springframework.data.domain.Page<GameFileDetailsJpaEntity> foundPage =
+                springRepository.findAllProcessed(pageable);
+        return pageMapper.toDomain(foundPage, entityMapper::toModel);
     }
 
     @Override
@@ -59,19 +72,21 @@ public class GameFileDetailsJpaRepository implements GameFileDetailsRepository {
     @Override
     public Optional<GameFileDetails> findById(GameFileDetailsId id) {
         return springRepository.findById(id.value())
-                .map(mapper::toModel);
+                .map(entityMapper::toModel);
     }
 
     @Override
-    public Page<GameFileDetails> findAllDiscovered(Pageable pageable) {
-        return springRepository.findAllByBackupDetailsStatus(pageable, FileBackupStatus.DISCOVERED)
-                .map(mapper::toModel);
+    public Page<GameFileDetails> findAllDiscovered(Pagination pagination) {
+        Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_DATE_CREATED_ASC);
+        org.springframework.data.domain.Page<GameFileDetailsJpaEntity> foundPage =
+                springRepository.findAllByBackupDetailsStatus(pageable, FileBackupStatus.DISCOVERED);
+        return pageMapper.toDomain(foundPage, entityMapper::toModel);
     }
 
     @Override
     public List<GameFileDetails> findAllByGameId(GameId gameId) {
         return springRepository.findAllByGameId(gameId.value()).stream()
-                .map(mapper::toModel)
+                .map(entityMapper::toModel)
                 .toList();
     }
 }

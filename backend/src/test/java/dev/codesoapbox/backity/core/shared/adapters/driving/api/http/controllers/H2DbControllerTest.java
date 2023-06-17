@@ -9,6 +9,7 @@ import dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetail
 import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.files.domain.game.Game;
 import dev.codesoapbox.backity.core.files.domain.game.GameRepository;
+import dev.codesoapbox.backity.core.shared.config.jpa.SharedJpaRepositoryConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = H2DbController.class, properties = "h2dump.path=test_dump.sql")
 @Import({FileManagementBeanConfig.class, FileBackupBeanConfig.class,
-        GameJpaRepositoryBeanConfig.class, GameFileDetailsJpaRepositoryBeanConfig.class})
+        GameJpaRepositoryBeanConfig.class, GameFileDetailsJpaRepositoryBeanConfig.class,
+        SharedJpaRepositoryConfig.class})
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 class H2DbControllerTest {
