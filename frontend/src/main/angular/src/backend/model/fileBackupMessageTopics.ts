@@ -11,11 +11,11 @@
  */
 
 
-export type FileBackupMessageTopics = '/topic/backups/started' | '/topic/backups/progress' | '/topic/backups/finished';
+export type FileBackupMessageTopics = '/topic/backups/started' | '/topic/backups/progress-update' | '/topic/backups/status-changed';
 
 export const FileBackupMessageTopics = {
     Started: '/topic/backups/started' as FileBackupMessageTopics,
-    Progress: '/topic/backups/progress' as FileBackupMessageTopics,
-    Finished: '/topic/backups/finished' as FileBackupMessageTopics
+    ProgressUpdate: '/topic/backups/progress-update' as FileBackupMessageTopics,
+    StatusChanged: '/topic/backups/status-changed' as FileBackupMessageTopics
 };
 

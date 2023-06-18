@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.integrations.gog.config;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.messages.FileBackupProgress;
-import dev.codesoapbox.backity.core.files.domain.backup.services.FileBackupMessageService;
-import dev.codesoapbox.backity.core.files.domain.backup.services.FileManager;
+import dev.codesoapbox.backity.core.backup.domain.FileBackupMessageService;
+import dev.codesoapbox.backity.core.backup.domain.FileBackupProgress;
+import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.GogFileBackupService;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.GogFileDiscoveryService;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.UrlFileDownloader;

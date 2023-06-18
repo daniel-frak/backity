@@ -4,6 +4,7 @@ import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchIgnore;
 import com.tngtech.archunit.junit.ArchTest;
+import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.library.dependencies.SliceRule;
 import dev.codesoapbox.backity.testing.archunit.AdapterPackagesOnlyAccessedByTheirConfigCondition;
@@ -38,7 +39,6 @@ class ArchitectureTest {
     private static final String DOMAIN_PACKAGE = "..domain..";
     private static final String DOMAIN_MODEL_PACKAGE = "..domain..model..";
     private static final String DOMAIN_SERVICES_PACKAGE = "..domain..services..";
-    private static final String DOMAIN_REPOSITORIES_PACKAGE = "..domain..repositories..";
     private static final String EXCEPTIONS_PACKAGE = "..exceptions..";
     static final String CONFIG_PACKAGE = "..config..";
     private static final String PERSISTENCE_ADAPTER_PACKAGE = "..adapters.driven.persistence..";
@@ -66,7 +66,9 @@ class ArchitectureTest {
     static final ArchRule adapterPackagesShouldOnlyBeAccessedByThemselvesOrTheirOwnConfig = classes().that()
             .resideInAPackage("..adapters.*..")
             .should(new AdapterPackagesOnlyAccessedByTheirConfigCondition(
-                    "adapters", "config"));
+                    "adapters", "config"))
+            // Ignore JPA adapters because they will frequently depend on each other in @OneToMany etc.
+            .orShould(ArchCondition.from(resideInAPackage("..adapters.driven.persistence.jpa")));
 
     @ArchTest
     static final ArchRule adaptersShouldNotDependOnEachOther = classes().that()
@@ -78,11 +80,6 @@ class ArchitectureTest {
     static final ArchRule domainModelShouldNotCallServices = noClasses().that()
             .resideInAPackage(DOMAIN_MODEL_PACKAGE)
             .should().accessClassesThat().resideInAPackage(DOMAIN_SERVICES_PACKAGE);
-
-    @ArchTest
-    static final ArchRule domainRepositoriesShouldBeInterfaces = classes().that()
-            .resideInAPackage(DOMAIN_REPOSITORIES_PACKAGE)
-            .should().beInterfaces();
 
     @ArchTest
     static final ArchRule exceptionsShouldBeInCorrectPackage = classes().that()

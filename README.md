@@ -204,7 +204,7 @@ analysed you should see one, two, or three projects.
 ## Built With
 
 * [Maven](https://maven.apache.org/)
-* [Spring Boot v2.5+](https://start.spring.io/)
+* [Spring Boot v3.1+](https://start.spring.io/)
 * [Angular v12+](https://angular.io/)
 * [frontend-maven-plugin](https://github.com/eirslett/frontend-maven-plugin)
 * [springdoc-openapi](https://springdoc.org/)

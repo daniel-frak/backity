@@ -12,19 +12,20 @@
     <ng-container *ngIf="currentDownload">
       <app-table [content]="{content: [currentDownload]}" [isLoading]="filesAreLoading">
         <ng-template app-table-column="Game title" let-item>
-          {{asFile(item).sourceFileDetails!.originalGameTitle}}
+          {{asBackupStartedMessage(item)!.originalGameTitle}}
         </ng-template>
         <ng-template app-table-column="File name" let-item>
-          {{asFile(item).sourceFileDetails!.fileTitle}} - {{asFile(item).sourceFileDetails!.originalFileName}}
+          {{asBackupStartedMessage(item)!.fileTitle}}
+          - {{asBackupStartedMessage(item)!.originalFileName}}
         </ng-template>
         <ng-template app-table-column="Version" let-item>
-          {{asFile(item).sourceFileDetails!.version}}
+          {{asBackupStartedMessage(item)!.version}}
         </ng-template>
         <ng-template app-table-column="Size" let-item>
-          {{asFile(item).sourceFileDetails!.size}}
+          {{asBackupStartedMessage(item)!.size}}
         </ng-template>
         <ng-template app-table-column="Path" style="max-width: 5%" let-item>
-          <span class="file-path">{{asFile(item).backupDetails!.filePath}}</span>
+          <span class="file-path">{{asBackupStartedMessage(item)!.filePath}}</span>
         </ng-template>
         <ng-template app-table-column="Progress">
           <ng-container *ngIf="downloadProgress">

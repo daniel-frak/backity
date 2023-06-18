@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.testing.assertions;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.codesoapbox.backity.core.files.domain.discovery.model.messages.FileDiscoveryStatus;
+import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryStatus;
 import dev.codesoapbox.backity.testing.TestObjectMapper;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 

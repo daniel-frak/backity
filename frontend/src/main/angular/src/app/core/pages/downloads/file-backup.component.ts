@@ -1,10 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
-  BackupsClient,
   FileBackupMessageTopics,
   FileBackupProgress,
+  FileBackupStartedMessage,
   FileBackupStatus,
+  FileBackupStatusChangedMessage,
   GameFileDetails,
+  GameFileDetailsClient,
   PageHttpDtoGameFileDetails
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
@@ -20,7 +22,7 @@ export class FileBackupComponent implements OnInit, OnDestroy {
 
   enqueuedDownloads?: PageHttpDtoGameFileDetails;
   processedFiles?: PageHttpDtoGameFileDetails;
-  currentDownload?: GameFileDetails;
+  currentDownload?: FileBackupStartedMessage;
   downloadProgress?: FileBackupProgress;
   filesAreLoading: boolean = false;
   FileBackupStatus = FileBackupStatus;
@@ -28,32 +30,37 @@ export class FileBackupComponent implements OnInit, OnDestroy {
   private pageSize = 20;
   private readonly stompSubscriptions: StompSubscription[] = [];
 
-  constructor(private readonly backupsClient: BackupsClient,
+  constructor(private readonly gameFileDetailsClient: GameFileDetailsClient,
               private readonly messageService: MessagesService) {
   }
 
   asFile = (file: GameFileDetails) => file;
+  asBackupStartedMessage = (message: FileBackupStartedMessage) => message;
 
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
-      client.subscribe(FileBackupMessageTopics.Started, p => this.onDownloadStartedReceived(p)),
-      client.subscribe(FileBackupMessageTopics.Progress, p => this.onDownloadProgressReceived(p)),
-      client.subscribe(FileBackupMessageTopics.Finished, () => this.onDownloadFinishedReceived())
+      client.subscribe(FileBackupMessageTopics.Started, p => this.onBackupStartedReceived(p)),
+      client.subscribe(FileBackupMessageTopics.ProgressUpdate, p => this.onProgressUpdate(p)),
+      client.subscribe(FileBackupMessageTopics.StatusChanged, p => this.onStatusChanged(p))
     ))
 
     this.refresh();
   }
 
-  private onDownloadStartedReceived(payload: IMessage) {
+  private onBackupStartedReceived(payload: IMessage) {
     this.currentDownload = JSON.parse(payload.body);
   }
 
-  private onDownloadProgressReceived(payload: IMessage) {
+  private onProgressUpdate(payload: IMessage) {
     this.downloadProgress = JSON.parse(payload.body);
   }
 
-  private onDownloadFinishedReceived() {
-    this.currentDownload = undefined;
+  private onStatusChanged(payload: IMessage) {
+    const message: FileBackupStatusChangedMessage = JSON.parse(payload.body);
+    if (message.gameFileDetailsId == this.currentDownload?.gameFileDetailsId &&
+      (message.newStatus == FileBackupStatus.Success || message.newStatus == FileBackupStatus.Failed)) {
+      this.currentDownload = undefined;
+    }
   }
 
   refresh() {
@@ -61,14 +68,14 @@ export class FileBackupComponent implements OnInit, OnDestroy {
     const page = 0;
     const size = this.pageSize;
 
-    this.backupsClient.getQueueItems({
+    this.gameFileDetailsClient.getQueueItems({
       page: page,
       size: size
     })
       .subscribe(d => {
         this.enqueuedDownloads = d;
 
-        this.backupsClient.getProcessedFiles({
+        this.gameFileDetailsClient.getProcessedFiles({
           page: 0,
           size: 20
         })
@@ -78,8 +85,17 @@ export class FileBackupComponent implements OnInit, OnDestroy {
           })
       });
 
-    this.backupsClient.getCurrentlyProcessing()
-      .subscribe(d => this.currentDownload = d);
+    this.gameFileDetailsClient.getCurrentlyProcessing()
+      .subscribe(d => {
+        this.currentDownload = {
+          gameFileDetailsId: d.id,
+          originalGameTitle: d.sourceFileDetails?.originalGameTitle,
+          fileTitle: d.sourceFileDetails?.fileTitle,
+          version: d.sourceFileDetails?.version,
+          originalFileName: d.sourceFileDetails?.originalFileName,
+          size: d.sourceFileDetails?.size
+        }
+      });
   }
 
   removeFromQueue(fileId?: string) {

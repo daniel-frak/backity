@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.services.BackupProgress;
-import dev.codesoapbox.backity.core.files.domain.backup.services.FileManager;
-import dev.codesoapbox.backity.core.files.domain.discovery.model.ProgressInfo;
+import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
+import dev.codesoapbox.backity.core.discovery.domain.ProgressInfo;
+import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
+import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileBackupException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

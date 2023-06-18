@@ -38,8 +38,11 @@ public class OpenApiAdditionalSchemaProvider implements OpenApiCustomizer {
     }
 
     private Stream<Class<?>> getAdditionalClasses() {
-        return reflections.getSubTypesOf(Object.class).stream()
+        Stream<Class<?>> classStream = reflections.getSubTypesOf(Object.class).stream()
                 .filter(c -> c.isAnnotationPresent(IncludeInDocumentation.class));
+        Stream<Class<? extends Record>> recordStream = reflections.getSubTypesOf(Record.class).stream()
+                .filter(c -> c.isAnnotationPresent(IncludeInDocumentation.class));
+        return Stream.concat(classStream, recordStream);
     }
 
     @SuppressWarnings("rawtypes")

@@ -26,10 +26,6 @@ import {Observable} from 'rxjs';
 
 // @ts-ignore
 import {FileDiscoveryStatus} from '../model/fileDiscoveryStatus';
-// @ts-ignore
-import {PageHttpDtoGameFileDetails} from '../model/pageHttpDtoGameFileDetails';
-// @ts-ignore
-import {Pagination} from '../model/pagination';
 
 // @ts-ignore
 import {BASE_PATH, COLLECTION_FORMATS} from '../variables';
@@ -141,76 +137,10 @@ export class FileDiscoveryClient {
             }
         }
 
-        let localVarPath = `/api/discovered-files/discover`;
+        let localVarPath = `/api/file-discovery/discover`;
         return this.httpClient.request<any>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                responseType: <any>responseType_,
-                withCredentials: this.configuration.withCredentials,
-                headers: localVarHeaders,
-                observe: observe,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * List discovered files
-     * Returns a paginated list of discovered files which were not yet added to the download queue
-     * @param pagination
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public getDiscoveredFiles(pagination: Pagination, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageHttpDtoGameFileDetails>;
-    public getDiscoveredFiles(pagination: Pagination, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageHttpDtoGameFileDetails>>;
-    public getDiscoveredFiles(pagination: Pagination, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageHttpDtoGameFileDetails>>;
-    public getDiscoveredFiles(pagination: Pagination, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        if (pagination === null || pagination === undefined) {
-            throw new Error('Required parameter pagination was null or undefined when calling getDiscoveredFiles.');
-        }
-
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (pagination !== undefined && pagination !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>pagination, 'pagination');
-        }
-
-        let localVarHeaders = this.defaultHeaders;
-
-        let localVarHttpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (localVarHttpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (localVarHttpHeaderAcceptSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Accept', localVarHttpHeaderAcceptSelected);
-        }
-
-        let localVarHttpContext: HttpContext | undefined = options && options.context;
-        if (localVarHttpContext === undefined) {
-            localVarHttpContext = new HttpContext();
-        }
-
-
-        let responseType_: 'text' | 'json' | 'blob' = 'json';
-        if (localVarHttpHeaderAcceptSelected) {
-            if (localVarHttpHeaderAcceptSelected.startsWith('text')) {
-                responseType_ = 'text';
-            } else if (this.configuration.isJsonMime(localVarHttpHeaderAcceptSelected)) {
-                responseType_ = 'json';
-            } else {
-                responseType_ = 'blob';
-            }
-        }
-
-        let localVarPath = `/api/discovered-files`;
-        return this.httpClient.request<PageHttpDtoGameFileDetails>('get', `${this.configuration.basePath}${localVarPath}`,
-            {
-                context: localVarHttpContext,
-                params: localVarQueryParameters,
                 responseType: <any>responseType_,
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
@@ -262,7 +192,7 @@ export class FileDiscoveryClient {
             }
         }
 
-        let localVarPath = `/api/discovered-files/statuses`;
+        let localVarPath = `/api/file-discovery/statuses`;
         return this.httpClient.request<Array<FileDiscoveryStatus>>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -316,7 +246,7 @@ export class FileDiscoveryClient {
             }
         }
 
-        let localVarPath = `/api/discovered-files/stop-discovery`;
+        let localVarPath = `/api/file-discovery/stop-discovery`;
         return this.httpClient.request<any>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

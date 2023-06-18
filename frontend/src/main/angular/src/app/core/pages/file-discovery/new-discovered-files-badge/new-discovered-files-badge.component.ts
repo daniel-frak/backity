@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {GameFileDetails} from "@backend";
+import {FileDiscoveredMessage} from "@backend";
 
 @Component({
   selector: 'app-new-discovered-files-badge',
@@ -12,11 +12,11 @@ export class NewDiscoveredFilesBadgeComponent implements OnInit {
   newDiscoveredCount: number = 0;
 
   @Input()
-  newestDiscovered?: GameFileDetails;
+  newestDiscovered?: FileDiscoveredMessage;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }
-
 }

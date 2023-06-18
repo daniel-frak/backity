@@ -1,13 +1,14 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
-  BackupsClient,
   FileBackupStatus,
+  FileDiscoveredMessage,
   FileDiscoveryClient,
   FileDiscoveryMessageTopics,
-  FileDiscoveryProgress,
+  FileDiscoveryProgressUpdateMessage,
   FileDiscoveryStatus,
+  FileDiscoveryStatusChangedMessage,
   GameFileDetails,
-  GameFileDetailsMessage,
+  GameFileDetailsClient,
   PageHttpDtoGameFileDetails
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
@@ -24,19 +25,20 @@ import {throwError} from "rxjs";
 export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
   discoveredFiles?: PageHttpDtoGameFileDetails;
-  newestDiscovered?: GameFileDetailsMessage;
+  newestDiscovered?: FileDiscoveredMessage;
   newDiscoveredCount: number = 0;
   infoIsLoading: boolean = false;
   filesAreLoading: boolean = false;
   discoveryStatusBySource: Map<string, boolean> = new Map<string, boolean>();
-  discoveryProgressBySource: Map<string, FileDiscoveryProgress> = new Map<string, FileDiscoveryProgress>();
+  discoveryProgressBySource: Map<string, FileDiscoveryProgressUpdateMessage>
+    = new Map<string, FileDiscoveryProgressUpdateMessage>();
   discoveryStateUnknown: boolean = true;
 
   private pageSize = 20;
   private readonly stompSubscriptions: StompSubscription[] = [];
 
   constructor(private readonly fileDiscoveryClient: FileDiscoveryClient,
-              private readonly backupsClient: BackupsClient,
+              private readonly gameFileDetailsClient: GameFileDetailsClient,
               private readonly messageService: MessagesService) {
   }
 
@@ -44,9 +46,9 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
-      client.subscribe(FileDiscoveryMessageTopics.Discovery, p => this.onGameFileDetailsReceived(p)),
-      client.subscribe(FileDiscoveryMessageTopics.DiscoveryStatus, p => this.onDiscoveryStatusChanged(p)),
-      client.subscribe(FileDiscoveryMessageTopics.DiscoveryProgress, p => this.onProgressUpdated(p))
+      client.subscribe(FileDiscoveryMessageTopics.FileDiscovered, p => this.onFileDiscovered(p)),
+      client.subscribe(FileDiscoveryMessageTopics.FileStatusChanged, p => this.onDiscoveryStatusChanged(p)),
+      client.subscribe(FileDiscoveryMessageTopics.ProgressUpdate, p => this.onProgressUpdated(p))
     ))
 
     this.refreshInfo();
@@ -54,22 +56,22 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     this.refreshDiscoveredFiles();
   }
 
-  private onGameFileDetailsReceived(payload: IMessage) {
+  private onFileDiscovered(payload: IMessage) {
     this.newestDiscovered = JSON.parse(payload.body);
     this.newDiscoveredCount++;
   }
 
   private onDiscoveryStatusChanged(payload: IMessage) {
-    const status: FileDiscoveryStatus = JSON.parse(payload.body);
+    const status: FileDiscoveryStatusChangedMessage = JSON.parse(payload.body);
     this.updateDiscoveryStatus(status);
   }
 
   private onProgressUpdated(payload: IMessage) {
-    const progress: FileDiscoveryProgress = JSON.parse(payload.body);
+    const progress: FileDiscoveryProgressUpdateMessage = JSON.parse(payload.body);
     this.discoveryProgressBySource.set(progress.source as string, progress);
   }
 
-  private updateDiscoveryStatus(status: FileDiscoveryStatus) {
+  private updateDiscoveryStatus(status: FileDiscoveryStatusChangedMessage) {
     this.discoveryStatusBySource.set(status.source as string, status.inProgress as boolean);
     this.discoveryStateUnknown = false;
   }
@@ -87,7 +89,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     this.filesAreLoading = true;
     const page = 0;
     const size = this.pageSize;
-    this.fileDiscoveryClient.getDiscoveredFiles({
+    this.gameFileDetailsClient.getDiscoveredFiles({
       page: page,
       size: size
     })
@@ -115,14 +117,13 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   enqueueFile(file: GameFileDetails) {
     file.backupDetails!.status = FileBackupStatus.Enqueued;
     console.info("Enqueuing: " + file.id);
-    this.backupsClient.download(file.id!)
+    this.gameFileDetailsClient.download(file.id!)
       .pipe(catchError(e => {
         file.backupDetails!.status = FileBackupStatus.Discovered;
         return throwError(e);
       }))
       .subscribe(() => {
-      }, err => console.error(`An error occurred while trying to enqueue a file (${file})`,
-        file, err));
+      }, (err: any) => console.error(`An error occurred while trying to enqueue a file (${file})`, file, err));
   }
 
   ngOnDestroy(): void {
@@ -143,7 +144,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
       });
   }
 
-  getProgressList(): FileDiscoveryProgress[] {
+  getProgressList(): FileDiscoveryProgressUpdateMessage[] {
     if (this.discoveryProgressBySource.size === 0) {
       return [];
     }

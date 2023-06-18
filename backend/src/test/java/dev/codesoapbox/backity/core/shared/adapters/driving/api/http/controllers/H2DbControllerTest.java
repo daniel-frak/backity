@@ -1,13 +1,14 @@
 package dev.codesoapbox.backity.core.shared.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.files.config.FileBackupBeanConfig;
-import dev.codesoapbox.backity.core.files.config.FileManagementBeanConfig;
-import dev.codesoapbox.backity.core.files.config.game.GameJpaRepositoryBeanConfig;
-import dev.codesoapbox.backity.core.files.config.gamefiledetails.GameFileDetailsJpaRepositoryBeanConfig;
-import dev.codesoapbox.backity.core.files.domain.backup.model.GameFileDetails;
-import dev.codesoapbox.backity.core.files.domain.backup.repositories.GameFileDetailsRepository;
-import dev.codesoapbox.backity.core.files.domain.game.Game;
-import dev.codesoapbox.backity.core.files.domain.game.GameRepository;
+import dev.codesoapbox.backity.core.backup.config.FileBackupBeanConfig;
+import dev.codesoapbox.backity.core.filemanagement.config.FileManagementBeanConfig;
+import dev.codesoapbox.backity.core.filemanagement.config.LocalFileSystemBeanConfig;
+import dev.codesoapbox.backity.core.game.config.GameJpaRepositoryBeanConfig;
+import dev.codesoapbox.backity.core.game.domain.Game;
+import dev.codesoapbox.backity.core.game.domain.GameRepository;
+import dev.codesoapbox.backity.core.gamefiledetails.config.GameFileDetailsJpaRepositoryBeanConfig;
+import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
+import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.shared.config.jpa.SharedJpaRepositoryConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,14 +27,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static dev.codesoapbox.backity.core.files.domain.backup.model.TestGameFileDetails.discovered;
+import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.discoveredFileDetails;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = H2DbController.class, properties = "h2dump.path=test_dump.sql")
-@Import({FileManagementBeanConfig.class, FileBackupBeanConfig.class,
+@Import({FileManagementBeanConfig.class, LocalFileSystemBeanConfig.class, FileBackupBeanConfig.class,
         GameJpaRepositoryBeanConfig.class, GameFileDetailsJpaRepositoryBeanConfig.class,
         SharedJpaRepositoryConfig.class})
 @AutoConfigureDataJpa
@@ -71,7 +72,7 @@ class H2DbControllerTest {
 
     @Test
     void shouldDumpSql() throws Exception {
-        GameFileDetails gameFileDetails = discovered().build();
+        GameFileDetails gameFileDetails = discoveredFileDetails().build();
         Game game = new Game(gameFileDetails.getGameId(), "Test game");
         gameRepository.save(game);
         gameFileDetailsRepository.save(gameFileDetails);

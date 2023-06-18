@@ -1,5 +1,11 @@
 import {Component, OnInit} from '@angular/core';
-import {BackupsClient, FileBackupStatus, GameFileDetails, GamesClient, PageHttpDtoGameWithFiles} from "@backend";
+import {
+  FileBackupStatus,
+  GameFileDetails,
+  GameFileDetailsClient,
+  GamesClient,
+  PageHttpDtoGameWithFiles
+} from "@backend";
 import {catchError} from "rxjs/operators";
 import {throwError} from "rxjs";
 
@@ -14,7 +20,7 @@ export class GamesComponent implements OnInit {
   gameWithFilesPage?: PageHttpDtoGameWithFiles;
 
   constructor(private readonly gamesClient: GamesClient,
-              private readonly backupsClient: BackupsClient) {
+              private readonly gameFileDetailsClient: GameFileDetailsClient) {
   }
 
   ngOnInit(): void {
@@ -36,7 +42,7 @@ export class GamesComponent implements OnInit {
   backUp(file: GameFileDetails) {
     file.backupDetails!.status = FileBackupStatus.Enqueued;
     console.info("Enqueuing backup: " + file.id);
-    this.backupsClient.download(file.id!)
+    this.gameFileDetailsClient.download(file.id!)
       .pipe(catchError(e => {
         file.backupDetails!.status = FileBackupStatus.Discovered;
         return throwError(e);

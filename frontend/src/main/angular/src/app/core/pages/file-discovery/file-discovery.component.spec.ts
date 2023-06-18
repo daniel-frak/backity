@@ -11,14 +11,14 @@ import {
 import {TableComponent} from "@app/shared/components/table/table.component";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {
-  BackupsClient,
   FileBackupStatus,
+  FileDiscoveredMessage,
   FileDiscoveryClient,
   FileDiscoveryMessageTopics,
-  FileDiscoveryProgress,
+  FileDiscoveryProgressUpdateMessage,
   FileDiscoveryStatus,
   GameFileDetails,
-  GameFileDetailsMessage,
+  GameFileDetailsClient,
   PageHttpDtoGameFileDetails
 } from "@backend";
 import {Observable} from "rxjs";
@@ -31,33 +31,22 @@ describe('FileDiscoveryComponent', () => {
   let discoveredSubscriptions: Function[];
   let discoveryChangedSubscriptions: Function[];
   let discoveryProgressSubscriptions: Function[];
-  let fileDiscoveryClientMock: any;
-  let backupsClientMock: any;
+  let fileDiscoveryClient: jasmine.SpyObj<FileDiscoveryClient>;
+  let gameFileDetailsClient: jasmine.SpyObj<GameFileDetailsClient>;
 
   beforeEach(async () => {
-    discoveredSubscriptions = [];
-    discoveryChangedSubscriptions = [];
-    discoveryProgressSubscriptions = [];
-
     const messagesServiceMock = MessageTesting.mockMessageService(
       (destination, callback) => {
-        if (destination == FileDiscoveryMessageTopics.Discovery) {
+        if (destination == FileDiscoveryMessageTopics.FileDiscovered) {
           discoveredSubscriptions.push(callback);
         }
-        if (destination == FileDiscoveryMessageTopics.DiscoveryStatus) {
+        if (destination == FileDiscoveryMessageTopics.FileStatusChanged) {
           discoveryChangedSubscriptions.push(callback);
         }
-        if (destination == FileDiscoveryMessageTopics.DiscoveryProgress) {
+        if (destination == FileDiscoveryMessageTopics.ProgressUpdate) {
           discoveryProgressSubscriptions.push(callback);
         }
       });
-
-    fileDiscoveryClientMock = createSpyObj(FileDiscoveryClient, ['getStatuses', 'getDiscoveredFiles',
-      'discover', 'stopDiscovery']);
-    fileDiscoveryClientMock.getStatuses.and.returnValue({subscribe: (s: (f: any) => any) => s([])});
-    fileDiscoveryClientMock.getDiscoveredFiles.and.returnValue({subscribe: (s: (f: any) => any) => s([])});
-
-    backupsClientMock = createSpyObj(BackupsClient, ['download']);
 
     await TestBed.configureTestingModule({
       declarations: [
@@ -68,7 +57,8 @@ describe('FileDiscoveryComponent', () => {
         TableComponent
       ],
       imports: [
-        HttpClientTestingModule, NgbModule
+        HttpClientTestingModule,
+        NgbModule
       ],
       providers: [
         {
@@ -77,11 +67,13 @@ describe('FileDiscoveryComponent', () => {
         },
         {
           provide: FileDiscoveryClient,
-          useValue: fileDiscoveryClientMock
+          useValue: jasmine.createSpyObj('FileDiscoveryClient',
+            ['getStatuses', 'discover', 'stopDiscovery'])
         },
         {
-          provide: BackupsClient,
-          useValue: backupsClientMock
+          provide: GameFileDetailsClient,
+          useValue: jasmine.createSpyObj('GameFileDetailsClient',
+            ['download', 'getDiscoveredFiles'])
         }
       ]
     })
@@ -93,6 +85,17 @@ describe('FileDiscoveryComponent', () => {
     component = fixture.componentInstance;
     component.discoveryStatusBySource.clear();
     component.discoveryProgressBySource.clear();
+
+    fileDiscoveryClient = TestBed.inject(FileDiscoveryClient) as jasmine.SpyObj<FileDiscoveryClient>;
+    gameFileDetailsClient = TestBed.inject(GameFileDetailsClient) as jasmine.SpyObj<GameFileDetailsClient>;
+
+    fileDiscoveryClient.getStatuses.and.returnValue({subscribe: (s: (f: any) => any) => s([])} as any);
+    gameFileDetailsClient.getDiscoveredFiles.and.returnValue({subscribe: (s: (f: any) => any) => s([])} as any);
+
+    discoveredSubscriptions = [];
+    discoveryChangedSubscriptions = [];
+    discoveryProgressSubscriptions = [];
+
     fixture.detectChanges();
   });
 
@@ -113,9 +116,9 @@ describe('FileDiscoveryComponent', () => {
       }]
     };
 
-    fileDiscoveryClientMock.getStatuses.and.returnValue({subscribe: (s: (f: any) => any) => s([newStatus])});
-    fileDiscoveryClientMock.getDiscoveredFiles.and
-      .returnValue({subscribe: (s: (f: any) => any) => s(expectedGameFileDetails)});
+    fileDiscoveryClient.getStatuses.and.returnValue({subscribe: (s: (f: any) => any) => s([newStatus])} as any);
+    gameFileDetailsClient.getDiscoveredFiles.and
+      .returnValue({subscribe: (s: (f: any) => any) => s(expectedGameFileDetails)} as any);
 
     component.ngOnInit();
 
@@ -138,13 +141,11 @@ describe('FileDiscoveryComponent', () => {
   });
 
   it('should set newest discovered and increment discovered count on new discovery', () => {
-    const expectedGameFileDetailsMessage: GameFileDetailsMessage = {
-      sourceFileDetails: {
-        fileTitle: 'someGameFileDetails'
-      }
+    const expectedFileDiscoveredMessage: FileDiscoveredMessage = {
+      fileTitle: 'someGameFileDetails'
     };
-    discoveredSubscriptions[0]({body: JSON.stringify(expectedGameFileDetailsMessage)})
-    expect(component.newestDiscovered).toEqual(expectedGameFileDetailsMessage);
+    discoveredSubscriptions[0]({body: JSON.stringify(expectedFileDiscoveredMessage)})
+    expect(component.newestDiscovered).toEqual(expectedFileDiscoveredMessage);
     expect(component.newDiscoveredCount).toEqual(1);
   });
 
@@ -166,7 +167,7 @@ describe('FileDiscoveryComponent', () => {
 
   it('should start file discovery', () => {
     const observableMock: any = createSpyObj('Observable', ['subscribe']);
-    fileDiscoveryClientMock.discover.and.returnValue(observableMock);
+    fileDiscoveryClient.discover.and.returnValue(observableMock);
 
     component.startDiscovery();
 
@@ -175,7 +176,7 @@ describe('FileDiscoveryComponent', () => {
 
   it('should stop file discovery', () => {
     const observableMock: any = createSpyObj('Observable', ['subscribe']);
-    fileDiscoveryClientMock.stopDiscovery.and.returnValue(observableMock);
+    fileDiscoveryClient.stopDiscovery.and.returnValue(observableMock);
 
     component.stopDiscovery();
 
@@ -195,7 +196,7 @@ describe('FileDiscoveryComponent', () => {
     const observableMock: any = createSpyObj('Observable', ['subscribe', 'pipe']);
     observableMock.pipe.and.returnValue(observableMock);
 
-    backupsClientMock.download.and.returnValue(observableMock);
+    gameFileDetailsClient.download.and.returnValue(observableMock);
 
     component.enqueueFile(file);
     expect(file.backupDetails?.status).toEqual(FileBackupStatus.Enqueued);
@@ -204,7 +205,7 @@ describe('FileDiscoveryComponent', () => {
   });
 
   it('should update discovery progress', () => {
-    const progressUpdate: FileDiscoveryProgress = {
+    const progressUpdate: FileDiscoveryProgressUpdateMessage = {
       source: 'someSource',
       percentage: 25,
       timeLeftSeconds: 1234
@@ -216,7 +217,7 @@ describe('FileDiscoveryComponent', () => {
 
   it('should get progress list', () => {
     expect(component.getProgressList()).toEqual([]);
-    const expectedProgress: FileDiscoveryProgress = {
+    const expectedProgress: FileDiscoveryProgressUpdateMessage = {
       source: 'someSource',
       percentage: 25,
       timeLeftSeconds: 1234
@@ -248,7 +249,7 @@ describe('FileDiscoveryComponent', () => {
     const observableMock: any = createSpyObj('Observable', ['subscribe', 'pipe']);
     observableMock.pipe.and.returnValue(observableMock);
 
-    backupsClientMock.download.and.returnValue(new Observable(subscriber => {
+    gameFileDetailsClient.download.and.returnValue(new Observable(subscriber => {
       expect(file.backupDetails?.status).toEqual(FileBackupStatus.Enqueued);
       subscriber.error(expectedError);
     }));
