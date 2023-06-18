@@ -12,7 +12,7 @@ public abstract class FileBackupStatusChangedMessageMapper {
     @Mapping(target = "gameFileDetailsId", source = "id")
     @Mapping(target = ".", source = "backupDetails")
     @Mapping(target = "newStatus", source = "backupDetails.status")
-    public abstract FileBackupStatusChangedMessage toMessage(GameFileDetails domain);
+    public abstract FileBackupStatusChangedWsMessage toMessage(GameFileDetails domain);
 
     protected String toString(GameFileDetailsId id) {
         return id.value().toString();

@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   FileBackupMessageTopics,
-  FileBackupProgress,
+  FileBackupProgressUpdateMessage,
   FileBackupStartedMessage,
   FileBackupStatus,
   FileBackupStatusChangedMessage,
@@ -23,7 +23,7 @@ export class FileBackupComponent implements OnInit, OnDestroy {
   enqueuedDownloads?: PageHttpDtoGameFileDetails;
   processedFiles?: PageHttpDtoGameFileDetails;
   currentDownload?: FileBackupStartedMessage;
-  downloadProgress?: FileBackupProgress;
+  downloadProgress?: FileBackupProgressUpdateMessage;
   filesAreLoading: boolean = false;
   FileBackupStatus = FileBackupStatus;
 

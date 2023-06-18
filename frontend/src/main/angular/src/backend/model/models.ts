@@ -1,6 +1,6 @@
 export * from './backupDetails';
 export * from './fileBackupMessageTopics';
-export * from './fileBackupProgress';
+export * from './fileBackupProgressUpdateMessage';
 export * from './fileBackupStartedMessage';
 export * from './fileBackupStatus';
 export * from './fileBackupStatusChangedMessage';

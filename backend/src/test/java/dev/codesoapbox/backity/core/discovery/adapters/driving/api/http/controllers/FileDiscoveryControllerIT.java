@@ -57,7 +57,7 @@ class FileDiscoveryControllerIT {
         var expectedJson = """
                 [{
                   "source": "someSource",
-                  "inProgress": true
+                  "isInProgress": true
                 }]""";
 
         mockMvc.perform(get("/api/file-discovery/statuses"))

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @IncludeInDocumentation
 @Schema(name = "FileBackupStartedMessage")
-public record FileBackupStartedMessage(
+public record FileBackupStartedWsMessage(
         String gameFileDetailsId,
         String originalGameTitle,
         String fileTitle,

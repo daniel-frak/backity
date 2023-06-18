@@ -32,7 +32,7 @@
       <div class="gutters-1">
         <div *ngFor="let status of getStatuses()">
           <button (click)="discoverFilesFor(status.source)"
-                  [disabled]="status.inProgress"
+                  [disabled]="status.isInProgress"
                   class="btn btn-secondary btn-sm mt-2 me-3">
             Discover new files for {{ status.source }}
           </button>

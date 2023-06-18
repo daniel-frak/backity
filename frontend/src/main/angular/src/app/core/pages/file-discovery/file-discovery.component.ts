@@ -72,7 +72,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   }
 
   private updateDiscoveryStatus(status: FileDiscoveryStatusChangedMessage) {
-    this.discoveryStatusBySource.set(status.source as string, status.inProgress as boolean);
+    this.discoveryStatusBySource.set(status.source as string, status.isInProgress as boolean);
     this.discoveryStateUnknown = false;
   }
 
@@ -136,10 +136,10 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     }
 
     return Array.from(this.discoveryStatusBySource)
-      .map(([source, inProgress]) => {
+      .map(([source, isInProgress]) => {
         return {
           source: source,
-          inProgress: inProgress
+          isInProgress: isInProgress
         };
       });
   }

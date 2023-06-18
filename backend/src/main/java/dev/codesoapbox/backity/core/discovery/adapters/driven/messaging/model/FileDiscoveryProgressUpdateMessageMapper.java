@@ -6,5 +6,5 @@ import org.mapstruct.Mapper;
 @Mapper
 public abstract class FileDiscoveryProgressUpdateMessageMapper {
 
-    public abstract FileDiscoveryProgressUpdateMessage toMessage(FileDiscoveryProgress domain);
+    public abstract FileDiscoveryProgressUpdateWsMessage toMessage(FileDiscoveryProgress domain);
 }

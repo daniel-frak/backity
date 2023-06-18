@@ -1,15 +1,10 @@
 package dev.codesoapbox.backity.core.discovery.domain.messages;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class FileDiscoveryProgress {
-
-    private String source;
-    private int percentage;
-    private long timeLeftSeconds;
+public record FileDiscoveryProgress(
+        @NonNull String source,
+        int percentage,
+        long timeLeftSeconds
+) {
 }

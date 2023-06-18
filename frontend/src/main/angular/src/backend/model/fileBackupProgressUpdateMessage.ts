@@ -11,7 +11,7 @@
  */
 
 
-export interface FileBackupProgress { 
+export interface FileBackupProgressUpdateMessage { 
     percentage?: number;
     timeLeftSeconds?: number;
 }

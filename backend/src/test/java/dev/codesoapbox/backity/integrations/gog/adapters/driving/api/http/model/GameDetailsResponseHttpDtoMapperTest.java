@@ -31,15 +31,15 @@ class GameDetailsResponseHttpDtoMapperTest {
 
         var result = MAPPER.toDto(domain);
 
-        assertEquals("someTitle", result.getTitle());
-        assertEquals("someBackgroundImage", result.getBackgroundImage());
-        assertEquals("someCdKey", result.getCdKey());
-        assertEquals("someTextInformation", result.getTextInformation());
-        assertEquals("someVersion", result.getFiles().get(0).getVersion());
-        assertEquals("someManualUrl", result.getFiles().get(0).getManualUrl());
-        assertEquals("someName", result.getFiles().get(0).getName());
-        assertEquals("someFileTitle", result.getFiles().get(0).getFileTitle());
-        assertEquals("100 KB", result.getFiles().get(0).getSize());
-        assertEquals("someChangelog", result.getChangelog());
+        assertEquals("someTitle", result.title());
+        assertEquals("someBackgroundImage", result.backgroundImage());
+        assertEquals("someCdKey", result.cdKey());
+        assertEquals("someTextInformation", result.textInformation());
+        assertEquals("someVersion", result.files().get(0).version());
+        assertEquals("someManualUrl", result.files().get(0).manualUrl());
+        assertEquals("someName", result.files().get(0).name());
+        assertEquals("someFileTitle", result.files().get(0).fileTitle());
+        assertEquals("100 KB", result.files().get(0).size());
+        assertEquals("someChangelog", result.changelog());
     }
 }

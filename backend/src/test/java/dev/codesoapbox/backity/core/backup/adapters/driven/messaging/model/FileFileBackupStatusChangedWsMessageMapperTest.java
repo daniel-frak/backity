@@ -1,7 +1,5 @@
-package dev.codesoapbox.backity.core.backup.adapters.driven.messaging;
+package dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model;
 
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStatusChangedMessage;
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStatusChangedMessageMapper;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -9,7 +7,7 @@ import org.mapstruct.factory.Mappers;
 import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.fullFileDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class FileFileBackupStatusChangedMessageMapperTest {
+class FileFileBackupStatusChangedWsMessageMapperTest {
 
     private static final FileBackupStatusChangedMessageMapper MAPPER =
             Mappers.getMapper(FileBackupStatusChangedMessageMapper.class);
@@ -18,9 +16,9 @@ class FileFileBackupStatusChangedMessageMapperTest {
     void shouldMapToMessage() {
         GameFileDetails domain = fullFileDetails().build();
 
-        FileBackupStatusChangedMessage result = MAPPER.toMessage(domain);
+        FileBackupStatusChangedWsMessage result = MAPPER.toMessage(domain);
 
-        var expectedResult = new FileBackupStatusChangedMessage(
+        var expectedResult = new FileBackupStatusChangedWsMessage(
                 domain.getId().value().toString(),
                 domain.getBackupDetails().getStatus().toString(),
                 domain.getBackupDetails().getFailedReason()

@@ -6,7 +6,7 @@ import org.mapstruct.factory.Mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class FileDiscoveryProgressUpdateMessageMapperTest {
+class FileDiscoveryProgressUpdateWsMessageMapperTest {
 
     private static final FileDiscoveryProgressUpdateMessageMapper MAPPER =
             Mappers.getMapper(FileDiscoveryProgressUpdateMessageMapper.class);
@@ -15,9 +15,9 @@ class FileDiscoveryProgressUpdateMessageMapperTest {
     void shouldMapToMessage() {
         var progress = new FileDiscoveryProgress("Test Source", 50, 10);
 
-        FileDiscoveryProgressUpdateMessage result = MAPPER.toMessage(progress);
+        FileDiscoveryProgressUpdateWsMessage result = MAPPER.toMessage(progress);
 
-        FileDiscoveryProgressUpdateMessage expectedResult = new FileDiscoveryProgressUpdateMessage(
+        FileDiscoveryProgressUpdateWsMessage expectedResult = new FileDiscoveryProgressUpdateWsMessage(
                 "Test Source", 50, 10);
         assertThat(result)
                 .hasNoNullFieldsOrProperties()

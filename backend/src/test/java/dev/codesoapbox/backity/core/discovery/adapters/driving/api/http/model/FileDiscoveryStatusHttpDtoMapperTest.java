@@ -18,7 +18,7 @@ class FileDiscoveryStatusHttpDtoMapperTest {
 
         var result = MAPPER.toDto(domain);
 
-        assertEquals("someSource", result.getSource());
+        assertEquals("someSource", result.source());
         assertTrue(result.isInProgress());
     }
 }

@@ -4,10 +4,9 @@ import dev.codesoapbox.backity.core.shared.domain.IncludeInDocumentation;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @IncludeInDocumentation
-@Schema(name = "FileBackupStatusChangedMessage")
-public record FileBackupStatusChangedMessage(
-        String gameFileDetailsId,
-        String newStatus,
-        String failedReason
+@Schema(name = "FileBackupProgressUpdateMessage")
+public record FileBackupProgressUpdateWsMessage(
+        int percentage,
+        long timeLeftSeconds
 ) {
 }

@@ -106,7 +106,7 @@ describe('FileDiscoveryComponent', () => {
   it('should refresh info on init', () => {
     const newStatus: FileDiscoveryStatus = {
       source: 'someSource',
-      inProgress: true
+      isInProgress: true
     };
     const expectedGameFileDetails: PageHttpDtoGameFileDetails = {
       content: [{
@@ -152,11 +152,11 @@ describe('FileDiscoveryComponent', () => {
   it('should unset current download on finish', () => {
     const newStatus1: FileDiscoveryStatus = {
       source: 'someSource',
-      inProgress: true
+      isInProgress: true
     };
     const newStatus2: FileDiscoveryStatus = {
       source: 'someSource',
-      inProgress: false
+      isInProgress: false
     };
 
     discoveryChangedSubscriptions[0]({body: JSON.stringify(newStatus1)});
@@ -265,7 +265,7 @@ describe('FileDiscoveryComponent', () => {
     expect(component.getStatuses()).toEqual([]);
     const expectedStatus: FileDiscoveryStatus = {
       source: 'someSource',
-      inProgress: true
+      isInProgress: true
     }
 
     component.discoveryStatusBySource.set('someSource', true);

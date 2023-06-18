@@ -12,7 +12,7 @@ public abstract class FileBackupStartedMessageMapper {
     @Mapping(target = "gameFileDetailsId", source = "id")
     @Mapping(target = ".", source = "sourceFileDetails")
     @Mapping(target = ".", source = "backupDetails")
-    public abstract FileBackupStartedMessage toMessage(GameFileDetails domain);
+    public abstract FileBackupStartedWsMessage toMessage(GameFileDetails domain);
 
     protected String toString(GameFileDetailsId id) {
         return id.value().toString();

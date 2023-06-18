@@ -13,6 +13,6 @@
 
 export interface FileDiscoveryStatus { 
     source?: string;
-    inProgress?: boolean;
+    isInProgress?: boolean;
 }
 

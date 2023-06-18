@@ -20,7 +20,7 @@ public class FileDiscoverySpringMessageService implements FileDiscoveryMessageSe
 
     @Override
     public void sendStatusChangedMessage(FileDiscoveryStatus status) {
-        FileDiscoveryStatusChangedMessage message = fileDiscoveryStatusChangedMessageMapper.toMessage(status);
+        FileDiscoveryStatusChangedWsMessage message = fileDiscoveryStatusChangedMessageMapper.toMessage(status);
         sendMessage(FileDiscoveryMessageTopics.FILE_DISCOVERY_STATUS_CHANGED.toString(), message);
     }
 
@@ -37,7 +37,7 @@ public class FileDiscoverySpringMessageService implements FileDiscoveryMessageSe
 
     @Override
     public void sendFileDiscoveredMessage(GameFileDetails gameFileDetails) {
-        FileDiscoveredMessage payload = fileDiscoveredMessageMapper.toMessage(gameFileDetails.getSourceFileDetails());
+        FileDiscoveredWsMessage payload = fileDiscoveredMessageMapper.toMessage(gameFileDetails.getSourceFileDetails());
         sendMessage(FileDiscoveryMessageTopics.FILE_DISCOVERED.toString(), payload);
     }
 }

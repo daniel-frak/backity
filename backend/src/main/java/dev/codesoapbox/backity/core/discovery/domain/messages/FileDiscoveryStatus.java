@@ -1,14 +1,9 @@
 package dev.codesoapbox.backity.core.discovery.domain.messages;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class FileDiscoveryStatus {
-
-    private String source;
-    private boolean isInProgress;
+public record FileDiscoveryStatus(
+        @NonNull String source,
+        boolean isInProgress
+) {
 }

@@ -43,7 +43,7 @@ class FileDiscoverySpringMessageServiceTest {
         var expectedPayload = """
                 {
                     "source": "someSource",
-                    "inProgress" : true
+                    "isInProgress" : true
                 }
                 """;
 

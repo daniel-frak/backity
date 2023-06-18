@@ -1,7 +1,5 @@
-package dev.codesoapbox.backity.core.backup.adapters.driven.messaging;
+package dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model;
 
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStartedMessage;
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStartedMessageMapper;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -9,7 +7,7 @@ import org.mapstruct.factory.Mappers;
 import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.fullFileDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class FileFileBackupStartedMessageMapperTest {
+class FileFileBackupStartedWsMessageMapperTest {
 
     private static final FileBackupStartedMessageMapper MAPPER = Mappers.getMapper(FileBackupStartedMessageMapper.class);
 
@@ -17,9 +15,9 @@ class FileFileBackupStartedMessageMapperTest {
     void shouldMapToMessage() {
         GameFileDetails domain = fullFileDetails().build();
 
-        FileBackupStartedMessage result = MAPPER.toMessage(domain);
+        FileBackupStartedWsMessage result = MAPPER.toMessage(domain);
 
-        var expectedResult = new FileBackupStartedMessage(
+        var expectedResult = new FileBackupStartedWsMessage(
                 domain.getId().value().toString(),
                 domain.getSourceFileDetails().originalGameTitle(),
                 domain.getSourceFileDetails().fileTitle(),

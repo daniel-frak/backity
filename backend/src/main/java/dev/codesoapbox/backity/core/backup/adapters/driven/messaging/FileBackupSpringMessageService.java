@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.core.backup.adapters.driven.messaging;
 
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStartedMessage;
 import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStartedMessageMapper;
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStatusChangedMessage;
+import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStartedWsMessage;
 import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStatusChangedMessageMapper;
+import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStatusChangedWsMessage;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupMessageService;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupProgress;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
@@ -21,7 +21,7 @@ public class FileBackupSpringMessageService implements FileBackupMessageService 
 
     @Override
     public void sendBackupStarted(GameFileDetails gameFileDetails) {
-        FileBackupStartedMessage payload = fileBackupStartedMessageMapper.toMessage(gameFileDetails);
+        FileBackupStartedWsMessage payload = fileBackupStartedMessageMapper.toMessage(gameFileDetails);
         sendMessage(FileBackupMessageTopics.BACKUP_STARTED.toString(), payload);
     }
 
@@ -37,7 +37,7 @@ public class FileBackupSpringMessageService implements FileBackupMessageService 
 
     @Override
     public void sendBackupFinished(GameFileDetails gameFileDetails) {
-        FileBackupStatusChangedMessage payload = fileBackupStatusChangedMessageMapper.toMessage(gameFileDetails);
+        FileBackupStatusChangedWsMessage payload = fileBackupStatusChangedMessageMapper.toMessage(gameFileDetails);
         sendMessage(FileBackupMessageTopics.BACKUP_STATUS_CHANGED.toString(), payload);
     }
 }

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @IncludeInDocumentation
 @Schema(name = "FileDiscoveredMessage")
-public record FileDiscoveredMessage(
+public record FileDiscoveredWsMessage(
         String originalGameTitle,
         String originalFileName,
         String fileTitle,
