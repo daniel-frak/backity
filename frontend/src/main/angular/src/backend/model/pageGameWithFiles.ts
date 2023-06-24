@@ -12,7 +12,7 @@
 import {GameWithFiles} from './gameWithFiles';
 
 
-export interface PageHttpDtoGameWithFiles {
+export interface PageGameWithFiles {
     content?: Array<GameWithFiles>;
     size?: number;
     totalPages?: number;

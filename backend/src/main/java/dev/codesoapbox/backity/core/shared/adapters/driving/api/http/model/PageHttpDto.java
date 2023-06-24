@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.util.List;
 
-/**
-This class doesn't have {@code @Schema(name="Page")} on it because it would break generics in OpenAPI.
- */
+@Schema(name = "Page")
 public record PageHttpDto<T>(
         List<T> content,
         int size,

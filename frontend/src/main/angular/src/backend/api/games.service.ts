@@ -25,7 +25,7 @@ import {CustomHttpParameterCodec} from '../encoder';
 import {Observable} from 'rxjs';
 
 // @ts-ignore
-import {PageHttpDtoGameWithFiles} from '../model/pageHttpDtoGameWithFiles';
+import {PageGameWithFiles} from '../model/pageGameWithFiles';
 // @ts-ignore
 import {Pagination} from '../model/pagination';
 
@@ -105,9 +105,9 @@ export class GamesClient {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getGames(pagination: Pagination, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageHttpDtoGameWithFiles>;
-    public getGames(pagination: Pagination, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageHttpDtoGameWithFiles>>;
-    public getGames(pagination: Pagination, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageHttpDtoGameWithFiles>>;
+    public getGames(pagination: Pagination, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageGameWithFiles>;
+    public getGames(pagination: Pagination, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageGameWithFiles>>;
+    public getGames(pagination: Pagination, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageGameWithFiles>>;
     public getGames(pagination: Pagination, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
         if (pagination === null || pagination === undefined) {
             throw new Error('Required parameter pagination was null or undefined when calling getGames.');
@@ -151,7 +151,7 @@ export class GamesClient {
         }
 
         let localVarPath = `/api/games`;
-        return this.httpClient.request<PageHttpDtoGameWithFiles>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<PageGameWithFiles>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,

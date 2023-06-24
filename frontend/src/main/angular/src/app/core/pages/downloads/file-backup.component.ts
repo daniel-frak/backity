@@ -7,7 +7,7 @@ import {
   FileBackupStatusChangedMessage,
   GameFileDetails,
   GameFileDetailsClient,
-  PageHttpDtoGameFileDetails
+  PageGameFileDetails
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
@@ -20,8 +20,8 @@ import {IMessage} from "@stomp/stompjs";
 })
 export class FileBackupComponent implements OnInit, OnDestroy {
 
-  enqueuedDownloads?: PageHttpDtoGameFileDetails;
-  processedFiles?: PageHttpDtoGameFileDetails;
+  enqueuedDownloads?: PageGameFileDetails;
+  processedFiles?: PageGameFileDetails;
   currentDownload?: FileBackupStartedMessage;
   downloadProgress?: FileBackupProgressUpdateMessage;
   filesAreLoading: boolean = false;

@@ -29,7 +29,7 @@ public class OpenApiAdditionalSchemaProvider implements OpenApiCustomizer {
                 .getSchemas();
         ModelConverters modelConverters = ModelConverters.getInstance();
         getAdditionalClasses().forEach(c -> {
-            Map<String, Schema> schemasToAdd = ModelConverters.getInstance()
+            Map<String, Schema> schemasToAdd = modelConverters
                     .resolveAsResolvedSchema(new AnnotatedType(c))
                     .referencedSchemas;
             schemas.putAll(schemasToAdd);

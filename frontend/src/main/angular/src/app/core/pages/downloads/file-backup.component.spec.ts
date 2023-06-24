@@ -12,7 +12,7 @@ import {
   FileBackupStatus,
   GameFileDetails,
   GameFileDetailsClient,
-  PageHttpDtoGameFileDetails
+  PageGameFileDetails
 } from "@backend";
 import {By} from "@angular/platform-browser";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
@@ -23,7 +23,7 @@ describe('FileBackupComponent', () => {
   let gameFileDetailsClient: jasmine.SpyObj<GameFileDetailsClient>;
   let messagesService: jasmine.SpyObj<MessagesService>;
 
-  const enqueuedDownloads: PageHttpDtoGameFileDetails = {
+  const enqueuedDownloads: PageGameFileDetails = {
     content: [{
       id: "someGameFileId",
       sourceFileDetails: {
@@ -36,7 +36,7 @@ describe('FileBackupComponent', () => {
       }
     }]
   };
-  const processedFiles: PageHttpDtoGameFileDetails = {
+  const processedFiles: PageGameFileDetails = {
     content: [{
       id: "someGameFileId",
       sourceFileDetails: {

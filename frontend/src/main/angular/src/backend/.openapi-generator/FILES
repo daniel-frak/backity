@@ -32,8 +32,8 @@ model/gameWithFiles.ts
 model/logCreatedMessage.ts
 model/logsMessageTopics.ts
 model/models.ts
-model/pageHttpDtoGameFileDetails.ts
-model/pageHttpDtoGameWithFiles.ts
+model/pageGameFileDetails.ts
+model/pageGameWithFiles.ts
 model/pagination.ts
 model/refreshTokenResponse.ts
 model/sourceFileDetails.ts

@@ -2,13 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GamesComponent} from './games.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {
-  FileBackupStatus,
-  GameFileDetails,
-  GameFileDetailsClient,
-  GamesClient,
-  PageHttpDtoGameWithFiles
-} from "@backend";
+import {FileBackupStatus, GameFileDetails, GameFileDetailsClient, GamesClient, PageGameWithFiles} from "@backend";
 import {of, throwError} from "rxjs";
 import {PageHeaderStubComponent} from "@app/shared/components/page-header/page-header.component.stub";
 import {TableComponent} from "@app/shared/components/table/table.component";
@@ -58,7 +52,7 @@ describe('GamesComponent', () => {
   });
 
   it('should get games', () => {
-    const mockGames: PageHttpDtoGameWithFiles = {
+    const mockGames: PageGameWithFiles = {
       content: [{
         id: "someGameId",
         title: "someGameTitle",
