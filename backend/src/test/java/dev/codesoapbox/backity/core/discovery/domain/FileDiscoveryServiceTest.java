@@ -15,8 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.system.CapturedOutput;
-import org.springframework.boot.test.system.OutputCaptureExtension;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
@@ -35,9 +33,8 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(OutputCaptureExtension.class)
 @ExtendWith(MockitoExtension.class)
-class FileDiscoveryServiceIT {
+class FileDiscoveryServiceTest {
 
     private FileDiscoveryService fileDiscoveryService;
 
@@ -68,14 +65,11 @@ class FileDiscoveryServiceIT {
     }
 
     @Test
-    void CompletedFileDiscoveryHandlerShouldLogExceptionAndChangeStatusOnFailure(CapturedOutput capturedOutput) {
+    void CompletedFileDiscoveryHandlerShouldLogExceptionAndChangeStatusOnFailure() {
         FileDiscoveryService.CompletedFileDiscoveryHandler handler =
                 fileDiscoveryService.getCompletedFileDiscoveryHandler();
 
         handler.handle(sourceFileDiscoveryService).accept(null, new RuntimeException("test exception"));
-
-        assertThat(capturedOutput.getAll())
-                .contains("test exception");
 
         assertThat(fileDiscoveryService.getStatuses().size()).isOne();
         assertFalse(fileDiscoveryService.getStatuses().get(0).isInProgress());

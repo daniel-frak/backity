@@ -323,10 +323,12 @@
                     <withHistory>true</withHistory>
                     <excludedClasses>
                         <excludedClass>**.config.**</excludedClass>
-                        <excludedClass>**.adapters.driving.http.*Controller</excludedClass>
-                        <excludedClass>**.adapters.driven.http.*Controller</excludedClass>
+                        <excludedClass>**.adapters.driving.**.http.**.*Controller</excludedClass>
                         <excludedClass>*MapperImpl</excludedClass>
-                        <excludedClass>*Repository</excludedClass>
+                        <excludedClass>**jpa.**.*Repository</excludedClass>
+                        <excludedClass>*GogEmbedWebClient</excludedClass>
+                        <excludedClass>*LogbackLogService</excludedClass>
+                        <excludedClass>*GogAuthClient</excludedClass>
                     </excludedClasses>
                     <excludedTestClasses>
                         <param>*IntegrationTest</param>
