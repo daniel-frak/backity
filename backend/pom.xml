@@ -27,6 +27,12 @@
         <sonar.exclusions>**/BackityApplication.java,**/**Config.java</sonar.exclusions>
     </properties>
 
+    <scm>
+        <!-- Make sure this points to the correct repository -->
+        <url>https://github.com/daniel-frak/backity</url>
+        <connection>scm:git:https://github.com/daniel-frak/backity</connection>
+    </scm>
+
     <dependencies>
         <dependency>
             <groupId>dev.codesoapbox</groupId>
@@ -298,6 +304,31 @@
                 </executions>
             </plugin>
             <!-- END Sonarqube code coverage -->
+
+            <!-- Pitest mutation testing (general configuration) -->
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.14.2</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>1.2.0</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <timestampedReports>false</timestampedReports>
+                    <mutators>STRONGER</mutators>
+                    <threads>4</threads>
+                    <withHistory>true</withHistory>
+                    <excludedTestClasses>
+                        <param>*IntegrationTest</param>
+                        <param>*IT</param>
+                    </excludedTestClasses>
+                </configuration>
+            </plugin>
+            <!-- END Pitest mutation testing (general configuration) -->
         </plugins>
     </build>
 
@@ -402,6 +433,88 @@
                 </plugins>
             </build>
         </profile>
+        <!-- END Client code generation -->
+
+        <!-- Pitest mutation testing (profiles) -->
+        <profile>
+            <!-- Generate full Pitest reports -->
+            <id>pitest-full</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <executions>
+                            <execution>
+                                <id>pitest</id>
+                                <phase>test-compile</phase>
+                                <goals>
+                                    <goal>mutationCoverage</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- Generate Pitest reports for new code -->
+            <id>pitest-new-code</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>io.github.git-commit-id</groupId>
+                        <artifactId>git-commit-id-maven-plugin</artifactId>
+                        <version>5.0.0</version>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <executions>
+                            <execution>
+                                <id>pitest</id>
+                                <phase>test-compile</phase>
+                                <goals>
+                                    <goal>scmMutationCoverage</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <!-- originBranch will be provided by git-commit-id-maven-plugin -->
+                            <originBranch>${git.branch}</originBranch>
+                            <!-- Make sure destinationBranch points to your primary branch! -->
+                            <destinationBranch>origin/main</destinationBranch>
+                            <include>ADDED,MODIFIED</include>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- Additional Pitest configuration for Pull Requests -->
+            <id>pitest-strict</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-maven</artifactId>
+                        <executions>
+                            <execution>
+                                <id>pitest</id>
+                                <phase>test-compile</phase>
+                                <goals>
+                                    <goal>scmMutationCoverage</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <testStrengthThreshold>100</testStrengthThreshold>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- END Pitest mutation testing (profiles) -->
     </profiles>
 
     <reporting>

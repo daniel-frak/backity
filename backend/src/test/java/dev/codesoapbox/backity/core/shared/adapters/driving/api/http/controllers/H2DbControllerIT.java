@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.shared.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.backup.config.FileBackupBeanConfig;
-import dev.codesoapbox.backity.core.filemanagement.config.FileManagementBeanConfig;
 import dev.codesoapbox.backity.core.filemanagement.config.LocalFileSystemBeanConfig;
+import dev.codesoapbox.backity.core.filemanagement.config.SharedFileManagementBeanConfig;
 import dev.codesoapbox.backity.core.game.config.GameJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
@@ -34,12 +34,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = H2DbController.class, properties = "h2dump.path=test_dump.sql")
-@Import({FileManagementBeanConfig.class, LocalFileSystemBeanConfig.class, FileBackupBeanConfig.class,
+@Import({SharedFileManagementBeanConfig.class, LocalFileSystemBeanConfig.class, FileBackupBeanConfig.class,
         GameJpaRepositoryBeanConfig.class, GameFileDetailsJpaRepositoryBeanConfig.class,
         SharedJpaRepositoryConfig.class})
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
-class H2DbControllerTest {
+class H2DbControllerIT {
 
     private static final Path TEST_DUMP_PATH = Path.of(
             System.getProperty("user.dir") + File.separator + "test_dump.sql");

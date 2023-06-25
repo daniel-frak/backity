@@ -6,6 +6,7 @@ import org.reflections.Reflections;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,9 +21,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
+@ConfigurationPropertiesScan
 @AutoConfigureTestDatabase
 @AutoConfigureMockMvc
-class OpenApiAdditionalSchemaProviderTest {
+class OpenApiAdditionalSchemaProviderIT {
 
     @Autowired
     private MockMvc mockMvc;

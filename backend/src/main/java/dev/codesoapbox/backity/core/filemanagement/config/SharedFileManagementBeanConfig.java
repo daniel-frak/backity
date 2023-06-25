@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class FileManagementBeanConfig {
+public class SharedFileManagementBeanConfig {
 
     @Bean
     FilePathProvider filePathProvider(@Value("${default-path-template}") String defaultPathTemplate,

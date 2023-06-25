@@ -40,12 +40,14 @@ The information below is aimed at developers who want to extend this project's f
 - [Running test suites](#running-test-suites)
     * [Backend](#backend)
     * [Frontend](#frontend)
-- [SonarQube analysis on a local environment](#sonarqube-analysis-on-local-a-environment)
+- [SonarQube analysis on a local environment](#sonarqube-analysis-on-a-local-environment)
     * [Prerequisites](#prerequisites)
+    * [Launching SonarQube on a local environment](#launching-sonarqube-on-a-local-environment)
     * [Full analysis](#full-analysis)
     * [Backend analysis](#backend-analysis)
     * [Frontend analysis](#frontend-analysis)
     * [Verifying results](#verifying-results)
+- [Mutation testing](#mutation-testing)
 - [Built With](#built-with)
 
 ## Getting Started
@@ -173,7 +175,7 @@ within Sonar.
 * You need to have [Docker](https://docs.docker.com/get-docker/) and
   [Docker-Compose](https://docs.docker.com/compose/install/) installed.
 * You need Chrome installed on your machine to run a frontend analysis with code coverage.
- 
+
 ### Launching SonarQube on a local environment
 
 To start a local instance of SonarQube, use the following command in the root of this repository:
@@ -188,10 +190,12 @@ The Java analysis profile is stored in `docker/sonarqube/java_profile.xml` and i
 launching the Docker instance.
 
 The SonarQube instance will become available at http://localhost:9000. The default credentials are:
+
 - User: admin
 - Password: admin
 
 To disable authentication, log in to the SonarQube instance, then:
+
 1. Go to `Administration`.
 2. Go to `Configuration`.
 3. Go to the `Security` tab (on the sidebar).
@@ -235,6 +239,37 @@ mvn sonar:sonar -Pfrontend-pre-sonar
 ### Verifying results
 
 Visit the [Projects](http://localhost:9000/projects) SonarQube page and choose the right project.
+
+## Mutation testing
+
+Mutation testing is the act of automatically modifying existing code in small ways, then checking if our tests will
+fail. This project supports Java mutation testing through [Pitest](https://pitest.org/).
+Bear in mind that mutation testing may take a while.
+
+To generate a full mutation coverage report, use the command:
+
+```shell
+mvn clean test-compile -Ppitest-full
+```
+
+Navigate to `./backend/target/pit-reports` and open `index.html` to view the report.
+
+The most efficient way to generate a local coverage report during development is:
+
+```shell
+mvn clean test-compile -Ppitest-new-code
+```
+
+This will only analyse code that has been changed compared to the `main` Git branch.
+Note that the part retrieving `originBranch` might need to be written differently for Windows.
+
+To use Pitest as part of Continuous Integration, use the following command in the CI script:
+
+```shell
+mvn clean test-compile -Ppitest-new-code -Ppitest-strict
+```
+
+This will fail the build if the mutation threshold is below a certain value.
 
 ## Built With
 
