@@ -21,7 +21,7 @@ public class FakeUnixFileManager implements FileManager {
     private Set<String> pathsCheckedForSize = new HashSet<>();
     private Set<String> directoriesCreated = new HashSet<>();
     private Map<String, String> filesRenamed = new HashMap<>();
-    private Set<String> filesDeleted = new HashSet<>();
+    private Set<String> fileDeletesAttempted = new HashSet<>();
 
     public FakeUnixFileManager(long availableSizeInBytes) {
         this.availableSizeInBytes = availableSizeInBytes;
@@ -56,7 +56,7 @@ public class FakeUnixFileManager implements FileManager {
 
     @Override
     public void deleteIfExists(String path) {
-        filesDeleted.add(path);
+        fileDeletesAttempted.add(path);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class FakeUnixFileManager implements FileManager {
         return !directoriesCreated.isEmpty();
     }
 
-    public boolean fileWasDeleted(String path) {
-        return filesDeleted.contains(path);
+    public boolean fileDeleteWasAttempted(String path) {
+        return fileDeletesAttempted.contains(path);
     }
 }

@@ -121,8 +121,8 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
 
     private void setFileNames(GameDetailsResponse details) {
         for (GameFileDetailsResponse fileDetails : details.getFiles()) {
-            String fileName = getFileName(fileDetails.getManualUrl());
-            fileDetails.setFileTitle(fileName);
+            String fileTitle = getFileTitle(fileDetails.getManualUrl());
+            fileDetails.setFileTitle(fileTitle);
         }
     }
 
@@ -163,11 +163,11 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
         return gameFileDetails;
     }
 
-    private String getFileName(String fileUrl) {
+    private String getFileTitle(String fileUrl) {
         return webClientEmbed.head()
                 .uri(fileUrl)
                 .header(HEADER_AUTHORIZATION, getBearerToken())
-                .exchangeToMono(response -> Mono.just(extractFileNameFromResponse(response))).block();
+                .exchangeToMono(response -> Mono.just(extractFileTitleFromResponse(response))).block();
     }
 
     private String getVersion(String version) {
@@ -194,18 +194,13 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
         return response.headers().contentLength().orElse(-1);
     }
 
-    private String extractFileNameFromResponse(ClientResponse response) {
-        try {
-            String url = response.headers().header("Final-location").get(0);
-            String fileName = extractFileNameFromUrl(url);
-            if (fileName.isBlank()) {
-                throw new FileDiscoveryException("Could not extract file name from response");
-            }
-            return fileName;
-        } catch (RuntimeException e) {
-            throw new FileDiscoveryException("Response did not have Final-location header");
+    private String extractFileTitleFromResponse(ClientResponse response) {
+        String finalLocationUrl = response.headers().header("Final-location").get(0);
+        String fileName = extractFileNameFromUrl(finalLocationUrl);
+        if (fileName.isBlank()) {
+            throw new FileDiscoveryException("Could not extract file title from response");
         }
-
+        return fileName;
     }
 
     private void verifyResponseIsSuccessful(ClientResponse response, String gameFileUrl) {

@@ -86,7 +86,6 @@ summary of the available profiles.
 ### Maven profiles
 
 * `sonar-cloud` - for code analysis on push to `master`
-* `code-coverage` - for including code coverage reports from the `backend` module during a sonar analysis
 * `frontend-pre-sonar` - for including code coverage reports from the `frontend` module during a sonar analysis
 * `frontend-sonar` - for running only a sonar analysis for the `frontend module`
 * `angular` - for [generating client code](https://codesoapbox.dev/generate-client-code-from-spring-boot-using-maven/)
@@ -224,7 +223,7 @@ You can run a separate analysis for the **backend** module:
 
 ```shell
 cd backend
-mvn clean verify sonar:sonar -Pcode-coverage
+mvn clean verify sonar:sonar
 ```
 
 ### Frontend analysis

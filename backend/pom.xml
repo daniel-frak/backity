@@ -34,12 +34,12 @@
     </scm>
 
     <dependencies>
-        <dependency>
-            <groupId>dev.codesoapbox</groupId>
-            <artifactId>frontend</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>dev.codesoapbox</groupId>-->
+<!--            <artifactId>frontend</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
 
         <!-- Spring Boot Misc. -->
         <dependency>
@@ -322,6 +322,13 @@
                     <mutators>STRONGER</mutators>
                     <threads>4</threads>
                     <withHistory>true</withHistory>
+                    <excludedClasses>
+                        <excludedClass>**.config.**</excludedClass>
+                        <excludedClass>**.adapters.driving.http.*Controller</excludedClass>
+                        <excludedClass>**.adapters.driven.http.*Controller</excludedClass>
+                        <excludedClass>*MapperImpl</excludedClass>
+                        <excludedClass>*Repository</excludedClass>
+                    </excludedClasses>
                     <excludedTestClasses>
                         <param>*IntegrationTest</param>
                         <param>*IT</param>
