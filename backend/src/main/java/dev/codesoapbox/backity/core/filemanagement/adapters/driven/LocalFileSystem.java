@@ -31,7 +31,6 @@ public class LocalFileSystem implements FileManager {
         Files.move(originalPath, newPath, StandardCopyOption.REPLACE_EXISTING);
         log.info("Renamed file {} to {}", originalPath, newPath);
 
-        // @TODO Write test for return value
         return newPath.toAbsolutePath().toString();
     }
 

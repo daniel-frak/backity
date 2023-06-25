@@ -69,11 +69,9 @@ public class GameFileDetailsController {
         return pageMapper.toDto(foundPage, gameFileDetailsMapper::toDto);
     }
 
-    // @TODO Should be POST
     @Operation(summary = "Enqueue file", description = "Adds a discovered file to the download queue")
     @GetMapping("enqueue/{gameFileVersionId}")
     public ResponseEntity<Void> download(@PathVariable String gameFileVersionId) {
-        // @TODO Return illegal argument if can't construct id
         Optional<GameFileDetails> gameFileVersionBackup = gameFileDetailsRepository
                 .findById(new GameFileDetailsId(UUID.fromString(gameFileVersionId)));
 

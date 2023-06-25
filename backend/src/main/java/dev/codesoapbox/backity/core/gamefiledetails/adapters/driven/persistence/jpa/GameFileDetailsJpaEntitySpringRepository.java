@@ -12,7 +12,6 @@ import java.util.UUID;
 
 public interface GameFileDetailsJpaEntitySpringRepository extends JpaRepository<GameFileDetailsJpaEntity, UUID> {
 
-    // @TODO Remove unnecessary duplications of findAllByStatus
     @Query("SELECT f FROM GameFileDetails f" +
             " WHERE f.backupDetails.status =" +
             " dev.codesoapbox.backity.core.gamefiledetails.domain.FileBackupStatus.ENQUEUED")

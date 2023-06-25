@@ -15,7 +15,6 @@ public class EnqueuedFileBackupProcessor {
     private final FileBackupService fileBackupService;
     private final FileBackupMessageService messageService;
 
-    // @TODO Refactor this so the processQueue method doesn't have to be synchronized
     final AtomicReference<GameFileDetails> enqueuedFileBackupReference = new AtomicReference<>();
 
     public synchronized void processQueue() {

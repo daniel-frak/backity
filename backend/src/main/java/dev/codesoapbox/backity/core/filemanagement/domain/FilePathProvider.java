@@ -39,7 +39,6 @@ public class FilePathProvider {
                 .replace("{SOURCE}", source)
                 .replace("{TITLE}", gameTitle)
                 .replace("{FILENAME}", fileName)
-                // @TODO Replace all illegal chars here
                 .replace(":", " -");
     }
 

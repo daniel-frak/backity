@@ -67,12 +67,10 @@ public class FileBackupService {
     private String createTemporaryFilePath(GameFileDetails gameFileDetails) throws IOException {
         return filePathProvider.createTemporaryFilePath(
                 gameFileDetails.getSourceFileDetails().sourceId(),
-                // @TODO Get game title from Game?
                 gameFileDetails.getSourceFileDetails().originalGameTitle());
     }
 
     private void validateEnoughFreeSpaceOnDisk(String filePath, String size) {
-        // @TODO Get free up-to-date filesize from URL header!
         Long sizeInBytes = new FileSizeAccumulator().add(size).getInBytes();
         if (!fileManager.isEnoughFreeSpaceOnDisk(sizeInBytes, filePath)) {
             throw new NotEnoughFreeSpaceException(filePath);

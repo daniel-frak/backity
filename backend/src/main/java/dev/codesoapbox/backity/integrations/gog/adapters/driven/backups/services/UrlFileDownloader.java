@@ -35,7 +35,6 @@ public class UrlFileDownloader {
 
         validateDownloadedFileSize(tempFilePath, progress.getContentLengthBytes());
 
-        // @TODO Write test for return value
         String originalFileName = gameFileDetails.getSourceFileDetails().originalFileName();
         return fileManager.renameFileAddingSuffixIfExists(tempFilePath, originalFileName);
     }

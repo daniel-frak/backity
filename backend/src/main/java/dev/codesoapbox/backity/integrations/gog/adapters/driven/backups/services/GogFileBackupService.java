@@ -23,7 +23,6 @@ public class GogFileBackupService implements SourceFileBackupService {
 
     @Override
     public String backUpGameFile(GameFileDetails gameFileDetails, String tempFilePath) throws IOException {
-        // @TODO Write test for return value
         return urlFileDownloader.downloadGameFile(gogEmbedClient, gameFileDetails, tempFilePath);
     }
 
