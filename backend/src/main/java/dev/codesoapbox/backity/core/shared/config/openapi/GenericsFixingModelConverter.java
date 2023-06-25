@@ -5,11 +5,11 @@ import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.core.jackson.TypeNameResolver;
+import io.swagger.v3.core.util.AnnotationsUtils;
 import io.swagger.v3.core.util.RefUtils;
 import io.swagger.v3.oas.models.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.providers.ObjectMapperProvider;
-import org.springdoc.core.utils.SpringDocAnnotationsUtils;
 
 import java.util.Iterator;
 
@@ -24,8 +24,8 @@ import java.util.Iterator;
 @RequiredArgsConstructor
 public class GenericsFixingModelConverter implements ModelConverter {
 
+    private static final TypeNameResolver TYPE_NAME_RESOLVER = TypeNameResolver.std;
     private final ObjectMapperProvider springDocObjectMapper;
-    private final TypeNameResolver typeNameResolver = TypeNameResolver.std;
 
     @Override
     public Schema<?> resolve(AnnotatedType type, ModelConverterContext context,
@@ -34,11 +34,11 @@ public class GenericsFixingModelConverter implements ModelConverter {
         if (resolvedSchema != null && resolvedSchema.getType() == null) {
             JavaType javaType = springDocObjectMapper.jsonMapper().constructType(type.getType());
             if (javaType != null && javaType.hasGenericTypes()) {
-                String $ref = resolvedSchema.get$ref();
-                if ($ref != null) {
-                    String referencedSchemaKey = $ref.substring(SpringDocAnnotationsUtils.COMPONENTS_REF.length());
+                String ref = resolvedSchema.get$ref();
+                if (ref != null) {
+                    String referencedSchemaKey = ref.substring(AnnotationsUtils.COMPONENTS_REF.length());
                     Schema<?> referencedSchema = context.getDefinedModels().get(referencedSchemaKey);
-                    String genericName = this.typeNameResolver.nameForType(javaType);
+                    String genericName = TYPE_NAME_RESOLVER.nameForType(javaType);
                     context.defineModel(genericName, referencedSchema, type, referencedSchema.getName());
                     referencedSchema.setName(genericName);
                     resolvedSchema.set$ref(RefUtils.constructRef(referencedSchema.getName()));

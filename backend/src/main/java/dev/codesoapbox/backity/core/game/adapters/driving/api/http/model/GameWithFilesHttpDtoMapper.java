@@ -8,9 +8,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(uses = {GameFileDetailsHttpDtoMapper.class, GameIdHttpDtoMapper.class})
-public abstract class GameWithFilesHttpDtoMapper {
+public interface GameWithFilesHttpDtoMapper {
 
     @Mapping(target = ".", source = "game")
     @BeanMapping(ignoreUnmappedSourceProperties = "game")
-    public abstract GameWithFilesHttpDto toDto(GameWithFiles model);
+    GameWithFilesHttpDto toDto(GameWithFiles model);
 }

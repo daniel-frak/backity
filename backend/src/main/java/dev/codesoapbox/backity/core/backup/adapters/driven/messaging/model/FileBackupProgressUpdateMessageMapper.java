@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.FileBackupProgress;
 import org.mapstruct.Mapper;
 
 @Mapper
-public abstract class FileBackupProgressUpdateMessageMapper {
+public interface FileBackupProgressUpdateMessageMapper {
 
-    public abstract FileBackupProgressUpdateWsMessage toMessage(FileBackupProgress domain);
+    FileBackupProgressUpdateWsMessage toMessage(FileBackupProgress domain);
 }

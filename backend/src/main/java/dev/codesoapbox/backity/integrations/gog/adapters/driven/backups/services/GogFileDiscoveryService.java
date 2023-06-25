@@ -7,7 +7,6 @@ import dev.codesoapbox.backity.core.gamefiledetails.domain.SourceFileDetails;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,13 +22,14 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
 
     private final GogEmbedClient gogEmbedClient;
 
-    @Getter
-    private final String source = "GOG";
-
     private final List<Consumer<ProgressInfo>> progressConsumers = new ArrayList<>();
 
     private final AtomicBoolean shouldStopFileDiscovery = new AtomicBoolean();
     private IncrementalProgressTracker progressTracker;
+
+    public String getSource() {
+        return "GOG";
+    }
 
     @Override
     public void startFileDiscovery(Consumer<SourceFileDetails> gameFileConsumer) {

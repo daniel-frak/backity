@@ -5,7 +5,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
-public abstract class FileDiscoveredMessageMapper {
+public interface FileDiscoveredMessageMapper {
 
-    public abstract FileDiscoveredWsMessage toMessage(SourceFileDetails domain);
+    FileDiscoveredWsMessage toMessage(SourceFileDetails domain);
 }

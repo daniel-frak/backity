@@ -26,7 +26,6 @@ import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
@@ -148,8 +147,8 @@ class FileBackupServiceTest {
                 .sourceId(sourceId)
                 .build();
         var tempFilePath = "someFileDir/someFile";
-        when(filePathProvider.createTemporaryFilePath(eq(sourceId),
-                        eq(gameFileDetails.getSourceFileDetails().originalGameTitle())))
+        when(filePathProvider.createTemporaryFilePath(sourceId,
+                gameFileDetails.getSourceFileDetails().originalGameTitle()))
                 .thenReturn(tempFilePath);
 
         assertThatThrownBy(() -> fileBackupService.backUpGameFile(gameFileDetails))

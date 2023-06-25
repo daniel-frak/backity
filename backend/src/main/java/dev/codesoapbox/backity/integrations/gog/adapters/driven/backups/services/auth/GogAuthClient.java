@@ -32,6 +32,7 @@ public class GogAuthClient {
                 .block();
     }
 
+    @SuppressWarnings("squid:S1192")
     public GogAuthenticationResponse refreshToken(String refreshToken) {
         return webClientAuth.get()
                 .uri(uriBuilder -> uriBuilder.path("/token")

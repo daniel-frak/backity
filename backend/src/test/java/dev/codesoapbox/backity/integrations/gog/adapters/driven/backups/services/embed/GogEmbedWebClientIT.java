@@ -102,8 +102,8 @@ class GogEmbedWebClientIT {
                 "en1installer3")),
                 "someChangelog");
         assertThat(result).isEqualTo(expectedResult);
-        assertThat(capturedOutput.getOut().contains("Retrieved game details for game: Unreal Tournament 2004 Editor's" +
-                " Choice Edition (#someGameId)")).isTrue();
+        assertThat(capturedOutput.getOut()).contains("Retrieved game details for game: Unreal Tournament 2004 Editor's" +
+                " Choice Edition (#someGameId)");
     }
 
     private void setLogLevelToDebug() {
@@ -194,7 +194,7 @@ class GogEmbedWebClientIT {
         GameDetailsResponse result = gogEmbedClient.getGameDetails("someGameId");
 
         assertThat(result).isNull();
-        assertThat(capturedOutput.getOut().contains("Could not retrieve game details for game id")).isTrue();
+        assertThat(capturedOutput.getOut()).contains("Could not retrieve game details for game id");
     }
 
     @Test
@@ -207,7 +207,7 @@ class GogEmbedWebClientIT {
         GameDetailsResponse result = gogEmbedClient.getGameDetails("someGameId");
 
         assertThat(result).isNull();
-        assertThat(capturedOutput.getOut().contains("Response was empty")).isTrue();
+        assertThat(capturedOutput.getOut()).contains("Response was empty");
     }
 
     @Test
@@ -301,7 +301,7 @@ class GogEmbedWebClientIT {
 
         assertThat(result).isEqualTo(expectedResult);
         assertThat(progress.getContentLengthBytes()).isEqualTo(4);
-        assertThat(progressHistory.size()).isEqualTo(1);
+        assertThat(progressHistory).hasSize(1);
         assertThat(progressHistory.get(0).percentage()).isEqualTo(100);
     }
 
@@ -335,7 +335,7 @@ class GogEmbedWebClientIT {
 
         assertThat(result).isEqualTo(expectedResult);
         assertThat(progress.getContentLengthBytes()).isEqualTo(4);
-        assertThat(progressHistory.size()).isEqualTo(1);
+        assertThat(progressHistory).hasSize(1);
         assertThat(progressHistory.get(0).percentage()).isEqualTo(100);
     }
 

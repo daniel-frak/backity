@@ -27,7 +27,7 @@ public class FileDiscoveryService {
     public FileDiscoveryService(List<SourceFileDiscoveryService> discoveryServices,
                                 GameRepository gameRepository,
                                 GameFileDetailsRepository fileRepository, FileDiscoveryMessageService messageService) {
-        this.discoveryServices = discoveryServices;
+        this.discoveryServices = discoveryServices.stream().toList();
         this.gameRepository = gameRepository;
         this.fileRepository = fileRepository;
         this.messageService = messageService;

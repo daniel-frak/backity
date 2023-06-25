@@ -27,6 +27,7 @@ public class LogbackLogService implements LogService {
     private final InMemoryLimitedLogbackAppender logAppender;
     private final PatternLayout layout;
 
+    @SuppressWarnings("squid:S1312")
     public LogbackLogService(LogMessageService messageService, Integer maxLogs) {
         this.messageService = messageService;
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -44,6 +45,7 @@ public class LogbackLogService implements LogService {
         return (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
     }
 
+    @SuppressWarnings("squid:S4792")
     private InMemoryLimitedLogbackAppender createAndAddLogAppender(LoggerContext loggerContext, Logger logger,
                                                                    Integer maxLogs) {
         InMemoryLimitedLogbackAppender inMemoryLogAppender = createAppender(loggerContext, maxLogs);

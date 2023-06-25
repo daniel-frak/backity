@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryStatu
 import org.mapstruct.Mapper;
 
 @Mapper
-public abstract class FileDiscoveryStatusChangedMessageMapper {
+public interface FileDiscoveryStatusChangedMessageMapper {
 
-    public abstract FileDiscoveryStatusChangedWsMessage toMessage(FileDiscoveryStatus domain);
+    FileDiscoveryStatusChangedWsMessage toMessage(FileDiscoveryStatus domain);
 }

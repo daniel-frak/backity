@@ -4,8 +4,6 @@ import dev.codesoapbox.backity.core.discovery.domain.IncrementalProgressTracker;
 import dev.codesoapbox.backity.core.discovery.domain.ProgressInfo;
 import lombok.Getter;
 
-import java.io.FilterOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.time.Clock;
 import java.util.ArrayList;
@@ -20,12 +18,12 @@ import java.util.function.Consumer;
  */
 public class BackupProgress {
 
-    private final List<Consumer<ProgressInfo>> progressConsumers = new ArrayList<>();
-    private IncrementalProgressTracker progressTracker;
+    protected final List<Consumer<ProgressInfo>> progressConsumers = new ArrayList<>();
+    protected IncrementalProgressTracker progressTracker = null;
 
     @Getter
-    private long contentLengthBytes = -1;
-    private long downloadedLengthBytes;
+    protected long contentLengthBytes = -1;
+    protected long downloadedLengthBytes = 0;
 
     public void startTracking(long contentLengthBytes) {
         this.contentLengthBytes = contentLengthBytes;
@@ -33,40 +31,7 @@ public class BackupProgress {
     }
 
     public OutputStream getTrackedOutputStream(OutputStream fileOutputStream) {
-        return new FilterOutputStream(fileOutputStream) {
-
-            @Override
-            public void write(byte[] currentByte, int offset, int length) throws IOException {
-                out.write(currentByte, offset, length);
-                downloadedLengthBytes += length;
-                progressTracker.incrementBy(length);
-                updateProgress(progressTracker.getProgressInfo());
-            }
-
-            @Override
-            public void write(int currentByte) throws IOException {
-                out.write(currentByte);
-                downloadedLengthBytes++;
-                progressTracker.incrementBy(1);
-                updateProgress(progressTracker.getProgressInfo());
-            }
-
-            @Override
-            public void close() throws IOException {
-                super.close();
-                done();
-            }
-        };
-    }
-
-    private void updateProgress(ProgressInfo progressInfo) {
-        progressConsumers.forEach(c -> c.accept(progressInfo));
-    }
-
-    private void done() {
-        if (contentLengthBytes == -1) {
-            contentLengthBytes = downloadedLengthBytes;
-        }
+        return new TrackedFilterOutputStream(this, fileOutputStream);
     }
 
     public long getDownloadedLengthBytes() {
@@ -81,6 +46,7 @@ public class BackupProgress {
         progressConsumers.add(progressConsumer);
     }
 
+    @SuppressWarnings("squid:S2250")
     public void unsubscribeFromProgress(Consumer<ProgressInfo> progressConsumer) {
         progressConsumers.remove(progressConsumer);
     }

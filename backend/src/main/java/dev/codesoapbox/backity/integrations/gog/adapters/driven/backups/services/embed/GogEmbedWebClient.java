@@ -145,7 +145,7 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
         }
 
         return response.getDownloads().stream()
-                .filter(d -> d.get(0).equals("English"))
+                .filter(d -> "English".equals(d.get(0)))
                 .map(d -> (Map<String, Object>) d.get((1)))
                 .flatMap(d -> ((List<Object>) d.get("windows")).stream())
                 .map(d -> (Map<String, Object>) d)

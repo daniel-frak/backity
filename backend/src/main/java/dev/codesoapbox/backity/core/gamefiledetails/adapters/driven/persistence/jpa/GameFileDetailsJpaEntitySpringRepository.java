@@ -14,7 +14,8 @@ public interface GameFileDetailsJpaEntitySpringRepository extends JpaRepository<
 
     // @TODO Remove unnecessary duplications of findAllByStatus
     @Query("SELECT f FROM GameFileDetails f" +
-            " WHERE f.backupDetails.status = dev.codesoapbox.backity.core.gamefiledetails.domain.FileBackupStatus.ENQUEUED")
+            " WHERE f.backupDetails.status =" +
+            " dev.codesoapbox.backity.core.gamefiledetails.domain.FileBackupStatus.ENQUEUED")
     Page<GameFileDetailsJpaEntity> findAllWaitingForDownload(Pageable pageable);
 
     Optional<GameFileDetailsJpaEntity> findByBackupDetailsStatus(FileBackupStatus status);

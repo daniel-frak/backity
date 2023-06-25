@@ -4,7 +4,6 @@ import dev.codesoapbox.backity.core.backup.domain.SourceFileBackupService;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.embed.GogEmbedWebClient;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,8 +17,9 @@ public class GogFileBackupService implements SourceFileBackupService {
     private final GogAuthService authService;
     private final UrlFileDownloader urlFileDownloader;
 
-    @Getter
-    private final String source = "GOG";
+    public String getSource() {
+        return "GOG";
+    }
 
     @Override
     public String backUpGameFile(GameFileDetails gameFileDetails, String tempFilePath) throws IOException {

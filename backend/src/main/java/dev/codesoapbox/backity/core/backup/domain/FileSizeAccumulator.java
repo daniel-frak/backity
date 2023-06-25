@@ -3,14 +3,18 @@ package dev.codesoapbox.backity.core.backup.domain;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.UnrecognizedFileSizeUnitException;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class FileSizeAccumulator {
 
-    private static final BigDecimal KB_IN_B = BigDecimal.valueOf(1_000);
-    private static final BigDecimal MB_IN_B = BigDecimal.valueOf(1_000_000);
-    private static final BigDecimal GB_IN_B = BigDecimal.valueOf(1_000_000_000);
-    private static final BigDecimal TB_IN_B = BigDecimal.valueOf(1_000_000_000_000L);
+    private static final Map<String, BigDecimal> MULTIPLIERS_BY_SIZE_FORMAT = Map.of(
+            "B", BigDecimal.ONE,
+            "KB", BigDecimal.valueOf(1_000),
+            "MB", BigDecimal.valueOf(1_000_000),
+            "GB", BigDecimal.valueOf(1_000_000_000),
+            "TB", BigDecimal.valueOf(1_000_000_000_000L)
+    );
     private static final String SPACE = " ";
 
     private final AtomicReference<BigDecimal> totalSizeInBytes = new AtomicReference<>(BigDecimal.ZERO);
@@ -24,23 +28,11 @@ public class FileSizeAccumulator {
     }
 
     private BigDecimal convertToBytes(double originalSize, String originalFormat) {
-        if (originalFormat.equals("B")) {
-            return BigDecimal.valueOf(originalSize);
+        if (!MULTIPLIERS_BY_SIZE_FORMAT.containsKey(originalFormat)) {
+            throw new UnrecognizedFileSizeUnitException(originalFormat);
         }
-        if (originalFormat.equals("KB")) {
-            return BigDecimal.valueOf(originalSize).multiply(KB_IN_B);
-        }
-        if (originalFormat.equals("MB")) {
-            return BigDecimal.valueOf(originalSize).multiply(MB_IN_B);
-        }
-        if (originalFormat.equals("GB")) {
-            return BigDecimal.valueOf(originalSize).multiply(GB_IN_B);
-        }
-        if (originalFormat.equals("TB")) {
-            return BigDecimal.valueOf(originalSize).multiply(TB_IN_B);
-        }
-
-        throw new UnrecognizedFileSizeUnitException(originalFormat);
+        BigDecimal multiplier = MULTIPLIERS_BY_SIZE_FORMAT.get(originalFormat);
+        return BigDecimal.valueOf(originalSize).multiply(multiplier);
     }
 
     public Long getInBytes() {

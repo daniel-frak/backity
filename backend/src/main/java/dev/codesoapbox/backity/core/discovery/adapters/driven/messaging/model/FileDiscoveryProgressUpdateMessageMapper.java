@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryProgr
 import org.mapstruct.Mapper;
 
 @Mapper
-public abstract class FileDiscoveryProgressUpdateMessageMapper {
+public interface FileDiscoveryProgressUpdateMessageMapper {
 
-    public abstract FileDiscoveryProgressUpdateWsMessage toMessage(FileDiscoveryProgress domain);
+    FileDiscoveryProgressUpdateWsMessage toMessage(FileDiscoveryProgress domain);
 }
