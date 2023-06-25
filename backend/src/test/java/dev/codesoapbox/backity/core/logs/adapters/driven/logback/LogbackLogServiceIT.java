@@ -23,7 +23,7 @@ import static org.mockito.Mockito.verify;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-class LogbackLogServiceTest {
+class LogbackLogServiceIT {
 
     private static final int MAX_LOGS = 2;
     private static Appender<ILoggingEvent> originalConsoleAppender;

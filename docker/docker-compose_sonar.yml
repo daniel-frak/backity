@@ -1,0 +1,38 @@
+version: '3.3'
+services:
+  ### CODE ANALYSIS ###
+  sonarqube:
+    image: sonarqube:$SONAR_VERSION
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+    stop_grace_period: 5m
+    restart: unless-stopped
+    networks:
+      - internal
+
+  # Only used for first-time setup:
+  sonarqube_first_run_setup:
+    image: alpine:$SONAR_CONFIG_ALPINE_LINUX_VERSION
+    environment:
+      SONAR_URL: $SONAR_URL
+      SONAR_USER: $SONAR_USER
+      SONAR_PASSWORD: $SONAR_PASSWORD
+    entrypoint: [ "sh", "/docker-entrypoint.sh" ]
+    volumes:
+      - ./sonarqube/import_data.sh:/docker-entrypoint.sh:ro
+      - ./sonarqube/java_profile.xml:/java_profile.xml:ro
+    depends_on:
+      - sonarqube
+    networks:
+      - internal
+  ### END CODE ANALYSIS ###
+
+networks:
+  internal:
+
+volumes:
+  sonarqube_data:
+  sonarqube_extensions:

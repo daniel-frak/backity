@@ -37,7 +37,7 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(OutputCaptureExtension.class)
 @ExtendWith(MockitoExtension.class)
-class FileDiscoveryServiceTest {
+class FileDiscoveryServiceIT {
 
     private FileDiscoveryService fileDiscoveryService;
 

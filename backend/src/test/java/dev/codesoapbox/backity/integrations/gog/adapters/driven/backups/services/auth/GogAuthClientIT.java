@@ -11,7 +11,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @WireMockTest
-class GogAuthClientTest {
+class GogAuthClientIT {
 
     private static final String CLIENT_ID = "someClientId";
     private static final String CLIENT_SECRET = "someClientSecret";

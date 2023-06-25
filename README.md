@@ -30,22 +30,22 @@ The information below is aimed at developers who want to extend this project's f
 
 - [Getting Started](#getting-started)
 - [Profiles summary](#profiles-summary)
-  * [Spring profiles](#spring-profiles)
-  * [Maven profiles](#maven-profiles)
+    * [Spring profiles](#spring-profiles)
+    * [Maven profiles](#maven-profiles)
 - [API documentation](#api-documentation)
-  * [Swagger](#swagger)
-  * [OpenAPI](#openapi)
+    * [Swagger](#swagger)
+    * [OpenAPI](#openapi)
 - [Client code generation](#client-code-generation)
 - [Working with frontend on a local environment](#working-with-frontend-on-a-local-environment)
 - [Running test suites](#running-test-suites)
-  * [Backend](#backend)
-  * [Frontend](#frontend)
+    * [Backend](#backend)
+    * [Frontend](#frontend)
 - [SonarQube analysis on a local environment](#sonarqube-analysis-on-local-a-environment)
-  * [Prerequisites](#prerequisites)
-  * [Full analysis](#full-analysis)
-  * [Backend analysis](#backend-analysis)
-  * [Frontend analysis](#frontend-analysis)
-  * [Verifying results](#verifying-results)
+    * [Prerequisites](#prerequisites)
+    * [Full analysis](#full-analysis)
+    * [Backend analysis](#backend-analysis)
+    * [Frontend analysis](#frontend-analysis)
+    * [Verifying results](#verifying-results)
 - [Built With](#built-with)
 
 ## Getting Started
@@ -78,8 +78,8 @@ summary of the available profiles.
 
 * `dev` - for local development. Allows things like handling requests from `http://localhost:4200/`.
 * `angular` - special profile used for
-[client code generation](https://codesoapbox.dev/generate-client-code-from-spring-boot-using-maven/).
-Applied automatically when the `angular` Maven profile is enabled.
+  [client code generation](https://codesoapbox.dev/generate-client-code-from-spring-boot-using-maven/).
+  Applied automatically when the `angular` Maven profile is enabled.
 
 ### Maven profiles
 
@@ -100,12 +100,13 @@ The Swagger UI page: [http://localhost:8080/swagger-ui.html](http://localhost:80
 ### OpenAPI
 
 The OpenAPI description is available at the following urls:
+
 * [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs) - in `json` format
 * [http://localhost:8080/v3/api-docs.yaml](http://localhost:8080/v3/api-docs.yaml) - in `yml` format
 
 ## Client code generation
 
-To run [client code generation](https://codesoapbox.dev/generate-client-code-from-spring-boot-using-maven/) 
+To run [client code generation](https://codesoapbox.dev/generate-client-code-from-spring-boot-using-maven/)
 using the `openapi-generator-maven-plugin`, execute the following command:
 
 ```shell
@@ -163,20 +164,54 @@ ng test
 
 ## SonarQube analysis on a local environment
 
+This project is configured so that its integration tests are taken into consideration when calculating code coverage.
+SonarQube will show these tests as unit tests on the dashboard, as there is currently no native integration test support
+within Sonar.
+
 ### Prerequisites
 
-* You'll need Chrome installed on your machine to run a frontend analysis with code coverage.
-* Read the [Boost project quality with SonarQube – local code analysis](https://keepgrowing.in/tools/boost-project-quality-with-sonarqube-local-code-analysis/)
-  post to set up dependencies properly.
-* Read the [How to add an Angular module built with Maven to a SonarQube analysis](https://keepgrowing.in/angular/how-to-add-an-angular-module-built-with-maven-to-a-sonarqube-analysis/) 
-to learn more about analysing a multi-module maven application.
+* You need to have [Docker](https://docs.docker.com/get-docker/) and
+  [Docker-Compose](https://docs.docker.com/compose/install/) installed.
+* You need Chrome installed on your machine to run a frontend analysis with code coverage.
+ 
+### Launching SonarQube on a local environment
+
+To start a local instance of SonarQube, use the following command in the root of this repository:
+
+```shell
+docker-compose -f docker/docker-compose_sonar.yml --env-file docker/.env up -d
+```
+
+You should only need to do this once.
+
+The Java analysis profile is stored in `docker/sonarqube/java_profile.xml` and is automatically restored when first
+launching the Docker instance.
+
+The SonarQube instance will become available at http://localhost:9000. The default credentials are:
+- User: admin
+- Password: admin
+
+To disable authentication, log in to the SonarQube instance, then:
+1. Go to `Administration`.
+2. Go to `Configuration`.
+3. Go to the `Security` tab (on the sidebar).
+4. Disable `Force user authentication`.
+5. Click `save`.
+6. Click on `Security`➝`Global permissions` (on the top bar).
+7. Toggle `Execute analysis` to ON for `Anyone`.
+8. Toggle `Create projects` to ON for `Anyone`.
+
+You can also
+[generate a token](https://docs.sonarqube.org/latest/user-guide/user-account/generating-and-using-tokens/#generating-a-token)
+and use it as the value of `sonar.login` (omitting `sonar.password` entirely) when performing analysis.
 
 ### Full analysis
 
-You can run analysis for the **whole project** (both backend and frontend):
+You can run analysis for the **whole project** (both backend and frontend) by running the following command from
+the root of this repository:
 
 ```shell
-mvn clean verify sonar:sonar -Pfrontend-pre-sonar -Pcode-coverage -Dsonar.login=your_username -Dsonar.password=your_password
+mvn clean verify sonar:sonar -Pfrontend-pre-sonar
 ```
 
 ### Backend analysis
@@ -185,7 +220,7 @@ You can run a separate analysis for the **backend** module:
 
 ```shell
 cd backend
-mvn clean verify sonar:sonar -Pcode-coverage -Dsonar.login=your_username -Dsonar.password=your_password
+mvn clean verify sonar:sonar -Pcode-coverage
 ```
 
 ### Frontend analysis
@@ -193,13 +228,13 @@ mvn clean verify sonar:sonar -Pcode-coverage -Dsonar.login=your_username -Dsonar
 You can run a separate analysis for the **frontend** module:
 
 ```shell
-mvn sonar:sonar -pl frontend -Pfrontend-pre-sonar -Dsonar.login=your_username -Dsonar.password=your_password
+cd frontend
+mvn sonar:sonar -Pfrontend-pre-sonar
 ```
 
 ### Verifying results
 
-Visit the [Projects](http://localhost:9000/projects) page and choose the right project. Depending on which modules were
-analysed you should see one, two, or three projects.
+Visit the [Projects](http://localhost:9000/projects) SonarQube page and choose the right project.
 
 ## Built With
 
@@ -211,4 +246,5 @@ analysed you should see one, two, or three projects.
 * [Bootstrap v5+](https://getbootstrap.com/docs/5.0/getting-started/introduction/)
 * [ng-bootstrap](https://ng-bootstrap.github.io/#/home)
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with
+markdown-toc</a></i></small>

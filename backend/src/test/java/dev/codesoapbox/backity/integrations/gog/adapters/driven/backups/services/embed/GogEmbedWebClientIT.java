@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(OutputCaptureExtension.class)
 @ExtendWith(MockitoExtension.class)
-class GogEmbedWebClientTest {
+class GogEmbedWebClientIT {
 
     protected static final String ACCESS_TOKEN = "someAccessToken";
 
