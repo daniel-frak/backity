@@ -30,3 +30,4 @@ run-sonar.sh
 /app.log**
 *.mv.db
 *.trace.db
+.flattened-pom.xml

@@ -10,7 +10,7 @@
     </parent>
     <groupId>dev.codesoapbox</groupId>
     <artifactId>backity</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
     <name>backity</name>
     <description>
@@ -23,9 +23,18 @@
     </modules>
 
     <properties>
+        <!-- Project version info -->
+        <revision>0.0.1-SNAPSHOT</revision>
+        <java.version>17</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <!-- END of Project version info -->
+
+        <!-- Sonar -->
         <sonar.projectKey>backity</sonar.projectKey>
         <sonar.projectName>Backity</sonar.projectName>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
+        <!-- END of Sonar -->
     </properties>
 
     <build>
@@ -36,6 +45,34 @@
                 <configuration>
                     <skip>true</skip>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <!-- Necessary for the ${revision} property to work properly. See:
+                https://maven.apache.org/maven-ci-friendly.html#install-deploy -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
