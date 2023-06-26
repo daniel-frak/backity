@@ -9,8 +9,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.discoveredFileDetails;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
@@ -32,11 +34,16 @@ class EnqueuedFileBackupProcessorTest {
     @Test
     void shouldProcessEnqueuedFileDownloadIfNotCurrentlyDownloading() {
         GameFileDetails gameFileDetails = discoveredFileDetails().build();
-
+        AtomicBoolean gameFileDetailsWasKeptAsReferenceDuringProcessing = new AtomicBoolean();
         when(gameFileDetailsRepository.findOldestWaitingForDownload())
                 .thenReturn(Optional.of(gameFileDetails));
         when(fileBackupService.isReadyFor(gameFileDetails))
                 .thenReturn(true);
+        doAnswer(inv -> {
+            gameFileDetailsWasKeptAsReferenceDuringProcessing.set(
+                    enqueuedFileBackupProcessor.enqueuedFileBackupReference.get() == gameFileDetails);
+            return null;
+        }).when(fileBackupService).backUpGameFile(gameFileDetails);
 
         enqueuedFileBackupProcessor.processQueue();
 
@@ -44,6 +51,7 @@ class EnqueuedFileBackupProcessorTest {
         verify(fileBackupService).backUpGameFile(gameFileDetails);
         verify(messageService).sendBackupFinished(gameFileDetails);
         assertNull(enqueuedFileBackupProcessor.enqueuedFileBackupReference.get());
+        assertThat(gameFileDetailsWasKeptAsReferenceDuringProcessing).isTrue();
     }
 
     @Test
@@ -61,7 +69,7 @@ class EnqueuedFileBackupProcessorTest {
 
         verify(messageService).sendBackupStarted(gameFileDetails);
         verify(messageService).sendBackupFinished(gameFileDetails);
-        assertNull(enqueuedFileBackupProcessor.enqueuedFileBackupReference.get());
+        assertThat(enqueuedFileBackupProcessor.enqueuedFileBackupReference.get()).isNull();
         verifyNoMoreInteractions(messageService, fileBackupService);
     }
 
@@ -82,10 +90,12 @@ class EnqueuedFileBackupProcessorTest {
     @Test
     void shouldDoNothingIfCurrentlyDownloading() {
         GameFileDetails gameFileDetails = discoveredFileDetails().build();
-        enqueuedFileBackupProcessor.enqueuedFileBackupReference.set(gameFileDetails);
+        lenient().when(gameFileDetailsRepository.findOldestWaitingForDownload())
+                .thenReturn(Optional.of(gameFileDetails));
 
+        enqueuedFileBackupProcessor.enqueuedFileBackupReference.set(gameFileDetails);
         enqueuedFileBackupProcessor.processQueue();
 
-        verifyNoInteractions(messageService, fileBackupService);
+        verifyNoInteractions(gameFileDetailsRepository, fileBackupService, messageService);
     }
 }

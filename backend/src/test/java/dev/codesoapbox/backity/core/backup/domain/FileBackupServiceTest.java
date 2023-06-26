@@ -25,9 +25,8 @@ import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDe
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class FileBackupServiceTest {
@@ -97,10 +96,15 @@ class FileBackupServiceTest {
         when(sourceFileBackupService.backUpGameFile(gameFileDetails, tempFilePath))
                 .thenThrow(coreException);
 
-        var exception = assertThrows(FileBackupFailedException.class,
-                () -> fileBackupService.backUpGameFile(gameFileDetails));
-
-        assertThat(exception.getCause()).isEqualTo(coreException);
+        assertThatThrownBy(() -> fileBackupService.backUpGameFile(gameFileDetails))
+                .isInstanceOf(FileBackupFailedException.class)
+                .cause().isEqualTo(coreException);
+        assertThat(gameFileDetails.getBackupDetails())
+                .satisfies(backupDetails -> assertAll(
+                        () -> assertThat(backupDetails.getStatus()).isEqualTo(FileBackupStatus.FAILED),
+                        () -> assertThat(backupDetails.getFailedReason()).isEqualTo(coreException.getMessage())
+                ));
+        verify(gameFileDetailsRepository, times(4)).save(gameFileDetails);
         assertThat(fileManager.fileDeleteWasAttempted(tempFilePath)).isTrue();
         assertThat(gameFileDetails.getBackupDetails().getFilePath()).isNull();
     }
@@ -124,7 +128,12 @@ class FileBackupServiceTest {
         assertThatThrownBy(() -> fileBackupService.backUpGameFile(gameFileDetails))
                 .isInstanceOf(FileBackupFailedException.class)
                 .cause().isEqualTo(coreException);
-        assertThat(fileManager.fileDeleteWasAttempted(tempFilePath)).isTrue();
+        assertThat(gameFileDetails.getBackupDetails())
+                .satisfies(backupDetails -> assertAll(
+                        () -> assertThat(backupDetails.getStatus()).isEqualTo(FileBackupStatus.FAILED),
+                        () -> assertThat(backupDetails.getFailedReason()).isEqualTo(coreException.getMessage())
+                ));
+        verify(gameFileDetailsRepository, times(3)).save(gameFileDetails);
         assertThat(gameFileDetails.getBackupDetails().getFilePath()).isEqualTo(nonTempFilePath);
     }
 
