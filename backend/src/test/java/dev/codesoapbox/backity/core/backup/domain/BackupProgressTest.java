@@ -9,7 +9,7 @@ import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class BackupProgressTest {
 
@@ -24,9 +24,9 @@ class BackupProgressTest {
             outputStream.write(1);
         }
 
-        assertEquals(2, downloadProgress.getDownloadedLengthBytes());
-        assertEquals(50, downloadProgress.getProgressInfo().percentage());
-        assertEquals(4, downloadProgress.getContentLengthBytes());
+        assertThat(downloadProgress.getDownloadedLengthBytes()).isEqualTo(2);
+        assertThat(downloadProgress.getProgressInfo().percentage()).isEqualTo(50);
+        assertThat(downloadProgress.getContentLengthBytes()).isEqualTo(4);
     }
 
     @Test
@@ -35,11 +35,11 @@ class BackupProgressTest {
 
         try (OutputStream outputStream = downloadProgress.getTrackedOutputStream(new ByteArrayOutputStream(4))) {
             downloadProgress.startTracking(-1);
-
             outputStream.write(new byte[]{0}, 0, 1);
             outputStream.write(1);
         }
-        assertEquals(2, downloadProgress.getContentLengthBytes());
+
+        assertThat(downloadProgress.getContentLengthBytes()).isEqualTo(2);
     }
 
     @Test
@@ -54,12 +54,12 @@ class BackupProgressTest {
         downloadProgress.startTracking(4);
 
         outputStream.write(1);
-        assertEquals(25, progressInfoReference.get().percentage());
+        assertThat(progressInfoReference.get().percentage()).isEqualTo(25);
 
         outputStream.write(new byte[]{0, 1}, 0, 2);
         downloadProgress.unsubscribeFromProgress(progressConsumer);
         outputStream.write(new byte[]{0, 1}, 0, 2);
 
-        assertEquals(75, progressInfoReference.get().percentage());
+        assertThat(progressInfoReference.get().percentage()).isEqualTo(75);
     }
 }

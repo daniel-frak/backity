@@ -13,8 +13,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -28,13 +29,13 @@ class GogFileDiscoveryServiceTest {
     private GogEmbedClient gogEmbedClient;
 
     @Test
-    void shouldDiscoverNewFiles() {
+    void startFileDiscoveryShouldDiscoverNewFiles() {
         mockFileDiscovery();
 
         List<SourceFileDetails> gameFileVersionBackups = new ArrayList<>();
         gogFileDiscoveryService.startFileDiscovery(gameFileVersionBackups::add);
 
-        var expectedGameFileDetailss = List.of(
+        var expectedGameFileDetails = List.of(
                 new SourceFileDetails("GOG", "Game 2", "fileSimpleName1", "1.0.0",
                         "someUrl1", "fileName1", "100 KB"),
                 new SourceFileDetails("GOG", "Game 2", "fileSimpleName2", "2.0.0",
@@ -43,7 +44,7 @@ class GogFileDiscoveryServiceTest {
                         "someUrl3", "fileName3", "300 KB")
         );
 
-        assertEquals(expectedGameFileDetailss, gameFileVersionBackups);
+        assertThat(gameFileVersionBackups).isEqualTo(expectedGameFileDetails);
     }
 
     private void mockFileDiscovery() {
@@ -82,6 +83,17 @@ class GogFileDiscoveryServiceTest {
     }
 
     @Test
+    void startFileDiscoveryShouldRestartFileDiscoveryAfterStopping() {
+        mockFileDiscovery();
+        AtomicInteger discoveredFilesCount = new AtomicInteger();
+
+        gogFileDiscoveryService.stopFileDiscovery();
+        gogFileDiscoveryService.startFileDiscovery(gf -> discoveredFilesCount.getAndIncrement());
+
+        assertThat(discoveredFilesCount.get()).isEqualTo(3);
+    }
+
+    @Test
     void shouldStopFileDiscoveryBeforeProcessingFiles() {
         var gameId1 = "gameId1";
 
@@ -94,7 +106,7 @@ class GogFileDiscoveryServiceTest {
         List<SourceFileDetails> gameFileVersionBackups = new ArrayList<>();
         gogFileDiscoveryService.startFileDiscovery(gameFileVersionBackups::add);
 
-        assertEquals(0, gameFileVersionBackups.size());
+        assertThat(gameFileVersionBackups.size()).isZero();
         verify(gogEmbedClient, never()).getGameDetails(any());
     }
 
@@ -118,7 +130,7 @@ class GogFileDiscoveryServiceTest {
         List<SourceFileDetails> gameFileVersionBackups = new ArrayList<>();
         gogFileDiscoveryService.startFileDiscovery(gameFileVersionBackups::add);
 
-        assertEquals(1, gameFileVersionBackups.size());
+        assertThat(gameFileVersionBackups.size()).isOne();
         verify(gogEmbedClient, times(1)).getGameDetails(any());
     }
 
@@ -131,15 +143,15 @@ class GogFileDiscoveryServiceTest {
         gogFileDiscoveryService.startFileDiscovery(df -> {
         });
 
-        assertEquals(25, progressInfos.get(0).percentage());
-        assertEquals(50, progressInfos.get(1).percentage());
-        assertEquals(75, progressInfos.get(2).percentage());
-        assertEquals(100, progressInfos.get(3).percentage());
+        assertThat(progressInfos.get(0).percentage()).isEqualTo(25);
+        assertThat(progressInfos.get(1).percentage()).isEqualTo(50);
+        assertThat(progressInfos.get(2).percentage()).isEqualTo(75);
+        assertThat(progressInfos.get(3).percentage()).isEqualTo(100);
     }
 
     @Test
     void shouldGetProgressWhenNoProgress() {
-        assertEquals(ProgressInfo.none(), gogFileDiscoveryService.getProgress());
+        assertThat(gogFileDiscoveryService.getProgress()).isEqualTo(ProgressInfo.none());
     }
 
     @Test
@@ -150,11 +162,11 @@ class GogFileDiscoveryServiceTest {
 
         ProgressInfo progressInfo = gogFileDiscoveryService.getProgress();
 
-        assertEquals(100, progressInfo.percentage());
+        assertThat(progressInfo.percentage()).isEqualTo(100);
     }
 
     @Test
     void shouldGetSource() {
-        assertEquals("GOG", gogFileDiscoveryService.getSource());
+        assertThat(gogFileDiscoveryService.getSource()).isEqualTo("GOG");
     }
 }

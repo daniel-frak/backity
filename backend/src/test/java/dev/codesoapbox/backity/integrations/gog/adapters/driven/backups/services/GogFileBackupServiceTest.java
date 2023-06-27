@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 
 import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.discoveredFileDetails;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,7 +32,7 @@ class GogFileBackupServiceTest {
     private UrlFileDownloader urlFileDownloader;
 
     @Test
-    void shouldDownloadGameFile() throws IOException {
+    void backUpGameFileShouldDownloadGameFile() throws IOException {
         GameFileDetails gameFileDetails = discoveredFileDetails().build();
         String tempFilePath = "someTempFilePath";
 
@@ -42,17 +42,30 @@ class GogFileBackupServiceTest {
     }
 
     @Test
+    void backUpGameFileShouldReturnFilePath() throws IOException {
+        GameFileDetails gameFileDetails = discoveredFileDetails().build();
+        String tempFilePath = "someTempFilePath";
+        String finalFilePath = "finalFilePath";
+        when(urlFileDownloader.downloadGameFile(gogEmbedClient, gameFileDetails, tempFilePath))
+                .thenReturn(finalFilePath);
+
+        String result = gogFileDownloader.backUpGameFile(gameFileDetails, tempFilePath);
+
+        assertThat(result).isEqualTo(finalFilePath);
+    }
+
+    @Test
     void isReadyShouldReturnTrueIfReady() {
         when(authService.isAuthenticated())
                 .thenReturn(false)
                 .thenReturn(true);
 
-        assertFalse(gogFileDownloader.isReady());
-        assertTrue(gogFileDownloader.isReady());
+        assertThat(gogFileDownloader.isReady()).isFalse();
+        assertThat(gogFileDownloader.isReady()).isTrue();
     }
 
     @Test
     void shouldGetSource() {
-        assertEquals("GOG", gogFileDownloader.getSource());
+        assertThat(gogFileDownloader.getSource()).isEqualTo("GOG");
     }
 }

@@ -50,4 +50,26 @@ public class BackupProgress {
     public void unsubscribeFromProgress(Consumer<ProgressInfo> progressConsumer) {
         progressConsumers.remove(progressConsumer);
     }
+
+    public void incrementDownloadedBytes(int length) {
+        downloadedLengthBytes += length;
+        progressTracker.incrementBy(length);
+        updateProgress();
+    }
+
+    private void updateProgress() {
+        progressConsumers.forEach(c -> c.accept(progressTracker.getProgressInfo()));
+    }
+
+    public void incrementProcessedElements() {
+        downloadedLengthBytes++;
+        progressTracker.incrementBy(1);
+        updateProgress();
+    }
+
+    public void updateContentLength() {
+        if (contentLengthBytes == -1) {
+            contentLengthBytes = downloadedLengthBytes;
+        }
+    }
 }
