@@ -24,6 +24,8 @@ Backity is a web service for automatically downloading backups of your games fro
 
 **For instructions on how to use Backity, [consult the Wiki](https://github.com/daniel-frak/backity/wiki).**
 
+**⚠️Warning: Backity is not yet production-ready! Anything may break at any time.⚠️**
+
 The information below is aimed at developers who want to extend this project's functionality.
 
 ---
