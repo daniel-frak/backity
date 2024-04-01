@@ -8,6 +8,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class GameFileDetailsTest {
 
     @Test
+    void shouldEnqueue() {
+        GameFileDetails gameFileDetails = discoveredFileDetails().build();
+
+        gameFileDetails.enqueue();
+
+        assertEquals(FileBackupStatus.ENQUEUED, gameFileDetails.getBackupDetails().getStatus());
+    }
+
+    @Test
     void shouldFail() {
         GameFileDetails gameFileDetails = discoveredFileDetails().build();
 
