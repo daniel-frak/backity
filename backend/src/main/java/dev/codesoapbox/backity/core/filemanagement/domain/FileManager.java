@@ -28,4 +28,5 @@ public interface FileManager {
 
     String getSeparator();
 
+    long getSizeInBytes(String filePath);
 }

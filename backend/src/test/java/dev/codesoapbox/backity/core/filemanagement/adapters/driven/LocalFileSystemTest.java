@@ -9,7 +9,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 class LocalFileSystemTest {
 
@@ -29,7 +30,7 @@ class LocalFileSystemTest {
         var result = localFileSystem.isEnoughFreeSpaceOnDisk(sizeInBytes,
                 tempDir.toString());
 
-        assertTrue(result);
+        assertThat(result).isTrue();
     }
 
     @Test
@@ -38,7 +39,7 @@ class LocalFileSystemTest {
 
         var result = localFileSystem.isEnoughFreeSpaceOnDisk(usableSpace, tempDir.toString());
 
-        assertTrue(result);
+        assertThat(result).isTrue();
     }
 
     @Test
@@ -49,7 +50,7 @@ class LocalFileSystemTest {
         var result = localFileSystem.isEnoughFreeSpaceOnDisk(sizeInBytes,
                 tempDir.toString());
 
-        assertFalse(result);
+        assertThat(result).isFalse();
     }
 
     @Test
@@ -58,7 +59,7 @@ class LocalFileSystemTest {
 
         localFileSystem.createDirectories(path);
 
-        assertTrue(new File(path).exists());
+        assertThat(new File(path).exists()).isTrue();
     }
 
     @Test
@@ -67,10 +68,11 @@ class LocalFileSystemTest {
         String newFileName = "newFileName";
         var fileCreated = new File(originalFilePath).createNewFile();
 
-        localFileSystem.renameFileAddingSuffixIfExists(originalFilePath, newFileName);
+        String result = localFileSystem.renameFileAddingSuffixIfExists(originalFilePath, newFileName);
 
-        assertTrue(fileCreated);
-        assertTrue(new File(tempDir + File.separator + newFileName).exists());
+        assertThat(fileCreated).isTrue();
+        assertThat(new File(tempDir + File.separator + newFileName).exists()).isTrue();
+        assertThat(result).isEqualTo(tempDir + File.separator + newFileName);
     }
 
     @Test
@@ -84,10 +86,10 @@ class LocalFileSystemTest {
 
         localFileSystem.renameFileAddingSuffixIfExists(originalFilePath, newFileName);
 
-        assertTrue(existingFile1Created);
-        assertTrue(existingFile2Created);
-        assertTrue(fileToRenameCreated);
-        assertTrue(new File(tempDir + File.separator + newFileName + "_2").exists());
+        assertThat(existingFile1Created).isTrue();
+        assertThat(existingFile2Created).isTrue();
+        assertThat(fileToRenameCreated).isTrue();
+        assertThat(new File(tempDir + File.separator + newFileName + "_2").exists()).isTrue();
     }
 
     @Test
@@ -103,11 +105,11 @@ class LocalFileSystemTest {
 
         localFileSystem.renameFileAddingSuffixIfExists(originalFilePath, newFileNameWithExtension);
 
-        assertTrue(existingFile1Created);
-        assertTrue(existingFile2Created);
-        assertTrue(fileToRenameCreated);
-        assertTrue(new File(tempDir + File.separator + newFileNameWithoutExtension + "_2" + extension)
-                .exists());
+        assertThat(existingFile1Created).isTrue();
+        assertThat(existingFile2Created).isTrue();
+        assertThat(fileToRenameCreated).isTrue();
+        assertThat(new File(tempDir + File.separator + newFileNameWithoutExtension + "_2" + extension)
+                .exists()).isTrue();
     }
 
     @Test
@@ -120,14 +122,15 @@ class LocalFileSystemTest {
 
         var fileExists = Files.exists(Path.of(filePath));
 
-        assertTrue(existingFileCreated);
-        assertFalse(fileExists);
+        assertThat(existingFileCreated).isTrue();
+        assertThat(fileExists).isFalse();
     }
 
     @Test
     void shouldNotDeleteIfDoesNotExist(@TempDir Path tempDir) {
         String filePath = tempDir + File.separator + "someFile";
 
-        assertDoesNotThrow(() -> localFileSystem.deleteIfExists(filePath));
+        assertThatCode(() -> localFileSystem.deleteIfExists(filePath))
+                .doesNotThrowAnyException();
     }
 }

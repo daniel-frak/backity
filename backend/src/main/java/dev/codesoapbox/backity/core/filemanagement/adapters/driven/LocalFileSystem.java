@@ -75,6 +75,12 @@ public class LocalFileSystem implements FileManager {
         return File.separator;
     }
 
+    @Override
+    public long getSizeInBytes(String filePath) {
+        var file = new File(filePath);
+        return file.length();
+    }
+
     private String extractDirectory(String path) {
         return path.substring(0, path.lastIndexOf(File.separator));
     }

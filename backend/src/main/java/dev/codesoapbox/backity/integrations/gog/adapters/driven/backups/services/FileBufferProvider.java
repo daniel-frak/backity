@@ -6,6 +6,5 @@ import reactor.core.publisher.Flux;
 
 public interface FileBufferProvider {
 
-    Flux<DataBuffer> getFileBuffer(String gameFileUrl,
-                                   BackupProgress progress);
+    Flux<DataBuffer> getFileBuffer(String gameFileUrl, BackupProgress progress);
 }

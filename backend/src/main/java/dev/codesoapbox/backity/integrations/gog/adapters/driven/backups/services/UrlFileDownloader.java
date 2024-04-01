@@ -11,8 +11,6 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import reactor.core.publisher.Flux;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.function.Consumer;
@@ -48,18 +46,16 @@ public class UrlFileDownloader {
                     .write(dataBufferFlux, progress.getTrackedOutputStream(outputStream))
                     .map(DataBufferUtils::release)
                     .blockLast();
-        } catch (FileNotFoundException e) {
-            throw new FileBackupException("Unable to create file", e);
         } finally {
             progress.unsubscribeFromProgress(progressInfoConsumer);
         }
     }
 
-    private void validateDownloadedFileSize(String tempFilePath, long sizeInBytes) {
-        File downloadedFile = new File(tempFilePath);
-        if (downloadedFile.length() != sizeInBytes) {
-            throw new FileBackupException("The downloaded size of " + tempFilePath + " is not what was expected ("
-                    + downloadedFile.length() + " vs " + sizeInBytes + ")");
+    private void validateDownloadedFileSize(String tempFilePath, long expectedSizeInBytes) {
+        long sizeInBytesOnDisk = fileManager.getSizeInBytes(tempFilePath);
+        if (sizeInBytesOnDisk != expectedSizeInBytes) {
+            throw new FileBackupException("The downloaded size of " + tempFilePath + " is not what was expected (was "
+                    + sizeInBytesOnDisk + ", expected " + expectedSizeInBytes + ")");
         } else {
             log.info("Filesize check for {} passed successfully", tempFilePath);
         }
