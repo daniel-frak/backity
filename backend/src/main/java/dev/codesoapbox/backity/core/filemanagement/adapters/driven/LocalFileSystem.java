@@ -35,12 +35,10 @@ public class LocalFileSystem implements FileManager {
     }
 
     private String getUniqueFileName(String directory, String fileName) {
-        StringBuilder baseName = new StringBuilder(getBaseName(fileName));
-        String targetBaseName = baseName.toString();
+        String baseName = getBaseName(fileName);
+        String targetBaseName = baseName;
         String extension = "";
-        if (baseName.length() < fileName.length()) {
-            extension = fileName.substring(baseName.length());
-        }
+        extension = fileName.substring(baseName.length());
         int counter = 1;
 
         while (Files.exists(Paths.get(directory + getSeparator() + targetBaseName + extension))) {
