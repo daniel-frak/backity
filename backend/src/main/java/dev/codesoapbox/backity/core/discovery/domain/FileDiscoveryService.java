@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.domain;
 
+import dev.codesoapbox.backity.DoNotMutate;
 import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryStatus;
 import dev.codesoapbox.backity.core.game.domain.Game;
@@ -72,12 +73,15 @@ public class FileDiscoveryService {
     class CompletedFileDiscoveryHandler {
 
         BiConsumer<Void, Throwable> handle(SourceFileDiscoveryService discoveryService) {
-            return (v, e) -> {
-                if (e != null) {
-                    log.error("An exception occurred while running file discovery", e);
-                }
-                changeDiscoveryStatus(discoveryService, false);
-            };
+            return (v, e) -> handle(discoveryService, e);
+        }
+
+        @DoNotMutate // Due to logging logic (difficult to test)
+        private void handle(SourceFileDiscoveryService discoveryService, Throwable e) {
+            if (e != null) {
+                log.error("An exception occurred while running file discovery", e);
+            }
+            changeDiscoveryStatus(discoveryService, false);
         }
 
     }

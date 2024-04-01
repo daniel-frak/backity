@@ -65,7 +65,7 @@ class FileDiscoveryServiceTest {
     }
 
     @Test
-    void CompletedFileDiscoveryHandlerShouldLogExceptionAndChangeStatusOnFailure() {
+    void completedFileDiscoveryHandlerShouldChangeStatusOnFailure() {
         FileDiscoveryService.CompletedFileDiscoveryHandler handler =
                 fileDiscoveryService.getCompletedFileDiscoveryHandler();
 
