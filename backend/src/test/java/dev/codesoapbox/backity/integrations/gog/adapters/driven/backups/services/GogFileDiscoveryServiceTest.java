@@ -106,7 +106,7 @@ class GogFileDiscoveryServiceTest {
         List<SourceFileDetails> gameFileVersionBackups = new ArrayList<>();
         gogFileDiscoveryService.startFileDiscovery(gameFileVersionBackups::add);
 
-        assertThat(gameFileVersionBackups.size()).isZero();
+        assertThat(gameFileVersionBackups).isEmpty();
         verify(gogEmbedClient, never()).getGameDetails(any());
     }
 

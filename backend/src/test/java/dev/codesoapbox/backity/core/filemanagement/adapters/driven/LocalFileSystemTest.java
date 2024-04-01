@@ -59,7 +59,7 @@ class LocalFileSystemTest {
 
         localFileSystem.createDirectories(path);
 
-        assertThat(new File(path).exists()).isTrue();
+        assertThat(new File(path)).exists();
     }
 
     @Test
@@ -71,7 +71,7 @@ class LocalFileSystemTest {
         String result = localFileSystem.renameFileAddingSuffixIfExists(originalFilePath, newFileName);
 
         assertThat(fileCreated).isTrue();
-        assertThat(new File(tempDir + File.separator + newFileName).exists()).isTrue();
+        assertThat(new File(tempDir + File.separator + newFileName)).exists();
         assertThat(result).isEqualTo(tempDir + File.separator + newFileName);
     }
 
@@ -89,7 +89,7 @@ class LocalFileSystemTest {
         assertThat(existingFile1Created).isTrue();
         assertThat(existingFile2Created).isTrue();
         assertThat(fileToRenameCreated).isTrue();
-        assertThat(new File(tempDir + File.separator + newFileName + "_2").exists()).isTrue();
+        assertThat(new File(tempDir + File.separator + newFileName + "_2")).exists();
     }
 
     @Test
@@ -108,8 +108,8 @@ class LocalFileSystemTest {
         assertThat(existingFile1Created).isTrue();
         assertThat(existingFile2Created).isTrue();
         assertThat(fileToRenameCreated).isTrue();
-        assertThat(new File(tempDir + File.separator + newFileNameWithoutExtension + "_2" + extension)
-                .exists()).isTrue();
+        assertThat(new File(tempDir + File.separator + newFileNameWithoutExtension + "_2" + extension))
+                .exists();
     }
 
     @Test
