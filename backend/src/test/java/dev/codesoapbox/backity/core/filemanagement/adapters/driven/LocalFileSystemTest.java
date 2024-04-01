@@ -4,8 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -132,5 +131,36 @@ class LocalFileSystemTest {
 
         assertThatCode(() -> localFileSystem.deleteIfExists(filePath))
                 .doesNotThrowAnyException();
+    }
+
+    @Test
+    void getOutputStreamShouldReturnValidOutputStream(@TempDir Path tempDir) throws IOException {
+        String filePath = tempDir + File.separator + "someFile";
+        String testData = "Test Data";
+
+        try (OutputStream outputStream = localFileSystem.getOutputStream(filePath)) {
+            outputStream.write(testData.getBytes());
+        }
+
+        assertThatDataWasWrittenToDisk(filePath, testData);
+    }
+
+    private static void assertThatDataWasWrittenToDisk(String filePath, String testData) throws IOException {
+        byte[] readBytes = Files.readAllBytes(Path.of(filePath));
+        String readData = new String(readBytes);
+        assertThat(readData).isEqualTo(testData);
+    }
+
+    @Test
+    void getSizeInBytesShouldReturnCorrectSize(@TempDir Path tempDir) throws IOException {
+        String filePath = tempDir + File.separator + "someFile";
+        String testData = "Test Data";
+        try (var writer = new BufferedWriter(new FileWriter(filePath))) {
+            writer.write(testData);
+        }
+
+        var sizeInBytes = localFileSystem.getSizeInBytes(filePath);
+
+        assertThat(sizeInBytes).isEqualTo(9);
     }
 }
