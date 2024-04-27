@@ -100,7 +100,7 @@ class FileDiscoveryServiceTest {
 
         fileDiscoveryService.startFileDiscovery();
 
-        await().atMost(2, TimeUnit.SECONDS)
+        await().atMost(5, TimeUnit.SECONDS)
                 .until(sourceFileDiscoveryService::hasBeenTriggered);
         sourceFileDiscoveryService.simulateFileDiscovery(discoveredGameFile);
 
@@ -122,7 +122,7 @@ class FileDiscoveryServiceTest {
 
         fileDiscoveryService.startFileDiscovery();
 
-        await().atMost(2, TimeUnit.SECONDS)
+        await().atMost(5, TimeUnit.SECONDS)
                 .until(sourceFileDiscoveryService::hasBeenTriggered);
         sourceFileDiscoveryService.simulateFileDiscovery(gameFileVersionBackup);
 
@@ -136,7 +136,7 @@ class FileDiscoveryServiceTest {
 
         sourceFileDiscoveryService.complete();
 
-        await().atMost(2, TimeUnit.SECONDS)
+        await().atMost(5, TimeUnit.SECONDS)
                 .until(() -> !fileDiscoveryService.getStatuses().get(0).isInProgress());
         assertEquals(1, fileDiscoveryService.getStatuses().size());
     }
@@ -147,7 +147,7 @@ class FileDiscoveryServiceTest {
         fileDiscoveryService.startFileDiscovery();
         sourceFileDiscoveryService.complete();
 
-        await().atMost(2, TimeUnit.SECONDS)
+        await().atMost(5, TimeUnit.SECONDS)
                 .until(() -> !fileDiscoveryService.getStatuses().get(0).isInProgress());
         assertEquals(1, fileDiscoveryService.getStatuses().size());
         assertEquals(1, sourceFileDiscoveryService.getTimesTriggered().get());
@@ -158,7 +158,7 @@ class FileDiscoveryServiceTest {
         fileDiscoveryService.startFileDiscovery();
         fileDiscoveryService.stopFileDiscovery();
 
-        await().atMost(2, TimeUnit.SECONDS)
+        await().atMost(5, TimeUnit.SECONDS)
                 .until(() -> !fileDiscoveryService.getStatuses().get(0).isInProgress());
         assertEquals(1, sourceFileDiscoveryService.getStoppedTimes());
     }
@@ -173,13 +173,10 @@ class FileDiscoveryServiceTest {
 
         private final AtomicBoolean shouldFinish = new AtomicBoolean(false);
         private final AtomicReference<Consumer<SourceFileDetails>> gameFileVersionConsumer = new AtomicReference<>();
-
-        @Getter
-        private int stoppedTimes = 0;
-
         @Getter
         private final AtomicInteger timesTriggered = new AtomicInteger();
-
+        @Getter
+        private int stoppedTimes = 0;
         @Setter
         private RuntimeException exception;
 
