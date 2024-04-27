@@ -1,14 +1,10 @@
 package dev.codesoapbox.backity.core.discovery.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.discovery.config.FileDiscoveryControllerBeanConfig;
 import dev.codesoapbox.backity.core.discovery.domain.FileDiscoveryService;
 import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryStatus;
-import dev.codesoapbox.backity.core.shared.config.jpa.SharedControllerBeanConfig;
+import dev.codesoapbox.backity.core.shared.config.http.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static java.util.Collections.singletonList;
@@ -19,14 +15,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(FileDiscoveryController.class)
-@Import({SharedControllerBeanConfig.class, FileDiscoveryControllerBeanConfig.class})
+@ControllerTest
 class FileDiscoveryControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
     private FileDiscoveryService fileDiscoveryService;
 
     @Test

@@ -1,14 +1,11 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.integrations.gog.config.GogControllerBeanConfig;
+import dev.codesoapbox.backity.core.shared.config.http.ControllerTest;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static java.util.Collections.singletonList;
@@ -18,14 +15,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(GogController.class)
-@Import(GogControllerBeanConfig.class)
+@ControllerTest
 class GogControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
     private GogEmbedClient gogEmbedClient;
 
     @Test

@@ -1,10 +1,9 @@
 package dev.codesoapbox.backity.core.logs.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.logs.domain.services.LogService;
+import dev.codesoapbox.backity.core.shared.config.http.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -15,13 +14,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(LogsController.class)
+@ControllerTest
 class LogsControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
     private LogService logService;
 
     @Test

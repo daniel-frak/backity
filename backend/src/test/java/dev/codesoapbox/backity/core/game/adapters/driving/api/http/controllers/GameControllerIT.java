@@ -2,18 +2,14 @@ package dev.codesoapbox.backity.core.game.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.game.application.GameFacade;
 import dev.codesoapbox.backity.core.game.application.GameWithFiles;
-import dev.codesoapbox.backity.core.game.config.GameControllerBeanConfig;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
-import dev.codesoapbox.backity.core.shared.config.jpa.SharedControllerBeanConfig;
+import dev.codesoapbox.backity.core.shared.config.http.ControllerTest;
 import dev.codesoapbox.backity.core.shared.domain.Page;
 import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
@@ -25,14 +21,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(GameController.class)
-@Import({GameControllerBeanConfig.class, SharedControllerBeanConfig.class})
+@ControllerTest
 class GameControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
     private GameFacade gameFacade;
 
     @Test

@@ -15,7 +15,7 @@ public class PostgresContainerWrapper extends PostgreSQLContainer<PostgresContai
     }
 
     public static PostgresContainerWrapper getContainer() {
-        return new PostgresContainerWrapper("postgres:14.2");
+        return new PostgresContainerWrapper("postgres:16.2");
     }
 
     public void setPostgreSQLProperties(ConfigurableApplicationContext applicationContext) {

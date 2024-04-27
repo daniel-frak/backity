@@ -1,22 +1,17 @@
 package dev.codesoapbox.backity.core.gamefiledetails.adapters.driving.api.http;
 
-import dev.codesoapbox.backity.core.gamefiledetails.adapters.driving.api.http.controllers.GameFileDetailsController;
-import dev.codesoapbox.backity.core.gamefiledetails.config.GameFileDetailsControllerBeanConfig;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.FileBackupStatus;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsId;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsRepository;
-import dev.codesoapbox.backity.core.shared.config.jpa.SharedControllerBeanConfig;
+import dev.codesoapbox.backity.core.shared.config.http.ControllerTest;
 import dev.codesoapbox.backity.core.shared.domain.Page;
 import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
@@ -34,14 +29,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(OutputCaptureExtension.class)
-@WebMvcTest(GameFileDetailsController.class)
-@Import({SharedControllerBeanConfig.class, GameFileDetailsControllerBeanConfig.class})
+@ControllerTest
 class GameFileDetailsControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @Autowired
     private GameFileDetailsRepository gameFileDetailsRepository;
 
     @Test

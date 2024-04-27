@@ -2,15 +2,22 @@ package dev.codesoapbox.backity.testing;
 
 import lombok.AllArgsConstructor;
 
-import java.time.Clock;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
+import java.time.*;
 
 @AllArgsConstructor
 public class FakeClock extends Clock {
 
     private Clock currentClock;
+
+    public static FakeClock at(LocalDate localDate) {
+        ZoneId zoneId = ZoneId.of("UTC");
+        return new FakeClock(Clock.fixed(localDate.atStartOfDay(zoneId).toInstant(), zoneId));
+    }
+
+    public static FakeClock at(LocalDateTime localDateTime) {
+        ZoneId zoneId = ZoneId.of("UTC");
+        return new FakeClock(Clock.fixed(localDateTime.toInstant(ZoneOffset.UTC), zoneId));
+    }
 
     public void moveForward(Duration offsetDuration) {
         currentClock = Clock.offset(currentClock, offsetDuration);
