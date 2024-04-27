@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.logs.adapters.driven.messaging;
 import dev.codesoapbox.backity.core.shared.domain.IncludeInDocumentation;
 import lombok.AllArgsConstructor;
 
+@SuppressWarnings("squid:S6548")
 @IncludeInDocumentation
 @AllArgsConstructor
 public enum LogsMessageTopics {

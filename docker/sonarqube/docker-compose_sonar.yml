@@ -14,7 +14,7 @@ services:
       - internal
 
   # Only used for first-time setup:
-  sonarqube_first_run_setup:
+  sonarqube_first_run_setup_backend:
     image: alpine:$SONAR_CONFIG_ALPINE_LINUX_VERSION
     environment:
       SONAR_URL: $SONAR_URL
@@ -22,8 +22,8 @@ services:
       SONAR_PASSWORD: $SONAR_PASSWORD
     entrypoint: [ "sh", "/docker-entrypoint.sh" ]
     volumes:
-      - ./sonarqube/import_data.sh:/docker-entrypoint.sh:ro
-      - ./sonarqube/java_profile.xml:/java_profile.xml:ro
+      - ./import_data.sh:/docker-entrypoint.sh:ro
+      - ./java_profile.xml:/java_profile.xml:ro
     depends_on:
       - sonarqube
     networks:

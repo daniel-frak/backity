@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <profile>
-    <name>Sonar way (extended)</name>
+    <name>Sonar way (extended) + Mutation</name>
     <language>java</language>
     <rules>
         <rule>
@@ -156,13 +156,6 @@
         </rule>
         <rule>
             <repositoryKey>java</repositoryKey>
-            <key>S1105</key>
-            <type>CODE_SMELL</type>
-            <priority>MINOR</priority>
-            <parameters/>
-        </rule>
-        <rule>
-            <repositoryKey>java</repositoryKey>
             <key>S1107</key>
             <type>CODE_SMELL</type>
             <priority>MINOR</priority>
@@ -186,13 +179,6 @@
             <repositoryKey>java</repositoryKey>
             <key>S1113</key>
             <type>CODE_SMELL</type>
-            <priority>CRITICAL</priority>
-            <parameters/>
-        </rule>
-        <rule>
-            <repositoryKey>java</repositoryKey>
-            <key>S1114</key>
-            <type>BUG</type>
             <priority>CRITICAL</priority>
             <parameters/>
         </rule>
@@ -285,13 +271,6 @@
             <key>S1132</key>
             <type>CODE_SMELL</type>
             <priority>MINOR</priority>
-            <parameters/>
-        </rule>
-        <rule>
-            <repositoryKey>java</repositoryKey>
-            <key>S1133</key>
-            <type>CODE_SMELL</type>
-            <priority>INFO</priority>
             <parameters/>
         </rule>
         <rule>
@@ -592,12 +571,7 @@
             <key>S1191</key>
             <type>CODE_SMELL</type>
             <priority>MAJOR</priority>
-            <parameters>
-                <parameter>
-                    <key>Exclude</key>
-                    <value>com.sun.jersey,com.sun.faces,com.sun.xml.ws</value>
-                </parameter>
-            </parameters>
+            <parameters/>
         </rule>
         <rule>
             <repositoryKey>java</repositoryKey>
@@ -897,18 +871,6 @@
         </rule>
         <rule>
             <repositoryKey>java</repositoryKey>
-            <key>S139</key>
-            <type>CODE_SMELL</type>
-            <priority>MINOR</priority>
-            <parameters>
-                <parameter>
-                    <key>legalTrailingCommentPattern</key>
-                    <value>^\s*+[^\s]++$</value>
-                </parameter>
-            </parameters>
-        </rule>
-        <rule>
-            <repositoryKey>java</repositoryKey>
             <key>S1444</key>
             <type>CODE_SMELL</type>
             <priority>MINOR</priority>
@@ -1022,13 +984,6 @@
             <key>S1607</key>
             <type>CODE_SMELL</type>
             <priority>MAJOR</priority>
-            <parameters/>
-        </rule>
-        <rule>
-            <repositoryKey>java</repositoryKey>
-            <key>S1610</key>
-            <type>CODE_SMELL</type>
-            <priority>MINOR</priority>
             <parameters/>
         </rule>
         <rule>
@@ -1663,13 +1618,6 @@
         </rule>
         <rule>
             <repositoryKey>java</repositoryKey>
-            <key>S2165</key>
-            <type>CODE_SMELL</type>
-            <priority>MINOR</priority>
-            <parameters/>
-        </rule>
-        <rule>
-            <repositoryKey>java</repositoryKey>
             <key>S2166</key>
             <type>CODE_SMELL</type>
             <priority>MAJOR</priority>
@@ -2011,13 +1959,6 @@
         </rule>
         <rule>
             <repositoryKey>java</repositoryKey>
-            <key>S2384</key>
-            <type>CODE_SMELL</type>
-            <priority>MINOR</priority>
-            <parameters/>
-        </rule>
-        <rule>
-            <repositoryKey>java</repositoryKey>
             <key>S2386</key>
             <type>CODE_SMELL</type>
             <priority>MINOR</priority>
@@ -2040,7 +1981,7 @@
         <rule>
             <repositoryKey>java</repositoryKey>
             <key>S2390</key>
-            <type>CODE_SMELL</type>
+            <type>BUG</type>
             <priority>CRITICAL</priority>
             <parameters/>
         </rule>
@@ -2166,13 +2107,6 @@
             <key>S2639</key>
             <type>BUG</type>
             <priority>MAJOR</priority>
-            <parameters/>
-        </rule>
-        <rule>
-            <repositoryKey>java</repositoryKey>
-            <key>S2647</key>
-            <type>VULNERABILITY</type>
-            <priority>CRITICAL</priority>
             <parameters/>
         </rule>
         <rule>
@@ -3168,13 +3102,6 @@
         </rule>
         <rule>
             <repositoryKey>java</repositoryKey>
-            <key>S4792</key>
-            <type>SECURITY_HOTSPOT</type>
-            <priority>CRITICAL</priority>
-            <parameters/>
-        </rule>
-        <rule>
-            <repositoryKey>java</repositoryKey>
             <key>S4830</key>
             <type>VULNERABILITY</type>
             <priority>CRITICAL</priority>
@@ -4115,13 +4042,6 @@
         </rule>
         <rule>
             <repositoryKey>java</repositoryKey>
-            <key>S6374</key>
-            <type>VULNERABILITY</type>
-            <priority>MAJOR</priority>
-            <parameters/>
-        </rule>
-        <rule>
-            <repositoryKey>java</repositoryKey>
             <key>S6376</key>
             <type>VULNERABILITY</type>
             <priority>MAJOR</priority>
@@ -4180,6 +4100,294 @@
         </rule>
         <rule>
             <repositoryKey>java</repositoryKey>
+            <key>S6485</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6539</key>
+            <type>CODE_SMELL</type>
+            <priority>INFO</priority>
+            <parameters>
+                <parameter>
+                    <key>couplingThreshold</key>
+                    <value>20</value>
+                </parameter>
+            </parameters>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6541</key>
+            <type>CODE_SMELL</type>
+            <priority>INFO</priority>
+            <parameters>
+                <parameter>
+                    <key>cyclomaticThreshold</key>
+                    <value>15</value>
+                </parameter>
+                <parameter>
+                    <key>nestingThreshold</key>
+                    <value>3</value>
+                </parameter>
+                <parameter>
+                    <key>noavThreshold</key>
+                    <value>7</value>
+                </parameter>
+                <parameter>
+                    <key>locThreshold</key>
+                    <value>65</value>
+                </parameter>
+            </parameters>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6548</key>
+            <type>CODE_SMELL</type>
+            <priority>INFO</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6804</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6806</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6809</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6810</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6813</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6814</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6816</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6817</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6818</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6829</key>
+            <type>CODE_SMELL</type>
+            <priority>MINOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6830</key>
+            <type>CODE_SMELL</type>
+            <priority>MINOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6831</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6832</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6833</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6837</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6838</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6856</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6857</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6862</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6863</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6876</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6877</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6878</key>
+            <type>CODE_SMELL</type>
+            <priority>MINOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6880</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6881</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6885</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6901</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6905</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6906</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6909</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6912</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6913</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6915</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
+            <key>S6916</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
             <key>S818</key>
             <type>CODE_SMELL</type>
             <priority>MINOR</priority>
@@ -4216,6 +4424,286 @@
             <key>S899</key>
             <type>BUG</type>
             <priority>MINOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.ARGUMENT_PROPAGATION</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.ARGUMENT_PROPAGATION_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.BOOLEAN_FALSE_RETURN</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.BOOLEAN_FALSE_RETURN_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.BOOLEAN_TRUE_RETURN</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.BOOLEAN_TRUE_RETURN_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.CONDITIONALS_BOUNDARY</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.CONDITIONALS_BOUNDARY_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.CONSTRUCTOR_CALLS</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.CONSTRUCTOR_CALLS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.EMPTY_RETURN_VALUES</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.EMPTY_RETURN_VALUES_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.EXPERIMENTAL_MEMBER_VARIABLE</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.EXPERIMENTAL_NAKED_RECEIVER</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.EXPERIMENTAL_REMOVE_INCREMENTS</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.EXPERIMENTAL_REMOVE_SWITCH</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.EXPERIMENTAL_RETURN_VALUES</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.EXPERIMENTAL_SWITCH</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.INCREMENTS</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.INCREMENTS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.INLINE_CONSTS</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.INLINE_CONSTS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.INVERT_NEGS</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.INVERT_NEGS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.MATH</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.MATH_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.NEGATE_CONDITIONALS</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.NEGATE_CONDITIONALS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.NON_VOID_METHOD_CALLS</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.NON_VOID_METHOD_CALLS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.NULL_RETURN_VALUES</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.NULL_RETURN_VALUES_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.PRIMITIVE_RETURN_VALS</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.PRIMITIVE_RETURN_VALS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.REMOVE_CONDITIONALS</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.REMOVE_CONDITIONALS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.RETURN_VALS</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.RETURN_VALS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.VOID_METHOD_CALLS</key>
+            <type>BUG</type>
+            <priority>MAJOR</priority>
+            <parameters/>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.VOID_METHOD_CALLS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
             <parameters/>
         </rule>
     </rules>

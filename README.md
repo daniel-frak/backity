@@ -182,33 +182,25 @@ within Sonar.
 To start a local instance of SonarQube, use the following command in the root of this repository:
 
 ```shell
-docker-compose -f docker/docker-compose_sonar.yml --env-file docker/.env up -d
+docker-compose -f docker/sonarqube/docker-compose_sonar.yml --env-file docker/sonarqube/.env up -d
 ```
 
 You should only need to do this once.
 
+Note that the first run may take a while before SonarQube is fully configured - you may want to check the Docker logs
+for `sonarqube_first_run_setup_backend` to confirm whether the setup is finished successfully. 
+
 The Java analysis profile is stored in `docker/sonarqube/java_profile.xml` and is automatically restored when first
 launching the Docker instance.
 
-The SonarQube instance will become available at http://localhost:9000. The default credentials are:
+The quality gate is defined in an init script (`docker/sonarqube/import_data.sh`) and is automatically restored when 
+first launching the Docker instance.
 
-- User: admin
-- Password: admin
+The imported profile and quality gate are set as default.
 
-To disable authentication, log in to the SonarQube instance, then:
+Authentication is disabled by default.
 
-1. Go to `Administration`.
-2. Go to `Configuration`.
-3. Go to the `Security` tab (on the sidebar).
-4. Disable `Force user authentication`.
-5. Click `save`.
-6. Click on `Security`➝`Global permissions` (on the top bar).
-7. Toggle `Execute analysis` to ON for `Anyone`.
-8. Toggle `Create projects` to ON for `Anyone`.
-
-You can also
-[generate a token](https://docs.sonarqube.org/latest/user-guide/user-account/generating-and-using-tokens/#generating-a-token)
-and use it as the value of `sonar.login` (omitting `sonar.password` entirely) when performing analysis.
+The SonarQube instance will become available at http://localhost:9000.
 
 ### Full analysis
 
@@ -216,7 +208,7 @@ You can run analysis for the **whole project** (both backend and frontend) by ru
 the root of this repository:
 
 ```shell
-mvn clean verify sonar:sonar -Pfrontend-pre-sonar
+mvn clean verify sonar:sonar -Pfrontend-pre-sonar -Ppitest-full
 ```
 
 ### Backend analysis
@@ -225,7 +217,7 @@ You can run a separate analysis for the **backend** module:
 
 ```shell
 cd backend
-mvn clean verify sonar:sonar
+mvn clean verify sonar:sonar -Ppitest-full
 ```
 
 ### Frontend analysis
