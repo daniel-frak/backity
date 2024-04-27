@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Transactional(readOnly=true)
 @RequiredArgsConstructor
 public class GameJpaRepository implements GameRepository {
 
@@ -32,14 +33,12 @@ public class GameJpaRepository implements GameRepository {
         springRepository.save(entity);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Optional<Game> findByTitle(String title) {
         return springRepository.findByTitle(title)
                 .map(entityMapper::toDomain);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Optional<Game> findById(GameId id) {
         return springRepository.findById(id.value())

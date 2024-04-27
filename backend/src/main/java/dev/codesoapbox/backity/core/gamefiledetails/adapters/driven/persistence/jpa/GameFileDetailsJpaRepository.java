@@ -13,10 +13,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Transactional(readOnly=true)
 @RequiredArgsConstructor
 public class GameFileDetailsJpaRepository implements GameFileDetailsRepository {
 
@@ -43,6 +45,7 @@ public class GameFileDetailsJpaRepository implements GameFileDetailsRepository {
         return pageMapper.toDomain(foundPage, entityMapper::toModel);
     }
 
+    @Transactional
     @Override
     public GameFileDetails save(GameFileDetails gameFileDetails) {
         GameFileDetailsJpaEntity entity = entityMapper.toEntity(gameFileDetails);
