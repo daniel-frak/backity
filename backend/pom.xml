@@ -236,8 +236,8 @@
                             <!-- Enable parallel test execution: -->
                             junit.jupiter.execution.parallel.enabled=true
 
-                            <!-- Execute tests within class in parallel: -->
-                            junit.jupiter.execution.parallel.mode.default=concurrent
+                            <!-- Execute tests within class on same thread: -->
+                            junit.jupiter.execution.parallel.mode.default=same_thread
 
                             <!-- Execute test classes in parallel: -->
                             junit.jupiter.execution.parallel.mode.classes.default=concurrent
