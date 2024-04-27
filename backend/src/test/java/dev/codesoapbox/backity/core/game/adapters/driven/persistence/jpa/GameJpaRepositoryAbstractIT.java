@@ -1,9 +1,7 @@
 package dev.codesoapbox.backity.core.game.adapters.driven.persistence.jpa;
 
-import dev.codesoapbox.backity.core.game.config.GameJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
-import dev.codesoapbox.backity.core.shared.config.jpa.SharedJpaRepositoryConfig;
 import dev.codesoapbox.backity.core.shared.domain.Page;
 import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import org.hibernate.exception.ConstraintViolationException;
@@ -11,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -24,18 +21,8 @@ import static dev.codesoapbox.backity.core.game.domain.TestGame.aGame;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@Import({SharedJpaRepositoryConfig.class, GameJpaRepositoryBeanConfig.class})
 @Transactional
 abstract class GameJpaRepositoryAbstractIT {
-
-    @Autowired
-    private GameJpaRepository jpaRepository;
-
-    @Autowired
-    private TestEntityManager entityManager;
-
-    @Autowired
-    private GameJpaEntityMapper entityMapper;
 
     private static final Supplier<Game> GAME_1 = () -> aGame()
             .withId(new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5")))
@@ -51,6 +38,15 @@ abstract class GameJpaRepositoryAbstractIT {
             .withId(new GameId(UUID.fromString("a811e5ad-f964-47de-a3fe-73f276918970")))
             .withTitle("Test Game 3")
             .build();
+
+    @Autowired
+    private GameJpaRepository jpaRepository;
+
+    @Autowired
+    private TestEntityManager entityManager;
+
+    @Autowired
+    private GameJpaEntityMapper entityMapper;
 
     @BeforeEach
     void setUp() {

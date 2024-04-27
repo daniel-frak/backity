@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class SharedJpaRepositoryConfig {
+public class SharedJpaRepositoryBeanConfig {
 
     @Bean
     public PageEntityMapper pageEntityMapper() {

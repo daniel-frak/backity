@@ -1,10 +1,8 @@
 package dev.codesoapbox.backity.core.gamefiledetails.adapters.driven.persistence.jpa;
 
 import dev.codesoapbox.backity.core.game.domain.GameId;
-import dev.codesoapbox.backity.core.gamefiledetails.config.GameFileDetailsJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsId;
-import dev.codesoapbox.backity.core.shared.config.jpa.SharedJpaRepositoryConfig;
 import dev.codesoapbox.backity.core.shared.domain.Page;
 import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,7 +11,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -26,18 +23,8 @@ import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDe
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Import({SharedJpaRepositoryConfig.class, GameFileDetailsJpaRepositoryBeanConfig.class})
 @Transactional
 abstract class GameFileDetailsJpaRepositoryAbstractIT {
-
-    @Autowired
-    protected GameFileDetailsJpaRepository gameFileVersionJpaRepository;
-
-    @Autowired
-    protected TestEntityManager entityManager;
-
-    @Autowired
-    protected GameFileDetailsJpaEntityMapper entityMapper;
 
     private static final Supplier<GameFileDetails> GAME_FILE_DETAILS_1 = () -> enqueuedFileDetails()
             .id(new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")))
@@ -68,6 +55,15 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
             .id(new GameFileDetailsId(UUID.fromString("3d65af79-a558-4f23-88bd-3c04e977e63f")))
             .gameId(new GameId(UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281")))
             .build();
+
+    @Autowired
+    protected GameFileDetailsJpaRepository gameFileVersionJpaRepository;
+
+    @Autowired
+    protected TestEntityManager entityManager;
+
+    @Autowired
+    protected GameFileDetailsJpaEntityMapper entityMapper;
 
     @BeforeEach
     void setUp() {

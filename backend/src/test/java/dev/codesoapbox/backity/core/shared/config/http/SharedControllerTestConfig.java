@@ -17,7 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.context.annotation.Import;
 
 /**
- * Motivation for the class:
+ * <h1>Motivation for the class</h1>
  * <p>
  * While creating an application context for controller tests does not take a long time, it can lead to the context
  * cache filling up and evicting other, more expensive contexts (such as those for testing repositories).

@@ -16,6 +16,6 @@ import java.lang.annotation.Target;
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@RepositoryTest
+@JpaRepositoryTest
 public @interface H2RepositoryTest {
 }
