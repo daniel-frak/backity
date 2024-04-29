@@ -9,6 +9,8 @@ import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsReposi
 import dev.codesoapbox.backity.core.gamefiledetails.domain.SourceFileDetails;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,8 +23,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -30,9 +32,9 @@ import java.util.function.Consumer;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+@Slf4j
 @ExtendWith(MockitoExtension.class)
 class FileDiscoveryServiceTest {
 
@@ -56,12 +58,18 @@ class FileDiscoveryServiceTest {
                 gameRepository, fileRepository, messageService);
     }
 
+    @AfterEach
+    void tearDown() {
+        // Manually finish file discovery to prevent thread starvation
+        sourceFileDiscoveryService.finishLatch.countDown();
+    }
+
     @Test
     void shouldStartFileDiscovery() {
         fileDiscoveryService.startFileDiscovery();
 
         assertThat(fileDiscoveryService.getStatuses().size()).isOne();
-        assertTrue(fileDiscoveryService.getStatuses().get(0).isInProgress());
+        assertThat(fileDiscoveryService.getStatuses().getFirst().isInProgress()).isTrue();
     }
 
     @Test
@@ -72,7 +80,7 @@ class FileDiscoveryServiceTest {
         handler.handle(sourceFileDiscoveryService).accept(null, new RuntimeException("test exception"));
 
         assertThat(fileDiscoveryService.getStatuses().size()).isOne();
-        assertFalse(fileDiscoveryService.getStatuses().get(0).isInProgress());
+        assertThat(fileDiscoveryService.getStatuses().get(0).isInProgress()).isFalse();
     }
 
     @Test
@@ -100,7 +108,7 @@ class FileDiscoveryServiceTest {
 
         fileDiscoveryService.startFileDiscovery();
 
-        await().atMost(5, TimeUnit.SECONDS)
+        await().atMost(2, TimeUnit.SECONDS)
                 .until(sourceFileDiscoveryService::hasBeenTriggered);
         sourceFileDiscoveryService.simulateFileDiscovery(discoveredGameFile);
 
@@ -108,7 +116,7 @@ class FileDiscoveryServiceTest {
         verify(fileRepository).save(gameFileDetailsArgumentCaptor.capture());
         gameFileDetails.setId(gameFileDetailsArgumentCaptor.getValue().getId());
         verify(messageService).sendFileDiscoveredMessage(gameFileDetails);
-        assertEquals(1, progressList.size());
+        assertThat(progressList.size()).isOne();
     }
 
     @Test
@@ -122,7 +130,7 @@ class FileDiscoveryServiceTest {
 
         fileDiscoveryService.startFileDiscovery();
 
-        await().atMost(5, TimeUnit.SECONDS)
+        await().atMost(2, TimeUnit.SECONDS)
                 .until(sourceFileDiscoveryService::hasBeenTriggered);
         sourceFileDiscoveryService.simulateFileDiscovery(gameFileVersionBackup);
 
@@ -136,9 +144,9 @@ class FileDiscoveryServiceTest {
 
         sourceFileDiscoveryService.complete();
 
-        await().atMost(5, TimeUnit.SECONDS)
-                .until(() -> !fileDiscoveryService.getStatuses().get(0).isInProgress());
-        assertEquals(1, fileDiscoveryService.getStatuses().size());
+        await().atMost(2, TimeUnit.SECONDS)
+                .until(() -> !fileDiscoveryService.getStatuses().getFirst().isInProgress());
+        assertThat(fileDiscoveryService.getStatuses().size()).isOne();
     }
 
     @Test
@@ -146,11 +154,11 @@ class FileDiscoveryServiceTest {
         fileDiscoveryService.startFileDiscovery();
         fileDiscoveryService.startFileDiscovery();
         sourceFileDiscoveryService.complete();
+        await().atMost(2, TimeUnit.SECONDS)
+                .until(() -> !fileDiscoveryService.getStatuses().getFirst().isInProgress());
 
-        await().atMost(5, TimeUnit.SECONDS)
-                .until(() -> !fileDiscoveryService.getStatuses().get(0).isInProgress());
-        assertEquals(1, fileDiscoveryService.getStatuses().size());
-        assertEquals(1, sourceFileDiscoveryService.getTimesTriggered().get());
+        assertThat(fileDiscoveryService.getStatuses().size()).isOne();
+        assertThat(sourceFileDiscoveryService.getTimesTriggered().get()).isOne();
     }
 
     @Test
@@ -158,25 +166,28 @@ class FileDiscoveryServiceTest {
         fileDiscoveryService.startFileDiscovery();
         fileDiscoveryService.stopFileDiscovery();
 
-        await().atMost(5, TimeUnit.SECONDS)
-                .until(() -> !fileDiscoveryService.getStatuses().get(0).isInProgress());
-        assertEquals(1, sourceFileDiscoveryService.getStoppedTimes());
+        await().atMost(2, TimeUnit.SECONDS)
+                .until(() -> !fileDiscoveryService.getStatuses().getFirst().isInProgress());
+        assertThat(sourceFileDiscoveryService.getStoppedTimes()).isOne();
     }
 
     @Test
     void shouldNotStopFileDiscoveryIfAlreadyStopped() {
         fileDiscoveryService.stopFileDiscovery();
-        assertEquals(0, sourceFileDiscoveryService.getStoppedTimes());
+        assertThat(sourceFileDiscoveryService.getStoppedTimes()).isZero();
     }
 
     private static class FakeSourceFileDiscoveryService implements SourceFileDiscoveryService {
 
-        private final AtomicBoolean shouldFinish = new AtomicBoolean(false);
+        private final CountDownLatch finishLatch = new CountDownLatch(1);
         private final AtomicReference<Consumer<SourceFileDetails>> gameFileVersionConsumer = new AtomicReference<>();
+
         @Getter
         private final AtomicInteger timesTriggered = new AtomicInteger();
+
         @Getter
         private int stoppedTimes = 0;
+
         @Setter
         private RuntimeException exception;
 
@@ -189,7 +200,7 @@ class FileDiscoveryServiceTest {
         }
 
         public void complete() {
-            shouldFinish.set(true);
+            finishLatch.countDown();
         }
 
         @Override
@@ -197,7 +208,6 @@ class FileDiscoveryServiceTest {
             return "someSource";
         }
 
-        @SuppressWarnings("StatementWithEmptyBody")
         @Override
         public void startFileDiscovery(Consumer<SourceFileDetails> gameFileVersionConsumer) {
             if (exception != null) {
@@ -206,15 +216,20 @@ class FileDiscoveryServiceTest {
             this.gameFileVersionConsumer.set(gameFileVersionConsumer);
             timesTriggered.incrementAndGet();
 
-            while (!shouldFinish.get()) {
-                // Do nothing
+            try {
+                finishLatch.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.error("File discovery interrupted", e);
             }
+
+            log.info("Finished file discovery");
         }
 
         @Override
         public void stopFileDiscovery() {
             stoppedTimes++;
-            shouldFinish.set(true);
+            finishLatch.countDown();
         }
 
         @Override

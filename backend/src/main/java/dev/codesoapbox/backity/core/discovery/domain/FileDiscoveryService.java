@@ -83,7 +83,6 @@ public class FileDiscoveryService {
             }
             changeDiscoveryStatus(discoveryService, false);
         }
-
     }
 
     private boolean alreadyInProgress(SourceFileDiscoveryService discoveryService) {
@@ -91,6 +90,7 @@ public class FileDiscoveryService {
     }
 
     private void changeDiscoveryStatus(SourceFileDiscoveryService discoveryService, boolean status) {
+        log.info("Changing discovery status of {} to {}" , discoveryService.getSource(), status);
         discoveryStatuses.put(discoveryService.getSource(), status);
         sendDiscoveryStatusMessage(discoveryService, status);
     }
