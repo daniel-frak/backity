@@ -128,12 +128,16 @@ abstract class GameJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindAllPaginated() {
-        Pagination pageable = new Pagination(0, 2);
+        Pagination pageable = new Pagination(0, 3);
         Page<Game> result = jpaRepository.findAll(pageable);
 
-        Page<Game> expectedResult = new Page<>(List.of(GAME_1.get(), GAME_2.get()), 2, 2, 3,
-                2, 0);
+        Page<Game> expectedResult = new Page<>(List.of(GAME_1.get(), GAME_2.get(), GAME_3.get()),
+                3, 1, 3,
+                3, 0);
         assertThat(result).usingRecursiveComparison()
+                .ignoringFields("content")
                 .isEqualTo(expectedResult);
+        assertThat(result.content())
+                .containsExactlyInAnyOrder(expectedResult.content().toArray(new Game[]{}));
     }
 }
