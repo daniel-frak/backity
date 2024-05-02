@@ -14,8 +14,7 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Named.named;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -41,19 +40,19 @@ class IncrementalProgressTrackerTest {
     @Test
     void shouldIncrementAndGetCorrectPercentage() {
         tracker.increment();
-        assertEquals(10, tracker.getProgressInfo().percentage());
+        assertThat(tracker.getProgressInfo().percentage()).isEqualTo(10);
     }
 
     @Test
     void shouldIncrementByAndGetCorrectPercentage() {
         tracker.incrementBy(2L);
-        assertEquals(20, tracker.getProgressInfo().percentage());
+        assertThat(tracker.getProgressInfo().percentage()).isEqualTo(20);
     }
 
     @Test
     void shouldNotIncrementByPastTotalElements() {
         tracker.incrementBy(20L);
-        assertEquals(100, tracker.getProgressInfo().percentage());
+        assertThat(tracker.getProgressInfo().percentage()).isEqualTo(100);
     }
 
     @Test
@@ -61,7 +60,7 @@ class IncrementalProgressTrackerTest {
         for (int i = 0; i < 20; i++) {
             tracker.increment();
         }
-        assertEquals(100, tracker.getProgressInfo().percentage());
+        assertThat(tracker.getProgressInfo().percentage()).isEqualTo(100);
     }
 
     @ParameterizedTest(name = "when {0}")
@@ -72,15 +71,15 @@ class IncrementalProgressTrackerTest {
         tracker.incrementBy(trackerIncrement);
         ProgressInfo progressInfo = tracker.getProgressInfo();
 
-        assertEquals(expectedPercentage, progressInfo.percentage());
-        assertEquals(Duration.of(expectedSecondsLeft, ChronoUnit.SECONDS), progressInfo.timeLeft());
+        assertThat(progressInfo.percentage()).isEqualTo(expectedPercentage);
+        assertThat(progressInfo.timeLeft()).isEqualTo(Duration.of(expectedSecondsLeft, ChronoUnit.SECONDS));
     }
 
     @Test
     void getProgressInfoShouldShowNoProgressWhenNeverIncremented() {
         ProgressInfo progressInfo = tracker.getProgressInfo();
 
-        assertEquals(0, progressInfo.percentage());
-        assertNull(progressInfo.timeLeft());
+        assertThat(progressInfo.percentage()).isZero();
+        assertThat(progressInfo.timeLeft()).isNull();
     }
 }

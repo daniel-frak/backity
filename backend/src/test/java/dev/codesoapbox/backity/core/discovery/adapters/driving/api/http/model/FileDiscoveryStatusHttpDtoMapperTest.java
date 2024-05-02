@@ -4,8 +4,7 @@ import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryStatu
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class FileDiscoveryStatusHttpDtoMapperTest {
 
@@ -18,7 +17,7 @@ class FileDiscoveryStatusHttpDtoMapperTest {
 
         var result = MAPPER.toDto(domain);
 
-        assertEquals("someSource", result.source());
-        assertTrue(result.isInProgress());
+        assertThat(result.source()).isEqualTo("someSource");
+        assertThat(result.isInProgress()).isTrue();
     }
 }

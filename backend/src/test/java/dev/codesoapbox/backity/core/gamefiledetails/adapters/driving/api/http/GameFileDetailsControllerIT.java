@@ -20,8 +20,7 @@ import java.util.UUID;
 import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.discoveredFileDetails;
 import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.fullFileDetails;
 import static java.util.Collections.singletonList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -225,7 +224,7 @@ class GameFileDetailsControllerIT {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        assertEquals(FileBackupStatus.ENQUEUED, gameFileDetails.getBackupDetails().getStatus());
+        assertThat(gameFileDetails.getBackupDetails().getStatus()).isEqualTo(FileBackupStatus.ENQUEUED);
         verify(gameFileDetailsRepository).save(gameFileDetails);
     }
 
@@ -241,7 +240,7 @@ class GameFileDetailsControllerIT {
                 .andExpect(status().isBadRequest());
 
         verify(gameFileDetailsRepository, never()).save(any());
-        assertTrue(capturedOutput.getOut().contains(
-                "Could not enqueue file. Game file version not found: acde26d7-33c7-42ee-be16-bca91a604b48"));
+        assertThat(capturedOutput.getOut()).contains(
+                "Could not enqueue file. Game file version not found: acde26d7-33c7-42ee-be16-bca91a604b48");
     }
 }

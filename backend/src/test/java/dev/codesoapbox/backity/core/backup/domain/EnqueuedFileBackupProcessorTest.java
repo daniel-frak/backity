@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.discoveredFileDetails;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,7 +49,7 @@ class EnqueuedFileBackupProcessorTest {
         verify(messageService).sendBackupStarted(gameFileDetails);
         verify(fileBackupService).backUpGameFile(gameFileDetails);
         verify(messageService).sendBackupFinished(gameFileDetails);
-        assertNull(enqueuedFileBackupProcessor.enqueuedFileBackupReference.get());
+        assertThat(enqueuedFileBackupProcessor.enqueuedFileBackupReference.get()).isNull();
         assertThat(gameFileDetailsWasKeptAsReferenceDuringProcessing).isTrue();
     }
 

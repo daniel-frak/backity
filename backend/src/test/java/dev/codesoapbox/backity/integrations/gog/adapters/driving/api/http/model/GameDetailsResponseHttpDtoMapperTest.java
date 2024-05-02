@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import static java.util.Collections.singletonList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class GameDetailsResponseHttpDtoMapperTest {
 
@@ -15,31 +15,46 @@ class GameDetailsResponseHttpDtoMapperTest {
 
     @Test
     void shouldMapToDto() {
-        var domain = new GameDetailsResponse();
-        domain.setTitle("someTitle");
-        domain.setBackgroundImage("someBackgroundImage");
-        domain.setCdKey("someCdKey");
-        domain.setTextInformation("someTextInformation");
-        GameFileDetailsResponse gameFileDetailsResponse = new GameFileDetailsResponse();
-        gameFileDetailsResponse.setVersion("someVersion");
-        gameFileDetailsResponse.setManualUrl("someManualUrl");
-        gameFileDetailsResponse.setName("someName");
-        gameFileDetailsResponse.setFileTitle("someFileTitle");
-        gameFileDetailsResponse.setSize("100 KB");
-        domain.setFiles(singletonList(gameFileDetailsResponse));
-        domain.setChangelog("someChangelog");
+        GameDetailsResponse domain = domainObject();
 
-        var result = MAPPER.toDto(domain);
+        GameDetailsResponseHttpDto result = MAPPER.toDto(domain);
 
-        assertEquals("someTitle", result.title());
-        assertEquals("someBackgroundImage", result.backgroundImage());
-        assertEquals("someCdKey", result.cdKey());
-        assertEquals("someTextInformation", result.textInformation());
-        assertEquals("someVersion", result.files().get(0).version());
-        assertEquals("someManualUrl", result.files().get(0).manualUrl());
-        assertEquals("someName", result.files().get(0).name());
-        assertEquals("someFileTitle", result.files().get(0).fileTitle());
-        assertEquals("100 KB", result.files().get(0).size());
-        assertEquals("someChangelog", result.changelog());
+        GameDetailsResponseHttpDto expectedResult = dto();
+        assertThat(result).usingRecursiveComparison()
+                .isEqualTo(expectedResult);
+    }
+
+    private GameDetailsResponse domainObject() {
+        return new GameDetailsResponse(
+                "someTitle",
+                "someBackgroundImage",
+                "someCdKey",
+                "someTextInformation",
+                singletonList(new GameFileDetailsResponse(
+                        "someVersion",
+                        "someManualUrl",
+                        "someName",
+                        "100 KB",
+                        "someFileTitle"
+                )),
+                "someChangelog"
+        );
+    }
+
+    private GameDetailsResponseHttpDto dto() {
+        return new GameDetailsResponseHttpDto(
+                "someTitle",
+                "someBackgroundImage",
+                "someCdKey",
+                "someTextInformation",
+                singletonList(new GameFileDetailsResponseHttpDto(
+                        "someVersion",
+                        "someManualUrl",
+                        "someName",
+                        "100 KB",
+                        "someFileTitle"
+                )),
+                "someChangelog"
+        );
     }
 }

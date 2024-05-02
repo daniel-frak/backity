@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class FilePathProviderTest {
 
@@ -35,8 +35,8 @@ class FilePathProviderTest {
         String wrongPathTemplate = "one" + wrongSeparator + "two";
         filePathProvider = new FilePathProvider(wrongPathTemplate, fakeUnixFileManager);
 
-        assertEquals("one" + File.separator + "two", filePathProvider.defaultPathTemplate);
-        assertNotEquals(wrongPathTemplate, filePathProvider.defaultPathTemplate);
+        assertThat(filePathProvider.defaultPathTemplate).isEqualTo("one" + File.separator + "two")
+                .isNotEqualTo(wrongPathTemplate);
     }
 
     @Test
@@ -48,8 +48,8 @@ class FilePathProviderTest {
 
         String expectedPath = "/test/someSource/some - GameTitle/" + extractFileName(result);
 
-        assertEquals(expectedPath, result.replace("\\", "/"));
-        assertTrue(fakeUnixFileManager.directoryWasCreated("/test/someSource/some - GameTitle"));
+        assertThat(result.replace("\\", "/")).isEqualTo(expectedPath);
+        assertThat(fakeUnixFileManager.directoryWasCreated("/test/someSource/some - GameTitle")).isTrue();
     }
 
     @Test
@@ -63,9 +63,9 @@ class FilePathProviderTest {
 
         String expectedPath = extractFileName(result);
 
-        assertFalse(result.contains(File.separator));
-        assertEquals(expectedPath, result.replace("\\", "/"));
-        assertFalse(fakeUnixFileManager.anyDirectoriesWereCreated());
+        assertThat(result).doesNotContain(File.separator);
+        assertThat(result.replace("\\", "/")).isEqualTo(expectedPath);
+        assertThat(fakeUnixFileManager.anyDirectoriesWereCreated()).isFalse();
     }
 
     private String extractFileName(String result) {

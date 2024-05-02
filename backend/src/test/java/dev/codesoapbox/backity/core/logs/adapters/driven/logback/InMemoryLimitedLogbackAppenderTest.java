@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class InMemoryLimitedLogbackAppenderTest {
 
@@ -30,7 +30,7 @@ class InMemoryLimitedLogbackAppenderTest {
                 null);
         inMemoryLimitedLogbackAppender.append(loggingEvent);
 
-        assertEquals(loggingEvent, inMemoryLimitedLogbackAppender.getEvents().get(0));
+        assertThat(inMemoryLimitedLogbackAppender.getEvents().get(0)).isEqualTo(loggingEvent);
     }
 
     @Test
@@ -52,7 +52,7 @@ class InMemoryLimitedLogbackAppenderTest {
 
         List<LoggingEvent> expectedEvents = List.of(loggingEvent2, loggingEvent3);
 
-        assertEquals(expectedEvents, inMemoryLimitedLogbackAppender.getEvents());
+        assertThat(inMemoryLimitedLogbackAppender.getEvents()).isEqualTo(expectedEvents);
     }
 
     @Test
@@ -66,6 +66,6 @@ class InMemoryLimitedLogbackAppenderTest {
         inMemoryLimitedLogbackAppender.subscribe(e -> message.set(e.getMessage()));
         inMemoryLimitedLogbackAppender.append(loggingEvent);
 
-        assertEquals(expectedMessage, message.get());
+        assertThat(message.get()).isEqualTo(expectedMessage);
     }
 }

@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.integrations.gog.domain.exceptions;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class GameListRequestFailedExceptionTest {
 
@@ -11,6 +11,8 @@ class GameListRequestFailedExceptionTest {
         var cause = new RuntimeException();
         var exception = new GameListRequestFailedException(cause);
 
-        assertEquals(cause, exception.getCause());
+        Throwable result = exception.getCause();
+
+        assertThat(result).isSameAs(cause);
     }
 }

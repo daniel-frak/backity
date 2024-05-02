@@ -2,16 +2,18 @@ package dev.codesoapbox.backity.integrations.gog.domain.exceptions;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class FileBackupExceptionTest {
 
     @Test
     void shouldGetMessage() {
-        var expectedMessage = "someMessage";
-        var exception = new FileBackupException(expectedMessage);
+        var expectedResult = "someMessage";
+        var exception = new FileBackupException(expectedResult);
 
-        assertEquals(expectedMessage, exception.getMessage());
+        String result = exception.getMessage();
+
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
@@ -20,7 +22,7 @@ class FileBackupExceptionTest {
         var expectedCause = new RuntimeException("someThrowable");
         var exception = new FileBackupException(expectedMessage, expectedCause);
 
-        assertEquals(expectedMessage, exception.getMessage());
-        assertEquals(expectedCause, exception.getCause());
+        assertThat(exception.getMessage()).isEqualTo(expectedMessage);
+        assertThat(exception.getCause()).isEqualTo(expectedCause);
     }
 }

@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
 import org.junit.jupiter.api.Test;
 
 import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.discoveredFileDetails;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class FileBackupFailedExceptionTest {
 
@@ -14,8 +14,8 @@ class FileBackupFailedExceptionTest {
 
         var exception = new FileBackupFailedException(gameFileDetails, null);
 
-        assertEquals("Could not back up game file acde26d7-33c7-42ee-be16-bca91a604b48",
-                exception.getMessage());
+        assertThat(exception.getMessage())
+                .isEqualTo("Could not back up game file acde26d7-33c7-42ee-be16-bca91a604b48");
     }
 
     @Test
@@ -25,6 +25,6 @@ class FileBackupFailedExceptionTest {
 
         var exception = new FileBackupFailedException(gameFileDetails, cause);
 
-        assertEquals(cause, exception.getCause());
+        assertThat(exception.getCause()).isSameAs(cause);
     }
 }

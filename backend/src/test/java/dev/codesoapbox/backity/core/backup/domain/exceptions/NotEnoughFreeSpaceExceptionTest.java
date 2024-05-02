@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.backup.domain.exceptions;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class NotEnoughFreeSpaceExceptionTest {
 
@@ -10,6 +10,9 @@ class NotEnoughFreeSpaceExceptionTest {
     void shouldGetMessage() {
         var exception = new NotEnoughFreeSpaceException("somePath");
 
-        assertEquals("Not enough space left to save: somePath", exception.getMessage());
+        String result = exception.getMessage();
+
+        var expectedResult = "Not enough space left to save: somePath";
+        assertThat(result).isEqualTo(expectedResult);
     }
 }

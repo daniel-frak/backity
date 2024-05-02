@@ -18,9 +18,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
+@SuppressWarnings("LoggingSimilarMessage")
 @Slf4j
 @ExtendWith(MockitoExtension.class)
 class LogbackLogServiceIT {
@@ -82,7 +83,7 @@ class LogbackLogServiceIT {
 
         log.info(logMessage);
 
-        assertEquals(1, logService.getLogs().size());
-        assertEquals(logMessage, logService.getLogs().get(0));
+        assertThat(logService.getLogs().size()).isOne();
+        assertThat(logService.getLogs().getFirst()).isEqualTo(logMessage);
     }
 }

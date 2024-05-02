@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @WireMockTest
 class GogAuthClientIT {
@@ -47,7 +47,7 @@ class GogAuthClientIT {
         var expectedResult = new GogAuthenticationResponse("someAccessToken", "someRefreshToken",
                 3600, "someSessionId", "someUserId");
 
-        assertEquals(expectedResult, result);
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
@@ -69,6 +69,6 @@ class GogAuthClientIT {
         var expectedResult = new GogAuthenticationResponse("someAccessToken", "someRefreshToken",
                 3600, "someSessionId", "someUserId");
 
-        assertEquals(expectedResult, result);
+        assertThat(result).isEqualTo(expectedResult);
     }
 }

@@ -8,7 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,7 +25,7 @@ class GogAuthSpringServiceTest {
     void shouldAuthenticate() {
         authenticateCorrectly(3600);
 
-        assertTrue(gogAuthService.isAuthenticated());
+        assertThat(gogAuthService.isAuthenticated()).isTrue();
     }
 
     private void authenticateCorrectly(int expiresInSeconds) {
@@ -40,14 +41,14 @@ class GogAuthSpringServiceTest {
 
     @Test
     void isAuthenticatedShouldReturnFalseIfAccessTokenMissing() {
-        assertFalse(gogAuthService.isAuthenticated());
+        assertThat(gogAuthService.isAuthenticated()).isFalse();
     }
 
     @Test
     void isAuthenticatedShouldReturnFalseIfAuthenticationExpired() {
         authenticateCorrectly(-1);
 
-        assertFalse(gogAuthService.isAuthenticated());
+        assertThat(gogAuthService.isAuthenticated()).isFalse();
     }
 
     @Test
@@ -62,7 +63,7 @@ class GogAuthSpringServiceTest {
 
         gogAuthService.refresh();
 
-        assertTrue(gogAuthService.isAuthenticated());
+        assertThat(gogAuthService.isAuthenticated()).isTrue();
     }
 
     @Test
@@ -77,40 +78,43 @@ class GogAuthSpringServiceTest {
 
         gogAuthService.refresh("someCustomRefreshToken");
 
-        assertTrue(gogAuthService.isAuthenticated());
+        assertThat(gogAuthService.isAuthenticated()).isTrue();
     }
 
     @Test
     void shouldGetAccessToken() {
         authenticateCorrectly(3600);
 
-        assertEquals("someAccessToken", gogAuthService.getAccessToken());
+        assertThat(gogAuthService.getAccessToken()).isEqualTo("someAccessToken");
     }
 
     @Test
     void getAccessTokenShouldThrowIfTokenIsNull() {
-        var exception = assertThrows(GogAuthException.class, () -> gogAuthService.getAccessToken());
-        assertTrue(exception.getMessage().contains("must authenticate"));
+        assertThatThrownBy(() -> gogAuthService.getAccessToken())
+                .isInstanceOf(GogAuthException.class)
+                .hasMessageContaining("must authenticate");
     }
 
     @Test
     void getAccessTokenShouldThrowIfTokenIsExpired() {
         authenticateCorrectly(-1);
-        var exception = assertThrows(GogAuthException.class, () -> gogAuthService.getAccessToken());
-        assertTrue(exception.getMessage().contains("Access token expired"));
+        assertThatThrownBy(() -> gogAuthService.getAccessToken())
+                .isInstanceOf(GogAuthException.class)
+                .hasMessageContaining("Access token expired");
     }
 
     @Test
     void shouldGetRefreshToken() {
         authenticateCorrectly(3600);
 
-        assertEquals("someRefreshToken", gogAuthService.getRefreshToken());
+        assertThat(gogAuthService.getRefreshToken()).isEqualTo("someRefreshToken");
     }
 
     @Test
     void getRefreshTokenShouldThrowIfTokenIsNull() {
-        var exception = assertThrows(GogAuthException.class, () -> gogAuthService.getRefreshToken());
-        assertTrue(exception.getMessage().contains("must authenticate"));
+        assertThatThrownBy(() -> gogAuthService.getRefreshToken())
+                .isInstanceOf(GogAuthException.class)
+                .hasMessageContaining("must authenticate");
     }
 
     @Test
@@ -118,7 +122,7 @@ class GogAuthSpringServiceTest {
         gogAuthService.refreshAccessTokenIfNeeded();
 
         verifyNoInteractions(gogAuthClient);
-        assertFalse(gogAuthService.isAuthenticated());
+        assertThat(gogAuthService.isAuthenticated()).isFalse();
     }
 
     @Test
@@ -128,7 +132,7 @@ class GogAuthSpringServiceTest {
         gogAuthService.refreshAccessTokenIfNeeded();
 
         verifyNoMoreInteractions(gogAuthClient);
-        assertTrue(gogAuthService.isAuthenticated());
+        assertThat(gogAuthService.isAuthenticated()).isTrue();
     }
 
     @Test
@@ -143,6 +147,6 @@ class GogAuthSpringServiceTest {
 
         gogAuthService.refreshAccessTokenIfNeeded();
 
-        assertTrue(gogAuthService.isAuthenticated());
+        assertThat(gogAuthService.isAuthenticated()).isTrue();
     }
 }

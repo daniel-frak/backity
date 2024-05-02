@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.integrations.gog.domain.exceptions;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class GameBackupRequestFailedExceptionTest {
 
@@ -10,8 +10,9 @@ class GameBackupRequestFailedExceptionTest {
     void shouldGetMessage() {
         var exception = new GameBackupRequestFailedException("someUrl", "someMessage");
 
-        assertEquals("An error occurred while backing up game file: someUrl. someMessage",
-                exception.getMessage());
+        String result = exception.getMessage();
+
+        assertThat(result).isEqualTo("An error occurred while backing up game file: someUrl. someMessage");
     }
 
     @Test
@@ -19,6 +20,8 @@ class GameBackupRequestFailedExceptionTest {
         var cause = new RuntimeException();
         var exception = new GameBackupRequestFailedException("someId", cause);
 
-        assertEquals(cause, exception.getCause());
+        Throwable result = exception.getCause();
+
+        assertThat(result).isSameAs(cause);
     }
 }

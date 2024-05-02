@@ -28,7 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.discoveredFileDetails;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -83,7 +83,7 @@ class H2DbControllerIT {
 
         var dumpContents = readTestDump();
 
-        assertTrue(dumpContents.contains("INSERT INTO \"PUBLIC\".\"GAME_FILE_DETAILS\" VALUES"));
+        assertThat(dumpContents).contains("INSERT INTO \"PUBLIC\".\"GAME_FILE_DETAILS\" VALUES");
     }
 
     private String readTestDump() throws IOException {

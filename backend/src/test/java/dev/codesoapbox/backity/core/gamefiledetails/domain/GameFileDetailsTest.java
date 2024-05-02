@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.gamefiledetails.domain;
 import org.junit.jupiter.api.Test;
 
 import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.discoveredFileDetails;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class GameFileDetailsTest {
 
@@ -13,7 +13,7 @@ class GameFileDetailsTest {
 
         gameFileDetails.enqueue();
 
-        assertEquals(FileBackupStatus.ENQUEUED, gameFileDetails.getBackupDetails().getStatus());
+        assertThat(gameFileDetails.getBackupDetails().getStatus()).isEqualTo(FileBackupStatus.ENQUEUED);
     }
 
     @Test
@@ -22,8 +22,8 @@ class GameFileDetailsTest {
 
         gameFileDetails.fail("someFailedReason");
 
-        assertEquals("someFailedReason", gameFileDetails.getBackupDetails().getFailedReason());
-        assertEquals(FileBackupStatus.FAILED, gameFileDetails.getBackupDetails().getStatus());
+        assertThat(gameFileDetails.getBackupDetails().getFailedReason()).isEqualTo("someFailedReason");
+        assertThat(gameFileDetails.getBackupDetails().getStatus()).isEqualTo(FileBackupStatus.FAILED);
     }
 
     @Test
@@ -32,7 +32,7 @@ class GameFileDetailsTest {
 
         gameFileDetails.markAsDownloaded("someFilePath");
 
-        assertEquals("someFilePath", gameFileDetails.getBackupDetails().getFilePath());
-        assertEquals(FileBackupStatus.SUCCESS, gameFileDetails.getBackupDetails().getStatus());
+        assertThat(gameFileDetails.getBackupDetails().getFilePath()).isEqualTo("someFilePath");
+        assertThat(gameFileDetails.getBackupDetails().getStatus()).isEqualTo(FileBackupStatus.SUCCESS);
     }
 }

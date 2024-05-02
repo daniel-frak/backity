@@ -2,8 +2,7 @@ package dev.codesoapbox.backity.core.discovery.domain;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ProgressInfoTest {
 
@@ -11,7 +10,7 @@ class ProgressInfoTest {
     void noneShouldCreateInfoWithNoProgress() {
         var result = ProgressInfo.none();
 
-        assertEquals(0, result.percentage());
-        assertNull(result.timeLeft());
+        assertThat(result.percentage()).isZero();
+        assertThat(result.timeLeft()).isNull();
     }
 }

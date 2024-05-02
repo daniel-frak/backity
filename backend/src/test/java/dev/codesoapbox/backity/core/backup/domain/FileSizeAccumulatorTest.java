@@ -3,8 +3,8 @@ package dev.codesoapbox.backity.core.backup.domain;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.UnrecognizedFileSizeUnitException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class FileSizeAccumulatorTest {
 
@@ -19,13 +19,14 @@ class FileSizeAccumulatorTest {
 
         String result = accumulator.toString();
 
-        assertEquals("1020010505005 bytes", result);
+        assertThat(result).isEqualTo("1020010505005 bytes");
     }
 
     @Test
     void addShouldThrowExceptionIfFileSizeUnitUnrecognized() {
         var accumulator = new FileSizeAccumulator();
-        assertThrows(UnrecognizedFileSizeUnitException.class, () -> accumulator.add("5 badunit"));
+        assertThatThrownBy(() -> accumulator.add("5 badunit"))
+                .isInstanceOf(UnrecognizedFileSizeUnitException.class);
     }
 
     @Test
@@ -35,6 +36,6 @@ class FileSizeAccumulatorTest {
 
         Long result = accumulator.getInBytes();
 
-        assertEquals(5000, result);
+        assertThat(result).isEqualTo(5000);
     }
 }
