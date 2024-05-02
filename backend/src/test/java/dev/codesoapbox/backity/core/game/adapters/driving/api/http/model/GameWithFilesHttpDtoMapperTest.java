@@ -3,8 +3,8 @@ package dev.codesoapbox.backity.core.game.adapters.driving.api.http.model;
 import dev.codesoapbox.backity.core.game.application.GameWithFiles;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.FileBackupStatus;
 import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefiledetails.BackupDetailsHttpDto;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefiledetails.FileBackupStatusHttpDto;
 import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefiledetails.GameFileDetailsHttpDto;
 import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefiledetails.SourceFileDetailsHttpDto;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ class GameWithFilesHttpDtoMapperTest {
                                         "5 KB"
                                 ),
                                 new BackupDetailsHttpDto(
-                                        FileBackupStatus.DISCOVERED,
+                                        FileBackupStatusHttpDto.DISCOVERED,
                                         "someFailedReason",
                                         "someFilePath"
                                 ),

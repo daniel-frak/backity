@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefiledetails;
 
-import dev.codesoapbox.backity.core.gamefiledetails.domain.FileBackupStatus;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -33,7 +32,7 @@ class GameFileDetailsHttpDtoMapperTest {
                         "5 KB"
                 ),
                 new BackupDetailsHttpDto(
-                        FileBackupStatus.DISCOVERED,
+                        FileBackupStatusHttpDto.DISCOVERED,
                         "someFailedReason",
                         "someFilePath"
                 ),
