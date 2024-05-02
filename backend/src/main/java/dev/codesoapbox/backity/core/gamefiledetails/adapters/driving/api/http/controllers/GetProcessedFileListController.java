@@ -9,6 +9,7 @@ import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.Pagin
 import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefiledetails.GameFileDetailsHttpDto;
 import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefiledetails.GameFileDetailsHttpDtoMapper;
 import dev.codesoapbox.backity.core.shared.domain.Page;
+import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,8 +28,9 @@ public class GetProcessedFileListController {
     @Operation(summary = "List processed files",
             description = "Returns a paginated list of all processed files (downloaded or failed)")
     @GetMapping("processed")
-    public PageHttpDto<GameFileDetailsHttpDto> getProcessedFiles(PaginationHttpDto pagination) {
-        Page<GameFileDetails> foundPage = useCase.getProcessedFileList(paginationMapper.toModel(pagination));
+    public PageHttpDto<GameFileDetailsHttpDto> getProcessedFiles(PaginationHttpDto paginationHttpDto) {
+        Pagination pagination = paginationMapper.toModel(paginationHttpDto);
+        Page<GameFileDetails> foundPage = useCase.getProcessedFileList(pagination);
         return pageMapper.toDto(foundPage, gameFileDetailsMapper::toDto);
     }
 }

@@ -9,6 +9,7 @@ import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.Pagin
 import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefiledetails.GameFileDetailsHttpDto;
 import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefiledetails.GameFileDetailsHttpDtoMapper;
 import dev.codesoapbox.backity.core.shared.domain.Page;
+import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +27,9 @@ public class GetEnqueuedFileListController {
 
     @Operation(summary = "List queue items", description = "Returns a paginated list of all downloads in the queue")
     @GetMapping("queue")
-    public PageHttpDto<GameFileDetailsHttpDto> getQueueItems(PaginationHttpDto pagination) {
-        Page<GameFileDetails> foundPage = useCase.getEnqueuedFileList(paginationMapper.toModel(pagination));
+    public PageHttpDto<GameFileDetailsHttpDto> getQueueItems(PaginationHttpDto paginationHttpDto) {
+        Pagination pagination = paginationMapper.toModel(paginationHttpDto);
+        Page<GameFileDetails> foundPage = useCase.getEnqueuedFileList(pagination);
         return pageMapper.toDto(foundPage, gameFileDetailsMapper::toDto);
     }
 }
