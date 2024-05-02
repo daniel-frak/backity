@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.discovery.domain.FileDiscoveryService;
+import dev.codesoapbox.backity.core.discovery.adapters.application.GetFileDiscoveryStatusListUseCase;
 import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryStatus;
 import dev.codesoapbox.backity.core.shared.config.http.ControllerTest;
 import org.junit.jupiter.api.Test;
@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static java.util.Collections.singletonList;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -16,37 +15,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ControllerTest
-class FileDiscoveryControllerIT {
+class GetFileDiscoveryStatusListControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private FileDiscoveryService fileDiscoveryService;
-
-    @Test
-    void shouldStartFileDiscovery() throws Exception {
-        mockMvc.perform(get("/api/file-discovery/discover"))
-                .andDo(print())
-                .andExpect(status().isOk());
-
-        verify(fileDiscoveryService).startFileDiscovery();
-    }
-
-    @Test
-    void shouldStopFileDiscovery() throws Exception {
-        mockMvc.perform(get("/api/file-discovery/stop-discovery"))
-                .andDo(print())
-                .andExpect(status().isOk());
-
-        verify(fileDiscoveryService).stopFileDiscovery();
-    }
+    private GetFileDiscoveryStatusListUseCase useCase;
 
     @Test
     void shouldGetStatuses() throws Exception {
         var status = new FileDiscoveryStatus("someSource", true);
 
-        when(fileDiscoveryService.getStatuses())
+        when(useCase.getStatusList())
                 .thenReturn(singletonList(status));
 
         var expectedJson = """
@@ -55,7 +36,7 @@ class FileDiscoveryControllerIT {
                   "isInProgress": true
                 }]""";
 
-        mockMvc.perform(get("/api/file-discovery/statuses"))
+        mockMvc.perform(get("/api/" + FileDiscoveryRestResource.RESOURCE_URL + "/statuses"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));

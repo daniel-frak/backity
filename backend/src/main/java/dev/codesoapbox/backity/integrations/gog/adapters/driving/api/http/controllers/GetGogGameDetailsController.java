@@ -2,35 +2,22 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.contr
 
 import dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model.GameDetailsResponseHttpDto;
 import dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model.GameDetailsResponseHttpDtoMapper;
-import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
+import dev.codesoapbox.backity.integrations.gog.application.GetGogGameDetailsUseCase;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "GOG", description = "The main GOG API")
-@Slf4j
-@RestController
-@RequestMapping("gog")
+@GogRestResource
 @RequiredArgsConstructor
-public class GogController {
+public class GetGogGameDetailsController {
 
-    private final GogEmbedClient gogEmbedClient;
+    private final GetGogGameDetailsUseCase useCase;
     private final GameDetailsResponseHttpDtoMapper gameDetailsResponseMapper;
-
-    @Operation(summary = "Get library size", description = "Returns the size of the user's GOG library")
-    @GetMapping("library/size")
-    public String getLibrarySize() {
-        return gogEmbedClient.getLibrarySize();
-    }
 
     @Operation(summary = "Get game details", description = "Returns the details of a game")
     @GetMapping("games/{id}")
     public GameDetailsResponseHttpDto getGameDetails(@PathVariable String id) {
-        return gameDetailsResponseMapper.toDto(gogEmbedClient.getGameDetails(id));
+        return gameDetailsResponseMapper.toDto(useCase.getGameDetails(id));
     }
 }

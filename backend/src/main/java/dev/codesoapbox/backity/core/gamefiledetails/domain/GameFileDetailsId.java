@@ -8,4 +8,9 @@ public record GameFileDetailsId(
     public static GameFileDetailsId newInstance() {
         return new GameFileDetailsId(UUID.randomUUID());
     }
+
+    @Override
+    public String toString() {
+        return value.toString();
+    }
 }

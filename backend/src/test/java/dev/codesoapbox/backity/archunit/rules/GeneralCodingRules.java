@@ -7,6 +7,7 @@ import static com.tngtech.archunit.core.domain.properties.CanBeAnnotated.Predica
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.GeneralCodingRules.*;
 
+@SuppressWarnings("unused")
 public class GeneralCodingRules {
 
     @ArchTest

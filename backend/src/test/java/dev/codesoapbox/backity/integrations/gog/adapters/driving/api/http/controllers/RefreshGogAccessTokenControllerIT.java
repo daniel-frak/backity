@@ -1,12 +1,10 @@
-package dev.codesoapbox.backity.core.logs.adapters.driving.api.http.controllers;
+package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.logs.domain.services.LogService;
 import dev.codesoapbox.backity.core.shared.config.http.ControllerTest;
+import dev.codesoapbox.backity.integrations.gog.application.RefreshGogAccessTokenUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -15,27 +13,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ControllerTest
-class LogsControllerIT {
+class RefreshGogAccessTokenControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private LogService logService;
+    private RefreshGogAccessTokenUseCase useCase;
 
     @Test
-    void shouldGetLogs() throws Exception {
-        var expectedLogs = List.of("someLog");
+    void shouldRefreshAccessToken() throws Exception {
+        var refreshToken = "someRefreshToken";
+        var accessToken = "someAccessToken";
         var expectedJson = """
-                            [
-                                "someLog"
-                            ]
-                """;
+                {
+                    "refresh_token": "%s"
+                }
+                """.formatted(accessToken);
+        when(useCase.refreshAccessToken(refreshToken))
+                .thenReturn(accessToken);
 
-        when(logService.getLogs())
-                .thenReturn(expectedLogs);
-
-        mockMvc.perform(get("/api/logs"))
+        mockMvc.perform(get("/api/gog/auth/refresh?refresh_token=" + refreshToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));

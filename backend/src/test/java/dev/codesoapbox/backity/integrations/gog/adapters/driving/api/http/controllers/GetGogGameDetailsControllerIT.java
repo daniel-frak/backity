@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.shared.config.http.ControllerTest;
+import dev.codesoapbox.backity.integrations.gog.application.GetGogGameDetailsUseCase;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileDetailsResponse;
-import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,25 +16,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ControllerTest
-class GogControllerIT {
+class GetGogGameDetailsControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private GogEmbedClient gogEmbedClient;
-
-    @Test
-    void shouldGetLibrarySize() throws Exception {
-        String expectedSize = "1GB";
-        when(gogEmbedClient.getLibrarySize())
-                .thenReturn(expectedSize);
-
-        mockMvc.perform(get("/api/gog/library/size"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string(expectedSize));
-    }
+    private GetGogGameDetailsUseCase useCase;
 
     @Test
     void shouldGetGameDetails() throws Exception {
@@ -72,7 +60,7 @@ class GogControllerIT {
                 "someChangelog"
         );
 
-        when(gogEmbedClient.getGameDetails(gameId))
+        when(useCase.getGameDetails(gameId))
                 .thenReturn(gameDetailsResponse);
 
         mockMvc.perform(get("/api/gog/games/" + gameId))

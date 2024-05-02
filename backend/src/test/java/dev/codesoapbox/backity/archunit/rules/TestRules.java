@@ -13,6 +13,7 @@ import java.util.Map;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static org.assertj.core.api.Fail.fail;
 
+@SuppressWarnings("unused")
 public class TestRules {
 
     @ArchTest

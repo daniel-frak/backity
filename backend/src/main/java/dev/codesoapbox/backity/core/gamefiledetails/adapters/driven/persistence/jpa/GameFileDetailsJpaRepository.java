@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.gamefiledetails.domain.FileBackupStatus;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsId;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsRepository;
+import dev.codesoapbox.backity.core.gamefiledetails.domain.exceptions.GameFileDetailsNotFoundException;
 import dev.codesoapbox.backity.core.shared.adapters.driven.persistence.PageEntityMapper;
 import dev.codesoapbox.backity.core.shared.adapters.driven.persistence.PaginationEntityMapper;
 import dev.codesoapbox.backity.core.shared.domain.Page;
@@ -18,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-@Transactional(readOnly=true)
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class GameFileDetailsJpaRepository implements GameFileDetailsRepository {
 
@@ -70,6 +71,12 @@ public class GameFileDetailsJpaRepository implements GameFileDetailsRepository {
     @Override
     public boolean existsByUrlAndVersion(String url, String version) {
         return springRepository.existsBySourceFileDetailsUrlAndSourceFileDetailsVersion(url, version);
+    }
+
+    @Override
+    public GameFileDetails getById(GameFileDetailsId id) {
+        return findById(id)
+                .orElseThrow(() -> new GameFileDetailsNotFoundException(id));
     }
 
     @Override

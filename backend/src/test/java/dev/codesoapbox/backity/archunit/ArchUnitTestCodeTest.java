@@ -8,6 +8,7 @@ import com.tngtech.archunit.junit.CacheMode;
 import dev.codesoapbox.backity.BackityApplication;
 import dev.codesoapbox.backity.archunit.rules.TestRules;
 
+@SuppressWarnings("unused")
 @AnalyzeClasses(packagesOf = BackityApplication.class, importOptions = ImportOption.OnlyIncludeTests.class,
         // https://www.archunit.org/userguide/html/000_Index.html#_controlling_the_cache
         cacheMode = CacheMode.PER_CLASS)

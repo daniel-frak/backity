@@ -21,6 +21,8 @@ public interface GameFileDetailsRepository {
 
     boolean existsByUrlAndVersion(String url, String version);
 
+    GameFileDetails getById(GameFileDetailsId id);
+
     Optional<GameFileDetails> findById(GameFileDetailsId id);
 
     Page<GameFileDetails> findAllDiscovered(Pagination pagination);

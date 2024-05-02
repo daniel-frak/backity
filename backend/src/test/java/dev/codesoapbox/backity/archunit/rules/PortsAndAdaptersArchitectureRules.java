@@ -12,6 +12,7 @@ import static dev.codesoapbox.backity.archunit.rules.PortsAndAdaptersArchitectur
 /*
 Describes how packages relate to each other
  */
+@SuppressWarnings("unused")
 public final class PortsAndAdaptersArchitectureRules {
 
     @ArchTest
@@ -21,8 +22,10 @@ public final class PortsAndAdaptersArchitectureRules {
             .layer(DOMAIN_LAYER).definedBy(".." + DOMAIN_PACKAGE + "..")
             .layer(ADAPTER_LAYER).definedBy(".." + ADAPTERS_PACKAGE + "..")
             .layer(CONFIG_LAYER).definedBy(".." + CONFIG_PACKAGE + "..")
+            .layer(APPLICATION_LAYER).definedBy(".." + APPLICATION_PACKAGE + "..")
             .whereLayer(ADAPTER_LAYER).mayOnlyBeAccessedByLayers(CONFIG_LAYER)
-            .whereLayer(CONFIG_LAYER).mayNotBeAccessedByAnyLayer();
+            .whereLayer(CONFIG_LAYER).mayNotBeAccessedByAnyLayer()
+            .whereLayer(APPLICATION_LAYER).mayOnlyBeAccessedByLayers(ADAPTER_LAYER, CONFIG_LAYER);
 
     @ArchTest
     static final SliceRule ADAPTERS_SHOULD_NOT_DEPEND_ON_EACH_OTHER = slices()
@@ -36,9 +39,11 @@ public final class PortsAndAdaptersArchitectureRules {
         static final String DOMAIN_LAYER = "Domain";
         static final String ADAPTER_LAYER = "Adapters";
         static final String CONFIG_LAYER = "Config";
+        static final String APPLICATION_LAYER = "Application";
         static final String DOMAIN_PACKAGE = "domain";
         static final String ADAPTERS_PACKAGE = "adapters";
         static final String CONFIG_PACKAGE = "config";
+        static final String APPLICATION_PACKAGE = "application";
 
         private Constants() {
         }

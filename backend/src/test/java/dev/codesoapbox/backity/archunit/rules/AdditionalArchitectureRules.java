@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.archunit.rules;
 
+import com.tngtech.archunit.junit.ArchIgnore;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 import dev.codesoapbox.backity.BackityApplication;
@@ -7,13 +8,16 @@ import org.springframework.data.repository.Repository;
 import org.springframework.web.bind.annotation.RestController;
 
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.simpleNameEndingWith;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
+import static dev.codesoapbox.backity.archunit.rules.TransitiveDependencyWithExceptionsCondition.transitivelyDependOnClassesThat;
 
 /*
 Describes how packages relate to each other
  */
+@SuppressWarnings("unused")
 public class AdditionalArchitectureRules {
 
     private static final String EXCEPTIONS_PACKAGE = "..exceptions..";
@@ -26,6 +30,8 @@ public class AdditionalArchitectureRules {
             + "..";
     private static final String CONFIG_PACKAGE = ".." + PortsAndAdaptersArchitectureRules.Constants.CONFIG_PACKAGE
             + "..";
+    private static final String APPLICATION_PACKAGE = ".."
+            + PortsAndAdaptersArchitectureRules.Constants.APPLICATION_PACKAGE + "..";
 
     @ArchTest
     static final ArchRule EXCEPTIONS_SHOULD_BE_IN_CORRECT_PACKAGE = classes().that()
@@ -55,6 +61,14 @@ public class AdditionalArchitectureRules {
             .areAnnotatedWith(RestController.class)
             .should().resideInAPackage(CONTROLLER_PACKAGE);
 
+    @ArchIgnore // Must find a way to ignore calls from within methods
+    @ArchTest
+    static final ArchRule CONTROLLERS_SHOULD_NOT_USE_DOMAIN_EXCEPT_FOR_MAPPER = noClasses().that()
+            .resideInAPackage(CONTROLLER_PACKAGE)
+            .should(transitivelyDependOnClassesThat(resideInAPackage(DOMAIN_PACKAGE))
+                    .exceptForDependencies(simpleNameEndingWith("Mapper")
+                            .or(resideInAPackage(APPLICATION_PACKAGE))));
+
     @ArchTest
     static final ArchRule CORE_SHOULD_NOT_DEPEND_ON_INTEGRATIONS = noClasses().that()
             .resideInAPackage(BackityApplication.class.getPackageName() + ".core..")
@@ -65,5 +79,4 @@ public class AdditionalArchitectureRules {
     static final ArchRule INTEGRATIONS_SHOULD_NOT_DEPEND_ON_EACH_OTHER = slices()
             .matching(BackityApplication.class.getPackageName() + ".integrations.(*)..")
             .should().notDependOnEachOther();
-
 }

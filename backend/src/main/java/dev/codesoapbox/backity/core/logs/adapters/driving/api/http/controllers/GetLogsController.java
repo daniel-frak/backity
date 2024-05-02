@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.logs.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.logs.domain.services.LogService;
+import dev.codesoapbox.backity.core.logs.application.GetLogsUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +14,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("logs")
-public class LogsController {
+public class GetLogsController {
 
-    private final LogService logService;
+    private final GetLogsUseCase logService;
 
     @Operation(summary = "List logs", description = "Returns the most recent logs")
     @GetMapping

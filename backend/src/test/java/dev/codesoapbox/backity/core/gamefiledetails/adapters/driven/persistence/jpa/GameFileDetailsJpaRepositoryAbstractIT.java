@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.gamefiledetails.adapters.driven.persistence
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsId;
+import dev.codesoapbox.backity.core.gamefiledetails.domain.exceptions.GameFileDetailsNotFoundException;
 import dev.codesoapbox.backity.core.shared.domain.Page;
 import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,7 @@ import java.util.stream.Stream;
 import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.*;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 abstract class GameFileDetailsJpaRepositoryAbstractIT {
@@ -180,6 +182,25 @@ abstract class GameFileDetailsJpaRepositoryAbstractIT {
         assertThat(result).get().usingRecursiveComparison()
                 .ignoringFields("dateCreated", "dateModified")
                 .isEqualTo(GAME_FILE_DETAILS_1.get());
+    }
+
+    @Test
+    void shouldGetById() {
+        var id = new GameFileDetailsId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48"));
+
+        GameFileDetails result = gameFileVersionJpaRepository.getById(id);
+
+        assertThat(result).usingRecursiveComparison()
+                .ignoringFields("dateCreated", "dateModified")
+                .isEqualTo(GAME_FILE_DETAILS_1.get());
+    }
+
+    @Test
+    void getByIdShouldThrowGivenNotFound() {
+        var nonexistentId = new GameFileDetailsId(UUID.fromString("59e37c43-dda7-4c5f-87a3-c380ebb5f8ea"));
+
+        assertThatThrownBy(() -> gameFileVersionJpaRepository.getById(nonexistentId))
+                .isInstanceOf(GameFileDetailsNotFoundException.class);
     }
 
     @Test

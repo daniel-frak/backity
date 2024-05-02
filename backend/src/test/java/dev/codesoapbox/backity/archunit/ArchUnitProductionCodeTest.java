@@ -10,6 +10,7 @@ import dev.codesoapbox.backity.archunit.rules.AdditionalArchitectureRules;
 import dev.codesoapbox.backity.archunit.rules.GeneralCodingRules;
 import dev.codesoapbox.backity.archunit.rules.PortsAndAdaptersArchitectureRules;
 
+@SuppressWarnings("unused")
 @AnalyzeClasses(packagesOf = BackityApplication.class, importOptions = ImportOption.DoNotIncludeTests.class,
         // https://www.archunit.org/userguide/html/000_Index.html#_controlling_the_cache
         cacheMode = CacheMode.PER_CLASS)
