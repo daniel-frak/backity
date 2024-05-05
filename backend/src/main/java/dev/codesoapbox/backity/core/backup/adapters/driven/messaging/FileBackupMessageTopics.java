@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.backup.adapters.driven.messaging;
 
-import dev.codesoapbox.backity.core.shared.domain.IncludeInDocumentation;
+import dev.codesoapbox.backity.core.shared.adapters.driven.messaging.IncludeInDocumentation;
 import lombok.AllArgsConstructor;
 
 @IncludeInDocumentation

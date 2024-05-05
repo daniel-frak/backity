@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.shared.config.openapi;
 
-import dev.codesoapbox.backity.core.shared.domain.IncludeInDocumentation;
+import dev.codesoapbox.backity.core.shared.adapters.driven.messaging.IncludeInDocumentation;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.oas.models.OpenAPI;
