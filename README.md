@@ -267,7 +267,7 @@ This will fail the build if the mutation threshold is below a certain value.
 ## Built With
 
 * [Maven](https://maven.apache.org/)
-* [Spring Boot v3.1+](https://start.spring.io/)
+* [Spring Boot v3.2+](https://start.spring.io/)
 * [Angular v12+](https://angular.io/)
 * [frontend-maven-plugin](https://github.com/eirslett/frontend-maven-plugin)
 * [springdoc-openapi](https://springdoc.org/)
