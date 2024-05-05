@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefiledetails;
 
+import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsId;
 import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.game.GameIdHttpDtoMapper;
@@ -12,5 +13,9 @@ public abstract class GameFileDetailsHttpDtoMapper {
 
     protected String toString(GameFileDetailsId id) {
         return id.value().toString();
+    }
+
+    protected String toString(FileSourceId fileSourceId) {
+        return fileSourceId.value();
     }
 }

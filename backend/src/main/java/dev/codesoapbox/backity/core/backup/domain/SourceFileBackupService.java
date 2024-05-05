@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public interface SourceFileBackupService {
 
-    String getSource();
+    FileSourceId getSource();
 
     /**
      * @return the path of the downloaded file

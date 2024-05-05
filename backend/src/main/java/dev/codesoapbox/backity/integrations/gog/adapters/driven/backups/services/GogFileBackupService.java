@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
+import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
 import dev.codesoapbox.backity.core.backup.domain.SourceFileBackupService;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.embed.GogEmbedWebClient;
@@ -17,8 +18,8 @@ public class GogFileBackupService implements SourceFileBackupService {
     private final GogAuthService authService;
     private final UrlFileDownloader urlFileDownloader;
 
-    public String getSource() {
-        return "GOG";
+    public FileSourceId getSource() {
+        return new FileSourceId("GOG");
     }
 
     @Override

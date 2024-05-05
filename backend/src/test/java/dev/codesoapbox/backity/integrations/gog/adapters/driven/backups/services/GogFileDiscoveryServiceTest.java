@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
+import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
 import dev.codesoapbox.backity.core.discovery.domain.ProgressInfo;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.SourceFileDetails;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
@@ -36,12 +37,13 @@ class GogFileDiscoveryServiceTest {
         gogFileDiscoveryService.startFileDiscovery(gameFileVersionBackups::add);
 
         var expectedGameFileDetails = List.of(
-                new SourceFileDetails("GOG", "Game 2", "fileSimpleName1", "1.0.0",
-                        "someUrl1", "fileName1", "100 KB"),
-                new SourceFileDetails("GOG", "Game 2", "fileSimpleName2", "2.0.0",
+                new SourceFileDetails(new FileSourceId("GOG"), "Game 2", "fileSimpleName1",
+                        "1.0.0", "someUrl1", "fileName1", "100 KB"),
+                new SourceFileDetails(new FileSourceId("GOG"), "Game 2", "fileSimpleName2",
+                        "2.0.0",
                         "someUrl2", "fileName2", "200 KB"),
-                new SourceFileDetails("GOG", "Game 4", "fileSimpleName3", "3.0.0",
-                        "someUrl3", "fileName3", "300 KB")
+                new SourceFileDetails(new FileSourceId("GOG"), "Game 4", "fileSimpleName3",
+                        "3.0.0", "someUrl3", "fileName3", "300 KB")
         );
 
         assertThat(gameFileVersionBackups).isEqualTo(expectedGameFileDetails);

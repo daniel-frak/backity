@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.gamefiledetails.domain;
 
+import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ public class TestGameFileDetails {
     private GameId gameId = new GameId(UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281"));
 
     @lombok.Builder.Default
-    String sourceId = "someSourceId";
+    private FileSourceId sourceId = new FileSourceId("someSourceId");
 
     @lombok.Builder.Default
     private String originalGameTitle = "someOriginalGameTitle";

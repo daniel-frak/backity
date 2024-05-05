@@ -47,7 +47,7 @@ class FileBackupServiceTest {
     @BeforeEach
     void setUp() {
         when(sourceFileBackupService.getSource())
-                .thenReturn("someSourceId");
+                .thenReturn(new FileSourceId("someSourceId"));
         fileManager = new FakeUnixFileManager(5000);
         fileBackupService = new FileBackupService(filePathProvider, gameFileDetailsRepository, fileManager,
                 singletonList(sourceFileBackupService));
@@ -55,7 +55,7 @@ class FileBackupServiceTest {
 
     @Test
     void shouldDownloadGameFile() throws IOException {
-        String source = sourceFileBackupService.getSource();
+        FileSourceId source = sourceFileBackupService.getSource();
         GameFileDetails gameFileDetails = discoveredFileDetails().build();
         var tempFilePath = "someFileDir/someFile";
         var expectedFilePath = "finalFilePath";
@@ -86,7 +86,7 @@ class FileBackupServiceTest {
 
     @Test
     void shouldTryToRemoveTempFileAndRethrowWrappedOnIOExceptionGivenFilePathIsTempFilePath() throws IOException {
-        String source = sourceFileBackupService.getSource();
+        FileSourceId source = sourceFileBackupService.getSource();
         GameFileDetails gameFileDetails = discoveredFileDetails().build();
         var tempFilePath = "someFileDir/someFile";
         var coreException = new IOException("someMessage");
@@ -111,7 +111,7 @@ class FileBackupServiceTest {
 
     @Test
     void shouldTryToRemoveTempFileAndRethrowWrappedOnIOExceptionGivenFilePathIsNotTempFilePath() throws IOException {
-        String source = sourceFileBackupService.getSource();
+        FileSourceId source = sourceFileBackupService.getSource();
         GameFileDetails gameFileDetails = discoveredFileDetails().build();
         var tempFilePath = "someFileDir/someFile";
         var nonTempFilePath = "nonTempFilePath";
@@ -151,7 +151,7 @@ class FileBackupServiceTest {
 
     @Test
     void downloadGameFileShouldThrowIfSourceDownloaderNotFound() throws IOException {
-        var sourceId = "nonExistentSource1";
+        var sourceId = new FileSourceId("nonExistentSource1");
         GameFileDetails gameFileDetails = discoveredFileDetails()
                 .sourceId(sourceId)
                 .build();
@@ -167,7 +167,7 @@ class FileBackupServiceTest {
 
     @Test
     void downloadGameFileShouldThrowIfIOExceptionOccurs() throws IOException {
-        String sourceId = sourceFileBackupService.getSource();
+        FileSourceId sourceId = sourceFileBackupService.getSource();
         GameFileDetails gameFileDetails = discoveredFileDetails()
                 .sourceId(sourceId)
                 .build();
@@ -183,7 +183,7 @@ class FileBackupServiceTest {
 
     @Test
     void downloadGameFileShouldThrowIfNotEnoughFreeSpace() throws IOException {
-        String sourceId = sourceFileBackupService.getSource();
+        FileSourceId sourceId = sourceFileBackupService.getSource();
         GameFileDetails gameFileDetails = discoveredFileDetails()
                 .sourceId(sourceId)
                 .build();

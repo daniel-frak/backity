@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.filemanagement.domain;
 
+import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -27,9 +28,9 @@ public class FilePathProvider {
     /**
      * @return the path that was created
      */
-    public String createTemporaryFilePath(String source, String gameTitle) throws IOException {
+    public String createTemporaryFilePath(FileSourceId source, String gameTitle) throws IOException {
         String tempFileName = "TEMP_" + UUID.randomUUID();
-        String tempFilePath = getFilePath(gameTitle, tempFileName, source);
+        String tempFilePath = getFilePath(gameTitle, tempFileName, source.value());
         createDirectories(tempFilePath);
         return tempFilePath;
     }

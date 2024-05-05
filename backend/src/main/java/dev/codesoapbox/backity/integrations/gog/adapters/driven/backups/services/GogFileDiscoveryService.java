@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
+import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
 import dev.codesoapbox.backity.core.discovery.domain.IncrementalProgressTracker;
 import dev.codesoapbox.backity.core.discovery.domain.ProgressInfo;
 import dev.codesoapbox.backity.core.discovery.domain.SourceFileDiscoveryService;
@@ -19,6 +20,8 @@ import java.util.function.Consumer;
 @Slf4j
 @RequiredArgsConstructor
 public class GogFileDiscoveryService implements SourceFileDiscoveryService {
+
+    private static final FileSourceId SOURCE_ID = new FileSourceId("GOG");
 
     private final GogEmbedClient gogEmbedClient;
 
@@ -62,7 +65,7 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
     private SourceFileDetails mapToDiscoveredGameFile(GameDetailsResponse gameDetails,
                                                       GameFileDetailsResponse fileDetails) {
         return new SourceFileDetails(
-                "GOG",
+                SOURCE_ID,
                 gameDetails.getTitle(),
                 fileDetails.getName(),
                 fileDetails.getVersion(),

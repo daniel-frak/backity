@@ -26,7 +26,7 @@ public class FileBackupService {
     private final FilePathProvider filePathProvider;
     private final GameFileDetailsRepository gameFileDetailsRepository;
     private final FileManager fileManager;
-    private final Map<String, SourceFileBackupService> sourceFileDownloaders;
+    private final Map<FileSourceId, SourceFileBackupService> sourceFileDownloaders;
 
     public FileBackupService(FilePathProvider filePathProvider, GameFileDetailsRepository gameFileDetailsRepository,
                              FileManager fileManager, List<SourceFileBackupService> sourceFileBackupServices) {
@@ -97,7 +97,7 @@ public class FileBackupService {
      * @return the path of the downloaded file
      */
     private String downloadToDisk(GameFileDetails gameFileDetails, String tempFilePath) throws IOException {
-        String sourceId = gameFileDetails.getSourceFileDetails().sourceId();
+        FileSourceId sourceId = gameFileDetails.getSourceFileDetails().sourceId();
         SourceFileBackupService sourceDownloader = getSourceDownloader(sourceId);
         return sourceDownloader.backUpGameFile(gameFileDetails, tempFilePath);
     }
@@ -116,7 +116,7 @@ public class FileBackupService {
         }
     }
 
-    private SourceFileBackupService getSourceDownloader(String sourceId) {
+    private SourceFileBackupService getSourceDownloader(FileSourceId sourceId) {
         if (!sourceFileDownloaders.containsKey(sourceId)) {
             throw new IllegalArgumentException("File downloader for sourceId not found: " + sourceId);
         }

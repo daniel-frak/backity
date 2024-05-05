@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.filemanagement.domain;
 
+import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
@@ -41,7 +42,7 @@ class FilePathProviderTest {
 
     @Test
     void shouldCreateTemporaryFilePath() throws IOException {
-        var source = "someSource";
+        var source = new FileSourceId( "someSource");
         var gameTitle = "some: GameTitle";
 
         String result = filePathProvider.createTemporaryFilePath(source, gameTitle);
@@ -54,7 +55,7 @@ class FilePathProviderTest {
 
     @Test
     void shouldCreateTemporaryFilePathWhenNoSeparatorFound() throws IOException {
-        var source = "someSource";
+        var source = new FileSourceId("someSource");
         var gameTitle = "some: GameTitle";
 
         filePathProvider = new FilePathProvider("{FILENAME}", fakeUnixFileManager);

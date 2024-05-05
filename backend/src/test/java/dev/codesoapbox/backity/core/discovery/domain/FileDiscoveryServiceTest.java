@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.domain;
 
+import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
 import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
@@ -80,14 +81,14 @@ class FileDiscoveryServiceTest {
         handler.handle(sourceFileDiscoveryService).accept(null, new RuntimeException("test exception"));
 
         assertThat(fileDiscoveryService.getStatuses().size()).isOne();
-        assertThat(fileDiscoveryService.getStatuses().get(0).isInProgress()).isFalse();
+        assertThat(fileDiscoveryService.getStatuses().getFirst().isInProgress()).isFalse();
     }
 
     @Test
     void startFileDiscoveryShouldSaveDiscoveredFilesAndSendMessages() {
         var gameTitle = "someGameTitle";
         var discoveredGameFile = new SourceFileDetails(
-                "someSource", gameTitle, "someTitle", "someVersion", "someUrl",
+                new FileSourceId("someSource"), gameTitle, "someTitle", "someVersion", "someUrl",
                 "someOriginalFileName", "100 KB");
         var game = new Game(GameId.newInstance(), gameTitle);
         GameFileDetails gameFileDetails = discoveredGameFile.associateWith(game);
@@ -122,8 +123,8 @@ class FileDiscoveryServiceTest {
     @Test
     void startFileDiscoveryShouldNotSaveDiscoveredFileIfAlreadyExists() {
         SourceFileDetails gameFileVersionBackup = new SourceFileDetails(
-                "someSource", "someGameTitle", "someTitle", "someVersion", "someUrl",
-                "someOriginalFileName", "100 KB");
+                new FileSourceId("someSource"), "someGameTitle", "someTitle",
+                "someVersion", "someUrl", "someOriginalFileName", "100 KB");
 
         when(fileRepository.existsByUrlAndVersion(gameFileVersionBackup.url(), gameFileVersionBackup.version()))
                 .thenReturn(true);

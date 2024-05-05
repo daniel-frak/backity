@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
+import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.embed.GogEmbedWebClient;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
@@ -66,6 +67,6 @@ class GogFileBackupServiceTest {
 
     @Test
     void shouldGetSource() {
-        assertThat(gogFileDownloader.getSource()).isEqualTo("GOG");
+        assertThat(gogFileDownloader.getSource()).isEqualTo(new FileSourceId("GOG"));
     }
 }

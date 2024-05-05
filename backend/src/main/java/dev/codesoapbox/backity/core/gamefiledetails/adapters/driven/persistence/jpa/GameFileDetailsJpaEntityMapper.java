@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.gamefiledetails.adapters.driven.persistence.jpa;
 
+import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsId;
@@ -25,11 +26,19 @@ public abstract class GameFileDetailsJpaEntityMapper {
         return id.value();
     }
 
+    protected String getValue(FileSourceId fileSourceId) {
+        return fileSourceId.value();
+    }
+
     protected GameFileDetailsId toGameFileDetailsId(UUID uuid) {
         return new GameFileDetailsId(uuid);
     }
 
     protected GameId toGameId(UUID uuid) {
         return new GameId(uuid);
+    }
+
+    protected FileSourceId toFileSourceId(String value) {
+        return new FileSourceId(value);
     }
 }

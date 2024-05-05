@@ -1,10 +1,11 @@
 package dev.codesoapbox.backity.core.gamefiledetails.domain;
 
+import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import lombok.NonNull;
 
 public record SourceFileDetails(
-        @NonNull String sourceId,
+        @NonNull FileSourceId sourceId,
         @NonNull String originalGameTitle,
         @NonNull String fileTitle,
         @NonNull String version,
