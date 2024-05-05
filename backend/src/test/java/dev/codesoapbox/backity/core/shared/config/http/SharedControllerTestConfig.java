@@ -5,11 +5,11 @@ import dev.codesoapbox.backity.core.discovery.adapters.application.StartFileDisc
 import dev.codesoapbox.backity.core.discovery.adapters.application.StopFileDiscoveryUseCase;
 import dev.codesoapbox.backity.core.discovery.config.FileDiscoveryControllerBeanConfig;
 import dev.codesoapbox.backity.core.discovery.domain.FileDiscoveryService;
+import dev.codesoapbox.backity.core.filedetails.application.*;
+import dev.codesoapbox.backity.core.filedetails.config.FileDetailsControllerBeanConfig;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsRepository;
 import dev.codesoapbox.backity.core.game.application.GameFacade;
 import dev.codesoapbox.backity.core.game.config.GameControllerBeanConfig;
-import dev.codesoapbox.backity.core.gamefiledetails.application.*;
-import dev.codesoapbox.backity.core.gamefiledetails.config.GameFileDetailsControllerBeanConfig;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.logs.application.GetLogsUseCase;
 import dev.codesoapbox.backity.core.logs.domain.services.LogService;
 import dev.codesoapbox.backity.core.shared.config.jpa.SharedControllerBeanConfig;
@@ -40,11 +40,11 @@ import org.springframework.context.annotation.Import;
         FileDiscoveryControllerBeanConfig.class,
         GogControllerBeanConfig.class,
         GameControllerBeanConfig.class,
-        GameFileDetailsControllerBeanConfig.class
+        FileDetailsControllerBeanConfig.class
 })
 @MockBeans({
         @MockBean(EntityManager.class),
-        @MockBean(GameFileDetailsRepository.class),
+        @MockBean(FileDetailsRepository.class),
         @MockBean(FileDiscoveryService.class),
         @MockBean(LogService.class),
         @MockBean(GogAuthService.class),

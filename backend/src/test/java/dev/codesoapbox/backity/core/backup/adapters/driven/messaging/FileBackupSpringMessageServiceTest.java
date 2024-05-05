@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStartedMessageMapper;
 import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStatusChangedMessageMapper;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupProgress;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,8 +13,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.fullFileDetails;
-import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.inProgressFileDetails;
+import static dev.codesoapbox.backity.core.filedetails.domain.TestFileDetails.fullFileDetails;
+import static dev.codesoapbox.backity.core.filedetails.domain.TestFileDetails.inProgressFileDetails;
 import static dev.codesoapbox.backity.testing.assertions.SimpMessagingAssertions.assertSendsMessage;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,11 +36,11 @@ class FileBackupSpringMessageServiceTest {
 
     @Test
     void shouldSendBackupStartedMessage() throws JsonProcessingException {
-        GameFileDetails gameFileDetails = inProgressFileDetails().build();
+        FileDetails fileDetails = inProgressFileDetails().build();
 
         var expectedPayload = """
                 {
-                    "gameFileDetailsId": "acde26d7-33c7-42ee-be16-bca91a604b48",
+                    "fileDetailsId": "acde26d7-33c7-42ee-be16-bca91a604b48",
                     "originalGameTitle": "someOriginalGameTitle",
                     "fileTitle": "someFileTitle",
                     "version": "someVersion",
@@ -51,7 +51,7 @@ class FileBackupSpringMessageServiceTest {
                 """;
         assertSendsMessage(simpMessagingTemplate, expectedPayload,
                 FileBackupMessageTopics.BACKUP_STARTED.toString(),
-                () -> fileDownloadSpringMessageService.sendBackupStarted(gameFileDetails));
+                () -> fileDownloadSpringMessageService.sendBackupStarted(fileDetails));
     }
 
     @Test
@@ -74,11 +74,11 @@ class FileBackupSpringMessageServiceTest {
 
     @Test
     void shouldSendBackupStatusChangedMessage() throws JsonProcessingException {
-        GameFileDetails gameFileDetails = fullFileDetails().build();
+        FileDetails fileDetails = fullFileDetails().build();
 
         var expectedPayload = """
                 {
-                    "gameFileDetailsId": "acde26d7-33c7-42ee-be16-bca91a604b48",
+                    "fileDetailsId": "acde26d7-33c7-42ee-be16-bca91a604b48",
                     "newStatus": "DISCOVERED",
                     "failedReason": "someFailedReason"
                 }
@@ -86,6 +86,6 @@ class FileBackupSpringMessageServiceTest {
         assertSendsMessage(simpMessagingTemplate, expectedPayload,
                 FileBackupMessageTopics.BACKUP_STATUS_CHANGED.toString(),
                 () -> fileDownloadSpringMessageService.sendBackupFinished(
-                        gameFileDetails));
+                        fileDetails));
     }
 }

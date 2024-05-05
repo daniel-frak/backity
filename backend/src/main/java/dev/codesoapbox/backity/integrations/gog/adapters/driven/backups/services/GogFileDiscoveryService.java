@@ -4,9 +4,9 @@ import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
 import dev.codesoapbox.backity.core.discovery.domain.IncrementalProgressTracker;
 import dev.codesoapbox.backity.core.discovery.domain.ProgressInfo;
 import dev.codesoapbox.backity.core.discovery.domain.SourceFileDiscoveryService;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.SourceFileDetails;
+import dev.codesoapbox.backity.core.filedetails.domain.SourceFileDetails;
+import dev.codesoapbox.backity.integrations.gog.domain.model.embed.FileDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
-import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
     }
 
     @Override
-    public void startFileDiscovery(Consumer<SourceFileDetails> gameFileConsumer) {
+    public void startFileDiscovery(Consumer<SourceFileDetails> fileConsumer) {
         log.info("Discovering new files...");
 
         shouldStopFileDiscovery.set(false);
@@ -47,7 +47,7 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
                 .takeWhile(id -> !shouldStopFileDiscovery.get())
                 .forEach(id -> {
                     GameDetailsResponse details = gogEmbedClient.getGameDetails(id);
-                    processFiles(gameFileConsumer, details);
+                    processFiles(fileConsumer, details);
                     incrementProgress();
                 });
     }
@@ -57,13 +57,13 @@ public class GogFileDiscoveryService implements SourceFileDiscoveryService {
             return;
         }
         details.getFiles().forEach(fileDetails -> {
-            SourceFileDetails sourceFileDetails = mapToDiscoveredGameFile(details, fileDetails);
+            SourceFileDetails sourceFileDetails = mapToDiscoveredFile(details, fileDetails);
             discoveredFileConsumer.accept(sourceFileDetails);
         });
     }
 
-    private SourceFileDetails mapToDiscoveredGameFile(GameDetailsResponse gameDetails,
-                                                      GameFileDetailsResponse fileDetails) {
+    private SourceFileDetails mapToDiscoveredFile(GameDetailsResponse gameDetails,
+                                                  FileDetailsResponse fileDetails) {
         return new SourceFileDetails(
                 SOURCE_ID,
                 gameDetails.getTitle(),

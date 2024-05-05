@@ -7,8 +7,8 @@ import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model.Fi
 import dev.codesoapbox.backity.core.discovery.domain.FileDiscoveryMessageService;
 import dev.codesoapbox.backity.core.discovery.domain.FileDiscoveryService;
 import dev.codesoapbox.backity.core.discovery.domain.SourceFileDiscoveryService;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsRepository;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsRepository;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +33,7 @@ public class FileDiscoveryBeanConfig {
     @Bean
     FileDiscoveryService fileDiscoveryService(List<SourceFileDiscoveryService> discoveryServices,
                                               GameRepository gameRepository,
-                                              GameFileDetailsRepository fileRepository,
+                                              FileDetailsRepository fileRepository,
                                               FileDiscoveryMessageService messageService) {
         return new FileDiscoveryService(discoveryServices, gameRepository, fileRepository, messageService);
     }

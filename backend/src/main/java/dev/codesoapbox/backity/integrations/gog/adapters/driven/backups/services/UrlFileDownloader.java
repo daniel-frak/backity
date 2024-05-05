@@ -2,8 +2,8 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.service
 
 import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
 import dev.codesoapbox.backity.core.discovery.domain.ProgressInfo;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileBackupException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,19 +24,19 @@ public class UrlFileDownloader {
     private final Consumer<ProgressInfo> progressInfoConsumer;
     private final Supplier<BackupProgress> backupProgressFactory;
 
-    public String downloadGameFile(FileBufferProvider fileBufferProvider, GameFileDetails gameFileDetails,
-                                   String tempFilePath)
+    public String downloadFile(FileBufferProvider fileBufferProvider, FileDetails fileDetails,
+                               String tempFilePath)
             throws IOException {
         BackupProgress progress = backupProgressFactory.get();
-        String url = gameFileDetails.getSourceFileDetails().url();
+        String url = fileDetails.getSourceFileDetails().url();
         Flux<DataBuffer> dataBufferFlux = fileBufferProvider.getFileBuffer(url, progress);
         writeToDisk(dataBufferFlux, tempFilePath, progress);
 
-        log.info("Downloaded file {} to {}", gameFileDetails, tempFilePath);
+        log.info("Downloaded file {} to {}", fileDetails, tempFilePath);
 
         validateDownloadedFileSize(tempFilePath, progress.getContentLengthBytes());
 
-        String originalFileName = gameFileDetails.getSourceFileDetails().originalFileName();
+        String originalFileName = fileDetails.getSourceFileDetails().originalFileName();
         return fileManager.renameFileAddingSuffixIfExists(tempFilePath, originalFileName);
     }
 

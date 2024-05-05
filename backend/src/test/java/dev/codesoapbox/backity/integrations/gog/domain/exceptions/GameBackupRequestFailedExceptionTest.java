@@ -12,7 +12,7 @@ class GameBackupRequestFailedExceptionTest {
 
         String result = exception.getMessage();
 
-        assertThat(result).isEqualTo("An error occurred while backing up game file: someUrl. someMessage");
+        assertThat(result).isEqualTo("An error occurred while backing up file: someUrl. someMessage");
     }
 
     @Test

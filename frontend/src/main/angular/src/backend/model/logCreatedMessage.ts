@@ -12,7 +12,7 @@
 
 
 export interface LogCreatedMessage { 
-    message: string;
-    maxLogs: number;
+    message?: string;
+    maxLogs?: number;
 }
 

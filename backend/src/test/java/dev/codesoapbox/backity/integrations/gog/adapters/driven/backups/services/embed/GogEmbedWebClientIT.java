@@ -11,8 +11,8 @@ import dev.codesoapbox.backity.integrations.gog.config.WebClientConfig;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileDiscoveryException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameBackupRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameListRequestFailedException;
+import dev.codesoapbox.backity.integrations.gog.domain.model.embed.FileDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
-import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -90,13 +90,13 @@ class GogEmbedWebClientIT {
     void shouldGetGameDetails(CapturedOutput capturedOutput) {
         setLogLevelToDebug();
         stubGameEndpoint("example_gog_game_details_response.json");
-        stubGameFileEndpoint("/downlink/unreal_tournament_2004_ece/en1installer3");
+        stubFileEndpoint("/downlink/unreal_tournament_2004_ece/en1installer3");
 
         GameDetailsResponse result = gogEmbedClient.getGameDetails("someGameId");
 
         var expectedResult = new GameDetailsResponse("Unreal Tournament 2004 Editor's Choice Edition",
                 "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
-                "someCdKey", "someTextInformation", singletonList(new GameFileDetailsResponse(
+                "someCdKey", "someTextInformation", singletonList(new FileDetailsResponse(
                 "someVersion", "/downlink/unreal_tournament_2004_ece/en1installer3",
                 "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)", "1 MB",
                 "en1installer3")),
@@ -119,7 +119,7 @@ class GogEmbedWebClientIT {
                         .withBodyFile(responseJson)));
     }
 
-    private void stubGameFileEndpoint(String url) {
+    private void stubFileEndpoint(String url) {
         wireMockEmbed.stubFor(head(urlPathEqualTo(url))
                 .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                 .willReturn(aResponse()));
@@ -128,7 +128,7 @@ class GogEmbedWebClientIT {
     @Test
     void shouldExtractFileTitleGivenFinalLocationUrlIncludesQueryParams() {
         stubGameEndpoint("example_gog_game_details_response_manual_url_with_query_params.json");
-        stubGameFileEndpoint("/downlink/unreal_tournament_2004_ece/en1installer3?some-query-param=true");
+        stubFileEndpoint("/downlink/unreal_tournament_2004_ece/en1installer3?some-query-param=true");
 
         GameDetailsResponse result = gogEmbedClient.getGameDetails("someGameId");
 
@@ -139,13 +139,13 @@ class GogEmbedWebClientIT {
     void shouldGetGameDetailsWhenVersionIsNull() {
         setLogLevelToDebug();
         stubGameEndpoint("example_gog_game_details_response_null_version.json");
-        stubGameFileEndpoint("/downlink/unreal_tournament_2004_ece/en1installer3");
+        stubFileEndpoint("/downlink/unreal_tournament_2004_ece/en1installer3");
 
         GameDetailsResponse result = gogEmbedClient.getGameDetails("someGameId");
 
         var expectedResult = new GameDetailsResponse("Unreal Tournament 2004 Editor's Choice Edition",
                 "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
-                "someCdKey", "someTextInformation", singletonList(new GameFileDetailsResponse(
+                "someCdKey", "someTextInformation", singletonList(new FileDetailsResponse(
                 "unknown", "/downlink/unreal_tournament_2004_ece/en1installer3",
                 "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)", "1 MB",
                 "en1installer3")),
@@ -228,7 +228,7 @@ class GogEmbedWebClientIT {
                         .withHeader("Content-Type", "application/json")
                         .withBodyFile("example_gog_game_details_response.json")));
 
-        stubGameFileEndpoint("/downlink/unreal_tournament_2004_ece/en1installer3");
+        stubFileEndpoint("/downlink/unreal_tournament_2004_ece/en1installer3");
 
         var result = gogEmbedClient.getLibrarySize();
         assertThat(result).isEqualTo("2000000 bytes");

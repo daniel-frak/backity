@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.core.game.application;
 
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsRepository;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsRepository;
 import dev.codesoapbox.backity.core.shared.domain.Page;
 import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.List;
 public class GameFacade {
 
     private final GameRepository gameRepository;
-    private final GameFileDetailsRepository gameFileRepository;
+    private final FileDetailsRepository fileDetailsRepository;
 
     public Page<GameWithFiles> getGamesWithFiles(Pagination pagination) {
         Page<Game> games = gameRepository.findAll(pagination);
@@ -22,7 +22,7 @@ public class GameFacade {
     }
 
     private GameWithFiles findFiles(Game game) {
-        List<GameFileDetails> gameFileDetails = gameFileRepository.findAllByGameId(game.getId());
-        return new GameWithFiles(game, gameFileDetails);
+        List<FileDetails> fileDetails = fileDetailsRepository.findAllByGameId(game.getId());
+        return new GameWithFiles(game, fileDetails);
     }
 }

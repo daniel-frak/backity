@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model;
 
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.fullFileDetails;
+import static dev.codesoapbox.backity.core.filedetails.domain.TestFileDetails.fullFileDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class FileFileBackupStartedWsMessageMapperTest {
@@ -13,7 +13,7 @@ class FileFileBackupStartedWsMessageMapperTest {
 
     @Test
     void shouldMapToMessage() {
-        GameFileDetails domain = fullFileDetails().build();
+        FileDetails domain = fullFileDetails().build();
 
         FileBackupStartedWsMessage result = MAPPER.toMessage(domain);
 

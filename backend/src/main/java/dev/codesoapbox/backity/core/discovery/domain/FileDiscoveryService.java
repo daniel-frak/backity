@@ -3,11 +3,11 @@ package dev.codesoapbox.backity.core.discovery.domain;
 import dev.codesoapbox.backity.DoNotMutate;
 import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryStatus;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsRepository;
+import dev.codesoapbox.backity.core.filedetails.domain.SourceFileDetails;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsRepository;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.SourceFileDetails;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -21,13 +21,13 @@ public class FileDiscoveryService {
 
     private final List<SourceFileDiscoveryService> discoveryServices;
     private final GameRepository gameRepository;
-    private final GameFileDetailsRepository fileRepository;
+    private final FileDetailsRepository fileRepository;
     private final FileDiscoveryMessageService messageService;
     private final Map<String, Boolean> discoveryStatuses = new ConcurrentHashMap<>();
 
     public FileDiscoveryService(List<SourceFileDiscoveryService> discoveryServices,
                                 GameRepository gameRepository,
-                                GameFileDetailsRepository fileRepository, FileDiscoveryMessageService messageService) {
+                                FileDetailsRepository fileRepository, FileDiscoveryMessageService messageService) {
         this.discoveryServices = discoveryServices.stream().toList();
         this.gameRepository = gameRepository;
         this.fileRepository = fileRepository;
@@ -89,26 +89,27 @@ public class FileDiscoveryService {
         return discoveryStatuses.get(discoveryService.getSource());
     }
 
-    private void changeDiscoveryStatus(SourceFileDiscoveryService discoveryService, boolean status) {
-        log.info("Changing discovery status of {} to {}" , discoveryService.getSource(), status);
-        discoveryStatuses.put(discoveryService.getSource(), status);
-        sendDiscoveryStatusMessage(discoveryService, status);
+    private void changeDiscoveryStatus(SourceFileDiscoveryService discoveryService, boolean isInProgress) {
+        log.info("Changing discovery status of {} to {}" , discoveryService.getSource(), isInProgress);
+        discoveryStatuses.put(discoveryService.getSource(), isInProgress);
+        sendDiscoveryStatusMessage(discoveryService, isInProgress);
     }
 
-    private void sendDiscoveryStatusMessage(SourceFileDiscoveryService discoveryService, boolean status) {
-        messageService.sendStatusChangedMessage(new FileDiscoveryStatus(discoveryService.getSource(), status));
+    private void sendDiscoveryStatusMessage(SourceFileDiscoveryService discoveryService, boolean isInProgress) {
+        var status = new FileDiscoveryStatus(discoveryService.getSource(), isInProgress);
+        messageService.sendStatusChangedMessage(status);
     }
 
     private void saveDiscoveredFileInfo(SourceFileDetails sourceFileDetails) {
         Game game = getGameOrCreateNew(sourceFileDetails);
-        GameFileDetails gameFileDetails = sourceFileDetails.associateWith(game);
+        FileDetails fileDetails = sourceFileDetails.associateWith(game);
 
-        if (!fileRepository.existsByUrlAndVersion(gameFileDetails.getSourceFileDetails().url(),
-                gameFileDetails.getSourceFileDetails().version())) {
-            fileRepository.save(gameFileDetails);
-            messageService.sendFileDiscoveredMessage(gameFileDetails);
-            log.info("Discovered new file: {} (gameId: {})", gameFileDetails.getSourceFileDetails().url(),
-                    gameFileDetails.getGameId().value());
+        if (!fileRepository.existsByUrlAndVersion(fileDetails.getSourceFileDetails().url(),
+                fileDetails.getSourceFileDetails().version())) {
+            fileRepository.save(fileDetails);
+            messageService.sendFileDiscoveredMessage(fileDetails);
+            log.info("Discovered new file: {} (gameId: {})", fileDetails.getSourceFileDetails().url(),
+                    fileDetails.getGameId().value());
         }
     }
 

@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model;
 
-import dev.codesoapbox.backity.core.gamefiledetails.domain.SourceFileDetails;
+import dev.codesoapbox.backity.core.filedetails.domain.SourceFileDetails;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.discoveredFileDetails;
+import static dev.codesoapbox.backity.core.filedetails.domain.TestFileDetails.discoveredFileDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class FileDiscoveredWsMessageMapperTest {

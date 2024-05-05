@@ -6,7 +6,7 @@ import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model.Fi
 import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model.FileDiscoveryStatusChangedMessageMapper;
 import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryStatus;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.discoveredFileDetails;
+import static dev.codesoapbox.backity.core.filedetails.domain.TestFileDetails.discoveredFileDetails;
 import static dev.codesoapbox.backity.testing.assertions.SimpMessagingAssertions.assertSendsMessage;
 
 @ExtendWith(MockitoExtension.class)
@@ -80,11 +80,11 @@ class FileDiscoverySpringMessageServiceTest {
                 }
                 """;
 
-        GameFileDetails gameFileDetails = discoveredFileDetails().build();
+        FileDetails fileDetails = discoveredFileDetails().build();
 
         assertSendsMessage(simpMessagingTemplate, expectedPayload,
                 FileDiscoveryMessageTopics.FILE_DISCOVERED.toString(),
                 () -> fileDiscoverySpringMessageService.sendFileDiscoveredMessage(
-                        gameFileDetails));
+                        fileDetails));
     }
 }

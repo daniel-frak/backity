@@ -7,25 +7,19 @@ import {TableComponent} from "@app/shared/components/table/table.component";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {of} from "rxjs";
-import {
-  FileBackupStartedMessage,
-  FileBackupStatus,
-  GameFileDetails,
-  GameFileDetailsClient,
-  PageGameFileDetails
-} from "@backend";
+import {FileBackupStartedMessage, FileBackupStatus, FileDetails, FileDetailsClient, PageFileDetails} from "@backend";
 import {By} from "@angular/platform-browser";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
 
 describe('FileBackupComponent', () => {
   let component: FileBackupComponent;
   let fixture: ComponentFixture<FileBackupComponent>;
-  let gameFileDetailsClient: jasmine.SpyObj<GameFileDetailsClient>;
+  let fileDetailsClient: jasmine.SpyObj<FileDetailsClient>;
   let messagesService: jasmine.SpyObj<MessagesService>;
 
-  const enqueuedDownloads: PageGameFileDetails = {
+  const enqueuedDownloads: PageFileDetails = {
     content: [{
-      id: "someGameFileId",
+      id: "someFileId",
       sourceFileDetails: {
         originalGameTitle: "Some queued game",
         fileTitle: "queuedGame.exe",
@@ -36,9 +30,9 @@ describe('FileBackupComponent', () => {
       }
     }]
   };
-  const processedFiles: PageGameFileDetails = {
+  const processedFiles: PageFileDetails = {
     content: [{
-      id: "someGameFileId",
+      id: "someFileId",
       sourceFileDetails: {
         originalGameTitle: "Some processed game",
         fileTitle: "processedGame.exe",
@@ -49,8 +43,8 @@ describe('FileBackupComponent', () => {
       }
     }]
   };
-  const currentlyProcessedGameFileDetails: GameFileDetails = {
-    id: "someGameFileId",
+  const currentlyProcessedFileDetails: FileDetails = {
+    id: "someFileId",
     sourceFileDetails: {
       originalGameTitle: "Some current game",
       originalFileName: "Some original file name",
@@ -60,7 +54,7 @@ describe('FileBackupComponent', () => {
     }
   };
   const expectedCurrentlyProcessing: FileBackupStartedMessage = {
-    gameFileDetailsId: "someGameFileId",
+    fileDetailsId: "someFileId",
     originalGameTitle: "Some current game",
     originalFileName: "Some original file name",
     version: "Some version",
@@ -82,9 +76,9 @@ describe('FileBackupComponent', () => {
       ],
       providers: [
         {
-          provide: GameFileDetailsClient,
-          useValue: jasmine.createSpyObj('GameFileDetailsClient',
-            ['getQueueItems', 'getProcessedFiles', 'getCurrentlyProcessing'])
+          provide: FileDetailsClient,
+          useValue: jasmine.createSpyObj('FileDetailsClient',
+            ['getQueueItems', 'getProcessedFiles', 'getCurrentlyDownloading'])
         },
         {
           provide: MessagesService,
@@ -98,12 +92,12 @@ describe('FileBackupComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FileBackupComponent);
     component = fixture.componentInstance;
-    gameFileDetailsClient = TestBed.inject(GameFileDetailsClient) as jasmine.SpyObj<GameFileDetailsClient>;
+    fileDetailsClient = TestBed.inject(FileDetailsClient) as jasmine.SpyObj<FileDetailsClient>;
     messagesService = TestBed.inject(MessagesService) as jasmine.SpyObj<MessagesService>;
 
-    gameFileDetailsClient.getQueueItems.and.returnValue(of(enqueuedDownloads) as any);
-    gameFileDetailsClient.getProcessedFiles.and.returnValue(of(processedFiles) as any);
-    gameFileDetailsClient.getCurrentlyProcessing.and.returnValue(of(currentlyProcessedGameFileDetails) as any);
+    fileDetailsClient.getQueueItems.and.returnValue(of(enqueuedDownloads) as any);
+    fileDetailsClient.getProcessedFiles.and.returnValue(of(processedFiles) as any);
+    fileDetailsClient.getCurrentlyDownloading.and.returnValue(of(currentlyProcessedFileDetails) as any);
   });
 
   it('should create the component', () => {
@@ -125,15 +119,15 @@ describe('FileBackupComponent', () => {
   it('should retrieve files', () => {
     fixture.detectChanges();
 
-    expect(gameFileDetailsClient.getQueueItems)
+    expect(fileDetailsClient.getQueueItems)
       .toHaveBeenCalledWith({
         page: 0,
         size: component['pageSize']
       });
     expect(component.enqueuedDownloads).toEqual(enqueuedDownloads);
-    expect(gameFileDetailsClient.getProcessedFiles).toHaveBeenCalled();
+    expect(fileDetailsClient.getProcessedFiles).toHaveBeenCalled();
     expect(component.processedFiles).toEqual(processedFiles);
-    expect(gameFileDetailsClient.getCurrentlyProcessing).toHaveBeenCalled();
+    expect(fileDetailsClient.getCurrentlyDownloading).toHaveBeenCalled();
     expect(component.currentDownload).toEqual(expectedCurrentlyProcessing);
     expect(component.filesAreLoading).toBe(false);
 

@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @IncludeInDocumentation
 @Schema(name = "FileBackupStatusChangedMessage")
 public record FileBackupStatusChangedWsMessage(
-        String gameFileDetailsId,
+        String fileDetailsId,
         String newStatus,
         String failedReason
 ) {

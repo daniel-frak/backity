@@ -2,9 +2,9 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.service
 
 import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
 import dev.codesoapbox.backity.core.discovery.domain.ProgressInfo;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.SourceFileDetails;
+import dev.codesoapbox.backity.core.filedetails.domain.SourceFileDetails;
+import dev.codesoapbox.backity.integrations.gog.domain.model.embed.FileDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
-import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,10 +33,10 @@ class GogFileDiscoveryServiceTest {
     void startFileDiscoveryShouldDiscoverNewFiles() {
         mockFileDiscovery();
 
-        List<SourceFileDetails> gameFileVersionBackups = new ArrayList<>();
-        gogFileDiscoveryService.startFileDiscovery(gameFileVersionBackups::add);
+        List<SourceFileDetails> fileVersionBackups = new ArrayList<>();
+        gogFileDiscoveryService.startFileDiscovery(fileVersionBackups::add);
 
-        var expectedGameFileDetails = List.of(
+        var expectedFileDetails = List.of(
                 new SourceFileDetails(new FileSourceId("GOG"), "Game 2", "fileSimpleName1",
                         "1.0.0", "someUrl1", "fileName1", "100 KB"),
                 new SourceFileDetails(new FileSourceId("GOG"), "Game 2", "fileSimpleName2",
@@ -46,7 +46,7 @@ class GogFileDiscoveryServiceTest {
                         "3.0.0", "someUrl3", "fileName3", "300 KB")
         );
 
-        assertThat(gameFileVersionBackups).isEqualTo(expectedGameFileDetails);
+        assertThat(fileVersionBackups).isEqualTo(expectedFileDetails);
     }
 
     private void mockFileDiscovery() {
@@ -60,15 +60,15 @@ class GogFileDiscoveryServiceTest {
 
         var game2Details = new GameDetailsResponse("Game 2", null, null,
                 null, List.of(
-                new GameFileDetailsResponse("1.0.0", "someUrl1", "fileSimpleName1", "100 KB",
+                new FileDetailsResponse("1.0.0", "someUrl1", "fileSimpleName1", "100 KB",
                         "fileName1"),
-                new GameFileDetailsResponse("2.0.0", "someUrl2", "fileSimpleName2", "200 KB",
+                new FileDetailsResponse("2.0.0", "someUrl2", "fileSimpleName2", "200 KB",
                         "fileName2")
         ), null);
 
         var game4Details = new GameDetailsResponse("Game 4", null, null,
                 null, List.of(
-                new GameFileDetailsResponse("3.0.0", "someUrl3", "fileSimpleName3", "300 KB",
+                new FileDetailsResponse("3.0.0", "someUrl3", "fileSimpleName3", "300 KB",
                         "fileName3")
         ), null);
 
@@ -105,10 +105,10 @@ class GogFileDiscoveryServiceTest {
                     return List.of(gameId1, "gameId2", "gameId3", "gameId4");
                 });
 
-        List<SourceFileDetails> gameFileVersionBackups = new ArrayList<>();
-        gogFileDiscoveryService.startFileDiscovery(gameFileVersionBackups::add);
+        List<SourceFileDetails> fileVersionBackups = new ArrayList<>();
+        gogFileDiscoveryService.startFileDiscovery(fileVersionBackups::add);
 
-        assertThat(gameFileVersionBackups).isEmpty();
+        assertThat(fileVersionBackups).isEmpty();
         verify(gogEmbedClient, never()).getGameDetails(any());
     }
 
@@ -117,7 +117,7 @@ class GogFileDiscoveryServiceTest {
         var gameId1 = "gameId1";
         var game1Details = new GameDetailsResponse("Game 1", null, null,
                 null, List.of(
-                new GameFileDetailsResponse("3.0.0", "someUrl3", "fileName3", "300 KB",
+                new FileDetailsResponse("3.0.0", "someUrl3", "fileName3", "300 KB",
                         "setup.exe")
         ), null);
 
@@ -129,10 +129,10 @@ class GogFileDiscoveryServiceTest {
                     return game1Details;
                 });
 
-        List<SourceFileDetails> gameFileVersionBackups = new ArrayList<>();
-        gogFileDiscoveryService.startFileDiscovery(gameFileVersionBackups::add);
+        List<SourceFileDetails> sourceFileDetails = new ArrayList<>();
+        gogFileDiscoveryService.startFileDiscovery(sourceFileDetails::add);
 
-        assertThat(gameFileVersionBackups.size()).isOne();
+        assertThat(sourceFileDetails.size()).isOne();
         verify(gogEmbedClient, times(1)).getGameDetails(any());
     }
 

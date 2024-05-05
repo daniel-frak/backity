@@ -1,12 +1,12 @@
 package dev.codesoapbox.backity.core.backup.domain;
 
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
 
 public interface FileBackupMessageService {
 
-    void sendBackupStarted(GameFileDetails payload);
+    void sendBackupStarted(FileDetails payload);
 
     void sendProgress(FileBackupProgress payload);
 
-    void sendBackupFinished(GameFileDetails payload);
+    void sendBackupFinished(FileDetails payload);
 }

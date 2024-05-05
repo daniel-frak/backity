@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.backup.domain;
 
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsRepository;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.discoveredFileDetails;
+import static dev.codesoapbox.backity.core.filedetails.domain.TestFileDetails.discoveredFileDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -22,7 +22,7 @@ class EnqueuedFileBackupProcessorTest {
     private EnqueuedFileBackupProcessor enqueuedFileBackupProcessor;
 
     @Mock
-    private GameFileDetailsRepository gameFileDetailsRepository;
+    private FileDetailsRepository fileDetailsRepository;
 
     @Mock
     private FileBackupService fileBackupService;
@@ -32,53 +32,53 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldProcessEnqueuedFileDownloadIfNotCurrentlyDownloading() {
-        GameFileDetails gameFileDetails = discoveredFileDetails().build();
-        AtomicBoolean gameFileDetailsWasKeptAsReferenceDuringProcessing = new AtomicBoolean();
-        when(gameFileDetailsRepository.findOldestWaitingForDownload())
-                .thenReturn(Optional.of(gameFileDetails));
-        when(fileBackupService.isReadyFor(gameFileDetails))
+        FileDetails fileDetails = discoveredFileDetails().build();
+        AtomicBoolean fileDetailsWasKeptAsReferenceDuringProcessing = new AtomicBoolean();
+        when(fileDetailsRepository.findOldestWaitingForDownload())
+                .thenReturn(Optional.of(fileDetails));
+        when(fileBackupService.isReadyFor(fileDetails))
                 .thenReturn(true);
         doAnswer(inv -> {
-            gameFileDetailsWasKeptAsReferenceDuringProcessing.set(
-                    enqueuedFileBackupProcessor.enqueuedFileBackupReference.get() == gameFileDetails);
+            fileDetailsWasKeptAsReferenceDuringProcessing.set(
+                    enqueuedFileBackupProcessor.enqueuedFileBackupReference.get() == fileDetails);
             return null;
-        }).when(fileBackupService).backUpGameFile(gameFileDetails);
+        }).when(fileBackupService).backUpFile(fileDetails);
 
         enqueuedFileBackupProcessor.processQueue();
 
-        verify(messageService).sendBackupStarted(gameFileDetails);
-        verify(fileBackupService).backUpGameFile(gameFileDetails);
-        verify(messageService).sendBackupFinished(gameFileDetails);
+        verify(messageService).sendBackupStarted(fileDetails);
+        verify(fileBackupService).backUpFile(fileDetails);
+        verify(messageService).sendBackupFinished(fileDetails);
         assertThat(enqueuedFileBackupProcessor.enqueuedFileBackupReference.get()).isNull();
-        assertThat(gameFileDetailsWasKeptAsReferenceDuringProcessing).isTrue();
+        assertThat(fileDetailsWasKeptAsReferenceDuringProcessing).isTrue();
     }
 
     @Test
     void shouldFailGracefully() {
-        GameFileDetails gameFileDetails = discoveredFileDetails().build();
+        FileDetails fileDetails = discoveredFileDetails().build();
 
-        when(gameFileDetailsRepository.findOldestWaitingForDownload())
-                .thenReturn(Optional.of(gameFileDetails));
-        when(fileBackupService.isReadyFor(gameFileDetails))
+        when(fileDetailsRepository.findOldestWaitingForDownload())
+                .thenReturn(Optional.of(fileDetails));
+        when(fileBackupService.isReadyFor(fileDetails))
                 .thenReturn(true);
         doThrow(new RuntimeException("someFailedReason"))
-                .when(fileBackupService).backUpGameFile(gameFileDetails);
+                .when(fileBackupService).backUpFile(fileDetails);
 
         enqueuedFileBackupProcessor.processQueue();
 
-        verify(messageService).sendBackupStarted(gameFileDetails);
-        verify(messageService).sendBackupFinished(gameFileDetails);
+        verify(messageService).sendBackupStarted(fileDetails);
+        verify(messageService).sendBackupFinished(fileDetails);
         assertThat(enqueuedFileBackupProcessor.enqueuedFileBackupReference.get()).isNull();
         verifyNoMoreInteractions(messageService, fileBackupService);
     }
 
     @Test
     void shouldDoNothingIfSourceDownloaderNotReady() {
-        GameFileDetails gameFileDetails = discoveredFileDetails().build();
+        FileDetails fileDetails = discoveredFileDetails().build();
 
-        when(gameFileDetailsRepository.findOldestWaitingForDownload())
-                .thenReturn(Optional.of(gameFileDetails));
-        when(fileBackupService.isReadyFor(gameFileDetails))
+        when(fileDetailsRepository.findOldestWaitingForDownload())
+                .thenReturn(Optional.of(fileDetails));
+        when(fileBackupService.isReadyFor(fileDetails))
                 .thenReturn(false);
 
         enqueuedFileBackupProcessor.processQueue();
@@ -88,13 +88,13 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldDoNothingIfCurrentlyDownloading() {
-        GameFileDetails gameFileDetails = discoveredFileDetails().build();
-        lenient().when(gameFileDetailsRepository.findOldestWaitingForDownload())
-                .thenReturn(Optional.of(gameFileDetails));
+        FileDetails fileDetails = discoveredFileDetails().build();
+        lenient().when(fileDetailsRepository.findOldestWaitingForDownload())
+                .thenReturn(Optional.of(fileDetails));
 
-        enqueuedFileBackupProcessor.enqueuedFileBackupReference.set(gameFileDetails);
+        enqueuedFileBackupProcessor.enqueuedFileBackupReference.set(fileDetails);
         enqueuedFileBackupProcessor.processQueue();
 
-        verifyNoInteractions(gameFileDetailsRepository, fileBackupService, messageService);
+        verifyNoInteractions(fileDetailsRepository, fileBackupService, messageService);
     }
 }

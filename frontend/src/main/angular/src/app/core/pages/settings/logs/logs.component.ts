@@ -28,8 +28,8 @@ export class LogsComponent implements OnInit, OnDestroy {
 
   private onLogReceived(payload: IMessage) {
     const message: LogCreatedMessage = JSON.parse(payload.body);
-    this.logs.unshift(message.message);
-    if (this.logs.length > (message.maxLogs)) {
+    this.logs.unshift(message.message as string);
+    if (this.logs.length > (message.maxLogs as number)) {
       this.logs.pop();
     }
   }

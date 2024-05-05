@@ -12,7 +12,7 @@
 
 
 export interface FileBackupStartedMessage { 
-    gameFileDetailsId?: string;
+    fileDetailsId?: string;
     originalGameTitle?: string;
     fileTitle?: string;
     version?: string;

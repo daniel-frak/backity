@@ -5,9 +5,9 @@ import {
   FileBackupStartedMessage,
   FileBackupStatus,
   FileBackupStatusChangedMessage,
-  GameFileDetails,
-  GameFileDetailsClient,
-  PageGameFileDetails
+  FileDetails,
+  FileDetailsClient,
+  PageFileDetails
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
@@ -20,8 +20,8 @@ import {IMessage} from "@stomp/stompjs";
 })
 export class FileBackupComponent implements OnInit, OnDestroy {
 
-  enqueuedDownloads?: PageGameFileDetails;
-  processedFiles?: PageGameFileDetails;
+  enqueuedDownloads?: PageFileDetails;
+  processedFiles?: PageFileDetails;
   currentDownload?: FileBackupStartedMessage;
   downloadProgress?: FileBackupProgressUpdateMessage;
   filesAreLoading: boolean = false;
@@ -30,11 +30,11 @@ export class FileBackupComponent implements OnInit, OnDestroy {
   private pageSize = 20;
   private readonly stompSubscriptions: StompSubscription[] = [];
 
-  constructor(private readonly gameFileDetailsClient: GameFileDetailsClient,
+  constructor(private readonly fileDetailsClient: FileDetailsClient,
               private readonly messageService: MessagesService) {
   }
 
-  asFile = (file: GameFileDetails) => file;
+  asFile = (file: FileDetails) => file;
   asBackupStartedMessage = (message: FileBackupStartedMessage) => message;
 
   ngOnInit(): void {
@@ -57,7 +57,7 @@ export class FileBackupComponent implements OnInit, OnDestroy {
 
   private onStatusChanged(payload: IMessage) {
     const message: FileBackupStatusChangedMessage = JSON.parse(payload.body);
-    if (message.gameFileDetailsId == this.currentDownload?.gameFileDetailsId &&
+    if (message.fileDetailsId == this.currentDownload?.fileDetailsId &&
       (message.newStatus == FileBackupStatus.Success || message.newStatus == FileBackupStatus.Failed)) {
       this.currentDownload = undefined;
     }
@@ -68,14 +68,14 @@ export class FileBackupComponent implements OnInit, OnDestroy {
     const page = 0;
     const size = this.pageSize;
 
-    this.gameFileDetailsClient.getQueueItems({
+    this.fileDetailsClient.getQueueItems({
       page: page,
       size: size
     })
       .subscribe(d => {
         this.enqueuedDownloads = d;
 
-        this.gameFileDetailsClient.getProcessedFiles({
+        this.fileDetailsClient.getProcessedFiles({
           page: 0,
           size: 20
         })
@@ -85,10 +85,10 @@ export class FileBackupComponent implements OnInit, OnDestroy {
           })
       });
 
-    this.gameFileDetailsClient.getCurrentlyProcessing()
+    this.fileDetailsClient.getCurrentlyDownloading()
       .subscribe(d => {
         this.currentDownload = {
-          gameFileDetailsId: d.id,
+          fileDetailsId: d.id,
           originalGameTitle: d.sourceFileDetails?.originalGameTitle,
           fileTitle: d.sourceFileDetails?.fileTitle,
           version: d.sourceFileDetails?.version,

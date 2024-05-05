@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.backup.domain;
 
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsRepository;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,38 +11,38 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public class EnqueuedFileBackupProcessor {
 
-    private final GameFileDetailsRepository gameFileDetailsRepository;
+    private final FileDetailsRepository fileDetailsRepository;
     private final FileBackupService fileBackupService;
     private final FileBackupMessageService messageService;
 
-    final AtomicReference<GameFileDetails> enqueuedFileBackupReference = new AtomicReference<>();
+    final AtomicReference<FileDetails> enqueuedFileBackupReference = new AtomicReference<>();
 
     public synchronized void processQueue() {
         if (enqueuedFileBackupReference.get() != null) {
             return;
         }
 
-        gameFileDetailsRepository.findOldestWaitingForDownload()
+        fileDetailsRepository.findOldestWaitingForDownload()
                 .ifPresent(this::processEnqueuedFileDownload);
     }
 
-    private void processEnqueuedFileDownload(GameFileDetails gameFileDetails) {
-        if (!fileBackupService.isReadyFor(gameFileDetails)) {
+    private void processEnqueuedFileDownload(FileDetails fileDetails) {
+        if (!fileBackupService.isReadyFor(fileDetails)) {
             return;
         }
 
-        enqueuedFileBackupReference.set(gameFileDetails);
+        enqueuedFileBackupReference.set(fileDetails);
 
-        log.info("Backing up enqueued file {}", gameFileDetails.getSourceFileDetails().url());
+        log.info("Backing up enqueued file {}", fileDetails.getSourceFileDetails().url());
 
         try {
-            messageService.sendBackupStarted(gameFileDetails);
-            fileBackupService.backUpGameFile(gameFileDetails);
-            messageService.sendBackupFinished(gameFileDetails);
+            messageService.sendBackupStarted(fileDetails);
+            fileBackupService.backUpFile(fileDetails);
+            messageService.sendBackupFinished(fileDetails);
         } catch (RuntimeException e) {
             log.error("An error occurred while trying to process enqueued file (id: {})",
-                    gameFileDetails.getId(), e);
-            messageService.sendBackupFinished(gameFileDetails);
+                    fileDetails.getId(), e);
+            messageService.sendBackupFinished(fileDetails);
         } finally {
             enqueuedFileBackupReference.set(null);
         }

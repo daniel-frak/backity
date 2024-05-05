@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.shared.config;
 
+import dev.codesoapbox.backity.core.filedetails.config.FileDetailsJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.game.config.GameJpaRepositoryBeanConfig;
-import dev.codesoapbox.backity.core.gamefiledetails.config.GameFileDetailsJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.shared.config.http.TestTimeBeanConfig;
 import dev.codesoapbox.backity.core.shared.config.jpa.SharedJpaRepositoryBeanConfig;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Import;
 
         // Specific
         GameJpaRepositoryBeanConfig.class,
-        GameFileDetailsJpaRepositoryBeanConfig.class
+        FileDetailsJpaRepositoryBeanConfig.class
 })
 public class SharedRepositoryTestConfig {
 }

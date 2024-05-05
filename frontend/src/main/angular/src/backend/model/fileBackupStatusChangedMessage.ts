@@ -12,7 +12,7 @@
 
 
 export interface FileBackupStatusChangedMessage { 
-    gameFileDetailsId?: string;
+    fileDetailsId?: string;
     newStatus?: string;
     failedReason?: string;
 }

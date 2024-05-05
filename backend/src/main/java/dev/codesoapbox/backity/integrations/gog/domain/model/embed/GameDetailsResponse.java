@@ -15,6 +15,6 @@ public class GameDetailsResponse {
     private String backgroundImage;
     private String cdKey;
     private String textInformation;
-    private List<GameFileDetailsResponse> files;
+    private List<FileDetailsResponse> files;
     private String changelog;
 }

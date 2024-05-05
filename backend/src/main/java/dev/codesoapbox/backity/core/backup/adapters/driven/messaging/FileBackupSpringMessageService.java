@@ -6,7 +6,7 @@ import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileB
 import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStatusChangedWsMessage;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupMessageService;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupProgress;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -20,8 +20,8 @@ public class FileBackupSpringMessageService implements FileBackupMessageService 
     private final FileBackupStatusChangedMessageMapper fileBackupStatusChangedMessageMapper;
 
     @Override
-    public void sendBackupStarted(GameFileDetails gameFileDetails) {
-        FileBackupStartedWsMessage payload = fileBackupStartedMessageMapper.toMessage(gameFileDetails);
+    public void sendBackupStarted(FileDetails fileDetails) {
+        FileBackupStartedWsMessage payload = fileBackupStartedMessageMapper.toMessage(fileDetails);
         sendMessage(FileBackupMessageTopics.BACKUP_STARTED.toString(), payload);
     }
 
@@ -36,8 +36,8 @@ public class FileBackupSpringMessageService implements FileBackupMessageService 
     }
 
     @Override
-    public void sendBackupFinished(GameFileDetails gameFileDetails) {
-        FileBackupStatusChangedWsMessage payload = fileBackupStatusChangedMessageMapper.toMessage(gameFileDetails);
+    public void sendBackupFinished(FileDetails fileDetails) {
+        FileBackupStatusChangedWsMessage payload = fileBackupStatusChangedMessageMapper.toMessage(fileDetails);
         sendMessage(FileBackupMessageTopics.BACKUP_STATUS_CHANGED.toString(), payload);
     }
 }

@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model.*;
 import dev.codesoapbox.backity.core.discovery.domain.FileDiscoveryMessageService;
 import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryProgress;
 import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryStatus;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -36,8 +36,8 @@ public class FileDiscoverySpringMessageService implements FileDiscoveryMessageSe
     }
 
     @Override
-    public void sendFileDiscoveredMessage(GameFileDetails gameFileDetails) {
-        FileDiscoveredWsMessage payload = fileDiscoveredMessageMapper.toMessage(gameFileDetails.getSourceFileDetails());
+    public void sendFileDiscoveredMessage(FileDetails fileDetails) {
+        FileDiscoveredWsMessage payload = fileDiscoveredMessageMapper.toMessage(fileDetails.getSourceFileDetails());
         sendMessage(FileDiscoveryMessageTopics.FILE_DISCOVERED.toString(), payload);
     }
 }

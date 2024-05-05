@@ -7,9 +7,9 @@ import dev.codesoapbox.backity.core.backup.domain.EnqueuedFileBackupProcessor;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupMessageService;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupService;
 import dev.codesoapbox.backity.core.backup.domain.SourceFileBackupService;
+import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsRepository;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
 import dev.codesoapbox.backity.core.filemanagement.domain.FilePathProvider;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetailsRepository;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,10 +22,10 @@ public class FileBackupBeanConfig {
 
     @Bean
     FileBackupService fileDownloader(FilePathProvider filePathProvider,
-                                     GameFileDetailsRepository gameFileDetailsSpringRepository,
+                                     FileDetailsRepository fileDetailsSpringRepository,
                                      List<SourceFileBackupService> fileDownloaders,
                                      FileManager fileManager) {
-        return new FileBackupService(filePathProvider, gameFileDetailsSpringRepository, fileManager, fileDownloaders);
+        return new FileBackupService(filePathProvider, fileDetailsSpringRepository, fileManager, fileDownloaders);
     }
 
     @Bean
@@ -38,9 +38,9 @@ public class FileBackupBeanConfig {
     }
 
     @Bean
-    EnqueuedFileBackupProcessor fileDownloadQueueScheduler(GameFileDetailsRepository gameFileDetailsRepository,
+    EnqueuedFileBackupProcessor fileDownloadQueueScheduler(FileDetailsRepository fileDetailsRepository,
                                                            FileBackupService fileBackupService,
                                                            FileBackupMessageService fileBackupMessageService) {
-        return new EnqueuedFileBackupProcessor(gameFileDetailsRepository, fileBackupService, fileBackupMessageService);
+        return new EnqueuedFileBackupProcessor(fileDetailsRepository, fileBackupService, fileBackupMessageService);
     }
 }
