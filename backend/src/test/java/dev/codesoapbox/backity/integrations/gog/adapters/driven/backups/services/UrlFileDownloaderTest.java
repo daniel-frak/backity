@@ -1,25 +1,24 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
+import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
 import dev.codesoapbox.backity.core.discovery.domain.ProgressInfo;
 import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileManager;
 import dev.codesoapbox.backity.core.gamefiledetails.domain.GameFileDetails;
-import dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileBackupException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
+import static dev.codesoapbox.backity.core.gamefiledetails.domain.TestGameFileDetails.discoveredFileDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UrlFileDownloaderTest {
@@ -39,27 +38,50 @@ class UrlFileDownloaderTest {
     void setUp() {
         fileManager = new FakeUnixFileManager();
         fileBufferProvider = new FakeFileBufferProvider();
-        urlFileDownloader = new UrlFileDownloader(fileManager, progressInfoConsumer);
+        urlFileDownloader = new UrlFileDownloader(fileManager, progressInfoConsumer, BackupProgress::new);
     }
 
     @Test
     void downloadGameFileShouldDownloadToDisk() throws IOException {
         String originalFileName = "originalFileName.txt";
-        GameFileDetails gameFileDetails = TestGameFileDetails.discoveredFileDetails()
+        GameFileDetails gameFileDetails = discoveredFileDetails()
                 .originalFileName(originalFileName)
                 .build();
         fileBufferProvider.mockDataForDownload(gameFileDetails, "Test data");
 
         urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileDetails, "tempFilePath");
 
-        fileManager.containsFile(originalFileName);
+        assertThat(fileManager.containsFile(originalFileName)).isTrue();
+    }
+
+    @Test
+    void downloadGameFileShouldTrackProgress() throws IOException {
+        BackupProgress backupProgress = mock(BackupProgress.class);
+        Supplier<BackupProgress> backupProgressFactory = () -> backupProgress;
+        fileManager = new FakeUnixFileManager();
+        fileBufferProvider = new FakeFileBufferProvider();
+        urlFileDownloader = new UrlFileDownloader(fileManager, progressInfoConsumer, backupProgressFactory);
+        when(backupProgress.getTrackedOutputStream(any()))
+                .thenAnswer(inv -> inv.getArgument(0));
+        when(backupProgress.getContentLengthBytes())
+                .thenReturn(9L);
+        GameFileDetails gameFileDetails = discoveredFileDetails().build();
+        fileBufferProvider.mockDataForDownload(gameFileDetails, "Test data");
+
+        urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileDetails, "tempFilePath");
+
+        InOrder inOrder = Mockito.inOrder(backupProgress);
+        inOrder.verify(backupProgress).startTracking(9);
+        inOrder.verify(backupProgress).subscribeToProgress(progressInfoConsumer);
+        inOrder.verify(backupProgress).getTrackedOutputStream(any());
+        inOrder.verify(backupProgress).unsubscribeFromProgress(progressInfoConsumer);
     }
 
     @Test
     void downloadGameFileShouldReturnDownloadedFilePath() throws IOException {
         String originalFileName = "originalFileName.txt";
         String tempFilePath = "tempFilePath";
-        GameFileDetails gameFileDetails = TestGameFileDetails.discoveredFileDetails()
+        GameFileDetails gameFileDetails = discoveredFileDetails()
                 .originalFileName(originalFileName)
                 .build();
         fileBufferProvider.mockDataForDownload(gameFileDetails, "Test data");
@@ -71,7 +93,7 @@ class UrlFileDownloaderTest {
 
     @Test
     void downloadGameFileShouldUpdateProgress() throws IOException {
-        GameFileDetails gameFileDetails = TestGameFileDetails.discoveredFileDetails().build();
+        GameFileDetails gameFileDetails = discoveredFileDetails().build();
         fileBufferProvider.mockDataForDownload(gameFileDetails, "Test data");
 
         urlFileDownloader.downloadGameFile(fileBufferProvider, gameFileDetails, "tempFilePath");
@@ -86,7 +108,7 @@ class UrlFileDownloaderTest {
     void downloadGameFileShouldDownloadAndUpdateProgressAndRename() throws IOException {
         String originalFileName = "originalFileName.txt";
         String tempFilePath = "tempFilePath";
-        GameFileDetails gameFileDetails = TestGameFileDetails.discoveredFileDetails()
+        GameFileDetails gameFileDetails = discoveredFileDetails()
                 .originalFileName(originalFileName)
                 .build();
         fileBufferProvider.mockDataForDownload(gameFileDetails, "Test data");
@@ -99,7 +121,7 @@ class UrlFileDownloaderTest {
     @Test
     void downloadGameFileShouldThrowGivenFileSizeDoesNotMatch() {
         String tempFilePath = "tempFilePath";
-        GameFileDetails gameFileDetails = TestGameFileDetails.discoveredFileDetails().build();
+        GameFileDetails gameFileDetails = discoveredFileDetails().build();
         fileBufferProvider.mockDataForDownload(gameFileDetails, "Test data");
         fileManager.overrideDownloadedSizeFor(tempFilePath, 999L);
 

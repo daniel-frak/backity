@@ -14,6 +14,7 @@ import reactor.core.publisher.Flux;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -21,10 +22,12 @@ public class UrlFileDownloader {
 
     private final FileManager fileManager;
     private final Consumer<ProgressInfo> progressInfoConsumer;
+    private final Supplier<BackupProgress> backupProgressFactory;
 
     public String downloadGameFile(FileBufferProvider fileBufferProvider, GameFileDetails gameFileDetails,
-                                   String tempFilePath) throws IOException {
-        var progress = new BackupProgress();
+                                   String tempFilePath)
+            throws IOException {
+        BackupProgress progress = backupProgressFactory.get();
         String url = gameFileDetails.getSourceFileDetails().url();
         Flux<DataBuffer> dataBufferFlux = fileBufferProvider.getFileBuffer(url, progress);
         writeToDisk(dataBufferFlux, tempFilePath, progress);

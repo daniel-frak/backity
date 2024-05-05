@@ -33,7 +33,8 @@ class IncrementalProgressTrackerTest {
 
     @BeforeEach
     void setUp() {
-        clock = new FakeClock(Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")));
+        // Don't start at EPOCH to better test timeLeft():
+        clock = new FakeClock(Clock.fixed(Instant.EPOCH.plus(1, ChronoUnit.DAYS), ZoneId.of("UTC")));
         tracker = new IncrementalProgressTracker(10L, clock);
     }
 

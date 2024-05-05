@@ -1,7 +1,9 @@
 package dev.codesoapbox.backity.integrations.gog.config;
 
+import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupMessageService;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupProgress;
+import dev.codesoapbox.backity.core.discovery.domain.ProgressInfo;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.GogFileBackupService;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.GogFileDiscoveryService;
@@ -48,9 +50,13 @@ public class GogBeanConfig {
     @Bean
     UrlFileDownloader enqueuedFileDownloader(FileManager fileManager,
                                              FileBackupMessageService fileBackupMessageService) {
-        return new UrlFileDownloader(fileManager,
-                i -> fileBackupMessageService.sendProgress(
-                        new FileBackupProgress(i.percentage(), i.timeLeft().toSeconds())));
+        return new UrlFileDownloader(fileManager, i -> getProgressInfoConsumer(fileBackupMessageService, i),
+                BackupProgress::new);
+    }
+
+    private void getProgressInfoConsumer(FileBackupMessageService fileBackupMessageService, ProgressInfo i) {
+        fileBackupMessageService.sendProgress(
+                new FileBackupProgress(i.percentage(), i.timeLeft().toSeconds()));
     }
 
     @Bean

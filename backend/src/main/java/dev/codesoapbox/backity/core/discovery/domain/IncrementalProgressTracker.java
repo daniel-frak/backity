@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.domain;
 
+import dev.codesoapbox.backity.DoNotMutate;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
@@ -29,6 +30,7 @@ public class IncrementalProgressTracker {
         }
     }
 
+    @DoNotMutate // Equivalent mutant (< vs <= both give same result)
     public void incrementBy(long value) {
         processedElementsCount += value;
         if (totalElements < processedElementsCount) {

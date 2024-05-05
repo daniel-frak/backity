@@ -87,6 +87,10 @@ public class FakeUnixFileManager implements FileManager {
             return fakeBytesWrittenPerFilePath.get(filePath);
         }
 
+        if(!bytesWrittenPerFilePath.containsKey(filePath)) {
+            throw new IllegalArgumentException(String.format("File '%s' does not exist", filePath));
+        }
+
         return bytesWrittenPerFilePath.get(filePath);
     }
 
