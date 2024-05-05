@@ -254,7 +254,6 @@ mvn clean test-compile -Ppitest-new-code
 ```
 
 This will only analyse code that has been changed compared to the `main` Git branch.
-Note that the part retrieving `originBranch` might need to be written differently for Windows.
 
 To use Pitest as part of Continuous Integration, use the following command in the CI script:
 
