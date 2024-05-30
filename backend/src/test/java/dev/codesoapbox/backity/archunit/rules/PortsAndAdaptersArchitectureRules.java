@@ -10,7 +10,7 @@ import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.sli
 import static dev.codesoapbox.backity.archunit.rules.PortsAndAdaptersArchitectureRules.Constants.*;
 
 /*
-Describes how packages relate to each other
+Enforces a Ports & Adapters package structure
  */
 @SuppressWarnings("unused")
 public final class PortsAndAdaptersArchitectureRules {

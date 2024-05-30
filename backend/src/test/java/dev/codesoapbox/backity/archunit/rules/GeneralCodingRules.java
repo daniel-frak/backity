@@ -12,21 +12,25 @@ public class GeneralCodingRules {
 
     @ArchTest
     static final ArchRule INTERFACE_NAMES_SHOULD_NOT_START_WITH_I =
-            noClasses().that().areInterfaces().should().haveNameMatching(".*\\.I[A-Z][A-Za-z0-9_-]*");
+            noClasses().that().areInterfaces().should().haveNameMatching(".*\\.I[A-Z][A-Za-z0-9_-]*")
+                    .because("the prefix does not add any useful information");
 
     @ArchTest
     static final ArchRule INTERFACE_NAMES_SHOULD_NOT_END_WITH_I =
-            noClasses().that().areInterfaces().should().haveNameMatching(".*I");
+            noClasses().that().areInterfaces().should().haveNameMatching(".*I")
+                    .because("the suffix does not add any useful information");
 
     @ArchTest
     static final ArchRule INTERFACE_NAMES_SHOULD_NOT_CONTAIN_THE_WORD_INTERFACE =
-            noClasses().that().areInterfaces().should().haveSimpleNameContaining("Interface");
+            noClasses().that().areInterfaces().should().haveSimpleNameContaining("Interface")
+                    .because("the word does not add any useful information");
 
     @ArchTest
     static final ArchRule NO_CLASS_SHOULD_END_WITH_IMPL_UNLESS_GENERATED = noClasses().that()
             .areNotAssignableTo(annotatedWith("org.mapstruct.Mapper"))
             .should().haveSimpleNameEndingWith("Impl")
-            .because("Only generated classes (e.g. with MapStruct) can end with Impl");
+            .because("Only generated classes (e.g. with MapStruct) can end with Impl, as the suffix does not" +
+                    " contain any useful information");
 
     @ArchTest
     static final ArchRule GENERIC_EXCEPTIONS_SHOULD_NOT_BE_THROWN = NO_CLASSES_SHOULD_THROW_GENERIC_EXCEPTIONS;
