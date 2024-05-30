@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.discovery.domain;
 
 import dev.codesoapbox.backity.DoNotMutate;
-import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryProgress;
-import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryStatus;
+import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryProgressChangedEvent;
+import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryStatusChangedEvent;
 import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
 import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsRepository;
 import dev.codesoapbox.backity.core.filedetails.domain.SourceFileDetails;
@@ -22,27 +22,30 @@ public class FileDiscoveryService {
     private final List<SourceFileDiscoveryService> discoveryServices;
     private final GameRepository gameRepository;
     private final FileDetailsRepository fileRepository;
-    private final FileDiscoveryMessageService messageService;
+    private final FileDiscoveryEventPublisher fileDiscoveryEventPublisher;
     private final Map<String, Boolean> discoveryStatuses = new ConcurrentHashMap<>();
 
     public FileDiscoveryService(List<SourceFileDiscoveryService> discoveryServices,
                                 GameRepository gameRepository,
-                                FileDetailsRepository fileRepository, FileDiscoveryMessageService messageService) {
+                                FileDetailsRepository fileRepository,
+                                FileDiscoveryEventPublisher fileDiscoveryEventPublisher) {
         this.discoveryServices = discoveryServices.stream().toList();
         this.gameRepository = gameRepository;
         this.fileRepository = fileRepository;
-        this.messageService = messageService;
+        this.fileDiscoveryEventPublisher = fileDiscoveryEventPublisher;
 
         discoveryServices.forEach(s -> {
             discoveryStatuses.put(s.getSource(), false);
-            s.subscribeToProgress(p -> onProgressMade(messageService, s.getSource(), p));
+            s.subscribeToProgress(p -> onProgressMade(fileDiscoveryEventPublisher, s.getSource(), p));
         });
     }
 
-    private void onProgressMade(FileDiscoveryMessageService messageService, String source, ProgressInfo progress) {
-        var payload = new FileDiscoveryProgress(source, progress.percentage(), progress.timeLeft().getSeconds());
-        messageService.sendProgressUpdateMessage(payload);
-        log.debug("Discovery progress: " + progress);
+    private void onProgressMade(FileDiscoveryEventPublisher eventPublisher, String source, ProgressInfo progress) {
+        int percentage = progress.percentage();
+        long seconds = progress.timeLeft().getSeconds();
+        var payload = new FileDiscoveryProgressChangedEvent(source, percentage, seconds);
+        eventPublisher.publishProgressChangedEvent(payload);
+        log.debug("Discovery progress: {}", progress);
     }
 
     public void startFileDiscovery() {
@@ -92,12 +95,12 @@ public class FileDiscoveryService {
     private void changeDiscoveryStatus(SourceFileDiscoveryService discoveryService, boolean isInProgress) {
         log.info("Changing discovery status of {} to {}" , discoveryService.getSource(), isInProgress);
         discoveryStatuses.put(discoveryService.getSource(), isInProgress);
-        sendDiscoveryStatusMessage(discoveryService, isInProgress);
+        sendDiscoveryStatusChangedEvent(discoveryService, isInProgress);
     }
 
-    private void sendDiscoveryStatusMessage(SourceFileDiscoveryService discoveryService, boolean isInProgress) {
-        var status = new FileDiscoveryStatus(discoveryService.getSource(), isInProgress);
-        messageService.sendStatusChangedMessage(status);
+    private void sendDiscoveryStatusChangedEvent(SourceFileDiscoveryService discoveryService, boolean isInProgress) {
+        var status = new FileDiscoveryStatusChangedEvent(discoveryService.getSource(), isInProgress);
+        fileDiscoveryEventPublisher.publishStatusChangedEvent(status);
     }
 
     private void saveDiscoveredFileInfo(SourceFileDetails sourceFileDetails) {
@@ -107,7 +110,7 @@ public class FileDiscoveryService {
         if (!fileRepository.existsByUrlAndVersion(fileDetails.getSourceFileDetails().url(),
                 fileDetails.getSourceFileDetails().version())) {
             fileRepository.save(fileDetails);
-            messageService.sendFileDiscoveredMessage(fileDetails);
+            fileDiscoveryEventPublisher.publishFileDiscoveredEvent(fileDetails);
             log.info("Discovered new file: {} (gameId: {})", fileDetails.getSourceFileDetails().url(),
                     fileDetails.getGameId().value());
         }
@@ -139,9 +142,9 @@ public class FileDiscoveryService {
         discoveryService.stopFileDiscovery();
     }
 
-    public List<FileDiscoveryStatus> getStatuses() {
+    public List<FileDiscoveryStatusChangedEvent> getStatuses() {
         return discoveryStatuses.entrySet().stream()
-                .map(s -> new FileDiscoveryStatus(s.getKey(), s.getValue()))
+                .map(s -> new FileDiscoveryStatusChangedEvent(s.getKey(), s.getValue()))
                 .toList();
     }
 }

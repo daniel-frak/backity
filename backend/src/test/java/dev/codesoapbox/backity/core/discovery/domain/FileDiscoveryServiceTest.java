@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.discovery.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
-import dev.codesoapbox.backity.core.discovery.domain.messages.FileDiscoveryProgress;
+import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
 import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsRepository;
 import dev.codesoapbox.backity.core.filedetails.domain.SourceFileDetails;
@@ -50,13 +50,13 @@ class FileDiscoveryServiceTest {
     private FileDetailsRepository fileRepository;
 
     @Mock
-    private FileDiscoveryMessageService messageService;
+    private FileDiscoveryEventPublisher eventPublisher;
 
     @BeforeEach
     void setUp() {
         sourceFileDiscoveryService = new FakeSourceFileDiscoveryService();
         fileDiscoveryService = new FileDiscoveryService(singletonList(sourceFileDiscoveryService),
-                gameRepository, fileRepository, messageService);
+                gameRepository, fileRepository, eventPublisher);
     }
 
     @AfterEach
@@ -103,7 +103,7 @@ class FileDiscoveryServiceTest {
                 .thenReturn(Optional.of(game));
 
         fileDiscoveryService = new FileDiscoveryService(singletonList(sourceFileDiscoveryService),
-                gameRepository, fileRepository, messageService);
+                gameRepository, fileRepository, eventPublisher);
 
         fileDiscoveryService.startFileDiscovery();
 
@@ -125,7 +125,7 @@ class FileDiscoveryServiceTest {
                 .thenReturn(Optional.empty());
 
         fileDiscoveryService = new FileDiscoveryService(singletonList(sourceFileDiscoveryService),
-                gameRepository, fileRepository, messageService);
+                gameRepository, fileRepository, eventPublisher);
 
         fileDiscoveryService.startFileDiscovery();
 
@@ -143,7 +143,7 @@ class FileDiscoveryServiceTest {
     }
 
     @Test
-    void startFileDiscoveryShouldSaveDiscoveredFilesAndSendMessages() {
+    void startFileDiscoveryShouldSaveDiscoveredFilesAndPublishEvents() {
         var gameTitle = "someGameTitle";
         var discoveredFile = aDiscoveredFile(gameTitle);
         var game = new Game(GameId.newInstance(), gameTitle);
@@ -154,9 +154,9 @@ class FileDiscoveryServiceTest {
         when(fileRepository.existsByUrlAndVersion(discoveredFile.url(), discoveredFile.version()))
                 .thenReturn(false);
 
-        List<FileDiscoveryProgress> progressUpdates = trackMessageServiceProgressUpdates();
+        List<FileDiscoveryProgressChangedEvent> progressUpdates = trackProgressUpdateEvents();
         fileDiscoveryService = new FileDiscoveryService(singletonList(sourceFileDiscoveryService),
-                gameRepository, fileRepository, messageService);
+                gameRepository, fileRepository, eventPublisher);
 
         fileDiscoveryService.startFileDiscovery();
 
@@ -168,18 +168,18 @@ class FileDiscoveryServiceTest {
         FileDetails savedFileDetails = fileDetailsArgumentCaptor.getValue();
         FileDetails expectedFileDetails = discoveredFile.associateWith(game);
         expectedFileDetails.setId(savedFileDetails.getId());
-        verify(messageService).sendFileDiscoveredMessage(expectedFileDetails);
+        verify(eventPublisher).publishFileDiscoveredEvent(expectedFileDetails);
         assertThat(progressUpdates.size()).isOne();
         finishFileDiscovery();
-        verify(messageService, times(2)).sendStatusChangedMessage(any());
+        verify(eventPublisher, times(2)).publishStatusChangedEvent(any());
     }
 
-    private List<FileDiscoveryProgress> trackMessageServiceProgressUpdates() {
-        List<FileDiscoveryProgress> progressList = new ArrayList<>();
+    private List<FileDiscoveryProgressChangedEvent> trackProgressUpdateEvents() {
+        List<FileDiscoveryProgressChangedEvent> progressList = new ArrayList<>();
         doAnswer(inv -> {
             progressList.add(inv.getArgument(0));
             return null;
-        }).when(messageService).sendProgressUpdateMessage(any());
+        }).when(eventPublisher).publishProgressChangedEvent(any());
         return progressList;
     }
 
@@ -196,7 +196,7 @@ class FileDiscoveryServiceTest {
         sourceFileDiscoveryService.simulateFileDiscovery(sourceFileDetails);
 
         verify(fileRepository, never()).save(any());
-        verify(messageService, never()).sendFileDiscoveredMessage(any());
+        verify(eventPublisher, never()).publishFileDiscoveredEvent(any());
     }
 
     @Test

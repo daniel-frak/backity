@@ -6,8 +6,8 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Appender;
 import ch.qos.logback.core.ConsoleAppender;
-import dev.codesoapbox.backity.core.logs.domain.model.LogCreatedMessage;
-import dev.codesoapbox.backity.core.logs.domain.services.LogMessageService;
+import dev.codesoapbox.backity.core.logs.domain.model.LogCreatedEvent;
+import dev.codesoapbox.backity.core.logs.domain.services.LogEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -32,7 +32,7 @@ class LogbackLogServiceIT {
     private LogbackLogService logService;
 
     @Mock
-    private LogMessageService messageService;
+    private LogEventPublisher eventPublisher;
 
     @BeforeAll
     static void beforeAll() {
@@ -57,7 +57,7 @@ class LogbackLogServiceIT {
 
     @BeforeEach
     void setUp() {
-        logService = new LogbackLogService(messageService, MAX_LOGS);
+        logService = new LogbackLogService(eventPublisher, MAX_LOGS);
     }
 
     @AfterEach
@@ -69,12 +69,12 @@ class LogbackLogServiceIT {
     }
 
     @Test
-    void shouldSendLogsToMessageService() {
+    void shouldSendLogsToEventPublisher() {
         String logMessage = "Test log";
 
         log.info(logMessage);
 
-        verify(messageService).sendLogCreated(LogCreatedMessage.of(logMessage, MAX_LOGS));
+        verify(eventPublisher).publish(LogCreatedEvent.of(logMessage, MAX_LOGS));
     }
 
     @Test

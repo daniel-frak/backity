@@ -13,7 +13,7 @@ public class EnqueuedFileBackupProcessor {
 
     private final FileDetailsRepository fileDetailsRepository;
     private final FileBackupService fileBackupService;
-    private final FileBackupMessageService messageService;
+    private final FileBackupEventPublisher eventPublisher;
 
     final AtomicReference<FileDetails> enqueuedFileBackupReference = new AtomicReference<>();
 
@@ -36,13 +36,13 @@ public class EnqueuedFileBackupProcessor {
         log.info("Backing up enqueued file {}", fileDetails.getSourceFileDetails().url());
 
         try {
-            messageService.sendBackupStarted(fileDetails);
+            eventPublisher.publishBackupStartedEvent(fileDetails);
             fileBackupService.backUpFile(fileDetails);
-            messageService.sendBackupFinished(fileDetails);
+            eventPublisher.publishBackupFinishedEvent(fileDetails);
         } catch (RuntimeException e) {
             log.error("An error occurred while trying to process enqueued file (id: {})",
                     fileDetails.getId(), e);
-            messageService.sendBackupFinished(fileDetails);
+            eventPublisher.publishBackupFinishedEvent(fileDetails);
         } finally {
             enqueuedFileBackupReference.set(null);
         }

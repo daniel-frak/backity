@@ -28,7 +28,7 @@ class EnqueuedFileBackupProcessorTest {
     private FileBackupService fileBackupService;
 
     @Mock
-    private FileBackupMessageService messageService;
+    private FileBackupEventPublisher eventPublisher;
 
     @Test
     void shouldProcessEnqueuedFileDownloadIfNotCurrentlyDownloading() {
@@ -46,9 +46,9 @@ class EnqueuedFileBackupProcessorTest {
 
         enqueuedFileBackupProcessor.processQueue();
 
-        verify(messageService).sendBackupStarted(fileDetails);
+        verify(eventPublisher).publishBackupStartedEvent(fileDetails);
         verify(fileBackupService).backUpFile(fileDetails);
-        verify(messageService).sendBackupFinished(fileDetails);
+        verify(eventPublisher).publishBackupFinishedEvent(fileDetails);
         assertThat(enqueuedFileBackupProcessor.enqueuedFileBackupReference.get()).isNull();
         assertThat(fileDetailsWasKeptAsReferenceDuringProcessing).isTrue();
     }
@@ -66,10 +66,10 @@ class EnqueuedFileBackupProcessorTest {
 
         enqueuedFileBackupProcessor.processQueue();
 
-        verify(messageService).sendBackupStarted(fileDetails);
-        verify(messageService).sendBackupFinished(fileDetails);
+        verify(eventPublisher).publishBackupStartedEvent(fileDetails);
+        verify(eventPublisher).publishBackupFinishedEvent(fileDetails);
         assertThat(enqueuedFileBackupProcessor.enqueuedFileBackupReference.get()).isNull();
-        verifyNoMoreInteractions(messageService, fileBackupService);
+        verifyNoMoreInteractions(eventPublisher, fileBackupService);
     }
 
     @Test
@@ -83,7 +83,7 @@ class EnqueuedFileBackupProcessorTest {
 
         enqueuedFileBackupProcessor.processQueue();
 
-        verifyNoMoreInteractions(messageService, fileBackupService);
+        verifyNoMoreInteractions(eventPublisher, fileBackupService);
     }
 
     @Test
@@ -95,6 +95,6 @@ class EnqueuedFileBackupProcessorTest {
         enqueuedFileBackupProcessor.enqueuedFileBackupReference.set(fileDetails);
         enqueuedFileBackupProcessor.processQueue();
 
-        verifyNoInteractions(fileDetailsRepository, fileBackupService, messageService);
+        verifyNoInteractions(fileDetailsRepository, fileBackupService, eventPublisher);
     }
 }

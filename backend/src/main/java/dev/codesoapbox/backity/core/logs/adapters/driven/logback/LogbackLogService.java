@@ -6,15 +6,13 @@ import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.OutputStreamAppender;
-import dev.codesoapbox.backity.core.logs.domain.model.LogCreatedMessage;
-import dev.codesoapbox.backity.core.logs.domain.services.LogMessageService;
+import dev.codesoapbox.backity.core.logs.domain.model.LogCreatedEvent;
+import dev.codesoapbox.backity.core.logs.domain.services.LogEventPublisher;
 import dev.codesoapbox.backity.core.logs.domain.services.LogService;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.regex.Pattern;
-
-import static java.util.stream.Collectors.toList;
 
 public class LogbackLogService implements LogService {
 
@@ -23,13 +21,13 @@ public class LogbackLogService implements LogService {
     // https://stackoverflow.com/a/25189932
     private static final Pattern ANSI_PATTERN = Pattern.compile("\\e\\[[\\d;]*[^\\d;]");
 
-    private final LogMessageService messageService;
+    private final LogEventPublisher eventPublisher;
     private final InMemoryLimitedLogbackAppender logAppender;
     private final PatternLayout layout;
 
     @SuppressWarnings("squid:S1312")
-    public LogbackLogService(LogMessageService messageService, Integer maxLogs) {
-        this.messageService = messageService;
+    public LogbackLogService(LogEventPublisher eventPublisher, Integer maxLogs) {
+        this.eventPublisher = eventPublisher;
         LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
         Logger logger = createLogger();
         this.layout = createPatternLayout(loggerContext, logger);
@@ -38,7 +36,7 @@ public class LogbackLogService implements LogService {
     }
 
     private void onLogEvent(ILoggingEvent event) {
-        messageService.sendLogCreated(LogCreatedMessage.of(getLogMessage(event), logAppender.getMaxLogs()));
+        eventPublisher.publish(LogCreatedEvent.of(getLogMessage(event), logAppender.getMaxLogs()));
     }
 
     private Logger createLogger() {
@@ -85,7 +83,7 @@ public class LogbackLogService implements LogService {
     public List<String> getLogs() {
         return logAppender.getEvents().stream()
                 .map(this::getLogMessage)
-                .collect(toList());
+                .toList();
     }
 
     private String getLogMessage(ILoggingEvent event) {

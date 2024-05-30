@@ -18,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.context.annotation.Import;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.web.servlet.MockMvc;
@@ -39,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SharedJpaRepositoryBeanConfig.class})
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
+@MockBeans(@MockBean(SimpMessagingTemplate.class))
 class H2DbControllerIT {
 
     private static final Path TEST_DUMP_PATH = Path.of(
@@ -52,9 +54,6 @@ class H2DbControllerIT {
 
     @Autowired
     private FileDetailsRepository fileDetailsRepository;
-
-    @MockBean
-    private SimpMessagingTemplate messageService;
 
     @BeforeEach
     void setUp() throws IOException {

@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.backup.config;
 
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.FileBackupSpringMessageService;
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStartedMessageMapper;
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStatusChangedMessageMapper;
+import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.FileBackupEventWebSocketPublisher;
+import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStartedWsEventMapper;
+import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStatusChangedWsEventMapper;
 import dev.codesoapbox.backity.core.backup.domain.EnqueuedFileBackupProcessor;
-import dev.codesoapbox.backity.core.backup.domain.FileBackupMessageService;
+import dev.codesoapbox.backity.core.backup.domain.FileBackupEventPublisher;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupService;
 import dev.codesoapbox.backity.core.backup.domain.SourceFileBackupService;
 import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsRepository;
@@ -29,18 +29,18 @@ public class FileBackupBeanConfig {
     }
 
     @Bean
-    FileBackupMessageService fileDownloadMessageService(SimpMessagingTemplate simpMessagingTemplate) {
-        FileBackupStartedMessageMapper backupStartedMapper = Mappers.getMapper(FileBackupStartedMessageMapper.class);
-        FileBackupStatusChangedMessageMapper backupStatusChangedMapper =
-                Mappers.getMapper(FileBackupStatusChangedMessageMapper.class);
-        return new FileBackupSpringMessageService(simpMessagingTemplate, backupStartedMapper,
+    FileBackupEventPublisher fileBackupEventPublisher(SimpMessagingTemplate simpMessagingTemplate) {
+        FileBackupStartedWsEventMapper backupStartedMapper = Mappers.getMapper(FileBackupStartedWsEventMapper.class);
+        FileBackupStatusChangedWsEventMapper backupStatusChangedMapper =
+                Mappers.getMapper(FileBackupStatusChangedWsEventMapper.class);
+        return new FileBackupEventWebSocketPublisher(simpMessagingTemplate, backupStartedMapper,
                 backupStatusChangedMapper);
     }
 
     @Bean
     EnqueuedFileBackupProcessor fileDownloadQueueScheduler(FileDetailsRepository fileDetailsRepository,
                                                            FileBackupService fileBackupService,
-                                                           FileBackupMessageService fileBackupMessageService) {
-        return new EnqueuedFileBackupProcessor(fileDetailsRepository, fileBackupService, fileBackupMessageService);
+                                                           FileBackupEventPublisher fileBackupEventPublisher) {
+        return new EnqueuedFileBackupProcessor(fileDetailsRepository, fileBackupService, fileBackupEventPublisher);
     }
 }

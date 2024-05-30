@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.discovery.config;
 
-import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.FileDiscoverySpringMessageService;
-import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model.FileDiscoveredMessageMapper;
-import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model.FileDiscoveryProgressUpdateMessageMapper;
-import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model.FileDiscoveryStatusChangedMessageMapper;
-import dev.codesoapbox.backity.core.discovery.domain.FileDiscoveryMessageService;
+import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.FileDiscoveryEventWebSocketPublisher;
+import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model.FileDiscoveredWsEventMapper;
+import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model.FileDiscoveryProgressChangedWsEventMapper;
+import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model.FileDiscoveryStatusChangedWsEventMapper;
+import dev.codesoapbox.backity.core.discovery.domain.FileDiscoveryEventPublisher;
 import dev.codesoapbox.backity.core.discovery.domain.FileDiscoveryService;
 import dev.codesoapbox.backity.core.discovery.domain.SourceFileDiscoveryService;
 import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsRepository;
@@ -20,21 +20,21 @@ import java.util.List;
 public class FileDiscoveryBeanConfig {
 
     @Bean
-    FileDiscoveryMessageService fileDiscoveryMessageService(SimpMessagingTemplate simpMessagingTemplate) {
-        FileDiscoveredMessageMapper fileDiscoveredMessageMapper = Mappers.getMapper(FileDiscoveredMessageMapper.class);
-        FileDiscoveryStatusChangedMessageMapper fileDiscoveryStatusChangedMessageMapper =
-                Mappers.getMapper(FileDiscoveryStatusChangedMessageMapper.class);
-        FileDiscoveryProgressUpdateMessageMapper fileDiscoveryProgressUpdateMessageMapper =
-                Mappers.getMapper(FileDiscoveryProgressUpdateMessageMapper.class);
-        return new FileDiscoverySpringMessageService(simpMessagingTemplate, fileDiscoveredMessageMapper,
-                fileDiscoveryStatusChangedMessageMapper, fileDiscoveryProgressUpdateMessageMapper);
+    FileDiscoveryEventPublisher fileDiscoveryEventPublisher(SimpMessagingTemplate simpMessagingTemplate) {
+        FileDiscoveredWsEventMapper fileDiscoveredWsEventMapper = Mappers.getMapper(FileDiscoveredWsEventMapper.class);
+        FileDiscoveryStatusChangedWsEventMapper fileDiscoveryStatusChangedWsEventMapper =
+                Mappers.getMapper(FileDiscoveryStatusChangedWsEventMapper.class);
+        FileDiscoveryProgressChangedWsEventMapper fileDiscoveryProgressChangedWsEventMapper =
+                Mappers.getMapper(FileDiscoveryProgressChangedWsEventMapper.class);
+        return new FileDiscoveryEventWebSocketPublisher(simpMessagingTemplate, fileDiscoveredWsEventMapper,
+                fileDiscoveryStatusChangedWsEventMapper, fileDiscoveryProgressChangedWsEventMapper);
     }
 
     @Bean
     FileDiscoveryService fileDiscoveryService(List<SourceFileDiscoveryService> discoveryServices,
                                               GameRepository gameRepository,
                                               FileDetailsRepository fileRepository,
-                                              FileDiscoveryMessageService messageService) {
-        return new FileDiscoveryService(discoveryServices, gameRepository, fileRepository, messageService);
+                                              FileDiscoveryEventPublisher eventPublisher) {
+        return new FileDiscoveryService(discoveryServices, gameRepository, fileRepository, eventPublisher);
     }
 }
