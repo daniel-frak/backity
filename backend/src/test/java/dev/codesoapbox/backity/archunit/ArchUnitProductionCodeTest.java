@@ -8,6 +8,7 @@ import com.tngtech.archunit.junit.CacheMode;
 import dev.codesoapbox.backity.BackityApplication;
 import dev.codesoapbox.backity.archunit.rules.AdditionalArchitectureRules;
 import dev.codesoapbox.backity.archunit.rules.GeneralCodingRules;
+import dev.codesoapbox.backity.archunit.rules.JpaRules;
 import dev.codesoapbox.backity.archunit.rules.PortsAndAdaptersArchitectureRules;
 
 @SuppressWarnings("unused")
@@ -24,4 +25,7 @@ public class ArchUnitProductionCodeTest {
 
     @ArchTest
     static final ArchTests CODING_RULES = ArchTests.in(GeneralCodingRules.class);
+
+    @ArchTest
+    static final ArchTests JPA_RULES = ArchTests.in(JpaRules.class);
 }
