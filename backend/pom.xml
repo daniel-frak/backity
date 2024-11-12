@@ -12,15 +12,15 @@
     <description>The backend module built with Spring Boot</description>
 
     <properties>
-        <springdoc.version>2.5.0</springdoc.version>
-        <openapi-generator.version>7.5.0</openapi-generator.version>
-        <maven-clean.version>3.3.2</maven-clean.version>
+        <springdoc.version>2.6.0</springdoc.version>
+        <openapi-generator.version>7.9.0</openapi-generator.version>
+        <maven-clean.version>3.4.0</maven-clean.version>
         <angular-openapi.version>12.0.0</angular-openapi.version>
-        <jacoco.version>0.8.11</jacoco.version>
+        <jacoco.version>0.8.12</jacoco.version>
         <sonar.projectKey>backity-backend</sonar.projectKey>
         <sonar.projectName>Backity (backend)</sonar.projectName>
-        <mapstruct.version>1.5.5.Final</mapstruct.version>
-        <testcontainers.version>1.19.7</testcontainers.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <testcontainers.version>1.20.3</testcontainers.version>
         <archunit.version>1.3.0</archunit.version>
 
         <sonar.exclusions>**/BackityApplication.java,**/**Config.java</sonar.exclusions>
@@ -319,12 +319,12 @@
             <plugin>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
-                <version>1.16.0</version>
+                <version>1.16.1</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.pitest</groupId>
                         <artifactId>pitest-junit5-plugin</artifactId>
-                        <version>1.2.0</version>
+                        <version>1.2.1</version>
                     </dependency>
                 </dependencies>
                 <configuration>

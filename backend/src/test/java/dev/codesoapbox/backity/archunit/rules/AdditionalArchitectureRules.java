@@ -139,9 +139,9 @@ public class AdditionalArchitectureRules {
                     } else {
                         var domainDependenciesString = domainDependencies.stream()
                                 .map(JavaClass::getFullName)
-                                .collect(Collectors.joining("\n - "));
+                                .collect(Collectors.joining("%n - "));
                         message = String.format(
-                                "%s returns %s which depends on the following domain classes:\n - %s",
+                                "%s returns %s which depends on the following domain classes:%n - %s",
                                 javaMethod.getFullName(), returnType.getName(), domainDependenciesString);
                     }
                     return message;
@@ -186,11 +186,11 @@ public class AdditionalArchitectureRules {
 
                 private void addDirectDependencyViolationInArguments(
                         JavaMethod javaMethod, ConditionEvents events, List<JavaClass> directDomainDependencies) {
-                    String message = String.format("%s accepts one or more domain classes as arguments:\n - %s",
+                    String message = String.format("%s accepts one or more domain classes as arguments:%n - %s",
                             javaMethod.getFullName(),
                             directDomainDependencies.stream()
                                     .map(JavaClass::getName)
-                                    .collect(Collectors.joining("\n - ")));
+                                    .collect(Collectors.joining("%n - ")));
                     events.add(SimpleConditionEvent.violated(javaMethod, message));
                 }
 
@@ -216,7 +216,7 @@ public class AdditionalArchitectureRules {
                             .collect(Collectors.toMap(c -> c, p -> p.getTransitiveDependenciesFromSelf().stream()
                                     .map(Dependency::getTargetClass)
                                     .distinct()
-                                    .filter(type -> isDomainClass(type))
+                                    .filter(this::isDomainClass)
                                     .toList()));
                 }
 
@@ -224,12 +224,12 @@ public class AdditionalArchitectureRules {
                         JavaMethod javaMethod, ConditionEvents events, Map.Entry<JavaClass, List<JavaClass>> entry) {
                     String message = String.format(
                             "%s accepts class %s as argument which transitively depends on the following" +
-                                    " domain classes:\n - %s",
+                                    " domain classes:%n - %s",
                             javaMethod.getFullName(),
                             entry.getKey().getFullName(),
                             entry.getValue().stream()
                                     .map(JavaClass::getName)
-                                    .collect(Collectors.joining("\n - ")));
+                                    .collect(Collectors.joining("%n - ")));
                     events.add(SimpleConditionEvent.violated(javaMethod, message));
                 }
             }).because("small changes to the domain should not affect the API");
