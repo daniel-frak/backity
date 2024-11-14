@@ -15,6 +15,6 @@ export class FileDiscoveryStatusBadgeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Nothing to initialize
   }
-
 }

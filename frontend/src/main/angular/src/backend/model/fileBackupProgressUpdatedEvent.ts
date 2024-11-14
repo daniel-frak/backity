@@ -9,7 +9,8 @@
  */
 
 
-export interface RefreshTokenResponse { 
-    refresh_token?: string;
+export interface FileBackupProgressUpdatedEvent { 
+    percentage: number;
+    timeLeftSeconds: number;
 }
 

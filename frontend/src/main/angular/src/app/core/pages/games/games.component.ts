@@ -34,15 +34,15 @@ export class GamesComponent implements OnInit {
   }
 
   backUp(file: FileDetails) {
-    file.backupDetails!.status = FileBackupStatus.Enqueued;
+    file.backupDetails.status = FileBackupStatus.Enqueued;
     console.info("Enqueuing backup: " + file.id);
-    this.fileDetailsClient.download(file.id!)
+    this.fileDetailsClient.download(file.id)
       .pipe(catchError(e => {
-        file.backupDetails!.status = FileBackupStatus.Discovered;
+        file.backupDetails.status = FileBackupStatus.Discovered;
         return throwError(e);
       }))
       .subscribe(() => {
-      }, err => console.error(`An error occurred while trying to enqueue a file (${file})`,
+      }, err => console.error(`An error occurred while trying to enqueue a file (id=${file.id})`,
         file, err));
   }
 

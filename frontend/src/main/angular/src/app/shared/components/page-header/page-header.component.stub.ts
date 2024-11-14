@@ -11,6 +11,6 @@ export class PageHeaderStubComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    // Nothing to initialize
   }
-
 }

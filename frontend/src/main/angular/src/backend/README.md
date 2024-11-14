@@ -1,5 +1,9 @@
 ## @
 
+The backend module built with Spring Boot
+
+The version of the OpenAPI document: 0.0.1-SNAPSHOT
+
 ### Building
 
 To install the required dependencies and to build the typescript sources run:

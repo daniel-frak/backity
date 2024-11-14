@@ -13,6 +13,6 @@ export class PageHeaderComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    // Nothing to initialize
   }
-
 }

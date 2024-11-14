@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class FileDetailsJpaEntityMapperTest {
 
-    private final FileDetailsJpaEntityMapper MAPPER = Mappers.getMapper(FileDetailsJpaEntityMapper.class);
+    private static final FileDetailsJpaEntityMapper MAPPER = Mappers.getMapper(FileDetailsJpaEntityMapper.class);
 
     @Test
     void shouldMapToEntity() {

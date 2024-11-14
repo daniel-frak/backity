@@ -34,6 +34,7 @@
             src/main/angular/src/polyfills.ts,
             src/main/angular/src/test.ts,
             src/main/angular/src/main.ts,
+            src/main/angular/src/app/core/pages/theme/**
         </sonar.exclusions>
     </properties>
 

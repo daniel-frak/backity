@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.backup.config;
 
 import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.FileBackupEventWebSocketPublisher;
+import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupProgressUpdatedWsEventMapper;
 import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStartedWsEventMapper;
 import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStatusChangedWsEventMapper;
 import dev.codesoapbox.backity.core.backup.domain.EnqueuedFileBackupProcessor;
@@ -31,9 +32,11 @@ public class FileBackupBeanConfig {
     @Bean
     FileBackupEventPublisher fileBackupEventPublisher(SimpMessagingTemplate simpMessagingTemplate) {
         FileBackupStartedWsEventMapper backupStartedMapper = Mappers.getMapper(FileBackupStartedWsEventMapper.class);
+        FileBackupProgressUpdatedWsEventMapper progressUpdatedMapper =
+                Mappers.getMapper(FileBackupProgressUpdatedWsEventMapper.class);
         FileBackupStatusChangedWsEventMapper backupStatusChangedMapper =
                 Mappers.getMapper(FileBackupStatusChangedWsEventMapper.class);
-        return new FileBackupEventWebSocketPublisher(simpMessagingTemplate, backupStartedMapper,
+        return new FileBackupEventWebSocketPublisher(simpMessagingTemplate, backupStartedMapper, progressUpdatedMapper,
                 backupStatusChangedMapper);
     }
 

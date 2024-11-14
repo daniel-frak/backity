@@ -7,15 +7,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { FileBackupStatus } from './fileBackupStatus';
 
 
-export interface BackupDetails { 
-    status: FileBackupStatus;
-    failedReason?: string;
+export interface FileBackupStartedEvent { 
+    fileDetailsId: string;
+    originalGameTitle: string;
+    fileTitle: string;
+    version: string;
+    originalFileName: string;
+    size: string;
     filePath?: string;
 }
-export namespace BackupDetails {
-}
-
 

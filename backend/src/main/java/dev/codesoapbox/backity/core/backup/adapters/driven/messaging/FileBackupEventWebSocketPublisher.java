@@ -1,9 +1,6 @@
 package dev.codesoapbox.backity.core.backup.adapters.driven.messaging;
 
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStartedWsEvent;
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStartedWsEventMapper;
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStatusChangedWsEvent;
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStatusChangedWsEventMapper;
+import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.*;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupEventPublisher;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupProgress;
 import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
@@ -17,6 +14,7 @@ public class FileBackupEventWebSocketPublisher implements FileBackupEventPublish
 
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final FileBackupStartedWsEventMapper fileBackupStartedWsEventMapper;
+    private final FileBackupProgressUpdatedWsEventMapper fileBackupProgressUpdatedWsEventMapper;
     private final FileBackupStatusChangedWsEventMapper fileBackupStatusChangedWsEventMapper;
 
     @Override
@@ -26,7 +24,8 @@ public class FileBackupEventWebSocketPublisher implements FileBackupEventPublish
     }
 
     @Override
-    public void publishFileBackupProgressChangedEvent(FileBackupProgress payload) {
+    public void publishFileBackupProgressChangedEvent(FileBackupProgress fileBackupProgress) {
+        FileBackupProgressUpdatedWsEvent payload = fileBackupProgressUpdatedWsEventMapper.toWsEvent(fileBackupProgress);
         publish(FileBackupWebSocketTopics.BACKUP_PROGRESS_UPDATE.toString(), payload);
     }
 

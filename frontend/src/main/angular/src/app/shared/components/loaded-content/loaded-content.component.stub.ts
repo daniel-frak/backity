@@ -12,6 +12,6 @@ export class LoadedContentStubComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    // Nothing to initialize
   }
-
 }

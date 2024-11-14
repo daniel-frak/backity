@@ -13,6 +13,6 @@ export class LoadedContentComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    // Nothing to initialize
   }
-
 }

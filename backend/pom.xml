@@ -345,6 +345,11 @@
                         <param>*IntegrationTest</param>
                         <param>*IT</param>
                     </excludedTestClasses>
+                    <outputFormats>
+                        <outputFormat>html</outputFormat>
+                        <!-- XML format is required for SonarQube plugin -->
+                        <outputFormat>xml</outputFormat>
+                    </outputFormats>
                 </configuration>
             </plugin>
             <!-- END Pitest mutation testing (general configuration) -->

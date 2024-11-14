@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class InMemoryLimitedLogbackAppenderTest {
 
-    Logger LOGGER = (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+    private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
 
     private InMemoryLimitedLogbackAppender inMemoryLimitedLogbackAppender;
 
@@ -30,7 +30,7 @@ class InMemoryLimitedLogbackAppenderTest {
                 null);
         inMemoryLimitedLogbackAppender.append(loggingEvent);
 
-        assertThat(inMemoryLimitedLogbackAppender.getEvents().get(0)).isEqualTo(loggingEvent);
+        assertThat(inMemoryLimitedLogbackAppender.getEvents().getFirst()).isEqualTo(loggingEvent);
     }
 
     @Test

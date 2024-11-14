@@ -16,7 +16,7 @@ import {
   FileDetailsClient,
   FileDiscoveredMessage,
   FileDiscoveryClient,
-  FileDiscoveryMessageTopics,
+  FileDiscoveryWebSocketTopics,
   FileDiscoveryProgressUpdateMessage,
   FileDiscoveryStatus,
   PageFileDetails
@@ -37,13 +37,13 @@ describe('FileDiscoveryComponent', () => {
   beforeEach(async () => {
     const messagesServiceMock = MessageTesting.mockMessageService(
       (destination, callback) => {
-        if (destination == FileDiscoveryMessageTopics.FileDiscovered) {
+        if (destination == FileDiscoveryWebSocketTopics.FileDiscovered) {
           discoveredSubscriptions.push(callback);
         }
-        if (destination == FileDiscoveryMessageTopics.FileStatusChanged) {
+        if (destination == FileDiscoveryWebSocketTopics.FileStatusChanged) {
           discoveryChangedSubscriptions.push(callback);
         }
-        if (destination == FileDiscoveryMessageTopics.ProgressUpdate) {
+        if (destination == FileDiscoveryWebSocketTopics.ProgressUpdate) {
           discoveryProgressSubscriptions.push(callback);
         }
       });
@@ -110,8 +110,19 @@ describe('FileDiscoveryComponent', () => {
     };
     const expectedFileDetails: PageFileDetails = {
       content: [{
+        id: "someFileId",
+        gameId: "someGameId",
         sourceFileDetails: {
-          fileTitle: 'someFileDetails'
+          sourceId: "someSourceId",
+          originalGameTitle: "Some current game",
+          originalFileName: "Some original file name",
+          version: "Some version",
+          url: "some.url",
+          size: "3 GB",
+          fileTitle: "currentGame.exe"
+        },
+        backupDetails: {
+          status: FileBackupStatus.InProgress
         }
       }]
     };
@@ -142,7 +153,7 @@ describe('FileDiscoveryComponent', () => {
 
   it('should set newest discovered and increment discovered count on new discovery', () => {
     const expectedFileDiscoveredMessage: FileDiscoveredMessage = {
-      fileTitle: 'someFileDetails'
+      fileTitle: 'currentGame.exe'
     };
     discoveredSubscriptions[0]({body: JSON.stringify(expectedFileDiscoveredMessage)})
     expect(component.newestDiscovered).toEqual(expectedFileDiscoveredMessage);
@@ -186,11 +197,19 @@ describe('FileDiscoveryComponent', () => {
   it('should enqueue file', () => {
     spyOn(console, 'info');
     const file: FileDetails = {
+      id: "someFileId",
+      gameId: "someGameId",
       sourceFileDetails: {
-        fileTitle: 'someFileDetails'
+        sourceId: "someSourceId",
+        originalGameTitle: "Some current game",
+        originalFileName: "Some original file name",
+        version: "Some version",
+        url: "some.url",
+        size: "3 GB",
+        fileTitle: "currentGame.exe"
       },
       backupDetails: {
-        status: "DISCOVERED"
+        status: FileBackupStatus.Discovered
       }
     };
     const observableMock: any = createSpyObj('Observable', ['subscribe', 'pipe']);
@@ -238,11 +257,19 @@ describe('FileDiscoveryComponent', () => {
     spyOn(console, 'info');
     spyOn(console, 'error');
     const file: FileDetails = {
+      id: "someFileId",
+      gameId: "someGameId",
       sourceFileDetails: {
-        fileTitle: 'someFileDetails'
+        sourceId: "someSourceId",
+        originalGameTitle: "Some current game",
+        originalFileName: "Some original file name",
+        version: "Some version",
+        url: "some.url",
+        size: "3 GB",
+        fileTitle: "currentGame.exe"
       },
       backupDetails: {
-        status: "DISCOVERED"
+        status: FileBackupStatus.Enqueued
       }
     };
     const expectedError = new Error("error1");

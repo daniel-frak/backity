@@ -4,9 +4,9 @@ import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
 
 public interface FileBackupEventPublisher {
 
-    void publishBackupStartedEvent(FileDetails payload);
+    void publishBackupStartedEvent(FileDetails fileDetails);
 
-    void publishFileBackupProgressChangedEvent(FileBackupProgress payload);
+    void publishFileBackupProgressChangedEvent(FileBackupProgress fileBackupProgress);
 
-    void publishBackupFinishedEvent(FileDetails payload);
+    void publishBackupFinishedEvent(FileDetails fileDetails);
 }

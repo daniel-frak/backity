@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.backup.adapters.driven.messaging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupProgressUpdatedWsEventMapper;
 import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStartedWsEventMapper;
 import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStatusChangedWsEventMapper;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupProgress;
@@ -27,12 +28,14 @@ class FileBackupEventWebSocketPublisherTest {
 
     @BeforeEach
     void setUp() {
-        FileBackupStartedWsEventMapper fileBackupStartedWsEventMapper =
+        FileBackupStartedWsEventMapper backupStartedEventMapper =
                 Mappers.getMapper(FileBackupStartedWsEventMapper.class);
-        FileBackupStatusChangedWsEventMapper fileBackupStatusChangedWsEventMapper =
+        FileBackupProgressUpdatedWsEventMapper progressUpdatedEventMapper =
+                Mappers.getMapper(FileBackupProgressUpdatedWsEventMapper.class);
+        FileBackupStatusChangedWsEventMapper statusChangedEventMapper =
                 Mappers.getMapper(FileBackupStatusChangedWsEventMapper.class);
         fileBackupEventWebSocketPublisher = new FileBackupEventWebSocketPublisher(simpMessagingTemplate,
-                fileBackupStartedWsEventMapper, fileBackupStatusChangedWsEventMapper);
+                backupStartedEventMapper, progressUpdatedEventMapper, statusChangedEventMapper);
     }
 
     @Test

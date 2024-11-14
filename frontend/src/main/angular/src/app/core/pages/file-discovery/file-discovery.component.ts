@@ -5,7 +5,7 @@ import {
   FileDetailsClient,
   FileDiscoveredMessage,
   FileDiscoveryClient,
-  FileDiscoveryMessageTopics,
+  FileDiscoveryWebSocketTopics,
   FileDiscoveryProgressUpdateMessage,
   FileDiscoveryStatus,
   FileDiscoveryStatusChangedMessage,
@@ -34,7 +34,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     = new Map<string, FileDiscoveryProgressUpdateMessage>();
   discoveryStateUnknown: boolean = true;
 
-  private pageSize = 20;
+  private readonly pageSize = 20;
   private readonly stompSubscriptions: StompSubscription[] = [];
 
   constructor(private readonly fileDiscoveryClient: FileDiscoveryClient,
@@ -46,9 +46,9 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
-      client.subscribe(FileDiscoveryMessageTopics.FileDiscovered, p => this.onFileDiscovered(p)),
-      client.subscribe(FileDiscoveryMessageTopics.FileStatusChanged, p => this.onDiscoveryStatusChanged(p)),
-      client.subscribe(FileDiscoveryMessageTopics.ProgressUpdate, p => this.onProgressUpdated(p))
+      client.subscribe(FileDiscoveryWebSocketTopics.FileDiscovered, p => this.onFileDiscovered(p)),
+      client.subscribe(FileDiscoveryWebSocketTopics.FileStatusChanged, p => this.onDiscoveryStatusChanged(p)),
+      client.subscribe(FileDiscoveryWebSocketTopics.ProgressUpdate, p => this.onProgressUpdated(p))
     ))
 
     this.refreshInfo();
@@ -115,15 +115,16 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   }
 
   enqueueFile(file: FileDetails) {
-    file.backupDetails!.status = FileBackupStatus.Enqueued;
+    file.backupDetails.status = FileBackupStatus.Enqueued;
     console.info("Enqueuing: " + file.id);
-    this.fileDetailsClient.download(file.id!)
+    this.fileDetailsClient.download(file.id)
       .pipe(catchError(e => {
-        file.backupDetails!.status = FileBackupStatus.Discovered;
+        file.backupDetails.status = FileBackupStatus.Discovered;
         return throwError(e);
       }))
       .subscribe(() => {
-      }, (err: any) => console.error(`An error occurred while trying to enqueue a file (${file})`, file, err));
+      }, (err: any) => console.error(
+        `An error occurred while trying to enqueue a file (id=${file.id})`, file, err));
   }
 
   ngOnDestroy(): void {

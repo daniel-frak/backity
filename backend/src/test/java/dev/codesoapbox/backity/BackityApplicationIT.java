@@ -11,5 +11,6 @@ class BackityApplicationIT {
     @SuppressWarnings("squid:S2699")
     @Test
     void contextLoads() {
+        // Intentionally empty - we're only testing that the application starts up
     }
 }

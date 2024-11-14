@@ -15,6 +15,7 @@ export class FileStatusBadgeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Nothing to initialize
   }
 
   public readonly FileBackupStatus = FileBackupStatus;

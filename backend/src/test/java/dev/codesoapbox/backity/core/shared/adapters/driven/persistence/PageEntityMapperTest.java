@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class PageEntityMapperTest {
 
-    private final PageEntityMapper MAPPER = new PageEntityMapper();
+    private static final PageEntityMapper MAPPER = new PageEntityMapper();
 
     @Test
     void shouldMapToDomain() {

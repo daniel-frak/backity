@@ -132,7 +132,7 @@ class GogEmbedWebClientIT {
 
         GameDetailsResponse result = gogEmbedClient.getGameDetails("someGameId");
 
-        assertThat(result.getFiles().get(0).getFileTitle()).isEqualTo("en1installer3");
+        assertThat(result.getFiles().getFirst().getFileTitle()).isEqualTo("en1installer3");
     }
 
     @Test
@@ -275,7 +275,6 @@ class GogEmbedWebClientIT {
     void shouldGetFileBufferWithWorkingRedirectsUpdatingTargetFileNameAndSizeAndProgress() {
         var expectedResult = "abcd";
         var expectedFileName = "someFile.exe";
-        var ACCESS_TOKEN = "someAccessToken";
         var progress = new BackupProgress();
         var progressHistory = new ArrayList<ProgressInfo>();
         var outputStream = new ByteArrayOutputStream();
@@ -302,7 +301,7 @@ class GogEmbedWebClientIT {
         assertThat(result).isEqualTo(expectedResult);
         assertThat(progress.getContentLengthBytes()).isEqualTo(4);
         assertThat(progressHistory).hasSize(1);
-        assertThat(progressHistory.get(0).percentage()).isEqualTo(100);
+        assertThat(progressHistory.getFirst().percentage()).isEqualTo(100);
     }
 
     @Test
@@ -336,7 +335,7 @@ class GogEmbedWebClientIT {
         assertThat(result).isEqualTo(expectedResult);
         assertThat(progress.getContentLengthBytes()).isEqualTo(4);
         assertThat(progressHistory).hasSize(1);
-        assertThat(progressHistory.get(0).percentage()).isEqualTo(100);
+        assertThat(progressHistory.getFirst().percentage()).isEqualTo(100);
     }
 
     @Test
@@ -347,7 +346,6 @@ class GogEmbedWebClientIT {
                 .willReturn(aResponse()
                         .withStatus(500)));
 
-        @SuppressWarnings("ReactiveStreamsUnusedPublisher")
         Flux<DataBuffer> dataBufferFlux = gogEmbedClient
                 .getFileBuffer("/someUrl1", progress);
 

@@ -1,10 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   FileBackupMessageTopics,
-  FileBackupProgressUpdateMessage,
-  FileBackupStartedMessage,
+  FileBackupProgressUpdatedEvent,
+  FileBackupStartedEvent,
   FileBackupStatus,
-  FileBackupStatusChangedMessage,
+  FileBackupStatusChangedEvent,
   FileDetails,
   FileDetailsClient,
   PageFileDetails
@@ -22,12 +22,12 @@ export class FileBackupComponent implements OnInit, OnDestroy {
 
   enqueuedDownloads?: PageFileDetails;
   processedFiles?: PageFileDetails;
-  currentDownload?: FileBackupStartedMessage;
-  downloadProgress?: FileBackupProgressUpdateMessage;
+  currentDownload?: FileBackupStartedEvent;
+  downloadProgress?: FileBackupProgressUpdatedEvent;
   filesAreLoading: boolean = false;
   FileBackupStatus = FileBackupStatus;
 
-  private pageSize = 20;
+  private readonly pageSize = 20;
   private readonly stompSubscriptions: StompSubscription[] = [];
 
   constructor(private readonly fileDetailsClient: FileDetailsClient,
@@ -35,11 +35,11 @@ export class FileBackupComponent implements OnInit, OnDestroy {
   }
 
   asFile = (file: FileDetails) => file;
-  asBackupStartedMessage = (message: FileBackupStartedMessage) => message;
+  asBackupStartedMessage = (message: FileBackupStartedEvent) => message;
 
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
-      client.subscribe(FileBackupMessageTopics.Started, p => this.onBackupStartedReceived(p)),
+      client.subscribe(FileBackupMessageTopics.Started, p => this.onBackupStarted(p)),
       client.subscribe(FileBackupMessageTopics.ProgressUpdate, p => this.onProgressUpdate(p)),
       client.subscribe(FileBackupMessageTopics.StatusChanged, p => this.onStatusChanged(p))
     ))
@@ -47,7 +47,7 @@ export class FileBackupComponent implements OnInit, OnDestroy {
     this.refresh();
   }
 
-  private onBackupStartedReceived(payload: IMessage) {
+  private onBackupStarted(payload: IMessage) {
     this.currentDownload = JSON.parse(payload.body);
   }
 
@@ -56,9 +56,12 @@ export class FileBackupComponent implements OnInit, OnDestroy {
   }
 
   private onStatusChanged(payload: IMessage) {
-    const message: FileBackupStatusChangedMessage = JSON.parse(payload.body);
-    if (message.fileDetailsId == this.currentDownload?.fileDetailsId &&
-      (message.newStatus == FileBackupStatus.Success || message.newStatus == FileBackupStatus.Failed)) {
+    const message: FileBackupStatusChangedEvent = JSON.parse(payload.body);
+    if (message.fileDetailsId != this.currentDownload?.fileDetailsId) {
+      return;
+    }
+    if (message.newStatus == FileBackupStatus.Success || message.newStatus == FileBackupStatus.Failed)
+    {
       this.currentDownload = undefined;
     }
   }
@@ -72,28 +75,29 @@ export class FileBackupComponent implements OnInit, OnDestroy {
       page: page,
       size: size
     })
-      .subscribe(d => {
+      .subscribe((d: PageFileDetails) => {
         this.enqueuedDownloads = d;
 
         this.fileDetailsClient.getProcessedFiles({
           page: 0,
           size: 20
         })
-          .subscribe(f => {
+          .subscribe((f: PageFileDetails) => {
             this.processedFiles = f;
             this.filesAreLoading = false;
           })
       });
 
     this.fileDetailsClient.getCurrentlyDownloading()
-      .subscribe(d => {
+      .subscribe((d: FileDetails) => {
         this.currentDownload = {
           fileDetailsId: d.id,
-          originalGameTitle: d.sourceFileDetails?.originalGameTitle,
-          fileTitle: d.sourceFileDetails?.fileTitle,
-          version: d.sourceFileDetails?.version,
-          originalFileName: d.sourceFileDetails?.originalFileName,
-          size: d.sourceFileDetails?.size
+          originalGameTitle: d.sourceFileDetails.originalGameTitle,
+          fileTitle: d.sourceFileDetails.fileTitle,
+          version: d.sourceFileDetails.version,
+          originalFileName: d.sourceFileDetails.originalFileName,
+          size: d.sourceFileDetails.size,
+          filePath: d.backupDetails.filePath
         }
       });
   }

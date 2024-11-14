@@ -14,6 +14,6 @@ export class NewDiscoveredPopupComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    // Nothing to initialize
   }
-
 }

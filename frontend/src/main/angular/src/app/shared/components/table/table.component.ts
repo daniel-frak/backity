@@ -25,6 +25,7 @@ export class TableComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Nothing to initialize
   }
 
   getColumnTitles(): string[] {

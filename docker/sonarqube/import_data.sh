@@ -43,15 +43,18 @@ function createQualityGateCondition() {
   local operation_name="${2}"
   local treshold="${3}"
 
-  curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "metric=$metric_name" -d "op=$operation_name" -d "gateName=$QUALITY_GATE_NAME" -d "error=$treshold" -X POST "$SONAR_QUALITY_GATE_URL/create_condition" ||
-                   (echo "Could not create condition metric=$metric_name, operation_name=$operation_name, treshold=$treshold . Aborting configuration." && exit 1)
+  curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "metric=$metric_name" -d "op=$operation_name" \
+  -d "gateName=$QUALITY_GATE_NAME" -d "error=$treshold" -X POST "$SONAR_QUALITY_GATE_URL/create_condition" ||
+                   (echo "Could not create condition metric=$metric_name, operation_name=$operation_name, \
+                   treshold=$treshold . Aborting configuration." && exit 1)
 }
 
 function waitUntilSonarQubeIsUp() {
     retry_counter=0
     while true; do
       echo "Checking if SonarQube is up... Retries so far: $retry_counter"
-      STATUS=$(curl -f -s -o /dev/null -I -w "%{http_code}" -u "$SONAR_USER":"$SONAR_PASSWORD" -X GET "$SONAR_HEALTH_URL") || true
+      STATUS=$(curl -f -s -o /dev/null -I -w "%{http_code}" -u "$SONAR_USER":"$SONAR_PASSWORD" \
+      -X GET "$SONAR_HEALTH_URL") || true
       echo "Received HTTP status: $STATUS."
 
       if [ "${STATUS:0:1}" -eq 2 ]; then
@@ -86,31 +89,36 @@ waitUntilSonarQubeIsUp;
 
 echo "Disabling 'Force user authentication'"
 
-    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "key=sonar.forceAuthentication&value=false" -X POST "$SONAR_SECURITY_SETTINGS_URL" ||
-      (echo "Could disable 'Force user authentication'. Aborting configuration." && exit 1)
+    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "key=sonar.forceAuthentication&value=false" \
+    -X POST "$SONAR_SECURITY_SETTINGS_URL" ||
+      (echo "Could not disable 'Force user authentication'. Aborting configuration." && exit 1)
 
 echo "Disabling 'Force user authentication' done"
 
-
 echo "Adding permissions: create projects, execute analysis, configure profiles and gates to 'anyone' group"
 
-    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "groupName=Anyone&permission=gateadmin" -X POST "$SONAR_ADD_PERMISSION_URL" ||
+    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "groupName=Anyone&permission=gateadmin" \
+    -X POST "$SONAR_ADD_PERMISSION_URL" ||
       (echo "Could not add 'configure gates' permission to 'anyone' group. Aborting configuration." && exit 1)
 
-    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "groupName=Anyone&permission=profileadmin" -X POST "$SONAR_ADD_PERMISSION_URL" ||
+    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "groupName=Anyone&permission=profileadmin" \
+    -X POST "$SONAR_ADD_PERMISSION_URL" ||
       (echo "Could not add 'configure profiles' permission to 'anyone' group. Aborting configuration." && exit 1)
 
-    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "groupName=Anyone&permission=scan" -X POST "$SONAR_ADD_PERMISSION_URL" ||
+    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "groupName=Anyone&permission=scan" \
+    -X POST "$SONAR_ADD_PERMISSION_URL" ||
       (echo "Could not add 'execute analysis' permission to 'anyone' group. Aborting configuration." && exit 1)
 
-    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "groupName=Anyone&permission=provisioning" -X POST "$SONAR_ADD_PERMISSION_URL" ||
+    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "groupName=Anyone&permission=provisioning" \
+    -X POST "$SONAR_ADD_PERMISSION_URL" ||
       (echo "Could not add 'create projects'  permission to 'anyone' group. Aborting configuration." && exit 1)
 
 echo "Adding permissions done"
 
 echo "Installing 'Mutation Analysis' plugin"
 
-    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "key=sonar.plugins.risk.consent&value=ACCEPTED" -X POST "$SONAR_SECURITY_SETTINGS_URL" ||
+    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "key=sonar.plugins.risk.consent&value=ACCEPTED" \
+    -X POST "$SONAR_SECURITY_SETTINGS_URL" ||
       (echo "Could not accept plugins consent. Aborting configuration." && exit 1)
 
     curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "key=mutationanalysis" -X POST "$SONAR_ADD_PLUGINS_URL" ||
@@ -131,21 +139,25 @@ echo "Installing 'Mutation Analysis' plugin done"
 # PROFILE - Java + Mutation
 echo "Importing custom profile ($JAVA_PROFILE_FILE_PATH)..."
 
-    curl -s -o /dev/null -X POST -u "$SONAR_USER":"$SONAR_PASSWORD" "$SONAR_RESTORE_PROFILE_URL" --form backup=@$JAVA_PROFILE_FILE_PATH ||
+    curl -s -o /dev/null -X POST -u "$SONAR_USER":"$SONAR_PASSWORD" "$SONAR_RESTORE_PROFILE_URL" \
+    --form backup=@$JAVA_PROFILE_FILE_PATH ||
       (echo "Could not import $JAVA_PROFILE_FILE_PATH profile. Aborting configuration." && exit 1)
 
 echo "Setting the profile as default..."
 
-    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "language=java&qualityProfile=$JAVA_PROFILE_NAME" -X POST "$SONAR_DEFAULT_PROFILE_URL" ||
+    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "language=java&qualityProfile=$JAVA_PROFILE_NAME" \
+    -X POST "$SONAR_DEFAULT_PROFILE_URL" ||
       (echo "Could not set $JAVA_PROFILE_NAME profile as default. Aborting configuration." && exit 1)
 
 
 echo "Creating quality gate and setting it as a default"
 
-    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "name=$QUALITY_GATE_NAME" -X POST "$SONAR_QUALITY_GATE_URL/create" ||
+    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "name=$QUALITY_GATE_NAME" \
+    -X POST "$SONAR_QUALITY_GATE_URL/create" ||
       (echo "Could not create quality gate. Aborting configuration." && exit 1)
 
-    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "name=$QUALITY_GATE_NAME" -X POST "$SONAR_QUALITY_GATE_URL/set_as_default" ||
+    curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "name=$QUALITY_GATE_NAME" \
+    -X POST "$SONAR_QUALITY_GATE_URL/set_as_default" ||
       (echo "Could not set quality gate as a default. Aborting configuration." && exit 1)
 
 echo "Creating quality gate done"
@@ -154,7 +166,8 @@ echo "Setting '$QUALITY_GATE_NAME' quality gate"
 
     echo "Deleting existing conditions"
 
-    CONDITIONS_JSON_RAW="$(curl -s -u $SONAR_USER:$SONAR_PASSWORD -X GET "$SONAR_QUALITY_GATE_URL/show?name=$QUALITY_GATE_NAME")" ||
+    CONDITIONS_JSON_RAW="$(curl -s -u $SONAR_USER:$SONAR_PASSWORD \
+    -X GET "$SONAR_QUALITY_GATE_URL/show?name=$QUALITY_GATE_NAME")" ||
       (echo "Could not get quality gate conditions. Aborting configuration." && exit 1)
 
     CONDITIONS_IDS_RAW=$(echo "$CONDITIONS_JSON_RAW" | jq '.conditions[].id')
@@ -162,7 +175,8 @@ echo "Setting '$QUALITY_GATE_NAME' quality gate"
     for CONDITION_ID_RAW in $CONDITIONS_IDS_RAW ; do
          CONDITION_ID=$(echo $CONDITION_ID_RAW | tr -d '"')
          echo "Deleting condition id: $CONDITION_ID"
-         curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "id=$CONDITION_ID" -X POST "$SONAR_QUALITY_GATE_URL/delete_condition" ||
+         curl -s -o /dev/null -u $SONAR_USER:$SONAR_PASSWORD -d "id=$CONDITION_ID" \
+         -X POST "$SONAR_QUALITY_GATE_URL/delete_condition" ||
           (echo "Could not delete condition id=$CONDITION_ID. Aborting configuration." && exit 1)
     done
 

@@ -10,6 +10,6 @@ export class ContainedLayoutComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    // Nothing to initialize
   }
-
 }

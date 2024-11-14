@@ -18,5 +18,6 @@ export class NewDiscoveredFilesBadgeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Nothing to initialize
   }
 }

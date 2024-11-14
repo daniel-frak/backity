@@ -23,9 +23,6 @@
       <ng-template app-table-column="Size" let-item>
         {{asFile(item).sourceFileDetails!.size}}
       </ng-template>
-      <!--      <ng-template app-table-column="Path" let-item>-->
-      <!--        {{asFile(item).backupDetails!.filePath}}-->
-      <!--      </ng-template>-->
       <ng-template app-table-column="Status" let-item>
         <app-file-status-badge [status]="asFile(item).backupDetails!.status"></app-file-status-badge>
       </ng-template>

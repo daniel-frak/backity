@@ -16,6 +16,23 @@ describe('GamesComponent', () => {
   let gamesClient: GamesClient;
   let fileDetailsClient: FileDetailsClient;
 
+  const sampleFileDetails: FileDetails = {
+    id: "someFileId",
+    gameId: "someGameId",
+    sourceFileDetails: {
+      sourceId: "someSourceId",
+      originalGameTitle: "Some game",
+      originalFileName: "Some original file name",
+      version: "Some version",
+      url: "some.url",
+      size: "3 GB",
+      fileTitle: "currentGame.exe"
+    },
+    backupDetails: {
+      status: "DISCOVERED"
+    }
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [
@@ -52,20 +69,14 @@ describe('GamesComponent', () => {
   });
 
   it('should get games', () => {
+    const fileDetails = {... sampleFileDetails};
+    fileDetails.sourceFileDetails.fileTitle = 'game.exe';
+
     const mockGames: PageGameWithFiles = {
       content: [{
         id: "someGameId",
         title: "someGameTitle",
-        files: [{
-          id: "someFileId",
-          sourceFileDetails: {
-            sourceId: "someSource",
-            fileTitle: "someFileTitle"
-          },
-          backupDetails: {
-            status: "DISCOVERED"
-          }
-        }]
+        files: [fileDetails]
       }]
     };
     (gamesClient.getGames as jasmine.Spy).and.returnValue(of(mockGames));
@@ -81,36 +92,30 @@ describe('GamesComponent', () => {
 
     const pageText = fixture.debugElement.nativeElement.textContent;
     expect(pageText).toContain('someGameTitle');
-    expect(pageText).toContain('someFileTitle');
+    expect(pageText).toContain('game.exe');
   });
 
   it('should back up game file and set its status to Enqueued', () => {
-    const mockFile: FileDetails = {
-      id: "someFileId", backupDetails: {
-        status: FileBackupStatus.Discovered
-      }
-    };
+    const fileDetails = {... sampleFileDetails};
+    fileDetails.backupDetails.status = FileBackupStatus.Enqueued;
     (fileDetailsClient.download as jasmine.Spy).and.returnValue(of(null));
 
-    component.backUp(mockFile);
+    component.backUp(fileDetails);
 
-    expect(mockFile.backupDetails?.status).toBe(FileBackupStatus.Enqueued);
-    expect(fileDetailsClient.download).toHaveBeenCalledWith(mockFile.id!);
+    expect(fileDetails.backupDetails?.status).toBe(FileBackupStatus.Enqueued);
+    expect(fileDetailsClient.download).toHaveBeenCalledWith(fileDetails.id!);
   });
 
   it('should set file status to Discovered when backup fails', () => {
-    const mockFile: FileDetails = {
-      id: "someFileId", backupDetails: {
-        status: FileBackupStatus.Discovered
-      }
-    };
+    const fileDetails = {... sampleFileDetails};
+    fileDetails.backupDetails.status = FileBackupStatus.Discovered;
     const mockError = new Error('Backup error');
     (fileDetailsClient.download as jasmine.Spy).and.returnValue(throwError(mockError));
 
-    component.backUp(mockFile);
+    component.backUp(fileDetails);
 
-    expect(mockFile.backupDetails?.status).toBe(FileBackupStatus.Discovered);
-    expect(fileDetailsClient.download).toHaveBeenCalledWith(mockFile.id!);
+    expect(fileDetails.backupDetails?.status).toBe(FileBackupStatus.Discovered);
+    expect(fileDetailsClient.download).toHaveBeenCalledWith(fileDetails.id!);
   });
 
   it('should log an error when canceling backup', () => {
@@ -154,22 +159,19 @@ describe('GamesComponent', () => {
   });
 
   it('should set file status to Discovered and log error when backup fails', () => {
-    const mockFile: FileDetails = {
-      id: "someFileId", backupDetails: {
-        status: FileBackupStatus.Discovered
-      }
-    };
+    const fileDetails = {... sampleFileDetails};
+    fileDetails.backupDetails.status = FileBackupStatus.Discovered;
     const mockError = new Error('Backup error');
     (fileDetailsClient.download as jasmine.Spy).and.returnValue(throwError(mockError));
     spyOn(console, 'error');
 
-    component.backUp(mockFile);
+    component.backUp(fileDetails);
 
-    expect(mockFile.backupDetails?.status).toBe(FileBackupStatus.Discovered);
-    expect(fileDetailsClient.download).toHaveBeenCalledWith(mockFile.id!);
+    expect(fileDetails.backupDetails?.status).toBe(FileBackupStatus.Discovered);
+    expect(fileDetailsClient.download).toHaveBeenCalledWith(fileDetails.id!);
     expect(console.error).toHaveBeenCalledWith(
-      `An error occurred while trying to enqueue a file (${mockFile})`,
-      mockFile,
+      `An error occurred while trying to enqueue a file (id=${fileDetails.id})`,
+      fileDetails,
       mockError
     );
   });

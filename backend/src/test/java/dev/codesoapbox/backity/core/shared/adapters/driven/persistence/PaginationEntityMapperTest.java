@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class PaginationEntityMapperTest {
 
-    private final PaginationEntityMapper MAPPER = new PaginationEntityMapper();
+    private static final PaginationEntityMapper MAPPER = new PaginationEntityMapper();
 
     @Test
     void shouldMapToEntity() {

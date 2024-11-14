@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class GameIdHttpDtoMapperTest {
 
-    private final GameIdHttpDtoMapper MAPPER = new GameIdHttpDtoMapper();
+    private static final GameIdHttpDtoMapper MAPPER = new GameIdHttpDtoMapper();
 
     @Test
     void shouldMapToDto() {
