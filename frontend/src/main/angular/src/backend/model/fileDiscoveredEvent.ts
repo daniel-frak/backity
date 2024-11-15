@@ -9,8 +9,10 @@
  */
 
 
-export interface LogCreatedMessage { 
-    message?: string;
-    maxLogs?: number;
+export interface FileDiscoveredEvent { 
+    originalGameTitle?: string;
+    originalFileName?: string;
+    fileTitle?: string;
+    size?: string;
 }
 

@@ -1,10 +1,11 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GogAuthComponent} from './gog-auth.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
 import {FormsModule} from "@angular/forms";
 import {GOGAuthenticationClient} from "@backend";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import createSpyObj = jasmine.createSpyObj;
 
 describe('GogAuthComponent', () => {
@@ -17,21 +18,20 @@ describe('GogAuthComponent', () => {
     gogAuthClientMock.checkAuthentication.and.returnValue({subscribe: (s: (f: any) => any) => s(false)});
 
     await TestBed.configureTestingModule({
-      declarations: [
+    declarations: [
         GogAuthComponent,
         LoadedContentStubComponent
-      ],
-      imports: [
-        HttpClientTestingModule,
-        FormsModule
-      ],
-      providers: [
+    ],
+    imports: [FormsModule],
+    providers: [
         {
-          provide: GOGAuthenticationClient,
-          useValue: gogAuthClientMock
-        }
-      ]
-    })
+            provide: GOGAuthenticationClient,
+            useValue: gogAuthClientMock
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+})
       .compileComponents();
   });
 

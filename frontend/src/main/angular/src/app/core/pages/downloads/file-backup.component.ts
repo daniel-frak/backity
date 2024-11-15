@@ -35,7 +35,7 @@ export class FileBackupComponent implements OnInit, OnDestroy {
   }
 
   asFile = (file: FileDetails) => file;
-  asBackupStartedMessage = (message: FileBackupStartedEvent) => message;
+  asBackupStartedEvent = (event: FileBackupStartedEvent) => event;
 
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
@@ -56,11 +56,11 @@ export class FileBackupComponent implements OnInit, OnDestroy {
   }
 
   private onStatusChanged(payload: IMessage) {
-    const message: FileBackupStatusChangedEvent = JSON.parse(payload.body);
-    if (message.fileDetailsId != this.currentDownload?.fileDetailsId) {
+    const event: FileBackupStatusChangedEvent = JSON.parse(payload.body);
+    if (event.fileDetailsId != this.currentDownload?.fileDetailsId) {
       return;
     }
-    if (message.newStatus == FileBackupStatus.Success || message.newStatus == FileBackupStatus.Failed)
+    if (event.newStatus == FileBackupStatus.Success || event.newStatus == FileBackupStatus.Failed)
     {
       this.currentDownload = undefined;
     }

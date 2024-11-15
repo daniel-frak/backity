@@ -1,12 +1,13 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {LogsComponent} from './logs.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
 import {PageHeaderStubComponent} from "@app/shared/components/page-header/page-header.component.stub";
-import {LogCreatedMessage, LogsClient, LogsMessageTopics} from "@backend";
+import {LogCreatedEvent, LogsClient, LogsMessageTopics} from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {MessageTesting} from "@app/shared/testing/message-testing";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import createSpyObj = jasmine.createSpyObj;
 
 describe('LogsComponent', () => {
@@ -29,25 +30,25 @@ describe('LogsComponent', () => {
     logsClientMock.getLogs.and.returnValue({subscribe: (s: (f: any) => any) => s([])});
 
     await TestBed.configureTestingModule({
-      declarations: [
+    declarations: [
         LogsComponent,
         LoadedContentStubComponent,
         PageHeaderStubComponent
-      ],
-      imports: [
-        HttpClientTestingModule
-      ],
-      providers: [
+    ],
+    imports: [],
+    providers: [
         {
-          provide: MessagesService,
-          useValue: messagesServiceMock
+            provide: MessagesService,
+            useValue: messagesServiceMock
         },
         {
-          provide: LogsClient,
-          useValue: logsClientMock
-        }
-      ]
-    })
+            provide: LogsClient,
+            useValue: logsClientMock
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+})
       .compileComponents();
   });
 
@@ -66,7 +67,7 @@ describe('LogsComponent', () => {
   });
 
   it('should add new logs to list', () => {
-    const log: LogCreatedMessage = {
+    const log: LogCreatedEvent = {
       maxLogs: 2,
       message: "Log3"
     };

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.NonNull;
 
 @IncludeInDocumentation
-@Schema(name = "FileDiscoveryStatusChangedMessage")
+@Schema(name = "FileDiscoveryStatusChangedEvent")
 public record FileDiscoveryStatusChangedWsEvent(
         @NonNull String source,
         boolean isInProgress

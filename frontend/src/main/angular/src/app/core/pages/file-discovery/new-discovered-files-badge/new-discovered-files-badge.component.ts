@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FileDiscoveredMessage} from "@backend";
+import {FileDiscoveredEvent} from "@backend";
 
 @Component({
   selector: 'app-new-discovered-files-badge',
@@ -12,7 +12,7 @@ export class NewDiscoveredFilesBadgeComponent implements OnInit {
   newDiscoveredCount: number = 0;
 
   @Input()
-  newestDiscovered?: FileDiscoveredMessage;
+  newestDiscovered?: FileDiscoveredEvent;
 
   constructor() {
   }

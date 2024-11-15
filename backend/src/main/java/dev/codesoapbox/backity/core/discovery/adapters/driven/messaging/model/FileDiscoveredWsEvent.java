@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.shared.adapters.driven.messaging.IncludeInDo
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @IncludeInDocumentation
-@Schema(name = "FileDiscoveredMessage")
+@Schema(name = "FileDiscoveredEvent")
 public record FileDiscoveredWsEvent(
         String originalGameTitle,
         String originalFileName,

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.NonNull;
 
 @IncludeInDocumentation
-@Schema(name = "FileDiscoveryProgressUpdateMessage")
+@Schema(name = "FileDiscoveryProgressUpdateEvent")
 public record FileDiscoveryProgressChangedWsEvent(
         @NonNull String source,
         int percentage,

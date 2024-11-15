@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {LogCreatedMessage, LogsClient, LogsMessageTopics} from "@backend";
+import {LogCreatedEvent, LogsClient, LogsMessageTopics} from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
 import {IMessage} from "@stomp/stompjs";
@@ -27,9 +27,9 @@ export class LogsComponent implements OnInit, OnDestroy {
   }
 
   private onLogReceived(payload: IMessage) {
-    const message: LogCreatedMessage = JSON.parse(payload.body);
-    this.logs.unshift(message.message as string);
-    if (this.logs.length > (message.maxLogs as number)) {
+    const event: LogCreatedEvent = JSON.parse(payload.body);
+    this.logs.unshift(event.message as string);
+    if (this.logs.length > (event.maxLogs as number)) {
       this.logs.pop();
     }
   }

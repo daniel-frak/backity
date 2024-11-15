@@ -9,9 +9,8 @@
  */
 
 
-export interface FileDiscoveryProgressUpdateMessage { 
-    source?: string;
-    percentage?: number;
-    timeLeftSeconds?: number;
+export interface LogCreatedEvent { 
+    message?: string;
+    maxLogs?: number;
 }
 

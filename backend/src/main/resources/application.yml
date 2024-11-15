@@ -1,0 +1,43 @@
+default-path-template: games/{SOURCE}/{TITLE}/{FILENAME}
+file-download-queue-scheduler:
+  rate-ms: 5000
+
+gog-auth-scheduler:
+  rate-ms: 60000
+gog:
+  # https://gogapidocs.readthedocs.io/en/latest/auth.html#get--token
+  client-secret: 9d85c43b1482497dbbce61f6e4aa173a433796eeae2ca8c5f6129f2dc4de46d9
+  client-id: 46899977096215655
+
+in-memory-logs:
+  max: '100'
+h2dump:
+  path: dump.sql
+
+spring:
+  datasource:
+    url: jdbc:h2:file:./backity
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  codec:
+    max-in-memory-size: 10MB
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.H2Dialect
+
+openapi:
+  project-description: '@project.description@'
+  project-title: '@project.name@'
+  project-version: '@project.version@'
+
+springdoc:
+  default-produces-media-type: application/json
+  remove-broken-reference-definitions: 'false'

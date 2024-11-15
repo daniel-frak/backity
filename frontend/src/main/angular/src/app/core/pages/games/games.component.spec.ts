@@ -1,13 +1,14 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GamesComponent} from './games.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import {FileBackupStatus, FileDetails, FileDetailsClient, GamesClient, PageGameWithFiles} from "@backend";
 import {of, throwError} from "rxjs";
 import {PageHeaderStubComponent} from "@app/shared/components/page-header/page-header.component.stub";
 import {TableComponent} from "@app/shared/components/table/table.component";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('GamesComponent', () => {
   let component: GamesComponent;
@@ -35,21 +36,21 @@ describe('GamesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+    declarations: [
         GamesComponent,
         PageHeaderStubComponent,
         LoadedContentStubComponent,
         TableComponent,
         TableColumnDirective
-      ],
-      imports: [
-        HttpClientTestingModule
-      ],
-      providers: [
-        {provide: GamesClient, useValue: {getGames: jasmine.createSpy('getGames')}},
-        {provide: FileDetailsClient, useValue: {download: jasmine.createSpy('download')}}
-      ]
-    })
+    ],
+    imports: [],
+    providers: [
+        { provide: GamesClient, useValue: { getGames: jasmine.createSpy('getGames') } },
+        { provide: FileDetailsClient, useValue: { download: jasmine.createSpy('download') } },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+})
       .compileComponents();
   });
 

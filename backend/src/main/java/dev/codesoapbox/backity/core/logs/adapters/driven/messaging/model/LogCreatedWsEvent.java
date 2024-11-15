@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.shared.adapters.driven.messaging.IncludeInDo
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @IncludeInDocumentation
-@Schema(name = "LogCreatedMessage")
+@Schema(name = "LogCreatedEvent")
 public record LogCreatedWsEvent(
         String message,
         Integer maxLogs

@@ -3,10 +3,10 @@
 @mixin gutters-variant($gutter-size) {
   display: flex;
   flex-wrap: wrap;
-  margin: -$gutter-size / 2;
+  margin: -(calc($gutter-size / 2));
 
   > * {
-    padding: $gutter-size / 2;
+    padding: calc($gutter-size / 2);
   }
 }
 

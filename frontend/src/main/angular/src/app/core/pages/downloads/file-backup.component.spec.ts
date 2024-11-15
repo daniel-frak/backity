@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FileBackupComponent} from './file-backup.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import {PageHeaderStubComponent} from "@app/shared/components/page-header/page-header.component.stub";
 import {TableComponent} from "@app/shared/components/table/table.component";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
@@ -18,6 +18,7 @@ import {
 import {By} from "@angular/platform-browser";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
 import {Client, IMessage, StompSubscription} from "@stomp/stompjs";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('FileBackupComponent', () => {
   let component: FileBackupComponent;
@@ -98,28 +99,27 @@ describe('FileBackupComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+    declarations: [
         FileBackupComponent,
         PageHeaderStubComponent,
         LoadedContentStubComponent,
         TableComponent,
         TableColumnDirective
-      ],
-      imports: [
-        HttpClientTestingModule
-      ],
-      providers: [
+    ],
+    imports: [],
+    providers: [
         {
-          provide: FileDetailsClient,
-          useValue: jasmine.createSpyObj('FileDetailsClient',
-            ['getQueueItems', 'getProcessedFiles', 'getCurrentlyDownloading'])
+            provide: FileDetailsClient,
+            useValue: jasmine.createSpyObj('FileDetailsClient', ['getQueueItems', 'getProcessedFiles', 'getCurrentlyDownloading'])
         },
         {
-          provide: MessagesService,
-          useValue: jasmine.createSpyObj('MessagesService', ["onConnect"])
-        }
-      ]
-    })
+            provide: MessagesService,
+            useValue: jasmine.createSpyObj('MessagesService', ["onConnect"])
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+})
       .compileComponents();
   });
 
@@ -321,10 +321,11 @@ describe('FileBackupComponent', () => {
 
   it('should do nothing when when FileBackupStatusChangedEvent' +
     ' is received and currently downloaded file is already cleared', () => {
-    fileDetailsClient.getCurrentlyDownloading.and.returnValue(of(undefined) as any);
+    fixture.detectChanges();
+    component.currentDownload = undefined;
     mockFileBackupStatusChangedEventReceived('anotherFileDetailsId', FileBackupStatus.Failed);
 
     const currentlyDownloadingTable = fixture.debugElement.query(By.css('#currently-downloading'));
-    expect(currentlyDownloadingTable.nativeElement.textContent).not.toContain('Nothing is currently being backed up');
+    expect(currentlyDownloadingTable.nativeElement.textContent).toContain('Nothing is currently being backed up');
   });
 });

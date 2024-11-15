@@ -1,11 +1,12 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {AuthComponent} from './auth.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
 import {FormsModule} from "@angular/forms";
 import {PageHeaderStubComponent} from "@app/shared/components/page-header/page-header.component.stub";
 import {GogAuthComponent} from "@app/gog/pages/auth/gog-auth/gog-auth.component";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('AuthComponent', () => {
   let component: AuthComponent;
@@ -13,17 +14,15 @@ describe('AuthComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+    declarations: [
         AuthComponent,
         LoadedContentStubComponent,
         PageHeaderStubComponent,
         GogAuthComponent
-      ],
-      imports: [
-        HttpClientTestingModule,
-        FormsModule
-      ]
-    })
+    ],
+    imports: [FormsModule],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+})
       .compileComponents();
   });
 

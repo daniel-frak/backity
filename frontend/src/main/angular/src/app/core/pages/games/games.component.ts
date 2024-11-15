@@ -39,11 +39,12 @@ export class GamesComponent implements OnInit {
     this.fileDetailsClient.download(file.id)
       .pipe(catchError(e => {
         file.backupDetails.status = FileBackupStatus.Discovered;
-        return throwError(e);
+        return throwError(() => e);
       }))
-      .subscribe(() => {
-      }, err => console.error(`An error occurred while trying to enqueue a file (id=${file.id})`,
-        file, err));
+      .subscribe({
+        error: (err) => console.error(`An error occurred while trying to enqueue a file (id=${file.id})`,
+          file, err)
+      });
   }
 
   cancelBackup(fileId: string) {

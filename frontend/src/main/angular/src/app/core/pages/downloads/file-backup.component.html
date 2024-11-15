@@ -12,29 +12,31 @@
     <ng-container *ngIf="currentDownload">
       <app-table [content]="{content: [currentDownload]}" [isLoading]="filesAreLoading">
         <ng-template app-table-column="Game title" let-item>
-          {{asBackupStartedMessage(item)!.originalGameTitle}}
+          {{ asBackupStartedEvent(item)!.originalGameTitle }}
         </ng-template>
         <ng-template app-table-column="File name" let-item>
-          {{asBackupStartedMessage(item)!.fileTitle}}
-          - {{asBackupStartedMessage(item)!.originalFileName}}
+          {{ asBackupStartedEvent(item)!.fileTitle }}
+          - {{ asBackupStartedEvent(item)!.originalFileName }}
         </ng-template>
         <ng-template app-table-column="Version" let-item>
-          {{asBackupStartedMessage(item)!.version}}
+          {{ asBackupStartedEvent(item)!.version }}
         </ng-template>
         <ng-template app-table-column="Size" let-item>
-          {{asBackupStartedMessage(item)!.size}}
+          {{ asBackupStartedEvent(item)!.size }}
         </ng-template>
         <ng-template app-table-column="Path" style="max-width: 5%" let-item>
-          <span class="file-path">{{asBackupStartedMessage(item)!.filePath}}</span>
+          <span class="file-path">{{ asBackupStartedEvent(item)!.filePath }}</span>
         </ng-template>
         <ng-template app-table-column="Progress">
           <ng-container *ngIf="downloadProgress">
             <span class="progress">
-              <div aria-valuemax="100" aria-valuemin="0" [attr.aria-valuenow]="downloadProgress.percentage"
-                   class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                   [ngStyle]="{width: downloadProgress.percentage + '%'}">{{downloadProgress.percentage + '%'}}</div>
+              <!--/* //NOSONAR */--><div
+              aria-valuemax="100" aria-valuemin="0" [attr.aria-valuenow]="downloadProgress.percentage"
+              class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+              [ngStyle]="{width: downloadProgress.percentage + '%'}">{{ downloadProgress.percentage + '%' }}
+            </div>
             </span>
-            (time left: {{(downloadProgress.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC'}})
+            (time left: {{ (downloadProgress.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }})
           </ng-container>
         </ng-template>
       </app-table>
@@ -55,16 +57,16 @@
 
     <app-table [content]="enqueuedDownloads!" [isLoading]="filesAreLoading" caption="Backup queue" id="download-queue">
       <ng-template app-table-column="Source game title" let-item>
-        {{asFile(item).sourceFileDetails!.originalGameTitle}}
+        {{ asFile(item).sourceFileDetails!.originalGameTitle }}
       </ng-template>
       <ng-template app-table-column="Source file name" let-item>
-        {{asFile(item).sourceFileDetails!.originalFileName}}
+        {{ asFile(item).sourceFileDetails!.originalFileName }}
       </ng-template>
       <ng-template app-table-column="Version" let-item>
-        {{asFile(item).sourceFileDetails!.version}}
+        {{ asFile(item).sourceFileDetails!.version }}
       </ng-template>
       <ng-template app-table-column="Size" let-item>
-        {{asFile(item).sourceFileDetails!.size}}
+        {{ asFile(item).sourceFileDetails!.size }}
       </ng-template>
       <ng-template app-table-column="Actions"
                    append-class="text-end"
@@ -81,33 +83,33 @@
 
     <app-table [content]="processedFiles!" [isLoading]="filesAreLoading" caption="Processed files" id="processed-files">
       <ng-template app-table-column="Game title" let-item>
-        {{asFile(item).sourceFileDetails!.originalGameTitle}}
+        {{ asFile(item).sourceFileDetails!.originalGameTitle }}
       </ng-template>
       <ng-template app-table-column="File name" let-item>
-        {{asFile(item).sourceFileDetails!.fileTitle}}
+        {{ asFile(item).sourceFileDetails!.fileTitle }}
       </ng-template>
       <ng-template app-table-column="Version" let-item>
-        {{asFile(item).sourceFileDetails!.version}}
+        {{ asFile(item).sourceFileDetails!.version }}
       </ng-template>
       <ng-template app-table-column="Size" let-item>
-        {{asFile(item).sourceFileDetails!.size}}
+        {{ asFile(item).sourceFileDetails!.size }}
       </ng-template>
       <ng-template app-table-column="Path" style="max-width: 5%" let-item>
-        <span class="file-path">{{asFile(item).backupDetails!.filePath}}</span>
+        <span class="file-path">{{ asFile(item).backupDetails!.filePath }}</span>
       </ng-template>
       <ng-template app-table-column="Status" let-item>
         <ng-container *ngFor="let file of [asFile(item)]">
           <span
-            [ngClass]="{'bg-success': file.backupDetails?.status == FileBackupStatus.Success,
-             'bg-danger': file.backupDetails?.status != FileBackupStatus.Success}"
+            [ngClass]="{'bg-success': file.backupDetails.status == FileBackupStatus.Success,
+             'bg-danger': file.backupDetails.status != FileBackupStatus.Success}"
             class="badge">
-            <i [ngClass]="{'bi bi-check-circle': file.backupDetails?.status == FileBackupStatus.Success,
-             'bi bi-x-circle': file.backupDetails?.status != FileBackupStatus.Success}"
+            <i [ngClass]="{'bi bi-check-circle': file.backupDetails.status == FileBackupStatus.Success,
+             'bi bi-x-circle': file.backupDetails.status != FileBackupStatus.Success}"
                aria-hidden="true"
                class="me-1">
             </i>
 
-            {{file.backupDetails?.status}}
+            {{ file.backupDetails.status }}
           </span>
         </ng-container>
       </ng-template>

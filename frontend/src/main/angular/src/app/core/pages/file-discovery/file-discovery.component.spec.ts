@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {FileDiscoveryComponent} from './file-discovery.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import { provideHttpClientTesting } from "@angular/common/http/testing";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {PageHeaderStubComponent} from "@app/shared/components/page-header/page-header.component.stub";
@@ -14,15 +14,16 @@ import {
   FileBackupStatus,
   FileDetails,
   FileDetailsClient,
-  FileDiscoveredMessage,
+  FileDiscoveredEvent,
   FileDiscoveryClient,
   FileDiscoveryWebSocketTopics,
-  FileDiscoveryProgressUpdateMessage,
+  FileDiscoveryProgressUpdateEvent,
   FileDiscoveryStatus,
   PageFileDetails
 } from "@backend";
 import {Observable} from "rxjs";
 import {MessageTesting} from "@app/shared/testing/message-testing";
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import createSpyObj = jasmine.createSpyObj;
 
 describe('FileDiscoveryComponent', () => {
@@ -49,34 +50,31 @@ describe('FileDiscoveryComponent', () => {
       });
 
     await TestBed.configureTestingModule({
-      declarations: [
+    declarations: [
         FileDiscoveryComponent,
         LoadedContentStubComponent,
         PageHeaderStubComponent,
         NewDiscoveredFilesBadgeComponent,
         TableComponent
-      ],
-      imports: [
-        HttpClientTestingModule,
-        NgbModule
-      ],
-      providers: [
+    ],
+    imports: [NgbModule],
+    providers: [
         {
-          provide: MessagesService,
-          useValue: messagesServiceMock
+            provide: MessagesService,
+            useValue: messagesServiceMock
         },
         {
-          provide: FileDiscoveryClient,
-          useValue: jasmine.createSpyObj('FileDiscoveryClient',
-            ['getStatuses', 'discover', 'stopDiscovery'])
+            provide: FileDiscoveryClient,
+            useValue: jasmine.createSpyObj('FileDiscoveryClient', ['getStatuses', 'discover', 'stopDiscovery'])
         },
         {
-          provide: FileDetailsClient,
-          useValue: jasmine.createSpyObj('FileDetailsClient',
-            ['download', 'getDiscoveredFiles'])
-        }
-      ]
-    })
+            provide: FileDetailsClient,
+            useValue: jasmine.createSpyObj('FileDetailsClient', ['download', 'getDiscoveredFiles'])
+        },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+})
       .compileComponents();
   });
 
@@ -152,11 +150,11 @@ describe('FileDiscoveryComponent', () => {
   });
 
   it('should set newest discovered and increment discovered count on new discovery', () => {
-    const expectedFileDiscoveredMessage: FileDiscoveredMessage = {
+    const expectedFileDiscoveredEvent: FileDiscoveredEvent = {
       fileTitle: 'currentGame.exe'
     };
-    discoveredSubscriptions[0]({body: JSON.stringify(expectedFileDiscoveredMessage)})
-    expect(component.newestDiscovered).toEqual(expectedFileDiscoveredMessage);
+    discoveredSubscriptions[0]({body: JSON.stringify(expectedFileDiscoveredEvent)})
+    expect(component.newestDiscovered).toEqual(expectedFileDiscoveredEvent);
     expect(component.newDiscoveredCount).toEqual(1);
   });
 
@@ -224,7 +222,7 @@ describe('FileDiscoveryComponent', () => {
   });
 
   it('should update discovery progress', () => {
-    const progressUpdate: FileDiscoveryProgressUpdateMessage = {
+    const progressUpdate: FileDiscoveryProgressUpdateEvent = {
       source: 'someSource',
       percentage: 25,
       timeLeftSeconds: 1234
@@ -236,7 +234,7 @@ describe('FileDiscoveryComponent', () => {
 
   it('should get progress list', () => {
     expect(component.getProgressList()).toEqual([]);
-    const expectedProgress: FileDiscoveryProgressUpdateMessage = {
+    const expectedProgress: FileDiscoveryProgressUpdateEvent = {
       source: 'someSource',
       percentage: 25,
       timeLeftSeconds: 1234

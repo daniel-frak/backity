@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
-import {HttpClientModule} from "@angular/common/http";
+import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import {AuthComponent} from './pages/auth/auth.component';
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {FileDiscoveryComponent} from './pages/file-discovery/file-discovery.component';
@@ -27,32 +27,25 @@ import {ThemeComponent} from './pages/theme/theme.component';
 import {GamesComponent} from './pages/games/games.component';
 import {FileStatusBadgeComponent} from './pages/games/file-status-badge/file-status-badge.component';
 
-@NgModule({
-  declarations: [
-    AuthComponent,
-    FileDiscoveryComponent,
-    FileBackupComponent,
-    LogsComponent,
-    NewDiscoveredPopupComponent,
-    NewDiscoveredFilesBadgeComponent,
-    FileDiscoveryStatusBadgeComponent,
-    SettingsLayoutComponent,
-    SettingsSideNavComponent,
-    FilesComponent,
-    ThemeComponent,
-    GamesComponent,
-    FileStatusBadgeComponent
-  ],
-  imports: [
-    SharedModule,
-    GogModule,
-    BrowserModule,
-    HttpClientModule,
-    NgbModule,
-    FormsModule,
-    RouterModule
-  ],
-  providers: [],
-})
+@NgModule({ declarations: [
+        AuthComponent,
+        FileDiscoveryComponent,
+        FileBackupComponent,
+        LogsComponent,
+        NewDiscoveredPopupComponent,
+        NewDiscoveredFilesBadgeComponent,
+        FileDiscoveryStatusBadgeComponent,
+        SettingsLayoutComponent,
+        SettingsSideNavComponent,
+        FilesComponent,
+        ThemeComponent,
+        GamesComponent,
+        FileStatusBadgeComponent
+    ], imports: [SharedModule,
+        GogModule,
+        BrowserModule,
+        NgbModule,
+        FormsModule,
+        RouterModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class CoreModule {
 }

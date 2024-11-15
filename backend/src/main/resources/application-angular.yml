@@ -1,0 +1,15 @@
+###
+# Special profile for code generation
+###
+spring:
+  datasource:
+    url: jdbc:h2:mem:backity
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+openapi:
+  project-title: '@project.name@'
+  project-version: '@project.version@'
+  project-description: '@project.description@'

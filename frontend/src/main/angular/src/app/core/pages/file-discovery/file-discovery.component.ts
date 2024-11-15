@@ -3,12 +3,12 @@ import {
   FileBackupStatus,
   FileDetails,
   FileDetailsClient,
-  FileDiscoveredMessage,
+  FileDiscoveredEvent,
   FileDiscoveryClient,
-  FileDiscoveryWebSocketTopics,
-  FileDiscoveryProgressUpdateMessage,
+  FileDiscoveryProgressUpdateEvent,
   FileDiscoveryStatus,
-  FileDiscoveryStatusChangedMessage,
+  FileDiscoveryStatusChangedEvent,
+  FileDiscoveryWebSocketTopics,
   PageFileDetails
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
@@ -25,13 +25,13 @@ import {throwError} from "rxjs";
 export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
   discoveredFiles?: PageFileDetails;
-  newestDiscovered?: FileDiscoveredMessage;
+  newestDiscovered?: FileDiscoveredEvent;
   newDiscoveredCount: number = 0;
   infoIsLoading: boolean = false;
   filesAreLoading: boolean = false;
   discoveryStatusBySource: Map<string, boolean> = new Map<string, boolean>();
-  discoveryProgressBySource: Map<string, FileDiscoveryProgressUpdateMessage>
-    = new Map<string, FileDiscoveryProgressUpdateMessage>();
+  discoveryProgressBySource: Map<string, FileDiscoveryProgressUpdateEvent>
+    = new Map<string, FileDiscoveryProgressUpdateEvent>();
   discoveryStateUnknown: boolean = true;
 
   private readonly pageSize = 20;
@@ -62,16 +62,16 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   }
 
   private onDiscoveryStatusChanged(payload: IMessage) {
-    const status: FileDiscoveryStatusChangedMessage = JSON.parse(payload.body);
+    const status: FileDiscoveryStatusChangedEvent = JSON.parse(payload.body);
     this.updateDiscoveryStatus(status);
   }
 
   private onProgressUpdated(payload: IMessage) {
-    const progress: FileDiscoveryProgressUpdateMessage = JSON.parse(payload.body);
+    const progress: FileDiscoveryProgressUpdateEvent = JSON.parse(payload.body);
     this.discoveryProgressBySource.set(progress.source as string, progress);
   }
 
-  private updateDiscoveryStatus(status: FileDiscoveryStatusChangedMessage) {
+  private updateDiscoveryStatus(status: FileDiscoveryStatusChangedEvent) {
     this.discoveryStatusBySource.set(status.source as string, status.isInProgress as boolean);
     this.discoveryStateUnknown = false;
   }
@@ -120,11 +120,12 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     this.fileDetailsClient.download(file.id)
       .pipe(catchError(e => {
         file.backupDetails.status = FileBackupStatus.Discovered;
-        return throwError(e);
+        return throwError(() => e);
       }))
-      .subscribe(() => {
-      }, (err: any) => console.error(
-        `An error occurred while trying to enqueue a file (id=${file.id})`, file, err));
+      .subscribe({
+        error: (err) => console.error(
+          `An error occurred while trying to enqueue a file (id=${file.id})`, file, err)
+      });
   }
 
   ngOnDestroy(): void {
@@ -145,7 +146,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
       });
   }
 
-  getProgressList(): FileDiscoveryProgressUpdateMessage[] {
+  getProgressList(): FileDiscoveryProgressUpdateEvent[] {
     if (this.discoveryProgressBySource.size === 0) {
       return [];
     }

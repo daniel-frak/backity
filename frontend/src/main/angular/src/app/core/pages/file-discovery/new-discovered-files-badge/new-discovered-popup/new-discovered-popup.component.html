@@ -1,11 +1,11 @@
 <div *ngIf="newestDiscovered">
   <div class="text-truncate"><span class="fw-bold">Game title:</span>
-    {{newestDiscovered?.originalGameTitle}}
+    {{newestDiscovered.originalGameTitle}}
   </div>
   <div class="text-truncate"><span class="fw-bold">File name:</span>
-    {{newestDiscovered?.fileTitle}} - {{newestDiscovered?.originalFileName}}
+    {{newestDiscovered.fileTitle}} - {{newestDiscovered.originalFileName}}
   </div>
-  <div class="text-truncate"><span class="fw-bold">Size:</span> {{newestDiscovered?.size}}</div>
+  <div class="text-truncate"><span class="fw-bold">Size:</span> {{newestDiscovered.size}}</div>
 </div>
 <ng-container *ngIf="!newestDiscovered">
   No new discovered files.

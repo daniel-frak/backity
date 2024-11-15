@@ -9,10 +9,8 @@
  */
 
 
-export interface FileDiscoveredMessage { 
-    originalGameTitle?: string;
-    originalFileName?: string;
-    fileTitle?: string;
-    size?: string;
+export interface FileDiscoveryStatusChangedEvent { 
+    source?: string;
+    isInProgress?: boolean;
 }
 

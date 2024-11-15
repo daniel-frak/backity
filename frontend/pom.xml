@@ -13,8 +13,8 @@
 
     <properties>
         <frontend.maven.plugin.version>1.15.0</frontend.maven.plugin.version>
-        <node.version>v14.17.1</node.version>
-        <npm.version>7.17.0</npm.version>
+        <node.version>v22.9.0</node.version>
+        <npm.version>10.9.0</npm.version>
 
         <sonar.projectKey>backity-frontend</sonar.projectKey>
         <sonar.projectName>Backity (frontend)</sonar.projectName>
@@ -77,7 +77,7 @@
 
         <resources>
             <resource>
-                <directory>target/frontend</directory>
+                <directory>target/frontend/browser</directory>
                 <targetPath>static</targetPath>
             </resource>
         </resources>

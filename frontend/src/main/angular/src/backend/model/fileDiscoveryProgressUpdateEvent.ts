@@ -9,8 +9,9 @@
  */
 
 
-export interface FileDiscoveryStatusChangedMessage { 
+export interface FileDiscoveryProgressUpdateEvent { 
     source?: string;
-    isInProgress?: boolean;
+    percentage?: number;
+    timeLeftSeconds?: number;
 }
 
