@@ -76,7 +76,8 @@ class GogEmbedWebClientIT {
 
     @BeforeEach
     void setUp() {
-        WebClient webClientEmbed = new WebClientConfig().webClientEmbed(WebClient.builder()).mutate()
+        WebClient webClientEmbed = new WebClientConfig().webClientEmbed(WebClient.builder(),
+                        "test-base-url").mutate()
                 .baseUrl(wireMockEmbed.baseUrl())
                 .build();
 

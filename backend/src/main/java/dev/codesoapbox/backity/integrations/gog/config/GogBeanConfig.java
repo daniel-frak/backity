@@ -33,8 +33,9 @@ public class GogBeanConfig {
     }
 
     @Bean
-    GogAuthClient gogAuthClient(@Qualifier("gogAuth") WebClient webClientAuth) {
-        return new GogAuthClient(webClientAuth, clientId, clientSecret);
+    GogAuthClient gogAuthClient(@Qualifier("gogAuth") WebClient webClientAuth,
+                                @Value("${gog.embed.redirect-uri}") String redirectUri) {
+        return new GogAuthClient(webClientAuth, clientId, clientSecret, redirectUri);
     }
 
     @Bean

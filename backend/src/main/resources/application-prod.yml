@@ -1,0 +1,6 @@
+gog:
+  auth:
+    base-url: "https://auth.gog.com"
+  embed:
+    base-url: "https://embed.gog.com"
+    redirect-uri: "https://embed.gog.com/on_login_success?origin=client"

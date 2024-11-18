@@ -1,0 +1,181 @@
+[
+  {
+    "httpRequest": {
+      "method" : "GET",
+      "path": "/gog/embed/user/data/games"
+    },
+    "httpResponse": {
+      "body": {
+        "owned": [
+          1000000000,
+          1000000001,
+          1000000002
+        ]
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method" : "GET",
+      "path": "/gog/embed/account/gameDetails/1000000000.json"
+    },
+    "httpResponse": {
+      "body": {
+        "title": "Test Game 1",
+        "backgroundImage": "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
+        "cdKey": "",
+        "textInformation": "",
+        "downloads": [
+          [
+            "English",
+            {
+              "windows": [
+                {
+                  "manualUrl": "/downlink/unreal_tournament_2004_ece/en1installer3",
+                  "downloaderUrl": "gogdownloader://unreal_tournament_2004_ece/installer_win_en",
+                  "name": "Test Game 1 Installer (Part 1 of 3)",
+                  "version": null,
+                  "date": "",
+                  "size": "1 MB"
+                },
+                {
+                  "manualUrl": "/downlink/unreal_tournament_2004_ece/en1installer4",
+                  "downloaderUrl": "gogdownloader://unreal_tournament_2004_ece/installer_win_en",
+                  "name": "Test Game 1 Installer (Part 2 of 3)",
+                  "version": null,
+                  "date": "",
+                  "size": "1.5 GB"
+                },
+                {
+                  "manualUrl": "/downlink/unreal_tournament_2004_ece/en1installer5",
+                  "downloaderUrl": "gogdownloader://unreal_tournament_2004_ece/installer_win_en",
+                  "name": "Test Game 1 Installer (Part 3 of 3)",
+                  "version": null,
+                  "date": "",
+                  "size": "507 MB"
+                }
+              ]
+            }
+          ]
+        ],
+        "extras": [
+          {
+            "manualUrl": "/downlink/file/unreal_tournament_2004_ece/6093",
+            "downloaderUrl": "gogdownloader://unreal_tournament_2004_ece/6093",
+            "name": "manual (33 pages)",
+            "type": "manuals",
+            "info": 1,
+            "size": "2 MB"
+          },
+          {
+            "manualUrl": "/downlink/file/unreal_tournament_2004_ece/6073",
+            "downloaderUrl": "gogdownloader://unreal_tournament_2004_ece/6073",
+            "name": "HD wallpapers",
+            "type": "wallpapers",
+            "info": 12,
+            "size": "115 MB"
+          },
+          {
+            "manualUrl": "/downlink/file/unreal_tournament_2004_ece/6083",
+            "downloaderUrl": "gogdownloader://unreal_tournament_2004_ece/6083",
+            "name": "avatars",
+            "type": "avatars",
+            "info": 8,
+            "size": "1 MB"
+          }
+        ],
+        "dlcs": [],
+        "tags": [],
+        "isPreOrder": false,
+        "releaseTimestamp": 1227585600,
+        "messages": [],
+        "changelog": null,
+        "forumLink": "forumLink1",
+        "isBaseProductMissing": false,
+        "missingBaseProduct": null
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method" : "GET",
+      "path": "/gog/embed/account/gameDetails/1000000001.json"
+    },
+    "httpResponse": {
+      "body": {
+        "title": "Test Game 2",
+        "backgroundImage": "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
+        "cdKey": "",
+        "textInformation": "",
+        "downloads": [
+          [
+            "English",
+            {
+              "windows": [
+                {
+                  "manualUrl": "/downlink/unreal_tournament_2004_ece/en1installer3",
+                  "downloaderUrl": "gogdownloader://unreal_tournament_2004_ece/installer_win_en",
+                  "name": "Test Game 1 Installer",
+                  "version": null,
+                  "date": "",
+                  "size": "1 MB"
+                }
+              ]
+            }
+          ]
+        ],
+        "extras": [],
+        "dlcs": [],
+        "tags": [],
+        "isPreOrder": false,
+        "releaseTimestamp": 1227585600,
+        "messages": [],
+        "changelog": null,
+        "forumLink": "forumLink2",
+        "isBaseProductMissing": false,
+        "missingBaseProduct": null
+      }
+    }
+  },
+  {
+    "httpRequest": {
+      "method" : "GET",
+      "path": "/gog/embed/account/gameDetails/1000000002.json"
+    },
+    "httpResponse": {
+      "body": {
+        "title": "Test Game 3",
+        "backgroundImage": "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
+        "cdKey": "",
+        "textInformation": "",
+        "downloads": [
+          [
+            "English",
+            {
+              "windows": [
+                {
+                  "manualUrl": "/downlink/unreal_tournament_2004_ece/en1installer3",
+                  "downloaderUrl": "gogdownloader://unreal_tournament_2004_ece/installer_win_en",
+                  "name": "Test Game 3 Installer",
+                  "version": null,
+                  "date": "",
+                  "size": "1 MB"
+                }
+              ]
+            }
+          ]
+        ],
+        "extras": [],
+        "dlcs": [],
+        "tags": [],
+        "isPreOrder": false,
+        "releaseTimestamp": 1227585600,
+        "messages": [],
+        "changelog": null,
+        "forumLink": "forumLink2",
+        "isBaseProductMissing": false,
+        "missingBaseProduct": null
+      }
+    }
+  }
+]

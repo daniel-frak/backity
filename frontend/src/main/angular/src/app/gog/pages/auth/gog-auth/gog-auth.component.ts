@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {GOGAuthenticationClient} from "@backend";
+import {environment} from "@environment/environment";
 
 @Component({
   selector: 'app-gog-auth',
@@ -8,9 +9,7 @@ import {GOGAuthenticationClient} from "@backend";
 })
 export class GogAuthComponent implements OnInit {
 
-  private readonly GOG_AUTH_URL = "https://login.gog.com/auth?client_id=46899977096215655"
-    + "&redirect_uri=https%3A%2F%2Fembed.gog.com%2Fon_login_success%3Forigin%3Dclient"
-    + "&response_type=code&layout=client2";
+  private readonly GOG_AUTH_URL = environment.gogAuthUrl;
 
   public gogAuthenticated: boolean = false;
   public gogCodeUrl: string = "";

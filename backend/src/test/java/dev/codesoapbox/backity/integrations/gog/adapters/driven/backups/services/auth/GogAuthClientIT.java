@@ -15,6 +15,7 @@ class GogAuthClientIT {
 
     private static final String CLIENT_ID = "someClientId";
     private static final String CLIENT_SECRET = "someClientSecret";
+    private static final String REDIRECT_URI = "someRedirectUri";
 
     private GogAuthClient gogAuthClient;
 
@@ -24,7 +25,7 @@ class GogAuthClientIT {
                 .baseUrl(wmRuntimeInfo.getHttpBaseUrl())
                 .build();
 
-        gogAuthClient = new GogAuthClient(webClientAuth, CLIENT_ID, CLIENT_SECRET);
+        gogAuthClient = new GogAuthClient(webClientAuth, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
     }
 
     @Test
@@ -35,7 +36,7 @@ class GogAuthClientIT {
                 .withQueryParam("client_id", equalTo(CLIENT_ID))
                 .withQueryParam("client_secret", equalTo(CLIENT_SECRET))
                 .withQueryParam("grant_type", equalTo(GogAuthClient.GRANT_TYPE_AUTHORIZATION_CODE))
-                .withQueryParam("redirect_uri", equalTo(GogAuthClient.REDIRECT_URI))
+                .withQueryParam("redirect_uri", equalTo(REDIRECT_URI))
                 .withQueryParam("code", equalTo(code))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")

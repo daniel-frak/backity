@@ -1,3 +1,6 @@
+cors:
+    allowed-origins: 'http://localhost:8080,http://localhost:4200'
+
 #logging:
 #  level:
 #    org:

@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.config;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -11,14 +12,16 @@ import reactor.netty.http.client.HttpClient;
 public class WebClientConfig {
 
     @Bean(name = "gogAuth")
-    WebClient webClientAuth(WebClient.Builder webClientBuilder) {
-        return webClientBuilder.baseUrl("https://auth.gog.com")
+    WebClient webClientAuth(WebClient.Builder webClientBuilder,
+                            @Value("${gog.auth.base-url}") String baseUrl) {
+        return webClientBuilder.baseUrl(baseUrl)
                 .build();
     }
 
     @Bean(name = "gogEmbed")
-    public WebClient webClientEmbed(WebClient.Builder webClientBuilder) {
-        return webClientBuilder.baseUrl("https://embed.gog.com")
+    public WebClient webClientEmbed(WebClient.Builder webClientBuilder,
+                                    @Value("${gog.embed.base-url}") String baseUrl) {
+        return webClientBuilder.baseUrl(baseUrl)
                 .clientConnector(new ReactorClientHttpConnector(
                         HttpClient.create()
                                 .compress(true)

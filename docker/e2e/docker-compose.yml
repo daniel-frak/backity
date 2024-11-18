@@ -1,0 +1,22 @@
+version: '3.3'
+services:
+  ### API MOCKING ###
+  mockserver:
+    image: mockserver/mockserver:$MOCKSERVER_VERSION
+    ports:
+      - "1080:1080"
+    environment:
+      MOCKSERVER_PROPERTY_FILE: /config/mockserver.properties
+      MOCKSERVER_INITIALIZATION_JSON_PATH: /config/api_*.json
+    volumes:
+      - type: bind
+        source: ./mockserver_config
+        target: /config
+    stop_grace_period: 5m
+    restart: unless-stopped
+    networks:
+      - internal
+  ### END MOCKING ###
+
+networks:
+  internal:
