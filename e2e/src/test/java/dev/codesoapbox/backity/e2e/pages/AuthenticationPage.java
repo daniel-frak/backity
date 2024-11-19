@@ -27,14 +27,19 @@ public class AuthenticationPage {
     }
 
     public void authenticateGog() {
-        // Not strictly necessary:
-        logInToGogBtn.click();
-        Page newTab = page.context().waitForPage(logInToGogBtn::click);
-        newTab.waitForLoadState();
-        newTab.close();
-        // END Not strictly necessary
+        GogLoginPopup gogLoginPopup = summonGogLoginPopup();
 
-        gogCodeUrlInput.fill("http://localhost/test-login-result?code=test_code");
+        gogLoginPopup.signIn();
+        gogCodeUrlInput.fill(gogLoginPopup.getUrl());
+        gogLoginPopup.close();
+
         gogAuthenticateButton.click();
+    }
+
+    private GogLoginPopup summonGogLoginPopup() {
+        Page loginPopup = page.context().waitForPage(logInToGogBtn::click);
+        loginPopup.waitForLoadState();
+
+        return new GogLoginPopup(loginPopup);
     }
 }

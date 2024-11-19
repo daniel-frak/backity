@@ -17,7 +17,7 @@
         </app-new-discovered-files-badge>
       </div>
 
-      <button (click)="startDiscovery()"
+      <button data-testid="discover-new-files-btn" (click)="startDiscovery()"
               [disabled]="discoveryStateUnknown || discoveryOngoing()"
               class="btn btn-primary mt-2 me-1">
         Discover new files
@@ -59,7 +59,7 @@
   <div class="card-body">
     <h2 class="card-title">Discovered files</h2>
     <p>
-      <button (click)="refreshDiscoveredFiles()"
+      <button data-testid="refresh-discovered-files-btn" (click)="refreshDiscoveredFiles()"
               [disabled]="filesAreLoading"
               class="btn btn-secondary">
         Refresh
@@ -80,7 +80,7 @@
       </div>
     </div>
 
-    <app-table [content]="discoveredFiles!" [isLoading]="filesAreLoading">
+    <app-table [content]="discoveredFiles!" [isLoading]="filesAreLoading" [testId]="'discovered-files-table'">
       <ng-template app-table-column="Source game title" let-item>
         {{ asFile(item).sourceFileDetails!.originalFileName }}
       </ng-template>
@@ -98,7 +98,7 @@
                    hide-title-on-mobile
                    let-item>
         <ng-container *ngFor="let file of [asFile(item)]">
-          <button (click)="enqueueFile(file)"
+          <button data-testid="back-up-btn" (click)="enqueueFile(file)"
                   [disabled]="file.backupDetails.status != 'DISCOVERED'"
                   class="btn btn-primary">
             Back up

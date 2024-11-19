@@ -9,10 +9,10 @@ import {By} from "@angular/platform-browser";
 
 @Component({
   template: `
-    <app-table [isLoading]="isLoading" [content]="content" caption="Test table">
-      <ng-template app-table-column="Test column 1" let-item>Col1: {{item}}</ng-template>
-      <ng-template app-table-column="Test column 2" hide-title-on-mobile let-item>Col2: {{item}}</ng-template>
-      <ng-template app-table-column="Test column 3" append-class="custom-class" let-item>Col3: {{item}}</ng-template>
+    <app-table [testId]="'someTestId'" [isLoading]="isLoading" [content]="content" caption="Test table">
+      <ng-template app-table-column="Test column 1" let-item>Col1: {{ item }}</ng-template>
+      <ng-template app-table-column="Test column 2" hide-title-on-mobile let-item>Col2: {{ item }}</ng-template>
+      <ng-template app-table-column="Test column 3" append-class="custom-class" let-item>Col3: {{ item }}</ng-template>
     </app-table>
   `
 })
@@ -46,6 +46,12 @@ describe('TableComponent', () => {
   it('should create', () => {
     fixture.detectChanges();
     expect(component).toBeTruthy();
+  });
+
+  it('should have test id', () => {
+    fixture.detectChanges();
+    const tableElement = fixture.debugElement.query(By.css('[data-testid="someTestId"]'));
+    expect(tableElement).toBeTruthy();
   });
 
   it('should show content', () => {

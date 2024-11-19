@@ -1,5 +1,5 @@
 <app-loaded-content [isLoading]="isLoading">
-  <table class="table table-custom-responsive-lg-down">
+  <table [attr.data-testid]="testId" class="table table-custom-responsive-lg-down">
     <caption *ngIf="caption">{{caption}}</caption>
     <thead *ngIf="content?.content?.length">
       <tr>

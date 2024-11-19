@@ -20,7 +20,6 @@
     <modules>
         <module>backend</module>
         <module>frontend</module>
-        <module>e2e</module>
     </modules>
 
     <properties>
@@ -85,6 +84,12 @@
                 <sonar.organization>codesoapbox</sonar.organization>
                 <sonar.host.url>https://sonarcloud.io</sonar.host.url>
             </properties>
+        </profile>
+        <profile>
+            <id>e2e</id>
+            <modules>
+                <module>e2e</module>
+            </modules>
         </profile>
     </profiles>
 

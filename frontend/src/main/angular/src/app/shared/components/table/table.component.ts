@@ -13,6 +13,9 @@ export class TableComponent implements OnInit {
   templateRefs!: QueryList<TableColumnDirective>;
 
   @Input()
+  testId?: string;
+
+  @Input()
   content?: TableContent;
 
   @Input()

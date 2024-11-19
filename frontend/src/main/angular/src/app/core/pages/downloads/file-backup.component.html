@@ -50,6 +50,7 @@
     <p>
       <button (click)="refresh()"
               [disabled]="filesAreLoading"
+              data-testid="refresh-queue-btn"
               class="btn btn-secondary">
         Refresh
       </button>
@@ -81,7 +82,8 @@
       </ng-template>
     </app-table>
 
-    <app-table [content]="processedFiles!" [isLoading]="filesAreLoading" caption="Processed files" id="processed-files">
+    <app-table [content]="processedFiles!" [isLoading]="filesAreLoading"
+               caption="Processed files" id="processed-files" [testId]="'processed-files-table'">
       <ng-template app-table-column="Game title" let-item>
         {{ asFile(item).sourceFileDetails!.originalGameTitle }}
       </ng-template>

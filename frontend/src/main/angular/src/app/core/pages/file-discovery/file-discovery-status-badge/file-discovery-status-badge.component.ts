@@ -4,7 +4,8 @@ import {FileDiscoveryStatus} from "@backend";
 @Component({
   selector: 'app-file-discovery-status-badge',
   templateUrl: './file-discovery-status-badge.component.html',
-  styleUrls: ['./file-discovery-status-badge.component.scss']
+  styleUrls: ['./file-discovery-status-badge.component.scss'],
+  host: { 'data-testid': 'file-discovery-status-badge' }
 })
 export class FileDiscoveryStatusBadgeComponent implements OnInit {
 

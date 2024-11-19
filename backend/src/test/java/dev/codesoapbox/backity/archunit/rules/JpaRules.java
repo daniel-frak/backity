@@ -89,7 +89,7 @@ public final class JpaRules {
             .and(isDeleteAllMethod())
             .should(CALL_METHOD_WITH_NAME_CONTAINING_FLUSH)
             .because("Hibernate may not behave correctly if the delete is part of a larger transaction")
-            .allowEmptyShould(true); // There were delete methods at the time of writing this rule
+            .allowEmptyShould(true); // There were no delete methods at the time of writing this rule
 
     private JpaRules() {
     }
