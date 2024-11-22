@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(name = "FileDiscoveryStatus")
 public record FileDiscoveryStatusHttpDto(
-        String source,
+        String gameProviderId,
         boolean isInProgress
 ) {
 }

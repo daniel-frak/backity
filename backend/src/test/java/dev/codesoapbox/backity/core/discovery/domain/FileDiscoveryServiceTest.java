@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.discovery.domain;
 
-import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
+import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryProgressChangedEvent;
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsRepository;
-import dev.codesoapbox.backity.core.filedetails.domain.SourceFileDetails;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
@@ -41,21 +41,21 @@ class FileDiscoveryServiceTest {
 
     private FileDiscoveryService fileDiscoveryService;
 
-    private FakeSourceFileDiscoveryService sourceFileDiscoveryService;
+    private FakeGameProviderFileDiscoveryService gameProviderFileDiscoveryService;
 
     @Mock
     private GameRepository gameRepository;
 
     @Mock
-    private FileDetailsRepository fileRepository;
+    private GameFileRepository fileRepository;
 
     @Mock
     private FileDiscoveryEventPublisher eventPublisher;
 
     @BeforeEach
     void setUp() {
-        sourceFileDiscoveryService = new FakeSourceFileDiscoveryService();
-        fileDiscoveryService = new FileDiscoveryService(singletonList(sourceFileDiscoveryService),
+        gameProviderFileDiscoveryService = new FakeGameProviderFileDiscoveryService();
+        fileDiscoveryService = new FileDiscoveryService(singletonList(gameProviderFileDiscoveryService),
                 gameRepository, fileRepository, eventPublisher);
     }
 
@@ -66,7 +66,7 @@ class FileDiscoveryServiceTest {
     }
 
     private void finishFileDiscovery() {
-        sourceFileDiscoveryService.finishLatch.countDown();
+        gameProviderFileDiscoveryService.finishLatch.countDown();
         waitForFileDiscoveryToStop();
     }
 
@@ -88,7 +88,7 @@ class FileDiscoveryServiceTest {
         FileDiscoveryService.CompletedFileDiscoveryHandler handler =
                 fileDiscoveryService.getCompletedFileDiscoveryHandler();
 
-        handler.handle(sourceFileDiscoveryService).accept(null, new RuntimeException("test exception"));
+        handler.handle(gameProviderFileDiscoveryService).accept(null, new RuntimeException("test exception"));
 
         assertThat(fileDiscoveryService.getStatuses().size()).isOne();
         assertThat(fileDiscoveryService.getStatuses().getFirst().isInProgress()).isFalse();
@@ -102,19 +102,19 @@ class FileDiscoveryServiceTest {
         when(gameRepository.findByTitle(gameTitle))
                 .thenReturn(Optional.of(game));
 
-        fileDiscoveryService = new FileDiscoveryService(singletonList(sourceFileDiscoveryService),
+        fileDiscoveryService = new FileDiscoveryService(singletonList(gameProviderFileDiscoveryService),
                 gameRepository, fileRepository, eventPublisher);
 
         fileDiscoveryService.startFileDiscovery();
 
-        waitForSourceFileDiscoveryToBeTriggered();
-        sourceFileDiscoveryService.simulateFileDiscovery(discoveredFile);
+        waitForGameProviderFileDiscoveryToBeTriggered();
+        gameProviderFileDiscoveryService.simulateFileDiscovery(discoveredFile);
         verify(gameRepository, never()).save(any());
     }
 
-    private void waitForSourceFileDiscoveryToBeTriggered() {
+    private void waitForGameProviderFileDiscoveryToBeTriggered() {
         await().atMost(2, TimeUnit.SECONDS)
-                .until(sourceFileDiscoveryService::hasBeenTriggered);
+                .until(gameProviderFileDiscoveryService::hasBeenTriggered);
     }
 
     @Test
@@ -124,21 +124,21 @@ class FileDiscoveryServiceTest {
         when(gameRepository.findByTitle(gameTitle))
                 .thenReturn(Optional.empty());
 
-        fileDiscoveryService = new FileDiscoveryService(singletonList(sourceFileDiscoveryService),
+        fileDiscoveryService = new FileDiscoveryService(singletonList(gameProviderFileDiscoveryService),
                 gameRepository, fileRepository, eventPublisher);
 
         fileDiscoveryService.startFileDiscovery();
 
-        waitForSourceFileDiscoveryToBeTriggered();
-        sourceFileDiscoveryService.simulateFileDiscovery(discoveredFile);
+        waitForGameProviderFileDiscoveryToBeTriggered();
+        gameProviderFileDiscoveryService.simulateFileDiscovery(discoveredFile);
         ArgumentCaptor<Game> gameCaptor = ArgumentCaptor.forClass(Game.class);
         verify(gameRepository).save(gameCaptor.capture());
         assertThat(gameCaptor.getValue().getTitle()).isEqualTo(gameTitle);
     }
 
-    private SourceFileDetails aDiscoveredFile(String gameTitle) {
-        return new SourceFileDetails(
-                new FileSourceId("someSource"), gameTitle, "someTitle", "someVersion", "someUrl",
+    private GameProviderFile aDiscoveredFile(String gameTitle) {
+        return new GameProviderFile(
+                new GameProviderId("someGameProviderId"), gameTitle, "someTitle", "someVersion", "someUrl",
                 "someOriginalFileName", "100 KB");
     }
 
@@ -155,20 +155,20 @@ class FileDiscoveryServiceTest {
                 .thenReturn(false);
 
         List<FileDiscoveryProgressChangedEvent> progressUpdates = trackProgressUpdateEvents();
-        fileDiscoveryService = new FileDiscoveryService(singletonList(sourceFileDiscoveryService),
+        fileDiscoveryService = new FileDiscoveryService(singletonList(gameProviderFileDiscoveryService),
                 gameRepository, fileRepository, eventPublisher);
 
         fileDiscoveryService.startFileDiscovery();
 
-        waitForSourceFileDiscoveryToBeTriggered();
-        sourceFileDiscoveryService.simulateFileDiscovery(discoveredFile);
+        waitForGameProviderFileDiscoveryToBeTriggered();
+        gameProviderFileDiscoveryService.simulateFileDiscovery(discoveredFile);
 
-        var fileDetailsArgumentCaptor = ArgumentCaptor.forClass(FileDetails.class);
-        verify(fileRepository).save(fileDetailsArgumentCaptor.capture());
-        FileDetails savedFileDetails = fileDetailsArgumentCaptor.getValue();
-        FileDetails expectedFileDetails = discoveredFile.associateWith(game);
-        expectedFileDetails.setId(savedFileDetails.getId());
-        verify(eventPublisher).publishFileDiscoveredEvent(expectedFileDetails);
+        var gameFileArgumentCaptor = ArgumentCaptor.forClass(GameFile.class);
+        verify(fileRepository).save(gameFileArgumentCaptor.capture());
+        GameFile savedGameFile = gameFileArgumentCaptor.getValue();
+        GameFile expectedGameFile = discoveredFile.associateWith(game);
+        expectedGameFile.setId(savedGameFile.getId());
+        verify(eventPublisher).publishFileDiscoveredEvent(expectedGameFile);
         assertThat(progressUpdates.size()).isOne();
         finishFileDiscovery();
         verify(eventPublisher, times(2)).publishStatusChangedEvent(any());
@@ -185,39 +185,39 @@ class FileDiscoveryServiceTest {
 
     @Test
     void startFileDiscoveryShouldNotSaveDiscoveredFileIfAlreadyExists() {
-        SourceFileDetails sourceFileDetails = aDiscoveredFile("someGameTitle");
+        GameProviderFile gameProviderFile = aDiscoveredFile("someGameTitle");
 
-        when(fileRepository.existsByUrlAndVersion(sourceFileDetails.url(), sourceFileDetails.version()))
+        when(fileRepository.existsByUrlAndVersion(gameProviderFile.url(), gameProviderFile.version()))
                 .thenReturn(true);
 
         fileDiscoveryService.startFileDiscovery();
 
-        waitForSourceFileDiscoveryToBeTriggered();
-        sourceFileDiscoveryService.simulateFileDiscovery(sourceFileDetails);
+        waitForGameProviderFileDiscoveryToBeTriggered();
+        gameProviderFileDiscoveryService.simulateFileDiscovery(gameProviderFile);
 
         verify(fileRepository, never()).save(any());
         verify(eventPublisher, never()).publishFileDiscoveredEvent(any());
     }
 
     @Test
-    void startFileDiscoveryShouldSetSourceServiceAsNotInProgressWhenDone() {
+    void startFileDiscoveryShouldSetGameProviderIdServiceAsNotInProgressWhenDone() {
         fileDiscoveryService.startFileDiscovery();
 
-        sourceFileDiscoveryService.complete();
+        gameProviderFileDiscoveryService.complete();
 
         waitForFileDiscoveryToStop();
         assertThat(fileDiscoveryService.getStatuses().size()).isOne();
     }
 
     @Test
-    void startFileDiscoveryShouldNotTriggerWhenSourceDiscoveryServiceAlreadyInProgress() {
+    void startFileDiscoveryShouldNotTriggerWhenGameProviderIdDiscoveryServiceAlreadyInProgress() {
         fileDiscoveryService.startFileDiscovery();
         fileDiscoveryService.startFileDiscovery();
-        sourceFileDiscoveryService.complete();
+        gameProviderFileDiscoveryService.complete();
         waitForFileDiscoveryToStop();
 
         assertThat(fileDiscoveryService.getStatuses().size()).isOne();
-        assertThat(sourceFileDiscoveryService.getTimesTriggered().get()).isOne();
+        assertThat(gameProviderFileDiscoveryService.getTimesTriggered().get()).isOne();
     }
 
     @Test
@@ -226,19 +226,19 @@ class FileDiscoveryServiceTest {
         fileDiscoveryService.stopFileDiscovery();
 
         waitForFileDiscoveryToStop();
-        assertThat(sourceFileDiscoveryService.getStoppedTimes()).isOne();
+        assertThat(gameProviderFileDiscoveryService.getStoppedTimes()).isOne();
     }
 
     @Test
     void shouldNotStopFileDiscoveryIfAlreadyStopped() {
         fileDiscoveryService.stopFileDiscovery();
-        assertThat(sourceFileDiscoveryService.getStoppedTimes()).isZero();
+        assertThat(gameProviderFileDiscoveryService.getStoppedTimes()).isZero();
     }
 
-    private static class FakeSourceFileDiscoveryService implements SourceFileDiscoveryService {
+    private static class FakeGameProviderFileDiscoveryService implements GameProviderFileDiscoveryService {
 
         private final CountDownLatch finishLatch = new CountDownLatch(1);
-        private final AtomicReference<Consumer<SourceFileDetails>> sourceFileDetailsConsumerRef =
+        private final AtomicReference<Consumer<GameProviderFile>> gameProviderFileConsumerRef =
                 new AtomicReference<>();
 
         @Getter
@@ -254,8 +254,8 @@ class FileDiscoveryServiceTest {
             return timesTriggered.get() > 0;
         }
 
-        public void simulateFileDiscovery(SourceFileDetails sourceFileDetails) {
-            sourceFileDetailsConsumerRef.get().accept(sourceFileDetails);
+        public void simulateFileDiscovery(GameProviderFile gameProviderFile) {
+            gameProviderFileConsumerRef.get().accept(gameProviderFile);
         }
 
         public void complete() {
@@ -263,16 +263,16 @@ class FileDiscoveryServiceTest {
         }
 
         @Override
-        public String getSource() {
-            return "someSource";
+        public String getGameProviderId() {
+            return "someGameProviderId";
         }
 
         @Override
-        public void startFileDiscovery(Consumer<SourceFileDetails> fileConsumer) {
+        public void startFileDiscovery(Consumer<GameProviderFile> fileConsumer) {
             if (exception != null) {
                 throw exception;
             }
-            this.sourceFileDetailsConsumerRef.set(fileConsumer);
+            this.gameProviderFileConsumerRef.set(fileConsumer);
             timesTriggered.incrementAndGet();
 
             try {

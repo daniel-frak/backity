@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.backup.domain;
 
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsRepository;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,38 +11,38 @@ import java.util.concurrent.atomic.AtomicReference;
 @RequiredArgsConstructor
 public class EnqueuedFileBackupProcessor {
 
-    private final FileDetailsRepository fileDetailsRepository;
+    private final GameFileRepository gameFileRepository;
     private final FileBackupService fileBackupService;
     private final FileBackupEventPublisher eventPublisher;
 
-    final AtomicReference<FileDetails> enqueuedFileBackupReference = new AtomicReference<>();
+    final AtomicReference<GameFile> enqueuedFileBackupReference = new AtomicReference<>();
 
     public synchronized void processQueue() {
         if (enqueuedFileBackupReference.get() != null) {
             return;
         }
 
-        fileDetailsRepository.findOldestWaitingForDownload()
+        gameFileRepository.findOldestWaitingForDownload()
                 .ifPresent(this::processEnqueuedFileDownload);
     }
 
-    private void processEnqueuedFileDownload(FileDetails fileDetails) {
-        if (!fileBackupService.isReadyFor(fileDetails)) {
+    private void processEnqueuedFileDownload(GameFile gameFile) {
+        if (!fileBackupService.isReadyFor(gameFile)) {
             return;
         }
 
-        enqueuedFileBackupReference.set(fileDetails);
+        enqueuedFileBackupReference.set(gameFile);
 
-        log.info("Backing up enqueued file {}", fileDetails.getSourceFileDetails().url());
+        log.info("Backing up enqueued file {}", gameFile.getGameProviderFile().url());
 
         try {
-            eventPublisher.publishBackupStartedEvent(fileDetails);
-            fileBackupService.backUpFile(fileDetails);
-            eventPublisher.publishBackupFinishedEvent(fileDetails);
+            eventPublisher.publishBackupStartedEvent(gameFile);
+            fileBackupService.backUpFile(gameFile);
+            eventPublisher.publishBackupFinishedEvent(gameFile);
         } catch (RuntimeException e) {
             log.error("An error occurred while trying to process enqueued file (id: {})",
-                    fileDetails.getId(), e);
-            eventPublisher.publishBackupFinishedEvent(fileDetails);
+                    gameFile.getId(), e);
+            eventPublisher.publishBackupFinishedEvent(gameFile);
         } finally {
             enqueuedFileBackupReference.set(null);
         }

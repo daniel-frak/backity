@@ -7,7 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { FileDetailsResponse } from './fileDetailsResponse';
+import { GameFileResponse } from './gameFileResponse';
 
 
 export interface GameDetailsResponse { 
@@ -15,7 +15,7 @@ export interface GameDetailsResponse {
     backgroundImage?: string;
     cdKey?: string;
     textInformation?: string;
-    files?: Array<FileDetailsResponse>;
+    files?: Array<GameFileResponse>;
     changelog?: string;
 }
 

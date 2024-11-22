@@ -57,25 +57,25 @@
     </p>
 
     <app-table [content]="enqueuedDownloads!" [isLoading]="filesAreLoading" caption="Backup queue" id="download-queue">
-      <ng-template app-table-column="Source game title" let-item>
-        {{ asFile(item).sourceFileDetails!.originalGameTitle }}
+      <ng-template app-table-column="Provider game title" let-item>
+        {{ asGameFile(item).gameProviderFile!.originalGameTitle }}
       </ng-template>
-      <ng-template app-table-column="Source file name" let-item>
-        {{ asFile(item).sourceFileDetails!.originalFileName }}
+      <ng-template app-table-column="Provider file name" let-item>
+        {{ asGameFile(item).gameProviderFile!.originalFileName }}
       </ng-template>
       <ng-template app-table-column="Version" let-item>
-        {{ asFile(item).sourceFileDetails!.version }}
+        {{ asGameFile(item).gameProviderFile!.version }}
       </ng-template>
       <ng-template app-table-column="Size" let-item>
-        {{ asFile(item).sourceFileDetails!.size }}
+        {{ asGameFile(item).gameProviderFile!.size }}
       </ng-template>
       <ng-template app-table-column="Actions"
                    append-class="text-end"
                    hide-title-on-mobile
                    let-item>
-        <ng-container *ngFor="let file of [asFile(item)]">
+        <ng-container *ngFor="let file of [asGameFile(item)]">
           <button (click)="removeFromQueue(file.id!)"
-                  *ngIf="file.backupDetails?.status == FileBackupStatus.Enqueued" class="btn btn-primary">
+                  *ngIf="file.fileBackup?.status == FileBackupStatus.Enqueued" class="btn btn-primary">
             Cancel
           </button>
         </ng-container>
@@ -85,33 +85,33 @@
     <app-table [content]="processedFiles!" [isLoading]="filesAreLoading"
                caption="Processed files" id="processed-files" [testId]="'processed-files-table'">
       <ng-template app-table-column="Game title" let-item>
-        {{ asFile(item).sourceFileDetails!.originalGameTitle }}
+        {{ asGameFile(item).gameProviderFile!.originalGameTitle }}
       </ng-template>
       <ng-template app-table-column="File name" let-item>
-        {{ asFile(item).sourceFileDetails!.fileTitle }}
+        {{ asGameFile(item).gameProviderFile!.fileTitle }}
       </ng-template>
       <ng-template app-table-column="Version" let-item>
-        {{ asFile(item).sourceFileDetails!.version }}
+        {{ asGameFile(item).gameProviderFile!.version }}
       </ng-template>
       <ng-template app-table-column="Size" let-item>
-        {{ asFile(item).sourceFileDetails!.size }}
+        {{ asGameFile(item).gameProviderFile!.size }}
       </ng-template>
       <ng-template app-table-column="Path" style="max-width: 5%" let-item>
-        <span class="file-path">{{ asFile(item).backupDetails!.filePath }}</span>
+        <span class="file-path">{{ asGameFile(item).fileBackup!.filePath }}</span>
       </ng-template>
       <ng-template app-table-column="Status" let-item>
-        <ng-container *ngFor="let file of [asFile(item)]">
+        <ng-container *ngFor="let file of [asGameFile(item)]">
           <span
-            [ngClass]="{'bg-success': file.backupDetails.status == FileBackupStatus.Success,
-             'bg-danger': file.backupDetails.status != FileBackupStatus.Success}"
+            [ngClass]="{'bg-success': file.fileBackup.status == FileBackupStatus.Success,
+             'bg-danger': file.fileBackup.status != FileBackupStatus.Success}"
             class="badge">
-            <i [ngClass]="{'bi bi-check-circle': file.backupDetails.status == FileBackupStatus.Success,
-             'bi bi-x-circle': file.backupDetails.status != FileBackupStatus.Success}"
+            <i [ngClass]="{'bi bi-check-circle': file.fileBackup.status == FileBackupStatus.Success,
+             'bi bi-x-circle': file.fileBackup.status != FileBackupStatus.Success}"
                aria-hidden="true"
                class="me-1">
             </i>
 
-            {{ file.backupDetails.status }}
+            {{ file.fileBackup.status }}
           </span>
         </ng-container>
       </ng-template>

@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.backup.adapters.driven.messaging;
 import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.*;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupEventPublisher;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupProgress;
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -18,8 +18,8 @@ public class FileBackupEventWebSocketPublisher implements FileBackupEventPublish
     private final FileBackupStatusChangedWsEventMapper fileBackupStatusChangedWsEventMapper;
 
     @Override
-    public void publishBackupStartedEvent(FileDetails fileDetails) {
-        FileBackupStartedWsEvent payload = fileBackupStartedWsEventMapper.toWsEvent(fileDetails);
+    public void publishBackupStartedEvent(GameFile gameFile) {
+        FileBackupStartedWsEvent payload = fileBackupStartedWsEventMapper.toWsEvent(gameFile);
         publish(FileBackupWebSocketTopics.BACKUP_STARTED.toString(), payload);
     }
 
@@ -35,8 +35,8 @@ public class FileBackupEventWebSocketPublisher implements FileBackupEventPublish
     }
 
     @Override
-    public void publishBackupFinishedEvent(FileDetails fileDetails) {
-        FileBackupStatusChangedWsEvent payload = fileBackupStatusChangedWsEventMapper.toWsEvent(fileDetails);
+    public void publishBackupFinishedEvent(GameFile gameFile) {
+        FileBackupStatusChangedWsEvent payload = fileBackupStatusChangedWsEventMapper.toWsEvent(gameFile);
         publish(FileBackupWebSocketTopics.BACKUP_STATUS_CHANGED.toString(), payload);
     }
 }

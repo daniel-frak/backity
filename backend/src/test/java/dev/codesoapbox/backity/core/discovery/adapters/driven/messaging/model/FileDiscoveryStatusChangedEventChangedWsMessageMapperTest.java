@@ -13,12 +13,12 @@ class FileDiscoveryStatusChangedEventChangedWsMessageMapperTest {
 
     @Test
     void shouldMapToMessage() {
-        var status = new FileDiscoveryStatusChangedEvent("Test Source", true);
+        var status = new FileDiscoveryStatusChangedEvent("Test Game Provider Id", true);
 
         FileDiscoveryStatusChangedWsEvent result = MAPPER.toWsEvent(status);
 
         FileDiscoveryStatusChangedWsEvent expectedResult = new FileDiscoveryStatusChangedWsEvent(
-                "Test Source", true);
+                "Test Game Provider Id", true);
         assertThat(result)
                 .hasNoNullFieldsOrProperties()
                 .usingRecursiveComparison()

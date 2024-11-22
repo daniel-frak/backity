@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,7 +33,7 @@ class RefreshGogAccessTokenControllerIT {
         when(useCase.refreshAccessToken(refreshToken))
                 .thenReturn(accessToken);
 
-        mockMvc.perform(get("/api/gog/auth/refresh?refresh_token=" + refreshToken))
+        mockMvc.perform(put("/api/" + GogAuthRestResource.RESOURCE_URL + "?refresh_token=" + refreshToken))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));

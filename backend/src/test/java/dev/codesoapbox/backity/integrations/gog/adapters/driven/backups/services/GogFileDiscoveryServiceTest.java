@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
-import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
+import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.ProgressInfo;
-import dev.codesoapbox.backity.core.filedetails.domain.SourceFileDetails;
-import dev.codesoapbox.backity.integrations.gog.domain.model.embed.FileDetailsResponse;
+import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
+import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 class GogFileDiscoveryServiceTest {
 
     @InjectMocks
-    private GogFileDiscoveryService gogFileDiscoveryService;
+    private GogFileDiscoveryServiceGame gogFileDiscoveryService;
 
     @Mock
     private GogEmbedClient gogEmbedClient;
@@ -33,20 +33,20 @@ class GogFileDiscoveryServiceTest {
     void startFileDiscoveryShouldDiscoverNewFiles() {
         mockFileDiscovery();
 
-        List<SourceFileDetails> fileVersionBackups = new ArrayList<>();
+        List<GameProviderFile> fileVersionBackups = new ArrayList<>();
         gogFileDiscoveryService.startFileDiscovery(fileVersionBackups::add);
 
-        var expectedFileDetails = List.of(
-                new SourceFileDetails(new FileSourceId("GOG"), "Game 2", "fileSimpleName1",
+        var expectedGameFile = List.of(
+                new GameProviderFile(new GameProviderId("GOG"), "Game 2", "fileSimpleName1",
                         "1.0.0", "someUrl1", "fileName1", "100 KB"),
-                new SourceFileDetails(new FileSourceId("GOG"), "Game 2", "fileSimpleName2",
+                new GameProviderFile(new GameProviderId("GOG"), "Game 2", "fileSimpleName2",
                         "2.0.0",
                         "someUrl2", "fileName2", "200 KB"),
-                new SourceFileDetails(new FileSourceId("GOG"), "Game 4", "fileSimpleName3",
+                new GameProviderFile(new GameProviderId("GOG"), "Game 4", "fileSimpleName3",
                         "3.0.0", "someUrl3", "fileName3", "300 KB")
         );
 
-        assertThat(fileVersionBackups).isEqualTo(expectedFileDetails);
+        assertThat(fileVersionBackups).isEqualTo(expectedGameFile);
     }
 
     private void mockFileDiscovery() {
@@ -60,15 +60,15 @@ class GogFileDiscoveryServiceTest {
 
         var game2Details = new GameDetailsResponse("Game 2", null, null,
                 null, List.of(
-                new FileDetailsResponse("1.0.0", "someUrl1", "fileSimpleName1", "100 KB",
+                new GameFileResponse("1.0.0", "someUrl1", "fileSimpleName1", "100 KB",
                         "fileName1"),
-                new FileDetailsResponse("2.0.0", "someUrl2", "fileSimpleName2", "200 KB",
+                new GameFileResponse("2.0.0", "someUrl2", "fileSimpleName2", "200 KB",
                         "fileName2")
         ), null);
 
         var game4Details = new GameDetailsResponse("Game 4", null, null,
                 null, List.of(
-                new FileDetailsResponse("3.0.0", "someUrl3", "fileSimpleName3", "300 KB",
+                new GameFileResponse("3.0.0", "someUrl3", "fileSimpleName3", "300 KB",
                         "fileName3")
         ), null);
 
@@ -105,7 +105,7 @@ class GogFileDiscoveryServiceTest {
                     return List.of(gameId1, "gameId2", "gameId3", "gameId4");
                 });
 
-        List<SourceFileDetails> fileVersionBackups = new ArrayList<>();
+        List<GameProviderFile> fileVersionBackups = new ArrayList<>();
         gogFileDiscoveryService.startFileDiscovery(fileVersionBackups::add);
 
         assertThat(fileVersionBackups).isEmpty();
@@ -117,7 +117,7 @@ class GogFileDiscoveryServiceTest {
         var gameId1 = "gameId1";
         var game1Details = new GameDetailsResponse("Game 1", null, null,
                 null, List.of(
-                new FileDetailsResponse("3.0.0", "someUrl3", "fileName3", "300 KB",
+                new GameFileResponse("3.0.0", "someUrl3", "fileName3", "300 KB",
                         "setup.exe")
         ), null);
 
@@ -129,10 +129,10 @@ class GogFileDiscoveryServiceTest {
                     return game1Details;
                 });
 
-        List<SourceFileDetails> sourceFileDetails = new ArrayList<>();
-        gogFileDiscoveryService.startFileDiscovery(sourceFileDetails::add);
+        List<GameProviderFile> gameProviderFileDetails = new ArrayList<>();
+        gogFileDiscoveryService.startFileDiscovery(gameProviderFileDetails::add);
 
-        assertThat(sourceFileDetails.size()).isOne();
+        assertThat(gameProviderFileDetails.size()).isOne();
         verify(gogEmbedClient, times(1)).getGameDetails(any());
     }
 
@@ -169,6 +169,6 @@ class GogFileDiscoveryServiceTest {
 
     @Test
     void shouldGetSource() {
-        assertThat(gogFileDiscoveryService.getSource()).isEqualTo("GOG");
+        assertThat(gogFileDiscoveryService.getGameProviderId()).isEqualTo("GOG");
     }
 }

@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.contr
 
 import dev.codesoapbox.backity.core.shared.config.http.ControllerTest;
 import dev.codesoapbox.backity.integrations.gog.application.GetGogGameDetailsUseCase;
-import dev.codesoapbox.backity.integrations.gog.domain.model.embed.FileDetailsResponse;
+import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ class GetGogGameDetailsControllerIT {
                 "someBgImage",
                 "someCdKey",
                 "someTextInfo",
-                singletonList(new FileDetailsResponse(
+                singletonList(new GameFileResponse(
                         "1.0.0",
                         "someUrl",
                         "someFileName",

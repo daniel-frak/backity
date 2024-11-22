@@ -13,12 +13,12 @@ class FileDiscoveryProgressChangedEventUpdateWsMessageMapperTest {
 
     @Test
     void shouldMapToMessage() {
-        var progress = new FileDiscoveryProgressChangedEvent("Test Source", 50, 10);
+        var progress = new FileDiscoveryProgressChangedEvent("Test GameProviderId", 50, 10);
 
         FileDiscoveryProgressChangedWsEvent result = MAPPER.toWsEvent(progress);
 
         FileDiscoveryProgressChangedWsEvent expectedResult = new FileDiscoveryProgressChangedWsEvent(
-                "Test Source", 50, 10);
+                "Test GameProviderId", 50, 10);
         assertThat(result)
                 .hasNoNullFieldsOrProperties()
                 .usingRecursiveComparison()

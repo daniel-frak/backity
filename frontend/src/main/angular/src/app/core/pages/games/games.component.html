@@ -15,43 +15,43 @@
     <app-table *ngFor="let game of gameWithFilesPage?.content" [content]="{content: game.files}"
                [isLoading]="gamesAreLoading" [caption]="game.title!">
       <ng-template app-table-column="File title" let-item>
-        {{asFile(item).sourceFileDetails!.fileTitle}}
+        {{asGameFile(item).gameProviderFile!.fileTitle}}
       </ng-template>
       <ng-template app-table-column="Version" let-item>
-        {{asFile(item).sourceFileDetails!.version}}
+        {{asGameFile(item).gameProviderFile!.version}}
       </ng-template>
       <ng-template app-table-column="Size" let-item>
-        {{asFile(item).sourceFileDetails!.size}}
+        {{asGameFile(item).gameProviderFile!.size}}
       </ng-template>
       <ng-template app-table-column="Status" let-item>
-        <app-file-status-badge [status]="asFile(item).backupDetails!.status"></app-file-status-badge>
+        <app-file-status-badge [status]="asGameFile(item).fileBackup!.status"></app-file-status-badge>
       </ng-template>
       <ng-template app-table-column="Actions" let-item>
         <div style="text-align: right">
-          <button class="btn btn-sm btn-primary" (click)="backUp(asFile(item))"
-                  *ngIf="asFile(item).backupDetails!.status == FileBackupStatus.Discovered">
+          <button class="btn btn-sm btn-primary" (click)="backUp(asGameFile(item))"
+                  *ngIf="asGameFile(item).fileBackup!.status == FileBackupStatus.Discovered">
             <i class="bi bi-cloud-download" aria-hidden="true"></i>
             Back up
           </button>
-          <button class="btn btn-sm btn-secondary" (click)="cancelBackup(asFile(item).id!)"
-                  *ngIf="asFile(item).backupDetails!.status == FileBackupStatus.Enqueued">
+          <button class="btn btn-sm btn-secondary" (click)="cancelBackup(asGameFile(item).id!)"
+                  *ngIf="asGameFile(item).fileBackup!.status == FileBackupStatus.Enqueued">
             Cancel backup
           </button>
-          <button class="btn btn-sm btn-secondary" (click)="viewFilePath(asFile(item).id!)"
-          *ngIf="asFile(item).backupDetails!.status == FileBackupStatus.Failed">
+          <button class="btn btn-sm btn-secondary" (click)="viewFilePath(asGameFile(item).id!)"
+          *ngIf="asGameFile(item).fileBackup!.status == FileBackupStatus.Failed">
             <i class="bi bi-bug" aria-hidden="true"></i>
             View error
           </button>
-          <ng-container *ngIf="asFile(item).backupDetails!.status == FileBackupStatus.Success">
-            <button class="btn btn-sm btn-primary" (click)="download(asFile(item).id!)">
+          <ng-container *ngIf="asGameFile(item).fileBackup!.status == FileBackupStatus.Success">
+            <button class="btn btn-sm btn-primary" (click)="download(asGameFile(item).id!)">
               <i class="bi bi-download" aria-hidden="true"></i>
               Download
             </button>
-            <button class="btn btn-sm btn-secondary" (click)="viewFilePath(asFile(item).id!)">
+            <button class="btn btn-sm btn-secondary" (click)="viewFilePath(asGameFile(item).id!)">
               <i class="bi bi-device-hdd" aria-hidden="true"></i>
               View file path
             </button>
-            <button class="btn btn-sm btn-danger" (click)="deleteBackup(asFile(item).id!)">
+            <button class="btn btn-sm btn-danger" (click)="deleteBackup(asGameFile(item).id!)">
               <i class="bi bi-trash" aria-hidden="true"></i>
               Delete backup
             </button>

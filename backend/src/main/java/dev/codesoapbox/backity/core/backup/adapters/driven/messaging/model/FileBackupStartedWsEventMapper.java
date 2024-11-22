@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model;
 
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsId;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -9,12 +9,12 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public abstract class FileBackupStartedWsEventMapper {
 
-    @Mapping(target = "fileDetailsId", source = "id")
-    @Mapping(target = ".", source = "sourceFileDetails")
-    @Mapping(target = ".", source = "backupDetails")
-    public abstract FileBackupStartedWsEvent toWsEvent(FileDetails domain);
+    @Mapping(target = "gameFileId", source = "id")
+    @Mapping(target = ".", source = "gameProviderFile")
+    @Mapping(target = ".", source = "fileBackup")
+    public abstract FileBackupStartedWsEvent toWsEvent(GameFile domain);
 
-    protected String toString(FileDetailsId id) {
+    protected String toString(GameFileId id) {
         return id.value().toString();
     }
 }

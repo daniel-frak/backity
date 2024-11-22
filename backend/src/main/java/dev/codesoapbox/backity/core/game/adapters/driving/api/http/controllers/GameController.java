@@ -11,7 +11,9 @@ import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.Pagin
 import dev.codesoapbox.backity.core.shared.domain.Page;
 import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +34,8 @@ public class GameController {
 
     @Operation(summary = "Get games", description = "Returns a paginated list of discovered games")
     @GetMapping
-    public PageHttpDto<GameWithFilesHttpDto> getGames(PaginationHttpDto paginationHttpDto) {
+    public PageHttpDto<GameWithFilesHttpDto> getGames(
+            @Valid @Parameter(name = "pagination") PaginationHttpDto paginationHttpDto) {
         Pagination pagination = paginationMapper.toModel(paginationHttpDto);
         Page<GameWithFiles> gamesWithFiles = gameFacade.getGamesWithFiles(pagination);
         return pageHttpDtoMapper.toDto(gamesWithFiles, mapper::toDto);

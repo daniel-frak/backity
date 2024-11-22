@@ -41,8 +41,12 @@ const routes: Routes = [
         ]
       }
     ]
+  },
+  {
+    // If route not found:
+    path: '**',
+    redirectTo: ''
   }
-
 ];
 
 @NgModule({

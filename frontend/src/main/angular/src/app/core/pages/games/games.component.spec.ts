@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GamesComponent} from './games.component';
 import { provideHttpClientTesting } from "@angular/common/http/testing";
-import {FileBackupStatus, FileDetails, FileDetailsClient, GamesClient, PageGameWithFiles} from "@backend";
+import {FileBackupStatus, GameFile, GameFilesClient, GamesClient, PageGameWithFiles} from "@backend";
 import {of, throwError} from "rxjs";
 import {PageHeaderStubComponent} from "@app/shared/components/page-header/page-header.component.stub";
 import {TableComponent} from "@app/shared/components/table/table.component";
@@ -15,13 +15,13 @@ describe('GamesComponent', () => {
   let fixture: ComponentFixture<GamesComponent>;
 
   let gamesClient: GamesClient;
-  let fileDetailsClient: FileDetailsClient;
+  let gameFilesClient: GameFilesClient;
 
-  const sampleFileDetails: FileDetails = {
+  const sampleGameFile: GameFile = {
     id: "someFileId",
     gameId: "someGameId",
-    sourceFileDetails: {
-      sourceId: "someSourceId",
+    gameProviderFile: {
+      gameProviderId: "someGameProviderId",
       originalGameTitle: "Some game",
       originalFileName: "Some original file name",
       version: "Some version",
@@ -29,7 +29,7 @@ describe('GamesComponent', () => {
       size: "3 GB",
       fileTitle: "currentGame.exe"
     },
-    backupDetails: {
+    fileBackup: {
       status: "DISCOVERED"
     }
   };
@@ -46,7 +46,7 @@ describe('GamesComponent', () => {
     imports: [],
     providers: [
         { provide: GamesClient, useValue: { getGames: jasmine.createSpy('getGames') } },
-        { provide: FileDetailsClient, useValue: { download: jasmine.createSpy('download') } },
+        { provide: GameFilesClient, useValue: { download: jasmine.createSpy('download') } },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
     ]
@@ -58,7 +58,7 @@ describe('GamesComponent', () => {
     fixture = TestBed.createComponent(GamesComponent);
     component = fixture.componentInstance;
     gamesClient = TestBed.inject(GamesClient);
-    fileDetailsClient = TestBed.inject(FileDetailsClient);
+    gameFilesClient = TestBed.inject(GameFilesClient);
   });
 
   it('should create', () => {
@@ -70,14 +70,14 @@ describe('GamesComponent', () => {
   });
 
   it('should get games', () => {
-    const fileDetails = {... sampleFileDetails};
-    fileDetails.sourceFileDetails.fileTitle = 'game.exe';
+    const gameFile = {... sampleGameFile};
+    gameFile.gameProviderFile.fileTitle = 'game.exe';
 
     const mockGames: PageGameWithFiles = {
       content: [{
         id: "someGameId",
         title: "someGameTitle",
-        files: [fileDetails]
+        files: [gameFile]
       }]
     };
     (gamesClient.getGames as jasmine.Spy).and.returnValue(of(mockGames));
@@ -97,26 +97,26 @@ describe('GamesComponent', () => {
   });
 
   it('should back up game file and set its status to Enqueued', () => {
-    const fileDetails = {... sampleFileDetails};
-    fileDetails.backupDetails.status = FileBackupStatus.Enqueued;
-    (fileDetailsClient.download as jasmine.Spy).and.returnValue(of(null));
+    const gameFile = {... sampleGameFile};
+    gameFile.fileBackup.status = FileBackupStatus.Enqueued;
+    (gameFilesClient.download as jasmine.Spy).and.returnValue(of(null));
 
-    component.backUp(fileDetails);
+    component.backUp(gameFile);
 
-    expect(fileDetails.backupDetails?.status).toBe(FileBackupStatus.Enqueued);
-    expect(fileDetailsClient.download).toHaveBeenCalledWith(fileDetails.id!);
+    expect(gameFile.fileBackup?.status).toBe(FileBackupStatus.Enqueued);
+    expect(gameFilesClient.download).toHaveBeenCalledWith(gameFile.id!);
   });
 
   it('should set file status to Discovered when backup fails', () => {
-    const fileDetails = {... sampleFileDetails};
-    fileDetails.backupDetails.status = FileBackupStatus.Discovered;
+    const gameFile = {... sampleGameFile};
+    gameFile.fileBackup.status = FileBackupStatus.Discovered;
     const mockError = new Error('Backup error');
-    (fileDetailsClient.download as jasmine.Spy).and.returnValue(throwError(mockError));
+    (gameFilesClient.download as jasmine.Spy).and.returnValue(throwError(mockError));
 
-    component.backUp(fileDetails);
+    component.backUp(gameFile);
 
-    expect(fileDetails.backupDetails?.status).toBe(FileBackupStatus.Discovered);
-    expect(fileDetailsClient.download).toHaveBeenCalledWith(fileDetails.id!);
+    expect(gameFile.fileBackup?.status).toBe(FileBackupStatus.Discovered);
+    expect(gameFilesClient.download).toHaveBeenCalledWith(gameFile.id!);
   });
 
   it('should log an error when canceling backup', () => {
@@ -160,19 +160,19 @@ describe('GamesComponent', () => {
   });
 
   it('should set file status to Discovered and log error when backup fails', () => {
-    const fileDetails = {... sampleFileDetails};
-    fileDetails.backupDetails.status = FileBackupStatus.Discovered;
+    const gameFile = {... sampleGameFile};
+    gameFile.fileBackup.status = FileBackupStatus.Discovered;
     const mockError = new Error('Backup error');
-    (fileDetailsClient.download as jasmine.Spy).and.returnValue(throwError(mockError));
+    (gameFilesClient.download as jasmine.Spy).and.returnValue(throwError(mockError));
     spyOn(console, 'error');
 
-    component.backUp(fileDetails);
+    component.backUp(gameFile);
 
-    expect(fileDetails.backupDetails?.status).toBe(FileBackupStatus.Discovered);
-    expect(fileDetailsClient.download).toHaveBeenCalledWith(fileDetails.id!);
+    expect(gameFile.fileBackup?.status).toBe(FileBackupStatus.Discovered);
+    expect(gameFilesClient.download).toHaveBeenCalledWith(gameFile.id!);
     expect(console.error).toHaveBeenCalledWith(
-      `An error occurred while trying to enqueue a file (id=${fileDetails.id})`,
-      fileDetails,
+      `An error occurred while trying to enqueue a file (id=${gameFile.id})`,
+      gameFile,
       mockError
     );
   });

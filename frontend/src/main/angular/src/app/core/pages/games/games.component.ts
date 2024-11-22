@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FileBackupStatus, FileDetails, FileDetailsClient, GamesClient, PageGameWithFiles} from "@backend";
+import {FileBackupStatus, GameFile, GameFilesClient, GamesClient, PageGameWithFiles} from "@backend";
 import {catchError} from "rxjs/operators";
 import {throwError} from "rxjs";
 
@@ -14,7 +14,7 @@ export class GamesComponent implements OnInit {
   gameWithFilesPage?: PageGameWithFiles;
 
   constructor(private readonly gamesClient: GamesClient,
-              private readonly fileDetailsClient: FileDetailsClient) {
+              private readonly gameFilesClient: GameFilesClient) {
   }
 
   ngOnInit(): void {
@@ -33,12 +33,12 @@ export class GamesComponent implements OnInit {
       });
   }
 
-  backUp(file: FileDetails) {
-    file.backupDetails.status = FileBackupStatus.Enqueued;
+  backUp(file: GameFile) {
+    file.fileBackup.status = FileBackupStatus.Enqueued;
     console.info("Enqueuing backup: " + file.id);
-    this.fileDetailsClient.download(file.id)
+    this.gameFilesClient.download(file.id)
       .pipe(catchError(e => {
-        file.backupDetails.status = FileBackupStatus.Discovered;
+        file.fileBackup.status = FileBackupStatus.Discovered;
         return throwError(() => e);
       }))
       .subscribe({
@@ -68,6 +68,7 @@ export class GamesComponent implements OnInit {
     console.error("Viewing errors not yet implemented");
   }
 
-  asFile = (game: FileDetails) => game;
+  asGameFile = (gameFile: GameFile) => gameFile;
+
   public readonly FileBackupStatus = FileBackupStatus;
 }

@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
-import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
+import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.embed.GogEmbedWebClient;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 
-import static dev.codesoapbox.backity.core.filedetails.domain.TestFileDetails.discoveredFileDetails;
+import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.discoveredGameFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 class GogFileBackupServiceTest {
 
     @InjectMocks
-    private GogFileBackupService gogFileDownloader;
+    private GogFileBackupServiceGame gogFileDownloader;
 
     @Mock
     private GogEmbedWebClient gogEmbedClient;
@@ -34,23 +34,23 @@ class GogFileBackupServiceTest {
 
     @Test
     void backUpFileShouldDownloadFile() throws IOException {
-        FileDetails fileDetails = discoveredFileDetails().build();
+        GameFile gameFile = discoveredGameFile().build();
         String tempFilePath = "someTempFilePath";
 
-        gogFileDownloader.backUpFile(fileDetails, tempFilePath);
+        gogFileDownloader.backUpFile(gameFile, tempFilePath);
 
-        verify(urlFileDownloader).downloadFile(gogEmbedClient, fileDetails, tempFilePath);
+        verify(urlFileDownloader).downloadFile(gogEmbedClient, gameFile, tempFilePath);
     }
 
     @Test
     void backUpFileShouldReturnFilePath() throws IOException {
-        FileDetails fileDetails = discoveredFileDetails().build();
+        GameFile gameFile = discoveredGameFile().build();
         String tempFilePath = "someTempFilePath";
         String finalFilePath = "finalFilePath";
-        when(urlFileDownloader.downloadFile(gogEmbedClient, fileDetails, tempFilePath))
+        when(urlFileDownloader.downloadFile(gogEmbedClient, gameFile, tempFilePath))
                 .thenReturn(finalFilePath);
 
-        String result = gogFileDownloader.backUpFile(fileDetails, tempFilePath);
+        String result = gogFileDownloader.backUpFile(gameFile, tempFilePath);
 
         assertThat(result).isEqualTo(finalFilePath);
     }
@@ -66,7 +66,7 @@ class GogFileBackupServiceTest {
     }
 
     @Test
-    void shouldGetSource() {
-        assertThat(gogFileDownloader.getSource()).isEqualTo(new FileSourceId("GOG"));
+    void shouldGetGameProviderId() {
+        assertThat(gogFileDownloader.getGameProviderId()).isEqualTo(new GameProviderId("GOG"));
     }
 }

@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.adapters.driving.api.http.model;
 
-import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryStatusChangedEvent;
+import dev.codesoapbox.backity.core.discovery.domain.FileDiscoveryStatus;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -13,11 +13,11 @@ class FileDiscoveryStatusChangedEventHttpDtoMapperTest {
 
     @Test
     void shouldMapToDto() {
-        var domain = new FileDiscoveryStatusChangedEvent("someSource", true);
+        var domain = new FileDiscoveryStatus("someGameProviderId", true);
 
         var result = MAPPER.toDto(domain);
 
-        assertThat(result.source()).isEqualTo("someSource");
+        assertThat(result.gameProviderId()).isEqualTo("someGameProviderId");
         assertThat(result.isInProgress()).isTrue();
     }
 }

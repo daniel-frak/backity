@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.backup.domain;
 
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsRepository;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static dev.codesoapbox.backity.core.filedetails.domain.TestFileDetails.discoveredFileDetails;
+import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.discoveredGameFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -22,7 +22,7 @@ class EnqueuedFileBackupProcessorTest {
     private EnqueuedFileBackupProcessor enqueuedFileBackupProcessor;
 
     @Mock
-    private FileDetailsRepository fileDetailsRepository;
+    private GameFileRepository gameFileRepository;
 
     @Mock
     private FileBackupService fileBackupService;
@@ -32,53 +32,53 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldProcessEnqueuedFileDownloadIfNotCurrentlyDownloading() {
-        FileDetails fileDetails = discoveredFileDetails().build();
-        AtomicBoolean fileDetailsWasKeptAsReferenceDuringProcessing = new AtomicBoolean();
-        when(fileDetailsRepository.findOldestWaitingForDownload())
-                .thenReturn(Optional.of(fileDetails));
-        when(fileBackupService.isReadyFor(fileDetails))
+        GameFile gameFile = discoveredGameFile().build();
+        AtomicBoolean gameFileWasKeptAsReferenceDuringProcessing = new AtomicBoolean();
+        when(gameFileRepository.findOldestWaitingForDownload())
+                .thenReturn(Optional.of(gameFile));
+        when(fileBackupService.isReadyFor(gameFile))
                 .thenReturn(true);
         doAnswer(inv -> {
-            fileDetailsWasKeptAsReferenceDuringProcessing.set(
-                    enqueuedFileBackupProcessor.enqueuedFileBackupReference.get() == fileDetails);
+            gameFileWasKeptAsReferenceDuringProcessing.set(
+                    enqueuedFileBackupProcessor.enqueuedFileBackupReference.get() == gameFile);
             return null;
-        }).when(fileBackupService).backUpFile(fileDetails);
+        }).when(fileBackupService).backUpFile(gameFile);
 
         enqueuedFileBackupProcessor.processQueue();
 
-        verify(eventPublisher).publishBackupStartedEvent(fileDetails);
-        verify(fileBackupService).backUpFile(fileDetails);
-        verify(eventPublisher).publishBackupFinishedEvent(fileDetails);
+        verify(eventPublisher).publishBackupStartedEvent(gameFile);
+        verify(fileBackupService).backUpFile(gameFile);
+        verify(eventPublisher).publishBackupFinishedEvent(gameFile);
         assertThat(enqueuedFileBackupProcessor.enqueuedFileBackupReference.get()).isNull();
-        assertThat(fileDetailsWasKeptAsReferenceDuringProcessing).isTrue();
+        assertThat(gameFileWasKeptAsReferenceDuringProcessing).isTrue();
     }
 
     @Test
     void shouldFailGracefully() {
-        FileDetails fileDetails = discoveredFileDetails().build();
+        GameFile gameFile = discoveredGameFile().build();
 
-        when(fileDetailsRepository.findOldestWaitingForDownload())
-                .thenReturn(Optional.of(fileDetails));
-        when(fileBackupService.isReadyFor(fileDetails))
+        when(gameFileRepository.findOldestWaitingForDownload())
+                .thenReturn(Optional.of(gameFile));
+        when(fileBackupService.isReadyFor(gameFile))
                 .thenReturn(true);
         doThrow(new RuntimeException("someFailedReason"))
-                .when(fileBackupService).backUpFile(fileDetails);
+                .when(fileBackupService).backUpFile(gameFile);
 
         enqueuedFileBackupProcessor.processQueue();
 
-        verify(eventPublisher).publishBackupStartedEvent(fileDetails);
-        verify(eventPublisher).publishBackupFinishedEvent(fileDetails);
+        verify(eventPublisher).publishBackupStartedEvent(gameFile);
+        verify(eventPublisher).publishBackupFinishedEvent(gameFile);
         assertThat(enqueuedFileBackupProcessor.enqueuedFileBackupReference.get()).isNull();
         verifyNoMoreInteractions(eventPublisher, fileBackupService);
     }
 
     @Test
-    void shouldDoNothingIfSourceDownloaderNotReady() {
-        FileDetails fileDetails = discoveredFileDetails().build();
+    void shouldDoNothingIfGameProviderIdDownloaderNotReady() {
+        GameFile gameFile = discoveredGameFile().build();
 
-        when(fileDetailsRepository.findOldestWaitingForDownload())
-                .thenReturn(Optional.of(fileDetails));
-        when(fileBackupService.isReadyFor(fileDetails))
+        when(gameFileRepository.findOldestWaitingForDownload())
+                .thenReturn(Optional.of(gameFile));
+        when(fileBackupService.isReadyFor(gameFile))
                 .thenReturn(false);
 
         enqueuedFileBackupProcessor.processQueue();
@@ -88,13 +88,13 @@ class EnqueuedFileBackupProcessorTest {
 
     @Test
     void shouldDoNothingIfCurrentlyDownloading() {
-        FileDetails fileDetails = discoveredFileDetails().build();
-        lenient().when(fileDetailsRepository.findOldestWaitingForDownload())
-                .thenReturn(Optional.of(fileDetails));
+        GameFile gameFile = discoveredGameFile().build();
+        lenient().when(gameFileRepository.findOldestWaitingForDownload())
+                .thenReturn(Optional.of(gameFile));
 
-        enqueuedFileBackupProcessor.enqueuedFileBackupReference.set(fileDetails);
+        enqueuedFileBackupProcessor.enqueuedFileBackupReference.set(gameFile);
         enqueuedFileBackupProcessor.processQueue();
 
-        verifyNoInteractions(fileDetailsRepository, fileBackupService, eventPublisher);
+        verifyNoInteractions(gameFileRepository, fileBackupService, eventPublisher);
     }
 }

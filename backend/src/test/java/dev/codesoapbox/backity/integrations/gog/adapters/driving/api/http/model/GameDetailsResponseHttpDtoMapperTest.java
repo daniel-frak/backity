@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model;
 
-import dev.codesoapbox.backity.integrations.gog.domain.model.embed.FileDetailsResponse;
+import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -30,7 +30,7 @@ class GameDetailsResponseHttpDtoMapperTest {
                 "someBackgroundImage",
                 "someCdKey",
                 "someTextInformation",
-                singletonList(new FileDetailsResponse(
+                singletonList(new GameFileResponse(
                         "someVersion",
                         "someManualUrl",
                         "someName",
@@ -47,7 +47,7 @@ class GameDetailsResponseHttpDtoMapperTest {
                 "someBackgroundImage",
                 "someCdKey",
                 "someTextInformation",
-                singletonList(new FileDetailsResponseHttpDto(
+                singletonList(new GameFileResponseHttpDto(
                         "someVersion",
                         "someManualUrl",
                         "someName",

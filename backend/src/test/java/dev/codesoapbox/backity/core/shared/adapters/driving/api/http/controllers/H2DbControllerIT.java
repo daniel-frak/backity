@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.core.shared.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.backup.config.FileBackupBeanConfig;
-import dev.codesoapbox.backity.core.filedetails.config.FileDetailsJpaRepositoryBeanConfig;
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsRepository;
+import dev.codesoapbox.backity.core.gamefile.config.GameFileJpaRepositoryBeanConfig;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.filemanagement.config.LocalFileSystemBeanConfig;
 import dev.codesoapbox.backity.core.filemanagement.config.SharedFileManagementBeanConfig;
 import dev.codesoapbox.backity.core.game.config.GameJpaRepositoryBeanConfig;
@@ -20,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -28,7 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static dev.codesoapbox.backity.core.filedetails.domain.TestFileDetails.discoveredFileDetails;
+import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.discoveredGameFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -36,10 +37,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = H2DbController.class, properties = "h2dump.path=test_dump.sql")
 @Import({SharedFileManagementBeanConfig.class, LocalFileSystemBeanConfig.class, FileBackupBeanConfig.class,
-        GameJpaRepositoryBeanConfig.class, FileDetailsJpaRepositoryBeanConfig.class,
+        GameJpaRepositoryBeanConfig.class, GameFileJpaRepositoryBeanConfig.class,
         SharedJpaRepositoryBeanConfig.class})
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
+@EnableJpaAuditing
 @MockBeans(@MockBean(SimpMessagingTemplate.class))
 class H2DbControllerIT {
 
@@ -53,7 +55,7 @@ class H2DbControllerIT {
     private GameRepository gameRepository;
 
     @Autowired
-    private FileDetailsRepository fileDetailsRepository;
+    private GameFileRepository gameFileRepository;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -71,10 +73,10 @@ class H2DbControllerIT {
 
     @Test
     void shouldDumpSql() throws Exception {
-        FileDetails fileDetails = discoveredFileDetails().build();
-        Game game = new Game(fileDetails.getGameId(), "Test game");
+        GameFile gameFile = discoveredGameFile().build();
+        Game game = new Game(gameFile.getGameId(), "Test game");
         gameRepository.save(game);
-        fileDetailsRepository.save(fileDetails);
+        gameFileRepository.save(gameFile);
 
         mockMvc.perform(get("/api/h2/dump"))
                 .andDo(print())
@@ -82,7 +84,7 @@ class H2DbControllerIT {
 
         var dumpContents = readTestDump();
 
-        assertThat(dumpContents).contains("INSERT INTO \"PUBLIC\".\"FILE_DETAILS\" VALUES");
+        assertThat(dumpContents).contains("INSERT INTO \"PUBLIC\".\"GAME_FILE\" VALUES");
     }
 
     private String readTestDump() throws IOException {

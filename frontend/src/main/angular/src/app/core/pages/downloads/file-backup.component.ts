@@ -5,9 +5,9 @@ import {
   FileBackupStartedEvent,
   FileBackupStatus,
   FileBackupStatusChangedEvent,
-  FileDetails,
-  FileDetailsClient,
-  PageFileDetails
+  GameFile, GameFileProcessingStatus,
+  GameFilesClient,
+  PageGameFile
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
@@ -20,8 +20,8 @@ import {IMessage} from "@stomp/stompjs";
 })
 export class FileBackupComponent implements OnInit, OnDestroy {
 
-  enqueuedDownloads?: PageFileDetails;
-  processedFiles?: PageFileDetails;
+  enqueuedDownloads?: PageGameFile;
+  processedFiles?: PageGameFile;
   currentDownload?: FileBackupStartedEvent;
   downloadProgress?: FileBackupProgressUpdatedEvent;
   filesAreLoading: boolean = false;
@@ -30,11 +30,11 @@ export class FileBackupComponent implements OnInit, OnDestroy {
   private readonly pageSize = 20;
   private readonly stompSubscriptions: StompSubscription[] = [];
 
-  constructor(private readonly fileDetailsClient: FileDetailsClient,
+  constructor(private readonly gameFilesClient: GameFilesClient,
               private readonly messageService: MessagesService) {
   }
 
-  asFile = (file: FileDetails) => file;
+  asGameFile = (gameFile: GameFile) => gameFile;
   asBackupStartedEvent = (event: FileBackupStartedEvent) => event;
 
   ngOnInit(): void {
@@ -57,7 +57,7 @@ export class FileBackupComponent implements OnInit, OnDestroy {
 
   private onStatusChanged(payload: IMessage) {
     const event: FileBackupStatusChangedEvent = JSON.parse(payload.body);
-    if (event.fileDetailsId != this.currentDownload?.fileDetailsId) {
+    if (event.gameFileId != this.currentDownload?.gameFileId) {
       return;
     }
     if (event.newStatus == FileBackupStatus.Success || event.newStatus == FileBackupStatus.Failed)
@@ -71,33 +71,33 @@ export class FileBackupComponent implements OnInit, OnDestroy {
     const page = 0;
     const size = this.pageSize;
 
-    this.fileDetailsClient.getQueueItems({
+    this.gameFilesClient.getGameFiles(GameFileProcessingStatus.Enqueued, {
       page: page,
       size: size
     })
-      .subscribe((d: PageFileDetails) => {
+      .subscribe((d: PageGameFile) => {
         this.enqueuedDownloads = d;
 
-        this.fileDetailsClient.getProcessedFiles({
-          page: 0,
-          size: 20
+        this.gameFilesClient.getGameFiles(GameFileProcessingStatus.Processed, {
+          page: page,
+          size: size
         })
-          .subscribe((f: PageFileDetails) => {
+          .subscribe((f: PageGameFile) => {
             this.processedFiles = f;
             this.filesAreLoading = false;
           })
       });
 
-    this.fileDetailsClient.getCurrentlyDownloading()
-      .subscribe((d: FileDetails) => {
+    this.gameFilesClient.getCurrentlyDownloading()
+      .subscribe((d: GameFile) => {
         this.currentDownload = {
-          fileDetailsId: d.id,
-          originalGameTitle: d.sourceFileDetails.originalGameTitle,
-          fileTitle: d.sourceFileDetails.fileTitle,
-          version: d.sourceFileDetails.version,
-          originalFileName: d.sourceFileDetails.originalFileName,
-          size: d.sourceFileDetails.size,
-          filePath: d.backupDetails.filePath
+          gameFileId: d.id,
+          originalGameTitle: d.gameProviderFile.originalGameTitle,
+          fileTitle: d.gameProviderFile.fileTitle,
+          version: d.gameProviderFile.version,
+          originalFileName: d.gameProviderFile.originalFileName,
+          size: d.gameProviderFile.size,
+          filePath: d.fileBackup.filePath
         }
       });
   }

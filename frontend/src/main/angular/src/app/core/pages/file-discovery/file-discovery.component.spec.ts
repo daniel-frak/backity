@@ -12,14 +12,14 @@ import {TableComponent} from "@app/shared/components/table/table.component";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {
   FileBackupStatus,
-  FileDetails,
-  FileDetailsClient,
+  GameFile,
+  GameFilesClient,
   FileDiscoveredEvent,
   FileDiscoveryClient,
   FileDiscoveryWebSocketTopics,
   FileDiscoveryProgressUpdateEvent,
   FileDiscoveryStatus,
-  PageFileDetails
+  PageGameFile
 } from "@backend";
 import {Observable} from "rxjs";
 import {MessageTesting} from "@app/shared/testing/message-testing";
@@ -33,7 +33,7 @@ describe('FileDiscoveryComponent', () => {
   let discoveryChangedSubscriptions: Function[];
   let discoveryProgressSubscriptions: Function[];
   let fileDiscoveryClient: jasmine.SpyObj<FileDiscoveryClient>;
-  let fileDetailsClient: jasmine.SpyObj<FileDetailsClient>;
+  let gameFilesClient: jasmine.SpyObj<GameFilesClient>;
 
   beforeEach(async () => {
     const messagesServiceMock = MessageTesting.mockMessageService(
@@ -65,11 +65,11 @@ describe('FileDiscoveryComponent', () => {
         },
         {
             provide: FileDiscoveryClient,
-            useValue: jasmine.createSpyObj('FileDiscoveryClient', ['getStatuses', 'discover', 'stopDiscovery'])
+            useValue: jasmine.createSpyObj('FileDiscoveryClient', ['getStatuses', 'startDiscovery', 'stopDiscovery'])
         },
         {
-            provide: FileDetailsClient,
-            useValue: jasmine.createSpyObj('FileDetailsClient', ['download', 'getDiscoveredFiles'])
+            provide: GameFilesClient,
+            useValue: jasmine.createSpyObj('GameFilesClient', ['download', 'getGameFiles'])
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
@@ -81,14 +81,14 @@ describe('FileDiscoveryComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FileDiscoveryComponent);
     component = fixture.componentInstance;
-    component.discoveryStatusBySource.clear();
-    component.discoveryProgressBySource.clear();
+    component.discoveryStatusByGameProviderId.clear();
+    component.discoveryProgressByGameProviderId.clear();
 
     fileDiscoveryClient = TestBed.inject(FileDiscoveryClient) as jasmine.SpyObj<FileDiscoveryClient>;
-    fileDetailsClient = TestBed.inject(FileDetailsClient) as jasmine.SpyObj<FileDetailsClient>;
+    gameFilesClient = TestBed.inject(GameFilesClient) as jasmine.SpyObj<GameFilesClient>;
 
     fileDiscoveryClient.getStatuses.and.returnValue({subscribe: (s: (f: any) => any) => s([])} as any);
-    fileDetailsClient.getDiscoveredFiles.and.returnValue({subscribe: (s: (f: any) => any) => s([])} as any);
+    gameFilesClient.getGameFiles.and.returnValue({subscribe: (s: (f: any) => any) => s([])} as any);
 
     discoveredSubscriptions = [];
     discoveryChangedSubscriptions = [];
@@ -103,15 +103,15 @@ describe('FileDiscoveryComponent', () => {
 
   it('should refresh info on init', () => {
     const newStatus: FileDiscoveryStatus = {
-      source: 'someSource',
+      gameProviderId: 'someGameProviderId',
       isInProgress: true
     };
-    const expectedFileDetails: PageFileDetails = {
+    const expectedGameFile: PageGameFile = {
       content: [{
         id: "someFileId",
         gameId: "someGameId",
-        sourceFileDetails: {
-          sourceId: "someSourceId",
+        gameProviderFile: {
+          gameProviderId: "someGameProviderId",
           originalGameTitle: "Some current game",
           originalFileName: "Some original file name",
           version: "Some version",
@@ -119,20 +119,20 @@ describe('FileDiscoveryComponent', () => {
           size: "3 GB",
           fileTitle: "currentGame.exe"
         },
-        backupDetails: {
+        fileBackup: {
           status: FileBackupStatus.InProgress
         }
       }]
     };
 
     fileDiscoveryClient.getStatuses.and.returnValue({subscribe: (s: (f: any) => any) => s([newStatus])} as any);
-    fileDetailsClient.getDiscoveredFiles.and
-      .returnValue({subscribe: (s: (f: any) => any) => s(expectedFileDetails)} as any);
+    gameFilesClient.getGameFiles.and
+      .returnValue({subscribe: (s: (f: any) => any) => s(expectedGameFile)} as any);
 
     component.ngOnInit();
 
-    expect(component.discoveryStatusBySource.get('someSource')).toBeTrue();
-    expect(component.discoveredFiles).toEqual(expectedFileDetails);
+    expect(component.discoveryStatusByGameProviderId.get('someGameProviderId')).toBeTrue();
+    expect(component.discoveredFiles).toEqual(expectedGameFile);
     expect(component.newDiscoveredCount).toBe(0);
     expect(component.filesAreLoading).toBeFalse();
   });
@@ -160,23 +160,23 @@ describe('FileDiscoveryComponent', () => {
 
   it('should unset current download on finish', () => {
     const newStatus1: FileDiscoveryStatus = {
-      source: 'someSource',
+      gameProviderId: 'someGameProviderId',
       isInProgress: true
     };
     const newStatus2: FileDiscoveryStatus = {
-      source: 'someSource',
+      gameProviderId: 'someGameProviderId',
       isInProgress: false
     };
 
     discoveryChangedSubscriptions[0]({body: JSON.stringify(newStatus1)});
-    expect(component.discoveryStatusBySource.get('someSource')).toBeTrue();
+    expect(component.discoveryStatusByGameProviderId.get('someGameProviderId')).toBeTrue();
     discoveryChangedSubscriptions[0]({body: JSON.stringify(newStatus2)});
-    expect(component.discoveryStatusBySource.get('someSource')).toBeFalse();
+    expect(component.discoveryStatusByGameProviderId.get('someGameProviderId')).toBeFalse();
   });
 
   it('should start file discovery', () => {
     const observableMock: any = createSpyObj('Observable', ['subscribe']);
-    fileDiscoveryClient.discover.and.returnValue(observableMock);
+    fileDiscoveryClient.startDiscovery.and.returnValue(observableMock);
 
     component.startDiscovery();
 
@@ -194,11 +194,11 @@ describe('FileDiscoveryComponent', () => {
 
   it('should enqueue file', () => {
     spyOn(console, 'info');
-    const file: FileDetails = {
+    const file: GameFile = {
       id: "someFileId",
       gameId: "someGameId",
-      sourceFileDetails: {
-        sourceId: "someSourceId",
+      gameProviderFile: {
+        gameProviderId: "someGameProviderId",
         originalGameTitle: "Some current game",
         originalFileName: "Some original file name",
         version: "Some version",
@@ -206,59 +206,59 @@ describe('FileDiscoveryComponent', () => {
         size: "3 GB",
         fileTitle: "currentGame.exe"
       },
-      backupDetails: {
+      fileBackup: {
         status: FileBackupStatus.Discovered
       }
     };
     const observableMock: any = createSpyObj('Observable', ['subscribe', 'pipe']);
     observableMock.pipe.and.returnValue(observableMock);
 
-    fileDetailsClient.download.and.returnValue(observableMock);
+    gameFilesClient.download.and.returnValue(observableMock);
 
     component.enqueueFile(file);
-    expect(file.backupDetails?.status).toEqual(FileBackupStatus.Enqueued);
+    expect(file.fileBackup?.status).toEqual(FileBackupStatus.Enqueued);
     expect(observableMock.subscribe).toHaveBeenCalled();
     expect(console.info).toHaveBeenCalled();
   });
 
   it('should update discovery progress', () => {
     const progressUpdate: FileDiscoveryProgressUpdateEvent = {
-      source: 'someSource',
+      gameProviderId: 'someGameProviderId',
       percentage: 25,
       timeLeftSeconds: 1234
     };
     discoveryProgressSubscriptions[0]({body: JSON.stringify(progressUpdate)});
 
-    expect(component.discoveryProgressBySource.get('someSource')).toEqual(progressUpdate);
+    expect(component.discoveryProgressByGameProviderId.get('someGameProviderId')).toEqual(progressUpdate);
   });
 
   it('should get progress list', () => {
     expect(component.getProgressList()).toEqual([]);
     const expectedProgress: FileDiscoveryProgressUpdateEvent = {
-      source: 'someSource',
+      gameProviderId: 'someGameProviderId',
       percentage: 25,
       timeLeftSeconds: 1234
     };
 
-    component.discoveryProgressBySource.set('someSource', expectedProgress);
+    component.discoveryProgressByGameProviderId.set('someGameProviderId', expectedProgress);
     expect(component.getProgressList()).toEqual([expectedProgress]);
   });
 
   it('should correctly check if is in progress', () => {
-    expect(component.isInProgress('someSource')).toBeFalse();
+    expect(component.isInProgress('someGameProviderId')).toBeFalse();
 
-    component.discoveryStatusBySource.set('someSource', true);
-    expect(component.isInProgress('someSource')).toBeTrue();
+    component.discoveryStatusByGameProviderId.set('someGameProviderId', true);
+    expect(component.isInProgress('someGameProviderId')).toBeTrue();
   });
 
   it('should dequeue file when enqueueFile throws', () => {
     spyOn(console, 'info');
     spyOn(console, 'error');
-    const file: FileDetails = {
+    const file: GameFile = {
       id: "someFileId",
       gameId: "someGameId",
-      sourceFileDetails: {
-        sourceId: "someSourceId",
+      gameProviderFile: {
+        gameProviderId: "someGameProviderId",
         originalGameTitle: "Some current game",
         originalFileName: "Some original file name",
         version: "Some version",
@@ -266,7 +266,7 @@ describe('FileDiscoveryComponent', () => {
         size: "3 GB",
         fileTitle: "currentGame.exe"
       },
-      backupDetails: {
+      fileBackup: {
         status: FileBackupStatus.Enqueued
       }
     };
@@ -274,14 +274,14 @@ describe('FileDiscoveryComponent', () => {
     const observableMock: any = createSpyObj('Observable', ['subscribe', 'pipe']);
     observableMock.pipe.and.returnValue(observableMock);
 
-    fileDetailsClient.download.and.returnValue(new Observable(subscriber => {
-      expect(file.backupDetails?.status).toEqual(FileBackupStatus.Enqueued);
+    gameFilesClient.download.and.returnValue(new Observable(subscriber => {
+      expect(file.fileBackup?.status).toEqual(FileBackupStatus.Enqueued);
       subscriber.error(expectedError);
     }));
 
     component.enqueueFile(file);
 
-    expect(file.backupDetails?.status).toEqual(FileBackupStatus.Discovered);
+    expect(file.fileBackup?.status).toEqual(FileBackupStatus.Discovered);
     expect(console.error).toHaveBeenCalled();
     expect(console.info).toHaveBeenCalled();
   });
@@ -289,27 +289,27 @@ describe('FileDiscoveryComponent', () => {
   it('should return all statuses', () => {
     expect(component.getStatuses()).toEqual([]);
     const expectedStatus: FileDiscoveryStatus = {
-      source: 'someSource',
+      gameProviderId: 'someGameProviderId',
       isInProgress: true
     }
 
-    component.discoveryStatusBySource.set('someSource', true);
+    component.discoveryStatusByGameProviderId.set('someGameProviderId', true);
     expect(component.getStatuses()).toEqual([expectedStatus]);
   });
 
   it('should return if discovery is ongoing', () => {
     expect(component.discoveryOngoing()).toBeFalse();
 
-    component.discoveryStatusBySource.set('someSource', false);
+    component.discoveryStatusByGameProviderId.set('someGameProviderId', false);
     expect(component.discoveryOngoing()).toBeFalse();
 
-    component.discoveryStatusBySource.set('someSource', true);
+    component.discoveryStatusByGameProviderId.set('someGameProviderId', true);
     expect(component.discoveryOngoing()).toBeTrue();
   })
 
   it('should log an error when discoverFilesFor is called', () => {
     spyOn(console, 'error');
-    component.discoverFilesFor('someSource');
+    component.discoverFilesFor('someGameProviderId');
     expect(console.error).toHaveBeenCalled();
   });
 });

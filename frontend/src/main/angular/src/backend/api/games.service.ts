@@ -95,22 +95,22 @@ export class GamesClient {
     /**
      * Get games
      * Returns a paginated list of discovered games
-     * @param paginationHttpDto 
+     * @param pagination 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getGames(paginationHttpDto: Pagination, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageGameWithFiles>;
-    public getGames(paginationHttpDto: Pagination, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageGameWithFiles>>;
-    public getGames(paginationHttpDto: Pagination, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageGameWithFiles>>;
-    public getGames(paginationHttpDto: Pagination, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
-        if (paginationHttpDto === null || paginationHttpDto === undefined) {
-            throw new Error('Required parameter paginationHttpDto was null or undefined when calling getGames.');
+    public getGames(pagination: Pagination, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<PageGameWithFiles>;
+    public getGames(pagination: Pagination, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<PageGameWithFiles>>;
+    public getGames(pagination: Pagination, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<PageGameWithFiles>>;
+    public getGames(pagination: Pagination, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        if (pagination === null || pagination === undefined) {
+            throw new Error('Required parameter pagination was null or undefined when calling getGames.');
         }
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (paginationHttpDto !== undefined && paginationHttpDto !== null) {
+        if (pagination !== undefined && pagination !== null) {
           localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>paginationHttpDto, 'paginationHttpDto');
+            <any>pagination, 'pagination');
         }
 
         let localVarHeaders = this.defaultHeaders;

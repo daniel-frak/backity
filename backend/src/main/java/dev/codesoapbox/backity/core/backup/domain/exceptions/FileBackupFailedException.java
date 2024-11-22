@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.backup.domain.exceptions;
 
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 
 public class FileBackupFailedException extends RuntimeException {
 
-    public FileBackupFailedException(FileDetails fileDetails, Throwable cause) {
-        super("Could not back up game file " + fileDetails.getId().value(), cause);
+    public FileBackupFailedException(GameFile gameFile, Throwable cause) {
+        super("Could not back up game file " + gameFile.getId().value(), cause);
     }
 }

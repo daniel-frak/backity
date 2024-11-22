@@ -1,4 +1,4 @@
-default-path-template: games/{SOURCE}/{TITLE}/{FILENAME}
+default-path-template: games/{GAME_PROVIDER_ID}/{TITLE}/{FILENAME}
 file-download-queue-scheduler:
   rate-ms: 5000
 
@@ -36,8 +36,10 @@ spring:
           lob:
             non_contextual_creation: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     database-platform: org.hibernate.dialect.H2Dialect
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-root.xml
 
 openapi:
   project-description: '@project.description@'

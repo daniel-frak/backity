@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model.*;
 import dev.codesoapbox.backity.core.discovery.domain.FileDiscoveryEventPublisher;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryStatusChangedEvent;
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -36,8 +36,8 @@ public class FileDiscoveryEventWebSocketPublisher implements FileDiscoveryEventP
     }
 
     @Override
-    public void publishFileDiscoveredEvent(FileDetails fileDetails) {
-        FileDiscoveredWsEvent payload = fileDiscoveredWsEventMapper.toWsEvent(fileDetails.getSourceFileDetails());
+    public void publishFileDiscoveredEvent(GameFile gameFile) {
+        FileDiscoveredWsEvent payload = fileDiscoveredWsEventMapper.toWsEvent(gameFile.getGameProviderFile());
         publish(FileDiscoveryWebSocketTopics.FILE_DISCOVERED.toString(), payload);
     }
 }

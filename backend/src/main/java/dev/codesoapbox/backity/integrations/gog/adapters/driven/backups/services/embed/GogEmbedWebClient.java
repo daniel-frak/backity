@@ -6,7 +6,7 @@ import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileDiscoveryException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameBackupRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameListRequestFailedException;
-import dev.codesoapbox.backity.integrations.gog.domain.model.embed.FileDetailsResponse;
+import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.remote.GogGameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
@@ -51,7 +51,7 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
                 .map(this::getGameDetails)
                 .filter(Objects::nonNull)
                 .flatMap(details -> details.getFiles().stream())
-                .map(FileDetailsResponse::getSize)
+                .map(GameFileResponse::getSize)
                 .forEach(accumulator::add);
 
         String librarySize = accumulator.toString();
@@ -120,9 +120,9 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
     }
 
     private void setFileNames(GameDetailsResponse details) {
-        for (FileDetailsResponse fileDetails : details.getFiles()) {
-            String fileTitle = getFileTitle(fileDetails.getManualUrl());
-            fileDetails.setFileTitle(fileTitle);
+        for (GameFileResponse gameFile : details.getFiles()) {
+            String fileTitle = getFileTitle(gameFile.getManualUrl());
+            gameFile.setFileTitle(fileTitle);
         }
     }
 
@@ -132,14 +132,14 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
         details.setBackgroundImage(response.getBackgroundImage());
         details.setCdKey(response.getCdKey());
         details.setTextInformation(response.getTextInformation());
-        details.setFiles(getFileDetails(response));
+        details.setFiles(getGameFile(response));
         details.setChangelog(response.getChangelog());
 
         return details;
     }
 
     @SuppressWarnings("unchecked")
-    private List<FileDetailsResponse> getFileDetails(GogGameDetailsResponse response) {
+    private List<GameFileResponse> getGameFile(GogGameDetailsResponse response) {
         if (response.getDownloads() == null) {
             return emptyList();
         }
@@ -149,18 +149,18 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
                 .map(d -> (Map<String, Object>) d.get((1)))
                 .flatMap(d -> ((List<Object>) d.get("windows")).stream())
                 .map(d -> (Map<String, Object>) d)
-                .map(this::toFileDetailsResponse)
+                .map(this::toGameFileResponse)
                 .collect(Collectors.toList());
     }
 
-    private FileDetailsResponse toFileDetailsResponse(Map<String, Object> d) {
-        FileDetailsResponse fileDetailsResponse = new FileDetailsResponse();
-        fileDetailsResponse.setManualUrl((String) d.get("manualUrl"));
-        fileDetailsResponse.setName((String) d.get("name"));
-        fileDetailsResponse.setVersion(getVersion((String) d.get("version")));
-        fileDetailsResponse.setSize((String) d.get("size"));
+    private GameFileResponse toGameFileResponse(Map<String, Object> d) {
+        GameFileResponse gameFileResponse = new GameFileResponse();
+        gameFileResponse.setManualUrl((String) d.get("manualUrl"));
+        gameFileResponse.setName((String) d.get("name"));
+        gameFileResponse.setVersion(getVersion((String) d.get("version")));
+        gameFileResponse.setSize((String) d.get("size"));
 
-        return fileDetailsResponse;
+        return gameFileResponse;
     }
 
     private String getFileTitle(String fileUrl) {

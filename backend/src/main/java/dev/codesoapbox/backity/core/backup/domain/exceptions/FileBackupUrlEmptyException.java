@@ -1,12 +1,12 @@
 package dev.codesoapbox.backity.core.backup.domain.exceptions;
 
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsId;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 
 public class FileBackupUrlEmptyException extends IllegalArgumentException {
 
-    public FileBackupUrlEmptyException(FileDetailsId id) {
-        super("Game file url was null or empty for " + FileDetails.class.getSimpleName()
+    public FileBackupUrlEmptyException(GameFileId id) {
+        super("Game file url was null or empty for " + GameFile.class.getSimpleName()
                 + " with id: " + id.value());
     }
 }

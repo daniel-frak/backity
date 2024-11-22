@@ -10,7 +10,7 @@
 
 
 export interface FileBackupStartedEvent { 
-    fileDetailsId: string;
+    gameFileId: string;
     originalGameTitle: string;
     fileTitle: string;
     version: string;

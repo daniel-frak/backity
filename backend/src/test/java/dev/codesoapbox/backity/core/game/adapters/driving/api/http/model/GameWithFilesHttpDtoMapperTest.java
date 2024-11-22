@@ -3,17 +3,17 @@ package dev.codesoapbox.backity.core.game.adapters.driving.api.http.model;
 import dev.codesoapbox.backity.core.game.application.GameWithFiles;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.filedetails.BackupDetailsHttpDto;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.filedetails.FileBackupStatusHttpDto;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.filedetails.FileDetailsHttpDto;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.filedetails.SourceFileDetailsHttpDto;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefile.FileBackupHttpDto;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefile.FileBackupStatusHttpDto;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefile.GameFileHttpDto;
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefile.GameProviderFileHttpDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static dev.codesoapbox.backity.core.filedetails.domain.TestFileDetails.fullFileDetails;
+import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.fullGameFile;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,7 +27,7 @@ class GameWithFilesHttpDtoMapperTest {
         var fileStringId = "acde26d7-33c7-42ee-be16-bca91a604b48";
         var model = new GameWithFiles(
                 new Game(gameId, "Test Game"),
-                singletonList(fullFileDetails().build())
+                singletonList(fullGameFile().build())
         );
 
         GameWithFilesHttpDto result = MAPPER.toDto(model);
@@ -36,11 +36,11 @@ class GameWithFilesHttpDtoMapperTest {
                 gameId.value().toString(),
                 "Test Game",
                 singletonList(
-                        new FileDetailsHttpDto(
+                        new GameFileHttpDto(
                                 fileStringId,
                                 gameId.value().toString(),
-                                new SourceFileDetailsHttpDto(
-                                        "someSourceId",
+                                new GameProviderFileHttpDto(
+                                        "someGameProviderId",
                                         "someOriginalGameTitle",
                                         "someFileTitle",
                                         "someVersion",
@@ -48,7 +48,7 @@ class GameWithFilesHttpDtoMapperTest {
                                         "someOriginalFileName",
                                         "5 KB"
                                 ),
-                                new BackupDetailsHttpDto(
+                                new FileBackupHttpDto(
                                         FileBackupStatusHttpDto.DISCOVERED,
                                         "someFailedReason",
                                         "someFilePath"

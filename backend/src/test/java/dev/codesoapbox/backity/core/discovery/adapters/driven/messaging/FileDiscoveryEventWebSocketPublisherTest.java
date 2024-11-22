@@ -6,7 +6,7 @@ import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model.Fi
 import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model.FileDiscoveryStatusChangedWsEventMapper;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryStatusChangedEvent;
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,7 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-import static dev.codesoapbox.backity.core.filedetails.domain.TestFileDetails.discoveredFileDetails;
+import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.discoveredGameFile;
 import static dev.codesoapbox.backity.testing.assertions.SimpMessagingAssertions.assertSendsMessage;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,7 +42,7 @@ class FileDiscoveryEventWebSocketPublisherTest {
     void shouldSendStatus() throws JsonProcessingException {
         var expectedPayload = """
                 {
-                    "source": "someSource",
+                    "gameProviderId": "someGameProviderId",
                     "isInProgress" : true
                 }
                 """;
@@ -50,14 +50,14 @@ class FileDiscoveryEventWebSocketPublisherTest {
         assertSendsMessage(simpMessagingTemplate, expectedPayload,
                 FileDiscoveryWebSocketTopics.FILE_DISCOVERY_STATUS_CHANGED.toString(),
                 () -> fileDiscoveryEventWebSocketPublisher.publishStatusChangedEvent(
-                        new FileDiscoveryStatusChangedEvent("someSource", true)));
+                        new FileDiscoveryStatusChangedEvent("someGameProviderId", true)));
     }
 
     @Test
     void shouldSendProgress() throws JsonProcessingException {
         var expectedPayload = """
                 {
-                    "source": "someSource",
+                    "gameProviderId": "someGameProviderId",
                     "percentage" : 25,
                     "timeLeftSeconds": 123
                 }
@@ -66,7 +66,7 @@ class FileDiscoveryEventWebSocketPublisherTest {
         assertSendsMessage(simpMessagingTemplate, expectedPayload,
                 FileDiscoveryWebSocketTopics.FILE_DISCOVERY_PROGRESS_UPDATE.toString(),
                 () -> fileDiscoveryEventWebSocketPublisher.publishProgressChangedEvent(new FileDiscoveryProgressChangedEvent(
-                        "someSource", 25, 123)));
+                        "someGameProviderId", 25, 123)));
     }
 
     @Test
@@ -80,11 +80,11 @@ class FileDiscoveryEventWebSocketPublisherTest {
                 }
                 """;
 
-        FileDetails fileDetails = discoveredFileDetails().build();
+        GameFile gameFile = discoveredGameFile().build();
 
         assertSendsMessage(simpMessagingTemplate, expectedPayload,
                 FileDiscoveryWebSocketTopics.FILE_DISCOVERED.toString(),
                 () -> fileDiscoveryEventWebSocketPublisher.publishFileDiscoveredEvent(
-                        fileDetails));
+                        gameFile));
     }
 }

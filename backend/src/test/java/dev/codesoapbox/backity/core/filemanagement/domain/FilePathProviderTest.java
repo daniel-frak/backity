@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.filemanagement.domain;
 
-import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
+import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class FilePathProviderTest {
 
-    private static final String PATH_TEMPLATE = "/test/{SOURCE}/{TITLE}/{FILENAME}";
+    private static final String PATH_TEMPLATE = "/test/{GAME_PROVIDER_ID}/{TITLE}/{FILENAME}";
 
     private FilePathProvider filePathProvider;
 
@@ -42,25 +42,25 @@ class FilePathProviderTest {
 
     @Test
     void shouldCreateTemporaryFilePath() throws IOException {
-        var source = new FileSourceId( "someSource");
+        var gameProviderId = new GameProviderId( "someGameProviderId");
         var gameTitle = "some: GameTitle";
 
-        String result = filePathProvider.createTemporaryFilePath(source, gameTitle);
+        String result = filePathProvider.createTemporaryFilePath(gameProviderId, gameTitle);
 
-        String expectedPath = "/test/someSource/some - GameTitle/" + extractFileName(result);
+        String expectedPath = "/test/someGameProviderId/some - GameTitle/" + extractFileName(result);
 
         assertThat(result.replace("\\", "/")).isEqualTo(expectedPath);
-        assertThat(fakeUnixFileManager.directoryWasCreated("/test/someSource/some - GameTitle")).isTrue();
+        assertThat(fakeUnixFileManager.directoryWasCreated("/test/someGameProviderId/some - GameTitle")).isTrue();
     }
 
     @Test
     void shouldCreateTemporaryFilePathWhenNoSeparatorFound() throws IOException {
-        var source = new FileSourceId("someSource");
+        var gameProviderId = new GameProviderId("someGameProviderId");
         var gameTitle = "some: GameTitle";
 
         filePathProvider = new FilePathProvider("{FILENAME}", fakeUnixFileManager);
 
-        String result = filePathProvider.createTemporaryFilePath(source, gameTitle);
+        String result = filePathProvider.createTemporaryFilePath(gameProviderId, gameTitle);
 
         String expectedPath = extractFileName(result);
 

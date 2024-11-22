@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.discovery.domain;
 
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryStatusChangedEvent;
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 
 public interface FileDiscoveryEventPublisher {
 
@@ -10,5 +10,5 @@ public interface FileDiscoveryEventPublisher {
 
     void publishProgressChangedEvent(FileDiscoveryProgressChangedEvent progress);
 
-    void publishFileDiscoveredEvent(FileDetails payload);
+    void publishFileDiscoveredEvent(GameFile payload);
 }

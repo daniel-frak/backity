@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.shared.config.openapi;
 
+import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.openapi.lowercaseenums.SwaggerEnumLowerCaseModelConverter;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -24,6 +25,7 @@ public class OpenApiConfig {
     private static final String CODE_GENERATION_PROFILE = "angular";
 
     static {
+        // Generate enums on frontend
         io.swagger.v3.core.jackson.ModelResolver.enumsAsRef = true;
     }
 
@@ -59,5 +61,10 @@ public class OpenApiConfig {
     @Bean
     public OpenApiCustomizer addAdditionalClasses(Reflections reflections) {
         return new OpenApiAdditionalSchemaProvider(reflections);
+    }
+
+    @Bean
+    public SwaggerEnumLowerCaseModelConverter swaggerEnumLowerCaseModelConverter() {
+        return new SwaggerEnumLowerCaseModelConverter();
     }
 }

@@ -3,17 +3,17 @@ package dev.codesoapbox.backity.core.discovery.adapters.driving.api.http.control
 import dev.codesoapbox.backity.core.discovery.adapters.application.StartFileDiscoveryUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
-@FileDiscoveryRestResource
+@FileDiscoveryActionsRestResource
 @RequiredArgsConstructor
 public class StartFileDiscoveryController {
 
     private final StartFileDiscoveryUseCase useCase;
 
     @Operation(summary = "Start file discovery", description = "Starts the process of file discovery")
-    @GetMapping("discover")
-    public void discover() {
+    @PostMapping("start")
+    public void startDiscovery() {
         useCase.startFileDiscovery();
     }
 }

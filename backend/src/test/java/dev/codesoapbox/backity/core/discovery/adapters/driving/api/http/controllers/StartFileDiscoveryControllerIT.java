@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -22,7 +22,7 @@ class StartFileDiscoveryControllerIT {
 
     @Test
     void shouldStartFileDiscovery() throws Exception {
-        mockMvc.perform(get("/api/" + FileDiscoveryRestResource.RESOURCE_URL + "/discover"))
+        mockMvc.perform(post("/api/" + FileDiscoveryActionsRestResource.RESOURCE_URL + "/start"))
                 .andDo(print())
                 .andExpect(status().isOk());
 

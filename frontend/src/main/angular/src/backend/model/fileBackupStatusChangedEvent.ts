@@ -10,7 +10,7 @@
 
 
 export interface FileBackupStatusChangedEvent { 
-    fileDetailsId: string;
+    gameFileId: string;
     newStatus: string;
     failedReason?: string;
 }

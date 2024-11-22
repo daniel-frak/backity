@@ -7,8 +7,8 @@ import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileB
 import dev.codesoapbox.backity.core.backup.domain.EnqueuedFileBackupProcessor;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupEventPublisher;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupService;
-import dev.codesoapbox.backity.core.backup.domain.SourceFileBackupService;
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetailsRepository;
+import dev.codesoapbox.backity.core.backup.domain.GameProviderFileBackupService;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
 import dev.codesoapbox.backity.core.filemanagement.domain.FilePathProvider;
 import org.mapstruct.factory.Mappers;
@@ -23,10 +23,10 @@ public class FileBackupBeanConfig {
 
     @Bean
     FileBackupService fileDownloader(FilePathProvider filePathProvider,
-                                     FileDetailsRepository fileDetailsSpringRepository,
-                                     List<SourceFileBackupService> fileDownloaders,
+                                     GameFileRepository gameFileSpringRepository,
+                                     List<GameProviderFileBackupService> fileDownloaders,
                                      FileManager fileManager) {
-        return new FileBackupService(filePathProvider, fileDetailsSpringRepository, fileManager, fileDownloaders);
+        return new FileBackupService(filePathProvider, gameFileSpringRepository, fileManager, fileDownloaders);
     }
 
     @Bean
@@ -41,9 +41,9 @@ public class FileBackupBeanConfig {
     }
 
     @Bean
-    EnqueuedFileBackupProcessor fileDownloadQueueScheduler(FileDetailsRepository fileDetailsRepository,
+    EnqueuedFileBackupProcessor fileDownloadQueueScheduler(GameFileRepository gameFileRepository,
                                                            FileBackupService fileBackupService,
                                                            FileBackupEventPublisher fileBackupEventPublisher) {
-        return new EnqueuedFileBackupProcessor(fileDetailsRepository, fileBackupService, fileBackupEventPublisher);
+        return new EnqueuedFileBackupProcessor(gameFileRepository, fileBackupService, fileBackupEventPublisher);
     }
 }

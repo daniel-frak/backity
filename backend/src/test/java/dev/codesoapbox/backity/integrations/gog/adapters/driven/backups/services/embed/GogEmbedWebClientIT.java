@@ -11,7 +11,7 @@ import dev.codesoapbox.backity.integrations.gog.config.WebClientConfig;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileDiscoveryException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameBackupRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameListRequestFailedException;
-import dev.codesoapbox.backity.integrations.gog.domain.model.embed.FileDetailsResponse;
+import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import org.junit.jupiter.api.AfterEach;
@@ -97,7 +97,7 @@ class GogEmbedWebClientIT {
 
         var expectedResult = new GameDetailsResponse("Unreal Tournament 2004 Editor's Choice Edition",
                 "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
-                "someCdKey", "someTextInformation", singletonList(new FileDetailsResponse(
+                "someCdKey", "someTextInformation", singletonList(new GameFileResponse(
                 "someVersion", "/downlink/unreal_tournament_2004_ece/en1installer3",
                 "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)", "1 MB",
                 "en1installer3")),
@@ -146,7 +146,7 @@ class GogEmbedWebClientIT {
 
         var expectedResult = new GameDetailsResponse("Unreal Tournament 2004 Editor's Choice Edition",
                 "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
-                "someCdKey", "someTextInformation", singletonList(new FileDetailsResponse(
+                "someCdKey", "someTextInformation", singletonList(new GameFileResponse(
                 "unknown", "/downlink/unreal_tournament_2004_ece/en1installer3",
                 "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)", "1 MB",
                 "en1installer3")),

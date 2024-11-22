@@ -1,12 +1,12 @@
 package dev.codesoapbox.backity.core.backup.domain;
 
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 
 public interface FileBackupEventPublisher {
 
-    void publishBackupStartedEvent(FileDetails fileDetails);
+    void publishBackupStartedEvent(GameFile gameFile);
 
     void publishFileBackupProgressChangedEvent(FileBackupProgress fileBackupProgress);
 
-    void publishBackupFinishedEvent(FileDetails fileDetails);
+    void publishBackupFinishedEvent(GameFile gameFile);
 }

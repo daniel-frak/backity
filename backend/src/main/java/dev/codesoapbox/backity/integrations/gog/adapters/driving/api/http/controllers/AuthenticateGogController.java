@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model.
 import dev.codesoapbox.backity.integrations.gog.application.AuthenticateGogUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @GogAuthRestResource
@@ -14,7 +14,7 @@ public class AuthenticateGogController {
     private final AuthenticateGogUseCase useCase;
 
     @Operation(summary = "Authenticate", description = "Returns a refresh token based on a code")
-    @GetMapping
+    @PostMapping
     public RefreshTokenResponseHttpDto authenticate(@RequestParam("code") String code) {
         String refreshToken = useCase.authenticateAndGetRefreshToken(code);
         return RefreshTokenResponseHttpDto.of(refreshToken);

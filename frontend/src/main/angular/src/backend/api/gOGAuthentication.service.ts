@@ -143,7 +143,7 @@ export class GOGAuthenticationClient {
         }
 
         let localVarPath = `/api/gog/auth`;
-        return this.httpClient.request<RefreshTokenResponse>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<RefreshTokenResponse>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,
@@ -157,7 +157,7 @@ export class GOGAuthenticationClient {
     }
 
     /**
-     * Check authentication
+     * Get authentication status
      * Returns whether or not the user is currently authenticated
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -198,7 +198,7 @@ export class GOGAuthenticationClient {
             }
         }
 
-        let localVarPath = `/api/gog/auth/check`;
+        let localVarPath = `/api/gog/auth`;
         return this.httpClient.request<boolean>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -263,8 +263,8 @@ export class GOGAuthenticationClient {
             }
         }
 
-        let localVarPath = `/api/gog/auth/refresh`;
-        return this.httpClient.request<RefreshTokenResponse>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/api/gog/auth`;
+        return this.httpClient.request<RefreshTokenResponse>('put', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,

@@ -5,8 +5,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -14,9 +16,17 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@SuppressWarnings(
+        // @Data and @EqualsAndHashCode are safe to use here because:
+        // - We explicitly add a @NoArgsConstructor (required by Jpa spec)
+        // - @EqualsAndHashCode only uses id (so won't break HashSets)
+        // - We don't do lazy loading (so toString() won't break it).
+        {"com.intellij.jpb.LombokDataInspection", "com.intellij.jpb.LombokEqualsAndHashCodeInspection"})
 @Entity(name = "Game")
 @EntityListeners(AuditingEntityListener.class)
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class GameJpaEntity {
 
@@ -30,6 +40,7 @@ public class GameJpaEntity {
 
     @NotNull
     @CreatedDate
+    @Column(updatable = false)
     private LocalDateTime dateCreated;
 
     @NotNull

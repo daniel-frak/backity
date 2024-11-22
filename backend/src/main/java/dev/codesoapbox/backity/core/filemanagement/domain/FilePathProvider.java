@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.filemanagement.domain;
 
-import dev.codesoapbox.backity.core.backup.domain.FileSourceId;
+import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -28,16 +28,16 @@ public class FilePathProvider {
     /**
      * @return the path that was created
      */
-    public String createTemporaryFilePath(FileSourceId source, String gameTitle) throws IOException {
+    public String createTemporaryFilePath(GameProviderId gameProviderId, String gameTitle) throws IOException {
         String tempFileName = "TEMP_" + UUID.randomUUID();
-        String tempFilePath = getFilePath(gameTitle, tempFileName, source.value());
+        String tempFilePath = getFilePath(gameTitle, tempFileName, gameProviderId.value());
         createDirectories(tempFilePath);
         return tempFilePath;
     }
 
-    private String getFilePath(String gameTitle, String fileName, String source) {
+    private String getFilePath(String gameTitle, String fileName, String gameProviderId) {
         return defaultPathTemplate
-                .replace("{SOURCE}", source)
+                .replace("{GAME_PROVIDER_ID}", gameProviderId)
                 .replace("{TITLE}", gameTitle)
                 .replace("{FILENAME}", fileName)
                 .replace(":", " -");

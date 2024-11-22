@@ -7,7 +7,7 @@ import lombok.NonNull;
 @IncludeInDocumentation
 @Schema(name = "FileDiscoveryProgressUpdateEvent")
 public record FileDiscoveryProgressChangedWsEvent(
-        @NonNull String source,
+        @NonNull String gameProviderId,
         int percentage,
         long timeLeftSeconds
 ) {

@@ -9,16 +9,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
-@FileDiscoveryRestResource
+@FileDiscoveryStatusRestResource
 @RequiredArgsConstructor
 public class GetFileDiscoveryStatusListController {
 
-    private final GetFileDiscoveryStatusListUseCase useCase;
+  private final GetFileDiscoveryStatusListUseCase useCase;
     private final FileDiscoveryStatusHttpDtoMapper fileDiscoveryStatusMapper;
 
-    @Operation(summary = "List discovery statuses",
-            description = "Returns a list of discovery statuses for every remote client")
-    @GetMapping("statuses")
+    @Operation(summary = "List game provider file discovery statuses",
+            description = "Returns a list of file discovery statuses for every game provider")
+    @GetMapping
     public List<FileDiscoveryStatusHttpDto> getStatuses() {
         return useCase.getStatusList().stream()
                 .map(fileDiscoveryStatusMapper::toDto)

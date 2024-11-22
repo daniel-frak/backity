@@ -7,7 +7,7 @@ import lombok.NonNull;
 @IncludeInDocumentation
 @Schema(name = "FileDiscoveryStatusChangedEvent")
 public record FileDiscoveryStatusChangedWsEvent(
-        @NonNull String source,
+        @NonNull String gameProviderId,
         boolean isInProgress
 ) {
 }

@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.shared.config.SharedRepositoryTestConfig;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+import org.springframework.test.context.TestPropertySource;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -22,8 +23,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @DataJpaTest
 @EnableJpaAuditing
-// Enable this once Liquibase is added:
-//@TestPropertySource(properties = {"spring.jpa.hibernate.ddl-auto=validate"})
+@TestPropertySource(properties = {"spring.jpa.hibernate.ddl-auto=validate"})
 @Import(SharedRepositoryTestConfig.class)
 public @interface JpaRepositoryTest {
 }

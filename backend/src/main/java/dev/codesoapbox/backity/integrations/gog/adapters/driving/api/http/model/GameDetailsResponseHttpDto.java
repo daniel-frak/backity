@@ -10,7 +10,7 @@ public record GameDetailsResponseHttpDto(
         String backgroundImage,
         String cdKey,
         String textInformation,
-        List<FileDetailsResponseHttpDto> files,
+        List<GameFileResponseHttpDto> files,
         String changelog
 ) {
 }

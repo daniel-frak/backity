@@ -11,9 +11,9 @@ import {
   FileBackupProgressUpdatedEvent,
   FileBackupStartedEvent,
   FileBackupStatus, FileBackupStatusChangedEvent,
-  FileDetails,
-  FileDetailsClient,
-  PageFileDetails
+  GameFile, GameFileProcessingStatus,
+  GameFilesClient,
+  PageGameFile
 } from "@backend";
 import {By} from "@angular/platform-browser";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
@@ -23,14 +23,14 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 describe('FileBackupComponent', () => {
   let component: FileBackupComponent;
   let fixture: ComponentFixture<FileBackupComponent>;
-  let fileDetailsClient: jasmine.SpyObj<FileDetailsClient>;
+  let gameFilesClient: jasmine.SpyObj<GameFilesClient>;
   let messagesService: jasmine.SpyObj<MessagesService>;
 
-  const sampleFileDetails: FileDetails = {
+  const sampleGameFile: GameFile = {
     id: "someFileId",
     gameId: "someGameId",
-    sourceFileDetails: {
-      sourceId: "someSourceId",
+    gameProviderFile: {
+      gameProviderId: "someGameProviderId",
       originalGameTitle: "Some game",
       originalFileName: "Some original file name",
       version: "Some version",
@@ -38,57 +38,57 @@ describe('FileBackupComponent', () => {
       size: "3 GB",
       fileTitle: "currentGame.exe"
     },
-    backupDetails: {
+    fileBackup: {
       status: "DISCOVERED"
     }
   };
 
-  const enqueuedDownloads: PageFileDetails = {
+  const enqueuedDownloads: PageGameFile = {
     content: [{
-      ...sampleFileDetails,
-      sourceFileDetails: {
-        ...sampleFileDetails.sourceFileDetails,
+      ...sampleGameFile,
+      gameProviderFile: {
+        ...sampleGameFile.gameProviderFile,
         originalGameTitle: "Some queued game",
         fileTitle: "queuedGame.exe",
         size: "1 GB"
       },
-      backupDetails: {
+      fileBackup: {
         status: FileBackupStatus.Discovered
       }
     }]
   };
 
-  const processedFiles: PageFileDetails = {
+  const processedFiles: PageGameFile = {
     content: [{
-      ...sampleFileDetails,
-      sourceFileDetails: {
-        ...sampleFileDetails.sourceFileDetails,
+      ...sampleGameFile,
+      gameProviderFile: {
+        ...sampleGameFile.gameProviderFile,
         originalGameTitle: "Some processed game",
         fileTitle: "processedGame.exe",
         size: "2 GB"
       },
-      backupDetails: {
+      fileBackup: {
         status: FileBackupStatus.Success
       }
     }]
   };
 
-  const currentlyProcessedFileDetails: FileDetails = {
-    ...sampleFileDetails,
-    sourceFileDetails: {
-      ...sampleFileDetails.sourceFileDetails,
+  const currentlyProcessedGameFile: GameFile = {
+    ...sampleGameFile,
+    gameProviderFile: {
+      ...sampleGameFile.gameProviderFile,
       originalGameTitle: "Some current game",
       fileTitle: "currentGame.exe",
       size: "3 GB",
     },
-    backupDetails: {
+    fileBackup: {
       status: FileBackupStatus.InProgress,
       filePath: 'some/file/path'
     }
   };
 
   const expectedCurrentlyProcessing: FileBackupStartedEvent = {
-    fileDetailsId: "someFileId",
+    gameFileId: "someFileId",
     originalGameTitle: "Some current game",
     originalFileName: "Some original file name",
     version: "Some version",
@@ -109,8 +109,8 @@ describe('FileBackupComponent', () => {
     imports: [],
     providers: [
         {
-            provide: FileDetailsClient,
-            useValue: jasmine.createSpyObj('FileDetailsClient', ['getQueueItems', 'getProcessedFiles', 'getCurrentlyDownloading'])
+            provide: GameFilesClient,
+            useValue: jasmine.createSpyObj('GameFilesClient', ['getGameFiles', 'getCurrentlyDownloading'])
         },
         {
             provide: MessagesService,
@@ -126,12 +126,14 @@ describe('FileBackupComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FileBackupComponent);
     component = fixture.componentInstance;
-    fileDetailsClient = TestBed.inject(FileDetailsClient) as jasmine.SpyObj<FileDetailsClient>;
+    gameFilesClient = TestBed.inject(GameFilesClient) as jasmine.SpyObj<GameFilesClient>;
     messagesService = TestBed.inject(MessagesService) as jasmine.SpyObj<MessagesService>;
 
-    fileDetailsClient.getQueueItems.and.returnValue(of(enqueuedDownloads) as any);
-    fileDetailsClient.getProcessedFiles.and.returnValue(of(processedFiles) as any);
-    fileDetailsClient.getCurrentlyDownloading.and.returnValue(of(currentlyProcessedFileDetails) as any);
+    gameFilesClient.getGameFiles.withArgs(GameFileProcessingStatus.Enqueued, jasmine.anything())
+      .and.returnValue(of(enqueuedDownloads) as any);
+    gameFilesClient.getGameFiles.withArgs(GameFileProcessingStatus.Processed, jasmine.anything())
+      .and.returnValue(of(processedFiles) as any);
+    gameFilesClient.getCurrentlyDownloading.and.returnValue(of(currentlyProcessedGameFile) as any);
   });
 
   it('should create the component', () => {
@@ -177,15 +179,21 @@ describe('FileBackupComponent', () => {
   it('should retrieve files', () => {
     fixture.detectChanges();
 
-    expect(fileDetailsClient.getQueueItems)
-      .toHaveBeenCalledWith({
+    expect(gameFilesClient.getGameFiles)
+      .toHaveBeenCalledWith(
+        GameFileProcessingStatus.Enqueued, {
         page: 0,
         size: component['pageSize']
       });
     expect(component.enqueuedDownloads).toEqual(enqueuedDownloads);
-    expect(fileDetailsClient.getProcessedFiles).toHaveBeenCalled();
+    expect(gameFilesClient.getGameFiles)
+      .toHaveBeenCalledWith(
+        GameFileProcessingStatus.Processed, {
+          page: 0,
+          size: component['pageSize']
+        });
     expect(component.processedFiles).toEqual(processedFiles);
-    expect(fileDetailsClient.getCurrentlyDownloading).toHaveBeenCalled();
+    expect(gameFilesClient.getCurrentlyDownloading).toHaveBeenCalled();
     expect(component.currentDownload).toEqual(expectedCurrentlyProcessing);
     expect(component.filesAreLoading).toBe(false);
 
@@ -268,7 +276,7 @@ describe('FileBackupComponent', () => {
 
   it('should clear currently downloaded game when FileBackupStatusChangedEvent' +
     ' is received with status Success', () => {
-    mockFileBackupStatusChangedEventReceived(expectedCurrentlyProcessing.fileDetailsId, FileBackupStatus.Success);
+    mockFileBackupStatusChangedEventReceived(expectedCurrentlyProcessing.gameFileId, FileBackupStatus.Success);
 
     const currentlyDownloadingTable = fixture.debugElement.query(By.css('#currently-downloading'));
     expect(currentlyDownloadingTable.nativeElement.textContent).toContain('Nothing is currently being backed up');
@@ -276,7 +284,7 @@ describe('FileBackupComponent', () => {
 
   function mockFileBackupStatusChangedEventReceived(id: string, newStatus: FileBackupStatus) {
     const statusChangedMessage: FileBackupStatusChangedEvent = {
-      fileDetailsId: id,
+      gameFileId: id,
       newStatus: newStatus
     };
     const payload: IMessage = {body: JSON.stringify(statusChangedMessage)} as any;
@@ -289,7 +297,7 @@ describe('FileBackupComponent', () => {
 
   it('should clear currently downloaded game when FileBackupStatusChangedEvent' +
     ' is received with status Failed', () => {
-    mockFileBackupStatusChangedEventReceived(expectedCurrentlyProcessing.fileDetailsId, FileBackupStatus.Failed);
+    mockFileBackupStatusChangedEventReceived(expectedCurrentlyProcessing.gameFileId, FileBackupStatus.Failed);
 
     const currentlyDownloadingTable = fixture.debugElement.query(By.css('#currently-downloading'));
     expect(currentlyDownloadingTable.nativeElement.textContent).toContain('Nothing is currently being backed up');
@@ -297,7 +305,7 @@ describe('FileBackupComponent', () => {
 
   it('should not clear currently downloaded game when FileBackupStatusChangedEvent' +
     ' is received with status other than Success or Failed', () => {
-    mockFileBackupStatusChangedEventReceived(expectedCurrentlyProcessing.fileDetailsId, FileBackupStatus.InProgress);
+    mockFileBackupStatusChangedEventReceived(expectedCurrentlyProcessing.gameFileId, FileBackupStatus.InProgress);
 
     const currentlyDownloadingTable = fixture.debugElement.query(By.css('#currently-downloading'));
     expect(currentlyDownloadingTable.nativeElement.textContent).not.toContain('Nothing is currently being backed up');
@@ -305,7 +313,7 @@ describe('FileBackupComponent', () => {
 
   it('should not clear currently downloaded game when FileBackupStatusChangedEvent' +
     ' is received with id other than current and status Success', () => {
-    mockFileBackupStatusChangedEventReceived('anotherFileDetailsId', FileBackupStatus.Success);
+    mockFileBackupStatusChangedEventReceived('anotherGameFileId', FileBackupStatus.Success);
 
     const currentlyDownloadingTable = fixture.debugElement.query(By.css('#currently-downloading'));
     expect(currentlyDownloadingTable.nativeElement.textContent).not.toContain('Nothing is currently being backed up');
@@ -313,7 +321,7 @@ describe('FileBackupComponent', () => {
 
   it('should not clear currently downloaded game when FileBackupStatusChangedEvent' +
     ' is received with id other than current and status Failed', () => {
-    mockFileBackupStatusChangedEventReceived('anotherFileDetailsId', FileBackupStatus.Failed);
+    mockFileBackupStatusChangedEventReceived('anotherGameFileId', FileBackupStatus.Failed);
 
     const currentlyDownloadingTable = fixture.debugElement.query(By.css('#currently-downloading'));
     expect(currentlyDownloadingTable.nativeElement.textContent).not.toContain('Nothing is currently being backed up');
@@ -323,7 +331,7 @@ describe('FileBackupComponent', () => {
     ' is received and currently downloaded file is already cleared', () => {
     fixture.detectChanges();
     component.currentDownload = undefined;
-    mockFileBackupStatusChangedEventReceived('anotherFileDetailsId', FileBackupStatus.Failed);
+    mockFileBackupStatusChangedEventReceived('anotherGameFileId', FileBackupStatus.Failed);
 
     const currentlyDownloadingTable = fixture.debugElement.query(By.css('#currently-downloading'));
     expect(currentlyDownloadingTable.nativeElement.textContent).toContain('Nothing is currently being backed up');

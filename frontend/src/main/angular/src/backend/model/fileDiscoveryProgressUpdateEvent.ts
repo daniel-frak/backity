@@ -10,7 +10,7 @@
 
 
 export interface FileDiscoveryProgressUpdateEvent { 
-    source?: string;
+    gameProviderId?: string;
     percentage?: number;
     timeLeftSeconds?: number;
 }

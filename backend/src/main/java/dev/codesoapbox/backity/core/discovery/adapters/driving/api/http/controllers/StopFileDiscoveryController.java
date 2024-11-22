@@ -3,16 +3,16 @@ package dev.codesoapbox.backity.core.discovery.adapters.driving.api.http.control
 import dev.codesoapbox.backity.core.discovery.adapters.application.StopFileDiscoveryUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
-@FileDiscoveryRestResource
+@FileDiscoveryActionsRestResource
 @RequiredArgsConstructor
 public class StopFileDiscoveryController {
 
     private final StopFileDiscoveryUseCase useCase;
 
     @Operation(summary = "Stop file discovery", description = "Stops the process of file discovery")
-    @GetMapping("stop-discovery")
+    @PostMapping("stop")
     public void stopDiscovery() {
         useCase.stopFileDiscovery();
     }

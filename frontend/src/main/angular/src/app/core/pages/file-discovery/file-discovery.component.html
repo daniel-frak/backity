@@ -31,18 +31,18 @@
 
       <div class="gutters-1">
         <div *ngFor="let status of getStatuses()">
-          <button (click)="discoverFilesFor(status.source)"
+          <button (click)="discoverFilesFor(status.gameProviderId)"
                   [disabled]="status.isInProgress"
                   class="btn btn-secondary btn-sm mt-2 me-3">
-            Discover new files for {{ status.source }}
+            Discover new files for {{ status.gameProviderId }}
           </button>
         </div>
       </div>
 
       <hr *ngIf="discoveryOngoing()">
       <ng-container *ngFor="let progress of getProgressList()">
-        <div class="mt-2" *ngIf="isInProgress(progress.source!)">
-          {{ progress.source }} (time left: {{ (progress.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }}):
+        <div class="mt-2" *ngIf="isInProgress(progress.gameProviderId!)">
+          {{ progress.gameProviderId }} (time left: {{ (progress.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }}):
           <div class="progress">
             <!--/* //NOSONAR */--><div
               aria-valuemax="100" aria-valuemin="0" [attr.aria-valuenow]="progress.percentage"
@@ -81,25 +81,25 @@
     </div>
 
     <app-table [content]="discoveredFiles!" [isLoading]="filesAreLoading" [testId]="'discovered-files-table'">
-      <ng-template app-table-column="Source game title" let-item>
-        {{ asFile(item).sourceFileDetails!.originalFileName }}
+      <ng-template app-table-column="Provider game title" let-item>
+        {{ asGameFile(item).gameProviderFile!.originalFileName }}
       </ng-template>
       <ng-template app-table-column="File name" let-item>
-        {{ asFile(item).sourceFileDetails!.fileTitle }} - {{ asFile(item).sourceFileDetails!.originalFileName }}
+        {{ asGameFile(item).gameProviderFile!.fileTitle }} - {{ asGameFile(item).gameProviderFile!.originalFileName }}
       </ng-template>
       <ng-template app-table-column="Version" let-item>
-        {{ asFile(item).sourceFileDetails!.version }}
+        {{ asGameFile(item).gameProviderFile!.version }}
       </ng-template>
       <ng-template app-table-column="Size" let-item>
-        {{ asFile(item).sourceFileDetails!.size }}
+        {{ asGameFile(item).gameProviderFile!.size }}
       </ng-template>
       <ng-template app-table-column="Actions"
                    append-class="text-end"
                    hide-title-on-mobile
                    let-item>
-        <ng-container *ngFor="let file of [asFile(item)]">
+        <ng-container *ngFor="let file of [asGameFile(item)]">
           <button data-testid="back-up-btn" (click)="enqueueFile(file)"
-                  [disabled]="file.backupDetails.status != 'DISCOVERED'"
+                  [disabled]="file.fileBackup.status != 'DISCOVERED'"
                   class="btn btn-primary">
             Back up
           </button>

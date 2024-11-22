@@ -1,15 +1,15 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   FileBackupStatus,
-  FileDetails,
-  FileDetailsClient,
+  GameFile,
+  GameFilesClient,
   FileDiscoveredEvent,
   FileDiscoveryClient,
   FileDiscoveryProgressUpdateEvent,
   FileDiscoveryStatus,
   FileDiscoveryStatusChangedEvent,
   FileDiscoveryWebSocketTopics,
-  PageFileDetails
+  PageGameFile, GameFileProcessingStatus
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
@@ -24,13 +24,13 @@ import {throwError} from "rxjs";
 })
 export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
-  discoveredFiles?: PageFileDetails;
+  discoveredFiles?: PageGameFile;
   newestDiscovered?: FileDiscoveredEvent;
   newDiscoveredCount: number = 0;
   infoIsLoading: boolean = false;
   filesAreLoading: boolean = false;
-  discoveryStatusBySource: Map<string, boolean> = new Map<string, boolean>();
-  discoveryProgressBySource: Map<string, FileDiscoveryProgressUpdateEvent>
+  discoveryStatusByGameProviderId: Map<string, boolean> = new Map<string, boolean>();
+  discoveryProgressByGameProviderId: Map<string, FileDiscoveryProgressUpdateEvent>
     = new Map<string, FileDiscoveryProgressUpdateEvent>();
   discoveryStateUnknown: boolean = true;
 
@@ -38,11 +38,11 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   private readonly stompSubscriptions: StompSubscription[] = [];
 
   constructor(private readonly fileDiscoveryClient: FileDiscoveryClient,
-              private readonly fileDetailsClient: FileDetailsClient,
+              private readonly gameFilesClient: GameFilesClient,
               private readonly messageService: MessagesService) {
   }
 
-  asFile = (file: FileDetails) => file;
+  asGameFile = (gameFile: GameFile) => gameFile;
 
   ngOnInit(): void {
     this.messageService.onConnect(client => this.stompSubscriptions.push(
@@ -68,11 +68,11 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
   private onProgressUpdated(payload: IMessage) {
     const progress: FileDiscoveryProgressUpdateEvent = JSON.parse(payload.body);
-    this.discoveryProgressBySource.set(progress.source as string, progress);
+    this.discoveryProgressByGameProviderId.set(progress.gameProviderId as string, progress);
   }
 
   private updateDiscoveryStatus(status: FileDiscoveryStatusChangedEvent) {
-    this.discoveryStatusBySource.set(status.source as string, status.isInProgress as boolean);
+    this.discoveryStatusByGameProviderId.set(status.gameProviderId as string, status.isInProgress as boolean);
     this.discoveryStateUnknown = false;
   }
 
@@ -89,14 +89,14 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     this.filesAreLoading = true;
     const page = 0;
     const size = this.pageSize;
-    this.fileDetailsClient.getDiscoveredFiles({
+    this.gameFilesClient.getGameFiles(GameFileProcessingStatus.Discovered, {
       page: page,
       size: size
     })
       .subscribe(df => this.updateDiscoveredFiles(df));
   }
 
-  private updateDiscoveredFiles(df: PageFileDetails) {
+  private updateDiscoveredFiles(df: PageGameFile) {
     this.discoveredFiles = df;
     this.newDiscoveredCount = 0;
     this.filesAreLoading = false;
@@ -104,7 +104,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
   startDiscovery() {
     this.discoveryStateUnknown = true;
-    this.fileDiscoveryClient.discover().subscribe(() => {
+    this.fileDiscoveryClient.startDiscovery().subscribe(() => {
     });
   }
 
@@ -114,12 +114,12 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     });
   }
 
-  enqueueFile(file: FileDetails) {
-    file.backupDetails.status = FileBackupStatus.Enqueued;
+  enqueueFile(file: GameFile) {
+    file.fileBackup.status = FileBackupStatus.Enqueued;
     console.info("Enqueuing: " + file.id);
-    this.fileDetailsClient.download(file.id)
+    this.gameFilesClient.download(file.id)
       .pipe(catchError(e => {
-        file.backupDetails.status = FileBackupStatus.Discovered;
+        file.fileBackup.status = FileBackupStatus.Discovered;
         return throwError(() => e);
       }))
       .subscribe({
@@ -133,43 +133,43 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   }
 
   getStatuses(): FileDiscoveryStatus[] {
-    if (this.discoveryStatusBySource.size === 0) {
+    if (this.discoveryStatusByGameProviderId.size === 0) {
       return [];
     }
 
-    return Array.from(this.discoveryStatusBySource)
-      .map(([source, isInProgress]) => {
+    return Array.from(this.discoveryStatusByGameProviderId)
+      .map(([gameProviderId, isInProgress]) => {
         return {
-          source: source,
+          gameProviderId: gameProviderId,
           isInProgress: isInProgress
         };
       });
   }
 
   getProgressList(): FileDiscoveryProgressUpdateEvent[] {
-    if (this.discoveryProgressBySource.size === 0) {
+    if (this.discoveryProgressByGameProviderId.size === 0) {
       return [];
     }
-    return Array.from(this.discoveryProgressBySource)
-      .map(([source, progress]) => {
+    return Array.from(this.discoveryProgressByGameProviderId)
+      .map(([gameProviderId, progress]) => {
         return progress;
       });
   }
 
   discoveryOngoing(): boolean {
-    if (this.discoveryStatusBySource.size === 0) {
+    if (this.discoveryStatusByGameProviderId.size === 0) {
       return false;
     }
 
-    return Array.from(this.discoveryStatusBySource)
-      .some(([source, inProgress]) => inProgress);
+    return Array.from(this.discoveryStatusByGameProviderId)
+      .some(([gameProviderId, inProgress]) => inProgress);
   }
 
-  discoverFilesFor(source?: string) {
-    console.error("Per-source file discovery start not yet implemented");
+  discoverFilesFor(gameProviderId?: string) {
+    console.error("Per-provider file discovery start not yet implemented");
   }
 
-  isInProgress(source: string): boolean {
-    return !!this.discoveryStatusBySource.get(source);
+  isInProgress(gameProviderId: string): boolean {
+    return !!this.discoveryStatusByGameProviderId.get(gameProviderId);
   }
 }

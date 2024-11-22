@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
 import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
-import dev.codesoapbox.backity.core.filedetails.domain.FileDetails;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBuffer;
@@ -16,8 +16,8 @@ public class FakeFileBufferProvider implements FileBufferProvider {
 
     Map<String, String> stringDataToDownloadByUrl = new HashMap<>();
 
-    public void mockDataForDownload(FileDetails fileDetails, String testData) {
-        String url = fileDetails.getSourceFileDetails().url();
+    public void mockDataForDownload(GameFile gameFile, String testData) {
+        String url = gameFile.getGameProviderFile().url();
         stringDataToDownloadByUrl.put(url, testData);
     }
 

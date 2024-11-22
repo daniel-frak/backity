@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 @IncludeInDocumentation
 @Schema(name = "FileBackupStartedEvent")
 public record FileBackupStartedWsEvent(
-        @NotNull String fileDetailsId,
+        @NotNull String gameFileId,
         @NotNull String originalGameTitle,
         @NotNull String fileTitle,
         @NotNull String version,
