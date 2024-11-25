@@ -24,7 +24,7 @@ public interface FileManager {
 
     OutputStream getOutputStream(String path) throws IOException;
 
-    void deleteIfExists(String path) throws IOException;
+    void deleteIfExists(String path);
 
     String getSeparator();
 

@@ -22,7 +22,7 @@ import static java.util.Collections.singletonList;
 @AllArgsConstructor
 public class OpenApiConfig {
 
-    private static final String CODE_GENERATION_PROFILE = "angular";
+    private static final String CODE_GENERATION_PROFILE = "angular-client-code-gen";
 
     static {
         // Generate enums on frontend

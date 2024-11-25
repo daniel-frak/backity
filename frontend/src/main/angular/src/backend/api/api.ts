@@ -1,3 +1,5 @@
+export * from './fileBackups.service';
+import { FileBackupsClient } from './fileBackups.service';
 export * from './fileDiscovery.service';
 import { FileDiscoveryClient } from './fileDiscovery.service';
 export * from './gOG.service';
@@ -12,4 +14,4 @@ export * from './h2Database.service';
 import { H2DatabaseClient } from './h2Database.service';
 export * from './logs.service';
 import { LogsClient } from './logs.service';
-export const APIS = [FileDiscoveryClient, GOGClient, GOGAuthenticationClient, GameFilesClient, GamesClient, H2DatabaseClient, LogsClient];
+export const APIS = [FileBackupsClient, FileDiscoveryClient, GOGClient, GOGAuthenticationClient, GameFilesClient, GamesClient, H2DatabaseClient, LogsClient];

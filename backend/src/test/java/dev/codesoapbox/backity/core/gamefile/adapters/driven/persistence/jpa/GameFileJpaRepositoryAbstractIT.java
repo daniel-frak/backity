@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 import static dev.codesoapbox.backity.core.game.domain.TestGame.aGame;
@@ -95,11 +94,18 @@ abstract class GameFileJpaRepositoryAbstractIT {
         GameFile result = gameFileJpaRepository.save(newGameFile);
         entityManager.flush();
 
+        assertEquals(result, newGameFile);
+        assertWasPersisted(newGameFile);
+    }
+
+    private void assertEquals(GameFile result, GameFile expected) {
         assertThat(result)
                 .usingRecursiveComparison()
                 .ignoringFields("dateCreated", "dateModified")
-                .isEqualTo(newGameFile);
+                .isEqualTo(expected);
+    }
 
+    private void assertWasPersisted(GameFile newGameFile) {
         GameFileJpaEntity persistedEntity = entityManager.find(GameFileJpaEntity.class,
                 newGameFile.getId().value());
         assertThat(persistedEntity)
@@ -150,30 +156,28 @@ abstract class GameFileJpaRepositoryAbstractIT {
     @Test
     void shouldFindById() {
         populateDatabase(FILE_DETAILS.getAll());
-        GameFileId id = new GameFileId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48"));
+        GameFile expectedGameFile = FILE_DETAILS.ENQUEUED_FOR_GAME_1.get();
 
-        Optional<GameFile> result = gameFileJpaRepository.findById(id);
+        Optional<GameFile> result = gameFileJpaRepository.findById(expectedGameFile.getId());
 
         assertThat(result).get().usingRecursiveComparison()
                 .ignoringFields("dateCreated", "dateModified")
-                .isEqualTo(FILE_DETAILS.ENQUEUED_FOR_GAME_1.get());
+                .isEqualTo(expectedGameFile);
     }
 
     @Test
     void shouldGetById() {
         populateDatabase(FILE_DETAILS.getAll());
-        var id = new GameFileId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48"));
+        GameFile expectedGameFile = FILE_DETAILS.ENQUEUED_FOR_GAME_1.get();
 
-        GameFile result = gameFileJpaRepository.getById(id);
+        GameFile result = gameFileJpaRepository.getById(expectedGameFile.getId());
 
-        assertThat(result).usingRecursiveComparison()
-                .ignoringFields("dateCreated", "dateModified")
-                .isEqualTo(FILE_DETAILS.ENQUEUED_FOR_GAME_1.get());
+        assertEquals(result, expectedGameFile);
     }
 
     @Test
     void getByIdShouldThrowGivenNotFound() {
-        var nonexistentId = new GameFileId(UUID.fromString("59e37c43-dda7-4c5f-87a3-c380ebb5f8ea"));
+        var nonexistentId = new GameFileId("59e37c43-dda7-4c5f-87a3-c380ebb5f8ea");
 
         assertThatThrownBy(() -> gameFileJpaRepository.getById(nonexistentId))
                 .isInstanceOf(GameFileNotFoundException.class);
@@ -204,17 +208,28 @@ abstract class GameFileJpaRepositoryAbstractIT {
         );
     }
 
+    @Test
+    void shouldDeleteById() {
+        GameFile gameFile = FILE_DETAILS.ENQUEUED_FOR_GAME_1.get();
+        populateDatabase(List.of(gameFile));
+
+        gameFileJpaRepository.deleteById(gameFile.getId());
+
+        var foundEntity = entityManager.find(GameFileJpaEntity.class, gameFile.getId().value());
+        assertThat(foundEntity).isNull();
+    }
+
     private static class EXISTING_GAMES {
 
         public static final GameJpaEntityMapper MAPPER = Mappers.getMapper(GameJpaEntityMapper.class);
 
         public static final Game GAME_1 = aGame()
-                .withId(new GameId(UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281")))
+                .withId(new GameId("1eec1c19-25bf-4094-b926-84b5bb8fa281"))
                 .withTitle("Game 1")
                 .build();
 
         public static final Game GAME_2 = aGame()
-                .withId(new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5")))
+                .withId(new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"))
                 .withTitle("Game 2")
                 .build();
 
@@ -226,32 +241,32 @@ abstract class GameFileJpaRepositoryAbstractIT {
     private static class FILE_DETAILS {
 
         public static final Supplier<GameFile> ENQUEUED_FOR_GAME_1 = () -> enqueuedGameFile()
-                .id(new GameFileId(UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48")))
+                .id(new GameFileId("acde26d7-33c7-42ee-be16-bca91a604b48"))
                 .gameId(EXISTING_GAMES.GAME_1.getId())
                 .build();
 
         public static final Supplier<GameFile> SUCCESSFUL_FOR_GAME_1 = () -> successfulGameFile()
-                .id(new GameFileId(UUID.fromString("a6adc122-df20-4e2c-a975-7d4af7104704")))
+                .id(new GameFileId("a6adc122-df20-4e2c-a975-7d4af7104704"))
                 .gameId(EXISTING_GAMES.GAME_1.getId())
                 .build();
 
         public static final Supplier<GameFile> DISCOVERED_FOR_GAME_1 = () -> discoveredGameFile()
-                .id(new GameFileId(UUID.fromString("3d65af79-a558-4f23-88bd-3c04e977e63f")))
+                .id(new GameFileId("3d65af79-a558-4f23-88bd-3c04e977e63f"))
                 .gameId(EXISTING_GAMES.GAME_1.getId())
                 .build();
 
         public static final Supplier<GameFile> ENQUEUED_FOR_GAME_2 = () -> enqueuedGameFile()
-                .id(new GameFileId(UUID.fromString("0d4d181c-9a77-4146-bbd6-40f7d4453b5f")))
+                .id(new GameFileId("0d4d181c-9a77-4146-bbd6-40f7d4453b5f"))
                 .gameId(EXISTING_GAMES.GAME_2.getId())
                 .build();
 
         public static final Supplier<GameFile> FAILED_FOR_GAME_2 = () -> failedGameFile()
-                .id(new GameFileId(UUID.fromString("568afe65-018b-40fc-a8b4-481ded571ff8")))
+                .id(new GameFileId("568afe65-018b-40fc-a8b4-481ded571ff8"))
                 .gameId(EXISTING_GAMES.GAME_2.getId())
                 .build();
 
         public static final Supplier<GameFile> IN_PROGRESS_FOR_GAME_2 = () -> inProgressGameFile()
-                .id(new GameFileId(UUID.fromString("0a2a4b8d-f02e-4e3e-a3da-f47e1ea6aa30")))
+                .id(new GameFileId("0a2a4b8d-f02e-4e3e-a3da-f47e1ea6aa30"))
                 .gameId(EXISTING_GAMES.GAME_2.getId())
                 .build();
 

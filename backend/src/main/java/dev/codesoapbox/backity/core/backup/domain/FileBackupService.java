@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Wrapper for all gameProviderId file downloaders.
+ * Wrapper for all gameProviderId file backup services.
  * <p>
  * Downloads files from remote servers.
  */
@@ -26,7 +26,7 @@ public class FileBackupService {
     private final FilePathProvider filePathProvider;
     private final GameFileRepository gameFileRepository;
     private final FileManager fileManager;
-    private final Map<GameProviderId, GameProviderFileBackupService> gameProviderFileDownloaders;
+    private final Map<GameProviderId, GameProviderFileBackupService> gameProviderFileBackupServices;
 
     public FileBackupService(FilePathProvider filePathProvider, GameFileRepository gameFileRepository,
                              FileManager fileManager,
@@ -34,7 +34,7 @@ public class FileBackupService {
         this.filePathProvider = filePathProvider;
         this.gameFileRepository = gameFileRepository;
         this.fileManager = fileManager;
-        this.gameProviderFileDownloaders = gameProviderFileBackupServices.stream()
+        this.gameProviderFileBackupServices = gameProviderFileBackupServices.stream()
                 .collect(Collectors.toMap(GameProviderFileBackupService::getGameProviderId, d -> d));
     }
 
@@ -99,8 +99,8 @@ public class FileBackupService {
      */
     private String downloadToDisk(GameFile gameFile, String tempFilePath) throws IOException {
         GameProviderId gameProviderId = gameFile.getGameProviderFile().gameProviderId();
-        GameProviderFileBackupService gameProviderIdDownloader = getGameProviderFileDownloader(gameProviderId);
-        return gameProviderIdDownloader.backUpFile(gameFile, tempFilePath);
+        GameProviderFileBackupService gameProviderFileBackupService = getGameProviderFileBackupService(gameProviderId);
+        return gameProviderFileBackupService.backUpFile(gameFile, tempFilePath);
     }
 
     private void markDownloaded(GameFile gameFile, String downloadedPath) {
@@ -117,12 +117,12 @@ public class FileBackupService {
         }
     }
 
-    private GameProviderFileBackupService getGameProviderFileDownloader(GameProviderId gameProviderId) {
-        if (!gameProviderFileDownloaders.containsKey(gameProviderId)) {
-            throw new IllegalArgumentException("File downloader for gameProviderId not found: " + gameProviderId);
+    private GameProviderFileBackupService getGameProviderFileBackupService(GameProviderId gameProviderId) {
+        if (!gameProviderFileBackupServices.containsKey(gameProviderId)) {
+            throw new IllegalArgumentException("File backup service for gameProviderId not found: " + gameProviderId);
         }
 
-        return gameProviderFileDownloaders.get(gameProviderId);
+        return gameProviderFileBackupServices.get(gameProviderId);
     }
 
     private void markFailed(GameFile gameFile, Exception e) {
@@ -131,6 +131,6 @@ public class FileBackupService {
     }
 
     public boolean isReadyFor(GameFile gameFile) {
-        return getGameProviderFileDownloader(gameFile.getGameProviderFile().gameProviderId()).isReady();
+        return getGameProviderFileBackupService(gameFile.getGameProviderFile().gameProviderId()).isReady();
     }
 }

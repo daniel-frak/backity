@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GamesComponent} from './games.component';
 import { provideHttpClientTesting } from "@angular/common/http/testing";
-import {FileBackupStatus, GameFile, GameFilesClient, GamesClient, PageGameWithFiles} from "@backend";
+import {FileBackupsClient, FileBackupStatus, GameFile, GameFilesClient, GamesClient, PageGameWithFiles} from "@backend";
 import {of, throwError} from "rxjs";
 import {PageHeaderStubComponent} from "@app/shared/components/page-header/page-header.component.stub";
 import {TableComponent} from "@app/shared/components/table/table.component";
@@ -16,6 +16,7 @@ describe('GamesComponent', () => {
 
   let gamesClient: GamesClient;
   let gameFilesClient: GameFilesClient;
+  let fileBackupsClient: FileBackupsClient;
 
   const sampleGameFile: GameFile = {
     id: "someFileId",
@@ -47,6 +48,7 @@ describe('GamesComponent', () => {
     providers: [
         { provide: GamesClient, useValue: { getGames: jasmine.createSpy('getGames') } },
         { provide: GameFilesClient, useValue: { download: jasmine.createSpy('download') } },
+        { provide: FileBackupsClient, useValue: { deleteFileBackup: jasmine.createSpy('deleteFileBackup') } },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
     ]
@@ -59,6 +61,7 @@ describe('GamesComponent', () => {
     component = fixture.componentInstance;
     gamesClient = TestBed.inject(GamesClient);
     gameFilesClient = TestBed.inject(GameFilesClient);
+    fileBackupsClient = TestBed.inject(FileBackupsClient);
   });
 
   it('should create', () => {
@@ -127,14 +130,6 @@ describe('GamesComponent', () => {
     expect(console.error).toHaveBeenCalledWith('Removing from queue not yet implemented');
   });
 
-  it('should log an error when deleting backup', () => {
-    spyOn(console, 'error');
-
-    component.deleteBackup("someFileId");
-
-    expect(console.error).toHaveBeenCalledWith('Deleting backups not yet implemented');
-  });
-
   it('should log an error when viewing file path', () => {
     spyOn(console, 'error');
 
@@ -173,6 +168,39 @@ describe('GamesComponent', () => {
     expect(console.error).toHaveBeenCalledWith(
       `An error occurred while trying to enqueue a file (id=${gameFile.id})`,
       gameFile,
+      mockError
+    );
+  });
+
+  it('should delete file backup and refresh list', () => {
+    let gameFileId = 'someGameFileId';
+    (fileBackupsClient.deleteFileBackup as jasmine.Spy).and.returnValue(of(null));
+    const mockGames: PageGameWithFiles = {
+      content: [{
+        id: "someGameId",
+        title: "someGameTitle",
+        files: []
+      }]
+    };
+    (gamesClient.getGames as jasmine.Spy).and.returnValue(of(mockGames));
+
+    component.deleteBackup(gameFileId);
+
+    expect(fileBackupsClient.deleteFileBackup).toHaveBeenCalledWith(gameFileId);
+    expect(gamesClient.getGames).toHaveBeenCalled();
+  });
+
+  it('should log error when file backup could not be deleted', () => {
+    spyOn(console, 'error');
+    let gameFileId = 'someGameFileId';
+    const mockError = new Error('Backup error');
+    (fileBackupsClient.deleteFileBackup as jasmine.Spy).and.returnValue(throwError(mockError));
+
+    component.deleteBackup(gameFileId);
+
+    expect(console.error).toHaveBeenCalledWith(
+      `An error occurred while trying to delete a file backup (id=${gameFileId})`,
+      gameFileId,
       mockError
     );
   });

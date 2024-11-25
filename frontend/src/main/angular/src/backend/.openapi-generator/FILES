@@ -3,6 +3,7 @@
 README.md
 api.module.ts
 api/api.ts
+api/fileBackups.service.ts
 api/fileDiscovery.service.ts
 api/gOG.service.ts
 api/gOGAuthentication.service.ts
@@ -14,6 +15,7 @@ configuration.ts
 encoder.ts
 git_push.sh
 index.ts
+model/errorMessage.ts
 model/fileBackup.ts
 model/fileBackupMessageTopics.ts
 model/fileBackupProgressUpdatedEvent.ts
@@ -38,5 +40,6 @@ model/pageGameFile.ts
 model/pageGameWithFiles.ts
 model/pagination.ts
 model/refreshTokenResponse.ts
+model/validationError.ts
 param.ts
 variables.ts

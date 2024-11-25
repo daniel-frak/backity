@@ -1,6 +1,5 @@
-package dev.codesoapbox.backity.core.gamefile.adapters.driving.api.http;
+package dev.codesoapbox.backity.core.gamefile.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.gamefile.adapters.driving.api.http.controllers.GameFileActionsRestResource;
 import dev.codesoapbox.backity.core.gamefile.application.EnqueueFileUseCase;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotFoundException;
@@ -11,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doThrow;
@@ -39,13 +36,13 @@ class EnqueueFileControllerIT {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        verify(useCase).enqueue(new GameFileId(UUID.fromString(stringUuid)));
+        verify(useCase).enqueue(new GameFileId(stringUuid));
     }
 
     @Test
     void shouldNotEnqueueWhenFileNotFound(CapturedOutput capturedOutput) throws Exception {
         var stringUuid = "acde26d7-33c7-42ee-be16-bca91a604b48";
-        GameFileId id = new GameFileId(UUID.fromString(stringUuid));
+        var id = new GameFileId(stringUuid);
         doThrow(new GameFileNotFoundException(id))
                 .when(useCase).enqueue(id);
 

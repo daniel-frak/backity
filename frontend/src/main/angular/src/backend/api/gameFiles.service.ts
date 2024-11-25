@@ -17,6 +17,8 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
+import { ErrorMessage } from '../model/errorMessage';
+// @ts-ignore
 import { GameFile } from '../model/gameFile';
 // @ts-ignore
 import { GameFileProcessingStatus } from '../model/gameFileProcessingStatus';
@@ -24,6 +26,8 @@ import { GameFileProcessingStatus } from '../model/gameFileProcessingStatus';
 import { PageGameFile } from '../model/pageGameFile';
 // @ts-ignore
 import { Pagination } from '../model/pagination';
+// @ts-ignore
+import { ValidationError } from '../model/validationError';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -99,16 +103,16 @@ export class GameFilesClient {
     /**
      * Enqueue file
      * Adds a discovered file to the download queue
-     * @param fileVersionId 
+     * @param gameFileId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public download(fileVersionId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext}): Observable<any>;
-    public download(fileVersionId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext}): Observable<HttpResponse<any>>;
-    public download(fileVersionId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined, context?: HttpContext}): Observable<HttpEvent<any>>;
-    public download(fileVersionId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined, context?: HttpContext}): Observable<any> {
-        if (fileVersionId === null || fileVersionId === undefined) {
-            throw new Error('Required parameter fileVersionId was null or undefined when calling download.');
+    public download(gameFileId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any>;
+    public download(gameFileId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<any>>;
+    public download(gameFileId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<any>>;
+    public download(gameFileId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+        if (gameFileId === null || gameFileId === undefined) {
+            throw new Error('Required parameter gameFileId was null or undefined when calling download.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -117,6 +121,7 @@ export class GameFilesClient {
         if (localVarHttpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
+                'application/json'
             ];
             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -141,7 +146,7 @@ export class GameFilesClient {
             }
         }
 
-        let localVarPath = `/api/game-file-actions/enqueue/${this.configuration.encodeParam({name: "fileVersionId", value: fileVersionId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        let localVarPath = `/api/game-file-actions/enqueue/${this.configuration.encodeParam({name: "gameFileId", value: gameFileId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

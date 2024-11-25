@@ -73,7 +73,7 @@ class EnqueuedFileBackupProcessorTest {
     }
 
     @Test
-    void shouldDoNothingIfGameProviderIdDownloaderNotReady() {
+    void shouldDoNothingIfGameProviderFileBackupServiceNotReady() {
         GameFile gameFile = discoveredGameFile().build();
 
         when(gameFileRepository.findOldestWaitingForDownload())

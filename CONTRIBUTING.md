@@ -43,7 +43,7 @@ summary of the available profiles.
 ### Spring profiles
 
 * `dev` - for local development. Allows things like handling requests from `http://localhost:4200/`.
-* `angular` - special profile used for
+* `angular-client-code-gen` - special profile used for
   [client code generation](https://codesoapbox.dev/generate-client-code-from-spring-boot-using-maven/).
   Applied automatically when the `angular` Maven profile is enabled.
 
@@ -52,7 +52,7 @@ summary of the available profiles.
 * `sonar-cloud` - for code analysis on push to `master`
 * `frontend-pre-sonar` - for including code coverage reports from the `frontend` module during a sonar analysis
 * `frontend-sonar` - for running only a sonar analysis for the `frontend module`
-* `angular` - for [generating client code](https://codesoapbox.dev/generate-client-code-from-spring-boot-using-maven/)
+* `angular-client-code-gen` - for [generating client code](https://codesoapbox.dev/generate-client-code-from-spring-boot-using-maven/)
 
 ## API documentation
 

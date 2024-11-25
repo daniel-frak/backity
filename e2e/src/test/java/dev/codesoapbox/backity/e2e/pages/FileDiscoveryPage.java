@@ -8,6 +8,7 @@ import lombok.Getter;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 public class FileDiscoveryPage {
+
     private static final String GAME_FILES_DISCOVERED_URL = "/game-files?processing-status=discovered";
     private static final String GAME_FILES_ENQUEUE_URL = "/game-file-actions/enqueue";
 

@@ -9,6 +9,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GameFileIdTest {
 
     @Test
+    void shouldCreateFromString() {
+        var result = new GameFileId("acde26d7-33c7-42ee-be16-bca91a604b48");
+
+        var expectedValue = UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48");
+        assertThat(result.value()).isEqualTo(expectedValue);
+    }
+
+    @Test
     void shouldCreateNewInstance() {
         GameFileId result = GameFileId.newInstance();
 
@@ -18,7 +26,7 @@ class GameFileIdTest {
     @Test
     void toStringShouldReturnValue() {
         String idString = "3b21cc23-54c6-48f3-914d-188b790128b4";
-        var id = new GameFileId(UUID.fromString(idString));
+        var id = new GameFileId(idString);
 
         String result = id.toString();
 

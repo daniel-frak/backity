@@ -12,7 +12,7 @@ import java.io.IOException;
 
 @Slf4j
 @RequiredArgsConstructor
-public class GogFileBackupServiceGame implements GameProviderFileBackupService {
+public class GogFileBackupService implements GameProviderFileBackupService {
 
     private final GogEmbedWebClient gogEmbedClient;
     private final GogAuthService authService;

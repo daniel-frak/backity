@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.fullGameFile;
 import static java.util.Collections.singletonList;
@@ -23,7 +22,7 @@ class GameWithFilesHttpDtoMapperTest {
 
     @Test
     void shouldMapToDto() {
-        var gameId = new GameId(UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281"));
+        var gameId = new GameId("1eec1c19-25bf-4094-b926-84b5bb8fa281");
         var fileStringId = "acde26d7-33c7-42ee-be16-bca91a604b48";
         var model = new GameWithFiles(
                 new Game(gameId, "Test Game"),

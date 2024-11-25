@@ -1,3 +1,4 @@
+export * from './errorMessage';
 export * from './fileBackup';
 export * from './fileBackupMessageTopics';
 export * from './fileBackupProgressUpdatedEvent';
@@ -21,3 +22,4 @@ export * from './pageGameFile';
 export * from './pageGameWithFiles';
 export * from './pagination';
 export * from './refreshTokenResponse';
+export * from './validationError';

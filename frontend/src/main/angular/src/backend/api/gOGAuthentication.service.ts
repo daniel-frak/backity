@@ -17,7 +17,11 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
+import { ErrorMessage } from '../model/errorMessage';
+// @ts-ignore
 import { RefreshTokenResponse } from '../model/refreshTokenResponse';
+// @ts-ignore
+import { ValidationError } from '../model/validationError';
 
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';

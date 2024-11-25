@@ -99,4 +99,10 @@ public class GameFileJpaRepository implements GameFileRepository {
                 .map(entityMapper::toModel)
                 .toList();
     }
+
+    @Transactional
+    @Override
+    public void deleteById(GameFileId gameFileId) {
+        springRepository.deleteById(gameFileId.value());
+    }
 }

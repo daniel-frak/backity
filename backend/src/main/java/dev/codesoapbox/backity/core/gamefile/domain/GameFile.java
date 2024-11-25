@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.gamefile.domain;
 
 import dev.codesoapbox.backity.core.game.domain.GameId;
+import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -56,5 +57,11 @@ public class GameFile {
 
     public void clearFilePath() {
         fileBackup.setFilePath(null);
+    }
+
+    public void validateIsBackedUp() {
+        if(fileBackup.getStatus() != FileBackupStatus.SUCCESS) {
+            throw new GameFileNotBackedUpException(id);
+        }
     }
 }

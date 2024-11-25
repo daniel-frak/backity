@@ -22,11 +22,11 @@ import java.util.List;
 public class FileBackupBeanConfig {
 
     @Bean
-    FileBackupService fileDownloader(FilePathProvider filePathProvider,
+    FileBackupService fileBackupService(FilePathProvider filePathProvider,
                                      GameFileRepository gameFileSpringRepository,
-                                     List<GameProviderFileBackupService> fileDownloaders,
+                                     List<GameProviderFileBackupService> fileBackupServices,
                                      FileManager fileManager) {
-        return new FileBackupService(filePathProvider, gameFileSpringRepository, fileManager, fileDownloaders);
+        return new FileBackupService(filePathProvider, gameFileSpringRepository, fileManager, fileBackupServices);
     }
 
     @Bean

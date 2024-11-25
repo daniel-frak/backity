@@ -14,16 +14,19 @@ import java.util.Set;
 @NoArgsConstructor
 public class FakeUnixFileManager implements FileManager {
 
-    @Getter
-    @Setter
-    private long availableSizeInBytes = 0;
-
     private final Set<String> pathsCheckedForSize = new HashSet<>();
     private final Set<String> directoriesCreated = new HashSet<>();
     private final Map<String, String> filesRenamed = new HashMap<>();
     private final Set<String> fileDeletesAttempted = new HashSet<>();
     private final Map<String, Long> bytesWrittenPerFilePath = new HashMap<>();
     private final Map<String, Long> fakeBytesWrittenPerFilePath = new HashMap<>();
+
+    @Getter
+    @Setter
+    private long availableSizeInBytes = 0;
+
+    @Setter
+    private RuntimeException shouldThrowOnFileDeletion;
 
     public FakeUnixFileManager(long availableSizeInBytes) {
         this.availableSizeInBytes = availableSizeInBytes;
@@ -73,6 +76,9 @@ public class FakeUnixFileManager implements FileManager {
 
     @Override
     public void deleteIfExists(String path) {
+        if (shouldThrowOnFileDeletion != null) {
+            throw shouldThrowOnFileDeletion;
+        }
         fileDeletesAttempted.add(path);
     }
 
@@ -87,7 +93,7 @@ public class FakeUnixFileManager implements FileManager {
             return fakeBytesWrittenPerFilePath.get(filePath);
         }
 
-        if(!bytesWrittenPerFilePath.containsKey(filePath)) {
+        if (!bytesWrittenPerFilePath.containsKey(filePath)) {
             throw new IllegalArgumentException(String.format("File '%s' does not exist", filePath));
         }
 
@@ -110,6 +116,10 @@ public class FakeUnixFileManager implements FileManager {
 
     public boolean fileDeleteWasAttempted(String path) {
         return fileDeletesAttempted.contains(path);
+    }
+
+    public boolean anyFileDeleteWasAttempted() {
+        return !fileDeletesAttempted.isEmpty();
     }
 
     public boolean fileWasRenamed(String filePath, String fileName) {

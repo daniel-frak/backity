@@ -28,4 +28,6 @@ public interface GameFileRepository {
     Page<GameFile> findAllDiscovered(Pagination pagination);
 
     List<GameFile> findAllByGameId(GameId id);
+
+    void deleteById(GameFileId gameFileId);
 }

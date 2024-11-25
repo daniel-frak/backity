@@ -1,6 +1,5 @@
-package dev.codesoapbox.backity.core.gamefile.adapters.driving.api.http;
+package dev.codesoapbox.backity.core.gamefile.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.gamefile.adapters.driving.api.http.controllers.GameFileRestResource;
 import dev.codesoapbox.backity.core.gamefile.application.GetCurrentlyDownloadingFileUseCase;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.shared.config.http.ControllerTest;

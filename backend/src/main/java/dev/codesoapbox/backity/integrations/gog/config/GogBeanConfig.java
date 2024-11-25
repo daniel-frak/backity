@@ -5,7 +5,7 @@ import dev.codesoapbox.backity.core.backup.domain.FileBackupEventPublisher;
 import dev.codesoapbox.backity.core.backup.domain.FileBackupProgress;
 import dev.codesoapbox.backity.core.discovery.domain.ProgressInfo;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
-import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.GogFileBackupServiceGame;
+import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.GogFileBackupService;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.GogFileDiscoveryServiceGame;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.UrlFileDownloader;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.auth.GogAuthClient;
@@ -49,7 +49,7 @@ public class GogBeanConfig {
     }
 
     @Bean
-    UrlFileDownloader enqueuedFileDownloader(FileManager fileManager,
+    UrlFileDownloader urlFileDownloader(FileManager fileManager,
                                              FileBackupEventPublisher fileBackupEventPublisher) {
         return new UrlFileDownloader(fileManager, i -> getProgressInfoConsumer(fileBackupEventPublisher, i),
                 BackupProgress::new);
@@ -61,9 +61,9 @@ public class GogBeanConfig {
     }
 
     @Bean
-    GogFileBackupServiceGame gogFileDownloader(GogEmbedWebClient gogEmbedClient, GogAuthService authService,
-                                               UrlFileDownloader urlFileDownloader) {
-        return new GogFileBackupServiceGame(gogEmbedClient, authService, urlFileDownloader);
+    GogFileBackupService gogFileBackupService(GogEmbedWebClient gogEmbedClient, GogAuthService authService,
+                                              UrlFileDownloader urlFileDownloader) {
+        return new GogFileBackupService(gogEmbedClient, authService, urlFileDownloader);
     }
 
     @Bean

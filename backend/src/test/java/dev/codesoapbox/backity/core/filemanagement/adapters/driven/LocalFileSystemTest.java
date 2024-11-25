@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.filemanagement.adapters.driven;
 
+import dev.codesoapbox.backity.core.filemanagement.domain.exceptions.FileCouldNotBeDeletedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -8,8 +9,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.*;
 
 class LocalFileSystemTest {
 
@@ -123,6 +123,24 @@ class LocalFileSystemTest {
 
         assertThat(existingFileCreated).isTrue();
         assertThat(fileExists).isFalse();
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @Test
+    void deleteIfExistsShouldThrowGivenException(@TempDir Path tempDir) throws IOException {
+        String filePath = tempDir + File.separator + "someFile";
+        var existingFile = new File(filePath);
+        existingFile.createNewFile();
+        tempDir.toFile().setWritable(false); // This will cause an IOException
+
+        try {
+            assertThatThrownBy(() -> localFileSystem.deleteIfExists(filePath))
+                    .isInstanceOf(FileCouldNotBeDeletedException.class)
+                    .hasMessageContaining(filePath)
+                    .hasCauseInstanceOf(IOException.class);
+        } finally {
+            tempDir.toFile().setWritable(true);
+        }
     }
 
     @Test

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FileBackupStatus, GameFile, GameFilesClient, GamesClient, PageGameWithFiles} from "@backend";
+import {FileBackupsClient, FileBackupStatus, GameFile, GameFilesClient, GamesClient, PageGameWithFiles} from "@backend";
 import {catchError} from "rxjs/operators";
 import {throwError} from "rxjs";
 
@@ -14,7 +14,8 @@ export class GamesComponent implements OnInit {
   gameWithFilesPage?: PageGameWithFiles;
 
   constructor(private readonly gamesClient: GamesClient,
-              private readonly gameFilesClient: GameFilesClient) {
+              private readonly gameFilesClient: GameFilesClient,
+              private readonly fileBackupsClient: FileBackupsClient) {
   }
 
   ngOnInit(): void {
@@ -47,24 +48,32 @@ export class GamesComponent implements OnInit {
       });
   }
 
-  cancelBackup(fileId: string) {
+  cancelBackup(gameFileId: string) {
     console.error("Removing from queue not yet implemented");
   }
 
-  deleteBackup(fileId: string) {
-    console.error("Deleting backups not yet implemented");
+  deleteBackup(gameFileId: string) {
+    this.fileBackupsClient.deleteFileBackup(gameFileId)
+      .subscribe({
+        complete: () => {
+          this.refresh();
+        },
+        error: (err) =>
+          console.error(`An error occurred while trying to delete a file backup (id=${gameFileId})`,
+          gameFileId, err)
+      });
   }
 
 
-  viewFilePath(fileId: string) {
+  viewFilePath(gameFileId: string) {
     console.error("Viewing file paths not yet implemented");
   }
 
-  download(fileId: string) {
+  download(gameFileId: string) {
     console.error("Downloading files not yet implemented");
   }
 
-  viewError(fileId: string) {
+  viewError(gameFileId: string) {
     console.error("Viewing errors not yet implemented");
   }
 

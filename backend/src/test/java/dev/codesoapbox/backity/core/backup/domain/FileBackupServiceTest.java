@@ -150,7 +150,7 @@ class FileBackupServiceTest {
     }
 
     @Test
-    void downloadFileShouldThrowIfGameProviderIdDownloaderNotFound() throws IOException {
+    void downloadFileShouldThrowIfGameProviderFileBackupServiceNotFound() throws IOException {
         var gameProviderId = new GameProviderId("nonExistentGameProviderId1");
         GameFile gameFile = discoveredGameFile()
                 .gameProviderId(gameProviderId)

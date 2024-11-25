@@ -10,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.UUID;
-
 @GameFileActionsRestResource
 @RequiredArgsConstructor
 @Slf4j
@@ -20,9 +18,9 @@ public class EnqueueFileController {
     private final EnqueueFileUseCase useCase;
 
     @Operation(summary = "Enqueue file", description = "Adds a discovered file to the download queue")
-    @PostMapping("enqueue/{fileVersionId}")
-    public ResponseEntity<Void> download(@PathVariable String fileVersionId) {
-        GameFileId id = new GameFileId(UUID.fromString(fileVersionId));
+    @PostMapping("enqueue/{gameFileId}")
+    public ResponseEntity<Void> download(@PathVariable String gameFileId) {
+        var id = new GameFileId(gameFileId);
 
         try {
             useCase.enqueue(id);

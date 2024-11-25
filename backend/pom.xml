@@ -367,7 +367,7 @@
     <profiles>
         <!-- Client code generation -->
         <profile>
-            <id>angular</id>
+            <id>angular-client-code-gen</id>
             <build>
                 <plugins>
                     <plugin>
@@ -407,7 +407,7 @@
                         </executions>
                         <configuration>
                             <profiles>
-                                <profile>angular</profile>
+                                <profile>angular-client-code-gen</profile>
                             </profiles>
                             <arguments>
                                 <argument>--server.port=${tomcat.http.port}</argument>

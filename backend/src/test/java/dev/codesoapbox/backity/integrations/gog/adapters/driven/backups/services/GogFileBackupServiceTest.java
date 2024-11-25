@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 class GogFileBackupServiceTest {
 
     @InjectMocks
-    private GogFileBackupServiceGame gogFileDownloader;
+    private GogFileBackupService gogFileBackupService;
 
     @Mock
     private GogEmbedWebClient gogEmbedClient;
@@ -37,7 +37,7 @@ class GogFileBackupServiceTest {
         GameFile gameFile = discoveredGameFile().build();
         String tempFilePath = "someTempFilePath";
 
-        gogFileDownloader.backUpFile(gameFile, tempFilePath);
+        gogFileBackupService.backUpFile(gameFile, tempFilePath);
 
         verify(urlFileDownloader).downloadFile(gogEmbedClient, gameFile, tempFilePath);
     }
@@ -50,7 +50,7 @@ class GogFileBackupServiceTest {
         when(urlFileDownloader.downloadFile(gogEmbedClient, gameFile, tempFilePath))
                 .thenReturn(finalFilePath);
 
-        String result = gogFileDownloader.backUpFile(gameFile, tempFilePath);
+        String result = gogFileBackupService.backUpFile(gameFile, tempFilePath);
 
         assertThat(result).isEqualTo(finalFilePath);
     }
@@ -61,12 +61,12 @@ class GogFileBackupServiceTest {
                 .thenReturn(false)
                 .thenReturn(true);
 
-        assertThat(gogFileDownloader.isReady()).isFalse();
-        assertThat(gogFileDownloader.isReady()).isTrue();
+        assertThat(gogFileBackupService.isReady()).isFalse();
+        assertThat(gogFileBackupService.isReady()).isTrue();
     }
 
     @Test
     void shouldGetGameProviderId() {
-        assertThat(gogFileDownloader.getGameProviderId()).isEqualTo(new GameProviderId("GOG"));
+        assertThat(gogFileBackupService.getGameProviderId()).isEqualTo(new GameProviderId("GOG"));
     }
 }

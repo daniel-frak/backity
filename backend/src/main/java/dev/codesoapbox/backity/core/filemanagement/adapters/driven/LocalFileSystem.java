@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.filemanagement.adapters.driven;
 
 import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
+import dev.codesoapbox.backity.core.filemanagement.domain.exceptions.FileCouldNotBeDeletedException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -64,8 +65,12 @@ public class LocalFileSystem implements FileManager {
     }
 
     @Override
-    public void deleteIfExists(String path) throws IOException {
-        Files.deleteIfExists(Path.of(path));
+    public void deleteIfExists(String path) {
+        try {
+            Files.deleteIfExists(Path.of(path));
+        } catch (Exception e) {
+            throw new FileCouldNotBeDeletedException(path, e);
+        }
     }
 
     @Override

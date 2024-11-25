@@ -5,6 +5,11 @@ import java.util.UUID;
 public record GameFileId(
         UUID value
 ) {
+
+    public GameFileId(String value) {
+        this(UUID.fromString(value));
+    }
+
     public static GameFileId newInstance() {
         return new GameFileId(UUID.randomUUID());
     }

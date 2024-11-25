@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Supplier;
 
 import static dev.codesoapbox.backity.core.game.domain.TestGame.aGame;
@@ -127,12 +126,12 @@ abstract class GameJpaRepositoryAbstractIT {
     private static class GAMES {
 
         public static final Supplier<Game> GAME_1 = () -> aGame()
-                .withId(new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5")))
+                .withId(new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"))
                 .withTitle("Test Game 1")
                 .build();
 
         public static final Supplier<Game> GAME_2 = () -> aGame()
-                .withId(new GameId(UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281")))
+                .withId(new GameId("1eec1c19-25bf-4094-b926-84b5bb8fa281"))
                 .withTitle("Test Game 2")
                 .build();
 

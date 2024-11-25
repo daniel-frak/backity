@@ -1,18 +1,16 @@
 package dev.codesoapbox.backity.core.game.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.game.application.GameFacade;
 import dev.codesoapbox.backity.core.game.application.GameWithFiles;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.shared.config.http.ControllerTest;
 import dev.codesoapbox.backity.core.shared.domain.Page;
 import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.UUID;
 
 import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.fullGameFile;
 import static java.util.Collections.singletonList;
@@ -32,7 +30,7 @@ class GameControllerIT {
 
     @Test
     void shouldGetGames() throws Exception {
-        var gameId = new GameId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"));
+        var gameId = new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5");
         Pagination pagination = new Pagination(0, 2);
         GameFile gameFile = fullGameFile().build();
         Page<GameWithFiles> gameWithFilesPage = new Page<>(singletonList(
