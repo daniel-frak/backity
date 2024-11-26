@@ -68,7 +68,7 @@ public class LocalFileSystem implements FileManager {
     public void deleteIfExists(String path) {
         try {
             Files.deleteIfExists(Path.of(path));
-        } catch (Exception e) {
+        } catch (RuntimeException | IOException e) {
             throw new FileCouldNotBeDeletedException(path, e);
         }
     }

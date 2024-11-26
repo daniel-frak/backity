@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {GOGAuthenticationClient} from "@backend";
 import {environment} from "@environment/environment";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-gog-auth',
@@ -14,6 +15,9 @@ export class GogAuthComponent implements OnInit {
   public gogAuthenticated: boolean = false;
   public gogCodeUrl: string = "";
   public gogIsLoading: boolean = true;
+  public gogAuthForm: FormGroup = new FormGroup({
+    gogCodeUrl: new FormControl('', Validators.required)
+  });
 
   constructor(private readonly gogAuthClient: GOGAuthenticationClient) {
   }
@@ -26,13 +30,18 @@ export class GogAuthComponent implements OnInit {
     });
   }
 
-  showGogAuthPopup(): void {
+  showGogAuthPopup = () => {
     window.open(this.GOG_AUTH_URL, '_blank', 'toolbar=0,location=0,menubar=0');
   }
 
   authenticateGog() {
     this.gogIsLoading = true;
-    const params = (new URL(this.gogCodeUrl)).searchParams;
+    let gogCodeUrl = this.gogAuthForm.get('gogCodeUrl')?.value;
+    if (!gogCodeUrl) {
+      this.gogIsLoading = false;
+      return;
+    }
+    const params: URLSearchParams = new URL(gogCodeUrl).searchParams;
     const code = params.get("code") as string;
     console.info("Authentication code: " + code);
     this.gogAuthClient.authenticate(code).subscribe(r => {
@@ -46,7 +55,7 @@ export class GogAuthComponent implements OnInit {
     });
   }
 
-  signOutGog() {
+  async signOutGog() {
     console.error('Not yet implemented');
   }
 }

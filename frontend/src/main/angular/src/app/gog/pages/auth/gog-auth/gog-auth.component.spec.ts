@@ -3,7 +3,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {GogAuthComponent} from './gog-auth.component';
 import { provideHttpClientTesting } from "@angular/common/http/testing";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {GOGAuthenticationClient} from "@backend";
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import createSpyObj = jasmine.createSpyObj;
@@ -22,7 +22,7 @@ describe('GogAuthComponent', () => {
         GogAuthComponent,
         LoadedContentStubComponent
     ],
-    imports: [FormsModule],
+    imports: [FormsModule, ReactiveFormsModule],
     providers: [
         {
             provide: GOGAuthenticationClient,
@@ -73,8 +73,7 @@ describe('GogAuthComponent', () => {
     spyOn(console, 'info');
     spyOn(console, 'warn');
     spyOn(console, 'error');
-    component.gogCodeUrl = 'https://www.example.com?code=1234';
-
+    component.gogAuthForm.get('gogCodeUrl')?.setValue('https://www.example.com?code=1234');
     gogAuthClientMock.authenticate.and.returnValue({
       subscribe: (s: (f: any) => any) => {
         expect(component.gogIsLoading).toBeTrue();
@@ -83,6 +82,7 @@ describe('GogAuthComponent', () => {
     });
 
     component.authenticateGog();
+
     expect(component.gogAuthenticated).toBeTrue();
     expect(component.gogIsLoading).toBeFalse();
     expect(console.info).toHaveBeenCalledWith('Refresh token: someRefreshToken');
@@ -94,7 +94,7 @@ describe('GogAuthComponent', () => {
     spyOn(console, 'info');
     spyOn(console, 'warn');
     spyOn(console, 'error');
-    component.gogCodeUrl = 'https://www.example.com?code=1234';
+    component.gogAuthForm.get('gogCodeUrl')?.setValue('https://www.example.com?code=1234');
 
     gogAuthClientMock.authenticate.and.returnValue({
       subscribe: (s: (f: any) => any) => {
@@ -104,10 +104,19 @@ describe('GogAuthComponent', () => {
     });
 
     component.authenticateGog();
+
     expect(component.gogAuthenticated).toBeFalse();
     expect(component.gogIsLoading).toBeFalse();
     expect(console.info).toHaveBeenCalledWith('Authentication code: 1234');
     expect(console.error).toHaveBeenCalled();
+  });
+
+  it('should not authenticate given GOG code URL is empty', () => {
+    component.gogAuthForm.get('gogCodeUrl')?.setValue('');
+
+    component.authenticateGog();
+
+    expect(gogAuthClientMock.authenticate).not.toHaveBeenCalled();
   });
 
   it('should log an error when signOutGog is called', () => {

@@ -19,7 +19,7 @@ public class EnqueueFileController {
 
     @Operation(summary = "Enqueue file", description = "Adds a discovered file to the download queue")
     @PostMapping("enqueue/{gameFileId}")
-    public ResponseEntity<Void> download(@PathVariable String gameFileId) {
+    public ResponseEntity<Void> enqueueFileBackup(@PathVariable String gameFileId) {
         var id = new GameFileId(gameFileId);
 
         try {

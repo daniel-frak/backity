@@ -89,16 +89,20 @@ export class FileBackupComponent implements OnInit, OnDestroy {
       });
 
     this.gameFilesClient.getCurrentlyDownloading()
-      .subscribe((d: GameFile) => {
-        this.currentDownload = {
-          gameFileId: d.id,
-          originalGameTitle: d.gameProviderFile.originalGameTitle,
-          fileTitle: d.gameProviderFile.fileTitle,
-          version: d.gameProviderFile.version,
-          originalFileName: d.gameProviderFile.originalFileName,
-          size: d.gameProviderFile.size,
-          filePath: d.fileBackup.filePath
+      .subscribe((gameFile: GameFile) => {
+        if (!gameFile) {
+          this.currentDownload = undefined;
+          return;
         }
+        this.currentDownload = {
+          gameFileId: gameFile.id,
+          originalGameTitle: gameFile.gameProviderFile.originalGameTitle,
+          fileTitle: gameFile.gameProviderFile.fileTitle,
+          version: gameFile.gameProviderFile.version,
+          originalFileName: gameFile.gameProviderFile.originalFileName,
+          size: gameFile.gameProviderFile.size,
+          filePath: gameFile.fileBackup.filePath
+        };
       });
   }
 

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FileBackupsClient, FileBackupStatus, GameFile, GameFilesClient, GamesClient, PageGameWithFiles} from "@backend";
 import {catchError} from "rxjs/operators";
-import {throwError} from "rxjs";
+import {firstValueFrom} from "rxjs";
 
 @Component({
   selector: 'app-games',
@@ -19,62 +19,72 @@ export class GamesComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.refresh();
+    this.refresh().then(r => {
+      // Do nothing
+    });
   }
 
-  refresh() {
-    this.gamesAreLoading = true;
-    this.gamesClient.getGames({
-      page: 0,
-      size: 20
-    })
-      .subscribe(games => {
-        this.gameWithFilesPage = games;
-        this.gamesAreLoading = false;
-      });
+  refresh = async () => {
+    try {
+      this.gamesAreLoading = true;
+      this.gameWithFilesPage = await firstValueFrom(this.gamesClient.getGames({page: 0, size: 20}));
+    } catch (error) {
+      console.error('Error fetching games:', error);
+    } finally {
+      this.gamesAreLoading = false;
+    }
   }
 
-  backUp(file: GameFile) {
-    file.fileBackup.status = FileBackupStatus.Enqueued;
-    console.info("Enqueuing backup: " + file.id);
-    this.gameFilesClient.download(file.id)
-      .pipe(catchError(e => {
-        file.fileBackup.status = FileBackupStatus.Discovered;
-        return throwError(() => e);
-      }))
-      .subscribe({
-        error: (err) => console.error(`An error occurred while trying to enqueue a file (id=${file.id})`,
-          file, err)
-      });
+  enqueueFileBackup(gameFile: GameFile): () => Promise<void> {
+    return async () => {
+      console.info("Enqueuing backup: " + gameFile.id);
+      try {
+        await firstValueFrom(this.gameFilesClient.enqueueFileBackup(gameFile.id).pipe(catchError(e => {
+          throw e;
+        })));
+        gameFile.fileBackup.status = FileBackupStatus.Enqueued;
+      } catch (err) {
+        console.error(`An error occurred while trying to enqueue a file (id=${gameFile.id})`, gameFile, err);
+        gameFile.fileBackup.status = FileBackupStatus.Discovered;
+      }
+    };
   }
 
-  cancelBackup(gameFileId: string) {
-    console.error("Removing from queue not yet implemented");
+  cancelBackup(gameFileId: string): () => Promise<void> {
+    return async () => {
+      console.error("Removing from queue not yet implemented");
+    }
   }
 
-  deleteBackup(gameFileId: string) {
-    this.fileBackupsClient.deleteFileBackup(gameFileId)
-      .subscribe({
-        complete: () => {
-          this.refresh();
-        },
-        error: (err) =>
-          console.error(`An error occurred while trying to delete a file backup (id=${gameFileId})`,
-          gameFileId, err)
-      });
+  deleteBackup(gameFileId: string): () => Promise<void> {
+    return async () => {
+      try {
+        await firstValueFrom(this.fileBackupsClient.deleteFileBackup(gameFileId));
+        return this.refresh();
+      } catch (err) {
+        console.error(`An error occurred while trying to delete a file backup (id=${gameFileId})`, gameFileId, err);
+        throw err;
+      }
+    };
   }
 
 
-  viewFilePath(gameFileId: string) {
-    console.error("Viewing file paths not yet implemented");
+  viewFilePath(gameFileId: string): () => Promise<void> {
+    return async () => {
+      console.error("Viewing file paths not yet implemented");
+    };
   }
 
-  download(gameFileId: string) {
-    console.error("Downloading files not yet implemented");
+  download(gameFileId: string): () => Promise<void> {
+    return async () => {
+      console.error("Downloading files not yet implemented");
+    }
   }
 
-  viewError(gameFileId: string) {
-    console.error("Viewing errors not yet implemented");
+  viewError(gameFileId: string): () => Promise<void> {
+    return async () => {
+      console.error("Viewing errors not yet implemented");
+    }
   }
 
   asGameFile = (gameFile: GameFile) => gameFile;

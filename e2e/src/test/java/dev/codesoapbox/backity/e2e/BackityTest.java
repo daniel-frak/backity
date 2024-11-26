@@ -6,6 +6,8 @@ import com.microsoft.playwright.junit.UsePlaywright;
 import dev.codesoapbox.backity.e2e.pages.AuthenticationPage;
 import dev.codesoapbox.backity.e2e.pages.FileBackupPage;
 import dev.codesoapbox.backity.e2e.pages.FileDiscoveryPage;
+import dev.codesoapbox.backity.e2e.pages.GamesPage;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
@@ -14,6 +16,17 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 class BackityTest {
 
     private static final String FILE_TO_DOWNLOAD_GAME_TITLE = "test_game_1_installer_1";
+
+    @BeforeEach
+    void setUp(Page page) {
+        deleteAllFileBackups(page);
+    }
+
+    private void deleteAllFileBackups(Page page) {
+        var gamesPage = new GamesPage(page);
+        gamesPage.visit();
+        gamesPage.deleteAllFileBackups();
+    }
 
     @Test
     void shouldBackupGogFiles(Page page) {

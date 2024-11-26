@@ -1,21 +1,22 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   FileBackupStatus,
-  GameFile,
-  GameFilesClient,
   FileDiscoveredEvent,
   FileDiscoveryClient,
   FileDiscoveryProgressUpdateEvent,
   FileDiscoveryStatus,
   FileDiscoveryStatusChangedEvent,
   FileDiscoveryWebSocketTopics,
-  PageGameFile, GameFileProcessingStatus
+  GameFile,
+  GameFileProcessingStatus,
+  GameFilesClient,
+  PageGameFile
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
 import {IMessage} from "@stomp/stompjs";
 import {catchError} from "rxjs/operators";
-import {throwError} from "rxjs";
+import {firstValueFrom} from "rxjs";
 
 @Component({
   selector: 'app-file-discovery',
@@ -53,7 +54,9 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
     this.refreshInfo();
 
-    this.refreshDiscoveredFiles();
+    this.refreshDiscoveredFiles()().then(() => {
+      // Do nothing
+    });
   }
 
   private onFileDiscovered(payload: IMessage) {
@@ -85,15 +88,24 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
       });
   }
 
-  refreshDiscoveredFiles() {
-    this.filesAreLoading = true;
-    const page = 0;
-    const size = this.pageSize;
-    this.gameFilesClient.getGameFiles(GameFileProcessingStatus.Discovered, {
-      page: page,
-      size: size
-    })
-      .subscribe(df => this.updateDiscoveredFiles(df));
+  refreshDiscoveredFiles(): () => Promise<void> {
+    return async () => {
+      this.filesAreLoading = true;
+      const page = 0;
+      const size = this.pageSize;
+      try {
+        const df = await firstValueFrom(
+          this.gameFilesClient.getGameFiles(GameFileProcessingStatus.Discovered, {
+            page: page,
+            size: size
+          }));
+        this.updateDiscoveredFiles(df);
+      } catch (error) {
+        console.error('Error fetching discovered files:', error);
+      } finally {
+        this.filesAreLoading = false;
+      }
+    }
   }
 
   private updateDiscoveredFiles(df: PageGameFile) {
@@ -102,30 +114,41 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     this.filesAreLoading = false;
   }
 
-  startDiscovery() {
-    this.discoveryStateUnknown = true;
-    this.fileDiscoveryClient.startDiscovery().subscribe(() => {
-    });
+  startDiscovery(): () => Promise<void> {
+    return async () => {
+      this.discoveryStateUnknown = true;
+      try {
+        await firstValueFrom(this.fileDiscoveryClient.startDiscovery());
+      } catch (error) {
+        console.error('Error starting discovery:', error);
+      }
+    };
   }
 
-  stopDiscovery() {
-    this.discoveryStateUnknown = true;
-    this.fileDiscoveryClient.stopDiscovery().subscribe(() => {
-    });
+  stopDiscovery(): () => Promise<void> {
+    return async () => {
+      this.discoveryStateUnknown = true;
+      try {
+        await firstValueFrom(this.fileDiscoveryClient.stopDiscovery());
+      } catch (error) {
+        console.error('Error stopping discovery:', error);
+      }
+    };
   }
 
-  enqueueFile(file: GameFile) {
-    file.fileBackup.status = FileBackupStatus.Enqueued;
-    console.info("Enqueuing: " + file.id);
-    this.gameFilesClient.download(file.id)
-      .pipe(catchError(e => {
-        file.fileBackup.status = FileBackupStatus.Discovered;
-        return throwError(() => e);
-      }))
-      .subscribe({
-        error: (err) => console.error(
-          `An error occurred while trying to enqueue a file (id=${file.id})`, file, err)
-      });
+  enqueueFile(gameFile: GameFile): () => Promise<void> {
+    return async () => {
+      gameFile.fileBackup.status = FileBackupStatus.Enqueued;
+      console.info("Enqueuing: " + gameFile.id);
+      try {
+        await firstValueFrom(this.gameFilesClient.enqueueFileBackup(gameFile.id).pipe(catchError(e => {
+          gameFile.fileBackup.status = FileBackupStatus.Discovered;
+          throw e;
+        })));
+      } catch (err) {
+        console.error(`An error occurred while trying to enqueue a file (id=${gameFile.id})`, gameFile, err);
+      }
+    }
   }
 
   ngOnDestroy(): void {
@@ -165,11 +188,15 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
       .some(([gameProviderId, inProgress]) => inProgress);
   }
 
-  discoverFilesFor(gameProviderId?: string) {
-    console.error("Per-provider file discovery start not yet implemented");
+  discoverFilesFor(gameProviderId?: string): () => Promise<void> {
+    return async () => {
+      console.error("Per-provider file discovery start not yet implemented");
+    };
   }
 
   isInProgress(gameProviderId: string): boolean {
     return !!this.discoveryStatusByGameProviderId.get(gameProviderId);
   }
+
+  protected readonly FileBackupStatus = FileBackupStatus;
 }

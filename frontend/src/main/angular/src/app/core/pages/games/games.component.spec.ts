@@ -104,7 +104,7 @@ describe('GamesComponent', () => {
     gameFile.fileBackup.status = FileBackupStatus.Enqueued;
     (gameFilesClient.download as jasmine.Spy).and.returnValue(of(null));
 
-    component.backUp(gameFile);
+    component.enqueueFileBackup(gameFile);
 
     expect(gameFile.fileBackup?.status).toBe(FileBackupStatus.Enqueued);
     expect(gameFilesClient.download).toHaveBeenCalledWith(gameFile.id!);
@@ -116,7 +116,7 @@ describe('GamesComponent', () => {
     const mockError = new Error('Backup error');
     (gameFilesClient.download as jasmine.Spy).and.returnValue(throwError(mockError));
 
-    component.backUp(gameFile);
+    component.enqueueFileBackup(gameFile);
 
     expect(gameFile.fileBackup?.status).toBe(FileBackupStatus.Discovered);
     expect(gameFilesClient.download).toHaveBeenCalledWith(gameFile.id!);
@@ -161,7 +161,7 @@ describe('GamesComponent', () => {
     (gameFilesClient.download as jasmine.Spy).and.returnValue(throwError(mockError));
     spyOn(console, 'error');
 
-    component.backUp(gameFile);
+    component.enqueueFileBackup(gameFile);
 
     expect(gameFile.fileBackup?.status).toBe(FileBackupStatus.Discovered);
     expect(gameFilesClient.download).toHaveBeenCalledWith(gameFile.id!);

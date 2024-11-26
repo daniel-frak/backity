@@ -1,0 +1,12 @@
+<button [type]="buttonType"
+        [disabled]="isLoading || disabled"
+        [ngClass]="'btn btn-' + buttonStyle + ' ' + getSizeClass() + ' ' + buttonClass"
+        [attr.data-testid]="testId"
+        (click)="onClick()">
+  <span [ngClass]="isLoading ? 'btn-text-hidden' : ''">
+    <ng-content></ng-content>
+  </span>
+  <span class="btn-loader-center" *ngIf="isLoading">
+    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><!--/* //NOSONAR */-->
+  </span>
+</button>

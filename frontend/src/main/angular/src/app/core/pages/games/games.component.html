@@ -5,59 +5,72 @@
 <div class="card mt-3">
   <div class="card-body">
     <p>
-      <button (click)="refresh()"
-              [disabled]="gamesAreLoading"
-              class="btn btn-secondary">
-        Refresh
-      </button>
+      <app-button [actionAsync]="refresh" testId="refresh-games-btn" buttonStyle="secondary">Refresh</app-button>
     </p>
-
-    <app-table *ngFor="let game of gameWithFilesPage?.content" [content]="{content: game.files}"
-               [isLoading]="gamesAreLoading" [caption]="game.title!">
-      <ng-template app-table-column="File title" let-item>
-        {{asGameFile(item).gameProviderFile!.fileTitle}}
-      </ng-template>
-      <ng-template app-table-column="Version" let-item>
-        {{asGameFile(item).gameProviderFile!.version}}
-      </ng-template>
-      <ng-template app-table-column="Size" let-item>
-        {{asGameFile(item).gameProviderFile!.size}}
-      </ng-template>
-      <ng-template app-table-column="Status" let-item>
-        <app-file-status-badge [status]="asGameFile(item).fileBackup!.status"></app-file-status-badge>
-      </ng-template>
-      <ng-template app-table-column="Actions" let-item>
-        <div style="text-align: right">
-          <button class="btn btn-sm btn-primary" (click)="backUp(asGameFile(item))"
-                  *ngIf="asGameFile(item).fileBackup!.status == FileBackupStatus.Discovered">
-            <i class="bi bi-cloud-download" aria-hidden="true"></i>
-            Back up
-          </button>
-          <button class="btn btn-sm btn-secondary" (click)="cancelBackup(asGameFile(item).id!)"
-                  *ngIf="asGameFile(item).fileBackup!.status == FileBackupStatus.Enqueued">
-            Cancel backup
-          </button>
-          <button class="btn btn-sm btn-secondary" (click)="viewFilePath(asGameFile(item).id!)"
-          *ngIf="asGameFile(item).fileBackup!.status == FileBackupStatus.Failed">
-            <i class="bi bi-bug" aria-hidden="true"></i>
-            View error
-          </button>
-          <ng-container *ngIf="asGameFile(item).fileBackup!.status == FileBackupStatus.Success">
-            <button class="btn btn-sm btn-primary" (click)="download(asGameFile(item).id!)">
-              <i class="bi bi-download" aria-hidden="true"></i>
-              Download
-            </button>
-            <button class="btn btn-sm btn-secondary" (click)="viewFilePath(asGameFile(item).id!)">
-              <i class="bi bi-device-hdd" aria-hidden="true"></i>
-              View file path
-            </button>
-            <button class="btn btn-sm btn-danger" (click)="deleteBackup(asGameFile(item).id!)">
-              <i class="bi bi-trash" aria-hidden="true"></i>
-              Delete backup
-            </button>
-          </ng-container>
-        </div>
-      </ng-template>
-    </app-table>
+    <app-loaded-content [isLoading]="gamesAreLoading">
+      <app-table *ngFor="let game of gameWithFilesPage?.content" [content]="{content: game.files ?? []}"
+                 [caption]="game.title">
+        <ng-template app-table-column="File title" let-item>
+          {{ asGameFile(item).gameProviderFile!.fileTitle }}
+        </ng-template>
+        <ng-template app-table-column="Version" let-item>
+          {{ asGameFile(item).gameProviderFile!.version }}
+        </ng-template>
+        <ng-template app-table-column="Size" let-item>
+          {{ asGameFile(item).gameProviderFile!.size }}
+        </ng-template>
+        <ng-template app-table-column="Status" let-item>
+          <app-file-status-badge [status]="asGameFile(item).fileBackup!.status"></app-file-status-badge>
+        </ng-template>
+        <ng-template app-table-column="Actions" let-item>
+          <div style="text-align: right">
+            <app-button [actionAsync]="enqueueFileBackup(asGameFile(item))"
+                        *ngIf="asGameFile(item).fileBackup!.status == FileBackupStatus.Discovered"
+                        testId="backup-file-btn"
+                        buttonSize="small">
+              <i class="bi bi-cloud-download" aria-hidden="true"></i>
+              Back up
+            </app-button>
+            <app-button [actionAsync]="cancelBackup(asGameFile(item).id!)"
+                        *ngIf="asGameFile(item).fileBackup!.status == FileBackupStatus.Enqueued"
+                        testId="cancel-file-backup-btn"
+                        buttonStyle="secondary"
+                        buttonSize="small">
+              Cancel backup
+            </app-button>
+            <app-button [actionAsync]="viewError(asGameFile(item).id!)"
+                        *ngIf="asGameFile(item).fileBackup!.status == FileBackupStatus.Failed"
+                        testId="view-error-btn"
+                        buttonStyle="secondary"
+                        buttonSize="small">
+              <i class="bi bi-bug" aria-hidden="true"></i>
+              View error
+            </app-button>
+            <ng-container *ngIf="asGameFile(item).fileBackup!.status == FileBackupStatus.Success">
+              <app-button [actionAsync]="download(asGameFile(item).id!)"
+                          testId="download-file-backup-btn"
+                          buttonSize="small">
+                <i class="bi bi-download" aria-hidden="true"></i>
+                Download
+              </app-button>
+              <app-button [actionAsync]="viewFilePath(asGameFile(item).id!)"
+                          testId="view-file-path-btn"
+                          buttonStyle="secondary"
+                          buttonSize="small">
+                <i class="bi bi-device-hdd" aria-hidden="true"></i>
+                View file path
+              </app-button>
+              <app-button [actionAsync]="deleteBackup(asGameFile(item).id!)"
+                          testId="delete-file-backup-btn"
+                          buttonStyle="danger"
+                          buttonSize="small">
+                <i class="bi bi-trash" aria-hidden="true"></i>
+                Delete backup
+              </app-button>
+            </ng-container>
+          </div>
+        </ng-template>
+      </app-table>
+    </app-loaded-content>
   </div>
 </div>

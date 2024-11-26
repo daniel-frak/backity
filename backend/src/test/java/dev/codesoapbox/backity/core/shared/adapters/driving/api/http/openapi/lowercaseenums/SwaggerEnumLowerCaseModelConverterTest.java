@@ -40,13 +40,16 @@ class SwaggerEnumLowerCaseModelConverterTest {
         return Stream.of(
                 Arguments.of("simple type",
                         getAnnotatedTypeFromArgumentAsSimpleType("testMethodWithAnnotation",
-                                TestEnum1.class), "TestEnum1"),
+                                EnumWithAnnotation.class), "EnumWithAnnotation"),
                 Arguments.of("simple type",
-                        getAnnotatedTypeFromArgumentAsSimpleType("testMethodWithAnnotationWithSchemaName",
-                                TestEnum3.class), "RenamedEnum"),
+                        getAnnotatedTypeFromArgumentAsSimpleType("testMethodWithAnnotationAndSchemaName",
+                                EnumWithAnnotationAndSchemaName.class), "RenamedEnum"),
+                Arguments.of("class",
+                        getAnnotatedTypeFromArgumentAsClass("testMethodWithAnnotationAndEmptySchema",
+                                EnumWithAnnotationAndEmptySchema.class), "EnumWithAnnotationAndEmptySchema"),
                 Arguments.of("class",
                         getAnnotatedTypeFromArgumentAsClass("testMethodWithAnnotation",
-                                TestEnum1.class), "TestEnum1")
+                                EnumWithAnnotation.class), "EnumWithAnnotation")
         );
     }
 
@@ -91,7 +94,7 @@ class SwaggerEnumLowerCaseModelConverterTest {
     @Test
     void shouldDelegateResolutionWithoutAnnotation() {
         AnnotatedType annotatedType = getAnnotatedTypeFromArgumentAsSimpleType("testMethodWithoutAnnotation",
-                TestEnum2.class);
+                PlainEnum.class);
 
         Schema<?> expectedResult = mock(Schema.class);
         mockDelegation(annotatedType, expectedResult);
@@ -140,19 +143,26 @@ class SwaggerEnumLowerCaseModelConverterTest {
     }
 
     @LowercaseApiEnum
-    private enum TestEnum1 {
+    private enum EnumWithAnnotation {
         VALUE1,
         VALUE2
     }
 
-    private enum TestEnum2 {
+    private enum PlainEnum {
         VALUE1,
         VALUE2
     }
 
     @io.swagger.v3.oas.annotations.media.Schema(name = "RenamedEnum")
     @LowercaseApiEnum
-    private enum TestEnum3 {
+    private enum EnumWithAnnotationAndSchemaName {
+        VALUE1,
+        VALUE2
+    }
+
+    @io.swagger.v3.oas.annotations.media.Schema
+    @LowercaseApiEnum
+    private enum EnumWithAnnotationAndEmptySchema {
         VALUE1,
         VALUE2
     }
@@ -164,19 +174,28 @@ class SwaggerEnumLowerCaseModelConverterTest {
     @SuppressWarnings("unused")
     private static class TestController {
 
-        public void testMethodWithAnnotation(TestEnum1 enumParam) {
+        public void testMethodWithAnnotation(EnumWithAnnotation enumParam) {
+            // Implementation not necessary
         }
 
-        public void testMethodWithAnnotationWithSchemaName(TestEnum3 enumParam) {
+        public void testMethodWithAnnotationAndSchemaName(EnumWithAnnotationAndSchemaName enumParam) {
+            // Implementation not necessary
         }
 
-        public void testMethodWithoutAnnotation(TestEnum2 enumParam) {
+        public void testMethodWithAnnotationAndEmptySchema(EnumWithAnnotationAndEmptySchema enumParam) {
+            // Implementation not necessary
+        }
+
+        public void testMethodWithoutAnnotation(PlainEnum enumParam) {
+            // Implementation not necessary
         }
 
         public void testMethodWithoutEnumWithAnnotation(TestRecord objectParam) {
+            // Implementation not necessary
         }
 
         public void testMethodWithoutEnumWithoutAnnotation(Object objectParam) {
+            // Implementation not necessary
         }
     }
 }

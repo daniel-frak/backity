@@ -57,10 +57,13 @@ class LowercaseEnumFinderTest {
     }
 
     static class TestController {
+
         public void testMethod1(TestEnum1 enumParam) {
+            // Implementation not necessary
         }
 
         public void testMethod2(TestEnum2 enumParam1, TestEnum3 enumParam2) {
+            // Implementation not necessary
         }
     }
 }

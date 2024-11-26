@@ -31,6 +31,7 @@ import java.util.UUID;
 @Slf4j
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
+    @SuppressWarnings("java:S6411") // Cannot implement Comparable for Class type
     private final Map<Class<? extends Throwable>, String> messageKeysByExceptionClass = Map.of(
             GameFileNotBackedUpException.class, "GAME_FILE_NOT_BACKED_UP"
     );

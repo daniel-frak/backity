@@ -26,6 +26,7 @@ import {FilesComponent} from "@app/core/pages/settings/files/files.component";
 import {ThemeComponent} from './pages/theme/theme.component';
 import {GamesComponent} from './pages/games/games.component';
 import {FileStatusBadgeComponent} from './pages/games/file-status-badge/file-status-badge.component';
+import {ButtonComponent} from "@app/shared/components/button/button.component";
 
 @NgModule({ declarations: [
         AuthComponent,
@@ -46,6 +47,6 @@ import {FileStatusBadgeComponent} from './pages/games/file-status-badge/file-sta
         BrowserModule,
         NgbModule,
         FormsModule,
-        RouterModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
+        RouterModule, ButtonComponent], providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class CoreModule {
 }

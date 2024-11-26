@@ -13,6 +13,7 @@ import {TableColumnDirective} from './components/table/column-directive/table-co
 import SockJS from "sockjs-client";
 import {environment} from "@environment/environment";
 import {Client} from "@stomp/stompjs";
+import {ButtonComponent} from "@app/shared/components/button/button.component";
 
 export const STOMP_CLIENT = new InjectionToken('STOMP_CLIENT');
 
@@ -33,7 +34,7 @@ export const STOMP_CLIENT = new InjectionToken('STOMP_CLIENT');
     ], imports: [CommonModule,
         NgbModule,
         FormsModule,
-        RouterModule], providers: [
+        RouterModule, ButtonComponent], providers: [
         {
             provide: STOMP_CLIENT,
             useValue: new Client({

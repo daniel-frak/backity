@@ -19,7 +19,7 @@ export class TableComponent implements OnInit {
   content?: TableContent;
 
   @Input()
-  caption?: string;
+  caption: string | undefined;
 
   @Input()
   isLoading: boolean = false;

@@ -16,34 +16,37 @@
       </p>
 
       <ol *ngIf="!gogAuthenticated">
-        <li>
-          <p>Press the button below to log in to GOG:</p>
-          <p>
-            <button data-testid="log-in-to-gog-btn" (click)="showGogAuthPopup()" class="btn btn-primary">
-              Log in to GOG
-            </button>
-          </p>
-        </li>
-        <li>
-          <p>Copy the URL you're redirected to and paste it below:</p>
-          <p>
-            <label for="urlInput" class="form-label">URL</label>
-            <input data-testid="gog-code-url-input" type="text" class="form-control" id="urlInput" placeholder="URL"
-                   [(ngModel)]="gogCodeUrl">
-          </p>
-        </li>
-        <li>
-          <p>Press the button below:</p>
-          <p>
-            <button data-testid="gog-authenticate-btn" (click)="authenticateGog()" class="btn btn-primary">
-              Authenticate
-            </button>
-          </p>
-        </li>
+        <form [formGroup]="gogAuthForm" (ngSubmit)="authenticateGog()">
+          <li>
+            <p>Press the button below to log in to GOG:</p>
+            <p>
+              <app-button [action]="showGogAuthPopup"
+                          buttonType="button" testId="log-in-to-gog-btn" buttonStyle="primary">
+                Log in to GOG
+              </app-button>
+            </p>
+          </li>
+          <li>
+            <p>Copy the URL you're redirected to and paste it below:</p>
+            <p>
+              <label for="urlInput" class="form-label">URL</label>
+              <input data-testid="gog-code-url-input" type="text" class="form-control" id="urlInput" placeholder="URL"
+                     formControlName="gogCodeUrl">
+            </p>
+          </li>
+          <li>
+            <p>Press the button below:</p>
+            <p>
+              <app-button buttonType="submit" testId="gog-authenticate-btn" buttonStyle="primary">
+                Authenticate
+              </app-button>
+            </p>
+          </li>
+        </form>
       </ol>
 
       <div *ngIf="gogAuthenticated">
-        <button (click)="signOutGog()" class="btn btn-danger">Log out</button>
+        <app-button [actionAsync]="signOutGog" buttonStyle="danger">Log out</app-button>
       </div>
     </div>
   </div>

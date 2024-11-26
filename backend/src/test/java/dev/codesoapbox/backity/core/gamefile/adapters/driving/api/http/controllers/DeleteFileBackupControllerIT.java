@@ -28,7 +28,7 @@ class DeleteFileBackupControllerIT {
         mockMvc.perform(delete("/api/"
                                + FileBackupsRestResource.RESOURCE_URL.replace("{gameFileId}", stringUuid)))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         verify(useCase).deleteFile(new GameFileId(stringUuid));
     }

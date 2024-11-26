@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -17,8 +18,10 @@ public class DeleteFileBackupController {
 
     @Operation(summary = "Delete file backup", description = "Deletes an already downloaded file backup")
     @DeleteMapping
-    public void deleteFileBackup(@PathVariable String gameFileId) {
+    public ResponseEntity<Void> deleteFileBackup(@PathVariable String gameFileId) {
         GameFileId id = new GameFileId(gameFileId);
         useCase.deleteFile(id);
+
+        return ResponseEntity.noContent().build();
     }
 }
