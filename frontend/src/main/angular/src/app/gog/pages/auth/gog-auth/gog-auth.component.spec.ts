@@ -1,12 +1,13 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-
 import {GogAuthComponent} from './gog-auth.component';
-import { provideHttpClientTesting } from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {GOGAuthenticationClient} from "@backend";
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {GamesClient, GOGAuthenticationClient, RefreshTokenResponse} from "@backend";
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import createSpyObj = jasmine.createSpyObj;
+import {of} from "rxjs";
+import {ButtonComponent} from "@app/shared/components/button/button.component";
 
 describe('GogAuthComponent', () => {
   let component: GogAuthComponent;
@@ -14,44 +15,37 @@ describe('GogAuthComponent', () => {
   let gogAuthClientMock: any;
 
   beforeEach(async () => {
-    gogAuthClientMock = createSpyObj(GOGAuthenticationClient, ['checkAuthentication', 'authenticate']);
-    gogAuthClientMock.checkAuthentication.and.returnValue({subscribe: (s: (f: any) => any) => s(false)});
-
     await TestBed.configureTestingModule({
-    declarations: [
-        GogAuthComponent,
-        LoadedContentStubComponent
-    ],
-    imports: [FormsModule, ReactiveFormsModule],
-    providers: [
+      declarations: [GogAuthComponent, LoadedContentStubComponent],
+      imports: [FormsModule, ReactiveFormsModule, ButtonComponent],
+      providers: [
         {
-            provide: GOGAuthenticationClient,
-            useValue: gogAuthClientMock
+          provide: GOGAuthenticationClient,
+          useValue: createSpyObj(GOGAuthenticationClient, ['checkAuthentication', 'authenticate'])
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
-    ]
-})
-      .compileComponents();
-  });
+      ]
+    }).compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(GogAuthComponent);
     component = fixture.componentInstance;
+
+    gogAuthClientMock = TestBed.inject(GOGAuthenticationClient);
+    gogAuthClientMock.checkAuthentication.and.returnValue(of(false));
+
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should check authentications status on init', () => {
-    expect(component.gogAuthenticated).toBeFalse();
-
+  it('should check authentication status on init', () => {
     gogAuthClientMock.checkAuthentication.and.returnValue({
-      subscribe: (s: (f: any) => any) => {
+      subscribe: (callback: (response: boolean) => any) => {
         expect(component.gogIsLoading).toBeTrue();
-        s(true);
+        callback(true);
       }
     });
 
@@ -61,7 +55,7 @@ describe('GogAuthComponent', () => {
     expect(component.gogIsLoading).toBeFalse();
   });
 
-  it('should open new window for authenticating', () => {
+  it('should open a new window for authenticating', () => {
     spyOn(window, 'open');
 
     component.showGogAuthPopup();
@@ -69,15 +63,15 @@ describe('GogAuthComponent', () => {
     expect(window.open).toHaveBeenCalled();
   });
 
-  it('should authenticate', () => {
+  it('should authenticate with a valid URL', () => {
     spyOn(console, 'info');
-    spyOn(console, 'warn');
     spyOn(console, 'error');
+
     component.gogAuthForm.get('gogCodeUrl')?.setValue('https://www.example.com?code=1234');
     gogAuthClientMock.authenticate.and.returnValue({
-      subscribe: (s: (f: any) => any) => {
+      subscribe: (callback: (response: RefreshTokenResponse) => any) => {
         expect(component.gogIsLoading).toBeTrue();
-        s({refresh_token: 'someRefreshToken'});
+        callback({refresh_token: 'someRefreshToken'});
       }
     });
 
@@ -90,16 +84,17 @@ describe('GogAuthComponent', () => {
     expect(console.error).toHaveBeenCalledTimes(0);
   });
 
-  it('should not authenticate if refresh token is missing from response', () => {
+  it('should not authenticate if refresh token is missing', () => {
     spyOn(console, 'info');
-    spyOn(console, 'warn');
     spyOn(console, 'error');
-    component.gogAuthForm.get('gogCodeUrl')?.setValue('https://www.example.com?code=1234');
 
+    component.gogAuthForm.get('gogCodeUrl')?.setValue('https://www.example.com?code=1234');
     gogAuthClientMock.authenticate.and.returnValue({
-      subscribe: (s: (f: any) => any) => {
+      subscribe: (callback: (response: RefreshTokenResponse) => any) => {
         expect(component.gogIsLoading).toBeTrue();
-        s({});
+        callback({
+          refresh_token: undefined
+        });
       }
     });
 
@@ -121,7 +116,9 @@ describe('GogAuthComponent', () => {
 
   it('should log an error when signOutGog is called', () => {
     spyOn(console, 'error');
+
     component.signOutGog();
+
     expect(console.error).toHaveBeenCalled();
   });
 });

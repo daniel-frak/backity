@@ -14,6 +14,7 @@ import SockJS from "sockjs-client";
 import {environment} from "@environment/environment";
 import {Client} from "@stomp/stompjs";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
+import {NotificationContainerComponent} from "@app/notification-container/notification-container.component";
 
 export const STOMP_CLIENT = new InjectionToken('STOMP_CLIENT');
 
@@ -34,7 +35,7 @@ export const STOMP_CLIENT = new InjectionToken('STOMP_CLIENT');
     ], imports: [CommonModule,
         NgbModule,
         FormsModule,
-        RouterModule, ButtonComponent], providers: [
+        RouterModule, ButtonComponent, NotificationContainerComponent], providers: [
         {
             provide: STOMP_CLIENT,
             useValue: new Client({

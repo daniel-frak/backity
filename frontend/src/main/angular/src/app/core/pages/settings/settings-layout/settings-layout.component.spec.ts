@@ -4,7 +4,7 @@ import {SettingsLayoutComponent} from './settings-layout.component';
 import {
   SettingsSideNavComponent
 } from "@app/core/pages/settings/settings-layout/settings-side-nav/settings-side-nav.component";
-import {RouterTestingModule} from "@angular/router/testing";
+import {RouterModule} from "@angular/router";
 
 describe('SettingsLayoutComponent', () => {
   let component: SettingsLayoutComponent;
@@ -16,7 +16,9 @@ describe('SettingsLayoutComponent', () => {
         SettingsLayoutComponent,
         SettingsSideNavComponent
       ],
-      imports: [RouterTestingModule]
+      imports: [
+        RouterModule.forRoot([])
+      ]
     })
       .compileComponents();
   });

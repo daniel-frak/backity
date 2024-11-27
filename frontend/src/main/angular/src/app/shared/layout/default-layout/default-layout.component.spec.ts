@@ -1,8 +1,9 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { DefaultLayoutComponent } from './default-layout.component';
+import {DefaultLayoutComponent} from './default-layout.component';
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {RouterTestingModule} from "@angular/router/testing";
+import {NotificationContainerComponent} from "@app/notification-container/notification-container.component";
+import {RouterModule} from "@angular/router";
 
 describe('DefaultLayoutComponent', () => {
   let component: DefaultLayoutComponent;
@@ -10,13 +11,14 @@ describe('DefaultLayoutComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ DefaultLayoutComponent ],
+      declarations: [DefaultLayoutComponent],
       imports: [
-        RouterTestingModule,
-        NgbModule
+        RouterModule.forRoot([]),
+        NgbModule,
+        NotificationContainerComponent
       ]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

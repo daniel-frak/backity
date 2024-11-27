@@ -7,6 +7,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {PageHeaderStubComponent} from "@app/shared/components/page-header/page-header.component.stub";
 import {GogAuthComponent} from "@app/gog/pages/auth/gog-auth/gog-auth.component";
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {ButtonComponent} from "@app/shared/components/button/button.component";
 
 describe('AuthComponent', () => {
   let component: AuthComponent;
@@ -20,7 +21,7 @@ describe('AuthComponent', () => {
         PageHeaderStubComponent,
         GogAuthComponent
     ],
-    imports: [FormsModule, ReactiveFormsModule],
+    imports: [FormsModule, ReactiveFormsModule, ButtonComponent],
     providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
 })
       .compileComponents();

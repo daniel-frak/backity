@@ -24,49 +24,51 @@
         </ng-template>
         <ng-template app-table-column="Actions" let-item>
           <div style="text-align: right">
-            <app-button [actionAsync]="enqueueFileBackup(asGameFile(item))"
-                        *ngIf="asGameFile(item).fileBackup!.status == FileBackupStatus.Discovered"
-                        testId="backup-file-btn"
-                        buttonSize="small">
-              <i class="bi bi-cloud-download" aria-hidden="true"></i>
-              Back up
-            </app-button>
-            <app-button [actionAsync]="cancelBackup(asGameFile(item).id!)"
-                        *ngIf="asGameFile(item).fileBackup!.status == FileBackupStatus.Enqueued"
-                        testId="cancel-file-backup-btn"
-                        buttonStyle="secondary"
-                        buttonSize="small">
-              Cancel backup
-            </app-button>
-            <app-button [actionAsync]="viewError(asGameFile(item).id!)"
-                        *ngIf="asGameFile(item).fileBackup!.status == FileBackupStatus.Failed"
-                        testId="view-error-btn"
-                        buttonStyle="secondary"
-                        buttonSize="small">
-              <i class="bi bi-bug" aria-hidden="true"></i>
-              View error
-            </app-button>
-            <ng-container *ngIf="asGameFile(item).fileBackup!.status == FileBackupStatus.Success">
-              <app-button [actionAsync]="download(asGameFile(item).id!)"
-                          testId="download-file-backup-btn"
+            <ng-container [ngSwitch]="asGameFile(item).fileBackup?.status">
+              <app-button [actionAsync]="enqueueFileBackup(asGameFile(item))"
+                          *ngSwitchCase="FileBackupStatus.Discovered"
+                          testId="backup-file-btn"
                           buttonSize="small">
-                <i class="bi bi-download" aria-hidden="true"></i>
-                Download
+                <i class="bi bi-cloud-download" aria-hidden="true"></i>
+                Back up
               </app-button>
-              <app-button [actionAsync]="viewFilePath(asGameFile(item).id!)"
-                          testId="view-file-path-btn"
+              <app-button [actionAsync]="cancelBackup(asGameFile(item).id!)"
+                          *ngSwitchCase="FileBackupStatus.Enqueued"
+                          testId="cancel-file-backup-btn"
                           buttonStyle="secondary"
                           buttonSize="small">
-                <i class="bi bi-device-hdd" aria-hidden="true"></i>
-                View file path
+                Cancel backup
               </app-button>
-              <app-button [actionAsync]="deleteBackup(asGameFile(item).id!)"
-                          testId="delete-file-backup-btn"
-                          buttonStyle="danger"
+              <app-button [actionAsync]="viewError(asGameFile(item).id!)"
+                          *ngSwitchCase="FileBackupStatus.Failed"
+                          testId="view-error-btn"
+                          buttonStyle="secondary"
                           buttonSize="small">
-                <i class="bi bi-trash" aria-hidden="true"></i>
-                Delete backup
+                <i class="bi bi-bug" aria-hidden="true"></i>
+                View error
               </app-button>
+              <ng-container *ngSwitchCase="FileBackupStatus.Success">
+                <app-button [actionAsync]="download(asGameFile(item).id!)"
+                            testId="download-file-backup-btn"
+                            buttonSize="small">
+                  <i class="bi bi-download" aria-hidden="true"></i>
+                  Download
+                </app-button>
+                <app-button [actionAsync]="viewFilePath(asGameFile(item).id!)"
+                            testId="view-file-path-btn"
+                            buttonStyle="secondary"
+                            buttonSize="small">
+                  <i class="bi bi-device-hdd" aria-hidden="true"></i>
+                  View file path
+                </app-button>
+                <app-button [actionAsync]="deleteBackup(asGameFile(item).id!)"
+                            testId="delete-file-backup-btn"
+                            buttonStyle="danger"
+                            buttonSize="small">
+                  <i class="bi bi-trash" aria-hidden="true"></i>
+                  Delete backup
+                </app-button>
+              </ng-container>
             </ng-container>
           </div>
         </ng-template>

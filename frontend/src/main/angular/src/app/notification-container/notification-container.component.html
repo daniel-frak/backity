@@ -1,0 +1,20 @@
+<div class="toast-container position-absolute top-0 end-0 p-3">
+  @for (notification of notificationService.notifications; track notification) {
+    <ngb-toast
+      [header]="notification.title || ''"
+      [autohide]="true"
+      [delay]="notification.delay || 5000"
+      [class]="notification.class"
+      (hidden)="notificationService.remove(notification)">
+
+      <div class="d-flex justify-content-between align-items-start">
+        <div> {{ notification.content }}</div>
+        <button type="button"
+                aria-label="Close"
+                [ngClass]="'btn-close' + (notification.shouldShowLightText ? ' btn-close-white' : '')"
+                (click)="notificationService.remove(notification)"
+                *ngIf="!notification.title"></button>
+      </div>
+    </ngb-toast>
+  }
+</div>

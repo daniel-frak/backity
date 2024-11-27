@@ -94,12 +94,12 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
       const page = 0;
       const size = this.pageSize;
       try {
-        const df = await firstValueFrom(
+        const gameFilePage = await firstValueFrom(
           this.gameFilesClient.getGameFiles(GameFileProcessingStatus.Discovered, {
             page: page,
             size: size
           }));
-        this.updateDiscoveredFiles(df);
+        this.updateDiscoveredFiles(gameFilePage);
       } catch (error) {
         console.error('Error fetching discovered files:', error);
       } finally {
@@ -108,8 +108,8 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     }
   }
 
-  private updateDiscoveredFiles(df: PageGameFile) {
-    this.discoveredFiles = df;
+  private updateDiscoveredFiles(gameFilePage: PageGameFile) {
+    this.discoveredFiles = gameFilePage;
     this.newDiscoveredCount = 0;
     this.filesAreLoading = false;
   }

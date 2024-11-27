@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {FileBackupsClient, FileBackupStatus, GameFile, GameFilesClient, GamesClient, PageGameWithFiles} from "@backend";
 import {catchError} from "rxjs/operators";
 import {firstValueFrom} from "rxjs";
+import {NotificationService} from "@app/shared/services/notification/notification.service";
 
 @Component({
   selector: 'app-games',
@@ -15,10 +16,14 @@ export class GamesComponent implements OnInit {
 
   constructor(private readonly gamesClient: GamesClient,
               private readonly gameFilesClient: GameFilesClient,
-              private readonly fileBackupsClient: FileBackupsClient) {
+              private readonly fileBackupsClient: FileBackupsClient,
+              private readonly notificationService: NotificationService) {
   }
 
   ngOnInit(): void {
+    this.notificationService.showFailure("Test content", "Test");
+    this.notificationService.showSuccess("Test content");
+    this.notificationService.show("A very very very very very very very very long toast");
     this.refresh().then(r => {
       // Do nothing
     });
@@ -67,7 +72,6 @@ export class GamesComponent implements OnInit {
       }
     };
   }
-
 
   viewFilePath(gameFileId: string): () => Promise<void> {
     return async () => {
