@@ -8,11 +8,14 @@ import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import createSpyObj = jasmine.createSpyObj;
 import {of} from "rxjs";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
+import {NotificationService} from "@app/shared/services/notification/notification.service";
 
 describe('GogAuthComponent', () => {
   let component: GogAuthComponent;
   let fixture: ComponentFixture<GogAuthComponent>;
+
   let gogAuthClientMock: any;
+  let notificationService: NotificationService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -22,6 +25,10 @@ describe('GogAuthComponent', () => {
         {
           provide: GOGAuthenticationClient,
           useValue: createSpyObj(GOGAuthenticationClient, ['checkAuthentication', 'authenticate'])
+        },
+        {
+          provide: NotificationService, useValue: createSpyObj('NotificationService',
+            ['showSuccess', 'showFailure'])
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
@@ -33,6 +40,7 @@ describe('GogAuthComponent', () => {
 
     gogAuthClientMock = TestBed.inject(GOGAuthenticationClient);
     gogAuthClientMock.checkAuthentication.and.returnValue(of(false));
+    notificationService = TestBed.inject(NotificationService);
 
     fixture.detectChanges();
   });
@@ -64,9 +72,6 @@ describe('GogAuthComponent', () => {
   });
 
   it('should authenticate with a valid URL', () => {
-    spyOn(console, 'info');
-    spyOn(console, 'error');
-
     component.gogAuthForm.get('gogCodeUrl')?.setValue('https://www.example.com?code=1234');
     gogAuthClientMock.authenticate.and.returnValue({
       subscribe: (callback: (response: RefreshTokenResponse) => any) => {
@@ -79,15 +84,11 @@ describe('GogAuthComponent', () => {
 
     expect(component.gogAuthenticated).toBeTrue();
     expect(component.gogIsLoading).toBeFalse();
-    expect(console.info).toHaveBeenCalledWith('Refresh token: someRefreshToken');
-    expect(console.info).toHaveBeenCalledWith('Authentication code: 1234');
-    expect(console.error).toHaveBeenCalledTimes(0);
+    expect(notificationService.showSuccess).toHaveBeenCalledWith('GOG authentication successful');
+    expect(notificationService.showFailure).toHaveBeenCalledTimes(0);
   });
 
   it('should not authenticate if refresh token is missing', () => {
-    spyOn(console, 'info');
-    spyOn(console, 'error');
-
     component.gogAuthForm.get('gogCodeUrl')?.setValue('https://www.example.com?code=1234');
     gogAuthClientMock.authenticate.and.returnValue({
       subscribe: (callback: (response: RefreshTokenResponse) => any) => {
@@ -102,8 +103,7 @@ describe('GogAuthComponent', () => {
 
     expect(component.gogAuthenticated).toBeFalse();
     expect(component.gogIsLoading).toBeFalse();
-    expect(console.info).toHaveBeenCalledWith('Authentication code: 1234');
-    expect(console.error).toHaveBeenCalled();
+    expect(notificationService.showFailure).toHaveBeenCalledWith('Something went wrong during GOG authentication');
   });
 
   it('should not authenticate given GOG code URL is empty', () => {
@@ -115,10 +115,8 @@ describe('GogAuthComponent', () => {
   });
 
   it('should log an error when signOutGog is called', () => {
-    spyOn(console, 'error');
-
     component.signOutGog();
 
-    expect(console.error).toHaveBeenCalled();
+    expect(notificationService.showFailure).toHaveBeenCalledWith('Not yet implemented');
   });
 });

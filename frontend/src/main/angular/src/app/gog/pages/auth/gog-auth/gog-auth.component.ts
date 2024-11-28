@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {GOGAuthenticationClient} from "@backend";
 import {environment} from "@environment/environment";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {NotificationService} from "@app/shared/services/notification/notification.service";
 
 @Component({
   selector: 'app-gog-auth',
@@ -19,7 +20,8 @@ export class GogAuthComponent implements OnInit {
     gogCodeUrl: new FormControl('', Validators.required)
   });
 
-  constructor(private readonly gogAuthClient: GOGAuthenticationClient) {
+  constructor(private readonly gogAuthClient: GOGAuthenticationClient,
+              private readonly notificationService: NotificationService) {
   }
 
   ngOnInit(): void {
@@ -43,19 +45,18 @@ export class GogAuthComponent implements OnInit {
     }
     const params: URLSearchParams = new URL(gogCodeUrl).searchParams;
     const code = params.get("code") as string;
-    console.info("Authentication code: " + code);
     this.gogAuthClient.authenticate(code).subscribe(r => {
       if (r.refresh_token) {
-        console.info("Refresh token: " + r.refresh_token);
         this.gogAuthenticated = true;
+        this.notificationService.showSuccess("GOG authentication successful");
       } else {
-        console.error("Something went wrong when authenticating GOG");
+        this.notificationService.showFailure("Something went wrong during GOG authentication");
       }
       this.gogIsLoading = false;
     });
   }
 
   async signOutGog() {
-    console.error('Not yet implemented');
+    this.notificationService.showFailure('Not yet implemented');
   }
 }

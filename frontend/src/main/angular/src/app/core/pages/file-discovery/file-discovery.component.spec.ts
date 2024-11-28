@@ -33,6 +33,7 @@ import {
 } from "@app/core/pages/file-discovery/file-discovery-status-badge/file-discovery-status-badge.component";
 import Spy = jasmine.Spy;
 import SpyObj = jasmine.SpyObj;
+import {NotificationService} from "@app/shared/services/notification/notification.service";
 
 describe('FileDiscoveryComponent', () => {
   let component: FileDiscoveryComponent;
@@ -42,6 +43,7 @@ describe('FileDiscoveryComponent', () => {
   let discoveryProgressSubscriptions: Function[];
   let fileDiscoveryClient: SpyObj<FileDiscoveryClient>;
   let gameFilesClient: SpyObj<GameFilesClient>;
+  let notificationService: NotificationService;
 
   beforeEach(async () => {
     discoveredSubscriptions = [];
@@ -82,6 +84,10 @@ describe('FileDiscoveryComponent', () => {
           provide: GameFilesClient,
           useValue: jasmine.createSpyObj('GameFilesClient', ['enqueueFileBackup', 'getGameFiles'])
         },
+        {
+          provide: NotificationService, useValue: createSpyObj('NotificationService',
+            ['showSuccess', 'showFailure'])
+        },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
       ]
@@ -94,6 +100,7 @@ describe('FileDiscoveryComponent', () => {
 
     fileDiscoveryClient = TestBed.inject(FileDiscoveryClient) as SpyObj<FileDiscoveryClient>;
     gameFilesClient = TestBed.inject(GameFilesClient) as SpyObj<GameFilesClient>;
+    notificationService = TestBed.inject(NotificationService);
 
     fileDiscoveryClient.getStatuses.and.returnValue(of([]) as any);
     const emptyGameFilePage: PageGameFile = {content: []};
@@ -138,7 +145,6 @@ describe('FileDiscoveryComponent', () => {
   });
 
   it('should log an error when discovered files cannot be refreshed', async () => {
-    spyOn(console, 'error');
     const mockError = new Error('Discovery failed');
     (gameFilesClient.getGameFiles as Spy).and.returnValue(throwError(() => mockError));
 
@@ -146,7 +152,8 @@ describe('FileDiscoveryComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(console.error).toHaveBeenCalledWith('Error fetching discovered files:', mockError);
+    expect(notificationService.showFailure).toHaveBeenCalledWith(
+      'Error fetching discovered files', undefined, mockError);
   });
 
 
@@ -197,14 +204,14 @@ describe('FileDiscoveryComponent', () => {
   });
 
   it('should log an error when file discovery cannot be started', async () => {
-    spyOn(console, 'error');
     const mockError = new Error('Discovery failed');
 
     (fileDiscoveryClient.startDiscovery as Spy).and.returnValue(throwError(() => mockError));
 
     await component.startDiscovery()();
 
-    expect(console.error).toHaveBeenCalledWith('Error starting discovery:', mockError);
+    expect(notificationService.showFailure).toHaveBeenCalledWith(
+      'Error starting discovery', undefined, mockError);
   });
 
   it('should stop file discovery', async () => {
@@ -217,18 +224,17 @@ describe('FileDiscoveryComponent', () => {
   });
 
   it('should log an error when file discovery cannot be stopped', async () => {
-    spyOn(console, 'error');
     const mockError = new Error('Discovery failed');
 
     (fileDiscoveryClient.stopDiscovery as Spy).and.returnValue(throwError(() => mockError));
 
     await component.stopDiscovery()();
 
-    expect(console.error).toHaveBeenCalledWith('Error stopping discovery:', mockError);
+    expect(notificationService.showFailure).toHaveBeenCalledWith(
+      'Error stopping discovery', undefined, mockError);
   });
 
   it('should enqueue file', async () => {
-    spyOn(console, 'info');
     const file: GameFile = {
       id: "someFileId",
       gameId: "someGameId",
@@ -255,7 +261,7 @@ describe('FileDiscoveryComponent', () => {
 
     expect(file.fileBackup?.status).toEqual(FileBackupStatus.Enqueued);
     expect(gameFilesClient.enqueueFileBackup).toHaveBeenCalledWith(file.id);
-    expect(console.info).toHaveBeenCalled();
+    expect(notificationService.showSuccess).toHaveBeenCalledWith(`File backup enqueued`);
   });
 
   it('should update discovery progress', () => {
@@ -289,9 +295,7 @@ describe('FileDiscoveryComponent', () => {
   });
 
   it('should dequeue file when enqueueFile throws', async () => {
-    spyOn(console, 'info');
-    spyOn(console, 'error');
-    const file: GameFile = {
+    const gameFile: GameFile = {
       id: "someFileId",
       gameId: "someGameId",
       gameProviderFile: {
@@ -307,20 +311,20 @@ describe('FileDiscoveryComponent', () => {
         status: FileBackupStatus.Enqueued
       }
     };
-    const expectedError = new Error("error1");
+    const mockError = new Error("error1");
     const observableMock: any = createSpyObj('Observable', ['subscribe', 'pipe']);
     observableMock.pipe.and.returnValue(observableMock);
 
     gameFilesClient.enqueueFileBackup.and.returnValue(new Observable(subscriber => {
-      expect(file.fileBackup?.status).toEqual(FileBackupStatus.Enqueued);
-      subscriber.error(expectedError);
+      expect(gameFile.fileBackup?.status).toEqual(FileBackupStatus.Enqueued);
+      subscriber.error(mockError);
     }));
 
-    await component.enqueueFile(file)();
+    await component.enqueueFile(gameFile)();
 
-    expect(file.fileBackup?.status).toEqual(FileBackupStatus.Discovered);
-    expect(console.error).toHaveBeenCalled();
-    expect(console.info).toHaveBeenCalled();
+    expect(gameFile.fileBackup?.status).toEqual(FileBackupStatus.Discovered);
+    expect(notificationService.showFailure).toHaveBeenCalledWith(
+      'An error occurred while trying to enqueue a file', undefined, gameFile, mockError);
   });
 
   it('should return all statuses', () => {
@@ -345,10 +349,9 @@ describe('FileDiscoveryComponent', () => {
   })
 
   it('should log an error when discoverFilesFor is called', async () => {
-    spyOn(console, 'error');
-
     await component.discoverFilesFor('someGameProviderId')();
 
-    expect(console.error).toHaveBeenCalled();
+    expect(notificationService.showFailure).toHaveBeenCalledWith(
+      `Per-provider file discovery start not yet implemented`);
   });
 });

@@ -17,6 +17,7 @@ import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
 import {IMessage} from "@stomp/stompjs";
 import {catchError} from "rxjs/operators";
 import {firstValueFrom} from "rxjs";
+import {NotificationService} from "@app/shared/services/notification/notification.service";
 
 @Component({
   selector: 'app-file-discovery',
@@ -40,7 +41,8 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
   constructor(private readonly fileDiscoveryClient: FileDiscoveryClient,
               private readonly gameFilesClient: GameFilesClient,
-              private readonly messageService: MessagesService) {
+              private readonly messageService: MessagesService,
+              private readonly notificationService: NotificationService) {
   }
 
   asGameFile = (gameFile: GameFile) => gameFile;
@@ -101,7 +103,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
           }));
         this.updateDiscoveredFiles(gameFilePage);
       } catch (error) {
-        console.error('Error fetching discovered files:', error);
+        this.notificationService.showFailure('Error fetching discovered files', undefined, error);
       } finally {
         this.filesAreLoading = false;
       }
@@ -120,7 +122,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
       try {
         await firstValueFrom(this.fileDiscoveryClient.startDiscovery());
       } catch (error) {
-        console.error('Error starting discovery:', error);
+        this.notificationService.showFailure('Error starting discovery', undefined, error);
       }
     };
   }
@@ -131,7 +133,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
       try {
         await firstValueFrom(this.fileDiscoveryClient.stopDiscovery());
       } catch (error) {
-        console.error('Error stopping discovery:', error);
+        this.notificationService.showFailure('Error stopping discovery', undefined, error);
       }
     };
   }
@@ -139,14 +141,15 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   enqueueFile(gameFile: GameFile): () => Promise<void> {
     return async () => {
       gameFile.fileBackup.status = FileBackupStatus.Enqueued;
-      console.info("Enqueuing: " + gameFile.id);
       try {
         await firstValueFrom(this.gameFilesClient.enqueueFileBackup(gameFile.id).pipe(catchError(e => {
           gameFile.fileBackup.status = FileBackupStatus.Discovered;
           throw e;
         })));
-      } catch (err) {
-        console.error(`An error occurred while trying to enqueue a file (id=${gameFile.id})`, gameFile, err);
+        this.notificationService.showSuccess("File backup enqueued");
+      } catch (error) {
+        this.notificationService.showFailure(
+          'An error occurred while trying to enqueue a file', undefined, gameFile, error);
       }
     }
   }
@@ -190,7 +193,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
   discoverFilesFor(gameProviderId?: string): () => Promise<void> {
     return async () => {
-      console.error("Per-provider file discovery start not yet implemented");
+      this.notificationService.showFailure('Per-provider file discovery start not yet implemented');
     };
   }
 

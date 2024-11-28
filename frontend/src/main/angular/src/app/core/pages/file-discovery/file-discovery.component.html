@@ -71,20 +71,6 @@
       </app-button>
     </p>
 
-    <div class="gutters-1">
-      <div>
-        <span class="badge bg-secondary">
-          Showing: {{ discoveredFiles?.size || 0 }}
-        </span>
-      </div>
-
-      <div>
-        <span class="badge bg-secondary">
-          Total elements: {{ discoveredFiles?.totalElements || 0 }}
-        </span>
-      </div>
-    </div>
-
     <app-table [content]="discoveredFiles!" [isLoading]="filesAreLoading" [testId]="'discovered-files-table'">
       <ng-template app-table-column="Provider game title" let-item>
         {{ asGameFile(item).gameProviderFile!.originalFileName }}

@@ -25,12 +25,14 @@ import anything = jasmine.anything;
 import SpyObj = jasmine.SpyObj;
 import createSpyObj = jasmine.createSpyObj;
 import createSpy = jasmine.createSpy;
+import {NotificationService} from "@app/shared/services/notification/notification.service";
 
 describe('FileBackupComponent', () => {
   let component: FileBackupComponent;
   let fixture: ComponentFixture<FileBackupComponent>;
   let gameFilesClient: SpyObj<GameFilesClient>;
   let messagesService: SpyObj<MessagesService>;
+  let notificationService: NotificationService;
 
   const aMockSubscription = (): StompSubscription => ({unsubscribe: createSpy()}) as any;
 
@@ -102,17 +104,20 @@ describe('FileBackupComponent', () => {
           useValue: createSpyObj('GameFilesClient', ['getGameFiles', 'getCurrentlyDownloading'])
         },
         {provide: MessagesService, useValue: createSpyObj('MessagesService', ["onConnect"])},
+        {
+          provide: NotificationService, useValue: createSpyObj('NotificationService',
+            ['showSuccess', 'showFailure'])
+        },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
       ]
     }).compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(FileBackupComponent);
     component = fixture.componentInstance;
     gameFilesClient = TestBed.inject(GameFilesClient) as SpyObj<GameFilesClient>;
     messagesService = TestBed.inject(MessagesService) as SpyObj<MessagesService>;
+    notificationService = TestBed.inject(NotificationService);
 
     gameFilesClient.getGameFiles.withArgs(GameFileProcessingStatus.Enqueued, anything()).and.returnValue(of(enqueuedDownloads) as any);
     gameFilesClient.getGameFiles.withArgs(GameFileProcessingStatus.Processed, anything()).and.returnValue(of(processedFiles) as any);
@@ -189,9 +194,8 @@ describe('FileBackupComponent', () => {
   }
 
   it('should log an error when removeFromQueue is called', () => {
-    spyOn(console, 'error');
     component.removeFromQueue();
-    expect(console.error).toHaveBeenCalledWith('Removing from queue not yet implemented');
+    expect(notificationService.showFailure).toHaveBeenCalledWith('Removing from queue not yet implemented');
   });
 
 

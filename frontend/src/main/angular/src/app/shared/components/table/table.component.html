@@ -23,4 +23,17 @@
       </tr>
     </tbody>
   </table>
+  <div class="gutters-1" *ngIf="content?.size">
+    <div>
+        <span class="badge bg-secondary">
+          Showing: {{ content?.size || 0 }}
+        </span>
+    </div>
+
+    <div>
+        <span class="badge bg-secondary">
+          Total elements: {{ content?.totalElements || 0 }}
+        </span>
+    </div>
+  </div>
 </app-loaded-content>

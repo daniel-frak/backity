@@ -12,6 +12,7 @@ import {
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
 import {IMessage} from "@stomp/stompjs";
+import {NotificationService} from "@app/shared/services/notification/notification.service";
 
 @Component({
   selector: 'app-downloads',
@@ -31,7 +32,8 @@ export class FileBackupComponent implements OnInit, OnDestroy {
   private readonly stompSubscriptions: StompSubscription[] = [];
 
   constructor(private readonly gameFilesClient: GameFilesClient,
-              private readonly messageService: MessagesService) {
+              private readonly messageService: MessagesService,
+              private readonly notificationService: NotificationService) {
   }
 
   asGameFile = (gameFile: GameFile) => gameFile;
@@ -107,7 +109,7 @@ export class FileBackupComponent implements OnInit, OnDestroy {
   }
 
   removeFromQueue(fileId?: string) {
-    console.error("Removing from queue not yet implemented");
+    this.notificationService.showFailure("Removing from queue not yet implemented");
   }
 
   ngOnDestroy(): void {

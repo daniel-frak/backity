@@ -10,12 +10,14 @@ describe('ButtonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ButtonComponent]
+      imports: [ButtonComponent],
+      providers: []
     })
       .compileComponents();
 
     fixture = TestBed.createComponent(ButtonComponent);
     component = fixture.componentInstance;
+
     fixture.detectChanges();
   });
 
@@ -97,16 +99,12 @@ describe('ButtonComponent', () => {
     expect(actionWasCalled).toBeFalse();
   }));
 
-  it('should print an error to the console', fakeAsync(() => {
-    spyOn(console, 'error');
-    let error = new Error('Test error');
+  it('should set isLoading to false when an error is thrown from action', async () => {
+    const error = new Error('Test error');
     component.action = () => {
       throw error;
     };
-
-    component.onClick();
-    tick();
-
-    expect(console.error).toHaveBeenCalledWith('Error during button action:', error);
-  }));
+    await expectAsync(component.onClick()).toBeRejected();
+    expect(component.isLoading).toBeFalse();
+  });
 });

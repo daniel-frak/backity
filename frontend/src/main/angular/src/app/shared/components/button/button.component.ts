@@ -23,6 +23,9 @@ export class ButtonComponent {
   @Input() action?: VoidFunction;
   @Input() testId?: string;
 
+  constructor() {
+  }
+
   getSizeClass() {
     if (this.buttonSize == 'small') {
       return "btn-sm";
@@ -43,8 +46,6 @@ export class ButtonComponent {
       } else if (this.action) {
         this.action();
       }
-    } catch (error) {
-      console.error('Error during button action:', error);
     } finally {
       this.isLoading = false;
     }
