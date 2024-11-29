@@ -13,6 +13,7 @@ import {FileStatusBadgeComponent} from "@app/core/pages/games/file-status-badge/
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import createSpyObj = jasmine.createSpyObj;
 import Spy = jasmine.Spy;
+import {ModalService} from "@app/shared/services/modal-service/modal.service";
 
 describe('GamesComponent', () => {
   let component: GamesComponent;
@@ -22,6 +23,7 @@ describe('GamesComponent', () => {
   let gameFilesClient: GameFilesClient;
   let fileBackupsClient: FileBackupsClient;
   let notificationService: NotificationService;
+  let modalService: ModalService;
 
   const sampleGameFile: GameFile = {
     id: "someFileId",
@@ -61,6 +63,7 @@ describe('GamesComponent', () => {
           provide: NotificationService, useValue: createSpyObj('NotificationService',
             ['showSuccess', 'showFailure'])
         },
+        {provide: ModalService, useValue: createSpyObj('ModalService', ['withConfirmationModal'])},
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
       ]
@@ -72,7 +75,15 @@ describe('GamesComponent', () => {
     gameFilesClient = TestBed.inject(GameFilesClient);
     fileBackupsClient = TestBed.inject(FileBackupsClient);
     notificationService = TestBed.inject(NotificationService);
+    modalService = TestBed.inject(ModalService);
+
+    autoConfirmModals();
   });
+
+  function autoConfirmModals() {
+    (modalService.withConfirmationModal as Spy)
+      .and.callFake((message: string, callback: () => Promise<void>) => callback());
+  }
 
   it('should create', () => {
     expect(component).toBeTruthy();
@@ -82,7 +93,7 @@ describe('GamesComponent', () => {
     expect(component.gamesAreLoading).toBeTrue();
   });
 
-  it('should get games', async () => {
+  it('should get games on init', async () => {
     const gameFile = {...sampleGameFile, gameProviderFile: {...sampleGameFile.gameProviderFile, fileTitle: 'game.exe'}};
 
     const mockGames: PageGameWithFiles = {
@@ -110,7 +121,7 @@ describe('GamesComponent', () => {
   it('should log an error when games cannot be retrieved', async () => {
     const mockError = new Error('Discovery failed');
 
-    (gamesClient.getGames as jasmine.Spy).and.returnValue(throwError(() => mockError));
+    (gamesClient.getGames as Spy).and.returnValue(throwError(() => mockError));
 
     fixture.detectChanges();
     await fixture.whenStable();
@@ -199,7 +210,7 @@ describe('GamesComponent', () => {
     const mockError = new Error('Backup error');
     (fileBackupsClient.deleteFileBackup as Spy).and.returnValue(throwError(() => mockError));
 
-    await expectAsync(component.deleteBackup(gameFileId)()).toBeRejected();
+    await component.deleteBackup(gameFileId)();
 
     expect(notificationService.showFailure).toHaveBeenCalledWith(
       `An error occurred while trying to delete a file backup`, undefined, gameFileId, mockError);

@@ -1,0 +1,22 @@
+@import "src/scss/bootstrap/basics";
+
+@mixin responsive-container($child-element) {
+  @extend .gutters-1;
+  @media (max-width: map-get($grid-breakpoints, sm) - 1) {
+    flex-direction: column;
+    > * {
+      flex-grow: 1;
+    }
+    #{$child-element} {
+      width: 100%;
+    }
+  }
+}
+
+.button-container {
+  @include responsive-container(button);
+}
+
+.badge-container {
+  @include responsive-container('.badge');
+}

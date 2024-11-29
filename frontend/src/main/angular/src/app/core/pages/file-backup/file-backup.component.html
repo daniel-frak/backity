@@ -47,14 +47,9 @@
 <div class="card mt-3">
   <div class="card-body">
     <h2 class="card-title">Queue</h2>
-    <p>
-      <button (click)="refresh()"
-              [disabled]="filesAreLoading"
-              data-testid="refresh-queue-btn"
-              class="btn btn-secondary">
-        Refresh
-      </button>
-    </p>
+    <div class="button-container">
+      <app-button [actionAsync]="refresh()" testId="refresh-queue-btn" buttonStyle="secondary">Refresh</app-button>
+    </div>
 
     <app-table [content]="enqueuedDownloads!" [isLoading]="filesAreLoading" caption="Backup queue" id="download-queue">
       <ng-template app-table-column="Provider game title" let-item>
@@ -74,10 +69,12 @@
                    hide-title-on-mobile
                    let-item>
         <ng-container *ngFor="let file of [asGameFile(item)]">
-          <button (click)="removeFromQueue(file.id!)"
-                  *ngIf="file.fileBackup?.status == FileBackupStatus.Enqueued" class="btn btn-primary">
-            Cancel
-          </button>
+          <div class="button-container justify-content-end">
+            <app-button [actionAsync]="removeFromQueue(file.id!)" buttonStyle="primary"
+                        *ngIf="file.fileBackup?.status == FileBackupStatus.Enqueued">
+              Cancel
+            </app-button>
+          </div>
         </ng-container>
       </ng-template>
     </app-table>

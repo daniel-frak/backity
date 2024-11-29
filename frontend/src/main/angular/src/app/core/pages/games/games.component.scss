@@ -1,1 +1,5 @@
-// Nothing to style
+@import "src/scss/bootstrap/basics";
+
+.button-container {
+  justify-content: flex-end;
+}

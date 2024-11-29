@@ -21,11 +21,12 @@ import {By} from "@angular/platform-browser";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
 import {Client, IMessage, StompSubscription} from "@stomp/stompjs";
 import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import {NotificationService} from "@app/shared/services/notification/notification.service";
+import {ButtonComponent} from "@app/shared/components/button/button.component";
 import anything = jasmine.anything;
 import SpyObj = jasmine.SpyObj;
 import createSpyObj = jasmine.createSpyObj;
 import createSpy = jasmine.createSpy;
-import {NotificationService} from "@app/shared/services/notification/notification.service";
 
 describe('FileBackupComponent', () => {
   let component: FileBackupComponent;
@@ -98,6 +99,7 @@ describe('FileBackupComponent', () => {
         TableComponent,
         TableColumnDirective
       ],
+      imports: [ButtonComponent],
       providers: [
         {
           provide: GameFilesClient,
@@ -134,7 +136,7 @@ describe('FileBackupComponent', () => {
     messagesService.onConnect.and.callFake((callback) => {
       callback({
         subscribe: (destination: string, callback: (message: IMessage) => void) => {
-          action(destination, callback)
+          action(destination, callback);
           return mockSubscription;
         }
       } as Client);
@@ -166,7 +168,9 @@ describe('FileBackupComponent', () => {
     expect(subscription.unsubscribe).toHaveBeenCalled();
   });
 
-  it('should retrieve files', () => {
+  it('should retrieve files on init', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
     fixture.detectChanges();
 
     expectFilesToBeLoaded();
@@ -193,27 +197,30 @@ describe('FileBackupComponent', () => {
     expect(table.nativeElement.textContent).toContain(title);
   }
 
-  it('should log an error when removeFromQueue is called', () => {
-    component.removeFromQueue();
+  it('should log an error when removeFromQueue is called', async () => {
+    await component.removeFromQueue()();
     expect(notificationService.showFailure).toHaveBeenCalledWith('Removing from queue not yet implemented');
   });
 
-
-  it('should update currently downloaded game', () => {
+  it('should update currently downloaded game', async () => {
     const fileBackupStartedEvent: FileBackupStartedEvent = {...expectedCurrentlyProcessing};
     fileBackupStartedEvent.originalGameTitle = "Updated game title";
 
-    simulateWebSocketMessageReceived(FileBackupMessageTopics.Started, fileBackupStartedEvent);
+    await simulateWebSocketMessageReceived(FileBackupMessageTopics.Started, fileBackupStartedEvent);
 
     expectCurrentlyDownloadingGameTitleToContain("Updated game title")
   });
 
-  function simulateWebSocketMessageReceived<T>(topic: string, message: T) {
+  async function simulateWebSocketMessageReceived<T>(topic: string, message: T) {
     const payload: IMessage = {body: JSON.stringify(message)} as any;
     const topicCallback = getCallbackForTopic(topic);
 
     fixture.detectChanges();
+    await fixture.whenStable();
+
     topicCallback.execute(payload);
+    await fixture.whenStable();
+
     fixture.detectChanges();
   }
 
@@ -233,13 +240,13 @@ describe('FileBackupComponent', () => {
     return topicCallback;
   }
 
-  it('should update download progress', () => {
+  it('should update download progress', async () => {
     const progressUpdatedEvent: FileBackupProgressUpdatedEvent = {
       percentage: 25,
       timeLeftSeconds: 999
     };
 
-    simulateWebSocketMessageReceived(FileBackupMessageTopics.ProgressUpdate, progressUpdatedEvent);
+    await simulateWebSocketMessageReceived(FileBackupMessageTopics.ProgressUpdate, progressUpdatedEvent);
 
     const progressBar = fixture.debugElement.query(By.css('.progress'));
     expect(progressBar.nativeElement.textContent).toContain('25%');
@@ -260,19 +267,20 @@ describe('FileBackupComponent', () => {
   }
 
   it('should clear currently downloaded game when FileBackupStatusChangedEvent' +
-    ' is received with status Success', () => {
-    simulateFileBackupStatusChangedEventReceived(expectedCurrentlyProcessing.gameFileId, FileBackupStatus.Success);
+    ' is received with status Success', async () => {
+    await simulateFileBackupStatusChangedEventReceived(
+      expectedCurrentlyProcessing.gameFileId, FileBackupStatus.Success);
 
     const currentlyDownloadingTable = fixture.debugElement.query(By.css('#currently-downloading'));
     expect(currentlyDownloadingTable.nativeElement.textContent).toContain('Nothing is currently being backed up');
   });
 
-  function simulateFileBackupStatusChangedEventReceived(id: string, newStatus: FileBackupStatus) {
+  async function simulateFileBackupStatusChangedEventReceived(id: string, newStatus: FileBackupStatus) {
     const statusChangedMessage: FileBackupStatusChangedEvent = {
       gameFileId: id,
       newStatus: newStatus
     };
-    simulateWebSocketMessageReceived(FileBackupMessageTopics.StatusChanged, statusChangedMessage);
+    await simulateWebSocketMessageReceived(FileBackupMessageTopics.StatusChanged, statusChangedMessage);
   }
 
   it('should clear currently downloaded game when FileBackupStatusChangedEvent' +
@@ -284,24 +292,25 @@ describe('FileBackupComponent', () => {
   });
 
   it('should not clear currently downloaded game when FileBackupStatusChangedEvent' +
-    ' is received with status other than Success or Failed', () => {
-    simulateFileBackupStatusChangedEventReceived(expectedCurrentlyProcessing.gameFileId, FileBackupStatus.InProgress);
+    ' is received with status other than Success or Failed', async () => {
+    await simulateFileBackupStatusChangedEventReceived(
+      expectedCurrentlyProcessing.gameFileId, FileBackupStatus.InProgress);
 
     const currentlyDownloadingTable = fixture.debugElement.query(By.css('#currently-downloading'));
     expect(currentlyDownloadingTable.nativeElement.textContent).not.toContain('Nothing is currently being backed up');
   });
 
   it('should not clear currently downloaded game when FileBackupStatusChangedEvent' +
-    ' is received with id other than current and status Success', () => {
-    simulateFileBackupStatusChangedEventReceived('anotherGameFileId', FileBackupStatus.Success);
+    ' is received with id other than current and status Success', async () => {
+    await simulateFileBackupStatusChangedEventReceived('anotherGameFileId', FileBackupStatus.Success);
 
     const currentlyDownloadingTable = fixture.debugElement.query(By.css('#currently-downloading'));
     expect(currentlyDownloadingTable.nativeElement.textContent).not.toContain('Nothing is currently being backed up');
   });
 
   it('should not clear currently downloaded game when FileBackupStatusChangedEvent' +
-    ' is received with id other than current and status Failed', () => {
-    simulateFileBackupStatusChangedEventReceived('anotherGameFileId', FileBackupStatus.Failed);
+    ' is received with id other than current and status Failed', async () => {
+    await simulateFileBackupStatusChangedEventReceived('anotherGameFileId', FileBackupStatus.Failed);
 
     const currentlyDownloadingTable = fixture.debugElement.query(By.css('#currently-downloading'));
     expect(currentlyDownloadingTable.nativeElement.textContent).not.toContain('Nothing is currently being backed up');

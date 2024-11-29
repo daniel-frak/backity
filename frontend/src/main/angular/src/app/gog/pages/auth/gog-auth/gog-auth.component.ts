@@ -3,6 +3,7 @@ import {GOGAuthenticationClient} from "@backend";
 import {environment} from "@environment/environment";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
+import {finalize} from "rxjs";
 
 @Component({
   selector: 'app-gog-auth',
@@ -26,10 +27,13 @@ export class GogAuthComponent implements OnInit {
 
   ngOnInit(): void {
     this.gogIsLoading = true;
-    this.gogAuthClient.checkAuthentication().subscribe(isAuthenticated => {
-      this.gogAuthenticated = isAuthenticated;
-      this.gogIsLoading = false;
-    });
+    this.gogAuthClient.checkAuthentication()
+      .pipe(finalize(() => this.gogIsLoading = false))
+      .subscribe({
+        next: isAuthenticated => this.gogAuthenticated = isAuthenticated,
+        error: error => this.notificationService.showFailure(
+          'Failed to check GOG authentication', undefined, error)
+      });
   }
 
   showGogAuthPopup = () => {

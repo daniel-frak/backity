@@ -56,9 +56,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
     this.refreshInfo();
 
-    this.refreshDiscoveredFiles()().then(() => {
-      // Do nothing
-    });
+    this.refreshDiscoveredFiles()();
   }
 
   private onFileDiscovered(payload: IMessage) {

@@ -4,9 +4,9 @@
 
 <div class="card mt-3">
   <div class="card-body">
-    <p>
+    <div class="button-container mb-3">
       <app-button [actionAsync]="refresh" testId="refresh-games-btn" buttonStyle="secondary">Refresh</app-button>
-    </p>
+    </div>
     <app-loaded-content [isLoading]="gamesAreLoading">
       <app-table *ngFor="let game of gameWithFilesPage?.content" [content]="{content: game.files ?? []}"
                  [caption]="game.title">
@@ -23,8 +23,8 @@
           <app-file-status-badge [status]="asGameFile(item).fileBackup!.status"></app-file-status-badge>
         </ng-template>
         <ng-template app-table-column="Actions" let-item>
-          <div style="text-align: right">
-            <ng-container [ngSwitch]="asGameFile(item).fileBackup?.status">
+          <div class="button-container">
+            <ng-container [ngSwitch]="asGameFile(item).fileBackup.status">
               <app-button [actionAsync]="enqueueFileBackup(asGameFile(item))"
                           *ngSwitchCase="FileBackupStatus.Discovered"
                           testId="backup-file-btn"

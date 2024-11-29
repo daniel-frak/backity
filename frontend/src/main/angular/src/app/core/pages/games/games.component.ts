@@ -3,6 +3,7 @@ import {FileBackupsClient, FileBackupStatus, GameFile, GameFilesClient, GamesCli
 import {catchError} from "rxjs/operators";
 import {firstValueFrom} from "rxjs";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
+import {ModalService} from "@app/shared/services/modal-service/modal.service";
 
 @Component({
   selector: 'app-games',
@@ -17,7 +18,8 @@ export class GamesComponent implements OnInit {
   constructor(private readonly gamesClient: GamesClient,
               private readonly gameFilesClient: GameFilesClient,
               private readonly fileBackupsClient: FileBackupsClient,
-              private readonly notificationService: NotificationService) {
+              private readonly notificationService: NotificationService,
+              private readonly modalService: ModalService) {
   }
 
   ngOnInit(): void {
@@ -62,13 +64,15 @@ export class GamesComponent implements OnInit {
   deleteBackup(gameFileId: string): () => Promise<void> {
     return async () => {
       try {
-        await firstValueFrom(this.fileBackupsClient.deleteFileBackup(gameFileId));
-        this.notificationService.showSuccess('Deleted file backup');
-        return this.refresh();
+        await this.modalService.withConfirmationModal("Are you sure you want to delete the file backup?",
+          async () => {
+            await firstValueFrom(this.fileBackupsClient.deleteFileBackup(gameFileId));
+            this.notificationService.showSuccess('Deleted file backup');
+            return this.refresh();
+          });
       } catch (error) {
         this.notificationService.showFailure(
           'An error occurred while trying to delete a file backup', undefined, gameFileId, error);
-        throw error;
       }
     };
   }

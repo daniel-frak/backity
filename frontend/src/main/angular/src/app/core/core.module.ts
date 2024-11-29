@@ -5,7 +5,7 @@ import {provideHttpClient, withInterceptorsFromDi} from "@angular/common/http";
 import {AuthComponent} from './pages/auth/auth.component';
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {FileDiscoveryComponent} from './pages/file-discovery/file-discovery.component';
-import {FileBackupComponent} from '@app/core/pages/downloads/file-backup.component';
+import {FileBackupComponent} from '@app/core/pages/file-backup/file-backup.component';
 import {FormsModule} from "@angular/forms";
 import {LogsComponent} from './pages/settings/logs/logs.component';
 import {

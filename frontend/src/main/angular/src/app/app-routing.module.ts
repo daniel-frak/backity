@@ -2,7 +2,7 @@ import {NgModule} from '@angular/core';
 import {RouterModule, Routes} from '@angular/router';
 import {DefaultLayoutComponent} from "./shared/layout/default-layout/default-layout.component";
 import {FileDiscoveryComponent} from "./core/pages/file-discovery/file-discovery.component";
-import {FileBackupComponent} from "@app/core/pages/downloads/file-backup.component";
+import {FileBackupComponent} from "@app/core/pages/file-backup/file-backup.component";
 import {AuthComponent} from "./core/pages/auth/auth.component";
 import {LogsComponent} from "./core/pages/settings/logs/logs.component";
 import {SettingsLayoutComponent} from "@app/core/pages/settings/settings-layout/settings-layout.component";

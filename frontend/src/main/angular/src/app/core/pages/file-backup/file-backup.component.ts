@@ -5,7 +5,8 @@ import {
   FileBackupStartedEvent,
   FileBackupStatus,
   FileBackupStatusChangedEvent,
-  GameFile, GameFileProcessingStatus,
+  GameFile,
+  GameFileProcessingStatus,
   GameFilesClient,
   PageGameFile
 } from "@backend";
@@ -13,6 +14,7 @@ import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
 import {IMessage} from "@stomp/stompjs";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
+import {firstValueFrom} from "rxjs";
 
 @Component({
   selector: 'app-downloads',
@@ -46,7 +48,7 @@ export class FileBackupComponent implements OnInit, OnDestroy {
       client.subscribe(FileBackupMessageTopics.StatusChanged, p => this.onStatusChanged(p))
     ))
 
-    this.refresh();
+    this.refresh()();
   }
 
   private onBackupStarted(payload: IMessage) {
@@ -62,54 +64,48 @@ export class FileBackupComponent implements OnInit, OnDestroy {
     if (event.gameFileId != this.currentDownload?.gameFileId) {
       return;
     }
-    if (event.newStatus == FileBackupStatus.Success || event.newStatus == FileBackupStatus.Failed)
-    {
+    if (event.newStatus == FileBackupStatus.Success || event.newStatus == FileBackupStatus.Failed) {
       this.currentDownload = undefined;
     }
   }
 
-  refresh() {
-    this.filesAreLoading = true;
-    const page = 0;
-    const size = this.pageSize;
+  refresh(): () => Promise<void> {
+    return async () => {
+      this.filesAreLoading = true;
+      const page = 0;
+      const size = this.pageSize;
 
-    this.gameFilesClient.getGameFiles(GameFileProcessingStatus.Enqueued, {
-      page: page,
-      size: size
-    })
-      .subscribe((d: PageGameFile) => {
-        this.enqueuedDownloads = d;
-
-        this.gameFilesClient.getGameFiles(GameFileProcessingStatus.Processed, {
-          page: page,
-          size: size
-        })
-          .subscribe((f: PageGameFile) => {
-            this.processedFiles = f;
-            this.filesAreLoading = false;
-          })
-      });
-
-    this.gameFilesClient.getCurrentlyDownloading()
-      .subscribe((gameFile: GameFile) => {
+      try {
+        this.enqueuedDownloads = await firstValueFrom(
+          this.gameFilesClient.getGameFiles(GameFileProcessingStatus.Enqueued, {page, size}));
+        this.processedFiles = await firstValueFrom(
+          this.gameFilesClient.getGameFiles(GameFileProcessingStatus.Processed, {page, size}));
+        const gameFile = await firstValueFrom(this.gameFilesClient.getCurrentlyDownloading());
         if (!gameFile) {
           this.currentDownload = undefined;
-          return;
+        } else {
+          this.currentDownload = {
+            gameFileId: gameFile.id,
+            originalGameTitle: gameFile.gameProviderFile.originalGameTitle,
+            fileTitle: gameFile.gameProviderFile.fileTitle,
+            version: gameFile.gameProviderFile.version,
+            originalFileName: gameFile.gameProviderFile.originalFileName,
+            size: gameFile.gameProviderFile.size,
+            filePath: gameFile.fileBackup.filePath
+          };
         }
-        this.currentDownload = {
-          gameFileId: gameFile.id,
-          originalGameTitle: gameFile.gameProviderFile.originalGameTitle,
-          fileTitle: gameFile.gameProviderFile.fileTitle,
-          version: gameFile.gameProviderFile.version,
-          originalFileName: gameFile.gameProviderFile.originalFileName,
-          size: gameFile.gameProviderFile.size,
-          filePath: gameFile.fileBackup.filePath
-        };
-      });
+      } catch (error) {
+        this.notificationService.showFailure('Error during refresh', undefined, error);
+      } finally {
+        this.filesAreLoading = false;
+      }
+    }
   }
 
-  removeFromQueue(fileId?: string) {
-    this.notificationService.showFailure("Removing from queue not yet implemented");
+  removeFromQueue(fileId?: string): () => Promise<void> {
+    return async () => {
+      this.notificationService.showFailure('Removing from queue not yet implemented');
+    }
   }
 
   ngOnDestroy(): void {

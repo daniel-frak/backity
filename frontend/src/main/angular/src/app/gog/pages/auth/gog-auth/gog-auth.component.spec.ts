@@ -3,12 +3,12 @@ import {GogAuthComponent} from './gog-auth.component';
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {GamesClient, GOGAuthenticationClient, RefreshTokenResponse} from "@backend";
+import {GOGAuthenticationClient, RefreshTokenResponse} from "@backend";
 import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
-import createSpyObj = jasmine.createSpyObj;
-import {of} from "rxjs";
+import {defer, of, throwError} from "rxjs";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
+import createSpyObj = jasmine.createSpyObj;
 
 describe('GogAuthComponent', () => {
   let component: GogAuthComponent;
@@ -50,17 +50,26 @@ describe('GogAuthComponent', () => {
   });
 
   it('should check authentication status on init', () => {
-    gogAuthClientMock.checkAuthentication.and.returnValue({
-      subscribe: (callback: (response: boolean) => any) => {
-        expect(component.gogIsLoading).toBeTrue();
-        callback(true);
-      }
-    });
+    gogAuthClientMock.checkAuthentication.and.returnValue(defer(() => {
+      expect(component.gogIsLoading).toBeTrue();
+      return of(true);
+    }));
 
     component.ngOnInit();
 
     expect(component.gogAuthenticated).toBeTrue();
     expect(component.gogIsLoading).toBeFalse();
+  });
+
+  it('should notify and disable loading on authentication check failure', () => {
+    const error = new Error('Test error');
+    gogAuthClientMock.checkAuthentication.and.returnValue(throwError(() => error));
+
+    component.ngOnInit();
+
+    expect(component.gogIsLoading).toBeFalse();
+    expect(notificationService.showFailure).toHaveBeenCalledWith(
+      'Failed to check GOG authentication', undefined, error);
   });
 
   it('should open a new window for authenticating', () => {
