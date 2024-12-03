@@ -1,55 +1,57 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {LogsComponent} from './logs.component';
-import { provideHttpClientTesting } from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
 import {PageHeaderStubComponent} from "@app/shared/components/page-header/page-header.component.stub";
 import {LogCreatedEvent, LogsClient, LogsMessageTopics} from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {MessageTesting} from "@app/shared/testing/message-testing";
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
+import {Observable, of} from "rxjs";
 import createSpyObj = jasmine.createSpyObj;
+import SpyObj = jasmine.SpyObj;
 
 describe('LogsComponent', () => {
   let component: LogsComponent;
   let fixture: ComponentFixture<LogsComponent>;
   let logSubscriptions: Function[];
-  let logsClientMock: any;
+  let logsClient: SpyObj<LogsClient>;
+  let messagesService: SpyObj<MessagesService>;
 
   beforeEach(async () => {
-    logSubscriptions = [];
-
-    const messagesServiceMock = MessageTesting.mockMessageService(
-      (destination, callback) => {
-        if (destination == LogsMessageTopics.TopicLogs) {
-          logSubscriptions.push(callback);
-        }
-      });
-
-    logsClientMock = createSpyObj(LogsClient, ['getLogs']);
-    logsClientMock.getLogs.and.returnValue({subscribe: (s: (f: any) => any) => s([])});
-
     await TestBed.configureTestingModule({
-    declarations: [
+      imports: [
         LogsComponent,
         LoadedContentStubComponent,
         PageHeaderStubComponent
-    ],
-    imports: [],
-    providers: [
+      ],
+      providers: [
         {
-            provide: MessagesService,
-            useValue: messagesServiceMock
+          provide: MessagesService,
+          useValue: createSpyObj(MessagesService, ['watch'])
         },
         {
-            provide: LogsClient,
-            useValue: logsClientMock
+          provide: LogsClient,
+          useValue: createSpyObj(LogsClient, ['getLogs'])
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
-    ]
-})
+      ]
+    })
       .compileComponents();
+
+    logsClient = TestBed.inject(LogsClient) as SpyObj<LogsClient>;
+    logsClient.getLogs.and.returnValue(of([]) as Observable<any>);
+
+    messagesService = TestBed.inject(MessagesService) as SpyObj<MessagesService>;
+    MessageTesting.mockWatch(messagesService, (destination, callback) => {
+      if (destination == LogsMessageTopics.TopicLogs) {
+        logSubscriptions.push(callback);
+      }
+    });
+
+    logSubscriptions = [];
   });
 
   beforeEach(() => {
@@ -79,7 +81,7 @@ describe('LogsComponent', () => {
 
   it('should refresh logs', () => {
     component.logs = ['Log2', 'Log1'];
-    logsClientMock.getLogs.and.returnValue({subscribe: (s: (f: any) => any) => s(['Log2', 'Log3'])});
+    logsClient.getLogs.and.returnValue(of(['Log2', 'Log3']) as Observable<any>);
 
     component.refresh();
     expect(component.logs).toEqual(['Log3', 'Log2']);

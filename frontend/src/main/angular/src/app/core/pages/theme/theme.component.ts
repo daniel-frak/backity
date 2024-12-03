@@ -1,15 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import {Component} from '@angular/core';
+import {FormsModule} from '@angular/forms';
 
 @Component({
   selector: 'app-theme',
   templateUrl: './theme.component.html',
-  styleUrls: ['./theme.component.scss']
+  styleUrls: ['./theme.component.scss'],
+  standalone: true,
+  imports: [FormsModule]
 })
-export class ThemeComponent implements OnInit {
+export class ThemeComponent {
 
-  constructor() { }
-
-  ngOnInit(): void {
+  constructor() {
   }
-
 }

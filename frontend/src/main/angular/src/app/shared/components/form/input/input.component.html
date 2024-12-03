@@ -1,0 +1,32 @@
+<div class="mb-3">
+  <label [for]="id" class="form-label"><!--/* //NOSONAR */-->
+    <ng-content/>
+  </label>
+  <input [attr.data-testid]="testId"
+         [type]="type"
+         [id]="id"
+         [placeholder]="placeholder"
+         [disabled]="disabled"
+         (blur)="onTouched()"
+         [value]="value"
+         (input)="onInput($event)"
+         [ngClass]="{
+         'form-control': true,
+         'is-invalid': formControl.invalid && (formControl.dirty || !formControl.untouched)
+         }">
+  <div *ngIf="formControl.errors?.['required']" class="invalid-feedback">
+    Must not be empty
+  </div>
+  <div *ngIf="formControl.errors?.['email']" class="invalid-feedback">
+    Please enter a valid email address
+  </div>
+  <div *ngIf="formControl.errors?.['minlength']" class="invalid-feedback">
+    Minimum length is {{ formControl.errors?.['minlength'].requiredLength }} characters
+  </div>
+  <div *ngIf="formControl.errors?.['maxlength']" class="invalid-feedback">
+    Maximum length is {{ formControl.errors?.['maxlength'].requiredLength }} characters
+  </div>
+  <div *ngIf="formControl.errors?.['pattern']" class="invalid-feedback">
+    Invalid format
+  </div>
+</div>

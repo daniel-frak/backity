@@ -1,50 +1,54 @@
 import {TestBed} from '@angular/core/testing';
 
 import {MessagesService} from './messages.service';
-import {STOMP_CLIENT} from "@app/shared/shared.module";
 import {Client} from "@stomp/stompjs";
-import {messageCallbackType} from "@stomp/stompjs/src/types";
+import {RxStompService} from "@app/shared/backend/services/rx-stomp/rx-stomp.service";
 import createSpyObj = jasmine.createSpyObj;
 
 describe('MessagesService', () => {
   let service: MessagesService;
-  let stompClientMock: any;
+  let rxStompService: any;
 
   beforeEach(() => {
-    stompClientMock = createSpyObj(Client, ['onConnect', 'activate', 'subscribe']);
-
     TestBed.configureTestingModule({
       providers: [
         {
-          provide: STOMP_CLIENT,
-          useValue: stompClientMock
+          provide: RxStompService,
+          useValue: createSpyObj(Client, ['watch'])
         }
       ]
     });
+
     service = TestBed.inject(MessagesService);
-    stompClientMock.onConnect()
+    rxStompService = TestBed.inject(RxStompService);
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
-
-  it('should activate on init', () => {
-    expect(stompClientMock.activate).toHaveBeenCalled();
+  it('should subscribe to functions on creation', () => {
+    const funcSpy = jasmine.createSpy('funcSpy');
+    service['subscriptions'].next(funcSpy);
+    expect(funcSpy).toHaveBeenCalledWith(rxStompService);
   });
 
-  it('should subscribe to messages onConnect', () => {
+  it('should watch WebSocket topics', () => {
     let calledDestination: string = "";
     let callbackRan: boolean = false;
-
-    stompClientMock.subscribe.and.callFake((destination: string, callback: messageCallbackType) => {
+    const expectedDestination = 'someDestination';
+    rxStompService.watch.and.callFake((destination: string) => {
       calledDestination = destination;
-      callback(null as any);
+      return {
+        subscribe: (callback: any) => {
+          callback(null as any);
+        }
+      }
     });
 
-    service.onConnect(client => client.subscribe("someDestination", () => callbackRan = true));
+    service.watch(expectedDestination)
+      .subscribe(message => callbackRan = true);
 
-    expect(calledDestination).toEqual("someDestination");
+    expect(calledDestination).toEqual(expectedDestination);
     expect(callbackRan).toBeTrue();
   });
 });

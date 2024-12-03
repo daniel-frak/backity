@@ -38,6 +38,7 @@ describe('NotificationService', () => {
   });
 
   it('should add a failure notification', () => {
+    spyOn(console, 'error');
     const content = 'Failure Notification';
 
     service.showFailure(content);
@@ -47,6 +48,7 @@ describe('NotificationService', () => {
     expect(service.notifications[0].title).toBeUndefined();
     expect(service.notifications[0].class).toBe('bg-danger text-light');
     expect(service.notifications[0].shouldShowLightText).toBeTrue();
+    expect(console.error).toHaveBeenCalledWith(content, []);
   });
 
   it('should remove a notification', () => {
@@ -93,6 +95,7 @@ describe('NotificationService', () => {
   });
 
   it('should add failure notification with a title', () => {
+    spyOn(console, 'error');
     const content = 'Test Notification';
     const title = 'Test Title';
 
@@ -101,5 +104,21 @@ describe('NotificationService', () => {
     expect(service.notifications[0].title).toBe(title);
     expect(service.notifications[0].class).toBe('bg-danger text-light');
     expect(service.notifications[0].shouldShowLightText).toBeTrue();
+    expect(console.error).toHaveBeenCalledWith(content, []);
+  });
+
+  it('should add failure notification with optional error params', () => {
+    spyOn(console, 'error');
+    const content = 'Test Notification';
+    const optionalParam1 = 'optionalParam1';
+    const optionalParam2 = 'optionalParam2';
+    const title = 'Test Title';
+
+    service.showFailure(content, title, optionalParam1, optionalParam2);
+
+    expect(service.notifications[0].title).toBe(title);
+    expect(service.notifications[0].class).toBe('bg-danger text-light');
+    expect(service.notifications[0].shouldShowLightText).toBeTrue();
+    expect(console.error).toHaveBeenCalledWith(content, [optionalParam1, optionalParam2]);
   });
 });

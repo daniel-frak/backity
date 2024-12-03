@@ -49,10 +49,7 @@ describe('GlobalErrorHandler', () => {
 
   it('should call showFailure on notificationService for HttpErrorResponse with status 400', () => {
     const error = new HttpErrorResponse({
-      status: 400,
-      statusText: 'Bad Request',
-      url: 'https://example.com/api',
-      error: { message: "Bad Request Error" }
+      status: 400
     });
 
     errorHandler.handleError(error);
@@ -67,9 +64,7 @@ describe('GlobalErrorHandler', () => {
 
   it('should call showFailure on notificationService for HttpErrorResponse with status 401', () => {
     const error = new HttpErrorResponse({
-      status: 401,
-      statusText: 'Unauthorized',
-      url: 'https://example.com/api'
+      status: 401
     });
 
     errorHandler.handleError(error);
@@ -84,9 +79,7 @@ describe('GlobalErrorHandler', () => {
 
   it('should call showFailure on notificationService for HttpErrorResponse with status 404', () => {
     const error = new HttpErrorResponse({
-      status: 404,
-      statusText: 'Not Found',
-      url: 'https://example.com/api'
+      status: 404
     });
 
     errorHandler.handleError(error);
@@ -99,11 +92,39 @@ describe('GlobalErrorHandler', () => {
       );
   });
 
+  it('should call showFailure on notificationService for HttpErrorResponse with status 405', () => {
+    const error = new HttpErrorResponse({
+      status: 405
+    });
+
+    errorHandler.handleError(error);
+
+    expect(notificationServiceSpy.showFailure)
+      .toHaveBeenCalledWith(
+        "This action is not supported.",
+        undefined,
+        error
+      );
+  });
+
+  it('should call showFailure on notificationService for HttpErrorResponse with status 408', () => {
+    const error = new HttpErrorResponse({
+      status: 408
+    });
+
+    errorHandler.handleError(error);
+
+    expect(notificationServiceSpy.showFailure)
+      .toHaveBeenCalledWith(
+        "The request timed out. Please ensure your network is stable and try again.",
+        undefined,
+        error
+      );
+  });
+
   it('should call showFailure on notificationService for HttpErrorResponse with status 500', () => {
     const error = new HttpErrorResponse({
-      status: 500,
-      statusText: 'Internal Server Error',
-      url: 'https://example.com/api'
+      status: 500
     });
 
     errorHandler.handleError(error);
@@ -119,8 +140,6 @@ describe('GlobalErrorHandler', () => {
   it('should use error.error.message if messageKey exists', () => {
     const error = new HttpErrorResponse({
       status: 500,
-      statusText: 'Internal Server Error',
-      url: 'https://example.com/api',
       error: { messageKey: 'true', message: 'Custom server error message' }
     });
 
@@ -129,6 +148,21 @@ describe('GlobalErrorHandler', () => {
     expect(notificationServiceSpy.showFailure)
       .toHaveBeenCalledWith(
         "Custom server error message",
+        undefined,
+        error
+      );
+  });
+
+  it('should call showFailure on notificationService for HttpErrorResponse with unrecognized status', () => {
+    const error = new HttpErrorResponse({
+      status: 418
+    });
+
+    errorHandler.handleError(error);
+
+    expect(notificationServiceSpy.showFailure)
+      .toHaveBeenCalledWith(
+        "An unexpected network error has occurred (status: 418).",
         undefined,
         error
       );

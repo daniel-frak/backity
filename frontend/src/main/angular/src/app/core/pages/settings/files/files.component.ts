@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-files',
   templateUrl: './files.component.html',
-  styleUrls: ['./files.component.scss']
+  styleUrls: ['./files.component.scss'],
+  standalone: true
 })
 export class FilesComponent implements OnInit {
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
     // Nothing to initialize

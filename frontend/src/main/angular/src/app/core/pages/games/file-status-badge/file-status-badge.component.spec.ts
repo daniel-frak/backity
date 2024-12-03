@@ -9,7 +9,7 @@ describe('FileStatusBadgeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [FileStatusBadgeComponent]
+      imports: [FileStatusBadgeComponent]
     })
       .compileComponents();
   });

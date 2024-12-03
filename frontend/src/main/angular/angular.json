@@ -112,7 +112,13 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "codeCoverageExclude": [
+              "**/*.factory.ts",
+              "**/*.stub.ts",
+              "src/backend/**",
+              "src/app/core/pages/theme/**"
+            ]
           }
         }
       }

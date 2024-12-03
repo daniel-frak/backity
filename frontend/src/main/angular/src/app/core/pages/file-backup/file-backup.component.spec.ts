@@ -5,7 +5,7 @@ import {PageHeaderStubComponent} from "@app/shared/components/page-header/page-h
 import {TableComponent} from "@app/shared/components/table/table.component";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
-import {of} from "rxjs";
+import {of, Subscription, throwError} from "rxjs";
 import {
   FileBackupMessageTopics,
   FileBackupProgressUpdatedEvent,
@@ -19,10 +19,10 @@ import {
 } from "@backend";
 import {By} from "@angular/platform-browser";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
-import {Client, IMessage, StompSubscription} from "@stomp/stompjs";
 import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
+import {MessageTesting} from "@app/shared/testing/message-testing";
 import anything = jasmine.anything;
 import SpyObj = jasmine.SpyObj;
 import createSpyObj = jasmine.createSpyObj;
@@ -35,7 +35,7 @@ describe('FileBackupComponent', () => {
   let messagesService: SpyObj<MessagesService>;
   let notificationService: NotificationService;
 
-  const aMockSubscription = (): StompSubscription => ({unsubscribe: createSpy()}) as any;
+  const aMockSubscription = (): Subscription => ({unsubscribe: createSpy()}) as any;
 
   const sampleGameFile: GameFile = {
     id: "someFileId",
@@ -92,23 +92,25 @@ describe('FileBackupComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         FileBackupComponent,
-        PageHeaderStubComponent,
-        LoadedContentStubComponent,
+        ButtonComponent,
         TableComponent,
-        TableColumnDirective
+        TableColumnDirective,
+        PageHeaderStubComponent,
+        LoadedContentStubComponent
       ],
-      imports: [ButtonComponent],
       providers: [
         {
           provide: GameFilesClient,
           useValue: createSpyObj('GameFilesClient', ['getGameFiles', 'getCurrentlyDownloading'])
         },
-        {provide: MessagesService, useValue: createSpyObj('MessagesService', ["onConnect"])},
         {
-          provide: NotificationService, useValue: createSpyObj('NotificationService',
-            ['showSuccess', 'showFailure'])
+          provide: MessagesService,
+          useValue: createSpyObj('MessagesService', ["watch"])
+        },
+        {
+          provide: NotificationService, useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
@@ -124,44 +126,46 @@ describe('FileBackupComponent', () => {
     gameFilesClient.getGameFiles.withArgs(GameFileProcessingStatus.Enqueued, anything()).and.returnValue(of(enqueuedDownloads) as any);
     gameFilesClient.getGameFiles.withArgs(GameFileProcessingStatus.Processed, anything()).and.returnValue(of(processedFiles) as any);
     gameFilesClient.getCurrentlyDownloading.and.returnValue(of(currentlyProcessedGameFile) as any);
+
+    MessageTesting.mockWatch(messagesService, (destination, callback) => {
+      // Do nothing
+    });
   });
 
   it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  function mockMessageServiceOnConnectAction(
-    action: (destination: string, callback: (message: IMessage) => void) => void) {
-    const mockSubscription = aMockSubscription();
-    messagesService.onConnect.and.callFake((callback) => {
-      callback({
-        subscribe: (destination: string, callback: (message: IMessage) => void) => {
-          action(destination, callback);
-          return mockSubscription;
-        }
-      } as Client);
-    });
-  }
-
   it('should subscribe to message topics on initialization', () => {
     const topicsSubscribed: string[] = [];
-    mockMessageServiceOnConnectAction((destination, callback) =>
+    MessageTesting.mockWatch(messagesService, (destination, callback) =>
       topicsSubscribed.push(destination));
 
     component.ngOnInit();
 
-    expect(messagesService.onConnect).toHaveBeenCalled();
+    expect(messagesService.watch).toHaveBeenCalledTimes(3);
     expect(topicsSubscribed).toEqual([
       FileBackupMessageTopics.Started,
       FileBackupMessageTopics.ProgressUpdate,
       FileBackupMessageTopics.StatusChanged
     ]);
-    expect(component['stompSubscriptions'].length).toBe(3);
+    expect(component['subscriptions'].length).toBe(3);
+  });
+
+  it('should show failure notification given refresh error', async () => {
+    const mockError = new Error('test error');
+    gameFilesClient.getGameFiles.withArgs(GameFileProcessingStatus.Enqueued, anything())
+      .and.returnValue(throwError(() => mockError));
+
+    await component.refresh()();
+
+    expect(notificationService.showFailure).toHaveBeenCalledWith('Error during refresh', undefined, mockError);
+    expect(component.filesAreLoading).toBeFalse();
   });
 
   it('should unsubscribe from message topics on destruction', () => {
     const subscription = aMockSubscription();
-    component['stompSubscriptions'].push(subscription);
+    component['subscriptions'].push(subscription);
 
     component.ngOnDestroy();
 
@@ -206,39 +210,11 @@ describe('FileBackupComponent', () => {
     const fileBackupStartedEvent: FileBackupStartedEvent = {...expectedCurrentlyProcessing};
     fileBackupStartedEvent.originalGameTitle = "Updated game title";
 
-    await simulateWebSocketMessageReceived(FileBackupMessageTopics.Started, fileBackupStartedEvent);
+    await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
+      FileBackupMessageTopics.Started, fileBackupStartedEvent);
 
     expectCurrentlyDownloadingGameTitleToContain("Updated game title")
   });
-
-  async function simulateWebSocketMessageReceived<T>(topic: string, message: T) {
-    const payload: IMessage = {body: JSON.stringify(message)} as any;
-    const topicCallback = getCallbackForTopic(topic);
-
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    topicCallback.execute(payload);
-    await fixture.whenStable();
-
-    fixture.detectChanges();
-  }
-
-  function getCallbackForTopic(topic: string) {
-    let topicCallback = {
-      execute: (message: IMessage) => {
-        console.error("Topic callback not found for: " + topic)
-      }
-    };
-
-    mockMessageServiceOnConnectAction((destination, callback) => {
-      if (destination == topic) {
-        topicCallback.execute = callback;
-      }
-    });
-
-    return topicCallback;
-  }
 
   it('should update download progress', async () => {
     const progressUpdatedEvent: FileBackupProgressUpdatedEvent = {
@@ -246,7 +222,8 @@ describe('FileBackupComponent', () => {
       timeLeftSeconds: 999
     };
 
-    await simulateWebSocketMessageReceived(FileBackupMessageTopics.ProgressUpdate, progressUpdatedEvent);
+    await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
+      FileBackupMessageTopics.ProgressUpdate, progressUpdatedEvent);
 
     const progressBar = fixture.debugElement.query(By.css('.progress'));
     expect(progressBar.nativeElement.textContent).toContain('25%');
@@ -280,7 +257,8 @@ describe('FileBackupComponent', () => {
       gameFileId: id,
       newStatus: newStatus
     };
-    await simulateWebSocketMessageReceived(FileBackupMessageTopics.StatusChanged, statusChangedMessage);
+    await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
+      FileBackupMessageTopics.StatusChanged, statusChangedMessage);
   }
 
   it('should clear currently downloaded game when FileBackupStatusChangedEvent' +

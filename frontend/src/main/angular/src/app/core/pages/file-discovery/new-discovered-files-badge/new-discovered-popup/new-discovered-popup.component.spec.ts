@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { NewDiscoveredPopupComponent } from './new-discovered-popup.component';
+import {NewDiscoveredPopupComponent} from './new-discovered-popup.component';
 
 describe('NewDiscoveredPopupComponent', () => {
   let component: NewDiscoveredPopupComponent;
@@ -8,9 +8,9 @@ describe('NewDiscoveredPopupComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NewDiscoveredPopupComponent ]
+      imports: [NewDiscoveredPopupComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

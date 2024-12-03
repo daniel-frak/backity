@@ -1,25 +1,41 @@
 import {Component, OnInit} from '@angular/core';
 import {GOGAuthenticationClient} from "@backend";
 import {environment} from "@environment/environment";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {finalize} from "rxjs";
+import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
+import {CommonModule} from '@angular/common';
+import {ButtonComponent} from '@app/shared/components/button/button.component';
+import {InputComponent} from "@app/shared/components/form/input/input.component";
 
 @Component({
   selector: 'app-gog-auth',
   templateUrl: './gog-auth.component.html',
-  styleUrls: ['./gog-auth.component.scss']
+  styleUrls: ['./gog-auth.component.scss'],
+  standalone: true,
+  imports: [
+    LoadedContentComponent,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    ButtonComponent,
+    InputComponent
+  ]
 })
 export class GogAuthComponent implements OnInit {
 
   private readonly GOG_AUTH_URL = environment.gogAuthUrl;
 
   public gogAuthenticated: boolean = false;
-  public gogCodeUrl: string = "";
   public gogIsLoading: boolean = true;
   public gogAuthForm: FormGroup = new FormGroup({
     gogCodeUrl: new FormControl('', Validators.required)
   });
+
+  get gogCodeUrlInput(): AbstractControl<any, any> {
+    return this.gogAuthForm.get('gogCodeUrl')!;
+  }
 
   constructor(private readonly gogAuthClient: GOGAuthenticationClient,
               private readonly notificationService: NotificationService) {
@@ -41,12 +57,13 @@ export class GogAuthComponent implements OnInit {
   }
 
   authenticateGog() {
-    this.gogIsLoading = true;
-    let gogCodeUrl = this.gogAuthForm.get('gogCodeUrl')?.value;
-    if (!gogCodeUrl) {
-      this.gogIsLoading = false;
+    if (!this.gogAuthForm.valid) {
+      this.gogAuthForm.markAllAsTouched();
+      this.notificationService.showFailure("Form is invalid", undefined, this.gogCodeUrlInput.errors);
       return;
     }
+    this.gogIsLoading = true;
+    let gogCodeUrl = this.gogAuthForm.get('gogCodeUrl')?.value;
     const params: URLSearchParams = new URL(gogCodeUrl).searchParams;
     const code = params.get("code") as string;
     this.gogAuthClient.authenticate(code).subscribe(r => {

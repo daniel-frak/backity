@@ -12,12 +12,10 @@ describe('SettingsLayoutComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
+        RouterModule.forRoot([]),
         SettingsLayoutComponent,
         SettingsSideNavComponent
-      ],
-      imports: [
-        RouterModule.forRoot([])
       ]
     })
       .compileComponents();

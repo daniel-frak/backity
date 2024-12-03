@@ -4,11 +4,20 @@ import {catchError} from "rxjs/operators";
 import {firstValueFrom} from "rxjs";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {ModalService} from "@app/shared/services/modal-service/modal.service";
+import {PageHeaderComponent} from '@app/shared/components/page-header/page-header.component';
+import {ButtonComponent} from '@app/shared/components/button/button.component';
+import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
+import {NgFor, NgSwitch, NgSwitchCase} from '@angular/common';
+import {TableComponent} from '@app/shared/components/table/table.component';
+import {TableColumnDirective} from '@app/shared/components/table/column-directive/table-column.directive';
+import {FileStatusBadgeComponent} from './file-status-badge/file-status-badge.component';
 
 @Component({
   selector: 'app-games',
   templateUrl: './games.component.html',
-  styleUrls: ['./games.component.scss']
+  styleUrls: ['./games.component.scss'],
+  standalone: true,
+  imports: [PageHeaderComponent, ButtonComponent, LoadedContentComponent, NgFor, TableComponent, TableColumnDirective, FileStatusBadgeComponent, NgSwitch, NgSwitchCase]
 })
 export class GamesComponent implements OnInit {
 

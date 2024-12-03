@@ -11,9 +11,9 @@ import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {ButtonComponent} from "@app/shared/components/button/button.component";
 import {FileStatusBadgeComponent} from "@app/core/pages/games/file-status-badge/file-status-badge.component";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
+import {ModalService} from "@app/shared/services/modal-service/modal.service";
 import createSpyObj = jasmine.createSpyObj;
 import Spy = jasmine.Spy;
-import {ModalService} from "@app/shared/services/modal-service/modal.service";
 
 describe('GamesComponent', () => {
   let component: GamesComponent;
@@ -44,24 +44,21 @@ describe('GamesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
+        ButtonComponent,
         GamesComponent,
-        PageHeaderStubComponent,
-        LoadedContentStubComponent,
         TableComponent,
         TableColumnDirective,
-        FileStatusBadgeComponent
-      ],
-      imports: [
-        ButtonComponent
+        FileStatusBadgeComponent,
+        PageHeaderStubComponent,
+        LoadedContentStubComponent
       ],
       providers: [
         {provide: GamesClient, useValue: createSpyObj('GamesClient', ['getGames'])},
         {provide: GameFilesClient, useValue: createSpyObj('GameFilesClient', ['enqueueFileBackup'])},
         {provide: FileBackupsClient, useValue: createSpyObj('FileBackupsClient', ['deleteFileBackup'])},
         {
-          provide: NotificationService, useValue: createSpyObj('NotificationService',
-            ['showSuccess', 'showFailure'])
+          provide: NotificationService, useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])
         },
         {provide: ModalService, useValue: createSpyObj('ModalService', ['withConfirmationModal'])},
         provideHttpClient(withInterceptorsFromDi()),

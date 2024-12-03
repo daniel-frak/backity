@@ -11,15 +11,27 @@ import {
   PageGameFile
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
-import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
-import {IMessage} from "@stomp/stompjs";
+import {Message} from "@stomp/stompjs";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
-import {firstValueFrom} from "rxjs";
+import {firstValueFrom, Subscription} from "rxjs";
+import {PageHeaderComponent} from '@app/shared/components/page-header/page-header.component';
+import {CommonModule} from '@angular/common';
+import {TableComponent} from '@app/shared/components/table/table.component';
+import {TableColumnDirective} from '@app/shared/components/table/column-directive/table-column.directive';
+import {ButtonComponent} from '@app/shared/components/button/button.component';
 
 @Component({
   selector: 'app-downloads',
   templateUrl: './file-backup.component.html',
-  styleUrls: ['./file-backup.component.scss']
+  styleUrls: ['./file-backup.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    PageHeaderComponent,
+    TableComponent,
+    TableColumnDirective,
+    ButtonComponent
+  ]
 })
 export class FileBackupComponent implements OnInit, OnDestroy {
 
@@ -31,7 +43,7 @@ export class FileBackupComponent implements OnInit, OnDestroy {
   FileBackupStatus = FileBackupStatus;
 
   private readonly pageSize = 20;
-  private readonly stompSubscriptions: StompSubscription[] = [];
+  private readonly subscriptions: Subscription[] = [];
 
   constructor(private readonly gameFilesClient: GameFilesClient,
               private readonly messageService: MessagesService,
@@ -42,24 +54,27 @@ export class FileBackupComponent implements OnInit, OnDestroy {
   asBackupStartedEvent = (event: FileBackupStartedEvent) => event;
 
   ngOnInit(): void {
-    this.messageService.onConnect(client => this.stompSubscriptions.push(
-      client.subscribe(FileBackupMessageTopics.Started, p => this.onBackupStarted(p)),
-      client.subscribe(FileBackupMessageTopics.ProgressUpdate, p => this.onProgressUpdate(p)),
-      client.subscribe(FileBackupMessageTopics.StatusChanged, p => this.onStatusChanged(p))
-    ))
+    this.subscriptions.push(
+      this.messageService.watch(FileBackupMessageTopics.Started)
+        .subscribe(p => this.onBackupStarted(p)),
+      this.messageService.watch(FileBackupMessageTopics.ProgressUpdate)
+        .subscribe(p => this.onProgressUpdate(p)),
+      this.messageService.watch(FileBackupMessageTopics.StatusChanged)
+        .subscribe(p => this.onStatusChanged(p))
+    )
 
     this.refresh()();
   }
 
-  private onBackupStarted(payload: IMessage) {
+  private onBackupStarted(payload: Message) {
     this.currentDownload = JSON.parse(payload.body);
   }
 
-  private onProgressUpdate(payload: IMessage) {
+  private onProgressUpdate(payload: Message) {
     this.downloadProgress = JSON.parse(payload.body);
   }
 
-  private onStatusChanged(payload: IMessage) {
+  private onStatusChanged(payload: Message) {
     const event: FileBackupStatusChangedEvent = JSON.parse(payload.body);
     if (event.gameFileId != this.currentDownload?.gameFileId) {
       return;
@@ -109,6 +124,6 @@ export class FileBackupComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.stompSubscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach(s => s.unsubscribe());
   }
 }

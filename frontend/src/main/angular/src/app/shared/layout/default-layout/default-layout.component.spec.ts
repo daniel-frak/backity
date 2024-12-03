@@ -11,11 +11,11 @@ describe('DefaultLayoutComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [DefaultLayoutComponent],
       imports: [
         RouterModule.forRoot([]),
         NgbModule,
-        NotificationContainerComponent
+        NotificationContainerComponent,
+        DefaultLayoutComponent
       ]
     })
       .compileComponents();

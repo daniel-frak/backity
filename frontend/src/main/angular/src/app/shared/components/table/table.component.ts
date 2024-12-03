@@ -1,11 +1,15 @@
 import {Component, ContentChildren, Input, OnInit, QueryList} from '@angular/core';
 import {TableContent} from "@app/shared/components/table/table-content";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
+import {LoadedContentComponent} from '../loaded-content/loaded-content.component';
+import {NgClass, NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
 
 @Component({
   selector: 'app-table',
   templateUrl: './table.component.html',
-  styleUrls: ['./table.component.scss']
+  styleUrls: ['./table.component.scss'],
+  standalone: true,
+  imports: [LoadedContentComponent, NgIf, NgFor, NgClass, NgTemplateOutlet]
 })
 export class TableComponent implements OnInit {
 

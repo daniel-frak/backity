@@ -25,15 +25,15 @@ import {Observable, of, throwError} from "rxjs";
 import {MessageTesting} from "@app/shared/testing/message-testing";
 import {HttpResponse, provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {catchError} from "rxjs/operators";
-import createSpyObj = jasmine.createSpyObj;
 import {ButtonComponent} from "@app/shared/components/button/button.component";
 import {FileStatusBadgeComponent} from "@app/core/pages/games/file-status-badge/file-status-badge.component";
 import {
   FileDiscoveryStatusBadgeComponent
 } from "@app/core/pages/file-discovery/file-discovery-status-badge/file-discovery-status-badge.component";
+import {NotificationService} from "@app/shared/services/notification/notification.service";
+import createSpyObj = jasmine.createSpyObj;
 import Spy = jasmine.Spy;
 import SpyObj = jasmine.SpyObj;
-import {NotificationService} from "@app/shared/services/notification/notification.service";
 
 describe('FileDiscoveryComponent', () => {
   let component: FileDiscoveryComponent;
@@ -44,38 +44,30 @@ describe('FileDiscoveryComponent', () => {
   let fileDiscoveryClient: SpyObj<FileDiscoveryClient>;
   let gameFilesClient: SpyObj<GameFilesClient>;
   let notificationService: NotificationService;
+  let messagesService: SpyObj<MessagesService>;
 
   beforeEach(async () => {
     discoveredSubscriptions = [];
     discoveryChangedSubscriptions = [];
     discoveryProgressSubscriptions = [];
 
-    const messagesServiceMock = MessageTesting.mockMessageService(
-      (destination, callback) => {
-        if (destination === FileDiscoveryWebSocketTopics.FileDiscovered) {
-          discoveredSubscriptions.push(callback);
-        }
-        if (destination === FileDiscoveryWebSocketTopics.FileStatusChanged) {
-          discoveryChangedSubscriptions.push(callback);
-        }
-        if (destination === FileDiscoveryWebSocketTopics.ProgressUpdate) {
-          discoveryProgressSubscriptions.push(callback);
-        }
-      });
-
     await TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         FileDiscoveryComponent,
-        LoadedContentStubComponent,
-        PageHeaderStubComponent,
+        NgbModule,
+        ButtonComponent,
         NewDiscoveredFilesBadgeComponent,
         TableComponent,
         FileStatusBadgeComponent,
-        FileDiscoveryStatusBadgeComponent
+        FileDiscoveryStatusBadgeComponent,
+        LoadedContentStubComponent,
+        PageHeaderStubComponent
       ],
-      imports: [NgbModule, ButtonComponent],
       providers: [
-        {provide: MessagesService, useValue: messagesServiceMock},
+        {
+          provide: MessagesService,
+          useValue: createSpyObj(MessagesService, ['watch'])
+        },
         {
           provide: FileDiscoveryClient,
           useValue: jasmine.createSpyObj('FileDiscoveryClient', ['getStatuses', 'startDiscovery', 'stopDiscovery'])
@@ -85,8 +77,7 @@ describe('FileDiscoveryComponent', () => {
           useValue: jasmine.createSpyObj('GameFilesClient', ['enqueueFileBackup', 'getGameFiles'])
         },
         {
-          provide: NotificationService, useValue: createSpyObj('NotificationService',
-            ['showSuccess', 'showFailure'])
+          provide: NotificationService, useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
@@ -98,10 +89,22 @@ describe('FileDiscoveryComponent', () => {
     component.discoveryStatusByGameProviderId.clear();
     component.discoveryProgressByGameProviderId.clear();
 
+    messagesService = TestBed.inject(MessagesService) as SpyObj<MessagesService>;
     fileDiscoveryClient = TestBed.inject(FileDiscoveryClient) as SpyObj<FileDiscoveryClient>;
     gameFilesClient = TestBed.inject(GameFilesClient) as SpyObj<GameFilesClient>;
     notificationService = TestBed.inject(NotificationService);
 
+    MessageTesting.mockWatch(messagesService, (destination, callback) => {
+      if (destination === FileDiscoveryWebSocketTopics.FileDiscovered) {
+        discoveredSubscriptions.push(callback);
+      }
+      if (destination === FileDiscoveryWebSocketTopics.FileStatusChanged) {
+        discoveryChangedSubscriptions.push(callback);
+      }
+      if (destination === FileDiscoveryWebSocketTopics.ProgressUpdate) {
+        discoveryProgressSubscriptions.push(callback);
+      }
+    });
     fileDiscoveryClient.getStatuses.and.returnValue(of([]) as any);
     const emptyGameFilePage: PageGameFile = {content: []};
     gameFilesClient.getGameFiles.and.returnValue(of(emptyGameFilePage) as any);

@@ -29,7 +29,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry
                 .addEndpoint("/api/messages")
                 .setAllowedOriginPatterns("*")
-                .setAllowedOrigins(allowedOrigins.toArray(new String[0]))
-                .withSockJS();
+                .setAllowedOrigins(allowedOrigins.toArray(new String[0]));
     }
 }

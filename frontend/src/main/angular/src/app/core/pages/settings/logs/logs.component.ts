@@ -1,32 +1,37 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {LogCreatedEvent, LogsClient, LogsMessageTopics} from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
-import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
-import {IMessage} from "@stomp/stompjs";
+import {Message} from "@stomp/stompjs";
+import {PageHeaderComponent} from '@app/shared/components/page-header/page-header.component';
+import {NgFor, NgIf} from '@angular/common';
+import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-logs',
   templateUrl: './logs.component.html',
-  styleUrls: ['./logs.component.scss']
+  styleUrls: ['./logs.component.scss'],
+  standalone: true,
+  imports: [PageHeaderComponent, NgIf, LoadedContentComponent, NgFor]
 })
 export class LogsComponent implements OnInit, OnDestroy {
 
   logs: string[] = [];
   public logsAreLoading: boolean = false;
-  private readonly stompSubscriptions: StompSubscription[] = [];
+  private readonly subscriptions: Subscription[] = [];
 
   constructor(private readonly logsClient: LogsClient, private readonly messageService: MessagesService) {
   }
 
   ngOnInit(): void {
-    this.messageService.onConnect(client => this.stompSubscriptions.push(
-      client.subscribe(LogsMessageTopics.TopicLogs, p => this.onLogReceived(p))
-    ));
+    this.subscriptions.push(
+      this.messageService.watch(LogsMessageTopics.TopicLogs).subscribe(p => this.onLogReceived(p))
+    )
 
     this.refresh();
   }
 
-  private onLogReceived(payload: IMessage) {
+  private onLogReceived(payload: Message) {
     const event: LogCreatedEvent = JSON.parse(payload.body);
     this.logs.unshift(event.message as string);
     if (this.logs.length > (event.maxLogs as number)) {
@@ -46,6 +51,6 @@ export class LogsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.stompSubscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach(s => s.unsubscribe());
   }
 }

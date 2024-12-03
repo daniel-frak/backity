@@ -9,9 +9,9 @@ describe('ContainedLayoutComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ContainedLayoutComponent],
       imports: [
-        RouterModule.forRoot([])
+        RouterModule.forRoot([]),
+        ContainedLayoutComponent
       ]
     })
       .compileComponents();

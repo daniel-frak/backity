@@ -14,7 +14,12 @@ import {By} from "@angular/platform-browser";
       <ng-template app-table-column="Test column 2" hide-title-on-mobile let-item>Col2: {{ item }}</ng-template>
       <ng-template app-table-column="Test column 3" append-class="custom-class" let-item>Col3: {{ item }}</ng-template>
     </app-table>
-  `
+  `,
+  imports: [
+    TableComponent,
+    TableColumnDirective
+  ],
+  standalone: true
 })
 class TableComponentWrapper {
   @ViewChild(TableComponent)
@@ -33,7 +38,7 @@ describe('TableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TableComponentWrapper, TableComponent, LoadedContentStubComponent, TableColumnDirective],
+      imports: [TableComponent, TableComponentWrapper, TableColumnDirective, LoadedContentStubComponent],
     })
       .compileComponents();
   });

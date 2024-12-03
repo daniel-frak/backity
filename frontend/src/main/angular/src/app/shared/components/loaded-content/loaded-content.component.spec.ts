@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { LoadedContentComponent } from './loaded-content.component';
+import {LoadedContentComponent} from './loaded-content.component';
 
 describe('LoadedContentComponent', () => {
   let component: LoadedContentComponent;
@@ -8,9 +8,9 @@ describe('LoadedContentComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LoadedContentComponent ]
+      imports: [LoadedContentComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

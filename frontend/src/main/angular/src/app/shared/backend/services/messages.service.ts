@@ -1,24 +1,21 @@
-import {Inject, Injectable} from '@angular/core';
-import {ReplaySubject} from "rxjs";
-import {Client} from "@stomp/stompjs";
-import {STOMP_CLIENT} from "@app/shared/shared.module";
+import {Injectable} from '@angular/core';
+import {Observable, ReplaySubject} from "rxjs";
+import {RxStompService} from "@app/shared/backend/services/rx-stomp/rx-stomp.service";
+import {IMessage} from "@stomp/stompjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessagesService {
 
-  private readonly subscriptions: ReplaySubject<(client: Client) => any> =
-    new ReplaySubject<(client: Client) => any>();
+  private readonly subscriptions: ReplaySubject<(client: RxStompService) => any> =
+    new ReplaySubject<(client: RxStompService) => any>();
 
-  constructor(@Inject(STOMP_CLIENT) private readonly stompClient: Client) {
-    stompClient.onConnect = (frame) => {
-      this.subscriptions.subscribe(func => func(stompClient));
-    };
-    stompClient.activate();
+  constructor(private readonly rxStompService: RxStompService) {
+    this.subscriptions.subscribe(func => func(rxStompService));
   }
 
-  public onConnect(func: (client: Client) => any): void {
-    this.subscriptions.next(client => func(client));
+  public watch(topic: string): Observable<IMessage> {
+    return this.rxStompService.watch(topic);
   }
 }

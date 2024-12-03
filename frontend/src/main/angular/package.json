@@ -22,6 +22,7 @@
     "@angular/router": "^18.2.12",
     "@ng-bootstrap/ng-bootstrap": "^17.0.1",
     "@popperjs/core": "^2.11.8",
+    "@stomp/rx-stomp": "^2.0.0",
     "@stomp/stompjs": "^7.0.0",
     "@types/sockjs-client": "^1.5.4",
     "bootstrap": "^5.3.3",

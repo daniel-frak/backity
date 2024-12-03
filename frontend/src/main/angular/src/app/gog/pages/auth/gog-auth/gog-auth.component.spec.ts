@@ -19,16 +19,21 @@ describe('GogAuthComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [GogAuthComponent, LoadedContentStubComponent],
-      imports: [FormsModule, ReactiveFormsModule, ButtonComponent],
+      imports: [
+        FormsModule,
+        ReactiveFormsModule,
+        ButtonComponent,
+        GogAuthComponent,
+        LoadedContentStubComponent
+      ],
       providers: [
         {
           provide: GOGAuthenticationClient,
           useValue: createSpyObj(GOGAuthenticationClient, ['checkAuthentication', 'authenticate'])
         },
         {
-          provide: NotificationService, useValue: createSpyObj('NotificationService',
-            ['showSuccess', 'showFailure'])
+          provide: NotificationService,
+          useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])
         },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
@@ -121,6 +126,8 @@ describe('GogAuthComponent', () => {
     component.authenticateGog();
 
     expect(gogAuthClientMock.authenticate).not.toHaveBeenCalled();
+    let expectedErrors = {required: true};
+    expect(notificationService.showFailure).toHaveBeenCalledWith("Form is invalid", undefined, expectedErrors)
   });
 
   it('should log an error when signOutGog is called', () => {

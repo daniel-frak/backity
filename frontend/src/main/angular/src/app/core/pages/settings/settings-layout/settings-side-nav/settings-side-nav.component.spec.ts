@@ -17,9 +17,9 @@ describe('SettingsSideNavComponent', () => {
       get: () => navigatorMock as any
     };
     await TestBed.configureTestingModule({
-      declarations: [SettingsSideNavComponent],
       imports: [
-        RouterModule.forRoot([])
+        RouterModule.forRoot([]),
+        SettingsSideNavComponent
       ],
       providers: [
         {

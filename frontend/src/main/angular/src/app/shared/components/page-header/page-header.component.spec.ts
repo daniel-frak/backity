@@ -9,9 +9,8 @@ describe('PageHeaderComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PageHeaderComponent ],
-      imports: [ NgbModule ]
-    })
+    imports: [NgbModule, PageHeaderComponent]
+})
     .compileComponents();
   });
 

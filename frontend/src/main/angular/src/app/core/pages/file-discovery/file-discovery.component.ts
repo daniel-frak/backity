@@ -13,16 +13,25 @@ import {
   PageGameFile
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
-import {StompSubscription} from "@stomp/stompjs/esm6/stomp-subscription";
 import {IMessage} from "@stomp/stompjs";
 import {catchError} from "rxjs/operators";
-import {firstValueFrom} from "rxjs";
+import {firstValueFrom, Subscription} from "rxjs";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
+import {PageHeaderComponent} from '@app/shared/components/page-header/page-header.component';
+import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
+import {DatePipe, NgFor, NgIf, NgStyle} from '@angular/common';
+import {FileDiscoveryStatusBadgeComponent} from './file-discovery-status-badge/file-discovery-status-badge.component';
+import {NewDiscoveredFilesBadgeComponent} from './new-discovered-files-badge/new-discovered-files-badge.component';
+import {ButtonComponent} from '@app/shared/components/button/button.component';
+import {TableComponent} from '@app/shared/components/table/table.component';
+import {TableColumnDirective} from '@app/shared/components/table/column-directive/table-column.directive';
 
 @Component({
   selector: 'app-file-discovery',
   templateUrl: './file-discovery.component.html',
-  styleUrls: ['./file-discovery.component.scss']
+  styleUrls: ['./file-discovery.component.scss'],
+  standalone: true,
+  imports: [PageHeaderComponent, LoadedContentComponent, NgFor, FileDiscoveryStatusBadgeComponent, NewDiscoveredFilesBadgeComponent, ButtonComponent, NgIf, NgStyle, TableComponent, TableColumnDirective, DatePipe]
 })
 export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
@@ -37,7 +46,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   discoveryStateUnknown: boolean = true;
 
   private readonly pageSize = 20;
-  private readonly stompSubscriptions: StompSubscription[] = [];
+  private readonly subscriptions: Subscription[] = [];
 
   constructor(private readonly fileDiscoveryClient: FileDiscoveryClient,
               private readonly gameFilesClient: GameFilesClient,
@@ -48,11 +57,14 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   asGameFile = (gameFile: GameFile) => gameFile;
 
   ngOnInit(): void {
-    this.messageService.onConnect(client => this.stompSubscriptions.push(
-      client.subscribe(FileDiscoveryWebSocketTopics.FileDiscovered, p => this.onFileDiscovered(p)),
-      client.subscribe(FileDiscoveryWebSocketTopics.FileStatusChanged, p => this.onDiscoveryStatusChanged(p)),
-      client.subscribe(FileDiscoveryWebSocketTopics.ProgressUpdate, p => this.onProgressUpdated(p))
-    ))
+    this.subscriptions.push(
+      this.messageService.watch(FileDiscoveryWebSocketTopics.FileDiscovered)
+        .subscribe(p => this.onFileDiscovered(p)),
+      this.messageService.watch(FileDiscoveryWebSocketTopics.FileStatusChanged)
+        .subscribe(p => this.onDiscoveryStatusChanged(p)),
+      this.messageService.watch(FileDiscoveryWebSocketTopics.ProgressUpdate)
+        .subscribe(p => this.onProgressUpdated(p))
+    )
 
     this.refreshInfo();
 
@@ -153,7 +165,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.stompSubscriptions.forEach(s => s.unsubscribe());
+    this.subscriptions.forEach(s => s.unsubscribe());
   }
 
   getStatuses(): FileDiscoveryStatus[] {

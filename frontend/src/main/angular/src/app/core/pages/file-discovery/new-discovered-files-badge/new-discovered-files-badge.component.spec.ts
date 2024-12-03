@@ -9,9 +9,8 @@ describe('NewDiscoveredFilesBadgeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ NewDiscoveredFilesBadgeComponent ],
-      imports: [ NgbModule ]
-    })
+    imports: [NgbModule, NewDiscoveredFilesBadgeComponent]
+})
     .compileComponents();
   });
 

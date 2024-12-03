@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { FileDiscoveryStatusBadgeComponent } from './file-discovery-status-badge.component';
+import {FileDiscoveryStatusBadgeComponent} from './file-discovery-status-badge.component';
 
 describe('DiscoveryStatusBadgeComponent', () => {
   let component: FileDiscoveryStatusBadgeComponent;
@@ -8,9 +8,9 @@ describe('DiscoveryStatusBadgeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FileDiscoveryStatusBadgeComponent ]
+      imports: [FileDiscoveryStatusBadgeComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {
