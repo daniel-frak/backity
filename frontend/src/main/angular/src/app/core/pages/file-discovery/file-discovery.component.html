@@ -3,8 +3,7 @@
   as well as manually trigger file discovery.
 </app-page-header>
 
-<div class="card mt-3">
-  <div class="card-body">
+<app-card>
     <app-loaded-content [isLoading]="infoIsLoading">
       <div class="badge-container">
         <ng-container *ngFor="let status of getStatuses()">
@@ -60,12 +59,9 @@
         </div>
       </ng-container>
     </app-loaded-content>
-  </div>
-</div>
-<div class="card mt-3">
-  <div class="card-body">
-    <h2 class="card-title">Discovered files</h2>
+</app-card>
 
+<app-card title="Discovered files">
     <div class="button-container mb-3">
       <app-button [actionAsync]="refreshDiscoveredFiles()"
                   testId="refresh-discovered-files-btn"
@@ -101,5 +97,4 @@
         </div>
       </ng-template>
     </app-table>
-  </div>
-</div>
+</app-card>

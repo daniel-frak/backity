@@ -4,15 +4,19 @@ import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 import dev.codesoapbox.backity.core.game.domain.GameId;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.UUID;
 
 @Mapper
 public abstract class GameFileJpaEntityMapper {
 
+    @BeanMapping(ignoreUnmappedSourceProperties = "domainEvents")
     public abstract GameFileJpaEntity toEntity(GameFile model);
 
+    @Mapping(target = "domainEvents", expression = "java( new java.util.ArrayList<>() )")
     public abstract GameFile toModel(GameFileJpaEntity entity);
 
     protected UUID toUuid(GameId id) {

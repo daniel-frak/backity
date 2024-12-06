@@ -1,13 +1,15 @@
 package dev.codesoapbox.backity.core.gamefile.domain;
 
+import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
+import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
+import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NonNull;
+import dev.codesoapbox.backity.core.shared.domain.DomainEvent;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * A version of a game file, either not yet downloaded, already downloaded or anything in-between.
@@ -33,6 +35,10 @@ public class GameFile {
     private LocalDateTime dateCreated;
     private LocalDateTime dateModified;
 
+    @Getter
+    @NonNull
+    private List<DomainEvent> domainEvents;
+
     public void enqueue() {
         fileBackup.setStatus(FileBackupStatus.ENQUEUED);
     }
@@ -40,15 +46,32 @@ public class GameFile {
     public void fail(String failedReason) {
         fileBackup.setStatus(FileBackupStatus.FAILED);
         fileBackup.setFailedReason(failedReason);
+
+        var event = new FileBackupFailedEvent(id, failedReason);
+        domainEvents.add(event);
     }
 
     public void markAsInProgress() {
         fileBackup.setStatus(FileBackupStatus.IN_PROGRESS);
+
+        var fileBackupStartedEvent = new FileBackupStartedEvent(
+                id,
+                gameProviderFile.originalGameTitle(),
+                gameProviderFile.fileTitle(),
+                gameProviderFile.version(),
+                gameProviderFile.originalFileName(),
+                gameProviderFile.size(),
+                fileBackup.getFilePath()
+        );
+        domainEvents.add(fileBackupStartedEvent);
     }
 
     public void markAsDownloaded(String filePath) {
         fileBackup.setFilePath(filePath);
         fileBackup.setStatus(FileBackupStatus.SUCCESS);
+
+        var event = new FileBackupFinishedEvent(id);
+        domainEvents.add(event);
     }
 
     public void updateFilePath(String filePath) {
@@ -60,8 +83,12 @@ public class GameFile {
     }
 
     public void validateIsBackedUp() {
-        if(fileBackup.getStatus() != FileBackupStatus.SUCCESS) {
+        if (fileBackup.getStatus() != FileBackupStatus.SUCCESS) {
             throw new GameFileNotBackedUpException(id);
         }
+    }
+
+    public void clearDomainEvents() {
+        domainEvents.clear();
     }
 }

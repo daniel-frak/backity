@@ -4,6 +4,8 @@ import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import lombok.NonNull;
 
+import java.util.ArrayList;
+
 public record GameProviderFile(
         @NonNull GameProviderId gameProviderId,
         @NonNull String originalGameTitle,
@@ -21,7 +23,8 @@ public record GameProviderFile(
                 this,
                 new FileBackup(FileBackupStatus.DISCOVERED, null, null),
                 null,
-                null
+                null,
+                new ArrayList<>()
         );
     }
 }

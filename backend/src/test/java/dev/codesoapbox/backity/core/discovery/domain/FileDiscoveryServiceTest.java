@@ -1,13 +1,16 @@
 package dev.codesoapbox.backity.core.discovery.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
+import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryProgressChangedEvent;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
+import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryStatusChangedEvent;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
+import dev.codesoapbox.backity.core.shared.domain.DomainEventPublisher;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +53,7 @@ class FileDiscoveryServiceTest {
     private GameFileRepository fileRepository;
 
     @Mock
-    private FileDiscoveryEventPublisher eventPublisher;
+    private DomainEventPublisher eventPublisher;
 
     @BeforeEach
     void setUp() {
@@ -117,6 +120,12 @@ class FileDiscoveryServiceTest {
                 .until(gameProviderFileDiscoveryService::hasBeenTriggered);
     }
 
+    private GameProviderFile aDiscoveredFile(String gameTitle) {
+        return new GameProviderFile(
+                new GameProviderId("someGameProviderId"), gameTitle, "someTitle", "someVersion", "someUrl",
+                "someOriginalFileName", "100 KB");
+    }
+
     @Test
     void startFileDiscoveryShouldSaveGameInformationGivenItDoesNotYetExist() {
         var gameTitle = "someGameTitle";
@@ -134,12 +143,6 @@ class FileDiscoveryServiceTest {
         ArgumentCaptor<Game> gameCaptor = ArgumentCaptor.forClass(Game.class);
         verify(gameRepository).save(gameCaptor.capture());
         assertThat(gameCaptor.getValue().getTitle()).isEqualTo(gameTitle);
-    }
-
-    private GameProviderFile aDiscoveredFile(String gameTitle) {
-        return new GameProviderFile(
-                new GameProviderId("someGameProviderId"), gameTitle, "someTitle", "someVersion", "someUrl",
-                "someOriginalFileName", "100 KB");
     }
 
     @Test
@@ -168,10 +171,10 @@ class FileDiscoveryServiceTest {
         GameFile savedGameFile = gameFileArgumentCaptor.getValue();
         GameFile expectedGameFile = discoveredFile.associateWith(game);
         expectedGameFile.setId(savedGameFile.getId());
-        verify(eventPublisher).publishFileDiscoveredEvent(expectedGameFile);
+        verify(eventPublisher).publish(FileDiscoveredEvent.from(expectedGameFile));
         assertThat(progressUpdates.size()).isOne();
         finishFileDiscovery();
-        verify(eventPublisher, times(2)).publishStatusChangedEvent(any());
+        verify(eventPublisher, times(2)).publish(any(FileDiscoveryStatusChangedEvent.class));
     }
 
     private List<FileDiscoveryProgressChangedEvent> trackProgressUpdateEvents() {
@@ -179,7 +182,7 @@ class FileDiscoveryServiceTest {
         doAnswer(inv -> {
             progressList.add(inv.getArgument(0));
             return null;
-        }).when(eventPublisher).publishProgressChangedEvent(any());
+        }).when(eventPublisher).publish(any(FileDiscoveryProgressChangedEvent.class));
         return progressList;
     }
 
@@ -196,7 +199,7 @@ class FileDiscoveryServiceTest {
         gameProviderFileDiscoveryService.simulateFileDiscovery(gameProviderFile);
 
         verify(fileRepository, never()).save(any());
-        verify(eventPublisher, never()).publishFileDiscoveredEvent(any());
+        verify(eventPublisher, never()).publish(any(FileDiscoveredEvent.class));
     }
 
     @Test

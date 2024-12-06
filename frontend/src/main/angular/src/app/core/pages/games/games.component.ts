@@ -11,13 +11,14 @@ import {NgFor, NgSwitch, NgSwitchCase} from '@angular/common';
 import {TableComponent} from '@app/shared/components/table/table.component';
 import {TableColumnDirective} from '@app/shared/components/table/column-directive/table-column.directive';
 import {FileStatusBadgeComponent} from './file-status-badge/file-status-badge.component';
+import {CardComponent} from "@app/shared/components/card/card.component";
 
 @Component({
   selector: 'app-games',
   templateUrl: './games.component.html',
   styleUrls: ['./games.component.scss'],
   standalone: true,
-  imports: [PageHeaderComponent, ButtonComponent, LoadedContentComponent, NgFor, TableComponent, TableColumnDirective, FileStatusBadgeComponent, NgSwitch, NgSwitchCase]
+  imports: [PageHeaderComponent, ButtonComponent, LoadedContentComponent, NgFor, TableComponent, TableColumnDirective, FileStatusBadgeComponent, NgSwitch, NgSwitchCase, CardComponent]
 })
 export class GamesComponent implements OnInit {
 

@@ -27,9 +27,6 @@ class EnqueuedFileBackupProcessorTest {
     @Mock
     private FileBackupService fileBackupService;
 
-    @Mock
-    private FileBackupEventPublisher eventPublisher;
-
     @Test
     void shouldProcessEnqueuedFileDownloadIfNotCurrentlyDownloading() {
         GameFile gameFile = discoveredGameFile().build();
@@ -46,9 +43,7 @@ class EnqueuedFileBackupProcessorTest {
 
         enqueuedFileBackupProcessor.processQueue();
 
-        verify(eventPublisher).publishBackupStartedEvent(gameFile);
         verify(fileBackupService).backUpFile(gameFile);
-        verify(eventPublisher).publishBackupFinishedEvent(gameFile);
         assertThat(enqueuedFileBackupProcessor.enqueuedFileBackupReference.get()).isNull();
         assertThat(gameFileWasKeptAsReferenceDuringProcessing).isTrue();
     }
@@ -66,10 +61,8 @@ class EnqueuedFileBackupProcessorTest {
 
         enqueuedFileBackupProcessor.processQueue();
 
-        verify(eventPublisher).publishBackupStartedEvent(gameFile);
-        verify(eventPublisher).publishBackupFinishedEvent(gameFile);
         assertThat(enqueuedFileBackupProcessor.enqueuedFileBackupReference.get()).isNull();
-        verifyNoMoreInteractions(eventPublisher, fileBackupService);
+        verifyNoMoreInteractions(fileBackupService);
     }
 
     @Test
@@ -83,7 +76,7 @@ class EnqueuedFileBackupProcessorTest {
 
         enqueuedFileBackupProcessor.processQueue();
 
-        verifyNoMoreInteractions(eventPublisher, fileBackupService);
+        verifyNoMoreInteractions(fileBackupService);
     }
 
     @Test
@@ -95,6 +88,6 @@ class EnqueuedFileBackupProcessorTest {
         enqueuedFileBackupProcessor.enqueuedFileBackupReference.set(gameFile);
         enqueuedFileBackupProcessor.processQueue();
 
-        verifyNoInteractions(gameFileRepository, fileBackupService, eventPublisher);
+        verifyNoInteractions(gameFileRepository, fileBackupService);
     }
 }

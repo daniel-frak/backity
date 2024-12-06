@@ -19,6 +19,7 @@ import {CommonModule} from '@angular/common';
 import {TableComponent} from '@app/shared/components/table/table.component';
 import {TableColumnDirective} from '@app/shared/components/table/column-directive/table-column.directive';
 import {ButtonComponent} from '@app/shared/components/button/button.component';
+import {CardComponent} from "@app/shared/components/card/card.component";
 
 @Component({
   selector: 'app-downloads',
@@ -30,7 +31,8 @@ import {ButtonComponent} from '@app/shared/components/button/button.component';
     PageHeaderComponent,
     TableComponent,
     TableColumnDirective,
-    ButtonComponent
+    ButtonComponent,
+    CardComponent
   ]
 })
 export class FileBackupComponent implements OnInit, OnDestroy {

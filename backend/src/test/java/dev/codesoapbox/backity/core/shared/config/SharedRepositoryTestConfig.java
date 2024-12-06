@@ -1,10 +1,13 @@
 package dev.codesoapbox.backity.core.shared.config;
 
-import dev.codesoapbox.backity.core.gamefile.config.GameFileJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.game.config.GameJpaRepositoryBeanConfig;
+import dev.codesoapbox.backity.core.gamefile.config.GameFileJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.shared.config.http.TestTimeBeanConfig;
 import dev.codesoapbox.backity.core.shared.config.jpa.SharedJpaRepositoryBeanConfig;
+import dev.codesoapbox.backity.core.shared.domain.DomainEventPublisher;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -25,6 +28,9 @@ import org.springframework.context.annotation.Import;
         // Specific
         GameJpaRepositoryBeanConfig.class,
         GameFileJpaRepositoryBeanConfig.class
+})
+@MockBeans({
+        @MockBean(DomainEventPublisher.class)
 })
 public class SharedRepositoryTestConfig {
 }

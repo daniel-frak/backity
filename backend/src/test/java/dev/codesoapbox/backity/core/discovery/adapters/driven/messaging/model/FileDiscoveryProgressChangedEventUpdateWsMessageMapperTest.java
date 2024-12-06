@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model;
 
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryProgressChangedEvent;
+import dev.codesoapbox.backity.core.discovery.domain.events.TestFileDiscoveryEvents;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -13,15 +14,11 @@ class FileDiscoveryProgressChangedEventUpdateWsMessageMapperTest {
 
     @Test
     void shouldMapToMessage() {
-        var progress = new FileDiscoveryProgressChangedEvent("Test GameProviderId", 50, 10);
+        FileDiscoveryProgressChangedEvent event = TestFileDiscoveryEvents.progressChanged();
 
-        FileDiscoveryProgressChangedWsEvent result = MAPPER.toWsEvent(progress);
+        FileDiscoveryProgressChangedWsEvent result = MAPPER.toWsEvent(event);
 
-        FileDiscoveryProgressChangedWsEvent expectedResult = new FileDiscoveryProgressChangedWsEvent(
-                "Test GameProviderId", 50, 10);
-        assertThat(result)
-                .hasNoNullFieldsOrProperties()
-                .usingRecursiveComparison()
-                .isEqualTo(expectedResult);
+        FileDiscoveryProgressChangedWsEvent expectedResult = TestFileDiscoveryWsEvents.progressChanged();
+        assertThat(result).isEqualTo(expectedResult);
     }
 }

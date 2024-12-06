@@ -1,13 +1,16 @@
 package dev.codesoapbox.backity.core.gamefile.adapters.driven.persistence.jpa;
 
+import dev.codesoapbox.backity.DoNotMutate;
+import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.gamefile.domain.FileBackupStatus;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotFoundException;
-import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.shared.adapters.driven.persistence.PageEntityMapper;
 import dev.codesoapbox.backity.core.shared.adapters.driven.persistence.PaginationEntityMapper;
+import dev.codesoapbox.backity.core.shared.domain.DomainEvent;
+import dev.codesoapbox.backity.core.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.core.shared.domain.Page;
 import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +18,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,6 +35,7 @@ public class GameFileJpaRepository implements GameFileRepository {
     private final GameFileJpaEntityMapper entityMapper;
     private final PageEntityMapper pageMapper;
     private final PaginationEntityMapper paginationMapper;
+    private final DomainEventPublisher domainEventPublisher;
 
     @Override
     public Optional<GameFile> findOldestWaitingForDownload() {
@@ -51,7 +58,21 @@ public class GameFileJpaRepository implements GameFileRepository {
     public GameFile save(GameFile gameFile) {
         GameFileJpaEntity entity = entityMapper.toEntity(gameFile);
         GameFileJpaEntity savedEntity = springRepository.save(entity);
+        schedulePublishingDomainEventsAfterCommit(gameFile);
+
         return entityMapper.toModel(savedEntity);
+    }
+
+    private void schedulePublishingDomainEventsAfterCommit(GameFile gameFile) {
+        // Since we're about to clear the Aggregate's events, we must copy them to reference after committing:
+        List<DomainEvent> events = new ArrayList<>(gameFile.getDomainEvents());
+
+        // Clear the domain events to prevent them from being republished in case of several calls to save():
+        gameFile.clearDomainEvents();
+
+        // Events should only be published after the Aggregate changes have been committed to the database:
+        TransactionSynchronizationManager.registerSynchronization(
+                new PublishEventsAfterCommitTransactionSynchronization(events));
     }
 
     @Override
@@ -104,5 +125,26 @@ public class GameFileJpaRepository implements GameFileRepository {
     @Override
     public void deleteById(GameFileId gameFileId) {
         springRepository.deleteById(gameFileId.value());
+    }
+
+    @DoNotMutate // Not covered by unit tests
+    private class PublishEventsAfterCommitTransactionSynchronization implements TransactionSynchronization {
+
+        private final List<DomainEvent> events;
+
+        public PublishEventsAfterCommitTransactionSynchronization(List<DomainEvent> events) {
+            this.events = events;
+        }
+
+        @Override
+        public void afterCommit() {
+            publish();
+        }
+
+        private void publish() {
+            for (DomainEvent domainEvent : events) {
+                domainEventPublisher.publish(domainEvent);
+            }
+        }
     }
 }

@@ -1,11 +1,13 @@
 package dev.codesoapbox.backity.core.gamefile.adapters.driven.persistence.jpa;
 
+import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.game.adapters.driven.persistence.jpa.GameJpaEntityMapper;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotFoundException;
+import dev.codesoapbox.backity.core.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.core.shared.domain.Page;
 import dev.codesoapbox.backity.core.shared.domain.Pagination;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +18,8 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +30,8 @@ import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.*;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
 @Transactional
 abstract class GameFileJpaRepositoryAbstractIT {
@@ -38,6 +44,9 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
     @Autowired
     protected GameFileJpaEntityMapper entityMapper;
+
+    @Autowired
+    protected DomainEventPublisher domainEventPublisher;
 
     @BeforeEach
     void setUp() {
@@ -116,6 +125,28 @@ abstract class GameFileJpaRepositoryAbstractIT {
                 .isEqualTo(newGameFile);
         assertThat(persistedEntity.getDateCreated()).isNotNull();
         assertThat(persistedEntity.getDateModified()).isNotNull();
+    }
+
+    @Test
+    void saveShouldPublishEventsAfterCommitting() {
+        GameFile gameFile = fullGameFile().build();
+        gameFile.markAsInProgress();
+        gameFileJpaRepository.save(gameFile);
+
+        TransactionSynchronizationManager.getSynchronizations().forEach(TransactionSynchronization::afterCommit);
+
+        verify(domainEventPublisher).publish(any(FileBackupStartedEvent.class));
+    }
+
+    @Test
+    void saveShouldClearEvents() {
+        GameFile gameFile = fullGameFile().build();
+        gameFile.markAsInProgress();
+        gameFileJpaRepository.save(gameFile);
+
+        TransactionSynchronizationManager.getSynchronizations().forEach(TransactionSynchronization::afterCommit);
+
+        assertThat(gameFile.getDomainEvents()).isEmpty();
     }
 
     @Test

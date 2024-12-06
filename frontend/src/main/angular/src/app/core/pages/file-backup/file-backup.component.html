@@ -2,33 +2,30 @@
   Here you can see the backup queue.
 </app-page-header>
 
-<div class="card mt-3">
-  <div class="card-body" id="currently-downloading">
-    <h2 class="card-title">Currently backing up</h2>
-
-    <ng-container *ngIf="!currentDownload">
-      Nothing is currently being backed up.
-    </ng-container>
-    <ng-container *ngIf="currentDownload">
-      <app-table [content]="{content: [currentDownload]}" [isLoading]="filesAreLoading">
-        <ng-template app-table-column="Game title" let-item>
-          {{ asBackupStartedEvent(item)!.originalGameTitle }}
-        </ng-template>
-        <ng-template app-table-column="File name" let-item>
-          {{ asBackupStartedEvent(item)!.fileTitle }}
-          - {{ asBackupStartedEvent(item)!.originalFileName }}
-        </ng-template>
-        <ng-template app-table-column="Version" let-item>
-          {{ asBackupStartedEvent(item)!.version }}
-        </ng-template>
-        <ng-template app-table-column="Size" let-item>
-          {{ asBackupStartedEvent(item)!.size }}
-        </ng-template>
-        <ng-template app-table-column="Path" style="max-width: 5%" let-item>
-          <span class="file-path">{{ asBackupStartedEvent(item)!.filePath }}</span>
-        </ng-template>
-        <ng-template app-table-column="Progress">
-          <ng-container *ngIf="downloadProgress">
+<app-card title="Currently backing up" id="currently-downloading">
+  <ng-container *ngIf="!currentDownload">
+    Nothing is currently being backed up.
+  </ng-container>
+  <ng-container *ngIf="currentDownload">
+    <app-table [content]="{content: [currentDownload]}" [isLoading]="filesAreLoading">
+      <ng-template app-table-column="Game title" let-item>
+        {{ asBackupStartedEvent(item)!.originalGameTitle }}
+      </ng-template>
+      <ng-template app-table-column="File name" let-item>
+        {{ asBackupStartedEvent(item)!.fileTitle }}
+        - {{ asBackupStartedEvent(item)!.originalFileName }}
+      </ng-template>
+      <ng-template app-table-column="Version" let-item>
+        {{ asBackupStartedEvent(item)!.version }}
+      </ng-template>
+      <ng-template app-table-column="Size" let-item>
+        {{ asBackupStartedEvent(item)!.size }}
+      </ng-template>
+      <ng-template app-table-column="Path" style="max-width: 5%" let-item>
+        <span class="file-path">{{ asBackupStartedEvent(item)!.filePath }}</span>
+      </ng-template>
+      <ng-template app-table-column="Progress">
+        <ng-container *ngIf="downloadProgress">
             <span class="progress">
               <!--/* //NOSONAR */--><div
               aria-valuemax="100" aria-valuemin="0" [attr.aria-valuenow]="downloadProgress.percentage"
@@ -36,68 +33,65 @@
               [ngStyle]="{width: downloadProgress.percentage + '%'}">{{ downloadProgress.percentage + '%' }}
             </div>
             </span>
-            (time left: {{ (downloadProgress.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }})
-          </ng-container>
-        </ng-template>
-      </app-table>
-    </ng-container>
-  </div>
-</div>
-
-<div class="card mt-3">
-  <div class="card-body">
-    <h2 class="card-title">Queue</h2>
-    <div class="button-container">
-      <app-button [actionAsync]="refresh()" testId="refresh-queue-btn" buttonStyle="secondary">Refresh</app-button>
-    </div>
-
-    <app-table [content]="enqueuedDownloads!" [isLoading]="filesAreLoading" caption="Backup queue" id="download-queue">
-      <ng-template app-table-column="Provider game title" let-item>
-        {{ asGameFile(item).gameProviderFile!.originalGameTitle }}
-      </ng-template>
-      <ng-template app-table-column="Provider file name" let-item>
-        {{ asGameFile(item).gameProviderFile!.originalFileName }}
-      </ng-template>
-      <ng-template app-table-column="Version" let-item>
-        {{ asGameFile(item).gameProviderFile!.version }}
-      </ng-template>
-      <ng-template app-table-column="Size" let-item>
-        {{ asGameFile(item).gameProviderFile!.size }}
-      </ng-template>
-      <ng-template app-table-column="Actions"
-                   append-class="text-end"
-                   hide-title-on-mobile
-                   let-item>
-        <ng-container *ngFor="let file of [asGameFile(item)]">
-          <div class="button-container justify-content-end">
-            <app-button [actionAsync]="removeFromQueue(file.id!)" buttonStyle="primary"
-                        *ngIf="file.fileBackup?.status == FileBackupStatus.Enqueued">
-              Cancel
-            </app-button>
-          </div>
+          (time left: {{ (downloadProgress.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }})
         </ng-container>
       </ng-template>
     </app-table>
+  </ng-container>
+</app-card>
 
-    <app-table [content]="processedFiles!" [isLoading]="filesAreLoading"
-               caption="Processed files" id="processed-files" [testId]="'processed-files-table'">
-      <ng-template app-table-column="Game title" let-item>
-        {{ asGameFile(item).gameProviderFile!.originalGameTitle }}
-      </ng-template>
-      <ng-template app-table-column="File name" let-item>
-        {{ asGameFile(item).gameProviderFile!.fileTitle }}
-      </ng-template>
-      <ng-template app-table-column="Version" let-item>
-        {{ asGameFile(item).gameProviderFile!.version }}
-      </ng-template>
-      <ng-template app-table-column="Size" let-item>
-        {{ asGameFile(item).gameProviderFile!.size }}
-      </ng-template>
-      <ng-template app-table-column="Path" style="max-width: 5%" let-item>
-        <span class="file-path">{{ asGameFile(item).fileBackup!.filePath }}</span>
-      </ng-template>
-      <ng-template app-table-column="Status" let-item>
-        <ng-container *ngFor="let file of [asGameFile(item)]">
+<app-card title="Queue">
+  <div class="button-container">
+    <app-button [actionAsync]="refresh()" testId="refresh-queue-btn" buttonStyle="secondary">Refresh</app-button>
+  </div>
+
+  <app-table [content]="enqueuedDownloads!" [isLoading]="filesAreLoading" caption="Backup queue" id="download-queue">
+    <ng-template app-table-column="Provider game title" let-item>
+      {{ asGameFile(item).gameProviderFile!.originalGameTitle }}
+    </ng-template>
+    <ng-template app-table-column="Provider file name" let-item>
+      {{ asGameFile(item).gameProviderFile!.originalFileName }}
+    </ng-template>
+    <ng-template app-table-column="Version" let-item>
+      {{ asGameFile(item).gameProviderFile!.version }}
+    </ng-template>
+    <ng-template app-table-column="Size" let-item>
+      {{ asGameFile(item).gameProviderFile!.size }}
+    </ng-template>
+    <ng-template app-table-column="Actions"
+                 append-class="text-end"
+                 hide-title-on-mobile
+                 let-item>
+      <ng-container *ngFor="let file of [asGameFile(item)]">
+        <div class="button-container justify-content-end">
+          <app-button [actionAsync]="removeFromQueue(file.id!)" buttonStyle="primary"
+                      *ngIf="file.fileBackup?.status == FileBackupStatus.Enqueued">
+            Cancel
+          </app-button>
+        </div>
+      </ng-container>
+    </ng-template>
+  </app-table>
+
+  <app-table [content]="processedFiles!" [isLoading]="filesAreLoading"
+             caption="Processed files" id="processed-files" [testId]="'processed-files-table'">
+    <ng-template app-table-column="Game title" let-item>
+      {{ asGameFile(item).gameProviderFile!.originalGameTitle }}
+    </ng-template>
+    <ng-template app-table-column="File name" let-item>
+      {{ asGameFile(item).gameProviderFile!.fileTitle }}
+    </ng-template>
+    <ng-template app-table-column="Version" let-item>
+      {{ asGameFile(item).gameProviderFile!.version }}
+    </ng-template>
+    <ng-template app-table-column="Size" let-item>
+      {{ asGameFile(item).gameProviderFile!.size }}
+    </ng-template>
+    <ng-template app-table-column="Path" style="max-width: 5%" let-item>
+      <span class="file-path">{{ asGameFile(item).fileBackup!.filePath }}</span>
+    </ng-template>
+    <ng-template app-table-column="Status" let-item>
+      <ng-container *ngFor="let file of [asGameFile(item)]">
           <span
             [ngClass]="{'bg-success': file.fileBackup.status == FileBackupStatus.Success,
              'bg-danger': file.fileBackup.status != FileBackupStatus.Success}"
@@ -110,8 +104,7 @@
 
             {{ file.fileBackup.status }}
           </span>
-        </ng-container>
-      </ng-template>
-    </app-table>
-  </div>
-</div>
+      </ng-container>
+    </ng-template>
+  </app-table>
+</app-card>

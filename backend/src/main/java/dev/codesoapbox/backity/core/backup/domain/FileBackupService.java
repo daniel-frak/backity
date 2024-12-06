@@ -3,10 +3,10 @@ package dev.codesoapbox.backity.core.backup.domain;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupUrlEmptyException;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.NotEnoughFreeSpaceException;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
 import dev.codesoapbox.backity.core.filemanagement.domain.FilePathProvider;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
 
@@ -103,26 +103,26 @@ public class FileBackupService {
         return gameProviderFileBackupService.backUpFile(gameFile, tempFilePath);
     }
 
-    private void markDownloaded(GameFile gameFile, String downloadedPath) {
-        gameFile.markAsDownloaded(downloadedPath);
-        gameFileRepository.save(gameFile);
-    }
-
-    private void tryToCleanUpAfterFailedDownload(GameFile gameFile,
-                                                 String tempFilePath) throws IOException {
-        fileManager.deleteIfExists(tempFilePath);
-        if (tempFilePath.equals(gameFile.getFileBackup().getFilePath())) {
-            gameFile.clearFilePath();
-            gameFileRepository.save(gameFile);
-        }
-    }
-
     private GameProviderFileBackupService getGameProviderFileBackupService(GameProviderId gameProviderId) {
         if (!gameProviderFileBackupServices.containsKey(gameProviderId)) {
             throw new IllegalArgumentException("File backup service for gameProviderId not found: " + gameProviderId);
         }
 
         return gameProviderFileBackupServices.get(gameProviderId);
+    }
+
+    private void markDownloaded(GameFile gameFile, String downloadedPath) {
+        gameFile.markAsDownloaded(downloadedPath);
+        gameFileRepository.save(gameFile);
+    }
+
+    private void tryToCleanUpAfterFailedDownload(GameFile gameFile,
+                                                 String tempFilePath) {
+        fileManager.deleteIfExists(tempFilePath);
+        if (tempFilePath.equals(gameFile.getFileBackup().getFilePath())) {
+            gameFile.clearFilePath();
+            gameFileRepository.save(gameFile);
+        }
     }
 
     private void markFailed(GameFile gameFile, Exception e) {

@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.integrations.gog.config;
 
 import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
-import dev.codesoapbox.backity.core.backup.domain.FileBackupEventPublisher;
-import dev.codesoapbox.backity.core.backup.domain.FileBackupProgress;
+import dev.codesoapbox.backity.core.shared.domain.DomainEventPublisher;
+import dev.codesoapbox.backity.core.backup.domain.events.FileBackupProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.ProgressInfo;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.GogFileBackupService;
@@ -50,14 +50,14 @@ public class GogBeanConfig {
 
     @Bean
     UrlFileDownloader urlFileDownloader(FileManager fileManager,
-                                             FileBackupEventPublisher fileBackupEventPublisher) {
-        return new UrlFileDownloader(fileManager, i -> getProgressInfoConsumer(fileBackupEventPublisher, i),
+                                        DomainEventPublisher domainEventPublisher) {
+        return new UrlFileDownloader(fileManager,
+                i -> publishFileBackupProgressedEvent(domainEventPublisher, i),
                 BackupProgress::new);
     }
 
-    private void getProgressInfoConsumer(FileBackupEventPublisher fileBackupEventPublisher, ProgressInfo i) {
-        fileBackupEventPublisher.publishFileBackupProgressChangedEvent(
-                new FileBackupProgress(i.percentage(), i.timeLeft().toSeconds()));
+    private void publishFileBackupProgressedEvent(DomainEventPublisher domainEventPublisher, ProgressInfo i) {
+        domainEventPublisher.publish(new FileBackupProgressChangedEvent(i.percentage(), i.timeLeft().toSeconds()));
     }
 
     @Bean

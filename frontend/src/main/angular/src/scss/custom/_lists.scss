@@ -1,0 +1,5 @@
+@import "src/scss/bootstrap/basics";
+
+li:not(:last-child) {
+  margin-bottom: map_get($spacers, 3);
+}

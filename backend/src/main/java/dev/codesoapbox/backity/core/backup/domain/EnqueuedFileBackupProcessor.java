@@ -13,7 +13,6 @@ public class EnqueuedFileBackupProcessor {
 
     private final GameFileRepository gameFileRepository;
     private final FileBackupService fileBackupService;
-    private final FileBackupEventPublisher eventPublisher;
 
     final AtomicReference<GameFile> enqueuedFileBackupReference = new AtomicReference<>();
 
@@ -36,13 +35,10 @@ public class EnqueuedFileBackupProcessor {
         log.info("Backing up enqueued file {}", gameFile.getGameProviderFile().url());
 
         try {
-            eventPublisher.publishBackupStartedEvent(gameFile);
             fileBackupService.backUpFile(gameFile);
-            eventPublisher.publishBackupFinishedEvent(gameFile);
         } catch (RuntimeException e) {
             log.error("An error occurred while trying to process enqueued file (id: {})",
                     gameFile.getId(), e);
-            eventPublisher.publishBackupFinishedEvent(gameFile);
         } finally {
             enqueuedFileBackupReference.set(null);
         }

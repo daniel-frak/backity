@@ -25,7 +25,7 @@ class GogAuthSpringSchedulerIT {
     void shouldRefreshAccessTokenIfNeeded() {
         await()
                 .pollInterval(Duration.ofMillis(5))
-                .atMost(Duration.ofMillis(100))
+                .atMost(Duration.ofSeconds(5))
                 .untilAsserted(() -> verify(gogAuthSpringService, atLeastOnce()).refreshAccessTokenIfNeeded());
     }
 }

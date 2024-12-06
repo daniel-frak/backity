@@ -6,13 +6,14 @@ import {PageHeaderComponent} from '@app/shared/components/page-header/page-heade
 import {NgFor, NgIf} from '@angular/common';
 import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
 import {Subscription} from "rxjs";
+import {CardComponent} from "@app/shared/components/card/card.component";
 
 @Component({
   selector: 'app-logs',
   templateUrl: './logs.component.html',
   styleUrls: ['./logs.component.scss'],
   standalone: true,
-  imports: [PageHeaderComponent, NgIf, LoadedContentComponent, NgFor]
+  imports: [PageHeaderComponent, NgIf, LoadedContentComponent, NgFor, CardComponent]
 })
 export class LogsComponent implements OnInit, OnDestroy {
 

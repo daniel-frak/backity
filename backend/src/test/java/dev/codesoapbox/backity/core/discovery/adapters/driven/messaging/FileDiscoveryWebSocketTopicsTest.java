@@ -7,8 +7,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FileDiscoveryWebSocketTopicsTest {
 
     @Test
-    void toStringShouldReturnValue() {
-        String result = FileDiscoveryWebSocketTopics.FILE_DISCOVERED.toString();
+    void wsDestinationShouldReturnValue() {
+        String result = FileDiscoveryWebSocketTopics.FILE_DISCOVERED.wsDestination();
 
         assertThat(result).isEqualTo("/topic/file-discovery/file-discovered");
     }

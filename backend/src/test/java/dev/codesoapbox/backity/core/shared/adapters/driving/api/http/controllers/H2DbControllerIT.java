@@ -1,14 +1,15 @@
 package dev.codesoapbox.backity.core.shared.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.backup.config.FileBackupBeanConfig;
-import dev.codesoapbox.backity.core.gamefile.config.GameFileJpaRepositoryBeanConfig;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.filemanagement.config.LocalFileSystemBeanConfig;
 import dev.codesoapbox.backity.core.filemanagement.config.SharedFileManagementBeanConfig;
 import dev.codesoapbox.backity.core.game.config.GameJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
+import dev.codesoapbox.backity.core.gamefile.config.GameFileJpaRepositoryBeanConfig;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.shared.config.DomainEventPublisherBeanConfig;
 import dev.codesoapbox.backity.core.shared.config.jpa.SharedJpaRepositoryBeanConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,11 +39,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = H2DbController.class, properties = "h2dump.path=test_dump.sql")
 @Import({SharedFileManagementBeanConfig.class, LocalFileSystemBeanConfig.class, FileBackupBeanConfig.class,
         GameJpaRepositoryBeanConfig.class, GameFileJpaRepositoryBeanConfig.class,
-        SharedJpaRepositoryBeanConfig.class})
+        SharedJpaRepositoryBeanConfig.class, DomainEventPublisherBeanConfig.class})
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 @EnableJpaAuditing
-@MockBeans(@MockBean(SimpMessagingTemplate.class))
+@MockBeans({
+        @MockBean(SimpMessagingTemplate.class)
+})
 class H2DbControllerIT {
 
     private static final Path TEST_DUMP_PATH = Path.of(

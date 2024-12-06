@@ -1,10 +1,11 @@
 package dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model;
 
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
+import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
+import dev.codesoapbox.backity.core.backup.domain.events.TestFileBackupEvents;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.fullGameFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class FileFileBackupStatusChangedWsEventMapperTest {
@@ -13,18 +14,22 @@ class FileFileBackupStatusChangedWsEventMapperTest {
             Mappers.getMapper(FileBackupStatusChangedWsEventMapper.class);
 
     @Test
-    void shouldMapToWsEvent() {
-        GameFile domain = fullGameFile().build();
+    void shouldMapBackupFinishedToWsEvent() {
+        FileBackupFinishedEvent domain = TestFileBackupEvents.finished();
 
         FileBackupStatusChangedWsEvent result = MAPPER.toWsEvent(domain);
 
-        var expectedResult = new FileBackupStatusChangedWsEvent(
-                domain.getId().value().toString(),
-                domain.getFileBackup().getStatus().toString(),
-                domain.getFileBackup().getFailedReason()
-        );
-        assertThat(result)
-                .hasNoNullFieldsOrProperties()
-                .usingRecursiveComparison().isEqualTo(expectedResult);
+        FileBackupStatusChangedWsEvent expectedResult = TestFileBackupWsEvents.finished();
+        assertThat(result).isEqualTo(expectedResult);
+    }
+
+    @Test
+    void shouldMapBackupFailedToWsEvent() {
+        FileBackupFailedEvent domain = TestFileBackupEvents.failed();
+
+        FileBackupStatusChangedWsEvent result = MAPPER.toWsEvent(domain);
+
+        FileBackupStatusChangedWsEvent expectedResult = TestFileBackupWsEvents.failed();
+        assertThat(result).isEqualTo(expectedResult);
     }
 }

@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model;
 
-import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
+import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
+import dev.codesoapbox.backity.core.discovery.domain.events.TestFileDiscoveryEvents;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.discoveredGameFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class FileDiscoveredWsEventMapperTest {
@@ -13,18 +13,11 @@ class FileDiscoveredWsEventMapperTest {
 
     @Test
     void shouldMapToMessage() {
-        GameProviderFile gameProviderFile = discoveredGameFile().build().getGameProviderFile();
+        FileDiscoveredEvent event = TestFileDiscoveryEvents.discovered();
 
-        FileDiscoveredWsEvent result = MAPPER.toWsEvent(gameProviderFile);
+        FileDiscoveredWsEvent result = MAPPER.toWsEvent(event);
 
-        var expectedResult = new FileDiscoveredWsEvent(
-                gameProviderFile.originalGameTitle(),
-                gameProviderFile.originalFileName(),
-                gameProviderFile.fileTitle(),
-                gameProviderFile.size()
-        );
-        assertThat(result).hasNoNullFieldsOrProperties()
-                .usingRecursiveComparison()
-                .isEqualTo(expectedResult);
+        FileDiscoveredWsEvent expectedResult = TestFileDiscoveryWsEvents.discovered();
+        assertThat(result).isEqualTo(expectedResult);
     }
 }

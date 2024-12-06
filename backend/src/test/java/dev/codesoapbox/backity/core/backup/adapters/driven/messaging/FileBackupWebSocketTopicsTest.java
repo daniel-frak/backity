@@ -7,8 +7,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FileBackupWebSocketTopicsTest {
 
     @Test
-    void toStringShouldReturnValue() {
-        String result = FileBackupWebSocketTopics.BACKUP_STARTED.toString();
+    void wsDestinationShouldReturnValue() {
+        String result = FileBackupWebSocketTopics.BACKUP_STARTED.wsDestination();
 
         assertThat(result).isEqualTo("/topic/backups/started");
     }

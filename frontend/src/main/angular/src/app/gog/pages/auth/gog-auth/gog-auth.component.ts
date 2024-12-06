@@ -8,6 +8,7 @@ import {LoadedContentComponent} from '@app/shared/components/loaded-content/load
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from '@app/shared/components/button/button.component';
 import {InputComponent} from "@app/shared/components/form/input/input.component";
+import {CardComponent} from "@app/shared/components/card/card.component";
 
 @Component({
   selector: 'app-gog-auth',
@@ -20,7 +21,8 @@ import {InputComponent} from "@app/shared/components/form/input/input.component"
     FormsModule,
     ReactiveFormsModule,
     ButtonComponent,
-    InputComponent
+    InputComponent,
+    CardComponent
   ]
 })
 export class GogAuthComponent implements OnInit {
@@ -29,9 +31,14 @@ export class GogAuthComponent implements OnInit {
 
   public gogAuthenticated: boolean = false;
   public gogIsLoading: boolean = true;
-  public gogAuthForm: FormGroup = new FormGroup({
-    gogCodeUrl: new FormControl('', Validators.required)
-  });
+  public gogAuthForm: FormGroup = new FormGroup(
+    {
+      gogCodeUrl: new FormControl('', Validators.required)
+    },
+    {
+      updateOn: 'submit'
+    }
+  );
 
   get gogCodeUrlInput(): AbstractControl<any, any> {
     return this.gogAuthForm.get('gogCodeUrl')!;

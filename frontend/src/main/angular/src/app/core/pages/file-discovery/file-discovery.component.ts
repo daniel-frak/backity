@@ -25,13 +25,14 @@ import {NewDiscoveredFilesBadgeComponent} from './new-discovered-files-badge/new
 import {ButtonComponent} from '@app/shared/components/button/button.component';
 import {TableComponent} from '@app/shared/components/table/table.component';
 import {TableColumnDirective} from '@app/shared/components/table/column-directive/table-column.directive';
+import {CardComponent} from "@app/shared/components/card/card.component";
 
 @Component({
   selector: 'app-file-discovery',
   templateUrl: './file-discovery.component.html',
   styleUrls: ['./file-discovery.component.scss'],
   standalone: true,
-  imports: [PageHeaderComponent, LoadedContentComponent, NgFor, FileDiscoveryStatusBadgeComponent, NewDiscoveredFilesBadgeComponent, ButtonComponent, NgIf, NgStyle, TableComponent, TableColumnDirective, DatePipe]
+  imports: [PageHeaderComponent, LoadedContentComponent, NgFor, FileDiscoveryStatusBadgeComponent, NewDiscoveredFilesBadgeComponent, ButtonComponent, NgIf, NgStyle, TableComponent, TableColumnDirective, DatePipe, CardComponent]
 })
 export class FileDiscoveryComponent implements OnInit, OnDestroy {
 

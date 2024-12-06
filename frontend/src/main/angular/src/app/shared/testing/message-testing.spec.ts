@@ -2,9 +2,9 @@ import {Message} from "@stomp/stompjs";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {ComponentFixture, fakeAsync, tick} from "@angular/core/testing";
 import {MessageTesting} from "@app/shared/testing/message-testing";
+import {Observable, Subscription} from "rxjs";
 import createSpyObj = jasmine.createSpyObj;
 import SpyObj = jasmine.SpyObj;
-import {Subscription} from "rxjs";
 
 describe('MessageTesting', () => {
   let messagesServiceSpy: SpyObj<MessagesService>;
@@ -25,34 +25,31 @@ describe('MessageTesting', () => {
   });
 
   it('should simulate WebSocket message received', async () => {
-    const fixture = {
-      detectChanges: jasmine.createSpy('detectChanges'),
-      whenStable: jasmine.createSpy('whenStable').and.resolveTo()
-    } as unknown as ComponentFixture<any>;
+    const fixture = jasmine.createSpyObj('fixture', ['detectChanges', 'whenStable']) as SpyObj<ComponentFixture<any>>;
+    fixture.whenStable.and.resolveTo();
 
     const message = {key: 'value'};
     const topic = 'someTopic';
+    let receivedMessage: Message | null = null;
 
-    MessageTesting.mockWatchAndGetCallbackForTopic = (messagesService: SpyObj<MessagesService>, topic: string) => {
-      let topicCallback = {
-        execute: (message: Message) => {
-          console.log("Topic callback executed for: " + topic);
+    messagesServiceSpy.watch.and.callFake((destination: string) => {
+      return {
+        subscribe: (callback: (message: Message) => void) => {
+          callback(message as any);
+          return Subscription.EMPTY;
         }
-      };
-
-      MessageTesting.mockWatch(messagesService, (destination, callback) => {
-        if (destination == topic) {
-          topicCallback.execute = callback;
-        }
-      });
-
-      return topicCallback;
-    };
+      } as Observable<Message>;
+    });
+    messagesServiceSpy.watch(topic).subscribe(msg => {
+      receivedMessage = msg;
+    });
 
     await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesServiceSpy, topic, message);
 
     expect(fixture.detectChanges).toHaveBeenCalledTimes(2);
     expect(fixture.whenStable).toHaveBeenCalledTimes(2);
+    expect(messagesServiceSpy.watch).toHaveBeenCalledWith(topic);
+    expect(receivedMessage).toEqual(message as any);
   });
 
   it('should return correct callback for topic', () => {
@@ -73,7 +70,7 @@ describe('MessageTesting', () => {
   });
 
   it('should return default callback if topic not found', fakeAsync(() => {
-    spyOn(console, 'error')
+    spyOn(console, 'error');
     let callbackRan: boolean = false;
     const expectedMessage: Message = {body: JSON.stringify({key: 'value'})} as Message;
 
@@ -89,6 +86,6 @@ describe('MessageTesting', () => {
 
     subscription.unsubscribe();
     expect(callbackRan).toBe(false);
-    expect(console.error).toHaveBeenCalledWith("Topic callback not found for: incorrectTopic")
+    expect(console.error).toHaveBeenCalledWith("Topic callback not found for: incorrectTopic");
   }));
 });

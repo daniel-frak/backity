@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @lombok.Builder(builderClassName = "Builder", buildMethodName = "internalBuild",
         builderMethodName = "discoveredGameFile")
@@ -106,7 +107,8 @@ public class TestGameFile {
                             temp.filePath
                     ),
                     temp.dateCreated,
-                    temp.dateModified
+                    temp.dateModified,
+                    new ArrayList<>()
             );
         }
     }

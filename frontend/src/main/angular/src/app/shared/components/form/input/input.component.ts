@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { NgClass, NgIf } from "@angular/common";
+import {Component, Input, OnInit} from '@angular/core';
+import {NgClass, NgIf} from "@angular/common";
 import {
   AbstractControl,
   ControlContainer,
@@ -38,14 +38,17 @@ export class InputComponent implements OnInit, ControlValueAccessor {
 
   value: any;
 
-  constructor(private readonly controlContainer: ControlContainer) {}
+  constructor(private readonly controlContainer: ControlContainer) {
+  }
 
   ngOnInit() {
     this.formGroup = <FormGroup>this.controlContainer.control;
   }
 
-  onChange: (value: any) => void = () => {};
-  onTouched: () => void = () => {};
+  onChange: (value: any) => void = () => {
+  };
+  onTouched: () => void = () => {
+  };
 
   onInput(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -54,7 +57,6 @@ export class InputComponent implements OnInit, ControlValueAccessor {
   }
 
   writeValue(value: any): void {
-    console.warn("WRITING " + value);
     this.value = value;
   }
 

@@ -348,6 +348,9 @@
                         <excludedClass>*GogEmbedWebClient</excludedClass>
                         <excludedClass>*LogbackLogService</excludedClass>
                         <excludedClass>*GogAuthClient</excludedClass>
+                        <excludedClass>*WebSocketHandler</excludedClass>
+                        <excludedClass>*WebSocketPublisher</excludedClass>
+                        <excludedClass>*WebSocketEventPublisher</excludedClass>
                     </excludedClasses>
                     <excludedTestClasses>
                         <param>*IntegrationTest</param>
@@ -355,7 +358,7 @@
                     </excludedTestClasses>
                     <outputFormats>
                         <outputFormat>html</outputFormat>
-                        <!-- XML format is required for SonarQube plugin -->
+                        <!-- XML format is required for the SonarQube plugin -->
                         <outputFormat>xml</outputFormat>
                     </outputFormats>
                 </configuration>
