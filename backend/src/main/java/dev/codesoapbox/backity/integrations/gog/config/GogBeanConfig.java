@@ -1,9 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.config;
 
-import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
-import dev.codesoapbox.backity.core.shared.domain.DomainEventPublisher;
-import dev.codesoapbox.backity.core.backup.domain.events.FileBackupProgressChangedEvent;
-import dev.codesoapbox.backity.core.discovery.domain.ProgressInfo;
+import dev.codesoapbox.backity.core.backup.domain.BackupProgressFactory;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.GogFileBackupService;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.GogFileDiscoveryServiceGame;
@@ -18,6 +15,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.time.Clock;
 
 @Slf4j
 @Configuration
@@ -44,20 +43,14 @@ public class GogBeanConfig {
     }
 
     @Bean
-    GogEmbedWebClient gogEmbedClient(@Qualifier("gogEmbed") WebClient webClientEmbed, GogAuthService authService) {
-        return new GogEmbedWebClient(webClientEmbed, authService);
+    GogEmbedWebClient gogEmbedClient(@Qualifier("gogEmbed") WebClient webClientEmbed, GogAuthService authService,
+                                     Clock clock) {
+        return new GogEmbedWebClient(webClientEmbed, authService, clock);
     }
 
     @Bean
-    UrlFileDownloader urlFileDownloader(FileManager fileManager,
-                                        DomainEventPublisher domainEventPublisher) {
-        return new UrlFileDownloader(fileManager,
-                i -> publishFileBackupProgressedEvent(domainEventPublisher, i),
-                BackupProgress::new);
-    }
-
-    private void publishFileBackupProgressedEvent(DomainEventPublisher domainEventPublisher, ProgressInfo i) {
-        domainEventPublisher.publish(new FileBackupProgressChangedEvent(i.percentage(), i.timeLeft().toSeconds()));
+    UrlFileDownloader urlFileDownloader(FileManager fileManager, BackupProgressFactory backupProgressFactory) {
+        return new UrlFileDownloader(fileManager, backupProgressFactory);
     }
 
     @Bean

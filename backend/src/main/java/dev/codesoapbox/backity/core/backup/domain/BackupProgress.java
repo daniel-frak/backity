@@ -23,35 +23,24 @@ public class BackupProgress {
 
     @Getter
     protected long contentLengthBytes = -1;
+
+    @Getter
     protected long downloadedLengthBytes = 0;
 
-    public void startTracking(long contentLengthBytes) {
+    public void initializeTracking(long contentLengthBytes, Clock clock) {
         this.contentLengthBytes = contentLengthBytes;
-        this.progressTracker = new IncrementalProgressTracker(contentLengthBytes, Clock.systemDefaultZone());
+        this.progressTracker = new IncrementalProgressTracker(contentLengthBytes, clock);
     }
 
-    public OutputStream getTrackedOutputStream(OutputStream fileOutputStream) {
+    public OutputStream track(OutputStream fileOutputStream) {
         return new TrackedFilterOutputStream(this, fileOutputStream);
-    }
-
-    public long getDownloadedLengthBytes() {
-        return downloadedLengthBytes;
-    }
-
-    public ProgressInfo getProgressInfo() {
-        return progressTracker.getProgressInfo();
     }
 
     public void subscribeToProgress(Consumer<ProgressInfo> progressConsumer) {
         progressConsumers.add(progressConsumer);
     }
 
-    @SuppressWarnings("squid:S2250")
-    public void unsubscribeFromProgress(Consumer<ProgressInfo> progressConsumer) {
-        progressConsumers.remove(progressConsumer);
-    }
-
-    public void incrementDownloadedBytes(int length) {
+    void incrementDownloadedBytes(int length) {
         downloadedLengthBytes += length;
         progressTracker.incrementBy(length);
         updateProgress();
@@ -61,13 +50,13 @@ public class BackupProgress {
         progressConsumers.forEach(c -> c.accept(progressTracker.getProgressInfo()));
     }
 
-    public void incrementProcessedElements() {
+    void incrementProcessedElements() {
         downloadedLengthBytes++;
         progressTracker.incrementBy(1);
         updateProgress();
     }
 
-    public void updateContentLength() {
+    void updateContentLength() {
         if (contentLengthBytes == -1) {
             contentLengthBytes = downloadedLengthBytes;
         }

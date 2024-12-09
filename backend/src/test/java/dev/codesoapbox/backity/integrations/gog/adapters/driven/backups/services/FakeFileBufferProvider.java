@@ -8,11 +8,14 @@ import org.springframework.core.io.buffer.DefaultDataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import reactor.core.publisher.Flux;
 
+import java.time.Clock;
 import java.util.HashMap;
 import java.util.Map;
 
 @RequiredArgsConstructor
 public class FakeFileBufferProvider implements FileBufferProvider {
+
+    private final Clock clock;
 
     Map<String, String> stringDataToDownloadByUrl = new HashMap<>();
 
@@ -24,7 +27,7 @@ public class FakeFileBufferProvider implements FileBufferProvider {
     @Override
     public Flux<DataBuffer> getFileBuffer(String fileUrl, BackupProgress progress) {
         String data = stringDataToDownloadByUrl.get(fileUrl);
-        progress.startTracking(data.getBytes().length);
+        progress.initializeTracking(data.getBytes().length, clock);
         byte[] bytes = data.getBytes();
         DefaultDataBuffer dataBuffer = new DefaultDataBufferFactory().wrap(bytes);
         return Flux.just(dataBuffer);

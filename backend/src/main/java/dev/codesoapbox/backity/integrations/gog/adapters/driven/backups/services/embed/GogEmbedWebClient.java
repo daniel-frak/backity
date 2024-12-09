@@ -22,6 +22,7 @@ import reactor.core.publisher.Mono;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,6 +41,7 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
 
     private final WebClient webClientEmbed;
     private final GogAuthService authService;
+    private final Clock clock;
 
     @Override
     public String getLibrarySize() {
@@ -185,7 +187,7 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
                 .header(HEADER_AUTHORIZATION, getBearerToken())
                 .exchangeToFlux(response -> {
                     verifyResponseIsSuccessful(response, fileUrl);
-                    progress.startTracking(extractSizeInBytes(response));
+                    progress.initializeTracking(extractSizeInBytes(response), clock);
                     return response.bodyToFlux(DataBuffer.class);
                 });
     }

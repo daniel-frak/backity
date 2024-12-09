@@ -32,6 +32,7 @@ import reactor.core.publisher.Flux;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +63,9 @@ class GogEmbedWebClientIT {
     @Mock
     private GogAuthService authService;
 
+    @Mock
+    private Clock clock;
+
     @BeforeAll
     static void beforeAll() {
         Logger logger = (Logger) LoggerFactory.getLogger(GogEmbedWebClient.class);
@@ -81,7 +85,7 @@ class GogEmbedWebClientIT {
                 .baseUrl(wireMockEmbed.baseUrl())
                 .build();
 
-        gogEmbedClient = new GogEmbedWebClient(webClientEmbed, authService);
+        gogEmbedClient = new GogEmbedWebClient(webClientEmbed, authService, clock);
 
         when(authService.getAccessToken())
                 .thenReturn(ACCESS_TOKEN);
@@ -296,7 +300,7 @@ class GogEmbedWebClientIT {
 
         Flux<DataBuffer> dataBufferFlux = gogEmbedClient
                 .getFileBuffer("/someUrl1", progress);
-        DataBufferUtils.write(dataBufferFlux, progress.getTrackedOutputStream(outputStream)).blockFirst();
+        DataBufferUtils.write(dataBufferFlux, progress.track(outputStream)).blockFirst();
         String result = outputStream.toString();
 
         assertThat(result).isEqualTo(expectedResult);
@@ -330,7 +334,7 @@ class GogEmbedWebClientIT {
 
         Flux<DataBuffer> dataBufferFlux = gogEmbedClient
                 .getFileBuffer("/someUrl1", progress);
-        DataBufferUtils.write(dataBufferFlux, progress.getTrackedOutputStream(outputStream)).blockFirst();
+        DataBufferUtils.write(dataBufferFlux, progress.track(outputStream)).blockFirst();
         String result = outputStream.toString();
 
         assertThat(result).isEqualTo(expectedResult);
