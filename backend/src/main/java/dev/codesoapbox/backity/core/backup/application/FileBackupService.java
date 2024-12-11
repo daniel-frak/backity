@@ -1,14 +1,13 @@
-package dev.codesoapbox.backity.core.backup.domain;
+package dev.codesoapbox.backity.core.backup.application;
 
+import dev.codesoapbox.backity.core.backup.domain.*;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
-import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupUrlEmptyException;
-import dev.codesoapbox.backity.core.backup.domain.exceptions.NotEnoughFreeSpaceException;
+import dev.codesoapbox.backity.core.backup.application.exceptions.NotEnoughFreeSpaceException;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
 import dev.codesoapbox.backity.core.filemanagement.domain.FilePathProvider;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.Strings;
 
 import java.io.IOException;
 import java.util.List;
@@ -27,15 +26,19 @@ public class FileBackupService {
     private final GameFileRepository gameFileRepository;
     private final FileManager fileManager;
     private final Map<GameProviderId, GameProviderFileBackupService> gameProviderFileBackupServices;
+    private final BackupProgressFactory backupProgressFactory;
 
     public FileBackupService(FilePathProvider filePathProvider, GameFileRepository gameFileRepository,
                              FileManager fileManager,
-                             List<GameProviderFileBackupService> gameProviderFileBackupServices) {
+                             List<GameProviderFileBackupService> gameProviderFileBackupServices,
+                             BackupProgressFactory backupProgressFactory) {
         this.filePathProvider = filePathProvider;
         this.gameFileRepository = gameFileRepository;
         this.fileManager = fileManager;
         this.gameProviderFileBackupServices = gameProviderFileBackupServices.stream()
-                .collect(Collectors.toMap(GameProviderFileBackupService::getGameProviderId, d -> d));
+                .collect(Collectors.toMap(GameProviderFileBackupService::getGameProviderId,
+                        d -> d));
+        this.backupProgressFactory = backupProgressFactory;
     }
 
     public void backUpFile(GameFile gameFile) {
@@ -44,7 +47,7 @@ public class FileBackupService {
 
         try {
             markInProgress(gameFile);
-            validateReadyForDownload(gameFile);
+            gameFile.validateReadyForDownload();
             String tempFilePath = createTemporaryFilePath(gameFile);
             validateEnoughFreeSpaceOnDisk(tempFilePath, gameFile.getGameProviderFile().size());
             tryToBackUp(gameFile, tempFilePath);
@@ -57,12 +60,6 @@ public class FileBackupService {
     private void markInProgress(GameFile gameFile) {
         gameFile.markAsInProgress();
         gameFileRepository.save(gameFile);
-    }
-
-    private void validateReadyForDownload(GameFile gameFile) {
-        if (Strings.isBlank(gameFile.getGameProviderFile().url())) {
-            throw new FileBackupUrlEmptyException(gameFile.getId());
-        }
     }
 
     private String createTemporaryFilePath(GameFile gameFile) throws IOException {
@@ -100,7 +97,9 @@ public class FileBackupService {
     private String downloadToDisk(GameFile gameFile, String tempFilePath) throws IOException {
         GameProviderId gameProviderId = gameFile.getGameProviderFile().gameProviderId();
         GameProviderFileBackupService gameProviderFileBackupService = getGameProviderFileBackupService(gameProviderId);
-        return gameProviderFileBackupService.backUpFile(gameFile, tempFilePath);
+        BackupProgress backupProgress = backupProgressFactory.create();
+
+        return gameProviderFileBackupService.backUpFile(gameFile, tempFilePath, backupProgress);
     }
 
     private GameProviderFileBackupService getGameProviderFileBackupService(GameProviderId gameProviderId) {
@@ -119,10 +118,8 @@ public class FileBackupService {
     private void tryToCleanUpAfterFailedDownload(GameFile gameFile,
                                                  String tempFilePath) {
         fileManager.deleteIfExists(tempFilePath);
-        if (tempFilePath.equals(gameFile.getFileBackup().getFilePath())) {
-            gameFile.clearFilePath();
-            gameFileRepository.save(gameFile);
-        }
+        gameFile.clearFilePath();
+        gameFileRepository.save(gameFile);
     }
 
     private void markFailed(GameFile gameFile, Exception e) {

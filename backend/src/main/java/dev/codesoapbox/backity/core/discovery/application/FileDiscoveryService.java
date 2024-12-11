@@ -1,6 +1,7 @@
-package dev.codesoapbox.backity.core.discovery.domain;
+package dev.codesoapbox.backity.core.discovery.application;
 
 import dev.codesoapbox.backity.DoNotMutate;
+import dev.codesoapbox.backity.core.shared.domain.ProgressInfo;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryStatusChangedEvent;

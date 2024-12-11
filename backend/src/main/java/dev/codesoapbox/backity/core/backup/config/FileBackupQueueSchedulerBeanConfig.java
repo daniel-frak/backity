@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.backup.config;
 
-import dev.codesoapbox.backity.core.backup.domain.EnqueuedFileBackupProcessor;
+import dev.codesoapbox.backity.core.backup.application.BackUpOldestGameFileUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,7 +9,7 @@ public class FileBackupQueueSchedulerBeanConfig {
 
     @Bean
     public FileBackupQueueSpringScheduler fileBackupQueueSpringScheduler(
-            EnqueuedFileBackupProcessor enqueuedFileBackupProcessor) {
-        return new FileBackupQueueSpringScheduler(enqueuedFileBackupProcessor);
+            BackUpOldestGameFileUseCase backupOldestGameFileUseCase) {
+        return new FileBackupQueueSpringScheduler(backupOldestGameFileUseCase);
     }
 }

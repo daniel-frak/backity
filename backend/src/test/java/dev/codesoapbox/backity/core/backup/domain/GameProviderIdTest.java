@@ -33,4 +33,13 @@ class GameProviderIdTest {
         int result = id1.compareTo(id2);
         assertThat(result).isEqualTo(1);
     }
+
+    @Test
+    void toStringShouldReturnValue() {
+        var gameProviderId = new GameProviderId("test");
+
+        String result = gameProviderId.toString();
+
+        assertThat(result).isEqualTo("test");
+    }
 }

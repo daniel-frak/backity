@@ -1,6 +1,7 @@
-package dev.codesoapbox.backity.core.discovery.domain;
+package dev.codesoapbox.backity.core.discovery.application;
 
 import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
+import dev.codesoapbox.backity.core.shared.domain.ProgressInfo;
 
 import java.util.function.Consumer;
 

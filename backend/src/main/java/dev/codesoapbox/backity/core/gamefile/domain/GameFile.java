@@ -5,8 +5,10 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
+import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameProviderFileUrlEmptyException;
 import dev.codesoapbox.backity.core.shared.domain.DomainEvent;
 import lombok.*;
+import org.apache.logging.log4j.util.Strings;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -90,5 +92,11 @@ public class GameFile {
 
     public void clearDomainEvents() {
         domainEvents.clear();
+    }
+
+    public void validateReadyForDownload() {
+        if (Strings.isBlank(gameProviderFile.url())) {
+            throw new GameProviderFileUrlEmptyException(id);
+        }
     }
 }

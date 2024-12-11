@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.adapters.application;
 
-import dev.codesoapbox.backity.core.discovery.domain.FileDiscoveryService;
+import dev.codesoapbox.backity.core.discovery.application.FileDiscoveryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.discovery.domain;
+package dev.codesoapbox.backity.core.shared.domain;
 
 import dev.codesoapbox.backity.testing.FakeClock;
 import org.junit.jupiter.api.BeforeEach;

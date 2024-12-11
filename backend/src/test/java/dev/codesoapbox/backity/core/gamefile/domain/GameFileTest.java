@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
+import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameProviderFileUrlEmptyException;
 import org.junit.jupiter.api.Test;
 
 import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.discoveredGameFile;
@@ -104,5 +105,24 @@ class GameFileTest {
         gameFile.clearDomainEvents();
 
         assertThat(gameFile.getDomainEvents()).isEmpty();
+    }
+
+    @Test
+    void validateReadyForDownloadShouldDoNothingGivenTrue() {
+        GameFile gameFile = discoveredGameFile().build();
+
+        assertThatCode(gameFile::validateReadyForDownload)
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void validateReadyForDownloadShouldDoNothingGivenGameProviderFileUrlIsBlank() {
+        GameFile gameFile = discoveredGameFile()
+                .url(" ")
+                .build();
+
+        assertThatThrownBy(gameFile::validateReadyForDownload)
+                .isInstanceOf(GameProviderFileUrlEmptyException.class)
+                .hasMessageContaining(gameFile.getId().toString());
     }
 }

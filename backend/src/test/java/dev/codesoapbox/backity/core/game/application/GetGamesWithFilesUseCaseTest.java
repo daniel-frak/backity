@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.core.game.application;
 
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.PageHttpDto;
 import dev.codesoapbox.backity.core.shared.domain.Page;
 import dev.codesoapbox.backity.core.shared.domain.Pagination;
@@ -16,12 +16,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.discoveredGameFile;
-import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class GameFacadeTest {
+class GetGamesWithFilesUseCaseTest {
 
     @Mock
     private GameRepository gameRepository;
@@ -29,11 +28,11 @@ class GameFacadeTest {
     @Mock
     private GameFileRepository gameFileRepository;
 
-    private GameFacade gameFacade;
+    private GetGamesWithFilesUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        gameFacade = new GameFacade(gameRepository, gameFileRepository);
+        useCase = new GetGamesWithFilesUseCase(gameRepository, gameFileRepository);
     }
 
     @Test
@@ -41,17 +40,16 @@ class GameFacadeTest {
         var pageable = new Pagination(0, 2);
         Game game = Game.createNew("Test game");
         GameFile file = discoveredGameFile().build();
-        List<GameFile> gameFile = singletonList(file);
 
         when(gameRepository.findAll(pageable))
-                .thenReturn(new Page<>(singletonList(game), 1, 2, 3, 4, 5));
+                .thenReturn(new Page<>(List.of(game), 1, 2, 3, 4, 5));
+        List<GameFile> gameFiles = List.of(file);
         when(gameFileRepository.findAllByGameId(game.getId()))
-                .thenReturn(gameFile);
+                .thenReturn(gameFiles);
 
-        Page<GameWithFiles> result = gameFacade.getGamesWithFiles(pageable);
+        Page<GameWithFiles> result = useCase.getGamesWithFiles(pageable);
 
-        PageHttpDto<GameWithFiles> expectedResult = new PageHttpDto<>(singletonList(new GameWithFiles(game,
-                gameFile)),
+        PageHttpDto<GameWithFiles> expectedResult = new PageHttpDto<>(List.of(new GameWithFiles(game, gameFiles)),
                 1, 2, 3, 4, 5);
         assertThat(result)
                 .usingRecursiveComparison().isEqualTo(expectedResult);

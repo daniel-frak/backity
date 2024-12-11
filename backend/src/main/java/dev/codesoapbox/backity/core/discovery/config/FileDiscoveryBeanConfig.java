@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.discovery.config;
 
-import dev.codesoapbox.backity.core.discovery.domain.FileDiscoveryService;
-import dev.codesoapbox.backity.core.discovery.domain.GameProviderFileDiscoveryService;
+import dev.codesoapbox.backity.core.discovery.application.FileDiscoveryService;
+import dev.codesoapbox.backity.core.discovery.application.GameProviderFileDiscoveryService;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.shared.domain.DomainEventPublisher;

@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
-import dev.codesoapbox.backity.core.discovery.domain.IncrementalProgressTracker;
-import dev.codesoapbox.backity.core.discovery.domain.ProgressInfo;
-import dev.codesoapbox.backity.core.discovery.domain.GameProviderFileDiscoveryService;
+import dev.codesoapbox.backity.core.shared.domain.IncrementalProgressTracker;
+import dev.codesoapbox.backity.core.shared.domain.ProgressInfo;
+import dev.codesoapbox.backity.core.discovery.application.GameProviderFileDiscoveryService;
 import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
@@ -21,7 +21,7 @@ import java.util.function.Consumer;
 @RequiredArgsConstructor
 public class GogFileDiscoveryServiceGame implements GameProviderFileDiscoveryService {
 
-    private static final GameProviderId GAMEPROVIDERID_ID = new GameProviderId("GOG");
+    private static final GameProviderId GAME_PROVIDER_ID = new GameProviderId("GOG");
 
     private final GogEmbedClient gogEmbedClient;
 
@@ -65,7 +65,7 @@ public class GogFileDiscoveryServiceGame implements GameProviderFileDiscoverySer
     private GameProviderFile mapToDiscoveredFile(GameDetailsResponse gameDetails,
                                                  GameFileResponse gameFile) {
         return new GameProviderFile(
-                GAMEPROVIDERID_ID,
+                GAME_PROVIDER_ID,
                 gameDetails.getTitle(),
                 gameFile.getName(),
                 gameFile.getVersion(),

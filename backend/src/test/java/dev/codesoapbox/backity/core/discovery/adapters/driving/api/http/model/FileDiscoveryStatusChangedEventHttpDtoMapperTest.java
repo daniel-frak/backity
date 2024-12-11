@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.adapters.driving.api.http.model;
 
-import dev.codesoapbox.backity.core.discovery.domain.FileDiscoveryStatus;
+import dev.codesoapbox.backity.core.discovery.application.FileDiscoveryStatus;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 

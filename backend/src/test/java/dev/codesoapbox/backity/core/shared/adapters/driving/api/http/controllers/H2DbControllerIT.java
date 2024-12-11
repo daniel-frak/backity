@@ -1,11 +1,10 @@
 package dev.codesoapbox.backity.core.shared.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.backup.config.FileBackupBeanConfig;
 import dev.codesoapbox.backity.core.filemanagement.config.LocalFileSystemBeanConfig;
-import dev.codesoapbox.backity.core.filemanagement.config.SharedFileManagementBeanConfig;
 import dev.codesoapbox.backity.core.game.config.GameJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
+import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.gamefile.config.GameFileJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
@@ -19,7 +18,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -37,15 +35,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = H2DbController.class, properties = "h2dump.path=test_dump.sql")
-@Import({SharedFileManagementBeanConfig.class, LocalFileSystemBeanConfig.class, FileBackupBeanConfig.class,
-        GameJpaRepositoryBeanConfig.class, GameFileJpaRepositoryBeanConfig.class,
-        SharedJpaRepositoryBeanConfig.class, DomainEventPublisherBeanConfig.class})
+@Import({
+        LocalFileSystemBeanConfig.class,
+        GameJpaRepositoryBeanConfig.class,
+        GameFileJpaRepositoryBeanConfig.class,
+        SharedJpaRepositoryBeanConfig.class,
+        DomainEventPublisherBeanConfig.class
+})
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 @EnableJpaAuditing
-@MockBeans({
-        @MockBean(SimpMessagingTemplate.class)
-})
+@MockBean(SimpMessagingTemplate.class)
 class H2DbControllerIT {
 
     private static final Path TEST_DUMP_PATH = Path.of(
@@ -76,8 +76,10 @@ class H2DbControllerIT {
 
     @Test
     void shouldDumpSql() throws Exception {
-        GameFile gameFile = discoveredGameFile().build();
-        Game game = new Game(gameFile.getGameId(), "Test game");
+        Game game = TestGame.aGame().build();
+        GameFile gameFile = discoveredGameFile()
+                .gameId(game.getId())
+                .build();
         gameRepository.save(game);
         gameFileRepository.save(gameFile);
 
@@ -87,7 +89,9 @@ class H2DbControllerIT {
 
         var dumpContents = readTestDump();
 
-        assertThat(dumpContents).contains("INSERT INTO \"PUBLIC\".\"GAME_FILE\" VALUES");
+        assertThat(dumpContents)
+                .contains("INSERT INTO \"PUBLIC\".\"GAME\" VALUES")
+                .contains("INSERT INTO \"PUBLIC\".\"GAME_FILE\" VALUES");
     }
 
     private String readTestDump() throws IOException {

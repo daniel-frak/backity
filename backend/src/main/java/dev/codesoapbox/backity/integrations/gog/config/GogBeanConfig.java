@@ -49,8 +49,8 @@ public class GogBeanConfig {
     }
 
     @Bean
-    UrlFileDownloader urlFileDownloader(FileManager fileManager, BackupProgressFactory backupProgressFactory) {
-        return new UrlFileDownloader(fileManager, backupProgressFactory);
+    UrlFileDownloader urlFileDownloader(FileManager fileManager) {
+        return new UrlFileDownloader(fileManager);
     }
 
     @Bean

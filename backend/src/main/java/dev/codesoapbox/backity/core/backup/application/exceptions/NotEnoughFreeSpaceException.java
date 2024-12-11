@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backup.domain.exceptions;
+package dev.codesoapbox.backity.core.backup.application.exceptions;
 
 public class NotEnoughFreeSpaceException extends RuntimeException {
 

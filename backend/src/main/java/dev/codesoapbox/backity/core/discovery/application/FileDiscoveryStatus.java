@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.discovery.domain;
+package dev.codesoapbox.backity.core.discovery.application;
 
 import lombok.NonNull;
 

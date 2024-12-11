@@ -10,4 +10,9 @@ public record GameProviderId(@NonNull String value) implements Comparable<GamePr
     public int compareTo(GameProviderId gameProviderId) {
         return Objects.compare(value, gameProviderId.value(), String::compareTo);
     }
+
+    @Override
+    public String toString() {
+        return value;
+    }
 }

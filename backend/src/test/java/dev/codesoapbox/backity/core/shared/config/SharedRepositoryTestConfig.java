@@ -7,7 +7,6 @@ import dev.codesoapbox.backity.core.shared.config.jpa.SharedJpaRepositoryBeanCon
 import dev.codesoapbox.backity.core.shared.domain.DomainEventPublisher;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.test.mock.mockito.MockBeans;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -29,8 +28,6 @@ import org.springframework.context.annotation.Import;
         GameJpaRepositoryBeanConfig.class,
         GameFileJpaRepositoryBeanConfig.class
 })
-@MockBeans({
-        @MockBean(DomainEventPublisher.class)
-})
+@MockBean(DomainEventPublisher.class)
 public class SharedRepositoryTestConfig {
 }

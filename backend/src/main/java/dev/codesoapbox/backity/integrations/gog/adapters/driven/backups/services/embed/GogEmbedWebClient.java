@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.embed;
 
 import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
-import dev.codesoapbox.backity.core.backup.domain.FileSizeAccumulator;
+import dev.codesoapbox.backity.core.backup.application.FileSizeAccumulator;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.FileBufferProvider;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileDiscoveryException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameBackupRequestFailedException;
@@ -152,7 +152,7 @@ public class GogEmbedWebClient implements FileBufferProvider, GogEmbedClient {
                 .flatMap(d -> ((List<Object>) d.get("windows")).stream())
                 .map(d -> (Map<String, Object>) d)
                 .map(this::toGameFileResponse)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private GameFileResponse toGameFileResponse(Map<String, Object> d) {

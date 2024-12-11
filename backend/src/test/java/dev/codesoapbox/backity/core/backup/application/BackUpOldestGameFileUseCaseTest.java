@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backup.domain;
+package dev.codesoapbox.backity.core.backup.application;
 
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
@@ -16,10 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class EnqueuedFileBackupProcessorTest {
+class BackUpOldestGameFileUseCaseTest {
 
     @InjectMocks
-    private EnqueuedFileBackupProcessor enqueuedFileBackupProcessor;
+    private BackUpOldestGameFileUseCase backUpOldestGameFileUseCase;
 
     @Mock
     private GameFileRepository gameFileRepository;
@@ -28,7 +28,7 @@ class EnqueuedFileBackupProcessorTest {
     private FileBackupService fileBackupService;
 
     @Test
-    void shouldProcessEnqueuedFileDownloadIfNotCurrentlyDownloading() {
+    void shouldBackUpEnqueuedGameFileIfNotCurrentlyDownloading() {
         GameFile gameFile = discoveredGameFile().build();
         AtomicBoolean gameFileWasKeptAsReferenceDuringProcessing = new AtomicBoolean();
         when(gameFileRepository.findOldestWaitingForDownload())
@@ -37,14 +37,14 @@ class EnqueuedFileBackupProcessorTest {
                 .thenReturn(true);
         doAnswer(inv -> {
             gameFileWasKeptAsReferenceDuringProcessing.set(
-                    enqueuedFileBackupProcessor.enqueuedFileBackupReference.get() == gameFile);
+                    backUpOldestGameFileUseCase.enqueuedFileBackupReference.get() == gameFile);
             return null;
         }).when(fileBackupService).backUpFile(gameFile);
 
-        enqueuedFileBackupProcessor.processQueue();
+        backUpOldestGameFileUseCase.backUpOldestGameFile();
 
         verify(fileBackupService).backUpFile(gameFile);
-        assertThat(enqueuedFileBackupProcessor.enqueuedFileBackupReference.get()).isNull();
+        assertThat(backUpOldestGameFileUseCase.enqueuedFileBackupReference.get()).isNull();
         assertThat(gameFileWasKeptAsReferenceDuringProcessing).isTrue();
     }
 
@@ -59,9 +59,9 @@ class EnqueuedFileBackupProcessorTest {
         doThrow(new RuntimeException("someFailedReason"))
                 .when(fileBackupService).backUpFile(gameFile);
 
-        enqueuedFileBackupProcessor.processQueue();
+        backUpOldestGameFileUseCase.backUpOldestGameFile();
 
-        assertThat(enqueuedFileBackupProcessor.enqueuedFileBackupReference.get()).isNull();
+        assertThat(backUpOldestGameFileUseCase.enqueuedFileBackupReference.get()).isNull();
         verifyNoMoreInteractions(fileBackupService);
     }
 
@@ -74,7 +74,7 @@ class EnqueuedFileBackupProcessorTest {
         when(fileBackupService.isReadyFor(gameFile))
                 .thenReturn(false);
 
-        enqueuedFileBackupProcessor.processQueue();
+        backUpOldestGameFileUseCase.backUpOldestGameFile();
 
         verifyNoMoreInteractions(fileBackupService);
     }
@@ -85,8 +85,8 @@ class EnqueuedFileBackupProcessorTest {
         lenient().when(gameFileRepository.findOldestWaitingForDownload())
                 .thenReturn(Optional.of(gameFile));
 
-        enqueuedFileBackupProcessor.enqueuedFileBackupReference.set(gameFile);
-        enqueuedFileBackupProcessor.processQueue();
+        backUpOldestGameFileUseCase.enqueuedFileBackupReference.set(gameFile);
+        backUpOldestGameFileUseCase.backUpOldestGameFile();
 
         verifyNoInteractions(gameFileRepository, fileBackupService);
     }

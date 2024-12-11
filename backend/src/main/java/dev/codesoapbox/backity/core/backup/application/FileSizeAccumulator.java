@@ -1,6 +1,6 @@
-package dev.codesoapbox.backity.core.backup.domain;
+package dev.codesoapbox.backity.core.backup.application;
 
-import dev.codesoapbox.backity.core.backup.domain.exceptions.UnrecognizedFileSizeUnitException;
+import dev.codesoapbox.backity.core.backup.application.exceptions.UnrecognizedFileSizeUnitException;
 
 import java.math.BigDecimal;
 import java.util.Map;

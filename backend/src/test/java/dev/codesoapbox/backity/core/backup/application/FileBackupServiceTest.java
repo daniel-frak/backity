@@ -1,8 +1,11 @@
-package dev.codesoapbox.backity.core.backup.domain;
+package dev.codesoapbox.backity.core.backup.application;
 
+import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
+import dev.codesoapbox.backity.core.backup.domain.BackupProgressFactory;
+import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
-import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupUrlEmptyException;
-import dev.codesoapbox.backity.core.backup.domain.exceptions.NotEnoughFreeSpaceException;
+import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameProviderFileUrlEmptyException;
+import dev.codesoapbox.backity.core.backup.application.exceptions.NotEnoughFreeSpaceException;
 import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileManager;
 import dev.codesoapbox.backity.core.filemanagement.domain.FilePathProvider;
 import dev.codesoapbox.backity.core.gamefile.domain.FileBackupStatus;
@@ -31,6 +34,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class FileBackupServiceTest {
 
+    private static final GameProviderId EXISTING_GAME_PROVIDER_ID = new GameProviderId("someGameProviderId");
+
     private FileBackupService fileBackupService;
 
     @Mock
@@ -42,63 +47,89 @@ class FileBackupServiceTest {
     @Mock
     private GameProviderFileBackupService gameProviderFileBackupService;
 
+    @Mock
+    private BackupProgressFactory backupProgressFactory;
+
     private FakeUnixFileManager fileManager;
 
     @BeforeEach
     void setUp() {
         when(gameProviderFileBackupService.getGameProviderId())
-                .thenReturn(new GameProviderId("someGameProviderId"));
+                .thenReturn(EXISTING_GAME_PROVIDER_ID);
         fileManager = new FakeUnixFileManager(5000);
         fileBackupService = new FileBackupService(filePathProvider, gameFileRepository, fileManager,
-                singletonList(gameProviderFileBackupService));
+                singletonList(gameProviderFileBackupService), backupProgressFactory);
     }
 
     @Test
     void shouldDownloadFile() throws IOException {
-        GameProviderId gameProviderId = gameProviderFileBackupService.getGameProviderId();
         GameFile gameFile = discoveredGameFile().build();
-        var tempFilePath = "someFileDir/someFile";
-        var expectedFilePath = "finalFilePath";
-        List<FileBackupStatus> savedFileBackupStatuses = new ArrayList<>();
-        List<String> savedFilePaths = new ArrayList<>();
-        when(gameFileRepository.save(any()))
-                .then(a -> {
-                    GameFile argument = a.getArgument(0, GameFile.class);
-                    savedFileBackupStatuses.add(argument.getFileBackup().getStatus());
-                    savedFilePaths.add(argument.getFileBackup().getFilePath());
-                    return argument;
-                });
-        when(filePathProvider.createTemporaryFilePath(gameProviderId,
-                gameFile.getGameProviderFile().originalGameTitle()))
-                .thenReturn(tempFilePath);
-        when(gameProviderFileBackupService.backUpFile(gameFile, tempFilePath))
-                .thenReturn(expectedFilePath);
+        GameFilePersistedChanges gameFilePersistedChanges = trackPersistedGameFileChanges();
+        String tempFilePath = mockTempFilePathCreation(gameFile, EXISTING_GAME_PROVIDER_ID);
+        BackupProgress backupProgress = mockBackupProgressCreation();
+        String expectedFilePath = mockGameProviderServiceSuccessfullyBackupsUp(
+                gameFile, tempFilePath, backupProgress);
 
         fileBackupService.backUpFile(gameFile);
 
         assertThat(fileManager.freeSpaceWasCheckedFor(tempFilePath)).isTrue();
-        assertThat(savedFileBackupStatuses)
+        assertThat(gameFilePersistedChanges.savedFileBackupStatuses())
                 .isEqualTo(List.of(FileBackupStatus.IN_PROGRESS, FileBackupStatus.IN_PROGRESS,
                         FileBackupStatus.SUCCESS));
-        assertThat(savedFilePaths)
+        assertThat(gameFilePersistedChanges.savedFilePaths())
                 .isEqualTo(Arrays.asList(null, tempFilePath, expectedFilePath));
+    }
+
+    private String mockGameProviderServiceSuccessfullyBackupsUp(
+            GameFile gameFile, String tempFilePath, BackupProgress backupProgress) throws IOException {
+        var expectedFilePath = "finalFilePath";
+        when(gameProviderFileBackupService.backUpFile(gameFile, tempFilePath, backupProgress))
+                .thenReturn(expectedFilePath);
+
+        return expectedFilePath;
+    }
+
+    private String mockTempFilePathCreation(GameFile gameFile, GameProviderId gameProviderId) throws IOException {
+        var tempFilePath = "someFileDir/someFile";
+        when(filePathProvider.createTemporaryFilePath(gameProviderId,
+                gameFile.getGameProviderFile().originalGameTitle()))
+                .thenReturn(tempFilePath);
+
+        return tempFilePath;
+    }
+
+    private GameFilePersistedChanges trackPersistedGameFileChanges() {
+        var gameFilePersistedChanges = new GameFilePersistedChanges();
+        when(gameFileRepository.save(any()))
+                .then(a -> {
+                    GameFile argument = a.getArgument(0, GameFile.class);
+                    gameFilePersistedChanges.addFor(argument);
+
+                    return argument;
+                });
+
+        return gameFilePersistedChanges;
+    }
+
+    private BackupProgress mockBackupProgressCreation() {
+        BackupProgress backupProgress = mock(BackupProgress.class);
+        when(backupProgressFactory.create())
+                .thenReturn(backupProgress);
+
+        return backupProgress;
     }
 
     @Test
     void shouldTryToRemoveTempFileAndRethrowWrappedOnIOExceptionGivenFilePathIsTempFilePath() throws IOException {
-        GameProviderId gameProviderId = gameProviderFileBackupService.getGameProviderId();
         GameFile gameFile = discoveredGameFile().build();
-        var tempFilePath = "someFileDir/someFile";
-        var coreException = new IOException("someMessage");
-        when(filePathProvider.createTemporaryFilePath(gameProviderId,
-                gameFile.getGameProviderFile().originalGameTitle()))
-                .thenReturn(tempFilePath);
-        when(gameProviderFileBackupService.backUpFile(gameFile, tempFilePath))
-                .thenThrow(coreException);
+        String tempFilePath = mockTempFilePathCreation(gameFile, EXISTING_GAME_PROVIDER_ID);
+        BackupProgress backupProgress = mockBackupProgressCreation();
+        IOException coreException = mockGameProviderServiceSetsFilePathAsTempThenThrowsExceptionDuringBackup(
+                gameFile, tempFilePath, backupProgress);
 
         assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
                 .isInstanceOf(FileBackupFailedException.class)
-                .cause().isEqualTo(coreException);
+                .hasCause(coreException);
         assertThat(gameFile.getFileBackup())
                 .satisfies(fileBackup -> assertSoftly(softly -> {
                     softly.assertThat(fileBackup.getStatus()).isEqualTo(FileBackupStatus.FAILED);
@@ -109,32 +140,17 @@ class FileBackupServiceTest {
         assertThat(gameFile.getFileBackup().getFilePath()).isNull();
     }
 
-    @Test
-    void shouldTryToRemoveTempFileAndRethrowWrappedOnIOExceptionGivenFilePathIsNotTempFilePath() throws IOException {
-        GameProviderId gameProviderId = gameProviderFileBackupService.getGameProviderId();
-        GameFile gameFile = discoveredGameFile().build();
-        var tempFilePath = "someFileDir/someFile";
-        var nonTempFilePath = "nonTempFilePath";
+    private IOException mockGameProviderServiceSetsFilePathAsTempThenThrowsExceptionDuringBackup(
+            GameFile gameFile, String tempFilePath, BackupProgress backupProgress) throws IOException {
         var coreException = new IOException("someMessage");
-        when(filePathProvider.createTemporaryFilePath(gameProviderId,
-                gameFile.getGameProviderFile().originalGameTitle()))
-                .thenReturn(tempFilePath);
-        when(gameProviderFileBackupService.backUpFile(gameFile, tempFilePath))
+        when(gameProviderFileBackupService.backUpFile(gameFile, tempFilePath, backupProgress))
                 .thenAnswer(inv -> {
-                    gameFile.getFileBackup().setFilePath(nonTempFilePath);
+                    gameFile.getFileBackup().setFilePath(tempFilePath);
                     throw coreException;
-                });
+                })
+                .thenThrow(coreException);
 
-        assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
-                .isInstanceOf(FileBackupFailedException.class)
-                .cause().isEqualTo(coreException);
-        assertThat(gameFile.getFileBackup())
-                .satisfies(fileBackup -> assertSoftly(softly -> {
-                    softly.assertThat(fileBackup.getStatus()).isEqualTo(FileBackupStatus.FAILED);
-                    softly.assertThat(fileBackup.getFailedReason()).isEqualTo(coreException.getMessage());
-                }));
-        verify(gameFileRepository, times(3)).save(gameFile);
-        assertThat(gameFile.getFileBackup().getFilePath()).isEqualTo(nonTempFilePath);
+        return coreException;
     }
 
     @ParameterizedTest
@@ -146,23 +162,21 @@ class FileBackupServiceTest {
 
         assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
                 .isInstanceOf(FileBackupFailedException.class)
-                .cause().isInstanceOf(FileBackupUrlEmptyException.class);
+                .cause().isInstanceOf(GameProviderFileUrlEmptyException.class);
     }
 
     @Test
     void downloadFileShouldThrowIfGameProviderFileBackupServiceNotFound() throws IOException {
-        var gameProviderId = new GameProviderId("nonExistentGameProviderId1");
+        var nonExistentGameProviderId = new GameProviderId("nonExistentGameProviderId1");
         GameFile gameFile = discoveredGameFile()
-                .gameProviderId(gameProviderId)
+                .gameProviderId(nonExistentGameProviderId)
                 .build();
-        var tempFilePath = "someFileDir/someFile";
-        when(filePathProvider.createTemporaryFilePath(gameProviderId,
-                gameFile.getGameProviderFile().originalGameTitle()))
-                .thenReturn(tempFilePath);
+        mockTempFilePathCreation(gameFile, nonExistentGameProviderId);
 
         assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
                 .isInstanceOf(FileBackupFailedException.class)
-                .cause().isInstanceOf(IllegalArgumentException.class);
+                .cause().isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("File backup service for gameProviderId not found: nonExistentGameProviderId1");
     }
 
     @Test
@@ -171,14 +185,18 @@ class FileBackupServiceTest {
         GameFile gameFile = discoveredGameFile()
                 .gameProviderId(gameProviderId)
                 .build();
-
-        when(filePathProvider.createTemporaryFilePath(gameProviderId,
-                gameFile.getGameProviderFile().originalGameTitle()))
-                .thenThrow(new IOException());
+        mockTempFilePathCreationThrowsIoException(gameProviderId, gameFile);
 
         assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
                 .isInstanceOf(FileBackupFailedException.class)
                 .cause().isInstanceOf(IOException.class);
+    }
+
+    private void mockTempFilePathCreationThrowsIoException(GameProviderId gameProviderId, GameFile gameFile)
+            throws IOException {
+        when(filePathProvider.createTemporaryFilePath(gameProviderId,
+                gameFile.getGameProviderFile().originalGameTitle()))
+                .thenThrow(new IOException());
     }
 
     @Test
@@ -187,11 +205,8 @@ class FileBackupServiceTest {
         GameFile gameFile = discoveredGameFile()
                 .gameProviderId(gameProviderId)
                 .build();
-        var tempFilePath = "someFileDir/someFile";
+        mockTempFilePathCreation(gameFile, EXISTING_GAME_PROVIDER_ID);
         fileManager.setAvailableSizeInBytes(0);
-        when(filePathProvider.createTemporaryFilePath(gameProviderId,
-                gameFile.getGameProviderFile().originalGameTitle()))
-                .thenReturn(tempFilePath);
 
         assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
                 .isInstanceOf(FileBackupFailedException.class)
@@ -214,5 +229,20 @@ class FileBackupServiceTest {
                 .thenReturn(false);
 
         assertThat(fileBackupService.isReadyFor(gameFile)).isFalse();
+    }
+
+    private record GameFilePersistedChanges(
+            List<FileBackupStatus> savedFileBackupStatuses,
+            List<String> savedFilePaths
+    ) {
+
+        private GameFilePersistedChanges() {
+            this(new ArrayList<>(), new ArrayList<>());
+        }
+
+        public void addFor(GameFile gameFile) {
+            savedFileBackupStatuses.add(gameFile.getFileBackup().getStatus());
+            savedFilePaths.add(gameFile.getFileBackup().getFilePath());
+        }
     }
 }

@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.game.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.game.application.GameFacade;
+import dev.codesoapbox.backity.core.game.application.GetGamesWithFilesUseCase;
 import dev.codesoapbox.backity.core.game.application.GameWithFiles;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
@@ -20,13 +20,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ControllerTest
-class GameControllerIT {
+class GetGamesControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private GameFacade gameFacade;
+    private GetGamesWithFilesUseCase getGamesWithFilesUseCase;
 
     @Test
     void shouldGetGames() throws Exception {
@@ -39,7 +39,7 @@ class GameControllerIT {
                         singletonList(gameFile)
                 )
         ), 1, 2, 3, 4, 5);
-        when(gameFacade.getGamesWithFiles(pagination))
+        when(getGamesWithFilesUseCase.getGamesWithFiles(pagination))
                 .thenReturn(gameWithFilesPage);
 
         mockMvc.perform(get("/api/games?page=0&size=2"))

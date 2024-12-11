@@ -19,11 +19,10 @@ import java.io.OutputStream;
 public class UrlFileDownloader {
 
     private final FileManager fileManager;
-    private final BackupProgressFactory backupProgressFactory;
 
-    public String downloadFile(FileBufferProvider fileBufferProvider, GameFile gameFile, String tempFilePath)
+    public String downloadFile(FileBufferProvider fileBufferProvider, GameFile gameFile, String tempFilePath,
+                               BackupProgress progress)
             throws IOException {
-        BackupProgress progress = backupProgressFactory.create();
         String url = gameFile.getGameProviderFile().url();
         Flux<DataBuffer> dataBufferFlux = fileBufferProvider.getFileBuffer(url, progress);
         writeToDisk(dataBufferFlux, tempFilePath, progress);

@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class GameFacade {
+public class GetGamesWithFilesUseCase {
 
     private final GameRepository gameRepository;
     private final GameFileRepository gameFileRepository;

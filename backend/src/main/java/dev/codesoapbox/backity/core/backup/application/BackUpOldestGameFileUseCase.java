@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backup.domain;
+package dev.codesoapbox.backity.core.backup.application;
 
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
@@ -9,23 +9,23 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @RequiredArgsConstructor
-public class EnqueuedFileBackupProcessor {
+public class BackUpOldestGameFileUseCase {
 
     private final GameFileRepository gameFileRepository;
     private final FileBackupService fileBackupService;
 
     final AtomicReference<GameFile> enqueuedFileBackupReference = new AtomicReference<>();
 
-    public synchronized void processQueue() {
+    public synchronized void backUpOldestGameFile() {
         if (enqueuedFileBackupReference.get() != null) {
             return;
         }
 
         gameFileRepository.findOldestWaitingForDownload()
-                .ifPresent(this::processEnqueuedFileDownload);
+                .ifPresent(this::tryToBackUp);
     }
 
-    private void processEnqueuedFileDownload(GameFile gameFile) {
+    private void tryToBackUp(GameFile gameFile) {
         if (!fileBackupService.isReadyFor(gameFile)) {
             return;
         }
