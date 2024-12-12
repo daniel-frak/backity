@@ -1,7 +1,21 @@
-$primary: #FFC107FF;
+@import "bootstrap/scss/functions";
 
+// Redefined variables (unchanged)
+$black: #000;
+$border-color-translucent: rgba($black, .175);
+
+//Overrides
+
+$primary: #FFC107FF;
 $info: #2770be;
 $warning: #FD7E14FF;
+$light: lighten(#f4eed9, 5%);
+$dark: desaturate(darken($light, 80%), 50%);
+$body-secondary-bg: desaturate(darken($light, 10%), 30%);
+$body-tertiary-bg: desaturate(darken($light, 5%), 15%);
+
+$body-bg: $light;
+$border-color: $border-color-translucent;
 
 $spinner-width: 3rem;
 $spinner-border-width: .35em;
@@ -9,3 +23,24 @@ $spinner-border-width: .35em;
 $popover-max-width: 300px;
 
 $toast-spacing: .75rem;
+
+$enable-rounded: false;
+
+// Dark mode alternative
+
+$white: #fff;
+$border-color-translucent: rgba($white, .175);
+$dark: #2a2f32; // Or something brown, e.g.: #322d2a;
+$light: lighten($dark, 75%);
+$body-color: $light;
+$body-bg: $dark;
+$table-color: $light;
+$border-color: $border-color-translucent;
+
+$red: #dc3545;
+$red-300: tint-color($red, 40%);
+$form-invalid-color: $red-300;
+$form-invalid-border-color: $red-300;
+$form-feedback-icon-invalid-color: $red-300;
+
+// END of Dark mode alternative

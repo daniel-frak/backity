@@ -28,11 +28,11 @@ export class FileStatusBadgeComponent implements OnInit {
       case FileBackupStatus.Success:
         return 'bg-success';
       case FileBackupStatus.InProgress:
-        return 'bg-info';
+        return 'bg-warning';
       case FileBackupStatus.Failed:
         return 'bg-danger';
       case FileBackupStatus.Enqueued:
-        return 'bg-warning';
+        return 'bg-info';
       default:
         return 'bg-secondary'
     }

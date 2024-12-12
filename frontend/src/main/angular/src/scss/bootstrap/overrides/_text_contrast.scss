@@ -1,0 +1,7 @@
+@import "../basics";
+
+@each $color, $value in $theme-colors {
+  .bg-#{$color} {
+    color: color-contrast($value) if($enable-important-utilities, !important, null);
+  }
+}
