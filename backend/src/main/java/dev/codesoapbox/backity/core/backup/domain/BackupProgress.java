@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.backup.domain;
 
-import dev.codesoapbox.backity.core.shared.domain.IncrementalProgressTracker;
-import dev.codesoapbox.backity.core.shared.domain.ProgressInfo;
+import dev.codesoapbox.backity.shared.domain.IncrementalProgressTracker;
+import dev.codesoapbox.backity.shared.domain.ProgressInfo;
 import lombok.Getter;
 
 import java.io.OutputStream;

@@ -2,8 +2,8 @@ package dev.codesoapbox.backity.core.game.adapters.driven.persistence.jpa;
 
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
-import dev.codesoapbox.backity.core.shared.domain.Page;
-import dev.codesoapbox.backity.core.shared.domain.Pagination;
+import dev.codesoapbox.backity.shared.domain.Page;
+import dev.codesoapbox.backity.shared.domain.Pagination;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.discovery.config;
 
-import dev.codesoapbox.backity.core.discovery.adapters.application.GetFileDiscoveryStatusListUseCase;
-import dev.codesoapbox.backity.core.discovery.adapters.application.StartFileDiscoveryUseCase;
-import dev.codesoapbox.backity.core.discovery.adapters.application.StopFileDiscoveryUseCase;
+import dev.codesoapbox.backity.core.discovery.application.GetFileDiscoveryStatusListUseCase;
+import dev.codesoapbox.backity.core.discovery.application.StartFileDiscoveryUseCase;
+import dev.codesoapbox.backity.core.discovery.application.StopFileDiscoveryUseCase;
 import dev.codesoapbox.backity.core.discovery.application.FileDiscoveryService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,7 +1,16 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {GamesComponent} from './games.component';
 import {provideHttpClientTesting} from "@angular/common/http/testing";
-import {FileBackupsClient, FileBackupStatus, GameFile, GameFilesClient, GamesClient, PageGameWithFiles} from "@backend";
+import {
+  FileBackupMessageTopics,
+  FileBackupsClient,
+  FileBackupStatus,
+  FileBackupStatusChangedEvent,
+  GameFile,
+  GameFilesClient,
+  GamesClient,
+  PageGameWithFiles
+} from "@backend";
 import {of, throwError} from "rxjs";
 import {PageHeaderStubComponent} from "@app/shared/components/page-header/page-header.component.stub";
 import {TableComponent} from "@app/shared/components/table/table.component";
@@ -12,18 +21,24 @@ import {ButtonComponent} from "@app/shared/components/button/button.component";
 import {FileStatusBadgeComponent} from "@app/core/pages/games/file-status-badge/file-status-badge.component";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {ModalService} from "@app/shared/services/modal-service/modal.service";
+import {MessagesService} from "@app/shared/backend/services/messages.service";
+import {By} from "@angular/platform-browser";
+import {MessageTesting} from "@app/shared/testing/message-testing";
+import {DebugElement} from "@angular/core";
 import createSpyObj = jasmine.createSpyObj;
 import Spy = jasmine.Spy;
+import SpyObj = jasmine.SpyObj;
 
 describe('GamesComponent', () => {
   let component: GamesComponent;
   let fixture: ComponentFixture<GamesComponent>;
 
-  let gamesClient: GamesClient;
-  let gameFilesClient: GameFilesClient;
-  let fileBackupsClient: FileBackupsClient;
-  let notificationService: NotificationService;
-  let modalService: ModalService;
+  let gamesClient: SpyObj<GamesClient>;
+  let gameFilesClient: SpyObj<GameFilesClient>;
+  let fileBackupsClient: SpyObj<FileBackupsClient>;
+  let messagesService: SpyObj<MessagesService>;
+  let notificationService: SpyObj<NotificationService>;
+  let modalService: SpyObj<ModalService>;
 
   const sampleGameFile: GameFile = {
     id: "someFileId",
@@ -57,9 +72,8 @@ describe('GamesComponent', () => {
         {provide: GamesClient, useValue: createSpyObj('GamesClient', ['getGames'])},
         {provide: GameFilesClient, useValue: createSpyObj('GameFilesClient', ['enqueueFileBackup'])},
         {provide: FileBackupsClient, useValue: createSpyObj('FileBackupsClient', ['deleteFileBackup'])},
-        {
-          provide: NotificationService, useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])
-        },
+        {provide: MessagesService, useValue: createSpyObj('MessagesService', ['watch'])},
+        {provide: NotificationService, useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])},
         {provide: ModalService, useValue: createSpyObj('ModalService', ['withConfirmationModal'])},
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting()
@@ -68,13 +82,18 @@ describe('GamesComponent', () => {
 
     fixture = TestBed.createComponent(GamesComponent);
     component = fixture.componentInstance;
-    gamesClient = TestBed.inject(GamesClient);
-    gameFilesClient = TestBed.inject(GameFilesClient);
-    fileBackupsClient = TestBed.inject(FileBackupsClient);
-    notificationService = TestBed.inject(NotificationService);
-    modalService = TestBed.inject(ModalService);
+    gamesClient = TestBed.inject(GamesClient) as SpyObj<GamesClient>;
+    gameFilesClient = TestBed.inject(GameFilesClient) as SpyObj<GameFilesClient>;
+    fileBackupsClient = TestBed.inject(FileBackupsClient) as SpyObj<FileBackupsClient>;
+    messagesService = TestBed.inject(MessagesService) as SpyObj<MessagesService>;
+    notificationService = TestBed.inject(NotificationService) as SpyObj<NotificationService>;
+    modalService = TestBed.inject(ModalService) as SpyObj<ModalService>;
 
     autoConfirmModals();
+
+    MessageTesting.mockWatch(messagesService, (destination, callback) => {
+      // Do nothing
+    });
   });
 
   function autoConfirmModals() {
@@ -212,4 +231,58 @@ describe('GamesComponent', () => {
     expect(notificationService.showFailure).toHaveBeenCalledWith(
       `An error occurred while trying to delete a file backup`, undefined, gameFileId, mockError);
   });
+
+  it('should update file status when status changed event is received', async () => {
+    const gameFile = {
+      ...sampleGameFile,
+      fileBackup: {
+        status: FileBackupStatus.Discovered
+      }
+    };
+    mockGameFilesPage(gameFile);
+    await simulateBackupStatusChangedEventReceived(gameFile.id, FileBackupStatus.InProgress);
+
+    expect(component.gameWithFilesPage?.content?.[0].files?.[0].fileBackup?.status).toBe(FileBackupStatus.InProgress);
+    const gameListTable: DebugElement = getGameListTable();
+    expect(gameListTable.nativeElement.textContent).toContain('IN_PROGRESS');
+  });
+
+  function mockGameFilesPage(gameFile: GameFile) {
+    component.gameWithFilesPage = {
+      content: [{
+        id: "someGameId",
+        title: "someGameTitle",
+        files: [gameFile]
+      }]
+    };
+  }
+
+  async function simulateBackupStatusChangedEventReceived(gameFileId: string, newStatus: FileBackupStatus) {
+    const statusChangedMessage: FileBackupStatusChangedEvent = {
+      gameFileId: gameFileId,
+      newStatus: newStatus
+    };
+    await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
+      FileBackupMessageTopics.StatusChanged, statusChangedMessage);
+  }
+
+  function getGameListTable() {
+    return fixture.debugElement.query(By.css('[data-testid="game-list"]'));
+  }
+
+  it('should handle StatusChanged event when no matching file exists', async () => {
+    const gameFile = {
+      ...sampleGameFile,
+      fileBackup: {
+        status: FileBackupStatus.Discovered
+      }
+    };
+    mockGameFilesPage(gameFile);
+    await simulateBackupStatusChangedEventReceived("nonExistentGameId", FileBackupStatus.InProgress);
+
+    expect(component.gameWithFilesPage?.content?.[0].files?.[0].fileBackup?.status).toBe(FileBackupStatus.Discovered);
+    const gameListTable: DebugElement = getGameListTable();
+    expect(gameListTable.nativeElement.textContent).not.toContain('IN_PROGRESS');
+  });
+
 });

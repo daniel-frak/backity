@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.backup.domain.events;
 import dev.codesoapbox.backity.core.gamefile.domain.FileBackupStatus;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
-import dev.codesoapbox.backity.core.shared.domain.DomainEvent;
+import dev.codesoapbox.backity.shared.domain.DomainEvent;
 import jakarta.validation.constraints.NotNull;
 
 public record FileBackupStatusChangedEvent(

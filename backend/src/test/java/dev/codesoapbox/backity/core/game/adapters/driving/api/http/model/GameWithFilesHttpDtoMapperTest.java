@@ -3,10 +3,10 @@ package dev.codesoapbox.backity.core.game.adapters.driving.api.http.model;
 import dev.codesoapbox.backity.core.game.application.GameWithFiles;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefile.FileBackupHttpDto;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefile.FileBackupStatusHttpDto;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefile.GameFileHttpDto;
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefile.GameProviderFileHttpDto;
+import dev.codesoapbox.backity.shared.adapters.driving.api.http.model.gamefile.FileBackupHttpDto;
+import dev.codesoapbox.backity.shared.adapters.driving.api.http.model.gamefile.FileBackupStatusHttpDto;
+import dev.codesoapbox.backity.shared.adapters.driving.api.http.model.gamefile.GameFileHttpDto;
+import dev.codesoapbox.backity.shared.adapters.driving.api.http.model.gamefile.GameProviderFileHttpDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 

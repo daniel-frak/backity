@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.gamefile.domain;
 
 import dev.codesoapbox.backity.core.game.domain.GameId;
-import dev.codesoapbox.backity.core.shared.domain.Page;
-import dev.codesoapbox.backity.core.shared.domain.Pagination;
+import dev.codesoapbox.backity.shared.domain.Page;
+import dev.codesoapbox.backity.shared.domain.Pagination;
 
 import java.util.List;
 import java.util.Optional;

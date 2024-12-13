@@ -38,6 +38,10 @@ public class AdditionalArchitectureRules {
             + "..";
     private static final String APPLICATION_PACKAGE = ".."
             + PortsAndAdaptersArchitectureRules.Constants.APPLICATION_PACKAGE + "..";
+    private static final String INTEGRATIONS_PACKAGE =
+            BackityApplication.class.getPackageName() + ".integrations.(*)..";
+    private static final String INFRASTRUCTURE_PACKAGE =
+            BackityApplication.class.getPackageName() + ".infrastructure.(*)..";
 
     @ArchTest
     static final ArchRule EXCEPTIONS_SHOULD_BE_IN_CORRECT_PACKAGE = classes().that()
@@ -243,7 +247,14 @@ public class AdditionalArchitectureRules {
 
     @ArchTest
     static final ArchRule INTEGRATIONS_SHOULD_NOT_DEPEND_ON_EACH_OTHER = slices()
-            .matching(BackityApplication.class.getPackageName() + ".integrations.(*)..")
+            .matching(INTEGRATIONS_PACKAGE)
             .should().notDependOnEachOther()
             .because("making integrations unaware of each other will increase maintainability");
+
+    @ArchTest
+    static final ArchRule NOTHING_SHOULD_NOT_DEPEND_ON_INFRASTRUCTURE = noClasses().that()
+            .resideOutsideOfPackage(INFRASTRUCTURE_PACKAGE)
+            .should().dependOnClassesThat()
+            .resideInAPackage(INFRASTRUCTURE_PACKAGE)
+            .because("the infrastructure package should only contain plumbing necessary to run the application");
 }

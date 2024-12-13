@@ -1,12 +1,12 @@
 package dev.codesoapbox.backity.core.discovery.config;
 
-import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.eventhandlers.FileDiscoveredEventWebSocketHandler;
-import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.eventhandlers.FileDiscoveryProgressChangedEventWebSocketHandler;
-import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.eventhandlers.FileDiscoveryStatusChangedEventWebSocketHandler;
-import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model.FileDiscoveredWsEventMapper;
-import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model.FileDiscoveryProgressChangedWsEventMapper;
-import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.model.FileDiscoveryStatusChangedWsEventMapper;
-import dev.codesoapbox.backity.core.shared.adapters.driven.messaging.WebSocketEventPublisher;
+import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.ws.eventhandlers.FileDiscoveredEventWebSocketHandler;
+import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.ws.eventhandlers.FileDiscoveryProgressChangedEventWebSocketHandler;
+import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.ws.eventhandlers.FileDiscoveryStatusChangedEventWebSocketHandler;
+import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.ws.model.FileDiscoveredWsEventMapper;
+import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.ws.model.FileDiscoveryProgressChangedWsEventMapper;
+import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.ws.model.FileDiscoveryStatusChangedWsEventMapper;
+import dev.codesoapbox.backity.shared.adapters.driven.messaging.ws.WebSocketEventPublisher;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

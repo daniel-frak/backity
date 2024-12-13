@@ -61,7 +61,7 @@ public class GeneralCodingRules {
                     see https://stackoverflow.com/q/39890849 for detailed explanations""");
 
     @ArchTest
-    static final ArchRule BEANS_SHOULD_BE_DEFINED_IN_CONFIGURATION = noClasses().that()
+    static final ArchRule BEANS_SHOULD_BE_DEFINED_IN_CONFIGURATION_PACKAGE = noClasses().that()
             .resideOutsideOfPackage(CONFIG_PACKAGE)
             .should()
             .beAnnotatedWith(SPRING_COMPONENT_ANNOTATION)

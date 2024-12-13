@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
-import dev.codesoapbox.backity.core.shared.domain.IncrementalProgressTracker;
-import dev.codesoapbox.backity.core.shared.domain.ProgressInfo;
+import dev.codesoapbox.backity.shared.domain.IncrementalProgressTracker;
+import dev.codesoapbox.backity.shared.domain.ProgressInfo;
 import dev.codesoapbox.backity.core.discovery.application.GameProviderFileDiscoveryService;
 import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileResponse;

@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.gamefile.config;
 
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.model.gamefile.GameFileHttpDtoMapper;
+import dev.codesoapbox.backity.shared.adapters.driving.api.http.model.gamefile.GameFileHttpDtoMapper;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

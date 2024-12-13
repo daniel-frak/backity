@@ -4,8 +4,8 @@ import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
-import dev.codesoapbox.backity.core.shared.domain.Page;
-import dev.codesoapbox.backity.core.shared.domain.Pagination;
+import dev.codesoapbox.backity.shared.domain.Page;
+import dev.codesoapbox.backity.shared.domain.Pagination;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;

@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.core.logs.config;
 
-import dev.codesoapbox.backity.core.logs.adapters.driven.messaging.LogEventWebSocketPublisher;
-import dev.codesoapbox.backity.core.logs.adapters.driven.messaging.model.LogCreatedWsEventMapper;
+import dev.codesoapbox.backity.core.logs.adapters.driven.messaging.ws.LogEventWebSocketPublisher;
+import dev.codesoapbox.backity.core.logs.adapters.driven.messaging.ws.model.LogCreatedWsEventMapper;
 import dev.codesoapbox.backity.core.logs.domain.services.LogEventPublisher;
-import dev.codesoapbox.backity.core.shared.adapters.driven.messaging.WebSocketEventPublisher;
+import dev.codesoapbox.backity.shared.adapters.driven.messaging.ws.WebSocketEventPublisher;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

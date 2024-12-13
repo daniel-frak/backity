@@ -12,17 +12,17 @@
     <description>The backend module built with Spring Boot</description>
 
     <properties>
-        <springdoc.version>2.6.0</springdoc.version>
-        <openapi-generator.version>7.9.0</openapi-generator.version>
+        <springdoc.version>2.7.0</springdoc.version>
+        <openapi-generator.version>7.10.0</openapi-generator.version>
         <maven-clean.version>3.4.0</maven-clean.version>
-        <angular-openapi.version>12.0.0</angular-openapi.version>
+        <angular-openapi.version>18.0.0</angular-openapi.version>
         <jacoco.version>0.8.12</jacoco.version>
-        <sonar.projectKey>backity-backend</sonar.projectKey>
-        <sonar.projectName>Backity (backend)</sonar.projectName>
         <mapstruct.version>1.6.3</mapstruct.version>
-        <testcontainers.version>1.20.3</testcontainers.version>
+        <testcontainers.version>1.20.4</testcontainers.version>
         <archunit.version>1.3.0</archunit.version>
 
+        <sonar.projectKey>backity-backend</sonar.projectKey>
+        <sonar.projectName>Backity (backend)</sonar.projectName>
         <sonar.exclusions>**/BackityApplication.java,**/**Config.java</sonar.exclusions>
     </properties>
 
@@ -195,7 +195,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>3.13.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -327,7 +327,7 @@
             <plugin>
                 <groupId>org.pitest</groupId>
                 <artifactId>pitest-maven</artifactId>
-                <version>1.16.1</version>
+                <version>1.17.2</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.pitest</groupId>
@@ -501,7 +501,7 @@
                     <plugin>
                         <groupId>io.github.git-commit-id</groupId>
                         <artifactId>git-commit-id-maven-plugin</artifactId>
-                        <version>5.0.0</version>
+                        <version>9.0.1</version>
                     </plugin>
                     <plugin>
                         <groupId>org.pitest</groupId>

@@ -69,7 +69,24 @@ export class FileBackupComponent implements OnInit, OnDestroy {
   }
 
   private onBackupStarted(payload: Message) {
-    this.currentDownload = JSON.parse(payload.body);
+    const event: FileBackupStartedEvent = JSON.parse(payload.body);
+    this.currentDownload = event;
+    this.tryToRemoveFileFromEnqueuedDownloads(event);
+  }
+
+  private tryToRemoveFileFromEnqueuedDownloads(event: FileBackupStartedEvent) {
+    const foundFile: GameFile | undefined = this.findFileInEnqueuedDownloads(event);
+    if (foundFile) {
+      const index: number | undefined = this.enqueuedDownloads?.content?.indexOf(foundFile);
+      if (index !== -1) {
+        this.enqueuedDownloads?.content?.splice(index!, 1);
+      }
+    }
+  }
+
+  private findFileInEnqueuedDownloads(event: FileBackupStartedEvent) {
+    return this.enqueuedDownloads?.content
+      ?.find(file => file?.id == event.gameFileId);
   }
 
   private onProgressUpdate(payload: Message) {

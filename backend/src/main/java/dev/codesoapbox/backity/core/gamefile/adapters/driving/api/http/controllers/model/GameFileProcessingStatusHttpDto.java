@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.gamefile.adapters.driving.api.http.controllers.model;
 
-import dev.codesoapbox.backity.core.shared.adapters.driving.api.http.openapi.lowercaseenums.LowercaseApiEnum;
+import dev.codesoapbox.backity.shared.adapters.driving.api.http.lowercaseenums.openapi.LowercaseApiEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @LowercaseApiEnum

@@ -7,7 +7,7 @@ import dev.codesoapbox.backity.core.backup.domain.BackupProgressFactory;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
 import dev.codesoapbox.backity.core.filemanagement.domain.FilePathProvider;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
-import dev.codesoapbox.backity.core.shared.domain.DomainEventPublisher;
+import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

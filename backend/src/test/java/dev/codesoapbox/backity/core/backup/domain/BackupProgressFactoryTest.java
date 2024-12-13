@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.backup.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupProgressChangedEvent;
-import dev.codesoapbox.backity.core.shared.domain.DomainEventPublisher;
-import dev.codesoapbox.backity.testing.FakeClock;
+import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
+import dev.codesoapbox.backity.testing.time.FakeClock;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

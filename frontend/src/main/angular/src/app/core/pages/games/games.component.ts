@@ -1,7 +1,15 @@
-import {Component, OnInit} from '@angular/core';
-import {FileBackupsClient, FileBackupStatus, GameFile, GameFilesClient, GamesClient, PageGameWithFiles} from "@backend";
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {
+  FileBackupMessageTopics,
+  FileBackupsClient,
+  FileBackupStatus, FileBackupStatusChangedEvent,
+  GameFile,
+  GameFilesClient,
+  GamesClient,
+  PageGameWithFiles
+} from "@backend";
 import {catchError} from "rxjs/operators";
-import {firstValueFrom} from "rxjs";
+import {firstValueFrom, Subscription} from "rxjs";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {ModalService} from "@app/shared/services/modal-service/modal.service";
 import {PageHeaderComponent} from '@app/shared/components/page-header/page-header.component';
@@ -12,6 +20,8 @@ import {TableComponent} from '@app/shared/components/table/table.component';
 import {TableColumnDirective} from '@app/shared/components/table/column-directive/table-column.directive';
 import {FileStatusBadgeComponent} from './file-status-badge/file-status-badge.component';
 import {CardComponent} from "@app/shared/components/card/card.component";
+import {MessagesService} from "@app/shared/backend/services/messages.service";
+import {Message} from "@stomp/stompjs";
 
 @Component({
   selector: 'app-games',
@@ -20,22 +30,46 @@ import {CardComponent} from "@app/shared/components/card/card.component";
   standalone: true,
   imports: [PageHeaderComponent, ButtonComponent, LoadedContentComponent, NgFor, TableComponent, TableColumnDirective, FileStatusBadgeComponent, NgSwitch, NgSwitchCase, CardComponent]
 })
-export class GamesComponent implements OnInit {
+export class GamesComponent implements OnInit, OnDestroy {
 
   gamesAreLoading: boolean = true;
   gameWithFilesPage?: PageGameWithFiles;
 
+  private readonly subscriptions: Subscription[] = [];
+
   constructor(private readonly gamesClient: GamesClient,
               private readonly gameFilesClient: GameFilesClient,
               private readonly fileBackupsClient: FileBackupsClient,
+              private readonly messageService: MessagesService,
               private readonly notificationService: NotificationService,
               private readonly modalService: ModalService) {
   }
 
   ngOnInit(): void {
+    this.subscriptions.push(
+      this.messageService.watch(FileBackupMessageTopics.StatusChanged)
+        .subscribe(p => this.onStatusChanged(p))
+    )
+
     this.refresh().then(() => {
       // Do nothing
     });
+  }
+
+  private onStatusChanged(payload: Message) {
+    const event: FileBackupStatusChangedEvent = JSON.parse(payload.body);
+
+    const fileInTable: GameFile | undefined = this.findFileInTable(event);
+
+    if(fileInTable) {
+      fileInTable.fileBackup.status = event.newStatus as FileBackupStatus;
+    }
+  }
+
+  private findFileInTable(event: FileBackupStatusChangedEvent) {
+    return this.gameWithFilesPage?.content
+      ?.flatMap(game => game.files)
+      ?.find(file => file?.id == event.gameFileId);
   }
 
   refresh = async () => {
@@ -108,4 +142,8 @@ export class GamesComponent implements OnInit {
   asGameFile = (gameFile: GameFile) => gameFile;
 
   public readonly FileBackupStatus = FileBackupStatus;
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
+  }
 }

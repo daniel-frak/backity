@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.integrations.gog.config;
 
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.auth.GogAuthSpringService;
+import dev.codesoapbox.backity.testing.TemporaryMockBean;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verify;
 @TestPropertySource(properties = "gog-auth-scheduler.rate-ms=1")
 class GogAuthSpringSchedulerIT {
 
-    @MockBean
+    @TemporaryMockBean
     private GogAuthSpringService gogAuthSpringService;
 
     @Test

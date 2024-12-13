@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.backup.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupProgressChangedEvent;
-import dev.codesoapbox.backity.core.shared.domain.ProgressInfo;
-import dev.codesoapbox.backity.core.shared.domain.DomainEventPublisher;
+import dev.codesoapbox.backity.shared.domain.ProgressInfo;
+import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import lombok.RequiredArgsConstructor;
 
 import java.util.function.Consumer;

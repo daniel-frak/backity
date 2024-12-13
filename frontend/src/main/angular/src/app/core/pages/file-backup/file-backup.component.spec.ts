@@ -123,9 +123,12 @@ describe('FileBackupComponent', () => {
     messagesService = TestBed.inject(MessagesService) as SpyObj<MessagesService>;
     notificationService = TestBed.inject(NotificationService);
 
-    gameFilesClient.getGameFiles.withArgs(GameFileProcessingStatus.Enqueued, anything()).and.returnValue(of(enqueuedDownloads) as any);
-    gameFilesClient.getGameFiles.withArgs(GameFileProcessingStatus.Processed, anything()).and.returnValue(of(processedFiles) as any);
-    gameFilesClient.getCurrentlyDownloading.and.returnValue(of(currentlyProcessedGameFile) as any);
+    gameFilesClient.getGameFiles.withArgs(GameFileProcessingStatus.Enqueued, anything())
+      .and.returnValue(of(JSON.parse(JSON.stringify(enqueuedDownloads))) as any);
+    gameFilesClient.getGameFiles.withArgs(GameFileProcessingStatus.Processed, anything())
+      .and.returnValue(of(JSON.parse(JSON.stringify(processedFiles))) as any);
+    gameFilesClient.getCurrentlyDownloading
+      .and.returnValue(of(JSON.parse(JSON.stringify(currentlyProcessedGameFile))) as any);
 
     MessageTesting.mockWatch(messagesService, (destination, callback) => {
       // Do nothing
@@ -214,7 +217,13 @@ describe('FileBackupComponent', () => {
       FileBackupMessageTopics.Started, fileBackupStartedEvent);
 
     expectCurrentlyDownloadingGameTitleToContain("Updated game title")
+    expectDownloadQueueToBeEmpty();
   });
+
+  function expectDownloadQueueToBeEmpty() {
+    const table = fixture.debugElement.query(By.css('#download-queue'));
+    expect(table.nativeElement.textContent).toContain('No data');
+  }
 
   it('should update download progress', async () => {
     const progressUpdatedEvent: FileBackupProgressUpdatedEvent = {

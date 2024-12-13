@@ -1,13 +1,13 @@
 package dev.codesoapbox.backity.core.backup.config;
 
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.eventhandlers.FileBackupFailedEventWebSocketHandler;
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.eventhandlers.FileBackupFinishedEventWebSocketHandler;
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.eventhandlers.FileBackupProgressChangedEventWebSocketHandler;
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.eventhandlers.FileBackupStartedEventWebSocketHandler;
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupProgressUpdatedWsEventMapper;
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStartedWsEventMapper;
-import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.model.FileBackupStatusChangedWsEventMapper;
-import dev.codesoapbox.backity.core.shared.adapters.driven.messaging.WebSocketEventPublisher;
+import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.ws.eventhandlers.FileBackupFailedEventWebSocketHandler;
+import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.ws.eventhandlers.FileBackupFinishedEventWebSocketHandler;
+import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.ws.eventhandlers.FileBackupProgressChangedEventWebSocketHandler;
+import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.ws.eventhandlers.FileBackupStartedEventWebSocketHandler;
+import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.ws.model.FileBackupProgressUpdatedWsEventMapper;
+import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.ws.model.FileBackupStartedWsEventMapper;
+import dev.codesoapbox.backity.core.backup.adapters.driven.messaging.ws.model.FileBackupStatusChangedWsEventMapper;
+import dev.codesoapbox.backity.shared.adapters.driven.messaging.ws.WebSocketEventPublisher;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,10 +18,13 @@ public class FileBackupWebSocketBeanConfig {
     @Bean
     FileBackupStartedEventWebSocketHandler fileBackupStartedEventWebSocketHandler(
             WebSocketEventPublisher webSocketEventPublisher) {
-        FileBackupStartedWsEventMapper backupStatusChangedMapper =
+        FileBackupStartedWsEventMapper backupStartedMapper =
                 Mappers.getMapper(FileBackupStartedWsEventMapper.class);
+        FileBackupStatusChangedWsEventMapper backupStatusChangedMapper =
+                Mappers.getMapper(FileBackupStatusChangedWsEventMapper.class);
 
-        return new FileBackupStartedEventWebSocketHandler(webSocketEventPublisher, backupStatusChangedMapper);
+        return new FileBackupStartedEventWebSocketHandler(
+                webSocketEventPublisher, backupStartedMapper, backupStatusChangedMapper);
     }
 
     @Bean

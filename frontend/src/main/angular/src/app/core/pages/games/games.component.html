@@ -8,7 +8,7 @@
   </div>
   <app-loaded-content [isLoading]="gamesAreLoading">
     <app-table *ngFor="let game of gameWithFilesPage?.content" [content]="{content: game.files ?? []}"
-               [caption]="game.title">
+               [caption]="game.title" testId="game-list">
       <ng-template app-table-column="File title" let-item>
         {{ asGameFile(item).gameProviderFile!.fileTitle }}
       </ng-template>

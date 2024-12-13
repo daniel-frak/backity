@@ -2,9 +2,11 @@ package dev.codesoapbox.backity.core.logs.adapters.driven.messaging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.codesoapbox.backity.core.logs.adapters.driven.messaging.ws.LogEventWebSocketPublisher;
+import dev.codesoapbox.backity.core.logs.adapters.driven.messaging.ws.LogWebSocketTopics;
 import dev.codesoapbox.backity.core.logs.domain.model.LogCreatedEvent;
 import dev.codesoapbox.backity.testing.messaging.TestMessageChannel;
-import dev.codesoapbox.backity.testing.messaging.WebSocketEventHandlerTest;
+import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketEventHandlerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

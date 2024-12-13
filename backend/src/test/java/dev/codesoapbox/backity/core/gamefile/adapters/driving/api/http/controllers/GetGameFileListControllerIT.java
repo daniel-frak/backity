@@ -4,9 +4,9 @@ import dev.codesoapbox.backity.core.gamefile.application.GetDiscoveredFileListUs
 import dev.codesoapbox.backity.core.gamefile.application.GetEnqueuedFileListUseCase;
 import dev.codesoapbox.backity.core.gamefile.application.GetProcessedFileListUseCase;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.shared.config.http.ControllerTest;
-import dev.codesoapbox.backity.core.shared.domain.Page;
-import dev.codesoapbox.backity.core.shared.domain.Pagination;
+import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
+import dev.codesoapbox.backity.shared.domain.Page;
+import dev.codesoapbox.backity.shared.domain.Pagination;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

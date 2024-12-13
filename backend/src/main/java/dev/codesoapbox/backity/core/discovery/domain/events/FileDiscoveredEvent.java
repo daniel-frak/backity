@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.discovery.domain.events;
 
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.shared.domain.DomainEvent;
+import dev.codesoapbox.backity.shared.domain.DomainEvent;
 
 public record FileDiscoveredEvent(
         String originalGameTitle,

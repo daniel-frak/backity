@@ -43,7 +43,7 @@ describe('FileStatusBadgeComponent', () => {
   it('should return the correct badge class for "In Progress"', () => {
     component.status = FileBackupStatus.InProgress;
     fixture.detectChanges();
-    expect(component.getBadgeClass()).toBe('bg-info');
+    expect(component.getBadgeClass()).toBe('bg-warning');
   });
 
   it('should return the correct badge class for "Failed"', () => {
@@ -55,7 +55,7 @@ describe('FileStatusBadgeComponent', () => {
   it('should return the correct badge class for "Enqueued"', () => {
     component.status = FileBackupStatus.Enqueued;
     fixture.detectChanges();
-    expect(component.getBadgeClass()).toBe('bg-warning');
+    expect(component.getBadgeClass()).toBe('bg-info');
   });
 
   it('should return the default badge class for undefined status', () => {

@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.discovery.application.FileDiscoveryService;
 import dev.codesoapbox.backity.core.discovery.application.GameProviderFileDiscoveryService;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
-import dev.codesoapbox.backity.core.shared.domain.DomainEventPublisher;
+import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

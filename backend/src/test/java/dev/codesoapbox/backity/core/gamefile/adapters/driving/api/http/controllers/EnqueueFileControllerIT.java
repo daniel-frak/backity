@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.gamefile.adapters.driving.api.http.controll
 import dev.codesoapbox.backity.core.gamefile.application.EnqueueFileUseCase;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotFoundException;
-import dev.codesoapbox.backity.core.shared.config.http.ControllerTest;
+import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
