@@ -1,7 +1,7 @@
 <app-loaded-content [isLoading]="isLoading">
   <table [attr.data-testid]="testId" class="table table-custom-responsive-lg-down">
     <caption *ngIf="caption">{{caption}}</caption>
-    <thead *ngIf="content?.content?.length">
+    <thead *ngIf="content?.length">
       <tr>
         <th *ngFor="let columnTitle of getColumnTitles()" scope="col">
           {{columnTitle}}
@@ -9,8 +9,8 @@
       </tr>
     </thead>
     <tbody>
-      <ng-container *ngIf="content?.content?.length">
-        <tr *ngFor="let row of content?.content">
+      <ng-container *ngIf="content?.length">
+        <tr *ngFor="let row of content">
           <td *ngFor="let columnContent of templateRefs; let i = index" [attr.data-title]="columnContent.columnTitle"
               [ngClass]="getTdClass(columnContent)">
             <ng-container
@@ -18,22 +18,9 @@
           </td>
         </tr>
       </ng-container>
-      <tr *ngIf="content?.content?.length === 0">
+      <tr *ngIf="content?.length === 0">
         <td class="hide-title">No data</td>
       </tr>
     </tbody>
   </table>
-  <div class="badge-container" *ngIf="content?.size">
-    <div>
-        <span class="badge bg-secondary">
-          Showing: {{ content?.size || 0 }}
-        </span>
-    </div>
-
-    <div>
-        <span class="badge bg-secondary">
-          Total elements: {{ content?.totalElements || 0 }}
-        </span>
-    </div>
-  </div>
 </app-loaded-content>

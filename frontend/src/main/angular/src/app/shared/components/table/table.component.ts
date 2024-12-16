@@ -1,5 +1,4 @@
 import {Component, ContentChildren, Input, OnInit, QueryList} from '@angular/core';
-import {TableContent} from "@app/shared/components/table/table-content";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
 import {LoadedContentComponent} from '../loaded-content/loaded-content.component';
 import {NgClass, NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
@@ -20,7 +19,7 @@ export class TableComponent implements OnInit {
   testId?: string;
 
   @Input()
-  content?: TableContent;
+  content?: any[];
 
   @Input()
   caption: string | undefined;

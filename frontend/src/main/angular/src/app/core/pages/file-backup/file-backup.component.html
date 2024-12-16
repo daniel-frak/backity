@@ -7,7 +7,7 @@
     Nothing is currently being backed up.
   </ng-container>
   <ng-container *ngIf="currentDownload">
-    <app-table [content]="{content: [currentDownload]}" [isLoading]="filesAreLoading">
+    <app-table [content]="[currentDownload]" [isLoading]="filesAreLoading">
       <ng-template app-table-column="Game title" let-item>
         {{ asBackupStartedEvent(item)!.originalGameTitle }}
       </ng-template>
@@ -45,7 +45,8 @@
     <app-button [actionAsync]="refresh()" testId="refresh-queue-btn" buttonStyle="secondary">Refresh</app-button>
   </div>
 
-  <app-table [content]="enqueuedDownloads!" [isLoading]="filesAreLoading" caption="Backup queue" id="download-queue">
+  <app-table [content]="enqueuedDownloads?.content" [isLoading]="filesAreLoading"
+             caption="Backup queue" id="download-queue">
     <ng-template app-table-column="Provider game title" let-item>
       {{ asGameFile(item).gameProviderFile!.originalGameTitle }}
     </ng-template>
@@ -73,7 +74,7 @@
     </ng-template>
   </app-table>
 
-  <app-table [content]="processedFiles!" [isLoading]="filesAreLoading"
+  <app-table [content]="processedFiles?.content" [isLoading]="filesAreLoading"
              caption="Processed files" id="processed-files" [testId]="'processed-files-table'">
     <ng-template app-table-column="Game title" let-item>
       {{ asGameFile(item).gameProviderFile!.originalGameTitle }}

@@ -2,7 +2,6 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TableComponent} from './table.component';
 import {Component, Input, QueryList, ViewChild} from "@angular/core";
-import {TableContent} from "@app/shared/components/table/table-content";
 import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
 import {By} from "@angular/platform-browser";
@@ -29,7 +28,7 @@ class TableComponentWrapper {
   isLoading?: boolean;
 
   @Input()
-  content?: TableContent;
+  content?: any[];
 }
 
 describe('TableComponent', () => {
@@ -60,7 +59,7 @@ describe('TableComponent', () => {
   });
 
   it('should show content', () => {
-    fixture.componentInstance.content = {content: ["testContent"]};
+    fixture.componentInstance.content = ["testContent"];
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('td').textContent).toContain("Col1: testContent");
   });
@@ -71,14 +70,14 @@ describe('TableComponent', () => {
   });
 
   it('should not show if loading', () => {
-    fixture.componentInstance.content = {content: ["testContent"]};
+    fixture.componentInstance.content = ["testContent"];
     fixture.componentInstance.isLoading = true;
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).not.toContain("Test table");
   });
 
   it('should add class to row if hide-title-on-mobile is used', () => {
-    fixture.componentInstance.content = {content: ["testContent"]};
+    fixture.componentInstance.content = ["testContent"];
     fixture.detectChanges();
 
     const columns = fixture.debugElement.queryAll(By.css('td'));
@@ -88,7 +87,7 @@ describe('TableComponent', () => {
   });
 
   it('should add custom class to row', () => {
-    fixture.componentInstance.content = {content: ["testContent"]};
+    fixture.componentInstance.content = ["testContent"];
     fixture.detectChanges();
 
     const columns = fixture.debugElement.queryAll(By.css('td'));

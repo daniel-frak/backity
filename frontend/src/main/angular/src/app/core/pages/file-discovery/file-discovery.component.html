@@ -70,7 +70,7 @@
     </app-button>
   </div>
 
-  <app-table [content]="discoveredFiles!" [isLoading]="filesAreLoading" [testId]="'discovered-files-table'">
+  <app-table [content]="discoveredFiles?.content" [isLoading]="filesAreLoading" [testId]="'discovered-files-table'">
     <ng-template app-table-column="Provider game title" let-item>
       {{ asGameFile(item).gameProviderFile!.originalFileName }}
     </ng-template>

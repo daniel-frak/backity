@@ -7,7 +7,7 @@
     <app-button [actionAsync]="refresh" testId="refresh-games-btn" buttonStyle="secondary">Refresh</app-button>
   </div>
   <app-loaded-content [isLoading]="gamesAreLoading">
-    <app-table *ngFor="let game of gameWithFilesPage?.content" [content]="{content: game.files ?? []}"
+    <app-table *ngFor="let game of gameWithFilesPage?.content" [content]="game.files ?? []"
                [caption]="game.title" testId="game-list">
       <ng-template app-table-column="File title" let-item>
         {{ asGameFile(item).gameProviderFile!.fileTitle }}
