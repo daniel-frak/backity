@@ -1,0 +1,47 @@
+@import "src/scss/bootstrap/basics";
+
+:host {
+  display: block;
+  margin-top: map_get($spacers, 3);
+  text-align: center;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: map_get($spacers, 3);
+
+  > * {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: map_get($spacers, 3);
+
+    > * {
+      display: flex;
+      justify-content: center;
+    }
+  }
+
+  .elements-per-page, .pagination-options {
+    flex-grow: 999;
+  }
+
+  @media (min-width: map-get($grid-breakpoints, md)) {
+    > * {
+      flex-grow: 0;
+      justify-content: flex-start;
+    }
+    .elements-per-page {
+      flex-grow: 0;
+
+      .form-select {
+        max-width: 5rem;
+      }
+    }
+  }
+}

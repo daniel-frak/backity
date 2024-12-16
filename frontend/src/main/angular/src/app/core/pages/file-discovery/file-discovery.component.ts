@@ -26,13 +26,14 @@ import {ButtonComponent} from '@app/shared/components/button/button.component';
 import {TableComponent} from '@app/shared/components/table/table.component';
 import {TableColumnDirective} from '@app/shared/components/table/column-directive/table-column.directive';
 import {CardComponent} from "@app/shared/components/card/card.component";
+import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
 
 @Component({
   selector: 'app-file-discovery',
   templateUrl: './file-discovery.component.html',
   styleUrls: ['./file-discovery.component.scss'],
   standalone: true,
-  imports: [PageHeaderComponent, LoadedContentComponent, NgFor, FileDiscoveryStatusBadgeComponent, NewDiscoveredFilesBadgeComponent, ButtonComponent, NgIf, NgStyle, TableComponent, TableColumnDirective, DatePipe, CardComponent]
+  imports: [PageHeaderComponent, LoadedContentComponent, NgFor, FileDiscoveryStatusBadgeComponent, NewDiscoveredFilesBadgeComponent, ButtonComponent, NgIf, NgStyle, TableComponent, TableColumnDirective, DatePipe, CardComponent, PaginationComponent]
 })
 export class FileDiscoveryComponent implements OnInit, OnDestroy {
 
@@ -46,7 +47,9 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     = new Map<string, FileDiscoveryProgressUpdateEvent>();
   discoveryStateUnknown: boolean = true;
 
-  private readonly pageSize = 20;
+  discoveredFilesPageNumber: number = 1;
+  discoveredFilesPageSize: number = 3;
+
   private readonly subscriptions: Subscription[] = [];
 
   constructor(private readonly fileDiscoveryClient: FileDiscoveryClient,
@@ -104,8 +107,8 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   refreshDiscoveredFiles(): () => Promise<void> {
     return async () => {
       this.filesAreLoading = true;
-      const page = 0;
-      const size = this.pageSize;
+      const page = this.discoveredFilesPageNumber - 1;
+      const size = this.discoveredFilesPageSize;
       try {
         const gameFilePage = await firstValueFrom(
           this.gameFilesClient.getGameFiles(GameFileProcessingStatus.Discovered, {

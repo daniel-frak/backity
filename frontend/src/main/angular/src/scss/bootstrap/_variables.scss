@@ -1,5 +1,7 @@
 @import "bootstrap/scss/functions";
 
+$enable-important-utilities: true;
+
 // Redefined variables (unchanged)
 $black: #000;
 $border-color-translucent: rgba($black, .175);
@@ -28,19 +30,30 @@ $enable-rounded: false;
 
 // Dark mode alternative
 
+$red: #dc3545;
+$red-300: tint-color($red, 40%);
+$component-active-bg: $primary;
 $white: #fff;
+$min-contrast-ratio: 4.5;
+$color-contrast-dark: $black;
+$color-contrast-light: $white;
+
 $border-color-translucent: rgba($white, .175);
 $dark: #2a2f32; // Or something brown, e.g.: #322d2a;
 $light: lighten($dark, 75%);
 $body-color: $light;
 $body-bg: $dark;
+$body-secondary-color: rgba($body-color, .75);
+$body-tertiary-color: rgba($body-color, .5);
+$body-secondary-bg: desaturate(darken($dark, 5%), 15%);
+$body-tertiary-bg: desaturate(darken($dark, 7.5%), 30%);
 $table-color: $light;
 $border-color: $border-color-translucent;
+$form-select-indicator-color: $light;
 
-$red: #dc3545;
-$red-300: tint-color($red, 40%);
 $form-invalid-color: $red-300;
 $form-invalid-border-color: $red-300;
 $form-feedback-icon-invalid-color: $red-300;
+$component-active-color: color-contrast($component-active-bg) if($enable-important-utilities, !important, null);
 
 // END of Dark mode alternative

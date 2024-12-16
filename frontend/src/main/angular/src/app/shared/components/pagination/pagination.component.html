@@ -1,0 +1,28 @@
+<ng-container *ngIf="currentPage">
+  <div class="pagination-container">
+    <div class="pagination-options">
+      <div class="elements-per-page">
+        <div class="input-group">
+          <span class="input-group-text">Rows per page</span>
+          <select type="number" class="form-select" aria-label="Rows per page" [(ngModel)]="pageSize"
+                  (ngModelChange)="onPageSizeChange($event)">
+            <option *ngFor="let value of availablePageSizes" [ngValue]="value">{{ value }}</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        Showing {{ getFirstElementNumber() }}-{{ getLastElementNumber() }} of {{ getTotalElements() }}
+      </div>
+    </div>
+    <div>
+      <ngb-pagination
+        [disabled]="disabled"
+        (pageChange)="emitPageChange($event)"
+        [collectionSize]="currentPage.totalElements!"
+        [(page)]="pageNumber"
+        [pageSize]="pageSize"
+        [maxSize]="10"
+        [boundaryLinks]="true"/>
+    </div>
+  </div>
+</ng-container>
