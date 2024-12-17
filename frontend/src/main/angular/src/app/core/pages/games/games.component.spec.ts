@@ -28,6 +28,7 @@ import {DebugElement} from "@angular/core";
 import createSpyObj = jasmine.createSpyObj;
 import Spy = jasmine.Spy;
 import SpyObj = jasmine.SpyObj;
+import {provideRouter} from "@angular/router";
 
 describe('GamesComponent', () => {
   let component: GamesComponent;
@@ -69,6 +70,7 @@ describe('GamesComponent', () => {
         LoadedContentStubComponent
       ],
       providers: [
+        provideRouter([]),
         {provide: GamesClient, useValue: createSpyObj('GamesClient', ['getGames'])},
         {provide: GameFilesClient, useValue: createSpyObj('GameFilesClient', ['enqueueFileBackup'])},
         {provide: FileBackupsClient, useValue: createSpyObj('FileBackupsClient', ['deleteFileBackup'])},
@@ -125,7 +127,7 @@ describe('GamesComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(gamesClient.getGames).toHaveBeenCalledWith({page: 0, size: 20});
+    expect(gamesClient.getGames).toHaveBeenCalledWith({page: 0, size: component.gamePageSize});
     expect(component.gameWithFilesPage).toEqual(mockGames);
     expect(component.gamesAreLoading).toBeFalse();
 
@@ -143,7 +145,7 @@ describe('GamesComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(notificationService.showFailure).toHaveBeenCalledWith('Error fetching games', undefined, mockError);
+    expect(notificationService.showFailure).toHaveBeenCalledWith('Error fetching games', mockError);
   });
 
   it('should back up game file and set its status to Enqueued', async () => {
@@ -173,7 +175,7 @@ describe('GamesComponent', () => {
     expect(gameFilesClient.enqueueFileBackup).toHaveBeenCalledWith(gameFile.id);
     expect(notificationService.showFailure).toHaveBeenCalledWith(
       `An error occurred while trying to enqueue a file`,
-      undefined, gameFile, mockError);
+      gameFile, mockError);
   });
 
   it('should log an error for various operations', async () => {
@@ -229,7 +231,7 @@ describe('GamesComponent', () => {
     await component.deleteBackup(gameFileId)();
 
     expect(notificationService.showFailure).toHaveBeenCalledWith(
-      `An error occurred while trying to delete a file backup`, undefined, gameFileId, mockError);
+      `An error occurred while trying to delete a file backup`, gameFileId, mockError);
   });
 
   it('should update file status when status changed event is received', async () => {

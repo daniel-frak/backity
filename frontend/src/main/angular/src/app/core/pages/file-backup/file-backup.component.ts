@@ -20,6 +20,7 @@ import {TableComponent} from '@app/shared/components/table/table.component';
 import {TableColumnDirective} from '@app/shared/components/table/column-directive/table-column.directive';
 import {ButtonComponent} from '@app/shared/components/button/button.component';
 import {CardComponent} from "@app/shared/components/card/card.component";
+import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
 
 @Component({
   selector: 'app-downloads',
@@ -32,19 +33,27 @@ import {CardComponent} from "@app/shared/components/card/card.component";
     TableComponent,
     TableColumnDirective,
     ButtonComponent,
-    CardComponent
+    CardComponent,
+    PaginationComponent
   ]
 })
 export class FileBackupComponent implements OnInit, OnDestroy {
 
-  enqueuedDownloads?: PageGameFile;
-  processedFiles?: PageGameFile;
+  currentDownloadIsLoading: boolean = false;
   currentDownload?: FileBackupStartedEvent;
   downloadProgress?: FileBackupProgressUpdatedEvent;
-  filesAreLoading: boolean = false;
-  FileBackupStatus = FileBackupStatus;
 
-  private readonly pageSize = 20;
+  FileBackupStatus = FileBackupStatus;
+  processedFilesAreLoading: boolean = false;
+  processedFilePage?: PageGameFile;
+  processedFilesPageNumber: number = 1;
+  processedFilesPageSize: number = 3;
+
+  enqueuedFilesAreLoading: boolean = false;
+  enqueuedFilePage?: PageGameFile;
+  enqueuedFilesPageNumber: number = 1;
+  enqueuedFilesPageSize: number = 3;
+
   private readonly subscriptions: Subscription[] = [];
 
   constructor(private readonly gameFilesClient: GameFilesClient,
@@ -65,7 +74,7 @@ export class FileBackupComponent implements OnInit, OnDestroy {
         .subscribe(p => this.onStatusChanged(p))
     )
 
-    this.refresh()();
+    this.refreshCurrentlyDownloaded()();
   }
 
   private onBackupStarted(payload: Message) {
@@ -77,15 +86,15 @@ export class FileBackupComponent implements OnInit, OnDestroy {
   private tryToRemoveFileFromEnqueuedDownloads(event: FileBackupStartedEvent) {
     const foundFile: GameFile | undefined = this.findFileInEnqueuedDownloads(event);
     if (foundFile) {
-      const index: number | undefined = this.enqueuedDownloads?.content?.indexOf(foundFile);
+      const index: number | undefined = this.enqueuedFilePage?.content?.indexOf(foundFile);
       if (index !== -1) {
-        this.enqueuedDownloads?.content?.splice(index!, 1);
+        this.enqueuedFilePage?.content?.splice(index!, 1);
       }
     }
   }
 
   private findFileInEnqueuedDownloads(event: FileBackupStartedEvent) {
-    return this.enqueuedDownloads?.content
+    return this.enqueuedFilePage?.content
       ?.find(file => file?.id == event.gameFileId);
   }
 
@@ -103,17 +112,11 @@ export class FileBackupComponent implements OnInit, OnDestroy {
     }
   }
 
-  refresh(): () => Promise<void> {
+  refreshCurrentlyDownloaded(): () => Promise<void> {
     return async () => {
-      this.filesAreLoading = true;
-      const page = 0;
-      const size = this.pageSize;
+      this.currentDownloadIsLoading = true;
 
       try {
-        this.enqueuedDownloads = await firstValueFrom(
-          this.gameFilesClient.getGameFiles(GameFileProcessingStatus.Enqueued, {page, size}));
-        this.processedFiles = await firstValueFrom(
-          this.gameFilesClient.getGameFiles(GameFileProcessingStatus.Processed, {page, size}));
         const gameFile = await firstValueFrom(this.gameFilesClient.getCurrentlyDownloading());
         if (!gameFile) {
           this.currentDownload = undefined;
@@ -129,9 +132,45 @@ export class FileBackupComponent implements OnInit, OnDestroy {
           };
         }
       } catch (error) {
-        this.notificationService.showFailure('Error during refresh', undefined, error);
+        this.notificationService.showFailure('Error fetching currently downloaded file', error);
       } finally {
-        this.filesAreLoading = false;
+        this.processedFilesAreLoading = false;
+      }
+    }
+  }
+
+  refreshEnqueuedFiles(): () => Promise<void> {
+    return async () => {
+      this.enqueuedFilesAreLoading = true;
+
+      try {
+        this.enqueuedFilePage = await firstValueFrom(
+          this.gameFilesClient.getGameFiles(GameFileProcessingStatus.Enqueued, {
+            page: this.enqueuedFilesPageNumber - 1,
+            size: this.enqueuedFilesPageSize
+          }));
+      } catch (error) {
+        this.notificationService.showFailure('Error fetching enqueued files', error);
+      } finally {
+        this.enqueuedFilesAreLoading = false;
+      }
+    }
+  }
+
+  refreshProcessedFiles(): () => Promise<void> {
+    return async () => {
+      this.processedFilesAreLoading = true;
+
+      try {
+        this.processedFilePage = await firstValueFrom(
+          this.gameFilesClient.getGameFiles(GameFileProcessingStatus.Processed, {
+            page: this.processedFilesPageNumber - 1,
+            size: this.processedFilesPageSize
+          }));
+      } catch (error) {
+        this.notificationService.showFailure('Error fetching processed files', error);
+      } finally {
+        this.processedFilesAreLoading = false;
       }
     }
   }

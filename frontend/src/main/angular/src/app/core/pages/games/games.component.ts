@@ -22,18 +22,22 @@ import {FileStatusBadgeComponent} from './file-status-badge/file-status-badge.co
 import {CardComponent} from "@app/shared/components/card/card.component";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {Message} from "@stomp/stompjs";
+import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
 
 @Component({
   selector: 'app-games',
   templateUrl: './games.component.html',
   styleUrls: ['./games.component.scss'],
   standalone: true,
-  imports: [PageHeaderComponent, ButtonComponent, LoadedContentComponent, NgFor, TableComponent, TableColumnDirective, FileStatusBadgeComponent, NgSwitch, NgSwitchCase, CardComponent]
+    imports: [PageHeaderComponent, ButtonComponent, LoadedContentComponent, NgFor, TableComponent, TableColumnDirective, FileStatusBadgeComponent, NgSwitch, NgSwitchCase, CardComponent, PaginationComponent]
 })
 export class GamesComponent implements OnInit, OnDestroy {
 
   gamesAreLoading: boolean = true;
   gameWithFilesPage?: PageGameWithFiles;
+
+  gamePageNumber: number = 1;
+  gamePageSize: number = 3;
 
   private readonly subscriptions: Subscription[] = [];
 
@@ -49,11 +53,7 @@ export class GamesComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.messageService.watch(FileBackupMessageTopics.StatusChanged)
         .subscribe(p => this.onStatusChanged(p))
-    )
-
-    this.refresh().then(() => {
-      // Do nothing
-    });
+    );
   }
 
   private onStatusChanged(payload: Message) {
@@ -75,9 +75,12 @@ export class GamesComponent implements OnInit, OnDestroy {
   refresh = async () => {
     try {
       this.gamesAreLoading = true;
-      this.gameWithFilesPage = await firstValueFrom(this.gamesClient.getGames({page: 0, size: 20}));
+      this.gameWithFilesPage = await firstValueFrom(this.gamesClient.getGames({
+        page: this.gamePageNumber - 1,
+        size: this.gamePageSize
+      }));
     } catch (error) {
-      this.notificationService.showFailure('Error fetching games', undefined, error);
+      this.notificationService.showFailure('Error fetching games', error);
     } finally {
       this.gamesAreLoading = false;
     }
@@ -92,8 +95,7 @@ export class GamesComponent implements OnInit, OnDestroy {
         gameFile.fileBackup.status = FileBackupStatus.Enqueued;
         this.notificationService.showSuccess("File backup enqueued");
       } catch (error) {
-        this.notificationService.showFailure(
-          'An error occurred while trying to enqueue a file', undefined, gameFile, error);
+        this.notificationService.showFailure('An error occurred while trying to enqueue a file', gameFile, error);
         gameFile.fileBackup.status = FileBackupStatus.Discovered;
       }
     };
@@ -115,8 +117,7 @@ export class GamesComponent implements OnInit, OnDestroy {
             return this.refresh();
           });
       } catch (error) {
-        this.notificationService.showFailure(
-          'An error occurred while trying to delete a file backup', undefined, gameFileId, error);
+        this.notificationService.showFailure('An error occurred while trying to delete a file backup', gameFileId, error);
       }
     };
   }

@@ -71,8 +71,6 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
     )
 
     this.refreshInfo();
-
-    this.refreshDiscoveredFiles()();
   }
 
   private onFileDiscovered(payload: IMessage) {
@@ -107,17 +105,15 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
   refreshDiscoveredFiles(): () => Promise<void> {
     return async () => {
       this.filesAreLoading = true;
-      const page = this.discoveredFilesPageNumber - 1;
-      const size = this.discoveredFilesPageSize;
       try {
         const gameFilePage = await firstValueFrom(
           this.gameFilesClient.getGameFiles(GameFileProcessingStatus.Discovered, {
-            page: page,
-            size: size
+            page: this.discoveredFilesPageNumber - 1,
+            size: this.discoveredFilesPageSize
           }));
         this.updateDiscoveredFiles(gameFilePage);
       } catch (error) {
-        this.notificationService.showFailure('Error fetching discovered files', undefined, error);
+        this.notificationService.showFailure('Error fetching discovered files', error);
       } finally {
         this.filesAreLoading = false;
       }
@@ -136,7 +132,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
       try {
         await firstValueFrom(this.fileDiscoveryClient.startDiscovery());
       } catch (error) {
-        this.notificationService.showFailure('Error starting discovery', undefined, error);
+        this.notificationService.showFailure('Error starting discovery', error);
       }
     };
   }
@@ -147,7 +143,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
       try {
         await firstValueFrom(this.fileDiscoveryClient.stopDiscovery());
       } catch (error) {
-        this.notificationService.showFailure('Error stopping discovery', undefined, error);
+        this.notificationService.showFailure('Error stopping discovery', error);
       }
     };
   }
@@ -162,8 +158,7 @@ export class FileDiscoveryComponent implements OnInit, OnDestroy {
         })));
         this.notificationService.showSuccess("File backup enqueued");
       } catch (error) {
-        this.notificationService.showFailure(
-          'An error occurred while trying to enqueue a file', undefined, gameFile, error);
+        this.notificationService.showFailure('An error occurred while trying to enqueue a file', gameFile, error);
       }
     }
   }

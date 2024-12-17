@@ -44,7 +44,9 @@ describe('GlobalErrorHandler', () => {
     errorHandler.handleError(error);
 
     expect(notificationServiceSpy.showFailure)
-      .toHaveBeenCalledWith('An unexpected error has occurred', undefined, error);
+      .toHaveBeenCalledWith(
+        'An unexpected error has occurred',
+        error);
   });
 
   it('should call showFailure on notificationService for HttpErrorResponse with status 400', () => {
@@ -57,7 +59,6 @@ describe('GlobalErrorHandler', () => {
     expect(notificationServiceSpy.showFailure)
       .toHaveBeenCalledWith(
         "The request couldn't be processed. Please check the information you entered and try again.",
-        undefined,
         error
       );
   });
@@ -72,7 +73,6 @@ describe('GlobalErrorHandler', () => {
     expect(notificationServiceSpy.showFailure)
       .toHaveBeenCalledWith(
         "You're not authorized to perform this action.",
-        undefined,
         error
       );
   });
@@ -87,7 +87,6 @@ describe('GlobalErrorHandler', () => {
     expect(notificationServiceSpy.showFailure)
       .toHaveBeenCalledWith(
         "The requested resource was not found.",
-        undefined,
         error
       );
   });
@@ -102,7 +101,6 @@ describe('GlobalErrorHandler', () => {
     expect(notificationServiceSpy.showFailure)
       .toHaveBeenCalledWith(
         "This action is not supported.",
-        undefined,
         error
       );
   });
@@ -117,7 +115,6 @@ describe('GlobalErrorHandler', () => {
     expect(notificationServiceSpy.showFailure)
       .toHaveBeenCalledWith(
         "The request timed out. Please ensure your network is stable and try again.",
-        undefined,
         error
       );
   });
@@ -132,7 +129,6 @@ describe('GlobalErrorHandler', () => {
     expect(notificationServiceSpy.showFailure)
       .toHaveBeenCalledWith(
         "An unexpected server error has occurred.",
-        undefined,
         error
       );
   });
@@ -148,7 +144,6 @@ describe('GlobalErrorHandler', () => {
     expect(notificationServiceSpy.showFailure)
       .toHaveBeenCalledWith(
         "Custom server error message",
-        undefined,
         error
       );
   });
@@ -163,7 +158,6 @@ describe('GlobalErrorHandler', () => {
     expect(notificationServiceSpy.showFailure)
       .toHaveBeenCalledWith(
         "An unexpected network error has occurred (status: 418).",
-        undefined,
         error
       );
   });

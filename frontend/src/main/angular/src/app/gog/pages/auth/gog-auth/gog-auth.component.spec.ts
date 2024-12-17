@@ -74,7 +74,7 @@ describe('GogAuthComponent', () => {
 
     expect(component.gogIsLoading).toBeFalse();
     expect(notificationService.showFailure).toHaveBeenCalledWith(
-      'Failed to check GOG authentication', undefined, error);
+      'Failed to check GOG authentication', error);
   });
 
   it('should open a new window for authenticating', () => {
@@ -127,7 +127,7 @@ describe('GogAuthComponent', () => {
 
     expect(gogAuthClientMock.authenticate).not.toHaveBeenCalled();
     let expectedErrors = {required: true};
-    expect(notificationService.showFailure).toHaveBeenCalledWith("Form is invalid", undefined, expectedErrors)
+    expect(notificationService.showFailure).toHaveBeenCalledWith("Form is invalid", expectedErrors)
   });
 
   it('should log an error when signOutGog is called', () => {

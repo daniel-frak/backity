@@ -1,8 +1,9 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {TableContent} from "@app/shared/components/table/table-content";
 import {NgForOf, NgIf} from "@angular/common";
 import {FormsModule} from "@angular/forms";
+import {ActivatedRoute, Params, Router} from '@angular/router';
 
 @Component({
   selector: 'app-pagination',
@@ -16,7 +17,7 @@ import {FormsModule} from "@angular/forms";
   templateUrl: './pagination.component.html',
   styleUrl: './pagination.component.scss',
 })
-export class PaginationComponent {
+export class PaginationComponent implements OnInit {
 
   @Input()
   currentPage?: TableContent;
@@ -42,16 +43,56 @@ export class PaginationComponent {
   @Input()
   availablePageSizes: number[] = [2, 3, 5, 10, 20];
 
-  emitPageChange(pageNumber: number) {
+  @Input()
+  pageNumberQueryParamName: string = 'page';
+
+  @Input()
+  pageSizeQueryParamName: string = 'page-size';
+
+  constructor(private readonly activatedRoute: ActivatedRoute,
+              private readonly router: Router) {
+  }
+
+  ngOnInit(): void {
+    this.activatedRoute.queryParams.subscribe((params: Params): void => {
+      Promise.resolve().then(() => { // Make update async to avoid ExpressionChangedAfterItHasBeenCheckedError
+        if (params[this.pageNumberQueryParamName]) {
+          this.pageNumber = Number.parseInt(params[this.pageNumberQueryParamName]);
+          this.pageNumberChange.emit(this.pageNumber);
+        }
+        if (params[this.pageSizeQueryParamName]) {
+          this.pageSize = Number.parseInt(params[this.pageSizeQueryParamName]);
+          this.pageSizeChange.emit(this.pageSize);
+        }
+        this.onPageChange.emit();
+      });
+    });
+  }
+
+  onPageNumberChange(pageNumber: number) {
     if (this.pageNumber != pageNumber) {
-      this.pageNumberChange.emit(pageNumber );
+      this.pageNumberChange.emit(pageNumber);
       this.onPageChange.emit();
+      this.updateUrlQueryParams({
+        [this.pageNumberQueryParamName]: pageNumber,
+      });
     }
   }
 
-  onPageSizeChange(rowsPerPage: number) {
-    this.pageSizeChange.emit(rowsPerPage);
+  private updateUrlQueryParams(queryParams: any) {
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: queryParams,
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  onPageSizeChange(pageSize: number) {
+    this.pageSizeChange.emit(pageSize);
     this.onPageChange.emit();
+    this.updateUrlQueryParams({
+      [this.pageSizeQueryParamName]: pageSize,
+    });
   }
 
   getFirstElementNumber(): number {

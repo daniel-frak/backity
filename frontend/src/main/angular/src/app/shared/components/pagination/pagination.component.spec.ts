@@ -4,18 +4,36 @@ import {NgbPagination} from '@ng-bootstrap/ng-bootstrap';
 import {FormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {DebugElement} from '@angular/core';
+import {ActivatedRoute, Router} from "@angular/router";
+import {of} from "rxjs";
+import SpyObj = jasmine.SpyObj;
+import createSpyObj = jasmine.createSpyObj;
 
 describe('PaginationComponent', () => {
   let component: PaginationComponent;
   let fixture: ComponentFixture<PaginationComponent>;
+  let router: SpyObj<Router>;
+  let activatedRoute: ActivatedRoute;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [PaginationComponent, FormsModule, NgbPagination],
+      providers: [
+        {provide: Router, useValue: createSpyObj(Router, ['navigate'])},
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            queryParams: of({}),
+          }
+        },
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PaginationComponent);
     component = fixture.componentInstance;
+
+    router = TestBed.inject(Router) as SpyObj<Router>;
+    activatedRoute = TestBed.inject(ActivatedRoute);
 
     component.currentPage = {
       totalElements: 100,
@@ -25,8 +43,6 @@ describe('PaginationComponent', () => {
     component.pageSize = 10;
     component.pageNumber = 1;
     component.availablePageSizes = [5, 10, 15];
-
-    fixture.detectChanges();
   });
 
   it('should create the component', () => {
@@ -34,6 +50,7 @@ describe('PaginationComponent', () => {
   });
 
   it('should show correct numbers', () => {
+    fixture.detectChanges();
     const expectedText = 'Showing 1-10 of 100';
     const paginationText = fixture.debugElement.query(By.css('.pagination-options'))
       .nativeElement.textContent.trim();
@@ -120,24 +137,24 @@ describe('PaginationComponent', () => {
     expect(component.getTotalElements()).toBe(0);
   });
 
-  it('should emit page number change and onPageChange when emitPageChange is called' +
+  it('should emit page number change and onPageChange when onPageNumberChange is called' +
     ' with page number different than current', () => {
     spyOn(component.pageNumberChange, 'emit');
     spyOn(component.onPageChange, 'emit');
     const newPageNumber = component.pageNumber + 1;
 
-    component.emitPageChange(newPageNumber);
+    component.onPageNumberChange(newPageNumber);
 
     expect(component.pageNumberChange.emit).toHaveBeenCalledWith(newPageNumber);
     expect(component.onPageChange.emit).toHaveBeenCalled();
   });
 
-  it('should do nothing when emitPageChange is called with page number same as current', () => {
+  it('should do nothing when onPageNumberChange is called with page number same as current', () => {
     spyOn(component.pageNumberChange, 'emit');
     spyOn(component.onPageChange, 'emit');
     const newPageNumber = component.pageNumber;
 
-    component.emitPageChange(newPageNumber);
+    component.onPageNumberChange(newPageNumber);
 
     expect(component.pageNumberChange.emit).not.toHaveBeenCalled();
     expect(component.onPageChange.emit).not.toHaveBeenCalled();
@@ -155,6 +172,7 @@ describe('PaginationComponent', () => {
   });
 
   it('should render pagination options', () => {
+    fixture.detectChanges();
     const options = fixture.debugElement.queryAll(By.css('option'));
     expect(options.length).toBe(3);
   });
@@ -167,13 +185,66 @@ describe('PaginationComponent', () => {
     expect(pagination.componentInstance.disabled).toBeTrue();
   });
 
-  it('should call emitPageChange when page is changed using NgbPagination', () => {
-    spyOn(component, 'emitPageChange');
+  it('should call onPageNumberChange when page is changed using NgbPagination', () => {
+    fixture.detectChanges();
+    spyOn(component, 'onPageNumberChange');
     const pagination: DebugElement = fixture.debugElement.query(By.directive(NgbPagination));
 
     pagination.triggerEventHandler('pageChange', 3);
     fixture.detectChanges();
 
-    expect(component.emitPageChange).toHaveBeenCalledWith(3);
+    expect(component.onPageNumberChange).toHaveBeenCalledWith(3);
+  });
+
+
+  it('should read page number and page size from query params on init', async () => {
+    activatedRoute.queryParams = of({
+      page: '2',
+      'page-size': '15',
+    });
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(component.pageNumber).toBe(2);
+    expect(component.pageSize).toBe(15);
+  });
+
+  it('should emit pageNumberChange, pageSizeChange, and onPageChange when query params are read',
+    async () => {
+      spyOn(component.pageNumberChange, 'emit');
+      spyOn(component.pageSizeChange, 'emit');
+      spyOn(component.onPageChange, 'emit');
+      activatedRoute.queryParams = of({
+        page: '2',
+        'page-size': '15',
+      });
+
+      component.ngOnInit();
+      await fixture.whenStable();
+
+      expect(component.pageNumberChange.emit).toHaveBeenCalledWith(2);
+      expect(component.pageSizeChange.emit).toHaveBeenCalledWith(15);
+      expect(component.onPageChange.emit).toHaveBeenCalled();
+    });
+
+  it('should update URL query parameters when onPageNumberChange is called', () => {
+    component.onPageNumberChange(3);
+
+    expect(router.navigate).toHaveBeenCalledWith([], {
+      relativeTo: activatedRoute,
+      queryParams: {page: 3},
+      queryParamsHandling: 'merge',
+    });
+  });
+
+  it('should update URL query parameters when onPageSizeChange is called', () => {
+    component.onPageSizeChange(20);
+
+    expect(router.navigate).toHaveBeenCalledWith([], {
+      relativeTo: activatedRoute,
+      queryParams: {'page-size': 20},
+      queryParamsHandling: 'merge',
+    });
   });
 });

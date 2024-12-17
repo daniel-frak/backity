@@ -17,7 +17,7 @@
     <div>
       <ngb-pagination
         [disabled]="disabled"
-        (pageChange)="emitPageChange($event)"
+        (pageChange)="onPageNumberChange($event)"
         [collectionSize]="currentPage.totalElements!"
         [(page)]="pageNumber"
         [pageSize]="pageSize"

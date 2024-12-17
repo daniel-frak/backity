@@ -2,12 +2,12 @@
   Here you can see the backup queue.
 </app-page-header>
 
-<app-card title="Currently backing up" id="currently-downloading">
+<app-card cardTitle="Currently backing up" id="currently-downloading">
   <ng-container *ngIf="!currentDownload">
     Nothing is currently being backed up.
   </ng-container>
   <ng-container *ngIf="currentDownload">
-    <app-table [content]="[currentDownload]" [isLoading]="filesAreLoading">
+    <app-table [content]="[currentDownload]" [isLoading]="processedFilesAreLoading">
       <ng-template app-table-column="Game title" let-item>
         {{ asBackupStartedEvent(item)!.originalGameTitle }}
       </ng-template>
@@ -40,12 +40,13 @@
   </ng-container>
 </app-card>
 
-<app-card title="Queue">
+<app-card cardTitle="Enqueued files">
   <div class="button-container">
-    <app-button [actionAsync]="refresh()" testId="refresh-queue-btn" buttonStyle="secondary">Refresh</app-button>
+    <app-button [actionAsync]="refreshEnqueuedFiles()" testId="refresh-queue-btn" buttonStyle="secondary">Refresh
+    </app-button>
   </div>
 
-  <app-table [content]="enqueuedDownloads?.content" [isLoading]="filesAreLoading"
+  <app-table [content]="enqueuedFilePage?.content" [isLoading]="enqueuedFilesAreLoading"
              caption="Backup queue" id="download-queue">
     <ng-template app-table-column="Provider game title" let-item>
       {{ asGameFile(item).gameProviderFile!.originalGameTitle }}
@@ -73,8 +74,23 @@
       </ng-container>
     </ng-template>
   </app-table>
+  <app-pagination pageSizeQueryParamName="enqueued-files-page-size"
+                  pageNumberQueryParamName="enqueued-files-page"
+                  [disabled]="enqueuedFilesAreLoading"
+                  [currentPage]="enqueuedFilePage"
+                  [(pageNumber)]="enqueuedFilesPageNumber"
+                  [(pageSize)]="enqueuedFilesPageSize"
+                  (onPageChange)="refreshEnqueuedFiles()()"/>
+</app-card>
 
-  <app-table [content]="processedFiles?.content" [isLoading]="filesAreLoading"
+<app-card cardTitle="Processed files">
+  <div class="button-container">
+    <app-button [actionAsync]="refreshProcessedFiles()" testId="refresh-processed-files-btn" buttonStyle="secondary">
+      Refresh
+    </app-button>
+  </div>
+
+  <app-table [content]="processedFilePage?.content" [isLoading]="processedFilesAreLoading"
              caption="Processed files" id="processed-files" [testId]="'processed-files-table'">
     <ng-template app-table-column="Game title" let-item>
       {{ asGameFile(item).gameProviderFile!.originalGameTitle }}
@@ -108,4 +124,11 @@
       </ng-container>
     </ng-template>
   </app-table>
+  <app-pagination pageSizeQueryParamName="processed-files-page-size"
+                  pageNumberQueryParamName="processed-files-page"
+                  [disabled]="processedFilesAreLoading"
+                  [currentPage]="processedFilePage"
+                  [(pageNumber)]="processedFilesPageNumber"
+                  [(pageSize)]="processedFilesPageSize"
+                  (onPageChange)="refreshProcessedFiles()()"/>
 </app-card>

@@ -54,8 +54,7 @@ export class GogAuthComponent implements OnInit {
       .pipe(finalize(() => this.gogIsLoading = false))
       .subscribe({
         next: isAuthenticated => this.gogAuthenticated = isAuthenticated,
-        error: error => this.notificationService.showFailure(
-          'Failed to check GOG authentication', undefined, error)
+        error: error => this.notificationService.showFailure('Failed to check GOG authentication', error)
       });
   }
 
@@ -66,7 +65,7 @@ export class GogAuthComponent implements OnInit {
   authenticateGog() {
     if (!this.gogAuthForm.valid) {
       this.gogAuthForm.markAllAsTouched();
-      this.notificationService.showFailure("Form is invalid", undefined, this.gogCodeUrlInput.errors);
+      this.notificationService.showFailure("Form is invalid", this.gogCodeUrlInput.errors);
       return;
     }
     this.gogIsLoading = true;

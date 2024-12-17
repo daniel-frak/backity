@@ -22,12 +22,12 @@ export class GlobalErrorHandler implements ErrorHandler {
 
   private handleStandardError(error: any) {
     this.zone.run(() =>
-      this.notificationService.showFailure('An unexpected error has occurred', undefined, error));
+      this.notificationService.showFailure('An unexpected error has occurred', error));
   }
 
   private handleHttpRequestError(error: HttpErrorResponse) {
     const message = this.getErrorMessage(error);
-    this.zone.run(() => this.notificationService.showFailure(message, undefined, error));
+    this.zone.run(() => this.notificationService.showFailure(message, error));
   }
 
   private getErrorMessage(error: HttpErrorResponse): string {

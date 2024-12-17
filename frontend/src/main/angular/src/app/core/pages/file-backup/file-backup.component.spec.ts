@@ -23,6 +23,7 @@ import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
 import {MessageTesting} from "@app/shared/testing/message-testing";
+import {provideRouter} from "@angular/router";
 import anything = jasmine.anything;
 import SpyObj = jasmine.SpyObj;
 import createSpyObj = jasmine.createSpyObj;
@@ -54,21 +55,24 @@ describe('FileBackupComponent', () => {
     }
   };
 
-  const createPageGameFile = (title: string, fileTitle: string, size: string, status: FileBackupStatus): PageGameFile => ({
-    content: [{
-      ...sampleGameFile,
-      gameProviderFile: {
-        ...sampleGameFile.gameProviderFile,
-        originalGameTitle: title,
-        fileTitle: fileTitle,
-        size: size
-      },
-      fileBackup: {status}
-    }]
-  });
+  const createPageGameFile =
+    (title: string, fileTitle: string, size: string, status: FileBackupStatus): PageGameFile => ({
+      content: [{
+        ...sampleGameFile,
+        gameProviderFile: {
+          ...sampleGameFile.gameProviderFile,
+          originalGameTitle: title,
+          fileTitle: fileTitle,
+          size: size
+        },
+        fileBackup: {status}
+      }]
+    });
 
-  const enqueuedDownloads = createPageGameFile("Some queued game", "queuedGame.exe", "1 GB", FileBackupStatus.Discovered);
-  const processedFiles = createPageGameFile("Some processed game", "processedGame.exe", "2 GB", FileBackupStatus.Success);
+  const enqueuedDownloads =
+    createPageGameFile("Some queued game", "queuedGame.exe", "1 GB", FileBackupStatus.Discovered);
+  const processedFiles =
+    createPageGameFile("Some processed game", "processedGame.exe", "2 GB", FileBackupStatus.Success);
   const currentlyProcessedGameFile: GameFile = {
     ...sampleGameFile,
     gameProviderFile: {
@@ -101,6 +105,7 @@ describe('FileBackupComponent', () => {
         LoadedContentStubComponent
       ],
       providers: [
+        provideRouter([]),
         {
           provide: GameFilesClient,
           useValue: createSpyObj('GameFilesClient', ['getGameFiles', 'getCurrentlyDownloading'])
@@ -155,16 +160,45 @@ describe('FileBackupComponent', () => {
     expect(component['subscriptions'].length).toBe(3);
   });
 
-  it('should show failure notification given refresh error', async () => {
-    const mockError = new Error('test error');
-    gameFilesClient.getGameFiles.withArgs(GameFileProcessingStatus.Enqueued, anything())
-      .and.returnValue(throwError(() => mockError));
+  it('should show failure notification given error when refreshCurrentlyDownloaded is called',
+    async () => {
+      const mockError = new Error('test error');
+      // gameFilesClient.getGameFiles.withArgs(GameFileProcessingStatus.Enqueued, anything())
+      //   .and.returnValue(throwError(() => mockError));
+      gameFilesClient.getCurrentlyDownloading.and.returnValue(throwError(() => mockError));
 
-    await component.refresh()();
+      await component.refreshCurrentlyDownloaded()();
 
-    expect(notificationService.showFailure).toHaveBeenCalledWith('Error during refresh', undefined, mockError);
-    expect(component.filesAreLoading).toBeFalse();
-  });
+      expect(notificationService.showFailure).toHaveBeenCalledWith(
+        'Error fetching currently downloaded file', mockError);
+      expect(component.processedFilesAreLoading).toBeFalse();
+    });
+
+  it('should show failure notification given error when refreshEnqueuedFiles is called',
+    async () => {
+      const mockError = new Error('test error');
+      gameFilesClient.getGameFiles.withArgs(GameFileProcessingStatus.Enqueued, anything())
+        .and.returnValue(throwError(() => mockError));
+
+      await component.refreshEnqueuedFiles()();
+
+      expect(notificationService.showFailure).toHaveBeenCalledWith(
+        'Error fetching enqueued files', mockError);
+      expect(component.processedFilesAreLoading).toBeFalse();
+    });
+
+  it('should show failure notification given error when refreshProcessedFiles is called',
+    async () => {
+      const mockError = new Error('test error');
+      gameFilesClient.getGameFiles.withArgs(GameFileProcessingStatus.Processed, anything())
+        .and.returnValue(throwError(() => mockError));
+
+      await component.refreshProcessedFiles()();
+
+      expect(notificationService.showFailure).toHaveBeenCalledWith(
+        'Error fetching processed files', mockError);
+      expect(component.processedFilesAreLoading).toBeFalse();
+    });
 
   it('should unsubscribe from message topics on destruction', () => {
     const subscription = aMockSubscription();
@@ -241,15 +275,15 @@ describe('FileBackupComponent', () => {
   function expectFilesToBeLoaded() {
     expect(gameFilesClient.getGameFiles).toHaveBeenCalledWith(GameFileProcessingStatus.Enqueued, {
       page: 0,
-      size: component['pageSize']
+      size: component.enqueuedFilesPageSize
     });
     expect(gameFilesClient.getGameFiles).toHaveBeenCalledWith(GameFileProcessingStatus.Processed, {
       page: 0,
-      size: component['pageSize']
+      size: component.processedFilesPageSize
     });
     expect(gameFilesClient.getCurrentlyDownloading).toHaveBeenCalled();
     expect(component.currentDownload).toEqual(expectedCurrentlyProcessing);
-    expect(component.filesAreLoading).toBe(false);
+    expect(component.processedFilesAreLoading).toBe(false);
   }
 
   it('should clear currently downloaded game when FileBackupStatusChangedEvent' +

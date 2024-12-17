@@ -31,6 +31,7 @@ import {
   FileDiscoveryStatusBadgeComponent
 } from "@app/core/pages/file-discovery/file-discovery-status-badge/file-discovery-status-badge.component";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
+import {provideRouter} from '@angular/router';
 import createSpyObj = jasmine.createSpyObj;
 import Spy = jasmine.Spy;
 import SpyObj = jasmine.SpyObj;
@@ -64,6 +65,7 @@ describe('FileDiscoveryComponent', () => {
         PageHeaderStubComponent
       ],
       providers: [
+        provideRouter([]),
         {
           provide: MessagesService,
           useValue: createSpyObj(MessagesService, ['watch'])
@@ -118,6 +120,17 @@ describe('FileDiscoveryComponent', () => {
 
   it('should refresh info on init', async () => {
     const newStatus: FileDiscoveryStatus = {gameProviderId: 'someGameProviderId', isInProgress: true};
+    fileDiscoveryClient.getStatuses.and.returnValue(of([newStatus]) as any);
+
+    component.ngOnInit();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(component.discoveryStatusByGameProviderId.get('someGameProviderId')).toBeTrue();
+    expect(component.newDiscoveredCount).toBe(0);
+  });
+
+  it('should refresh game files', async () => {
     const expectedGameFilePage: PageGameFile = {
       content: [{
         id: "someFileId",
@@ -134,16 +147,11 @@ describe('FileDiscoveryComponent', () => {
         fileBackup: {status: FileBackupStatus.InProgress}
       }]
     };
-    fileDiscoveryClient.getStatuses.and.returnValue(of([newStatus]) as any);
     gameFilesClient.getGameFiles.and.returnValue(of(expectedGameFilePage) as any);
 
-    component.ngOnInit();
-    await fixture.whenStable();
-    fixture.detectChanges();
+    await component.refreshDiscoveredFiles()();
 
-    expect(component.discoveryStatusByGameProviderId.get('someGameProviderId')).toBeTrue();
     expect(component.discoveredFiles).toEqual(expectedGameFilePage);
-    expect(component.newDiscoveredCount).toBe(0);
     expect(component.filesAreLoading).toBeFalse();
   });
 
@@ -151,12 +159,10 @@ describe('FileDiscoveryComponent', () => {
     const mockError = new Error('Discovery failed');
     (gameFilesClient.getGameFiles as Spy).and.returnValue(throwError(() => mockError));
 
-    component.ngOnInit();
-    await fixture.whenStable();
-    fixture.detectChanges();
+    await component.refreshDiscoveredFiles()();
 
     expect(notificationService.showFailure).toHaveBeenCalledWith(
-      'Error fetching discovered files', undefined, mockError);
+      'Error fetching discovered files', mockError);
   });
 
 
@@ -214,7 +220,7 @@ describe('FileDiscoveryComponent', () => {
     await component.startDiscovery()();
 
     expect(notificationService.showFailure).toHaveBeenCalledWith(
-      'Error starting discovery', undefined, mockError);
+      'Error starting discovery', mockError);
   });
 
   it('should stop file discovery', async () => {
@@ -234,7 +240,7 @@ describe('FileDiscoveryComponent', () => {
     await component.stopDiscovery()();
 
     expect(notificationService.showFailure).toHaveBeenCalledWith(
-      'Error stopping discovery', undefined, mockError);
+      'Error stopping discovery', mockError);
   });
 
   it('should enqueue file', async () => {
@@ -327,7 +333,7 @@ describe('FileDiscoveryComponent', () => {
 
     expect(gameFile.fileBackup?.status).toEqual(FileBackupStatus.Discovered);
     expect(notificationService.showFailure).toHaveBeenCalledWith(
-      'An error occurred while trying to enqueue a file', undefined, gameFile, mockError);
+      'An error occurred while trying to enqueue a file', gameFile, mockError);
   });
 
   it('should return all statuses', () => {

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {UserNotification} from "@app/shared/services/notification/userNotification";
 
 @Injectable({
@@ -8,16 +8,16 @@ export class NotificationService {
   notifications: UserNotification[] = [];
 
   show(content: string, title?: string) {
-    this.notifications.unshift({ title, content, shouldShowLightText: false });
+    this.notifications.unshift({title, content, shouldShowLightText: false});
   }
 
   showSuccess(content: string, title?: string) {
-    this.notifications.unshift({ title, content, class: 'bg-success text-light', shouldShowLightText: true });
+    this.notifications.unshift({title, content, class: 'bg-success text-light', shouldShowLightText: true});
   }
 
-  showFailure(content: string, title?: string, ...optionalParams: any[]) {
-    this.notifications.unshift({ title, content, class: 'bg-danger text-light', shouldShowLightText: true });
-    console.error(content, optionalParams);
+  showFailure(content: string, ...optionalParams: any[]) {
+    this.notifications.unshift({content, class: 'bg-danger text-light', shouldShowLightText: true});
+    console.error(content, ...optionalParams);
   }
 
   remove(notification: UserNotification) {

@@ -72,5 +72,10 @@
         </div>
       </ng-template>
     </app-table>
+    <app-pagination [disabled]="gamesAreLoading"
+                    [currentPage]="gameWithFilesPage"
+                    [(pageNumber)]="gamePageNumber"
+                    [(pageSize)]="gamePageSize"
+                    (onPageChange)="refresh()"/>
   </app-loaded-content>
 </app-card>

@@ -12,5 +12,5 @@ import {NgIf} from "@angular/common";
 })
 export class CardComponent {
 
-  @Input() title?: string;
+  @Input() cardTitle?: string;
 }
