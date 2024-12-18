@@ -30,18 +30,48 @@
   .elements-per-page, .pagination-options {
     flex-grow: 999;
   }
+  .elements-per-page {
+    .form-floating {
+      width: 100%;
+      min-width: 10rem;
+    }
+  }
 
-  @media (min-width: map-get($grid-breakpoints, md)) {
+  .page-container {
+    margin: 0 map_get($spacers, 3);
+    display: flex;
+    align-items: center;
+  }
+
+  .page-editable {
+    display: none;
+  }
+  .page-text {
+    display: inline-block;
+  }
+
+  @media (min-width: map-get($grid-breakpoints, lg)) {
     > * {
       flex-grow: 0;
       justify-content: flex-start;
     }
     .elements-per-page {
       flex-grow: 0;
+    }
+  }
 
-      .form-select {
-        max-width: 5rem;
+  @media (min-width: map-get($grid-breakpoints, sm)) {
+    .page-editable, .page-editable label {
+      display: flex;
+      align-items: center;
+      gap: map_get($spacers, 2);
+
+      input {
+        width: 4rem;
       }
+    }
+    .page-text {
+      display: none;
     }
   }
 }

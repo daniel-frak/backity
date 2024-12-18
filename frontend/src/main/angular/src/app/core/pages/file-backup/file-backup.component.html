@@ -47,7 +47,7 @@
   </div>
 
   <app-table [content]="enqueuedFilePage?.content" [isLoading]="enqueuedFilesAreLoading"
-             caption="Backup queue" id="download-queue">
+             id="download-queue">
     <ng-template app-table-column="Provider game title" let-item>
       {{ asGameFile(item).gameProviderFile!.originalGameTitle }}
     </ng-template>
@@ -91,7 +91,7 @@
   </div>
 
   <app-table [content]="processedFilePage?.content" [isLoading]="processedFilesAreLoading"
-             caption="Processed files" id="processed-files" [testId]="'processed-files-table'">
+             id="processed-files" [testId]="'processed-files-table'">
     <ng-template app-table-column="Game title" let-item>
       {{ asGameFile(item).gameProviderFile!.originalGameTitle }}
     </ng-template>

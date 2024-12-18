@@ -247,4 +247,34 @@ describe('PaginationComponent', () => {
       queryParamsHandling: 'merge',
     });
   });
+
+  it('should do nothing given pageNumber is zero when onPageNumberChange is called', () => {
+    spyOn(component.pageNumberChange, 'emit');
+    spyOn(component.onPageChange, 'emit');
+
+    component.onPageNumberChange(0);
+
+    expect(component.pageNumber).toBe(1);
+    expect(component.pageNumberChange.emit).not.toHaveBeenCalled();
+    expect(component.onPageChange.emit).not.toHaveBeenCalled();
+    expect(router.navigate).not.toHaveBeenCalled();
+  });
+
+  it('should restrict page number input to numeric values only', () => {
+    const inputElement = document.createElement('input');
+    inputElement.value = '123abc';
+
+    component.restrictToNumbers(inputElement);
+
+    expect(inputElement.value).toBe('123');
+  });
+
+  it('should remove leading zeroes from page number input', () => {
+    const inputElement = document.createElement('input');
+    inputElement.value = '00123';
+
+    component.restrictToNumbers(inputElement);
+
+    expect(inputElement.value).toBe('123');
+  });
 });

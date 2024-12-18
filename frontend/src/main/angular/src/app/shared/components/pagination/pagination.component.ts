@@ -1,9 +1,12 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
+import {NgbPagination, NgbPaginationPages} from "@ng-bootstrap/ng-bootstrap";
 import {TableContent} from "@app/shared/components/table/table-content";
 import {NgForOf, NgIf} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {ActivatedRoute, Params, Router} from '@angular/router';
+
+const NOT_NUMBERS_REGEX = /\D/g;
+const LEADING_ZEROES_REGEX = /^0+/;
 
 @Component({
   selector: 'app-pagination',
@@ -12,7 +15,8 @@ import {ActivatedRoute, Params, Router} from '@angular/router';
     NgbPagination,
     NgIf,
     FormsModule,
-    NgForOf
+    NgForOf,
+    NgbPaginationPages
   ],
   templateUrl: './pagination.component.html',
   styleUrl: './pagination.component.scss',
@@ -53,6 +57,11 @@ export class PaginationComponent implements OnInit {
               private readonly router: Router) {
   }
 
+  restrictToNumbers(input: HTMLInputElement) {
+    input.value = input.value.replace(NOT_NUMBERS_REGEX, '')
+      .replace(LEADING_ZEROES_REGEX, '');
+  }
+
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe((params: Params): void => {
       Promise.resolve().then(() => { // Make update async to avoid ExpressionChangedAfterItHasBeenCheckedError
@@ -70,6 +79,9 @@ export class PaginationComponent implements OnInit {
   }
 
   onPageNumberChange(pageNumber: number) {
+    if (!pageNumber) {
+      return;
+    }
     if (this.pageNumber != pageNumber) {
       this.pageNumberChange.emit(pageNumber);
       this.onPageChange.emit();
@@ -106,4 +118,6 @@ export class PaginationComponent implements OnInit {
   getTotalElements(): number {
     return this.currentPage?.totalElements ?? 0;
   }
+
+  protected readonly Number = Number;
 }
