@@ -1,10 +1,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NotificationContainerComponent} from './notification-container.component';
-import {NgbToastModule} from '@ng-bootstrap/ng-bootstrap';
 import {NotificationService} from '@app/shared/services/notification/notification.service';
 import {By} from '@angular/platform-browser';
 import {DebugElement} from '@angular/core';
-import {CommonModule} from '@angular/common';
 
 describe('NotificationContainerComponent', () => {
   let component: NotificationContainerComponent;
@@ -13,11 +11,7 @@ describe('NotificationContainerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        NotificationContainerComponent,
-        NgbToastModule,
-        CommonModule
-      ],
+      imports: [NotificationContainerComponent],
       declarations: [],
       providers: [NotificationService]
     }).compileComponents();

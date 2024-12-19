@@ -1,7 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {PaginationComponent} from './pagination.component';
 import {NgbPagination} from '@ng-bootstrap/ng-bootstrap';
-import {FormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {DebugElement} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
@@ -17,7 +16,7 @@ describe('PaginationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PaginationComponent, FormsModule, NgbPagination],
+      imports: [PaginationComponent],
       providers: [
         {provide: Router, useValue: createSpyObj(Router, ['navigate'])},
         {

@@ -1,0 +1,37 @@
+<app-card cardTitle="Currently backing up" id="currently-downloading">
+  <ng-container *ngIf="!currentDownload">
+    Nothing is currently being backed up.
+  </ng-container>
+  <ng-container *ngIf="currentDownload">
+    <app-table [content]="[currentDownload]" [isLoading]="currentDownloadIsLoading">
+      <ng-template app-table-column="Game title" let-item>
+        {{ asGameFile(item)!.gameProviderFile.originalGameTitle }}
+      </ng-template>
+      <ng-template app-table-column="File name" let-item>
+        {{ asGameFile(item)!.gameProviderFile.fileTitle }}
+        - {{ asGameFile(item)!.gameProviderFile.originalFileName }}
+      </ng-template>
+      <ng-template app-table-column="Version" let-item>
+        {{ asGameFile(item)!.gameProviderFile.version }}
+      </ng-template>
+      <ng-template app-table-column="Size" let-item>
+        {{ asGameFile(item)!.gameProviderFile.size }}
+      </ng-template>
+      <ng-template app-table-column="Path" style="max-width: 5%" let-item>
+        <span class="file-path">{{ asGameFile(item)!.fileBackup.filePath }}</span>
+      </ng-template>
+      <ng-template app-table-column="Progress">
+        <ng-container *ngIf="downloadProgress">
+            <span class="progress">
+              <!--/* //NOSONAR */--><div
+              aria-valuemax="100" aria-valuemin="0" [attr.aria-valuenow]="downloadProgress.percentage"
+              class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+              [ngStyle]="{width: downloadProgress.percentage + '%'}">{{ downloadProgress.percentage + '%' }}
+            </div>
+            </span>
+          (time left: {{ (downloadProgress.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }})
+        </ng-container>
+      </ng-template>
+    </app-table>
+  </ng-container>
+</app-card>

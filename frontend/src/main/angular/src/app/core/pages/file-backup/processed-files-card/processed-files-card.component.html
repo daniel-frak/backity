@@ -1,0 +1,53 @@
+<app-card cardTitle="Processed files">
+  <app-loaded-content [isLoading]="filesAreLoading">
+    <div class="button-container">
+      <app-button [actionAsync]="onClickRefreshProcessedFiles()"
+                  [disabled]="filesAreLoading"
+                  testId="refresh-processed-files-btn" buttonStyle="secondary">
+        Refresh
+      </app-button>
+    </div>
+
+    <app-table [content]="filePage?.content" [isLoading]="filesAreLoading"
+               id="processed-files" [testId]="'processed-files-table'">
+      <ng-template app-table-column="Game title" let-item>
+        {{ asGameFile(item).gameProviderFile!.originalGameTitle }}
+      </ng-template>
+      <ng-template app-table-column="File name" let-item>
+        {{ asGameFile(item).gameProviderFile!.fileTitle }}
+      </ng-template>
+      <ng-template app-table-column="Version" let-item>
+        {{ asGameFile(item).gameProviderFile!.version }}
+      </ng-template>
+      <ng-template app-table-column="Size" let-item>
+        {{ asGameFile(item).gameProviderFile!.size }}
+      </ng-template>
+      <ng-template app-table-column="Path" style="max-width: 5%" let-item>
+        <span class="file-path">{{ asGameFile(item).fileBackup!.filePath }}</span>
+      </ng-template>
+      <ng-template app-table-column="Status" let-item>
+        <ng-container *ngFor="let file of [asGameFile(item)]">
+          <span
+            [ngClass]="{'bg-success': file.fileBackup.status == FileBackupStatus.Success,
+             'bg-danger': file.fileBackup.status != FileBackupStatus.Success}"
+            class="badge">
+            <i [ngClass]="{'bi bi-check-circle': file.fileBackup.status == FileBackupStatus.Success,
+             'bi bi-x-circle': file.fileBackup.status != FileBackupStatus.Success}"
+               aria-hidden="true"
+               class="me-1">
+            </i>
+
+            {{ file.fileBackup.status }}
+          </span>
+        </ng-container>
+      </ng-template>
+    </app-table>
+    <app-pagination pageSizeQueryParamName="processed-files-page-size"
+                    pageNumberQueryParamName="processed-files-page"
+                    [disabled]="filesAreLoading"
+                    [currentPage]="filePage"
+                    [(pageNumber)]="pageNumber"
+                    [(pageSize)]="pageSize"
+                    (onPageChange)="refreshProcessedFiles()"/>
+  </app-loaded-content>
+</app-card>

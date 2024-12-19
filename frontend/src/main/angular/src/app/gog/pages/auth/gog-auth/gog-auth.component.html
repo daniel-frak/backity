@@ -1,5 +1,5 @@
-<app-loaded-content [isLoading]="gogIsLoading">
-  <app-card cardTitle="GOG">
+<app-card cardTitle="GOG">
+  <app-loaded-content [isLoading]="gogIsLoading">
     <div class="badge-container">
       <p data-testid="gog-auth-status">
           <span class="badge"
@@ -46,7 +46,7 @@
     </ol>
 
     <div *ngIf="gogAuthenticated">
-      <app-button [actionAsync]="signOutGog" buttonStyle="danger">Log out</app-button>
+      <app-button [actionAsync]="onClickSignOutGog()" buttonStyle="danger">Log out</app-button>
     </div>
-  </app-card>
-</app-loaded-content>
+  </app-loaded-content>
+</app-card>

@@ -1,7 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ConfirmationModalComponent} from './confirmation-modal.component';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {FormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import SpyObj = jasmine.SpyObj;
 import createSpyObj = jasmine.createSpyObj;
@@ -15,7 +14,7 @@ describe('ConfirmationModalComponent', () => {
     const modalMock = createSpyObj('NgbActiveModal', ['close', 'dismiss']);
 
     await TestBed.configureTestingModule({
-      imports: [ConfirmationModalComponent, FormsModule],
+      imports: [ConfirmationModalComponent],
       providers: [
         {provide: NgbActiveModal, useValue: modalMock}
       ]

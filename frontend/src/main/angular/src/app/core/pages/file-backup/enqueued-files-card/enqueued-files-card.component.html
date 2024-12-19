@@ -1,0 +1,45 @@
+<app-card cardTitle="Enqueued files">
+  <app-loaded-content [isLoading]="filesAreLoading">
+    <div class="button-container">
+      <app-button [actionAsync]="onClickRefreshEnqueuedFiles()"
+                  [disabled]="filesAreLoading"
+                  testId="refresh-queue-btn" buttonStyle="secondary">Refresh
+      </app-button>
+    </div>
+
+    <app-table [content]="filePage?.content" [isLoading]="filesAreLoading"
+               id="download-queue">
+      <ng-template app-table-column="Provider game title" let-item>
+        {{ asGameFile(item).gameProviderFile!.originalGameTitle }}
+      </ng-template>
+      <ng-template app-table-column="Provider file name" let-item>
+        {{ asGameFile(item).gameProviderFile!.originalFileName }}
+      </ng-template>
+      <ng-template app-table-column="Version" let-item>
+        {{ asGameFile(item).gameProviderFile!.version }}
+      </ng-template>
+      <ng-template app-table-column="Size" let-item>
+        {{ asGameFile(item).gameProviderFile!.size }}
+      </ng-template>
+      <ng-template app-table-column="Actions"
+                   hide-title-on-mobile
+                   let-item>
+        <ng-container *ngFor="let file of [asGameFile(item)]">
+          <div class="button-container justify-content-end">
+            <app-button [actionAsync]="onClickRemoveFromQueue(file.id!)" buttonStyle="primary"
+                        *ngIf="file.fileBackup?.status == FileBackupStatus.Enqueued">
+              Cancel
+            </app-button>
+          </div>
+        </ng-container>
+      </ng-template>
+    </app-table>
+    <app-pagination pageSizeQueryParamName="enqueued-files-page-size"
+                    pageNumberQueryParamName="enqueued-files-page"
+                    [disabled]="filesAreLoading"
+                    [currentPage]="filePage"
+                    [(pageNumber)]="pageNumber"
+                    [(pageSize)]="pageSize"
+                    (onPageChange)="refreshEnqueuedFiles()"/>
+  </app-loaded-content>
+</app-card>

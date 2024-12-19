@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {SettingsSideNavComponent} from './settings-side-nav.component';
 import {NavigatorProviderService} from "@app/shared/services/navigator-provider.service";
-import {RouterModule} from "@angular/router";
+import {provideRouter} from "@angular/router";
 
 describe('SettingsSideNavComponent', () => {
   let component: SettingsSideNavComponent;
@@ -17,15 +17,13 @@ describe('SettingsSideNavComponent', () => {
       get: () => navigatorMock as any
     };
     await TestBed.configureTestingModule({
-      imports: [
-        RouterModule.forRoot([]),
-        SettingsSideNavComponent
-      ],
+      imports: [SettingsSideNavComponent],
       providers: [
         {
           provide: NavigatorProviderService,
           useValue: navigatorProviderServiceMock
-        }
+        },
+        provideRouter([])
       ]
     })
       .compileComponents();

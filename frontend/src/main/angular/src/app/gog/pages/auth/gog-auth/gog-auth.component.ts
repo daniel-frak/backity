@@ -83,7 +83,11 @@ export class GogAuthComponent implements OnInit {
     });
   }
 
-  async signOutGog() {
+  onClickSignOutGog(): () => Promise<void> {
+    return async () => this.signOutGog();
+  }
+
+  async signOutGog(): Promise<void> {
     this.notificationService.showFailure('Not yet implemented');
   }
 }

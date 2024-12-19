@@ -3,8 +3,8 @@ import {
   ControlContainer,
   FormBuilder,
   FormGroup,
-  FormGroupDirective, NG_VALUE_ACCESSOR,
-  ReactiveFormsModule,
+  FormGroupDirective,
+  NG_VALUE_ACCESSOR,
   Validators
 } from '@angular/forms';
 import {InputComponent} from './input.component';
@@ -26,7 +26,7 @@ describe('InputComponent', () => {
     formGroupDirective.form = form;
 
     await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, InputComponent],
+      imports: [InputComponent],
       providers: [
         {
           provide: ControlContainer,

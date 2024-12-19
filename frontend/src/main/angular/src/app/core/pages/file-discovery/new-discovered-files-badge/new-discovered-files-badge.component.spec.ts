@@ -1,7 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {NewDiscoveredFilesBadgeComponent} from './new-discovered-files-badge.component';
-import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 describe('NewDiscoveredFilesBadgeComponent', () => {
   let component: NewDiscoveredFilesBadgeComponent;
@@ -9,9 +8,9 @@ describe('NewDiscoveredFilesBadgeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [NgbModule, NewDiscoveredFilesBadgeComponent]
-})
-    .compileComponents();
+      imports: [NewDiscoveredFilesBadgeComponent]
+    })
+      .compileComponents();
   });
 
   beforeEach(() => {

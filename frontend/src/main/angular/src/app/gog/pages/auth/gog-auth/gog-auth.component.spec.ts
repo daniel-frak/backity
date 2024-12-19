@@ -1,12 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {GogAuthComponent} from './gog-auth.component';
-import {provideHttpClientTesting} from "@angular/common/http/testing";
-import {LoadedContentStubComponent} from "@app/shared/components/loaded-content/loaded-content.component.stub";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {GOGAuthenticationClient, RefreshTokenResponse} from "@backend";
-import {provideHttpClient, withInterceptorsFromDi} from '@angular/common/http';
 import {defer, of, throwError} from "rxjs";
-import {ButtonComponent} from "@app/shared/components/button/button.component";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import createSpyObj = jasmine.createSpyObj;
 
@@ -19,13 +14,7 @@ describe('GogAuthComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        ButtonComponent,
-        GogAuthComponent,
-        LoadedContentStubComponent
-      ],
+      imports: [GogAuthComponent],
       providers: [
         {
           provide: GOGAuthenticationClient,
@@ -34,9 +23,7 @@ describe('GogAuthComponent', () => {
         {
           provide: NotificationService,
           useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])
-        },
-        provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting()
+        }
       ]
     }).compileComponents();
 
