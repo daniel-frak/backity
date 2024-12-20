@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.ws.model;
 
-public class TestFileDiscoveryWsEvents {
+public final class TestFileDiscoveryWsEvent {
 
     private static final String GAME_PROVIDER_ID = "TestGameProviderId";
 

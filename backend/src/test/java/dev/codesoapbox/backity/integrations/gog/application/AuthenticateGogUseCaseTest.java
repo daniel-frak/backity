@@ -28,9 +28,7 @@ class AuthenticateGogUseCaseTest {
     @Test
     void shouldAuthenticateAndGetRefreshToken() {
         String code = "someCode";
-        String refreshToken = "someRefreshToken";
-        when(authService.getRefreshToken())
-                .thenReturn(refreshToken);
+        String refreshToken = mockRefreshToken();
 
         String result = useCase.authenticateAndGetRefreshToken(code);
 
@@ -39,5 +37,13 @@ class AuthenticateGogUseCaseTest {
         InOrder inOrder = inOrder(authService);
         inOrder.verify(authService).authenticate(code);
         inOrder.verify(authService).getRefreshToken();
+    }
+
+    private String mockRefreshToken() {
+        String refreshToken = "someRefreshToken";
+        when(authService.getRefreshToken())
+                .thenReturn(refreshToken);
+
+        return refreshToken;
     }
 }

@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.game.adapters.driven.persistence.jpa;
 
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
+import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 import org.hibernate.exception.ConstraintViolationException;
@@ -14,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static dev.codesoapbox.backity.core.game.domain.TestGame.aGame;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -32,7 +32,7 @@ abstract class GameJpaRepositoryAbstractIT {
 
     @Test
     void shouldSaveNew() {
-        Game game = aGame()
+        Game game = TestGame.anyBuilder()
                 .withId(GameId.newInstance())
                 .withTitle("New Title")
                 .build();
@@ -51,7 +51,7 @@ abstract class GameJpaRepositoryAbstractIT {
     void shouldNotSaveWhenGameWithTitleAlreadyExists() {
         populateDatabase(List.of(GAMES.GAME_1.get()));
         String existingTitle = GAMES.GAME_1.get().getTitle();
-        Game game = aGame()
+        Game game = TestGame.anyBuilder()
                 .withId(GameId.newInstance())
                 .withTitle(existingTitle)
                 .build();
@@ -125,12 +125,12 @@ abstract class GameJpaRepositoryAbstractIT {
 
     private static class GAMES {
 
-        public static final Supplier<Game> GAME_1 = () -> aGame()
+        public static final Supplier<Game> GAME_1 = () -> TestGame.anyBuilder()
                 .withId(new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"))
                 .withTitle("Test Game 1")
                 .build();
 
-        public static final Supplier<Game> GAME_2 = () -> aGame()
+        public static final Supplier<Game> GAME_2 = () -> TestGame.anyBuilder()
                 .withId(new GameId("1eec1c19-25bf-4094-b926-84b5bb8fa281"))
                 .withTitle("Test Game 2")
                 .build();

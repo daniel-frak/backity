@@ -1,18 +1,15 @@
 package dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.ws.eventhandlers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.codesoapbox.backity.core.discovery.adapters.driven.messaging.ws.FileDiscoveryWebSocketTopics;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
-import dev.codesoapbox.backity.core.discovery.domain.events.TestFileDiscoveryEvents;
+import dev.codesoapbox.backity.core.discovery.domain.events.TestFileDiscoveryEvent;
 import dev.codesoapbox.backity.testing.messaging.TestMessageChannel;
 import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketEventHandlerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @WebSocketEventHandlerTest
 class FileDiscoveredEventWebSocketHandlerIT {
@@ -28,13 +25,11 @@ class FileDiscoveredEventWebSocketHandlerIT {
 
     @Test
     void shouldPublishWebSocketEvent() throws IOException {
-        FileDiscoveredEvent event = TestFileDiscoveryEvents.discovered();
+        FileDiscoveredEvent event = TestFileDiscoveryEvent.discovered();
 
         eventHandler.handle(event);
 
-        String receivedMessage = messageChannel.receiveMessage(
-                FileDiscoveryWebSocketTopics.FILE_DISCOVERED.wsDestination());
-        String expectedJson = """
+        var expectedJson = """
                 {
                   "originalGameTitle": "Original game title",
                   "originalFileName": "originalFileName",
@@ -42,12 +37,7 @@ class FileDiscoveredEventWebSocketHandlerIT {
                   "size": "5 KB"
                 }
                 """;
-        assertReceivedMessageIs(receivedMessage, expectedJson);
-    }
-
-    private void assertReceivedMessageIs(String receivedMessage, String expectedJson) throws JsonProcessingException {
-        assertThat(receivedMessage).isNotNull();
-        assertThat(objectMapper.readTree(receivedMessage))
-                .isEqualTo(objectMapper.readTree(expectedJson));
+        messageChannel.assertPublishedWebSocketEvent(
+                FileDiscoveryWebSocketTopics.FILE_DISCOVERED.wsDestination(), expectedJson);
     }
 }

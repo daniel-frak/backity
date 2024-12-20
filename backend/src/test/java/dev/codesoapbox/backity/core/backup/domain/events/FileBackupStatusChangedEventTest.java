@@ -3,16 +3,16 @@ package dev.codesoapbox.backity.core.backup.domain.events;
 import dev.codesoapbox.backity.core.gamefile.domain.FileBackupStatus;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import org.junit.jupiter.api.Test;
 
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.discoveredGameFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class FileBackupStatusChangedEventTest {
 
     @Test
     void shouldCreateFromGameFile() {
-        GameFile gameFile = discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
 
         FileBackupStatusChangedEvent result = FileBackupStatusChangedEvent.from(gameFile);
 

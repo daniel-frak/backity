@@ -27,9 +27,7 @@ class GetGogGameDetailsUseCaseTest {
     @Test
     void shouldGetGameDetails() {
         String id = "someGameId";
-        GameDetailsResponse gameDetailsResponse = aGameDetailsResponse();
-        when(gogEmbedClient.getGameDetails(id))
-                .thenReturn(gameDetailsResponse);
+        GameDetailsResponse gameDetailsResponse = mockGameDetailsExist(id);
 
         GameDetailsResponse result = useCase.getGameDetails(id);
 
@@ -37,9 +35,17 @@ class GetGogGameDetailsUseCaseTest {
                 .isEqualTo(gameDetailsResponse);
     }
 
+    private GameDetailsResponse mockGameDetailsExist(String id) {
+        GameDetailsResponse gameDetailsResponse = aGameDetailsResponse();
+        when(gogEmbedClient.getGameDetails(id))
+                .thenReturn(gameDetailsResponse);
+        return gameDetailsResponse;
+    }
+
     private GameDetailsResponse aGameDetailsResponse() {
         GameDetailsResponse gameDetailsResponse = new GameDetailsResponse();
         gameDetailsResponse.setTitle("Test game");
+
         return gameDetailsResponse;
     }
 }

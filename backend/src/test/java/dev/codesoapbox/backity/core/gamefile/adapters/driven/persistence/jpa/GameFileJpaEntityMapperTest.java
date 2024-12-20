@@ -2,13 +2,13 @@ package dev.codesoapbox.backity.core.gamefile.adapters.driven.persistence.jpa;
 
 import dev.codesoapbox.backity.core.gamefile.domain.FileBackupStatus;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.discoveredGameFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GameFileJpaEntityMapperTest {
@@ -28,7 +28,7 @@ class GameFileJpaEntityMapperTest {
     }
 
     private GameFile domainModel() {
-        return discoveredGameFile().build();
+        return TestGameFile.discovered();
     }
 
     private GameFileJpaEntity entity() {

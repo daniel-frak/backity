@@ -25,18 +25,21 @@ class CheckGogAuthenticationUseCaseTest {
 
     @Test
     void isAuthenticatedShouldReturnTrueGivenIsAuthenticated() {
-        when(authService.isAuthenticated())
-                .thenReturn(true);
+        mockIsAuthenticated(true);
 
         boolean result = useCase.isAuthenticated();
 
         assertThat(result).isTrue();
     }
 
+    private void mockIsAuthenticated(boolean isAuthenticated) {
+        when(authService.isAuthenticated())
+                .thenReturn(isAuthenticated);
+    }
+
     @Test
     void isAuthenticatedShouldReturnFalseGivenIsNotAuthenticated() {
-        when(authService.isAuthenticated())
-                .thenReturn(false);
+        mockIsAuthenticated(false);
 
         boolean result = useCase.isAuthenticated();
 

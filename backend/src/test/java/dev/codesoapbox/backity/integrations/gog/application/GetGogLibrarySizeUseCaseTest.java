@@ -25,13 +25,19 @@ class GetGogLibrarySizeUseCaseTest {
 
     @Test
     void shouldGetLibrarySize() {
-        String size = "100 KB";
-        when(gogEmbedClient.getLibrarySize())
-                .thenReturn(size);
+        String size = mockLibrarySize();
 
         String result = useCase.getLibrarySize();
 
         assertThat(result)
                 .isEqualTo(size);
+    }
+
+    private String mockLibrarySize() {
+        String size = "100 KB";
+        when(gogEmbedClient.getLibrarySize())
+                .thenReturn(size);
+
+        return size;
     }
 }

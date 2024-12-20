@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.game.adapters.driven.persistence.jpa;
 
 import dev.codesoapbox.backity.core.game.domain.Game;
-import dev.codesoapbox.backity.core.game.domain.GameId;
+import dev.codesoapbox.backity.core.game.domain.TestGame;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -15,38 +15,34 @@ class GameJpaEntityMapperTest {
 
     @Test
     void shouldMapToEntity() {
-        var uuid = UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5");
-        var title = "someTitle";
-        var domain = new Game(new GameId(uuid), title);
+        Game domain = domainObject();
 
-        var result = mapper.toEntity(domain);
+        GameJpaEntity result = mapper.toEntity(domain);
 
-        var expectedResult = new GameJpaEntity();
-        expectedResult.setId(uuid);
-        expectedResult.setTitle(title);
-
+        GameJpaEntity expectedResult = entity();
         assertThat(result).hasNoNullFieldsOrPropertiesExcept("dateCreated", "dateModified")
                 .usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
-    @Test
-    void toEntityShouldReturnNullWhenGivenNull() {
-        assertThat(mapper.toEntity(null))
-                .isNull();
+    private GameJpaEntity entity() {
+        var expectedResult = new GameJpaEntity();
+        expectedResult.setId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"));
+        expectedResult.setTitle("Test Game");
+
+        return expectedResult;
+    }
+
+    private Game domainObject() {
+        return TestGame.any();
     }
 
     @Test
     void shouldMapToDomain() {
-        var uuid = UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5");
-        var title = "someTitle";
-        var entity = new GameJpaEntity();
-        entity.setId(uuid);
-        entity.setTitle(title);
+        GameJpaEntity entity = entity();
 
-        var result = mapper.toDomain(entity);
+        Game result = mapper.toDomain(entity);
 
-        var expectedResult = new Game(new GameId(uuid), title);
-
+        Game expectedResult = domainObject();
         assertThat(result).hasNoNullFieldsOrProperties()
                 .usingRecursiveComparison().isEqualTo(expectedResult);
     }

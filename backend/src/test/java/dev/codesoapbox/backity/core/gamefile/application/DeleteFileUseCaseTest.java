@@ -1,10 +1,7 @@
 package dev.codesoapbox.backity.core.gamefile.application;
 
 import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileManager;
-import dev.codesoapbox.backity.core.gamefile.domain.FileBackupStatus;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.gamefile.domain.*;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,9 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.enqueuedGameFile;
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.successfulGameFile;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,7 +40,7 @@ class DeleteFileUseCaseTest {
     }
 
     private GameFile mockSuccessfulGameFileExists() {
-        GameFile gameFile = successfulGameFile().build();
+        GameFile gameFile = TestGameFile.successful();
         when(gameFileRepository.getById(gameFile.getId()))
                 .thenReturn(gameFile);
         return gameFile;
@@ -85,7 +81,7 @@ class DeleteFileUseCaseTest {
     }
 
     private GameFile mockEnqueuedGameFileExists() {
-        GameFile gameFile = enqueuedGameFile().build();
+        GameFile gameFile = TestGameFile.enqueued();
         when(gameFileRepository.getById(gameFile.getId()))
                 .thenReturn(gameFile);
         return gameFile;

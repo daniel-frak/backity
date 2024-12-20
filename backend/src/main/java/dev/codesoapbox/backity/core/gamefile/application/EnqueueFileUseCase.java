@@ -11,9 +11,7 @@ public class EnqueueFileUseCase {
     private final GameFileRepository gameFileRepository;
 
     public void enqueue(GameFileId gameFileId) {
-        GameFile gameFile = gameFileRepository
-                .getById(gameFileId);
-
+        GameFile gameFile = gameFileRepository.getById(gameFileId);
         gameFile.enqueue();
         gameFileRepository.save(gameFile);
     }

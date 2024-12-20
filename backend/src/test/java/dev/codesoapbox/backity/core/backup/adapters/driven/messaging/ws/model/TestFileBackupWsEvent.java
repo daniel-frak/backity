@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.backup.adapters.driven.messaging.ws.model;
 
 import dev.codesoapbox.backity.core.gamefile.domain.FileBackupStatus;
 
-public class TestFileBackupWsEvents {
+public final class TestFileBackupWsEvent {
 
     private static final String GAME_FILE_ID = "acde26d7-33c7-42ee-be16-bca91a604b48";
 

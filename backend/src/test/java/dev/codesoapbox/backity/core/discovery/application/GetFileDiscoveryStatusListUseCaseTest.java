@@ -26,14 +26,20 @@ class GetFileDiscoveryStatusListUseCaseTest {
 
     @Test
     void shouldGetStatusList() {
-        List<FileDiscoveryStatus> statuses =
-                List.of(new FileDiscoveryStatus("someGameProviderId", true));
-        when(fileDiscoveryService.getStatuses())
-                .thenReturn(statuses);
+        List<FileDiscoveryStatus> statuses = mockFileDiscoveryStatuses();
 
         List<FileDiscoveryStatus> result = useCase.getStatusList();
 
         assertThat(result).usingRecursiveComparison()
                 .isEqualTo(statuses);
+    }
+
+    private List<FileDiscoveryStatus> mockFileDiscoveryStatuses() {
+        List<FileDiscoveryStatus> statuses =
+                List.of(new FileDiscoveryStatus("someGameProviderId", true));
+        when(fileDiscoveryService.getStatuses())
+                .thenReturn(statuses);
+
+        return statuses;
     }
 }

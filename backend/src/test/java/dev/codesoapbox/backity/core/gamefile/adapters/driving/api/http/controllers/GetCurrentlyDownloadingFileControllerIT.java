@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.gamefile.adapters.driving.api.http.controll
 
 import dev.codesoapbox.backity.core.gamefile.application.GetCurrentlyDownloadingFileUseCase;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +12,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.fullGameFile;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -30,7 +30,7 @@ class GetCurrentlyDownloadingFileControllerIT {
 
     @Test
     void shouldGetCurrentlyDownloadingFile() throws Exception {
-        GameFile gameFile = fullGameFile().build();
+        GameFile gameFile = TestGameFile.full();
 
         when(useCase.findCurrentlyDownloadingFile())
                 .thenReturn(Optional.of(gameFile));

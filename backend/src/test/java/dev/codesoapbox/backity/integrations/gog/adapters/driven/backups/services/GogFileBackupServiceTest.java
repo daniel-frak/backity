@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.service
 import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.embed.GogEmbedWebClient;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.discoveredGameFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -34,7 +34,7 @@ class GogFileBackupServiceTest {
 
     @Test
     void backUpFileShouldDownloadFile() throws IOException {
-        GameFile gameFile = discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
         String tempFilePath = "someTempFilePath";
         BackupProgress backupProgress = mock(BackupProgress.class);
 
@@ -45,7 +45,7 @@ class GogFileBackupServiceTest {
 
     @Test
     void backUpFileShouldReturnFilePath() throws IOException {
-        GameFile gameFile = discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
         var tempFilePath = "someTempFilePath";
         BackupProgress backupProgress = mock(BackupProgress.class);
         String finalFilePath = mockSuccessfulFileDownload(gameFile, tempFilePath, backupProgress);
@@ -60,6 +60,7 @@ class GogFileBackupServiceTest {
         var finalFilePath = "finalFilePath";
         when(urlFileDownloader.downloadFile(gogEmbedClient, gameFile, tempFilePath, backupProgress))
                 .thenReturn(finalFilePath);
+
         return finalFilePath;
     }
 

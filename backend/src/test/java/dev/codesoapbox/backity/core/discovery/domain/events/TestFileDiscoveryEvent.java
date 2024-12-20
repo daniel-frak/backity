@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.domain.events;
 
-public class TestFileDiscoveryEvents {
+public final class TestFileDiscoveryEvent {
 
     private static final String GAME_PROVIDER_ID = "TestGameProviderId";
 

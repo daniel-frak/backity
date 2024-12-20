@@ -7,15 +7,13 @@ import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBacked
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameProviderFileUrlEmptyException;
 import org.junit.jupiter.api.Test;
 
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.discoveredGameFile;
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.successfulGameFile;
 import static org.assertj.core.api.Assertions.*;
 
 class GameFileTest {
 
     @Test
     void shouldEnqueue() {
-        GameFile gameFile = discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
 
         gameFile.enqueue();
 
@@ -24,7 +22,7 @@ class GameFileTest {
 
     @Test
     void shouldFailWithEvent() {
-        GameFile gameFile = discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
         String failedReason = "someFailedReason";
         FileBackupFailedEvent expectedEvent = fileBackupFailedEvent(gameFile, failedReason);
 
@@ -41,9 +39,8 @@ class GameFileTest {
 
     @Test
     void shouldMarkAsInProgressWithEvent() {
-        GameFile gameFile = discoveredGameFile().build();
-        GameProviderFile gameProviderFile = gameFile.getGameProviderFile();
-        FileBackupStartedEvent expectedEvent = fileBackupStartedEvent(gameFile, gameProviderFile);
+        GameFile gameFile = TestGameFile.discovered();
+        FileBackupStartedEvent expectedEvent = fileBackupStartedEvent(gameFile);
 
         gameFile.markAsInProgress();
 
@@ -51,8 +48,10 @@ class GameFileTest {
         assertThat(gameFile.getDomainEvents()).containsExactly(expectedEvent);
     }
 
-    private FileBackupStartedEvent fileBackupStartedEvent(
-            GameFile gameFile, GameProviderFile gameProviderFile) {
+    private FileBackupStartedEvent fileBackupStartedEvent(GameFile gameFile) {
+        GameProviderFile gameProviderFile = gameFile.getGameProviderFile();
+        FileBackup fileBackup = gameFile.getFileBackup();
+
         return new FileBackupStartedEvent(
                 gameFile.getId(),
                 gameProviderFile.originalGameTitle(),
@@ -60,13 +59,13 @@ class GameFileTest {
                 gameProviderFile.version(),
                 gameProviderFile.originalFileName(),
                 gameProviderFile.size(),
-                gameFile.getFileBackup().getFilePath()
+                fileBackup.getFilePath()
         );
     }
 
     @Test
     void shouldMarkAsDownloadedWithEvent() {
-        GameFile gameFile = discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
         FileBackupFinishedEvent expectedEvent = fileBackupFinishedEvent(gameFile);
 
         gameFile.markAsDownloaded("someFilePath");
@@ -82,7 +81,7 @@ class GameFileTest {
 
     @Test
     void validateIsBackedUpShouldDoNothingGivenStatusIsSuccessful() {
-        GameFile gameFile = successfulGameFile().build();
+        GameFile gameFile = TestGameFile.successful();
 
         assertThatCode(gameFile::validateIsBackedUp)
                 .doesNotThrowAnyException();
@@ -90,7 +89,7 @@ class GameFileTest {
 
     @Test
     void validateIsBackedUpShouldThrowGivenStatusIsNotSuccessful() {
-        GameFile gameFile = discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
 
         assertThatThrownBy(gameFile::validateIsBackedUp)
                 .isInstanceOf(GameFileNotBackedUpException.class)
@@ -99,7 +98,7 @@ class GameFileTest {
 
     @Test
     void shouldClearDomainEvents() {
-        GameFile gameFile = discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
         gameFile.markAsInProgress();
 
         gameFile.clearDomainEvents();
@@ -109,7 +108,7 @@ class GameFileTest {
 
     @Test
     void validateReadyForDownloadShouldDoNothingGivenTrue() {
-        GameFile gameFile = discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
 
         assertThatCode(gameFile::validateReadyForDownload)
                 .doesNotThrowAnyException();
@@ -117,12 +116,16 @@ class GameFileTest {
 
     @Test
     void validateReadyForDownloadShouldDoNothingGivenGameProviderFileUrlIsBlank() {
-        GameFile gameFile = discoveredGameFile()
-                .url(" ")
-                .build();
+        GameFile gameFile = aGameFileWithABlankUrl();
 
         assertThatThrownBy(gameFile::validateReadyForDownload)
                 .isInstanceOf(GameProviderFileUrlEmptyException.class)
                 .hasMessageContaining(gameFile.getId().toString());
+    }
+
+    private GameFile aGameFileWithABlankUrl() {
+        return TestGameFile.discoveredBuilder()
+                .url(" ")
+                .build();
     }
 }

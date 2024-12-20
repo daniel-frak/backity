@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.testing.messaging.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.codesoapbox.backity.core.backup.config.FileBackupWebSocketBeanConfig;
 import dev.codesoapbox.backity.core.discovery.config.FileDiscoveryWebSocketBeanConfig;
 import dev.codesoapbox.backity.core.logs.config.LogsWebSocketBeanConfig;
@@ -41,8 +42,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 public class SharedWebSocketEventHandlerTestConfig {
 
     @Bean
-    TestMessageChannel testMessageChannel() {
-        return new TestMessageChannel();
+    TestMessageChannel testMessageChannel(ObjectMapper objectMapper) {
+        return new TestMessageChannel(objectMapper);
     }
 
     @Bean

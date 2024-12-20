@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.gamefile.application.GetDiscoveredFileListUs
 import dev.codesoapbox.backity.core.gamefile.application.GetEnqueuedFileListUseCase;
 import dev.codesoapbox.backity.core.gamefile.application.GetProcessedFileListUseCase;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.*;
 import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -53,7 +53,7 @@ class GetGameFileListControllerIT {
     }
 
     private void mockDiscoveredFileExists(Pagination pagination) {
-        GameFile gameFile = discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
         when(getDiscoveredFilesUseCase.getDiscoveredFileList(pagination))
                 .thenReturn(pageWith(gameFile));
     }
@@ -112,7 +112,7 @@ class GetGameFileListControllerIT {
     }
 
     private void mockEnqueuedFileExists(Pagination pagination) {
-        GameFile gameFile = enqueuedGameFile().build();
+        GameFile gameFile = TestGameFile.enqueued();
         when(getEnqueuedFilesUseCase.getEnqueuedFileList(pagination))
                 .thenReturn(pageWith(gameFile));
     }
@@ -133,7 +133,7 @@ class GetGameFileListControllerIT {
     }
 
     private void mockProcessedFileExists(Pagination pagination) {
-        GameFile gameFile = successfulGameFile().build();
+        GameFile gameFile = TestGameFile.successful();
         when(getProcessedFilesUseCase.getProcessedFileList(pagination))
                 .thenReturn(pageWith(gameFile));
     }

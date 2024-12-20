@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotFoundException;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.shared.domain.Page;
@@ -25,8 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import static dev.codesoapbox.backity.core.game.domain.TestGame.aGame;
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.*;
+import static dev.codesoapbox.backity.core.game.domain.TestGame.anyBuilder;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -98,7 +98,7 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
     @Test
     void shouldSave() {
-        GameFile newGameFile = fullGameFile().build();
+        GameFile newGameFile = TestGameFile.full();
 
         GameFile result = gameFileJpaRepository.save(newGameFile);
         entityManager.flush();
@@ -129,7 +129,7 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
     @Test
     void saveShouldPublishEventsAfterCommitting() {
-        GameFile gameFile = fullGameFile().build();
+        GameFile gameFile = TestGameFile.full();
         gameFile.markAsInProgress();
         gameFileJpaRepository.save(gameFile);
 
@@ -140,7 +140,7 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
     @Test
     void saveShouldClearEvents() {
-        GameFile gameFile = fullGameFile().build();
+        GameFile gameFile = TestGameFile.full();
         gameFile.markAsInProgress();
         gameFileJpaRepository.save(gameFile);
 
@@ -254,12 +254,12 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
         public static final GameJpaEntityMapper MAPPER = Mappers.getMapper(GameJpaEntityMapper.class);
 
-        public static final Game GAME_1 = aGame()
+        public static final Game GAME_1 = anyBuilder()
                 .withId(new GameId("1eec1c19-25bf-4094-b926-84b5bb8fa281"))
                 .withTitle("Game 1")
                 .build();
 
-        public static final Game GAME_2 = aGame()
+        public static final Game GAME_2 = anyBuilder()
                 .withId(new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"))
                 .withTitle("Game 2")
                 .build();
@@ -271,32 +271,32 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
     private static class FILE_DETAILS {
 
-        public static final Supplier<GameFile> ENQUEUED_FOR_GAME_1 = () -> enqueuedGameFile()
+        public static final Supplier<GameFile> ENQUEUED_FOR_GAME_1 = () -> TestGameFile.enqueuedBuilder()
                 .id(new GameFileId("acde26d7-33c7-42ee-be16-bca91a604b48"))
                 .gameId(EXISTING_GAMES.GAME_1.getId())
                 .build();
 
-        public static final Supplier<GameFile> SUCCESSFUL_FOR_GAME_1 = () -> successfulGameFile()
+        public static final Supplier<GameFile> SUCCESSFUL_FOR_GAME_1 = () -> TestGameFile.successfulBuilder()
                 .id(new GameFileId("a6adc122-df20-4e2c-a975-7d4af7104704"))
                 .gameId(EXISTING_GAMES.GAME_1.getId())
                 .build();
 
-        public static final Supplier<GameFile> DISCOVERED_FOR_GAME_1 = () -> discoveredGameFile()
+        public static final Supplier<GameFile> DISCOVERED_FOR_GAME_1 = () -> TestGameFile.discoveredBuilder()
                 .id(new GameFileId("3d65af79-a558-4f23-88bd-3c04e977e63f"))
                 .gameId(EXISTING_GAMES.GAME_1.getId())
                 .build();
 
-        public static final Supplier<GameFile> ENQUEUED_FOR_GAME_2 = () -> enqueuedGameFile()
+        public static final Supplier<GameFile> ENQUEUED_FOR_GAME_2 = () -> TestGameFile.enqueuedBuilder()
                 .id(new GameFileId("0d4d181c-9a77-4146-bbd6-40f7d4453b5f"))
                 .gameId(EXISTING_GAMES.GAME_2.getId())
                 .build();
 
-        public static final Supplier<GameFile> FAILED_FOR_GAME_2 = () -> failedGameFile()
+        public static final Supplier<GameFile> FAILED_FOR_GAME_2 = () -> TestGameFile.failedBuilder()
                 .id(new GameFileId("568afe65-018b-40fc-a8b4-481ded571ff8"))
                 .gameId(EXISTING_GAMES.GAME_2.getId())
                 .build();
 
-        public static final Supplier<GameFile> IN_PROGRESS_FOR_GAME_2 = () -> inProgressGameFile()
+        public static final Supplier<GameFile> IN_PROGRESS_FOR_GAME_2 = () -> TestGameFile.inProgressBuilder()
                 .id(new GameFileId("0a2a4b8d-f02e-4e3e-a3da-f47e1ea6aa30"))
                 .gameId(EXISTING_GAMES.GAME_2.getId())
                 .build();

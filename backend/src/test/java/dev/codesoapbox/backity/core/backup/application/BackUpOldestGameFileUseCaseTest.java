@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.backup.application;
 
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,7 +12,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.discoveredGameFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -29,17 +29,11 @@ class BackUpOldestGameFileUseCaseTest {
 
     @Test
     void shouldBackUpEnqueuedGameFileIfNotCurrentlyDownloading() {
-        GameFile gameFile = discoveredGameFile().build();
-        AtomicBoolean gameFileWasKeptAsReferenceDuringProcessing = new AtomicBoolean();
-        when(gameFileRepository.findOldestWaitingForDownload())
-                .thenReturn(Optional.of(gameFile));
-        when(fileBackupService.isReadyFor(gameFile))
-                .thenReturn(true);
-        doAnswer(inv -> {
-            gameFileWasKeptAsReferenceDuringProcessing.set(
-                    backUpOldestGameFileUseCase.enqueuedFileBackupReference.get() == gameFile);
-            return null;
-        }).when(fileBackupService).backUpFile(gameFile);
+        GameFile gameFile = TestGameFile.discovered();
+        mockIsNextInQueue(gameFile);
+        mockBackupServiceIsReadyFor(gameFile);
+        AtomicBoolean gameFileWasKeptAsReferenceDuringProcessing =
+                watchGameFileWasKeptAsReferenceDuringProcessing(gameFile);
 
         backUpOldestGameFileUseCase.backUpOldestGameFile();
 
@@ -48,16 +42,32 @@ class BackUpOldestGameFileUseCaseTest {
         assertThat(gameFileWasKeptAsReferenceDuringProcessing).isTrue();
     }
 
-    @Test
-    void shouldFailGracefully() {
-        GameFile gameFile = discoveredGameFile().build();
-
-        when(gameFileRepository.findOldestWaitingForDownload())
-                .thenReturn(Optional.of(gameFile));
+    private void mockBackupServiceIsReadyFor(GameFile gameFile) {
         when(fileBackupService.isReadyFor(gameFile))
                 .thenReturn(true);
-        doThrow(new RuntimeException("someFailedReason"))
-                .when(fileBackupService).backUpFile(gameFile);
+    }
+
+    private void mockIsNextInQueue(GameFile gameFile) {
+        when(gameFileRepository.findOldestWaitingForDownload())
+                .thenReturn(Optional.of(gameFile));
+    }
+
+    private AtomicBoolean watchGameFileWasKeptAsReferenceDuringProcessing(GameFile gameFile) {
+        AtomicBoolean gameFileWasKeptAsReferenceDuringProcessing = new AtomicBoolean();
+        doAnswer(inv -> {
+            gameFileWasKeptAsReferenceDuringProcessing.set(
+                    backUpOldestGameFileUseCase.enqueuedFileBackupReference.get() == gameFile);
+            return null;
+        }).when(fileBackupService).backUpFile(gameFile);
+        return gameFileWasKeptAsReferenceDuringProcessing;
+    }
+
+    @Test
+    void shouldFailGracefully() {
+        GameFile gameFile = TestGameFile.discovered();
+        mockIsNextInQueue(gameFile);
+        mockBackupServiceIsReadyFor(gameFile);
+        mockBackupServiceFails();
 
         backUpOldestGameFileUseCase.backUpOldestGameFile();
 
@@ -65,25 +75,30 @@ class BackUpOldestGameFileUseCaseTest {
         verifyNoMoreInteractions(fileBackupService);
     }
 
+    private void mockBackupServiceFails() {
+        doThrow(new RuntimeException("someFailedReason"))
+                .when(fileBackupService).backUpFile(any());
+    }
+
     @Test
     void shouldDoNothingIfGameProviderFileBackupServiceNotReady() {
-        GameFile gameFile = discoveredGameFile().build();
-
-        when(gameFileRepository.findOldestWaitingForDownload())
-                .thenReturn(Optional.of(gameFile));
-        when(fileBackupService.isReadyFor(gameFile))
-                .thenReturn(false);
+        GameFile gameFile = TestGameFile.discovered();
+        mockIsNextInQueue(gameFile);
+        mockBackupServiceIsNotReadyFor(gameFile);
 
         backUpOldestGameFileUseCase.backUpOldestGameFile();
 
         verifyNoMoreInteractions(fileBackupService);
     }
 
+    private void mockBackupServiceIsNotReadyFor(GameFile gameFile) {
+        when(fileBackupService.isReadyFor(gameFile))
+                .thenReturn(false);
+    }
+
     @Test
     void shouldDoNothingIfCurrentlyDownloading() {
-        GameFile gameFile = discoveredGameFile().build();
-        lenient().when(gameFileRepository.findOldestWaitingForDownload())
-                .thenReturn(Optional.of(gameFile));
+        GameFile gameFile = TestGameFile.discovered();
 
         backUpOldestGameFileUseCase.enqueuedFileBackupReference.set(gameFile);
         backUpOldestGameFileUseCase.backUpOldestGameFile();

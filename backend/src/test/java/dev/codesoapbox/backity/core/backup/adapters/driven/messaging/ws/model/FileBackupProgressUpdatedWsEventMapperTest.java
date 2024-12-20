@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.backup.adapters.driven.messaging.ws.model;
 
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupProgressChangedEvent;
-import dev.codesoapbox.backity.core.backup.domain.events.TestFileBackupEvents;
+import dev.codesoapbox.backity.core.backup.domain.events.TestFileBackupEvent;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -14,11 +14,11 @@ class FileBackupProgressUpdatedWsEventMapperTest {
 
     @Test
     void shouldMapToToWsEvent() {
-        FileBackupProgressChangedEvent domain = TestFileBackupEvents.progressChanged();
+        FileBackupProgressChangedEvent domain = TestFileBackupEvent.progressChanged();
 
         FileBackupProgressUpdatedWsEvent result = MAPPER.toWsEvent(domain);
 
-        FileBackupProgressUpdatedWsEvent expectedResult = TestFileBackupWsEvents.progressChanged();
+        FileBackupProgressUpdatedWsEvent expectedResult = TestFileBackupWsEvent.progressChanged();
         assertThat(result).isEqualTo(expectedResult);
     }
 }

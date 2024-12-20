@@ -8,6 +8,7 @@ import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.gamefile.config.GameFileJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.infrastructure.adapters.driving.api.http.controllers.H2DbController;
 import dev.codesoapbox.backity.infrastructure.config.DomainEventPublisherBeanConfig;
 import dev.codesoapbox.backity.infrastructure.config.jpa.SharedJpaRepositoryBeanConfig;
@@ -29,7 +30,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.discoveredGameFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -77,8 +77,8 @@ class H2DbControllerIT {
 
     @Test
     void shouldDumpSql() throws Exception {
-        Game game = TestGame.aGame().build();
-        GameFile gameFile = discoveredGameFile()
+        Game game = TestGame.any();
+        GameFile gameFile = TestGameFile.discoveredBuilder()
                 .gameId(game.getId())
                 .build();
         gameRepository.save(game);

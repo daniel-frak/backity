@@ -1,12 +1,12 @@
 package dev.codesoapbox.backity.core.discovery.application;
 
-import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
+import dev.codesoapbox.backity.core.game.domain.TestGame;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.shared.domain.ProgressInfo;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryStatusChangedEvent;
 import dev.codesoapbox.backity.core.game.domain.Game;
-import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
@@ -100,11 +100,8 @@ class FileDiscoveryServiceTest {
 
     @Test
     void startFileDiscoveryShouldNotSaveGameInformationGivenGameAlreadyExists() {
-        var gameTitle = "someGameTitle";
-        var discoveredFile = aDiscoveredFile(gameTitle);
-        var game = new Game(GameId.newInstance(), gameTitle);
-        when(gameRepository.findByTitle(gameTitle))
-                .thenReturn(Optional.of(game));
+        GameProviderFile discoveredFile = TestGameFile.discovered().getGameProviderFile();
+        mockGameExists(discoveredFile.originalGameTitle());
 
         fileDiscoveryService = new FileDiscoveryService(singletonList(gameProviderFileDiscoveryService),
                 gameRepository, fileRepository, eventPublisher);
@@ -116,26 +113,25 @@ class FileDiscoveryServiceTest {
         verify(gameRepository, never()).save(any());
     }
 
+    private Game mockGameExists(String title) {
+        Game game = TestGame.anyBuilder()
+                .withTitle(title)
+                .build();
+        when(gameRepository.findByTitle(game.getTitle()))
+                .thenReturn(Optional.of(game));
+
+        return game;
+    }
+
     private void waitForGameProviderFileDiscoveryToBeTriggered() {
         await().atMost(2, TimeUnit.SECONDS)
                 .until(gameProviderFileDiscoveryService::hasBeenTriggered);
     }
 
-    private GameProviderFile aDiscoveredFile(String gameTitle) {
-        return new GameProviderFile(
-                new GameProviderId("someGameProviderId"), gameTitle, "someTitle", "someVersion", "someUrl",
-                "someOriginalFileName", "100 KB");
-    }
-
     @Test
     void startFileDiscoveryShouldSaveGameInformationGivenItDoesNotYetExist() {
-        var gameTitle = "someGameTitle";
-        var discoveredFile = aDiscoveredFile(gameTitle);
-        when(gameRepository.findByTitle(gameTitle))
-                .thenReturn(Optional.empty());
-
-        fileDiscoveryService = new FileDiscoveryService(singletonList(gameProviderFileDiscoveryService),
-                gameRepository, fileRepository, eventPublisher);
+        GameProviderFile discoveredFile = TestGameFile.discovered().getGameProviderFile();
+        mockGameDoesNotExist(discoveredFile.originalGameTitle());
 
         fileDiscoveryService.startFileDiscovery();
 
@@ -143,23 +139,22 @@ class FileDiscoveryServiceTest {
         gameProviderFileDiscoveryService.simulateFileDiscovery(discoveredFile);
         ArgumentCaptor<Game> gameCaptor = ArgumentCaptor.forClass(Game.class);
         verify(gameRepository).save(gameCaptor.capture());
-        assertThat(gameCaptor.getValue().getTitle()).isEqualTo(gameTitle);
+        assertThat(gameCaptor.getValue().getTitle()).isEqualTo(discoveredFile.originalGameTitle());
+    }
+
+    private void mockGameDoesNotExist(String gameTitle) {
+        when(gameRepository.findByTitle(gameTitle))
+                .thenReturn(Optional.empty());
     }
 
     @Test
     void startFileDiscoveryShouldSaveDiscoveredFilesAndPublishEvents() {
-        var gameTitle = "someGameTitle";
-        var discoveredFile = aDiscoveredFile(gameTitle);
-        var game = new Game(GameId.newInstance(), gameTitle);
-
-        when(gameRepository.findByTitle(gameTitle))
-                .thenReturn(Optional.of(game));
-
-        when(fileRepository.existsByUrlAndVersion(discoveredFile.url(), discoveredFile.version()))
-                .thenReturn(false);
+        GameProviderFile discoveredFile = TestGameFile.discovered().getGameProviderFile();
+        Game game = mockGameExists(discoveredFile.originalGameTitle());
+        mockDoesNotExistLocally(discoveredFile);
 
         List<FileDiscoveryProgressChangedEvent> progressUpdates = trackProgressUpdateEvents();
-        fileDiscoveryService = new FileDiscoveryService(singletonList(gameProviderFileDiscoveryService),
+        fileDiscoveryService = new FileDiscoveryService(List.of(gameProviderFileDiscoveryService),
                 gameRepository, fileRepository, eventPublisher);
 
         fileDiscoveryService.startFileDiscovery();
@@ -178,6 +173,11 @@ class FileDiscoveryServiceTest {
         verify(eventPublisher, times(2)).publish(any(FileDiscoveryStatusChangedEvent.class));
     }
 
+    private void mockDoesNotExistLocally(GameProviderFile discoveredFile) {
+        when(fileRepository.existsByUrlAndVersion(discoveredFile.url(), discoveredFile.version()))
+                .thenReturn(false);
+    }
+
     private List<FileDiscoveryProgressChangedEvent> trackProgressUpdateEvents() {
         List<FileDiscoveryProgressChangedEvent> progressList = new ArrayList<>();
         doAnswer(inv -> {
@@ -189,10 +189,8 @@ class FileDiscoveryServiceTest {
 
     @Test
     void startFileDiscoveryShouldNotSaveDiscoveredFileIfAlreadyExists() {
-        GameProviderFile gameProviderFile = aDiscoveredFile("someGameTitle");
-
-        when(fileRepository.existsByUrlAndVersion(gameProviderFile.url(), gameProviderFile.version()))
-                .thenReturn(true);
+        GameProviderFile gameProviderFile = TestGameFile.discovered().getGameProviderFile();
+        mockExistsLocally(gameProviderFile);
 
         fileDiscoveryService.startFileDiscovery();
 
@@ -201,6 +199,11 @@ class FileDiscoveryServiceTest {
 
         verify(fileRepository, never()).save(any());
         verify(eventPublisher, never()).publish(any(FileDiscoveredEvent.class));
+    }
+
+    private void mockExistsLocally(GameProviderFile gameProviderFile) {
+        when(fileRepository.existsByUrlAndVersion(gameProviderFile.url(), gameProviderFile.version()))
+                .thenReturn(true);
     }
 
     @Test

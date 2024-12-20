@@ -28,9 +28,7 @@ class RefreshGogAccessTokenUseCaseTest {
     @Test
     void shouldRefreshAccessToken() {
         String oldRefreshToken = "oldRefreshToken";
-        String newRefreshToken = "newRefreshToken";
-        when(authService.getRefreshToken())
-                .thenReturn(newRefreshToken);
+        String newRefreshToken = mockNewRefreshToken();
 
         String result = useCase.refreshAccessToken(oldRefreshToken);
 
@@ -39,5 +37,13 @@ class RefreshGogAccessTokenUseCaseTest {
         InOrder inOrder = inOrder(authService);
         inOrder.verify(authService).refresh(oldRefreshToken);
         inOrder.verify(authService).getRefreshToken();
+    }
+
+    private String mockNewRefreshToken() {
+        String newRefreshToken = "newRefreshToken";
+        when(authService.getRefreshToken())
+                .thenReturn(newRefreshToken);
+
+        return newRefreshToken;
     }
 }

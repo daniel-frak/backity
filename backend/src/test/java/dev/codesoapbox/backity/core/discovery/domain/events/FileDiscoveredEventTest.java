@@ -10,7 +10,7 @@ class FileDiscoveredEventTest {
 
     @Test
     void shouldCreateFrom() {
-        GameFile gameFile = TestGameFile.discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
 
         FileDiscoveredEvent result = FileDiscoveredEvent.from(gameFile);
 

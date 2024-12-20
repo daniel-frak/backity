@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 @lombok.Builder(builderClassName = "Builder", buildMethodName = "internalBuild",
-        builderMethodName = "discoveredGameFile")
-public class TestGameFile {
+        builderMethodName = "discoveredBuilder")
+public final class TestGameFile {
 
     @lombok.Builder.Default
     private GameFileId id = new GameFileId("acde26d7-33c7-42ee-be16-bca91a604b48");
@@ -52,35 +52,59 @@ public class TestGameFile {
     @lombok.Builder.Default
     private LocalDateTime dateModified = LocalDateTime.parse("2023-04-29T14:15:53");
 
-    public static Builder fullGameFile() {
-        return discoveredGameFile()
+    public static GameFile full() {
+        return fullBuilder().build();
+    }
+
+    public static Builder fullBuilder() {
+        return discoveredBuilder()
                 .backupFailedReason("someFailedReason")
                 .filePath("someFilePath");
     }
 
-    public static Builder discoveredGameFile() {
+    public static GameFile discovered() {
+        return discoveredBuilder().build();
+    }
+
+    public static Builder discoveredBuilder() {
         return new Builder();
     }
 
-    public static Builder successfulGameFile() {
-        return discoveredGameFile()
+    public static GameFile successful() {
+        return successfulBuilder().build();
+    }
+
+    public static Builder successfulBuilder() {
+        return discoveredBuilder()
                 .backupStatus(FileBackupStatus.SUCCESS)
                 .filePath("someFilePath");
     }
 
-    public static Builder enqueuedGameFile() {
-        return discoveredGameFile()
+    public static GameFile enqueued() {
+        return enqueuedBuilder().build();
+    }
+
+    public static Builder enqueuedBuilder() {
+        return discoveredBuilder()
                 .backupStatus(FileBackupStatus.ENQUEUED);
     }
 
-    public static Builder failedGameFile() {
-        return discoveredGameFile()
+    public static GameFile failed() {
+        return failedBuilder().build();
+    }
+
+    public static Builder failedBuilder() {
+        return discoveredBuilder()
                 .backupStatus(FileBackupStatus.FAILED)
                 .backupFailedReason("someFailedReason");
     }
 
-    public static Builder inProgressGameFile() {
-        return discoveredGameFile()
+    public static GameFile inProgress() {
+        return inProgressBuilder().build();
+    }
+
+    public static Builder inProgressBuilder() {
+        return discoveredBuilder()
                 .backupStatus(FileBackupStatus.IN_PROGRESS)
                 .filePath("tempFilePath");
     }

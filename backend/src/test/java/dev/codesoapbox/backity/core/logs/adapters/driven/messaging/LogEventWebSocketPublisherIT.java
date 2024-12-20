@@ -10,8 +10,6 @@ import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketEventHandl
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @WebSocketEventHandlerTest
 class LogEventWebSocketPublisherIT {
 
@@ -30,19 +28,12 @@ class LogEventWebSocketPublisherIT {
 
         eventPublisher.publish(event);
 
-        String receivedMessage = messageChannel.receiveMessage(LogWebSocketTopics.LOGS.wsDestination());
-        String expectedJson = """
+        var expectedJson = """
                 {
                     "message": "someMessage",
                     "maxLogs" : 123
                 }
                 """;
-        assertReceivedMessageIs(receivedMessage, expectedJson);
-    }
-
-    private void assertReceivedMessageIs(String receivedMessage, String expectedJson) throws JsonProcessingException {
-        assertThat(receivedMessage).isNotNull();
-        assertThat(objectMapper.readTree(receivedMessage))
-                .isEqualTo(objectMapper.readTree(expectedJson));
+        messageChannel.assertPublishedWebSocketEvent(LogWebSocketTopics.LOGS.wsDestination(), expectedJson);
     }
 }

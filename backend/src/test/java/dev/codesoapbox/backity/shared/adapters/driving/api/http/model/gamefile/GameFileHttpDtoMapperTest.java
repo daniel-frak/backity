@@ -1,12 +1,12 @@
 package dev.codesoapbox.backity.shared.adapters.driving.api.http.model.gamefile;
 
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.fullGameFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class GameFileHttpDtoMapperTest {
@@ -15,7 +15,7 @@ class GameFileHttpDtoMapperTest {
 
     @Test
     void shouldMapToDto() {
-        GameFile domain = fullGameFile().build();
+        GameFile domain = TestGameFile.full();
 
         GameFileHttpDto result = MAPPER.toDto(domain);
 

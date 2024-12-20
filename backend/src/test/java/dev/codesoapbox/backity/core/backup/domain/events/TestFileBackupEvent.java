@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.backup.domain.events;
 
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 
-public class TestFileBackupEvents {
+public final class TestFileBackupEvent {
 
     private static final GameFileId GAME_FILE_ID = new GameFileId("acde26d7-33c7-42ee-be16-bca91a604b48");
 

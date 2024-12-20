@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.gamefile.application;
 
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.inProgressGameFile;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -29,12 +29,12 @@ class GetCurrentlyDownloadingFileUseCaseTest {
 
     @Test
     void shouldFindCurrentlyDownloadingFile() {
-        Optional<GameFile> gameFile = Optional.of(inProgressGameFile().build());
+        Optional<GameFile> maybeGameFile = Optional.of(TestGameFile.inProgress());
         when(gameFileRepository.findCurrentlyDownloading())
-                .thenReturn(gameFile);
+                .thenReturn(maybeGameFile);
 
         Optional<GameFile> result = useCase.findCurrentlyDownloadingFile();
 
-        assertThat(result).isEqualTo(gameFile);
+        assertThat(result).isEqualTo(maybeGameFile);
     }
 }

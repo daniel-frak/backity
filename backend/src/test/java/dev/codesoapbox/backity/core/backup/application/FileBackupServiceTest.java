@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
 import dev.codesoapbox.backity.core.backup.domain.BackupProgressFactory;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameProviderFileUrlEmptyException;
 import dev.codesoapbox.backity.core.backup.application.exceptions.NotEnoughFreeSpaceException;
 import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileManager;
@@ -24,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.discoveredGameFile;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -63,7 +63,7 @@ class FileBackupServiceTest {
 
     @Test
     void shouldDownloadFile() throws IOException {
-        GameFile gameFile = discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
         GameFilePersistedChanges gameFilePersistedChanges = trackPersistedGameFileChanges();
         String tempFilePath = mockTempFilePathCreation(gameFile, EXISTING_GAME_PROVIDER_ID);
         BackupProgress backupProgress = mockBackupProgressCreation();
@@ -121,7 +121,7 @@ class FileBackupServiceTest {
 
     @Test
     void shouldTryToRemoveTempFileAndRethrowWrappedOnIOExceptionGivenFilePathIsTempFilePath() throws IOException {
-        GameFile gameFile = discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
         String tempFilePath = mockTempFilePathCreation(gameFile, EXISTING_GAME_PROVIDER_ID);
         BackupProgress backupProgress = mockBackupProgressCreation();
         IOException coreException = mockGameProviderServiceSetsFilePathAsTempThenThrowsExceptionDuringBackup(
@@ -156,7 +156,7 @@ class FileBackupServiceTest {
     @ParameterizedTest
     @ValueSource(strings = {"", " "})
     void downloadFileShouldThrowIfUrlIsEmpty(String url) {
-        GameFile gameFile = discoveredGameFile()
+        GameFile gameFile = TestGameFile.discoveredBuilder()
                 .url(url)
                 .build();
 
@@ -168,7 +168,7 @@ class FileBackupServiceTest {
     @Test
     void downloadFileShouldThrowIfGameProviderFileBackupServiceNotFound() throws IOException {
         var nonExistentGameProviderId = new GameProviderId("nonExistentGameProviderId1");
-        GameFile gameFile = discoveredGameFile()
+        GameFile gameFile = TestGameFile.discoveredBuilder()
                 .gameProviderId(nonExistentGameProviderId)
                 .build();
         mockTempFilePathCreation(gameFile, nonExistentGameProviderId);
@@ -182,7 +182,7 @@ class FileBackupServiceTest {
     @Test
     void downloadFileShouldThrowIfIOExceptionOccurs() throws IOException {
         GameProviderId gameProviderId = gameProviderFileBackupService.getGameProviderId();
-        GameFile gameFile = discoveredGameFile()
+        GameFile gameFile = TestGameFile.discoveredBuilder()
                 .gameProviderId(gameProviderId)
                 .build();
         mockTempFilePathCreationThrowsIoException(gameProviderId, gameFile);
@@ -202,7 +202,7 @@ class FileBackupServiceTest {
     @Test
     void downloadFileShouldThrowIfNotEnoughFreeSpace() throws IOException {
         GameProviderId gameProviderId = gameProviderFileBackupService.getGameProviderId();
-        GameFile gameFile = discoveredGameFile()
+        GameFile gameFile = TestGameFile.discoveredBuilder()
                 .gameProviderId(gameProviderId)
                 .build();
         mockTempFilePathCreation(gameFile, EXISTING_GAME_PROVIDER_ID);
@@ -215,7 +215,7 @@ class FileBackupServiceTest {
 
     @Test
     void isReadyForShouldReturnTrueIfFileIsReadyToDownload() {
-        GameFile gameFile = discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
         when(gameProviderFileBackupService.isReady())
                 .thenReturn(true);
 
@@ -224,7 +224,7 @@ class FileBackupServiceTest {
 
     @Test
     void isReadyForShouldReturnFalseIfFileIsNotReadyToDownload() {
-        GameFile gameFile = discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
         when(gameProviderFileBackupService.isReady())
                 .thenReturn(false);
 

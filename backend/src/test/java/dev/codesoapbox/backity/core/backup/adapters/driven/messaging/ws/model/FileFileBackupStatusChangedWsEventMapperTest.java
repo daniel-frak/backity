@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.backup.adapters.driven.messaging.ws.model;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
-import dev.codesoapbox.backity.core.backup.domain.events.TestFileBackupEvents;
+import dev.codesoapbox.backity.core.backup.domain.events.TestFileBackupEvent;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -16,31 +16,31 @@ class FileFileBackupStatusChangedWsEventMapperTest {
 
     @Test
     void shouldMapBackupFinishedToWsEvent() {
-        FileBackupFinishedEvent domain = TestFileBackupEvents.finished();
+        FileBackupFinishedEvent domain = TestFileBackupEvent.finished();
 
         FileBackupStatusChangedWsEvent result = MAPPER.toWsEvent(domain);
 
-        FileBackupStatusChangedWsEvent expectedResult = TestFileBackupWsEvents.finished();
+        FileBackupStatusChangedWsEvent expectedResult = TestFileBackupWsEvent.finished();
         assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
     void shouldMapBackupFailedToWsEvent() {
-        FileBackupFailedEvent domain = TestFileBackupEvents.failed();
+        FileBackupFailedEvent domain = TestFileBackupEvent.failed();
 
         FileBackupStatusChangedWsEvent result = MAPPER.toWsEvent(domain);
 
-        FileBackupStatusChangedWsEvent expectedResult = TestFileBackupWsEvents.failed();
+        FileBackupStatusChangedWsEvent expectedResult = TestFileBackupWsEvent.failed();
         assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test
     void shouldMapBackupInProgressToWsEvent() {
-        FileBackupStartedEvent domain = TestFileBackupEvents.started();
+        FileBackupStartedEvent domain = TestFileBackupEvent.started();
 
         FileBackupStatusChangedWsEvent result = MAPPER.toWsEvent(domain);
 
-        FileBackupStatusChangedWsEvent expectedResult = TestFileBackupWsEvents.startedAsStatusChange();
+        FileBackupStatusChangedWsEvent expectedResult = TestFileBackupWsEvent.startedAsStatusChange();
         assertThat(result).isEqualTo(expectedResult);
     }
 }

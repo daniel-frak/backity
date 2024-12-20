@@ -1,16 +1,16 @@
 package dev.codesoapbox.backity.core.backup.domain.exceptions;
 
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import org.junit.jupiter.api.Test;
 
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.discoveredGameFile;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class FileBackupFailedExceptionTest {
 
     @Test
     void shouldGetMessage() {
-        GameFile gameFile = discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
 
         var exception = new FileBackupFailedException(gameFile, null);
 
@@ -20,7 +20,7 @@ class FileBackupFailedExceptionTest {
 
     @Test
     void shouldGetCause() {
-        GameFile gameFile = discoveredGameFile().build();
+        GameFile gameFile = TestGameFile.discovered();
         var cause = new RuntimeException("test");
 
         var exception = new FileBackupFailedException(gameFile, cause);

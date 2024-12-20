@@ -25,15 +25,20 @@ class EnqueueFileUseCaseTest {
     }
 
     @Test
-    void shouldEnqueue() {
-        var id = new GameFileId("acde26d7-33c7-42ee-be16-bca91a604b48");
-        GameFile gameFile = TestGameFile.discoveredGameFile().build();
-        when(gameFileRepository.getById(id))
-                .thenReturn(gameFile);
+    void shouldSetFileBackupStatusToEnqueuedAndPersistGameFile() {
+        GameFile gameFile = mockDiscoveredGameFileExists();
 
-        useCase.enqueue(id);
+        useCase.enqueue(gameFile.getId());
 
         assertThat(gameFile.getFileBackup().getStatus()).isEqualTo(FileBackupStatus.ENQUEUED);
         verify(gameFileRepository).save(gameFile);
+    }
+
+    private GameFile mockDiscoveredGameFileExists() {
+        GameFile gameFile = TestGameFile.discovered();
+        when(gameFileRepository.getById(gameFile.getId()))
+                .thenReturn(gameFile);
+
+        return gameFile;
     }
 }

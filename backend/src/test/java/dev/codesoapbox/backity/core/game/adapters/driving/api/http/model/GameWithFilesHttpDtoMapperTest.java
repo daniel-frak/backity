@@ -2,7 +2,8 @@ package dev.codesoapbox.backity.core.game.adapters.driving.api.http.model;
 
 import dev.codesoapbox.backity.core.game.application.GameWithFiles;
 import dev.codesoapbox.backity.core.game.domain.Game;
-import dev.codesoapbox.backity.core.game.domain.GameId;
+import dev.codesoapbox.backity.core.game.domain.TestGame;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.shared.adapters.driving.api.http.model.gamefile.FileBackupHttpDto;
 import dev.codesoapbox.backity.shared.adapters.driving.api.http.model.gamefile.FileBackupStatusHttpDto;
 import dev.codesoapbox.backity.shared.adapters.driving.api.http.model.gamefile.GameFileHttpDto;
@@ -12,7 +13,6 @@ import org.mapstruct.factory.Mappers;
 
 import java.time.LocalDateTime;
 
-import static dev.codesoapbox.backity.core.gamefile.domain.TestGameFile.fullGameFile;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,22 +22,33 @@ class GameWithFilesHttpDtoMapperTest {
 
     @Test
     void shouldMapToDto() {
-        var gameId = new GameId("1eec1c19-25bf-4094-b926-84b5bb8fa281");
-        var fileStringId = "acde26d7-33c7-42ee-be16-bca91a604b48";
-        var model = new GameWithFiles(
-                new Game(gameId, "Test Game"),
-                singletonList(fullGameFile().build())
-        );
+        GameWithFiles model = domainObject();
 
         GameWithFilesHttpDto result = MAPPER.toDto(model);
 
-        var expectedResult = new GameWithFilesHttpDto(
-                gameId.value().toString(),
+        var expectedResult = dto();
+        assertThat(result)
+                .usingRecursiveComparison().isEqualTo(expectedResult);
+    }
+
+    private GameWithFiles domainObject() {
+        Game game = TestGame.any();
+        return new GameWithFiles(
+                game,
+                singletonList(TestGameFile.fullBuilder()
+                        .gameId(game.getId())
+                        .build())
+        );
+    }
+
+    private GameWithFilesHttpDto dto() {
+        return new GameWithFilesHttpDto(
+                "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
                 "Test Game",
                 singletonList(
                         new GameFileHttpDto(
-                                fileStringId,
-                                gameId.value().toString(),
+                                "acde26d7-33c7-42ee-be16-bca91a604b48",
+                                "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
                                 new GameProviderFileHttpDto(
                                         "someGameProviderId",
                                         "someOriginalGameTitle",
@@ -57,9 +68,6 @@ class GameWithFilesHttpDtoMapperTest {
                         )
                 )
         );
-
-        assertThat(result)
-                .usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
     @Test

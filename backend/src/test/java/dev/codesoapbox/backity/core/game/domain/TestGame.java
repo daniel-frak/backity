@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.game.domain;
 
 import lombok.Builder;
 
-@Builder(builderClassName = "Builder", builderMethodName = "aGame", buildMethodName = "internalBuilder",
+@Builder(builderClassName = "Builder", builderMethodName = "anyBuilder", buildMethodName = "internalBuilder",
         setterPrefix = "with")
 public final class TestGame {
 
@@ -12,7 +12,11 @@ public final class TestGame {
     @lombok.Builder.Default
     private String title = "Test Game";
 
-    public static TestGame.Builder aGame() {
+    public static Game any() {
+        return anyBuilder().build();
+    }
+
+    public static TestGame.Builder anyBuilder() {
         return new Builder();
     }
 
