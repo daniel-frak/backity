@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
+import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
 import dev.codesoapbox.backity.shared.domain.IncrementalProgressTracker;
 import dev.codesoapbox.backity.shared.domain.ProgressInfo;
 import dev.codesoapbox.backity.core.discovery.application.GameProviderFileDiscoveryService;
@@ -71,7 +72,7 @@ public class GogFileDiscoveryServiceGame implements GameProviderFileDiscoverySer
                 gameFile.getVersion(),
                 gameFile.getManualUrl(),
                 gameFile.getFileTitle(),
-                gameFile.getSize()
+                FileSize.fromString(gameFile.getSize())
         );
     }
 

@@ -13,7 +13,7 @@ export class ModalService {
   }
 
   public async withConfirmationModal(message: string, callback: () => Promise<void>): Promise<void>{
-    let ngbModalRef = this.modalService.open(ConfirmationModalComponent);
+    const ngbModalRef = this.modalService.open(ConfirmationModalComponent);
     (ngbModalRef.componentInstance as ConfirmationModalComponent).message = message;
     return ngbModalRef.result.then(async (result) => {
       if (result) {

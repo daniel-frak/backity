@@ -69,7 +69,7 @@ export class GogAuthComponent implements OnInit {
       return;
     }
     this.gogIsLoading = true;
-    let gogCodeUrl = this.gogAuthForm.get('gogCodeUrl')?.value;
+    const gogCodeUrl = this.gogAuthForm.get('gogCodeUrl')?.value;
     const params: URLSearchParams = new URL(gogCodeUrl).searchParams;
     const code = params.get("code") as string;
     this.gogAuthClient.authenticate(code).subscribe(r => {

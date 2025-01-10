@@ -1,24 +1,22 @@
-default-path-template: games/{GAME_PROVIDER_ID}/{TITLE}/{FILENAME}
-file-download-queue-scheduler:
-  rate-ms: 5000
-
-gog-auth-scheduler:
-  rate-ms: 60000
-
-gog:
-  # https://gogapidocs.readthedocs.io/en/latest/auth.html#get--token
-  client-secret: 9d85c43b1482497dbbce61f6e4aa173a433796eeae2ca8c5f6129f2dc4de46d9
-  client-id: 46899977096215655
-  auth:
-    base-url: "http://localhost:1080/gog/auth"
-  embed:
-    base-url: "http://localhost:1080/gog/embed"
-    redirect-uri: "http://localhost:1080/gog/embed/on_login_success"
-
-in-memory-logs:
-  max: '100'
-h2dump:
-  path: dump.sql
+backity:
+  default-path-template: games/{GAME_PROVIDER_ID}/{TITLE}/{FILENAME}
+  in-memory-logs:
+    max: '100'
+  file-download-queue-scheduler:
+    rate-ms: 5000
+  gog-auth-scheduler:
+    rate-ms: 60000
+  gog:
+    # https://gogapidocs.readthedocs.io/en/latest/auth.html#get--token
+    client-secret: 9d85c43b1482497dbbce61f6e4aa173a433796eeae2ca8c5f6129f2dc4de46d9
+    client-id: 46899977096215655
+    auth:
+      base-url: "http://localhost:1080/gog/auth"
+    embed:
+      base-url: "http://localhost:1080/gog/embed"
+      redirect-uri: "http://localhost:1080/gog/embed/on_login_success"
+  h2dump:
+    path: dump.sql
 
 spring:
   datasource:

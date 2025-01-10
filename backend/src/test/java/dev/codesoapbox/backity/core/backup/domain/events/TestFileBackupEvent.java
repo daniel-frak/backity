@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.backup.domain.events;
 
+import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 
 public final class TestFileBackupEvent {
@@ -13,7 +14,7 @@ public final class TestFileBackupEvent {
                 "fileTitle",
                 "1.0.0",
                 "originalFileName",
-                "5 KB",
+                new FileSize(5120L),
                 "file/path"
         );
     }

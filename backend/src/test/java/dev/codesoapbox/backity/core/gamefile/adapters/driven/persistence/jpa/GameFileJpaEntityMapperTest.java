@@ -42,7 +42,7 @@ class GameFileJpaEntityMapperTest {
                         "someVersion",
                         "someUrl",
                         "someOriginalFileName",
-                        "5 KB"
+                        5120L
                 ),
                 new FileBackupJpaEntity(
                         FileBackupStatus.DISCOVERED,

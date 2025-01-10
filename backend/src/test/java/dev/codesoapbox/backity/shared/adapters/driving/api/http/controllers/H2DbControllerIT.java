@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = H2DbController.class, properties = "h2dump.path=test_dump.sql")
+@WebMvcTest(controllers = H2DbController.class, properties = "backity.h2dump.path=test_dump.sql")
 @Import({
         LocalFileSystemBeanConfig.class,
         GameJpaRepositoryBeanConfig.class,

@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.domain.events;
 
+import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,7 @@ class FileDiscoveredEventTest {
                 "someOriginalGameTitle",
                 "someOriginalFileName",
                 "someFileTitle",
-                "5 KB"
+                new FileSize(5120L)
         );
         assertThat(result).isEqualTo(expectedResult);
     }

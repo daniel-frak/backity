@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class LogsBeanConfig {
 
     @Bean
-    LogService logService(LogEventPublisher logEventPublisher, @Value("${in-memory-logs.max}") Integer maxLogs) {
+    LogService logService(LogEventPublisher logEventPublisher, @Value("${backity.in-memory-logs.max}") Integer maxLogs) {
         return new LogbackLogService(logEventPublisher, maxLogs);
     }
 }

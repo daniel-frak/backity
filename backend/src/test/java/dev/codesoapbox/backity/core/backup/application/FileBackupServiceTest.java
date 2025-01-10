@@ -56,7 +56,7 @@ class FileBackupServiceTest {
     void setUp() {
         when(gameProviderFileBackupService.getGameProviderId())
                 .thenReturn(EXISTING_GAME_PROVIDER_ID);
-        fileManager = new FakeUnixFileManager(5000);
+        fileManager = new FakeUnixFileManager(5120);
         fileBackupService = new FileBackupService(filePathProvider, gameFileRepository, fileManager,
                 singletonList(gameProviderFileBackupService), backupProgressFactory);
     }

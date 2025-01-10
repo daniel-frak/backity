@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.integrations.gog.config;
 
-import dev.codesoapbox.backity.core.backup.domain.BackupProgressFactory;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.GogFileBackupService;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.GogFileDiscoveryServiceGame;
@@ -25,15 +24,15 @@ public class GogBeanConfig {
     private final String clientId;
     private final String clientSecret;
 
-    public GogBeanConfig(@Value("${gog.client-id}") String clientId,
-                         @Value("${gog.client-secret}") String clientSecret) {
+    public GogBeanConfig(@Value("${backity.gog.client-id}") String clientId,
+                         @Value("${backity.gog.client-secret}") String clientSecret) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
     }
 
     @Bean
     GogAuthClient gogAuthClient(@Qualifier("gogAuth") WebClient webClientAuth,
-                                @Value("${gog.embed.redirect-uri}") String redirectUri) {
+                                @Value("${backity.gog.embed.redirect-uri}") String redirectUri) {
         return new GogAuthClient(webClientAuth, clientId, clientSecret, redirectUri);
     }
 

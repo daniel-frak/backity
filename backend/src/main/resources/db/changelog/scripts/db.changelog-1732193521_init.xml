@@ -35,7 +35,7 @@
             <column name="original_file_name" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>
-            <column name="size" type="VARCHAR">
+            <column name="size_in_bytes" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
             <column name="status" type="VARCHAR">

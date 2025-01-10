@@ -1,5 +1,7 @@
 package dev.codesoapbox.backity.core.discovery.domain.events;
 
+import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
+
 public final class TestFileDiscoveryEvent {
 
     private static final String GAME_PROVIDER_ID = "TestGameProviderId";
@@ -9,7 +11,7 @@ public final class TestFileDiscoveryEvent {
                 "Original game title",
                 "originalFileName",
                 "fileTitle",
-                "5 KB"
+                new FileSize(5120L)
         );
     }
 

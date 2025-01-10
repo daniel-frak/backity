@@ -13,7 +13,7 @@ public record GameProviderFile(
         @NonNull String version,
         @NonNull String url,
         @NonNull String originalFileName,
-        @NonNull String size
+        @NonNull FileSize size
 ) {
 
     public GameFile associateWith(Game game) {

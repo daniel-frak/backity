@@ -13,14 +13,14 @@ public class WebClientConfig {
 
     @Bean(name = "gogAuth")
     WebClient webClientAuth(WebClient.Builder webClientBuilder,
-                            @Value("${gog.auth.base-url}") String baseUrl) {
+                            @Value("${backity.gog.auth.base-url}") String baseUrl) {
         return webClientBuilder.baseUrl(baseUrl)
                 .build();
     }
 
     @Bean(name = "gogEmbed")
     public WebClient webClientEmbed(WebClient.Builder webClientBuilder,
-                                    @Value("${gog.embed.base-url}") String baseUrl) {
+                                    @Value("${backity.gog.embed.base-url}") String baseUrl) {
         return webClientBuilder.baseUrl(baseUrl)
                 .clientConnector(new ReactorClientHttpConnector(
                         HttpClient.create()

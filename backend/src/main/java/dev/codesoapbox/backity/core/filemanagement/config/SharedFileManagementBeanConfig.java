@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 public class SharedFileManagementBeanConfig {
 
     @Bean
-    FilePathProvider filePathProvider(@Value("${default-path-template}") String defaultPathTemplate,
+    FilePathProvider filePathProvider(@Value("${backity.default-path-template}") String defaultPathTemplate,
                                       FileManager fileManager) {
         return new FilePathProvider(defaultPathTemplate, fileManager);
     }

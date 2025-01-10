@@ -35,7 +35,7 @@ export class MessageTesting {
   }
 
   static mockWatchAndGetCallbackForTopic(messagesService: SpyObj<MessagesService>, topic: string) {
-    let topicCallback = {
+    const topicCallback = {
       execute: (message: Message) => {
         console.error("Topic callback not found for: " + topic);
       }

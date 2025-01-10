@@ -17,7 +17,7 @@ public class H2DbController {
 
     private final String h2DumpPath;
 
-    public H2DbController(EntityManager entityManager, @Value("${h2dump.path}") String h2DumpPath) {
+    public H2DbController(EntityManager entityManager, @Value("${backity.h2dump.path}") String h2DumpPath) {
         this.entityManager = entityManager;
         this.h2DumpPath = h2DumpPath;
     }

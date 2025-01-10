@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedExc
 import dev.codesoapbox.backity.core.backup.application.exceptions.NotEnoughFreeSpaceException;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
 import dev.codesoapbox.backity.core.filemanagement.domain.FilePathProvider;
+import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -68,9 +69,8 @@ public class FileBackupService {
                 gameFile.getGameProviderFile().originalGameTitle());
     }
 
-    private void validateEnoughFreeSpaceOnDisk(String filePath, String size) {
-        Long sizeInBytes = new FileSizeAccumulator().add(size).getInBytes();
-        if (!fileManager.isEnoughFreeSpaceOnDisk(sizeInBytes, filePath)) {
+    private void validateEnoughFreeSpaceOnDisk(String filePath, FileSize fileSize) {
+        if (!fileManager.isEnoughFreeSpaceOnDisk(fileSize.getBytes(), filePath)) {
             throw new NotEnoughFreeSpaceException(filePath);
         }
     }

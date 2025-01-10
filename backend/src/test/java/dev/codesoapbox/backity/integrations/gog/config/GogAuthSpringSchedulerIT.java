@@ -15,7 +15,7 @@ import static org.mockito.Mockito.verify;
 
 @EnableScheduling
 @SpringJUnitConfig(GogAuthSchedulerBeanConfig.class)
-@TestPropertySource(properties = "gog-auth-scheduler.rate-ms=1")
+@TestPropertySource(properties = "backity.gog-auth-scheduler.rate-ms=1")
 class GogAuthSpringSchedulerIT {
 
     @TemporaryMockBean

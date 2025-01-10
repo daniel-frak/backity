@@ -35,7 +35,7 @@ public final class TestGameFile {
     private String originalFileName = "someOriginalFileName";
 
     @lombok.Builder.Default
-    private String size = "5 KB";
+    private long sizeInBytes = 5120;
 
     @lombok.Builder.Default
     private FileBackupStatus backupStatus = FileBackupStatus.DISCOVERED;
@@ -123,7 +123,7 @@ public final class TestGameFile {
                             temp.version,
                             temp.url,
                             temp.originalFileName,
-                            temp.size
+                            new FileSize(temp.sizeInBytes)
                     ),
                     new FileBackup(
                             temp.backupStatus,

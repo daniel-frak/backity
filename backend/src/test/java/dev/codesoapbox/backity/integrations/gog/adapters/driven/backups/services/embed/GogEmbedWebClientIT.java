@@ -236,7 +236,7 @@ class GogEmbedWebClientIT {
         stubFileEndpoint("/downlink/unreal_tournament_2004_ece/en1installer3");
 
         var result = gogEmbedClient.getLibrarySize();
-        assertThat(result).isEqualTo("2000000 bytes");
+        assertThat(result).isEqualTo("2 MB");
     }
 
     @Test

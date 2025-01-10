@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
+import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
 import dev.codesoapbox.backity.shared.domain.ProgressInfo;
 import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileResponse;
@@ -38,12 +39,12 @@ class GogFileDiscoveryServiceTest {
 
         var expectedGameFile = List.of(
                 new GameProviderFile(new GameProviderId("GOG"), "Game 2", "fileSimpleName1",
-                        "1.0.0", "someUrl1", "fileName1", "100 KB"),
+                        "1.0.0", "someUrl1", "fileName1", new FileSize(102_400)),
                 new GameProviderFile(new GameProviderId("GOG"), "Game 2", "fileSimpleName2",
                         "2.0.0",
-                        "someUrl2", "fileName2", "200 KB"),
+                        "someUrl2", "fileName2", new FileSize(204_800L)),
                 new GameProviderFile(new GameProviderId("GOG"), "Game 4", "fileSimpleName3",
-                        "3.0.0", "someUrl3", "fileName3", "300 KB")
+                        "3.0.0", "someUrl3", "fileName3", new FileSize(307_200L))
         );
 
         assertThat(fileVersionBackups).isEqualTo(expectedGameFile);

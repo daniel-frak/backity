@@ -31,5 +31,5 @@ public class GameProviderFileJpaEntity {
     private String originalFileName;
 
     @NotNull
-    private String size;
+    private long sizeInBytes;
 }
