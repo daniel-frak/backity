@@ -16,9 +16,9 @@ class FileDiscoveredEventTest {
         FileDiscoveredEvent result = FileDiscoveredEvent.from(gameFile);
 
         var expectedResult = new FileDiscoveredEvent(
-                "someOriginalGameTitle",
-                "someOriginalFileName",
-                "someFileTitle",
+                "Game 1",
+                "game_1_installer.exe",
+                "Game 1 (Installer)",
                 new FileSize(5120L)
         );
         assertThat(result).isEqualTo(expectedResult);

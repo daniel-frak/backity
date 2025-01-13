@@ -12,7 +12,7 @@
             "manualUrl": "/downlink/unreal_tournament_2004_ece/en1installer3?some-query-param=true",
             "downloaderUrl": "gogdownloader://unreal_tournament_2004_ece/installer_win_en",
             "name": "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)",
-            "version": "someVersion",
+            "version": "1.0.0",
             "date": "someDate",
             "size": "1 MB"
           }

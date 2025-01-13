@@ -31,11 +31,11 @@ class GameDetailsResponseHttpDtoMapperTest {
                 "someCdKey",
                 "someTextInformation",
                 singletonList(new GameFileResponse(
-                        "someVersion",
+                        "1.0.0",
                         "someManualUrl",
                         "someName",
                         "100 KB",
-                        "someFileTitle"
+                        "Game 1 (Installer)"
                 )),
                 "someChangelog"
         );
@@ -48,11 +48,11 @@ class GameDetailsResponseHttpDtoMapperTest {
                 "someCdKey",
                 "someTextInformation",
                 singletonList(new GameFileResponseHttpDto(
-                        "someVersion",
+                        "1.0.0",
                         "someManualUrl",
                         "someName",
                         "100 KB",
-                        "someFileTitle"
+                        "Game 1 (Installer)"
                 )),
                 "someChangelog"
         );

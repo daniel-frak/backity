@@ -50,12 +50,12 @@ class GameWithFilesHttpDtoMapperTest {
                                 "acde26d7-33c7-42ee-be16-bca91a604b48",
                                 "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
                                 new GameProviderFileHttpDto(
-                                        "someGameProviderId",
-                                        "someOriginalGameTitle",
-                                        "someFileTitle",
-                                        "someVersion",
-                                        "someUrl",
-                                        "someOriginalFileName",
+                                        "GOG",
+                                        "Game 1",
+                                        "Game 1 (Installer)",
+                                        "1.0.0",
+                                        "http://some.url",
+                                        "game_1_installer.exe",
                                         "5 KB"
                                 ),
                                 new FileBackupHttpDto(

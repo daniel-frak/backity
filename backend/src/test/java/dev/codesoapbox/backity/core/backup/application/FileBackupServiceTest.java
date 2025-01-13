@@ -1,17 +1,14 @@
 package dev.codesoapbox.backity.core.backup.application;
 
+import dev.codesoapbox.backity.core.backup.application.exceptions.NotEnoughFreeSpaceException;
 import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
 import dev.codesoapbox.backity.core.backup.domain.BackupProgressFactory;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameProviderFileUrlEmptyException;
-import dev.codesoapbox.backity.core.backup.application.exceptions.NotEnoughFreeSpaceException;
 import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileManager;
 import dev.codesoapbox.backity.core.filemanagement.domain.FilePathProvider;
-import dev.codesoapbox.backity.core.gamefile.domain.FileBackupStatus;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.gamefile.domain.*;
+import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameProviderFileUrlEmptyException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +31,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class FileBackupServiceTest {
 
-    private static final GameProviderId EXISTING_GAME_PROVIDER_ID = new GameProviderId("someGameProviderId");
+    private static final GameProviderId EXISTING_GAME_PROVIDER_ID = new GameProviderId("GOG");
 
     private FileBackupService fileBackupService;
 
@@ -157,7 +154,9 @@ class FileBackupServiceTest {
     @ValueSource(strings = {"", " "})
     void downloadFileShouldThrowIfUrlIsEmpty(String url) {
         GameFile gameFile = TestGameFile.discoveredBuilder()
-                .url(url)
+                .gameProviderFile(TestGameProviderFile.gogBuilder()
+                        .url(url)
+                        .build())
                 .build();
 
         assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
@@ -169,7 +168,9 @@ class FileBackupServiceTest {
     void downloadFileShouldThrowIfGameProviderFileBackupServiceNotFound() throws IOException {
         var nonExistentGameProviderId = new GameProviderId("nonExistentGameProviderId1");
         GameFile gameFile = TestGameFile.discoveredBuilder()
-                .gameProviderId(nonExistentGameProviderId)
+                .gameProviderFile(TestGameProviderFile.gogBuilder()
+                        .gameProviderId(nonExistentGameProviderId)
+                        .build())
                 .build();
         mockTempFilePathCreation(gameFile, nonExistentGameProviderId);
 
@@ -183,7 +184,9 @@ class FileBackupServiceTest {
     void downloadFileShouldThrowIfIOExceptionOccurs() throws IOException {
         GameProviderId gameProviderId = gameProviderFileBackupService.getGameProviderId();
         GameFile gameFile = TestGameFile.discoveredBuilder()
-                .gameProviderId(gameProviderId)
+                .gameProviderFile(TestGameProviderFile.gogBuilder()
+                        .gameProviderId(gameProviderId)
+                        .build())
                 .build();
         mockTempFilePathCreationThrowsIoException(gameProviderId, gameFile);
 
@@ -203,7 +206,9 @@ class FileBackupServiceTest {
     void downloadFileShouldThrowIfNotEnoughFreeSpace() throws IOException {
         GameProviderId gameProviderId = gameProviderFileBackupService.getGameProviderId();
         GameFile gameFile = TestGameFile.discoveredBuilder()
-                .gameProviderId(gameProviderId)
+                .gameProviderFile(TestGameProviderFile.gogBuilder()
+                        .gameProviderId(gameProviderId)
+                        .build())
                 .build();
         mockTempFilePathCreation(gameFile, EXISTING_GAME_PROVIDER_ID);
         fileManager.setAvailableSizeInBytes(0);

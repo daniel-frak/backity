@@ -1,12 +1,12 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
-import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
-import dev.codesoapbox.backity.shared.domain.ProgressInfo;
 import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
-import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileResponse;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameProviderFile;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
+import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
+import dev.codesoapbox.backity.shared.domain.ProgressInfo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -37,14 +37,31 @@ class GogFileDiscoveryServiceTest {
         List<GameProviderFile> fileVersionBackups = new ArrayList<>();
         gogFileDiscoveryService.startFileDiscovery(fileVersionBackups::add);
 
-        var expectedGameFile = List.of(
-                new GameProviderFile(new GameProviderId("GOG"), "Game 2", "fileSimpleName1",
-                        "1.0.0", "someUrl1", "fileName1", new FileSize(102_400)),
-                new GameProviderFile(new GameProviderId("GOG"), "Game 2", "fileSimpleName2",
-                        "2.0.0",
-                        "someUrl2", "fileName2", new FileSize(204_800L)),
-                new GameProviderFile(new GameProviderId("GOG"), "Game 4", "fileSimpleName3",
-                        "3.0.0", "someUrl3", "fileName3", new FileSize(307_200L))
+        List<GameProviderFile> expectedGameFile = List.of(
+                TestGameProviderFile.gogBuilder()
+                        .originalGameTitle("Game 2")
+                        .fileTitle("fileSimpleName1")
+                        .version("1.0.0")
+                        .url("http://some.url1")
+                        .originalFileName("fileName1")
+                        .size(new FileSize(102_400L))
+                        .build(),
+                TestGameProviderFile.gogBuilder()
+                        .originalGameTitle("Game 2")
+                        .fileTitle("fileSimpleName2")
+                        .version("2.0.0")
+                        .url("http://some.url2")
+                        .originalFileName("fileName2")
+                        .size(new FileSize(204_800L))
+                        .build(),
+                TestGameProviderFile.gogBuilder()
+                        .originalGameTitle("Game 4")
+                        .fileTitle("fileSimpleName3")
+                        .version("3.0.0")
+                        .url("http://some.url3")
+                        .originalFileName("fileName3")
+                        .size(new FileSize(307_200L))
+                        .build()
         );
 
         assertThat(fileVersionBackups).isEqualTo(expectedGameFile);
@@ -61,15 +78,15 @@ class GogFileDiscoveryServiceTest {
 
         var game2Details = new GameDetailsResponse("Game 2", null, null,
                 null, List.of(
-                new GameFileResponse("1.0.0", "someUrl1", "fileSimpleName1", "100 KB",
+                new GameFileResponse("1.0.0", "http://some.url1", "fileSimpleName1", "100 KB",
                         "fileName1"),
-                new GameFileResponse("2.0.0", "someUrl2", "fileSimpleName2", "200 KB",
+                new GameFileResponse("2.0.0", "http://some.url2", "fileSimpleName2", "200 KB",
                         "fileName2")
         ), null);
 
         var game4Details = new GameDetailsResponse("Game 4", null, null,
                 null, List.of(
-                new GameFileResponse("3.0.0", "someUrl3", "fileSimpleName3", "300 KB",
+                new GameFileResponse("3.0.0", "http://some.url3", "fileSimpleName3", "300 KB",
                         "fileName3")
         ), null);
 
@@ -118,7 +135,7 @@ class GogFileDiscoveryServiceTest {
         var gameId1 = "gameId1";
         var game1Details = new GameDetailsResponse("Game 1", null, null,
                 null, List.of(
-                new GameFileResponse("3.0.0", "someUrl3", "fileName3", "300 KB",
+                new GameFileResponse("3.0.0", "http://some.url3", "fileName3", "300 KB",
                         "setup.exe")
         ), null);
 

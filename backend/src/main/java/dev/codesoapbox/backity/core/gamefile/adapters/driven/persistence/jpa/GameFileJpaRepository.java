@@ -40,7 +40,7 @@ public class GameFileJpaRepository implements GameFileRepository {
     @Override
     public Optional<GameFile> findOldestWaitingForDownload() {
         PageRequest pageable = PageRequest.of(0, 1, SORT_BY_DATE_CREATED_ASC);
-        return springRepository.findAllWaitingForDownload(pageable).get()
+        return springRepository.findAllByFileBackupStatusIn(pageable, List.of(FileBackupStatus.ENQUEUED)).get()
                 .findFirst()
                 .map(entityMapper::toModel);
     }
@@ -49,7 +49,7 @@ public class GameFileJpaRepository implements GameFileRepository {
     public Page<GameFile> findAllWaitingForDownload(Pagination pagination) {
         Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_DATE_CREATED_ASC);
         org.springframework.data.domain.Page<GameFileJpaEntity> foundPage =
-                springRepository.findAllWaitingForDownload(pageable);
+                springRepository.findAllByFileBackupStatusIn(pageable, List.of(FileBackupStatus.ENQUEUED));
         return pageMapper.toDomain(foundPage, entityMapper::toModel);
     }
 
@@ -85,7 +85,8 @@ public class GameFileJpaRepository implements GameFileRepository {
     public Page<GameFile> findAllProcessed(Pagination pagination) {
         Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_DATE_CREATED_ASC);
         org.springframework.data.domain.Page<GameFileJpaEntity> foundPage =
-                springRepository.findAllProcessed(pageable);
+                springRepository.findAllByFileBackupStatusIn(pageable,
+                        List.of(FileBackupStatus.SUCCESS, FileBackupStatus.FAILED));
         return pageMapper.toDomain(foundPage, entityMapper::toModel);
     }
 
@@ -110,7 +111,7 @@ public class GameFileJpaRepository implements GameFileRepository {
     public Page<GameFile> findAllDiscovered(Pagination pagination) {
         Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_DATE_CREATED_ASC);
         org.springframework.data.domain.Page<GameFileJpaEntity> foundPage =
-                springRepository.findAllByFileBackupStatus(pageable, FileBackupStatus.DISCOVERED);
+                springRepository.findAllByFileBackupStatusIn(pageable, List.of(FileBackupStatus.DISCOVERED));
         return pageMapper.toDomain(foundPage, entityMapper::toModel);
     }
 

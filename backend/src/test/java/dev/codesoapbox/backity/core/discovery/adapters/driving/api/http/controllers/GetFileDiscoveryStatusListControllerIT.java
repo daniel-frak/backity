@@ -26,14 +26,14 @@ class GetFileDiscoveryStatusListControllerIT {
 
     @Test
     void shouldGetStatuses() throws Exception {
-        var status = new FileDiscoveryStatus("someGameProviderId", true);
+        var status = new FileDiscoveryStatus("GOG", true);
 
         when(useCase.getStatusList())
                 .thenReturn(List.of(status));
 
         var expectedJson = """
                 [{
-                  "gameProviderId": "someGameProviderId",
+                  "gameProviderId": "GOG",
                   "isInProgress": true
                 }]""";
 

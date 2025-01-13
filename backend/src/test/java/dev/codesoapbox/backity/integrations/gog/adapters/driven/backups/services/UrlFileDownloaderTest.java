@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
 import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileManager;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameProviderFile;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileBackupException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -84,7 +85,9 @@ class UrlFileDownloaderTest {
         String originalFileName = "originalFileName.txt";
         String tempFilePath = "tempFilePath";
         GameFile gameFile = TestGameFile.discoveredBuilder()
-                .originalFileName(originalFileName)
+                .gameProviderFile(TestGameProviderFile.gogBuilder()
+                        .originalFileName(originalFileName)
+                        .build())
                 .build();
         fileBufferProvider.mockDataForDownload(gameFile, "Test data");
         BackupProgress backupProgress = mockBackupProgress();
@@ -99,7 +102,9 @@ class UrlFileDownloaderTest {
         String originalFileName = "originalFileName.txt";
         String tempFilePath = "tempFilePath";
         GameFile gameFile = TestGameFile.discoveredBuilder()
-                .originalFileName(originalFileName)
+                .gameProviderFile(TestGameProviderFile.gogBuilder()
+                        .originalFileName(originalFileName)
+                        .build())
                 .build();
         fileBufferProvider.mockDataForDownload(gameFile, "Test data");
         BackupProgress backupProgress = mockBackupProgress();

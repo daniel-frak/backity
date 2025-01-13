@@ -36,7 +36,7 @@ class GetFileDiscoveryStatusListUseCaseTest {
 
     private List<FileDiscoveryStatus> mockFileDiscoveryStatuses() {
         List<FileDiscoveryStatus> statuses =
-                List.of(new FileDiscoveryStatus("someGameProviderId", true));
+                List.of(new FileDiscoveryStatus("GOG", true));
         when(fileDiscoveryService.getStatuses())
                 .thenReturn(statuses);
 

@@ -36,7 +36,7 @@ class GetGogGameDetailsControllerIT {
                   "files": [
                     {
                       "version": "1.0.0",
-                      "manualUrl": "someUrl",
+                      "manualUrl": "http://some.url",
                       "name": "someFileName",
                       "size": "someFileSize"
                     }
@@ -52,7 +52,7 @@ class GetGogGameDetailsControllerIT {
                 "someTextInfo",
                 singletonList(new GameFileResponse(
                         "1.0.0",
-                        "someUrl",
+                        "http://some.url",
                         "someFileName",
                         "someFileSize",
                         "setup.exe"

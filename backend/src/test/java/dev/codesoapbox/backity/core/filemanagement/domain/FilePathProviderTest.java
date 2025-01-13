@@ -43,14 +43,14 @@ class FilePathProviderTest {
     @Test
     void shouldCreateTemporaryFilePath() throws IOException {
         var gameProviderId = new GameProviderId( "someGameProviderId");
-        var gameTitle = "some: GameTitle";
+        var gameTitle = "someGameTitle";
 
         String result = filePathProvider.createTemporaryFilePath(gameProviderId, gameTitle);
 
-        String expectedPath = "/test/someGameProviderId/some - GameTitle/" + extractFileName(result);
+        String expectedPath = "/test/someGameProviderId/someGameTitle/" + extractFileName(result);
 
         assertThat(result.replace("\\", "/")).isEqualTo(expectedPath);
-        assertThat(fakeUnixFileManager.directoryWasCreated("/test/someGameProviderId/some - GameTitle")).isTrue();
+        assertThat(fakeUnixFileManager.directoryWasCreated("/test/someGameProviderId/someGameTitle")).isTrue();
     }
 
     @Test
@@ -77,5 +77,20 @@ class FilePathProviderTest {
         }
 
         return matcher.group();
+    }
+
+    @Test
+    void shouldRemoveIllegalCharacters() throws IOException {
+        String charactersToRemove = "<>\"|?\n`';!@#$%^&*{}[]~";
+        var gameProviderId = new GameProviderId("someGameProviderId" + charactersToRemove);
+        var gameTitle = "some:\tGameTitle" + charactersToRemove;
+
+        String result = filePathProvider.createTemporaryFilePath(gameProviderId, gameTitle);
+
+        String expectedPath = "/test/someGameProviderId/some - GameTitle/" + extractFileName(result);
+
+        assertThat(result.replace("\\", "/")).isEqualTo(expectedPath);
+        assertThat(fakeUnixFileManager.directoryWasCreated("/test/someGameProviderId/some - GameTitle")).isTrue();
+
     }
 }

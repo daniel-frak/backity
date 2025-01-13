@@ -5,9 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class FilePathProvider {
+
+    private static final Pattern ILLEGAL_CHARACTERS = Pattern.compile("[<>\"|?\n`';!@#$%^&*{}\\[\\]~]");
 
     final String defaultPathTemplate;
     private final FileManager fileManager;
@@ -37,10 +40,15 @@ public class FilePathProvider {
 
     private String getFilePath(String gameTitle, String fileName, String gameProviderId) {
         return defaultPathTemplate
-                .replace("{GAME_PROVIDER_ID}", gameProviderId)
-                .replace("{TITLE}", gameTitle)
-                .replace("{FILENAME}", fileName)
+                .replace("{GAME_PROVIDER_ID}", sanitize(gameProviderId))
+                .replace("{TITLE}", sanitize(gameTitle))
+                .replace("{FILENAME}", sanitize(fileName))
+                .replace("\t", " ")
                 .replace(":", " -");
+    }
+
+    private String sanitize(String value) {
+        return ILLEGAL_CHARACTERS.matcher(value).replaceAll("");
     }
 
     private void createDirectories(String tempFilePath) throws IOException {

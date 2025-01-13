@@ -176,10 +176,10 @@ abstract class GameFileJpaRepositoryAbstractIT {
     }
 
     @ParameterizedTest(name = "should return {1} for version={0}")
-    @CsvSource(value = {"someVersion,true", "fakeVersion,false"})
+    @CsvSource(value = {"1.0.0,true", "fakeVersion,false"})
     void existsByUrlAndVersion(String version, boolean shouldFind) {
         populateDatabase(FILE_DETAILS.getAll());
-        boolean exists = gameFileJpaRepository.existsByUrlAndVersion("someUrl", version);
+        boolean exists = gameFileJpaRepository.existsByUrlAndVersion("http://some.url", version);
 
         assertThat(exists).isEqualTo(shouldFind);
     }

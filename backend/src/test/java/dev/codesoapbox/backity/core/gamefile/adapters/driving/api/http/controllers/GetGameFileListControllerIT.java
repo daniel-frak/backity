@@ -71,12 +71,12 @@ class GetGameFileListControllerIT {
                       "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
                       "gameId": "1eec1c19-25bf-4094-b926-84b5bb8fa281",
                       "gameProviderFile": {
-                        "gameProviderId": "someGameProviderId",
-                        "originalGameTitle": "someOriginalGameTitle",
-                        "fileTitle": "someFileTitle",
-                        "version": "someVersion",
-                        "url": "someUrl",
-                        "originalFileName": "someOriginalFileName",
+                        "gameProviderId": "GOG",
+                        "originalGameTitle": "Game 1",
+                        "fileTitle": "Game 1 (Installer)",
+                        "version": "1.0.0",
+                        "url": "http://some.url",
+                        "originalFileName": "game_1_installer.exe",
                         "size": "5 KB"
                       },
                       "fileBackup": {

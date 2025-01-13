@@ -125,7 +125,9 @@ class GameFileTest {
 
     private GameFile aGameFileWithABlankUrl() {
         return TestGameFile.discoveredBuilder()
-                .url(" ")
+                .gameProviderFile(TestGameProviderFile.gogBuilder()
+                        .url(" ")
+                        .build())
                 .build();
     }
 }

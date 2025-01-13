@@ -102,7 +102,7 @@ class GogEmbedWebClientIT {
         var expectedResult = new GameDetailsResponse("Unreal Tournament 2004 Editor's Choice Edition",
                 "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
                 "someCdKey", "someTextInformation", singletonList(new GameFileResponse(
-                "someVersion", "/downlink/unreal_tournament_2004_ece/en1installer3",
+                "1.0.0", "/downlink/unreal_tournament_2004_ece/en1installer3",
                 "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)", "1 MB",
                 "en1installer3")),
                 "someChangelog");
