@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.e2e;
 
+import com.microsoft.playwright.Download;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.junit.UsePlaywright;
@@ -7,40 +8,74 @@ import dev.codesoapbox.backity.e2e.pages.AuthenticationPage;
 import dev.codesoapbox.backity.e2e.pages.FileBackupPage;
 import dev.codesoapbox.backity.e2e.pages.FileDiscoveryPage;
 import dev.codesoapbox.backity.e2e.pages.GamesPage;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.util.stream.Collectors;
+
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @UsePlaywright(CustomOptions.class)
 class BackityTest {
 
-    private static final String FILE_TO_DOWNLOAD_GAME_TITLE = "test_game_1_installer_1";
+    private static final String FILE_TO_DOWNLOAD_TITLE = "Test Game 1 Installer (Part 1 of 3)";
+    private static final String FILE_TO_DOWNLOAD_NAME = "test_game_1_installer_1.exe";
+    private static final String FILE_TO_DOWNLOAD_EXPECTED_CONTENTS = "Game file contents";
+
+    private AuthenticationPage authenticationPage;
+    private FileDiscoveryPage fileDiscoveryPage;
+    private FileBackupPage fileBackupPage;
+    private GamesPage gamesPage;
 
     @BeforeEach
     void setUp(Page page) {
-        deleteAllFileBackups(page);
+        this.authenticationPage = new AuthenticationPage(page);
+        this.fileDiscoveryPage = new FileDiscoveryPage(page);
+        this.fileBackupPage = new FileBackupPage(page);
+        this.gamesPage = new GamesPage(page);
+        deleteAllFileBackups();
     }
 
-    private void deleteAllFileBackups(Page page) {
-        var gamesPage = new GamesPage(page);
+    private void deleteAllFileBackups() {
         gamesPage.visit();
         gamesPage.deleteAllFileBackups();
     }
 
     @Test
-    void shouldBackupGogFiles(Page page) {
-        authenticateGog(page);
+    void shouldBackupGogFiles() {
+        authenticateGog();
 
-        var fileDiscoveryPage = new FileDiscoveryPage(page);
         fileDiscoveryPage.navigate();
         discoverNewFiles(fileDiscoveryPage);
-        fileDiscoveryPage.backUpFile(FILE_TO_DOWNLOAD_GAME_TITLE);
-        assertThatFileWasDownloaded(page);
+        fileDiscoveryPage.backUpFile(FILE_TO_DOWNLOAD_TITLE);
+        assertThatFileWasDownloaded();
+
+        gamesPage.visit();
+        Download download = gamesPage.startFileDownload(FILE_TO_DOWNLOAD_TITLE);
+        assertEquals(FILE_TO_DOWNLOAD_NAME, download.suggestedFilename());
+        String fileContent = downloadFileAndReadContent(download.url());
+        assertEquals(FILE_TO_DOWNLOAD_EXPECTED_CONTENTS, fileContent);
     }
 
-    private void authenticateGog(Page page) {
-        var authenticationPage = new AuthenticationPage(page);
+    @SneakyThrows
+    private String downloadFileAndReadContent(String downloadUrl) {
+        URL url = new URI(downloadUrl).toURL();
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        try (InputStream inputStream = connection.getInputStream();
+             var reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            return reader.lines().collect(Collectors.joining("\n"));
+        }
+    }
+
+    private void authenticateGog() {
         authenticationPage.navigate();
 
         if (authenticationPage.getGogAuthBadge().textContent().contains("Authenticated")) {
@@ -53,13 +88,12 @@ class BackityTest {
 
     private void discoverNewFiles(FileDiscoveryPage fileDiscoveryPage) {
         fileDiscoveryPage.discoverNewFiles();
-        assertThat(fileDiscoveryPage.getDiscoveredFileRow(FILE_TO_DOWNLOAD_GAME_TITLE)).isVisible();
+        assertThat(fileDiscoveryPage.getDiscoveredFileRow(FILE_TO_DOWNLOAD_TITLE)).isVisible();
     }
 
-    private void assertThatFileWasDownloaded(Page page) {
-        var fileBackupPage = new FileBackupPage(page);
+    private void assertThatFileWasDownloaded() {
         fileBackupPage.navigate();
-        Locator processedFileStatus = fileBackupPage.getProcessedFilesGameTitleStatus(FILE_TO_DOWNLOAD_GAME_TITLE);
+        Locator processedFileStatus = fileBackupPage.getProcessedFilesGameTitleStatus(FILE_TO_DOWNLOAD_TITLE);
         assertThat(processedFileStatus).containsText("SUCCESS");
     }
 }

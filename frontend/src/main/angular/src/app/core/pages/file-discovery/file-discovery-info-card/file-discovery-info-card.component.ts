@@ -61,12 +61,12 @@ export class FileDiscoveryInfoCardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.push(
-      this.messageService.watch(FileDiscoveryWebSocketTopics.FileDiscovered)
+      this.messageService.watch(FileDiscoveryWebSocketTopics.Discovered)
         .subscribe(p => this.onFileDiscovered(p)),
-      this.messageService.watch(FileDiscoveryWebSocketTopics.FileStatusChanged)
+      this.messageService.watch(FileDiscoveryWebSocketTopics.DiscoveryStatusChanged)
         .subscribe(p => this.onDiscoveryStatusChanged(p)),
-      this.messageService.watch(FileDiscoveryWebSocketTopics.ProgressUpdate)
-        .subscribe(p => this.onProgressUpdated(p))
+      this.messageService.watch(FileDiscoveryWebSocketTopics.DiscoveryProgressChanged)
+        .subscribe(p => this.onDiscoveryProgressChanged(p))
     )
 
     this.refreshInfo();
@@ -82,13 +82,13 @@ export class FileDiscoveryInfoCardComponent implements OnInit, OnDestroy {
     this.updateDiscoveryStatus(status);
   }
 
-  private onProgressUpdated(payload: IMessage) {
+  private onDiscoveryProgressChanged(payload: IMessage) {
     const progress: FileDiscoveryProgressUpdateEvent = JSON.parse(payload.body);
-    this.discoveryProgressByGameProviderId.set(progress.gameProviderId as string, progress);
+    this.discoveryProgressByGameProviderId.set(progress.gameProviderId, progress);
   }
 
   private updateDiscoveryStatus(status: FileDiscoveryStatusChangedEvent) {
-    this.discoveryStatusByGameProviderId.set(status.gameProviderId as string, status.isInProgress as boolean);
+    this.discoveryStatusByGameProviderId.set(status.gameProviderId, status.isInProgress as boolean);
     this.discoveryStateUnknown = false;
   }
 

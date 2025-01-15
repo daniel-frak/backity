@@ -42,4 +42,9 @@ public class GameFileUseCaseBeanConfig {
     public DeleteFileUseCase deleteFileUseCase(FileManager fileManager, GameFileRepository gameFileRepository) {
         return new DeleteFileUseCase(fileManager, gameFileRepository);
     }
+
+    @Bean
+    public DownloadFileUseCase downloadFileUseCase(GameFileRepository gameFileRepository, FileManager fileManager) {
+        return new DownloadFileUseCase(gameFileRepository, fileManager);
+    }
 }

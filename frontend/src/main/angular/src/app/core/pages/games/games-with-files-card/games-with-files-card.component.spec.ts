@@ -1,5 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
+  Configuration,
   FileBackupMessageTopics,
   FileBackupsClient,
   FileBackupStatus,
@@ -36,6 +37,7 @@ describe('GamesWithFilesCardComponent', () => {
   let messagesService: SpyObj<MessagesService>;
   let notificationService: SpyObj<NotificationService>;
   let modalService: SpyObj<ModalService>;
+  let mockWindow = { location: { href: '' } };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -47,7 +49,8 @@ describe('GamesWithFilesCardComponent', () => {
         {provide: FileBackupsClient, useValue: createSpyObj('FileBackupsClient', ['deleteFileBackup'])},
         {provide: MessagesService, useValue: createSpyObj('MessagesService', ['watch'])},
         {provide: NotificationService, useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])},
-        {provide: ModalService, useValue: createSpyObj('ModalService', ['withConfirmationModal'])}
+        {provide: ModalService, useValue: createSpyObj('ModalService', ['withConfirmationModal'])},
+        { provide: 'Window', useValue: mockWindow }
       ]
     }).compileComponents();
 
@@ -136,22 +139,18 @@ describe('GamesWithFilesCardComponent', () => {
       gameFile, mockError);
   });
 
-  it('should log an error for various operations', async () => {
+  it('should log an error for unimplemented operations', async () => {
     const operations = [
       {
-        method: () => component.cancelBackup('someGameFileId'),
+        method: () => component.onClickCancelBackup('someGameFileId')(),
         message: 'Removing from queue not yet implemented'
       },
       {
-        method: () => component.viewFilePath('someFileId'),
+        method: () => component.onClickViewFilePath('someFileId')(),
         message: 'Viewing file paths not yet implemented'
       },
       {
-        method: () => component.download('someFileId'),
-        message: 'Downloading files not yet implemented'
-      },
-      {
-        method: () => component.viewError('someFileId'),
+        method: () => component.onClickViewError('someFileId')(),
         message: 'Viewing errors not yet implemented'
       }
     ];
@@ -216,5 +215,30 @@ describe('GamesWithFilesCardComponent', () => {
     expect(component.gameWithFilesPage?.content?.[0].files?.[0].fileBackup?.status).toBe(FileBackupStatus.Discovered);
     const gameListTable: DebugElement = getGameListTable();
     expect(gameListTable.nativeElement.textContent).not.toContain(FileBackupStatus.InProgress);
+  });
+
+  it('should download file', async () => {
+    const gameFile: GameFile = TestGameFile.successfullyProcessed();
+    const game: { id: string; title: string; files: GameFile[] } = TestGame.withFiles([gameFile]);
+    const gameWithFilesPage: PageGameWithFiles = TestPage.of([game]);
+    gamesClient.getGames.and.returnValue(of(gameWithFilesPage) as any);
+    const configuration: SpyObj<Configuration> = createSpyObj('Configuration', ['encodeParam']);
+    configuration.basePath = 'someBasePath';
+    configuration.encodeParam.withArgs({
+      name: "gameFileId", value: gameFile.id, in: "path", style: "simple", explode: false, dataType: "string",
+      dataFormat: undefined
+    }).and.returnValue(gameFile.id);
+    fileBackupsClient.configuration = configuration;
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const gameListTable: DebugElement = getGameListTable();
+    const downloadBtn: DebugElement = gameListTable.query(By.css('[data-testid="download-file-backup-btn"]'));
+
+    downloadBtn.nativeElement.click();
+
+    expect(mockWindow.location.href).toBe(`someBasePath/api/game-files/${gameFile.id}/file-backup`);
   });
 });

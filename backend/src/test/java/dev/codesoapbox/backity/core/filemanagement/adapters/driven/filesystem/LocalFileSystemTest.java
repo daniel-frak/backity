@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.filemanagement.adapters.driven.filesystem;
 
+import dev.codesoapbox.backity.core.filemanagement.domain.FileResource;
 import dev.codesoapbox.backity.core.filemanagement.domain.exceptions.FileCouldNotBeDeletedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -180,5 +181,39 @@ class LocalFileSystemTest {
         var sizeInBytes = localFileSystem.getSizeInBytes(filePath);
 
         assertThat(sizeInBytes).isEqualTo(9);
+    }
+
+    @Test
+    void getFileResourceShouldReturnFileResourceGivenFileExists(@TempDir Path tempDir) throws IOException {
+        String fileName = "testfile.txt";
+        Path tempFile = tempDir.resolve(fileName);
+        Files.write(tempFile, "Test content".getBytes());
+
+        FileResource fileResource = localFileSystem.getFileResource(tempFile.toString());
+
+        assertThat(fileResource).isNotNull();
+        assertThat(fileResource.sizeInBytes()).isPositive();
+        assertThat(fileResource.fileName()).isEqualTo(fileName);
+        assertThatCode(fileResource::close)
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    void getFileResourceShouldThrowGivenFileNotFound() {
+        String filePath = "nonexistentfile.txt";
+
+        assertThatThrownBy(() -> localFileSystem.getFileResource(filePath))
+                .isInstanceOf(FileNotFoundException.class)
+                .hasMessage("File not found: " + filePath);
+    }
+
+    @Test
+    void getFileResourceShouldThrowGivenFileIsDirectory(@TempDir Path tempDir) throws IOException {
+        Path tempDirectory = tempDir.resolve("tempDirectory");
+        Files.createDirectory(tempDirectory);
+
+        assertThatThrownBy(() -> localFileSystem.getFileResource(tempDirectory.toString()))
+                .isInstanceOf(FileNotFoundException.class)
+                .hasMessage("File not found: " + tempDirectory);
     }
 }

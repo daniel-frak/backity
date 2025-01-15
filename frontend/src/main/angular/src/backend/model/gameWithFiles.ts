@@ -11,8 +11,8 @@ import { GameFile } from './gameFile';
 
 
 export interface GameWithFiles { 
-    id?: string;
-    title?: string;
-    files?: Array<GameFile>;
+    id: string;
+    title: string;
+    files: Array<GameFile>;
 }
 

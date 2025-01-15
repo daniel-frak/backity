@@ -9,10 +9,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@SuppressWarnings({"LombokGetterMayBeUsed", "ClassCanBeRecord"})
 @RequiredArgsConstructor
 @EqualsAndHashCode
 public class FileSize {
 
+    private static final String[] UNITS = new String[]{ "B", "KB", "MB", "GB", "TB", "PB" };
     private static final Map<String, Long> UNIT_MAP = Map.ofEntries(
             Map.entry("B", 1L),
             Map.entry("KB", 1_024L),
@@ -21,7 +23,9 @@ public class FileSize {
             Map.entry("TB", 1_099_511_627_776L),
             Map.entry("PB", 1_125_899_906_842_624L)
     );
-    private static final Pattern SIZE_PATTERN = Pattern.compile("(\\d*\\.?\\d+)\\s*(\\w+)");
+    private static final Pattern SIZE_PATTERN = Pattern.compile("^(\\d++\\.\\d++|\\d++)\\s*+(\\w++)$",
+            Pattern.UNICODE_CHARACTER_CLASS);
+    private static final int BYTES_IN_KILOBYTE = 1024;
 
     @Getter
     private final long bytes;
@@ -37,18 +41,18 @@ public class FileSize {
         return new FileSize((long) (numericValue * multiplier));
     }
 
+    private static void validateNotNullOrEmpty(String size) {
+        if (size == null || size.trim().isEmpty()) {
+            throw new IllegalArgumentException("Size string cannot be null or empty");
+        }
+    }
+
     private static Matcher getValidMatcher(String size) {
         Matcher matcher = SIZE_PATTERN.matcher(size);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Invalid size string");
         }
         return matcher;
-    }
-
-    private static void validateNotNullOrEmpty(String size) {
-        if (size == null || size.trim().isEmpty()) {
-            throw new IllegalArgumentException("Size string cannot be null or empty");
-        }
     }
 
     private static Long getBytesMultiplier(String unit) {
@@ -61,24 +65,15 @@ public class FileSize {
 
     @Override
     public String toString() {
-        if (bytes < 1024) {
-            return bytes + " B";
-        } else if (bytes < 1024L * 1024) {
-            double sizeInKB = bytes / 1024.0;
-            return formatSize(sizeInKB) + " KB";
-        } else if (bytes < 1024L * 1024 * 1024) {
-            double sizeInMB = bytes / (1024.0 * 1024);
-            return formatSize(sizeInMB) + " MB";
-        } else if (bytes < 1024L * 1024 * 1024 * 1024) {
-            double sizeInGB = bytes / (1024.0 * 1024 * 1024);
-            return formatSize(sizeInGB) + " GB";
-        } else if (bytes < 1024L * 1024 * 1024 * 1024 * 1024) {
-            double sizeInTB = bytes / (1024.0 * 1024 * 1024 * 1024);
-            return formatSize(sizeInTB) + " TB";
-        } else {
-            double sizeInPB = bytes / (1024.0 * 1024 * 1024 * 1024 * 1024);
-            return formatSize(sizeInPB) + " PB";
+        double size = bytes;
+        int unitIndex = 0;
+
+        while (size >= BYTES_IN_KILOBYTE && unitIndex < UNITS.length - 1) {
+            size /= BYTES_IN_KILOBYTE;
+            unitIndex++;
         }
+
+        return formatSize(size) + " " + UNITS[unitIndex];
     }
 
     private String formatSize(double size) {

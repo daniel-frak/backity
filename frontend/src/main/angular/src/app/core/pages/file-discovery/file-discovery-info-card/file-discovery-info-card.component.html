@@ -30,7 +30,7 @@
     <div class="button-container">
       <div *ngFor="let status of getStatuses()">
         <app-button [actionAsync]="onClickDiscoverFilesFor(status.gameProviderId)"
-                    testId="discover-new-files-btn"
+                    testId="discover-new-files-gog-btn"
                     [disabled]="discoveryStateUnknown || discoveryOngoing()"
                     buttonStyle="secondary"
                     buttonSize="small"

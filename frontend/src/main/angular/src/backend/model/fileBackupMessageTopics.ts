@@ -9,11 +9,11 @@
  */
 
 
-export type FileBackupMessageTopics = '/topic/backups/started' | '/topic/backups/progress-update' | '/topic/backups/status-changed';
+export type FileBackupMessageTopics = 'BACKUP_STARTED' | 'BACKUP_PROGRESS_CHANGED' | 'BACKUP_STATUS_CHANGED';
 
 export const FileBackupMessageTopics = {
-    Started: '/topic/backups/started' as FileBackupMessageTopics,
-    ProgressUpdate: '/topic/backups/progress-update' as FileBackupMessageTopics,
-    StatusChanged: '/topic/backups/status-changed' as FileBackupMessageTopics
+    Started: 'BACKUP_STARTED' as FileBackupMessageTopics,
+    ProgressChanged: 'BACKUP_PROGRESS_CHANGED' as FileBackupMessageTopics,
+    StatusChanged: 'BACKUP_STATUS_CHANGED' as FileBackupMessageTopics
 };
 

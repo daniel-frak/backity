@@ -50,8 +50,8 @@ export class InProgressFilesCardComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.messageService.watch(FileBackupMessageTopics.Started)
         .subscribe(p => this.onBackupStarted(p)),
-      this.messageService.watch(FileBackupMessageTopics.ProgressUpdate)
-        .subscribe(p => this.onProgressUpdate(p)),
+      this.messageService.watch(FileBackupMessageTopics.ProgressChanged)
+        .subscribe(p => this.onProgressChanged(p)),
       this.messageService.watch(FileBackupMessageTopics.StatusChanged)
         .subscribe(p => this.onStatusChanged(p))
     )
@@ -80,7 +80,7 @@ export class InProgressFilesCardComponent implements OnInit, OnDestroy {
     }
   }
 
-  private onProgressUpdate(payload: Message) {
+  private onProgressChanged(payload: Message) {
     this.downloadProgress = JSON.parse(payload.body);
   }
 

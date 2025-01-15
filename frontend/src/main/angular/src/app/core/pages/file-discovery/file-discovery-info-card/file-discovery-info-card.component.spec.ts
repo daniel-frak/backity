@@ -65,13 +65,13 @@ describe('FileDiscoveryInfoCardComponent', () => {
     notificationService = TestBed.inject(NotificationService) as SpyObj<NotificationService>;
 
     MessageTesting.mockWatch(messagesService, (destination, callback) => {
-      if (destination === FileDiscoveryWebSocketTopics.FileDiscovered) {
+      if (destination === FileDiscoveryWebSocketTopics.Discovered) {
         discoveredSubscriptions.push(callback);
       }
-      if (destination === FileDiscoveryWebSocketTopics.FileStatusChanged) {
+      if (destination === FileDiscoveryWebSocketTopics.DiscoveryStatusChanged) {
         discoveryChangedSubscriptions.push(callback);
       }
-      if (destination === FileDiscoveryWebSocketTopics.ProgressUpdate) {
+      if (destination === FileDiscoveryWebSocketTopics.DiscoveryProgressChanged) {
         discoveryProgressSubscriptions.push(callback);
       }
     });

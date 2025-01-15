@@ -1,12 +1,11 @@
 package dev.codesoapbox.backity.core.filemanagement.adapters.driven.filesystem;
 
 import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
+import dev.codesoapbox.backity.core.filemanagement.domain.FileResource;
 import dev.codesoapbox.backity.core.filemanagement.domain.exceptions.FileCouldNotBeDeletedException;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.*;
 
 @Slf4j
@@ -82,6 +81,20 @@ public class LocalFileSystem implements FileManager {
     public long getSizeInBytes(String filePath) {
         var file = new File(filePath);
         return file.length();
+    }
+
+    @Override
+    public FileResource getFileResource(String filePath) throws FileNotFoundException {
+        File file = new File(filePath);
+
+        if (!file.isFile()) {
+            throw new FileNotFoundException("File not found: " + filePath);
+        }
+
+        var inputStream = new FileInputStream(file);
+        long sizeInBytes = file.length();
+
+        return new FileResource(inputStream, sizeInBytes, file.getName());
     }
 
     private String extractDirectory(String path) {

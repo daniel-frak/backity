@@ -6,8 +6,10 @@
   <p>{{ message }}</p>
 </div>
 <div class="modal-footer">
-  <button type="button" class="btn btn-danger" (click)="modal.close(true)">Yes</button>
+  <button type="button" class="btn btn-danger" (click)="modal.close(true)"
+          [attr.data-testid]="'confirmation-modal-yes-btn'">Yes</button>
   <button type="button" class="btn btn-secondary" data-dismiss="modal" ngbAutofocus
-          (click)="modal.close(false)">Cancel
+          (click)="modal.close(false)"
+          [attr.data-testid]="'confirmation-modal-cancel-btn'">Cancel
   </button>
 </div>

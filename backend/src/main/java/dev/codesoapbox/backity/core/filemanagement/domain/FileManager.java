@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.filemanagement.domain;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -29,4 +30,6 @@ public interface FileManager {
     String getSeparator();
 
     long getSizeInBytes(String filePath);
+
+    FileResource getFileResource(String filePath) throws FileNotFoundException;
 }

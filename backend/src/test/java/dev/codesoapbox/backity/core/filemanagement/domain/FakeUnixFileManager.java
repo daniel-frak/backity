@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -98,6 +99,11 @@ public class FakeUnixFileManager implements FileManager {
         }
 
         return bytesWrittenPerFilePath.get(filePath);
+    }
+
+    @Override
+    public FileResource getFileResource(String filePath) throws FileNotFoundException {
+        throw new FileNotFoundException("Not implemented");
     }
 
     public boolean freeSpaceWasCheckedFor(String path) {

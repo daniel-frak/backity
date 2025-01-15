@@ -48,18 +48,18 @@ public class FileDiscoveryPage {
                 .filter(new Locator.FilterOptions().setHasText(gameProviderIdGameTitle));
     }
 
-    private void refreshDiscoveredFilesUntilTheyContain(String gameProviderIdGameTitle) {
+    private void refreshDiscoveredFilesUntilTheyContain(String fileTitle) {
         Repeat.on(page)
                 .action(refreshDiscoveredFilesBtn::click)
                 .expectingResponse(response ->
                         response.url().contains(GAME_FILES_DISCOVERED_URL) && response.status() == 200)
-                .until(() -> discoveredFilesTable.textContent().contains(gameProviderIdGameTitle));
+                .until(() -> discoveredFilesTable.textContent().contains(fileTitle));
     }
 
-    public void backUpFile(String gameProviderIdGameTitle) {
-        refreshDiscoveredFilesUntilTheyContain(gameProviderIdGameTitle);
+    public void backUpFile(String fileTitle) {
+        refreshDiscoveredFilesUntilTheyContain(fileTitle);
         Locator gameTitleRow = discoveredFilesTable.locator("tr")
-                .filter(new Locator.FilterOptions().setHasText(gameProviderIdGameTitle));
+                .filter(new Locator.FilterOptions().setHasText(fileTitle));
         Locator backupFileBtn = gameTitleRow.getByTestId("back-up-btn");
         page.waitForResponse(response -> response.url().contains(GAME_FILES_ENQUEUE_URL)
                                          && response.status() == 200,

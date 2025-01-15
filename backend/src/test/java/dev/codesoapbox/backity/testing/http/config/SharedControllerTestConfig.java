@@ -54,6 +54,7 @@ import org.springframework.context.annotation.Import;
 @TemporaryMockBean(GetFileDiscoveryStatusListUseCase.class)
 @TemporaryMockBean(EnqueueFileUseCase.class)
 @TemporaryMockBean(DeleteFileUseCase.class)
+@TemporaryMockBean(DownloadFileUseCase.class)
 @TemporaryMockBean(GetCurrentlyDownloadingFileUseCase.class)
 @TemporaryMockBean(GetDiscoveredFileListUseCase.class)
 @TemporaryMockBean(GetEnqueuedFileListUseCase.class)

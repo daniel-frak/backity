@@ -118,7 +118,7 @@ describe('GogAuthComponent', () => {
   });
 
   it('should log an error when signOutGog is called', () => {
-    component.signOutGog();
+    component.onClickSignOutGog()();
 
     expect(notificationService.showFailure).toHaveBeenCalledWith('Not yet implemented');
   });

@@ -9,12 +9,12 @@ public class FileBackupPage {
     private static final String GAME_FILES_PROCESSED_URL = "/game-files?processing-status=processed";
     private final Page page;
 
-    private final Locator refreshQueueButton;
+    private final Locator refreshProcessedFilesButton;
     private final Locator processedFilesTable;
 
     public FileBackupPage(Page page) {
         this.page = page;
-        refreshQueueButton = page.getByTestId("refresh-queue-btn");
+        refreshProcessedFilesButton = page.getByTestId("refresh-processed-files-btn");
         processedFilesTable = page.getByTestId("processed-files-table");
     }
 
@@ -22,18 +22,18 @@ public class FileBackupPage {
         page.navigate("/file-backup");
     }
 
-    public Locator getProcessedFilesGameTitleStatus(String gameProviderIdGameTitle) {
-        refreshQueueUntilItContains(gameProviderIdGameTitle);
+    public Locator getProcessedFilesGameTitleStatus(String fileTitle) {
+        refreshProcessedFilesUntilItContains(fileTitle);
         Locator gameTitleRow = processedFilesTable.locator("tr")
-                .filter(new Locator.FilterOptions().setHasText(gameProviderIdGameTitle));
+                .filter(new Locator.FilterOptions().setHasText(fileTitle));
         return gameTitleRow.locator("[data-title=\"Status\"]");
     }
 
-    private void refreshQueueUntilItContains(String gameProviderIdGameTitle) {
+    private void refreshProcessedFilesUntilItContains(String fileTitle) {
         Repeat.on(page)
-                .action(refreshQueueButton::click)
+                .action(refreshProcessedFilesButton::click)
                 .expectingResponse(response ->
                         response.url().contains(GAME_FILES_PROCESSED_URL) && response.status() == 200)
-                .until(() -> processedFilesTable.textContent().contains(gameProviderIdGameTitle));
+                .until(() -> processedFilesTable.textContent().contains(fileTitle));
     }
 }

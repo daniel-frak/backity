@@ -10,7 +10,7 @@
 
 
 export interface FileDiscoveryStatusChangedEvent { 
-    gameProviderId?: string;
+    gameProviderId: string;
     isInProgress?: boolean;
 }
 

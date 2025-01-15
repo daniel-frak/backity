@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {
   FileBackupMessageTopics,
   FileBackupsClient,
@@ -59,7 +59,8 @@ export class GamesWithFilesCardComponent implements OnInit, OnDestroy {
               private readonly fileBackupsClient: FileBackupsClient,
               private readonly messageService: MessagesService,
               private readonly notificationService: NotificationService,
-              private readonly modalService: ModalService) {
+              private readonly modalService: ModalService,
+              @Inject('Window') private readonly window: Window) {
   }
 
   ngOnInit(): void {
@@ -158,7 +159,15 @@ export class GamesWithFilesCardComponent implements OnInit, OnDestroy {
   }
 
   async download(gameFileId: string): Promise<void> {
-    this.notificationService.showFailure('Downloading files not yet implemented');
+    /*
+    The file interaction here is hardcoded because there seems to be no easy way to use the auto-generated HttpClient
+    code to show the download dialog before first downloading the entire file into memory.
+     */
+    const configuration = this.fileBackupsClient.configuration;
+    this.window.location.href = `${configuration.basePath}/api/game-files/${configuration.encodeParam({
+      name: "gameFileId", value: gameFileId, in: "path", style: "simple", explode: false, dataType: "string",
+      dataFormat: undefined
+    })}/file-backup`;
   }
 
   onClickViewError(gameFileId: string): () => Promise<void> {

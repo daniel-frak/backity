@@ -9,11 +9,11 @@
  */
 
 
-export type FileDiscoveryWebSocketTopics = '/topic/file-discovery/file-discovered' | '/topic/file-discovery/file-status-changed' | '/topic/file-discovery/progress-update';
+export type FileDiscoveryWebSocketTopics = 'FILE_DISCOVERED' | 'FILE_DISCOVERY_STATUS_CHANGED' | 'FILE_DISCOVERY_PROGRESS_CHANGED';
 
 export const FileDiscoveryWebSocketTopics = {
-    FileDiscovered: '/topic/file-discovery/file-discovered' as FileDiscoveryWebSocketTopics,
-    FileStatusChanged: '/topic/file-discovery/file-status-changed' as FileDiscoveryWebSocketTopics,
-    ProgressUpdate: '/topic/file-discovery/progress-update' as FileDiscoveryWebSocketTopics
+    Discovered: 'FILE_DISCOVERED' as FileDiscoveryWebSocketTopics,
+    DiscoveryStatusChanged: 'FILE_DISCOVERY_STATUS_CHANGED' as FileDiscoveryWebSocketTopics,
+    DiscoveryProgressChanged: 'FILE_DISCOVERY_PROGRESS_CHANGED' as FileDiscoveryWebSocketTopics
 };
 

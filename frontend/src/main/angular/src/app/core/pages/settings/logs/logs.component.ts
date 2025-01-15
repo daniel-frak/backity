@@ -26,7 +26,7 @@ export class LogsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.push(
-      this.messageService.watch(LogsMessageTopics.TopicLogs).subscribe(p => this.onLogReceived(p))
+      this.messageService.watch(LogsMessageTopics.Logs).subscribe(p => this.onLogReceived(p))
     )
 
     this.refresh();

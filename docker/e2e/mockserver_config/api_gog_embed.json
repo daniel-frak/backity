@@ -31,7 +31,7 @@
             {
               "windows": [
                 {
-                  "manualUrl": "/downlink/test_game_1/test_game_1_installer_1",
+                  "manualUrl": "/downlink/test_game_1/test_game_1_installer_1.exe",
                   "downloaderUrl": "gogdownloader://test_game_1/installer_win_en",
                   "name": "Test Game 1 Installer (Part 1 of 3)",
                   "version": null,
@@ -39,7 +39,7 @@
                   "size": "1 MB"
                 },
                 {
-                  "manualUrl": "/downlink/test_game_1/test_game_1_installer_2",
+                  "manualUrl": "/downlink/test_game_1/test_game_1_installer_2.exe",
                   "downloaderUrl": "gogdownloader://test_game_1/installer_win_en",
                   "name": "Test Game 1 Installer (Part 2 of 3)",
                   "version": null,
@@ -47,7 +47,7 @@
                   "size": "1.5 GB"
                 },
                 {
-                  "manualUrl": "/downlink/test_game_1/test_game_1_installer_3",
+                  "manualUrl": "/downlink/test_game_1/test_game_1_installer_3.exe",
                   "downloaderUrl": "gogdownloader://test_game_1/installer_win_en",
                   "name": "Test Game 1 Installer (Part 3 of 3)",
                   "version": null,

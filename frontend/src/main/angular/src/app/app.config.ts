@@ -19,5 +19,9 @@ export const appConfig: ApplicationConfig = {
       provide: ErrorHandler,
       useClass: GlobalErrorHandler,
     },
+    {
+      provide: 'Window',
+      useValue: window
+    }
   ]
 };

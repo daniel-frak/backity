@@ -13,7 +13,7 @@ import {CommonModule} from '@angular/common';
 export class FileDiscoveryStatusBadgeComponent implements OnInit {
 
   @Input()
-  public status: FileDiscoveryStatus = {};
+  public status: FileDiscoveryStatus = {} as any;
 
   constructor() {
   }

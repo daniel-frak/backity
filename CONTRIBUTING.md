@@ -75,7 +75,7 @@ To run [client code generation](https://codesoapbox.dev/generate-client-code-fro
 using the `openapi-generator-maven-plugin`, execute the following command:
 
 ```shell
-mvn clean verify -Pangular -DskipTests
+mvn clean verify -Pangular-client-code-gen -DskipTests
 ```
 
 The application will be started so that the API specification can be obtained from the Open API endpoint.

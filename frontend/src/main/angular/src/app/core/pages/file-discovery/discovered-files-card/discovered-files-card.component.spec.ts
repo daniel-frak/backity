@@ -68,7 +68,7 @@ describe('DiscoveredFilesCardComponent', () => {
     }));
     gameFilesClient.enqueueFileBackup.and.returnValue(fakeObservable);
 
-    await component.enqueueFile(file);
+    await component.onClickEnqueueFile(file)();
 
     expect(file.fileBackup?.status).toEqual(FileBackupStatus.Enqueued);
     expect(gameFilesClient.enqueueFileBackup).toHaveBeenCalledWith(file.id);
