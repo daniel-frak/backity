@@ -62,6 +62,7 @@ import org.springframework.context.annotation.Import;
 @TemporaryMockBean(AuthenticateGogUseCase.class)
 @TemporaryMockBean(CheckGogAuthenticationUseCase.class)
 @TemporaryMockBean(RefreshGogAccessTokenUseCase.class)
+@TemporaryMockBean(LogOutOfGogUseCase.class)
 @TemporaryMockBean(GetGogLibrarySizeUseCase.class)
 @TemporaryMockBean(GetGogGameDetailsUseCase.class)
 @TemporaryMockBean(GetLogsUseCase.class)

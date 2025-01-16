@@ -46,7 +46,9 @@
     </ol>
 
     <div *ngIf="gogAuthenticated">
-      <app-button [actionAsync]="onClickSignOutGog()" buttonStyle="danger">Log out</app-button>
+      <app-button [actionAsync]="onClickSignOutGog()" buttonStyle="danger" testId="log-out-gog-btn">
+        Log out
+      </app-button>
     </div>
   </app-loaded-content>
 </app-card>

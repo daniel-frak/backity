@@ -3,7 +3,7 @@ import {GOGAuthenticationClient} from "@backend";
 import {environment} from "@environment/environment";
 import {AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
-import {finalize} from "rxjs";
+import {finalize, firstValueFrom} from "rxjs";
 import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from '@app/shared/components/button/button.component';
@@ -69,13 +69,14 @@ export class GogAuthComponent implements OnInit {
       return;
     }
     this.gogIsLoading = true;
-    const gogCodeUrl = this.gogAuthForm.get('gogCodeUrl')?.value;
+    const gogCodeUrl = this.gogCodeUrlInput.value;
     const params: URLSearchParams = new URL(gogCodeUrl).searchParams;
     const code = params.get("code") as string;
     this.gogAuthClient.authenticate(code).subscribe(r => {
       if (r.refresh_token) {
         this.gogAuthenticated = true;
         this.notificationService.showSuccess("GOG authentication successful");
+        this.gogCodeUrlInput.reset();
       } else {
         this.notificationService.showFailure("Something went wrong during GOG authentication");
       }
@@ -88,6 +89,15 @@ export class GogAuthComponent implements OnInit {
   }
 
   async signOutGog(): Promise<void> {
-    this.notificationService.showFailure('Not yet implemented');
+    this.gogIsLoading = true;
+    try {
+      await firstValueFrom(this.gogAuthClient.logOutOfGog());
+      this.gogAuthenticated = false;
+      this.notificationService.showSuccess("Logged out of GOG");
+    } catch (error) {
+      this.notificationService.showFailure('Could not log out of GOG', error);
+    } finally {
+      this.gogIsLoading = false;
+    }
   }
 }

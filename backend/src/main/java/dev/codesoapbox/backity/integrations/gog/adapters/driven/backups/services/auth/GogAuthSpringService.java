@@ -84,4 +84,12 @@ public class GogAuthSpringService implements GogAuthService {
             refresh();
         }
     }
+
+    @Override
+    public void logOut() {
+        accessToken = null;
+        refreshToken = null;
+        expiresInSeconds = null;
+        expirationTime = null;
+    }
 }

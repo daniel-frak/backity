@@ -3,7 +3,9 @@ import {GogAuthComponent} from './gog-auth.component';
 import {GOGAuthenticationClient, RefreshTokenResponse} from "@backend";
 import {defer, of, throwError} from "rxjs";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
+import {By} from '@angular/platform-browser';
 import createSpyObj = jasmine.createSpyObj;
+import {DebugElement} from "@angular/core";
 
 describe('GogAuthComponent', () => {
   let component: GogAuthComponent;
@@ -18,7 +20,7 @@ describe('GogAuthComponent', () => {
       providers: [
         {
           provide: GOGAuthenticationClient,
-          useValue: createSpyObj(GOGAuthenticationClient, ['checkAuthentication', 'authenticate'])
+          useValue: createSpyObj(GOGAuthenticationClient, ['checkAuthentication', 'authenticate', 'logOutOfGog'])
         },
         {
           provide: NotificationService,
@@ -73,7 +75,7 @@ describe('GogAuthComponent', () => {
   });
 
   it('should authenticate with a valid URL', () => {
-    component.gogAuthForm.get('gogCodeUrl')?.setValue('https://www.example.com?code=1234');
+    component.gogCodeUrlInput.setValue('https://www.example.com?code=1234');
     gogAuthClientMock.authenticate.and.returnValue({
       subscribe: (callback: (response: RefreshTokenResponse) => any) => {
         expect(component.gogIsLoading).toBeTrue();
@@ -87,10 +89,11 @@ describe('GogAuthComponent', () => {
     expect(component.gogIsLoading).toBeFalse();
     expect(notificationService.showSuccess).toHaveBeenCalledWith('GOG authentication successful');
     expect(notificationService.showFailure).toHaveBeenCalledTimes(0);
+    expect(component.gogCodeUrlInput.value).toBeNull();
   });
 
   it('should not authenticate if refresh token is missing', () => {
-    component.gogAuthForm.get('gogCodeUrl')?.setValue('https://www.example.com?code=1234');
+    component.gogCodeUrlInput.setValue('https://www.example.com?code=1234');
     gogAuthClientMock.authenticate.and.returnValue({
       subscribe: (callback: (response: RefreshTokenResponse) => any) => {
         expect(component.gogIsLoading).toBeTrue();
@@ -108,18 +111,51 @@ describe('GogAuthComponent', () => {
   });
 
   it('should not authenticate given GOG code URL is empty', () => {
-    component.gogAuthForm.get('gogCodeUrl')?.setValue('');
+    component.gogCodeUrlInput.setValue('');
 
     component.authenticateGog();
 
     expect(gogAuthClientMock.authenticate).not.toHaveBeenCalled();
-    let expectedErrors = {required: true};
+    const expectedErrors = {required: true};
     expect(notificationService.showFailure).toHaveBeenCalledWith("Form is invalid", expectedErrors)
   });
 
-  it('should log an error when signOutGog is called', () => {
-    component.onClickSignOutGog()();
+  it('should log out given logged in', async () => {
+    makeAuthenticated();
+    gogAuthClientMock.logOutOfGog.and.returnValue(of(true));
+    const logOutButton: DebugElement = getLogOutButton();
 
-    expect(notificationService.showFailure).toHaveBeenCalledWith('Not yet implemented');
+    await logOutButton.nativeElement.click();
+
+    expect(component.gogIsLoading).toBeFalsy();
+    expect(component.gogAuthenticated).toBeFalsy();
+    expect(notificationService.showSuccess).toHaveBeenCalledWith("Logged out of GOG");
+  })
+
+  function makeAuthenticated() {
+    component.gogAuthenticated = true;
+    fixture.detectChanges();
+  }
+
+  function getLogOutButton(): DebugElement {
+    return fixture.debugElement.query(By.css('[data-testid="log-out-gog-btn"]'));
+  }
+
+  it('should handle error during log out', async () => {
+    makeAuthenticated();
+    const error = throwErrorDuringLogOut();
+    const logOutButton: DebugElement = getLogOutButton();
+
+    await logOutButton.nativeElement.click();
+
+    expect(component.gogIsLoading).toBeFalsy();
+    expect(component.gogAuthenticated).toBeTruthy();
+    expect(notificationService.showFailure).toHaveBeenCalledWith("Could not log out of GOG", error);
   });
+
+  function throwErrorDuringLogOut() {
+    const error = new Error('Log out failed');
+    gogAuthClientMock.logOutOfGog.and.returnValue(throwError(() => error));
+    return error;
+  }
 });

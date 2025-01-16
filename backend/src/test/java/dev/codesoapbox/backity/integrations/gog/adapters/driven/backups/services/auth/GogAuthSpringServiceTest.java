@@ -30,8 +30,9 @@ class GogAuthSpringServiceTest {
 
     private void authenticateCorrectly(int expiresInSeconds) {
         var code = "someCode";
-        var gogAuthResponse = new GogAuthenticationResponse("someAccessToken", "someRefreshToken",
-                expiresInSeconds, "someSessionId", "someUserId");
+        var gogAuthResponse = new GogAuthenticationResponse(
+                "someAccessToken", "someRefreshToken", expiresInSeconds,
+                "someSessionId", "someUserId");
 
         when(gogAuthClient.getInitialToken(code))
                 .thenReturn(gogAuthResponse);
@@ -148,5 +149,14 @@ class GogAuthSpringServiceTest {
         gogAuthService.refreshAccessTokenIfNeeded();
 
         assertThat(gogAuthService.isAuthenticated()).isTrue();
+    }
+
+    @Test
+    void shouldLogOut() {
+        authenticateCorrectly(3600);
+
+        gogAuthService.logOut();
+
+        assertThat(gogAuthService.isAuthenticated()).isFalse();
     }
 }

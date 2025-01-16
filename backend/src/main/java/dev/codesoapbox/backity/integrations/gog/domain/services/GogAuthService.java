@@ -14,4 +14,6 @@ public interface GogAuthService {
     String getRefreshToken();
 
     void refreshAccessTokenIfNeeded();
+
+    void logOut();
 }
