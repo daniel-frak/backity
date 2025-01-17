@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @UsePlaywright(CustomOptions.class)
 class BackityTest {
@@ -41,7 +42,16 @@ class BackityTest {
         this.fileDiscoveryPage = new FileDiscoveryPage(page);
         this.fileBackupPage = new FileBackupPage(page);
         this.gamesPage = new GamesPage(page);
+        tryToLogOutOfGog();
         deleteAllFileBackups();
+    }
+
+    private void tryToLogOutOfGog() {
+        authenticationPage.navigate();
+        if (authenticationPage.isAuthenticated()) {
+            authenticationPage.logOut();
+        }
+        assertFalse(authenticationPage.isAuthenticated());
     }
 
     private void deleteAllFileBackups() {
@@ -77,13 +87,7 @@ class BackityTest {
 
     private void authenticateGog() {
         authenticationPage.navigate();
-
-        if (authenticationPage.getGogAuthBadge().textContent().contains("Authenticated")) {
-            return;
-        }
         authenticationPage.authenticateGog();
-
-        assertThat(authenticationPage.getGogAuthBadge()).containsText("Authenticated");
     }
 
     private void discoverNewFiles(FileDiscoveryPage fileDiscoveryPage) {

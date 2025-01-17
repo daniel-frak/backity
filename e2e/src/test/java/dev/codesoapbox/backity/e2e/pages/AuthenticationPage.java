@@ -2,7 +2,6 @@ package dev.codesoapbox.backity.e2e.pages;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
-import lombok.Getter;
 
 public class AuthenticationPage {
 
@@ -10,9 +9,8 @@ public class AuthenticationPage {
     private final Locator logInToGogBtn;
     private final Locator gogCodeUrlInput;
     private final Locator gogAuthenticateButton;
-
-    @Getter
     private final Locator gogAuthBadge;
+    private final Locator gogLogOutButton;
 
     public AuthenticationPage(Page page) {
         this.page = page;
@@ -20,6 +18,7 @@ public class AuthenticationPage {
         gogCodeUrlInput = page.getByTestId("gog-code-url-input");
         gogAuthenticateButton = page.getByTestId("gog-authenticate-btn");
         gogAuthBadge = page.getByTestId("gog-auth-status");
+        gogLogOutButton = page.getByTestId("log-out-gog-btn");
     }
 
     public void navigate() {
@@ -41,5 +40,13 @@ public class AuthenticationPage {
         loginPopup.waitForLoadState();
 
         return new GogLoginPopup(loginPopup);
+    }
+
+    public boolean isAuthenticated() {
+        return gogAuthBadge.textContent().contains("Authenticated");
+    }
+
+    public void logOut() {
+        gogLogOutButton.click();
     }
 }
