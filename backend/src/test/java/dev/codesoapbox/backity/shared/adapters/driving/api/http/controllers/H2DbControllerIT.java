@@ -12,7 +12,6 @@ import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.infrastructure.adapters.driving.api.http.controllers.H2DbController;
 import dev.codesoapbox.backity.infrastructure.config.DomainEventPublisherBeanConfig;
 import dev.codesoapbox.backity.infrastructure.config.jpa.SharedJpaRepositoryBeanConfig;
-import dev.codesoapbox.backity.testing.TemporaryMockBean;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +22,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.File;
@@ -46,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 @EnableJpaAuditing
-@TemporaryMockBean(SimpMessagingTemplate.class)
+@MockitoBean(types = SimpMessagingTemplate.class)
 class H2DbControllerIT {
 
     private static final Path TEST_DUMP_PATH = Path.of(

@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.testing.http.config;
+package dev.codesoapbox.backity.testing.http.annotations;
 
 import dev.codesoapbox.backity.core.discovery.application.FileDiscoveryService;
 import dev.codesoapbox.backity.core.discovery.application.GetFileDiscoveryStatusListUseCase;
@@ -17,20 +17,18 @@ import dev.codesoapbox.backity.integrations.gog.application.*;
 import dev.codesoapbox.backity.integrations.gog.config.GogControllerBeanConfig;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
-import dev.codesoapbox.backity.testing.TemporaryMockBean;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import jakarta.persistence.EntityManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-/**
- * <h1>Motivation for the class</h1>
- * <p>
- * While creating an application context for controller tests does not take a long time, it can lead to the context
- * cache filling up and evicting other, more expensive contexts (such as those for testing repositories).
- * <p>
- * Thus, making all controller tests share a single application context should protect against cache eviction slowing
- * down the tests.
- */
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
 @Import({
         // Common
         SharedControllerBeanConfig.class,
@@ -42,29 +40,36 @@ import org.springframework.context.annotation.Import;
         GameControllerBeanConfig.class,
         GameFileControllerBeanConfig.class
 })
-@TemporaryMockBean(EntityManager.class)
-@TemporaryMockBean(GameFileRepository.class)
-@TemporaryMockBean(FileDiscoveryService.class)
-@TemporaryMockBean(LogService.class)
-@TemporaryMockBean(GogAuthService.class)
-@TemporaryMockBean(GogEmbedClient.class)
-@TemporaryMockBean(GetGamesWithFilesUseCase.class)
-@TemporaryMockBean(StartFileDiscoveryUseCase.class)
-@TemporaryMockBean(StopFileDiscoveryUseCase.class)
-@TemporaryMockBean(GetFileDiscoveryStatusListUseCase.class)
-@TemporaryMockBean(EnqueueFileUseCase.class)
-@TemporaryMockBean(DeleteFileUseCase.class)
-@TemporaryMockBean(DownloadFileUseCase.class)
-@TemporaryMockBean(GetCurrentlyDownloadingFileUseCase.class)
-@TemporaryMockBean(GetDiscoveredFileListUseCase.class)
-@TemporaryMockBean(GetEnqueuedFileListUseCase.class)
-@TemporaryMockBean(GetProcessedFileListUseCase.class)
-@TemporaryMockBean(AuthenticateGogUseCase.class)
-@TemporaryMockBean(CheckGogAuthenticationUseCase.class)
-@TemporaryMockBean(RefreshGogAccessTokenUseCase.class)
-@TemporaryMockBean(LogOutOfGogUseCase.class)
-@TemporaryMockBean(GetGogLibrarySizeUseCase.class)
-@TemporaryMockBean(GetGogGameDetailsUseCase.class)
-@TemporaryMockBean(GetLogsUseCase.class)
-public class SharedControllerTestConfig {
+@MockitoBean(types = {
+        // Common
+        EntityManager.class,
+
+        // Specific
+        GameFileRepository.class,
+        FileDiscoveryService.class,
+        LogService.class,
+        GogAuthService.class,
+        GogEmbedClient.class,
+
+        // Use cases
+        GetGamesWithFilesUseCase.class,
+        StartFileDiscoveryUseCase.class,
+        StopFileDiscoveryUseCase.class,
+        GetFileDiscoveryStatusListUseCase.class,
+        EnqueueFileUseCase.class,
+        DeleteFileUseCase.class,
+        DownloadFileUseCase.class,
+        GetCurrentlyDownloadingFileUseCase.class,
+        GetDiscoveredFileListUseCase.class,
+        GetEnqueuedFileListUseCase.class,
+        GetProcessedFileListUseCase.class,
+        AuthenticateGogUseCase.class,
+        CheckGogAuthenticationUseCase.class,
+        RefreshGogAccessTokenUseCase.class,
+        LogOutOfGogUseCase.class,
+        GetGogLibrarySizeUseCase.class,
+        GetGogGameDetailsUseCase.class,
+        GetLogsUseCase.class
+})
+public @interface ControllerTestBeans {
 }
