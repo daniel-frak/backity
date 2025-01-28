@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.opentest4j.AssertionFailedError;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,8 +40,8 @@ class FilePathProviderTest {
     }
 
     @Test
-    void shouldCreateTemporaryFilePath() throws IOException {
-        var gameProviderId = new GameProviderId( "someGameProviderId");
+    void shouldCreateTemporaryFilePath() {
+        var gameProviderId = new GameProviderId("someGameProviderId");
         var gameTitle = "someGameTitle";
 
         String result = filePathProvider.createTemporaryFilePath(gameProviderId, gameTitle);
@@ -50,11 +49,20 @@ class FilePathProviderTest {
         String expectedPath = "/test/someGameProviderId/someGameTitle/" + extractFileName(result);
 
         assertThat(result.replace("\\", "/")).isEqualTo(expectedPath);
-        assertThat(fakeUnixFileManager.directoryWasCreated("/test/someGameProviderId/someGameTitle")).isTrue();
+    }
+
+    private String extractFileName(String result) {
+        Matcher matcher = Pattern.compile("TEMP_\\S+$").matcher(result);
+
+        if (!matcher.find()) {
+            throw new AssertionFailedError("File name does not start with 'TEMP_': " + result);
+        }
+
+        return matcher.group();
     }
 
     @Test
-    void shouldCreateTemporaryFilePathWhenNoSeparatorFound() throws IOException {
+    void shouldCreateTemporaryFilePathWhenNoSeparatorFound() {
         var gameProviderId = new GameProviderId("someGameProviderId");
         var gameTitle = "some: GameTitle";
 
@@ -69,18 +77,8 @@ class FilePathProviderTest {
         assertThat(fakeUnixFileManager.anyDirectoriesWereCreated()).isFalse();
     }
 
-    private String extractFileName(String result) {
-        Matcher matcher = Pattern.compile("TEMP_\\S+$").matcher(result);
-
-        if (!matcher.find()) {
-            throw new AssertionFailedError("File name does not start with 'TEMP_': " + result);
-        }
-
-        return matcher.group();
-    }
-
     @Test
-    void shouldRemoveIllegalCharacters() throws IOException {
+    void shouldRemoveIllegalCharacters() {
         String charactersToRemove = "<>\"|?\n`';!@#$%^&*{}[]~";
         var gameProviderId = new GameProviderId("someGameProviderId" + charactersToRemove);
         var gameTitle = "some:\tGameTitle" + charactersToRemove;
@@ -90,7 +88,5 @@ class FilePathProviderTest {
         String expectedPath = "/test/someGameProviderId/some - GameTitle/" + extractFileName(result);
 
         assertThat(result.replace("\\", "/")).isEqualTo(expectedPath);
-        assertThat(fakeUnixFileManager.directoryWasCreated("/test/someGameProviderId/some - GameTitle")).isTrue();
-
     }
 }

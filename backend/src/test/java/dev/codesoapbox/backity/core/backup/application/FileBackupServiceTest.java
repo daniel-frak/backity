@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.core.backup.application;
 
-import dev.codesoapbox.backity.core.backup.application.exceptions.NotEnoughFreeSpaceException;
 import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
 import dev.codesoapbox.backity.core.backup.domain.BackupProgressFactory;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
@@ -69,7 +68,6 @@ class FileBackupServiceTest {
 
         fileBackupService.backUpFile(gameFile);
 
-        assertThat(fileManager.freeSpaceWasCheckedFor(tempFilePath)).isTrue();
         assertThat(gameFilePersistedChanges.savedFileBackupStatuses())
                 .isEqualTo(List.of(FileBackupStatus.IN_PROGRESS, FileBackupStatus.IN_PROGRESS,
                         FileBackupStatus.SUCCESS));
@@ -86,7 +84,7 @@ class FileBackupServiceTest {
         return expectedFilePath;
     }
 
-    private String mockTempFilePathCreation(GameFile gameFile, GameProviderId gameProviderId) throws IOException {
+    private String mockTempFilePathCreation(GameFile gameFile, GameProviderId gameProviderId) {
         var tempFilePath = "someFileDir/someFile";
         when(filePathProvider.createTemporaryFilePath(gameProviderId,
                 gameFile.getGameProviderFile().originalGameTitle()))
@@ -165,7 +163,7 @@ class FileBackupServiceTest {
     }
 
     @Test
-    void downloadFileShouldThrowIfGameProviderFileBackupServiceNotFound() throws IOException {
+    void downloadFileShouldThrowIfGameProviderFileBackupServiceNotFound() {
         var nonExistentGameProviderId = new GameProviderId("nonExistentGameProviderId1");
         GameFile gameFile = TestGameFile.discoveredBuilder()
                 .gameProviderFile(TestGameProviderFile.gogBuilder()
@@ -188,34 +186,16 @@ class FileBackupServiceTest {
                         .gameProviderId(gameProviderId)
                         .build())
                 .build();
-        mockTempFilePathCreationThrowsIoException(gameProviderId, gameFile);
+        mockFileBackupThrowsIOException();
 
         assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
                 .isInstanceOf(FileBackupFailedException.class)
                 .cause().isInstanceOf(IOException.class);
     }
 
-    private void mockTempFilePathCreationThrowsIoException(GameProviderId gameProviderId, GameFile gameFile)
-            throws IOException {
-        when(filePathProvider.createTemporaryFilePath(gameProviderId,
-                gameFile.getGameProviderFile().originalGameTitle()))
+    private void mockFileBackupThrowsIOException() throws IOException {
+        when(gameProviderFileBackupService.backUpFile(any(), any(), any()))
                 .thenThrow(new IOException());
-    }
-
-    @Test
-    void downloadFileShouldThrowIfNotEnoughFreeSpace() throws IOException {
-        GameProviderId gameProviderId = gameProviderFileBackupService.getGameProviderId();
-        GameFile gameFile = TestGameFile.discoveredBuilder()
-                .gameProviderFile(TestGameProviderFile.gogBuilder()
-                        .gameProviderId(gameProviderId)
-                        .build())
-                .build();
-        mockTempFilePathCreation(gameFile, EXISTING_GAME_PROVIDER_ID);
-        fileManager.setAvailableSizeInBytes(0);
-
-        assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
-                .isInstanceOf(FileBackupFailedException.class)
-                .cause().isInstanceOf(NotEnoughFreeSpaceException.class);
     }
 
     @Test

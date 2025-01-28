@@ -2,18 +2,17 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.service
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import com.github.tomakehurst.wiremock.core.Options;
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
-import dev.codesoapbox.backity.shared.domain.ProgressInfo;
 import dev.codesoapbox.backity.integrations.gog.config.WebClientConfig;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileDiscoveryException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameBackupRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameListRequestFailedException;
-import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
+import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
+import dev.codesoapbox.backity.shared.domain.ProgressInfo;
+import dev.codesoapbox.backity.testing.wiremock.CustomWireMockExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,14 +46,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class GogEmbedWebClientIT {
 
-    protected static final String ACCESS_TOKEN = "someAccessToken";
-
     @RegisterExtension
-    static final WireMockExtension wireMockEmbed = WireMockExtension.newInstance()
-            .options(new WireMockConfiguration()
-                    .useChunkedTransferEncoding(Options.ChunkedEncodingPolicy.NEVER)
-                    .dynamicPort())
-            .build();
+    static final WireMockExtension wireMockEmbed = CustomWireMockExtension.newInstance();
+
+    private static final String ACCESS_TOKEN = "someAccessToken";
 
     private static Level defaultLogLevel;
 
@@ -107,7 +102,8 @@ class GogEmbedWebClientIT {
                 "en1installer3")),
                 "someChangelog");
         assertThat(result).isEqualTo(expectedResult);
-        assertThat(capturedOutput.getOut()).contains("Retrieved game details for game: Unreal Tournament 2004 Editor's" +
+        assertThat(capturedOutput.getOut()).contains(
+                "Retrieved game details for game: Unreal Tournament 2004 Editor's" +
                 " Choice Edition (#someGameId)");
     }
 

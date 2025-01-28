@@ -6,10 +6,6 @@ import java.io.OutputStream;
 
 public interface FileManager {
 
-    boolean isEnoughFreeSpaceOnDisk(long sizeInBytes, String filePath);
-
-    void createDirectories(String filePath) throws IOException;
-
     /**
      * Renames the file, but adds a suffix to it if another file already exists with the new name.
      * <p>

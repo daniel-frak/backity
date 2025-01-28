@@ -31,6 +31,10 @@ The information below is aimed at developers who want to extend this project's f
 ---
 
 - [Getting Started](#getting-started)
+- [Configuration](#configuration)
+  * [Basic configuration](#basic-configuration)
+  * [Advanced configuration](#advanced-configuration)
+  * [S3 support](#s3-support)
 
 ## Getting Started
 
@@ -52,6 +56,41 @@ mvn spring-boot:run -Dspring-boot.run.profiles=dev
 As a result, you should be able to visit the home page on [http://localhost:8080/](http://localhost:8080/):
 
 ![home page screenshot](readme-images/home-page-screenshot.png)
+
+## Configuration
+
+### Basic configuration
+
+The following basic properties can be customized:
+
+- `backity.default-path-template` - the template to use when constructing the file download path. 
+  Available placeholders:
+  - `{GAME_PROVIDER_ID}` - the ID of the game provider, e.g., "GOG"
+  - `{TITLE}` - the game title
+  - `{FILENAME}` - the full name of the file being downloaded
+
+### Advanced configuration
+
+The following advanced properties can be customized:
+
+- `backity.file-download-queue-scheduler` - how often the file download queue should be checked
+- `backity.gog-auth-scheduler` - how often the system should check if GOG authentication should be refreshed 
+
+### S3 support
+
+By default, Backity uses the local file system to store files.
+
+To enable S3 support, `backity.filesystem.s3.enabled` must be set to `true`.
+
+Further properties should also be configured:
+- `backity.filesystem.s3.bucket` - the bucket to use for storing game files
+- `spring.cloud.aws.s3.endpoint` - the S3 endpoint
+- `spring.cloud.aws.s3.region.static` - the S3 region
+- `spring.cloud.aws.credentials.access-key` - optionally, the access key
+- `spring.cloud.aws.credentials.secret-key` - optionally, the secret key
+
+Check the [Spring Cloud AWS documentation](https://docs.awspring.io/spring-cloud-aws/docs/3.0.0-M1/reference/html/index.html)
+for more advanced configuration options.
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with
 markdown-toc</a></i></small>

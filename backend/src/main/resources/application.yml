@@ -17,6 +17,9 @@ backity:
       redirect-uri: "http://localhost:1080/gog/embed/on_login_success"
   h2dump:
     path: dump.sql
+  filesystem:
+    s3:
+      enabled: false
 
 spring:
   datasource:
@@ -38,6 +41,11 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
   liquibase:
     change-log: classpath:db/changelog/db.changelog-root.xml
+
+  cloud: # S3
+    aws:
+      s3:
+        enabled: ${backity.filesystem.s3.enabled}
 
 openapi:
   project-description: '@project.description@'

@@ -14,14 +14,14 @@ class TrackedFilterOutputStream extends FilterOutputStream {
     }
 
     @Override
-    public void write(byte[] currentByte, int offset, int length) throws IOException {
-        out.write(currentByte, offset, length);
+    public void write(byte[] bytesToWrite, int offset, int length) throws IOException {
+        out.write(bytesToWrite, offset, length);
         backupProgress.incrementDownloadedBytes(length);
     }
 
     @Override
-    public void write(int currentByte) throws IOException {
-        out.write(currentByte);
+    public void write(int byteToWrite) throws IOException {
+        out.write(byteToWrite);
         backupProgress.incrementProcessedElements();
     }
 

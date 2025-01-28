@@ -33,20 +33,9 @@ public class FakeUnixFileManager implements FileManager {
         this.availableSizeInBytes = availableSizeInBytes;
     }
 
-    @Override
-    public boolean isEnoughFreeSpaceOnDisk(long sizeInBytes, String filePath) {
-        pathsCheckedForSize.add(fixSeparatorChar(filePath));
-        return availableSizeInBytes >= sizeInBytes;
-    }
-
     private String fixSeparatorChar(String filePath) {
         return filePath
                 .replace("/", "\\");
-    }
-
-    @Override
-    public void createDirectories(String filePath) {
-        directoriesCreated.add(fixSeparatorChar(filePath));
     }
 
     @Override

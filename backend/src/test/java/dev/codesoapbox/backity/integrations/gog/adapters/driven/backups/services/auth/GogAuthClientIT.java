@@ -1,17 +1,20 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.auth;
 
-import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
-import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import dev.codesoapbox.backity.integrations.gog.domain.model.auth.remote.GogAuthenticationResponse;
+import dev.codesoapbox.backity.testing.wiremock.CustomWireMockExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@WireMockTest
 class GogAuthClientIT {
+
+    @RegisterExtension
+    static final WireMockExtension wireMockEmbed = CustomWireMockExtension.newInstance();
 
     private static final String CLIENT_ID = "someClientId";
     private static final String CLIENT_SECRET = "someClientSecret";
@@ -20,9 +23,10 @@ class GogAuthClientIT {
     private GogAuthClient gogAuthClient;
 
     @BeforeEach
-    void setUp(WireMockRuntimeInfo wmRuntimeInfo) {
+    void setUp() {
+        configureFor(wireMockEmbed.getRuntimeInfo().getWireMock());
         var webClientAuth = WebClient.builder()
-                .baseUrl(wmRuntimeInfo.getHttpBaseUrl())
+                .baseUrl(wireMockEmbed.getRuntimeInfo().getHttpBaseUrl())
                 .build();
 
         gogAuthClient = new GogAuthClient(webClientAuth, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);

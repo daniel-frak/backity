@@ -1,0 +1,15 @@
+backity:
+  filesystem:
+    s3:
+      enabled: true
+      bucket: backity
+spring:
+  cloud: # S3
+    aws:
+      s3:
+        endpoint: https://s3.localhost.localstack.cloud:4566
+      credentials:
+        access-key: none
+        secret-key: none
+      region:
+        static: eu-central-1

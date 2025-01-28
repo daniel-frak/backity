@@ -50,7 +50,6 @@ public class FileBackupService {
             markInProgress(gameFile);
             gameFile.validateReadyForDownload();
             String tempFilePath = createTemporaryFilePath(gameFile);
-            validateEnoughFreeSpaceOnDisk(tempFilePath, gameFile.getGameProviderFile().size());
             tryToBackUp(gameFile, tempFilePath);
         } catch (IOException | RuntimeException e) {
             markFailed(gameFile, e);
@@ -63,16 +62,10 @@ public class FileBackupService {
         gameFileRepository.save(gameFile);
     }
 
-    private String createTemporaryFilePath(GameFile gameFile) throws IOException {
+    private String createTemporaryFilePath(GameFile gameFile) {
         return filePathProvider.createTemporaryFilePath(
                 gameFile.getGameProviderFile().gameProviderId(),
                 gameFile.getGameProviderFile().originalGameTitle());
-    }
-
-    private void validateEnoughFreeSpaceOnDisk(String filePath, FileSize fileSize) {
-        if (!fileManager.isEnoughFreeSpaceOnDisk(fileSize.getBytes(), filePath)) {
-            throw new NotEnoughFreeSpaceException(filePath);
-        }
     }
 
     private void tryToBackUp(GameFile gameFile, String tempFilePath) throws IOException {

@@ -12,9 +12,8 @@ import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.*;
 
-class LocalFileSystemTest {
+class LocalFileSystemIT {
 
-    private static final long SPACE_DIFFERENCE_BYTES = 9999999999L;
     private LocalFileSystem localFileSystem;
 
     @BeforeEach
@@ -23,47 +22,7 @@ class LocalFileSystemTest {
     }
 
     @Test
-    void isEnoughFreeSpaceOnDiskShouldReturnTrueIfEnoughSpace(@TempDir Path tempDir) {
-        var usableSpace = tempDir.toFile().getUsableSpace();
-        var sizeInBytes = usableSpace - SPACE_DIFFERENCE_BYTES;
-
-        var result = localFileSystem.isEnoughFreeSpaceOnDisk(sizeInBytes,
-                tempDir.toString());
-
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    void isEnoughFreeSpaceOnDiskShouldReturnTrueIfExactlyEnoughSpace(@TempDir Path tempDir) {
-        var usableSpace = tempDir.toFile().getUsableSpace();
-
-        var result = localFileSystem.isEnoughFreeSpaceOnDisk(usableSpace, tempDir.toString());
-
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    void isEnoughFreeSpaceOnDiskShouldReturnFalseIfNotEnoughSpace(@TempDir Path tempDir) {
-        var usableSpace = tempDir.toFile().getUsableSpace();
-        var sizeInBytes = usableSpace + SPACE_DIFFERENCE_BYTES;
-
-        var result = localFileSystem.isEnoughFreeSpaceOnDisk(sizeInBytes,
-                tempDir.toString());
-
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    void shouldCreateDirectories(@TempDir Path tempDir) throws IOException {
-        var path = tempDir + File.separator + "test1" + File.separator + "test2";
-
-        localFileSystem.createDirectories(path);
-
-        assertThat(new File(path)).exists();
-    }
-
-    @Test
-    void shouldRenameFile(@TempDir Path tempDir) throws IOException {
+    void shouldRenameFileWithoutAddingSuffixGivenFileNameDoesNotCollide(@TempDir Path tempDir) throws IOException {
         String originalFilePath = tempDir + File.separator + "someFile";
         String newFileName = "newFileName";
         var fileCreated = new File(originalFilePath).createNewFile();
@@ -76,7 +35,7 @@ class LocalFileSystemTest {
     }
 
     @Test
-    void shouldRenameFileAddingSuffixWithoutExtension(@TempDir Path tempDir) throws IOException {
+    void shouldRenameFileWithoutExtensionAddingSuffixGivenFileNameCollides(@TempDir Path tempDir) throws IOException {
         String originalFilePath = tempDir + File.separator + "someFile";
         String newFileName = "newFileName";
         String newFilePath = tempDir + File.separator + newFileName;
@@ -93,7 +52,7 @@ class LocalFileSystemTest {
     }
 
     @Test
-    void shouldRenameFileAddingSuffixWithExtension(@TempDir Path tempDir) throws IOException {
+    void shouldRenameFileAddingSuffixBeforeExtensionGivenFileNameCollides(@TempDir Path tempDir) throws IOException {
         String originalFilePath = tempDir + File.separator + "someFile";
         String newFileNameWithoutExtension = "newFileName";
         String extension = ".exe";
@@ -154,20 +113,39 @@ class LocalFileSystemTest {
 
     @Test
     void getOutputStreamShouldReturnValidOutputStream(@TempDir Path tempDir) throws IOException {
-        String filePath = tempDir + File.separator + "someFile";
-        String testData = "Test Data";
+        var filePath = tempDir + File.separator + "someFile";
+        var fileContent = "Test Data";
 
         try (OutputStream outputStream = localFileSystem.getOutputStream(filePath)) {
-            outputStream.write(testData.getBytes());
+            outputStream.write(fileContent.getBytes());
         }
 
-        assertThatDataWasWrittenToDisk(filePath, testData);
+        assertThatDataWasWrittenToDisk(filePath, fileContent);
     }
 
-    private static void assertThatDataWasWrittenToDisk(String filePath, String testData) throws IOException {
+    private void assertThatDataWasWrittenToDisk(String filePath, String fileContent) throws IOException {
         byte[] readBytes = Files.readAllBytes(Path.of(filePath));
         String readData = new String(readBytes);
-        assertThat(readData).isEqualTo(testData);
+        assertThat(readData).isEqualTo(fileContent);
+    }
+
+    @Test
+    void getOutputStreamShouldReturnValidOutputStreamWithSubfolders(@TempDir Path tempDir) throws IOException {
+        var filePath = tempDir + File.separator + "subfolder" + File.separator + "someFile";
+        var fileContent = "Test Data";
+
+        try (OutputStream outputStream = localFileSystem.getOutputStream(filePath)) {
+            outputStream.write(fileContent.getBytes());
+        }
+
+        assertThatDataWasWrittenToDisk(filePath, fileContent);
+    }
+
+    @Test
+    void shouldGetSeparator() {
+        String result = localFileSystem.getSeparator();
+
+        assertThat(result).isEqualTo(File.separator);
     }
 
     @Test
@@ -189,20 +167,20 @@ class LocalFileSystemTest {
         Path tempFile = tempDir.resolve(fileName);
         Files.write(tempFile, "Test content".getBytes());
 
-        FileResource fileResource = localFileSystem.getFileResource(tempFile.toString());
-
-        assertThat(fileResource).isNotNull();
-        assertThat(fileResource.sizeInBytes()).isPositive();
-        assertThat(fileResource.fileName()).isEqualTo(fileName);
-        assertThatCode(fileResource::close)
-                .doesNotThrowAnyException();
+        try (FileResource fileResource = localFileSystem.getFileResource(tempFile.toString())) {
+            assertThat(fileResource).isNotNull();
+            assertThat(fileResource.sizeInBytes()).isPositive();
+            assertThat(fileResource.fileName()).isEqualTo(fileName);
+            assertThatCode(fileResource::close)
+                    .doesNotThrowAnyException();
+        }
     }
 
     @Test
     void getFileResourceShouldThrowGivenFileNotFound() {
         String filePath = "nonexistentfile.txt";
 
-        assertThatThrownBy(() -> localFileSystem.getFileResource(filePath))
+        assertThatThrownBy(() -> localFileSystem.getFileResource(filePath).close())
                 .isInstanceOf(FileNotFoundException.class)
                 .hasMessage("File not found: " + filePath);
     }
@@ -212,7 +190,7 @@ class LocalFileSystemTest {
         Path tempDirectory = tempDir.resolve("tempDirectory");
         Files.createDirectory(tempDirectory);
 
-        assertThatThrownBy(() -> localFileSystem.getFileResource(tempDirectory.toString()))
+        assertThatThrownBy(() -> localFileSystem.getFileResource(tempDirectory.toString()).close())
                 .isInstanceOf(FileNotFoundException.class)
                 .hasMessage("File not found: " + tempDirectory);
     }
