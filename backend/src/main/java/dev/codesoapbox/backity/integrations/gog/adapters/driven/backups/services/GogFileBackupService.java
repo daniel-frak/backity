@@ -24,8 +24,9 @@ public class GogFileBackupService implements GameProviderFileBackupService {
     }
 
     @Override
-    public String backUpFile(GameFile gameFile, String tempFilePath, BackupProgress backupProgress) throws IOException {
-        return urlFileDownloader.downloadFile(gogEmbedClient, gameFile, tempFilePath, backupProgress);
+    public void backUpFile(GameFile gameFile, BackupProgress backupProgress) throws IOException {
+        String filePath = gameFile.getFileBackup().getFilePath();
+        urlFileDownloader.downloadFile(gogEmbedClient, gameFile, filePath, backupProgress);
     }
 
     @Override

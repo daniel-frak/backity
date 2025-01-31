@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.integrations.gog.config;
+package dev.codesoapbox.backity.infrastructure.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;

@@ -1,11 +1,11 @@
 package dev.codesoapbox.backity.core.backup.application;
 
-import dev.codesoapbox.backity.core.backup.domain.*;
+import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
+import dev.codesoapbox.backity.core.backup.domain.BackupProgressFactory;
+import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
-import dev.codesoapbox.backity.core.backup.application.exceptions.NotEnoughFreeSpaceException;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
 import dev.codesoapbox.backity.core.filemanagement.domain.FilePathProvider;
-import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -49,8 +49,8 @@ public class FileBackupService {
         try {
             markInProgress(gameFile);
             gameFile.validateReadyForDownload();
-            String tempFilePath = createTemporaryFilePath(gameFile);
-            tryToBackUp(gameFile, tempFilePath);
+            String filePath = buildFilePath(gameFile);
+            tryToBackUp(gameFile, filePath);
         } catch (IOException | RuntimeException e) {
             markFailed(gameFile, e);
             throw new FileBackupFailedException(gameFile, e);
@@ -62,37 +62,35 @@ public class FileBackupService {
         gameFileRepository.save(gameFile);
     }
 
-    private String createTemporaryFilePath(GameFile gameFile) {
-        return filePathProvider.createTemporaryFilePath(
+    private String buildFilePath(GameFile gameFile) {
+        return filePathProvider.buildUniqueFilePath(
                 gameFile.getGameProviderFile().gameProviderId(),
-                gameFile.getGameProviderFile().originalGameTitle());
+                gameFile.getGameProviderFile().originalGameTitle(),
+                gameFile.getGameProviderFile().originalFileName());
     }
 
-    private void tryToBackUp(GameFile gameFile, String tempFilePath) throws IOException {
+    private void tryToBackUp(GameFile gameFile, String filePath) throws IOException {
         try {
-            updateFilePath(gameFile, tempFilePath);
-            String downloadedPath = downloadToDisk(gameFile, tempFilePath);
-            markDownloaded(gameFile, downloadedPath);
+            updateFilePath(gameFile, filePath);
+            downloadToDisk(gameFile);
+            markDownloaded(gameFile, filePath);
         } catch (IOException e) {
-            tryToCleanUpAfterFailedDownload(gameFile, tempFilePath);
+            tryToCleanUpAfterFailedDownload(gameFile, filePath);
             throw e;
         }
     }
 
-    private void updateFilePath(GameFile gameFile, String tempFilePath) {
-        gameFile.updateFilePath(tempFilePath);
+    private void updateFilePath(GameFile gameFile, String filePath) {
+        gameFile.updateFilePath(filePath);
         gameFileRepository.save(gameFile);
     }
 
-    /**
-     * @return the path of the downloaded file
-     */
-    private String downloadToDisk(GameFile gameFile, String tempFilePath) throws IOException {
+    private void downloadToDisk(GameFile gameFile) throws IOException {
         GameProviderId gameProviderId = gameFile.getGameProviderFile().gameProviderId();
         GameProviderFileBackupService gameProviderFileBackupService = getGameProviderFileBackupService(gameProviderId);
         BackupProgress backupProgress = backupProgressFactory.create();
 
-        return gameProviderFileBackupService.backUpFile(gameFile, tempFilePath, backupProgress);
+        gameProviderFileBackupService.backUpFile(gameFile, backupProgress);
     }
 
     private GameProviderFileBackupService getGameProviderFileBackupService(GameProviderId gameProviderId) {
@@ -108,9 +106,8 @@ public class FileBackupService {
         gameFileRepository.save(gameFile);
     }
 
-    private void tryToCleanUpAfterFailedDownload(GameFile gameFile,
-                                                 String tempFilePath) {
-        fileManager.deleteIfExists(tempFilePath);
+    private void tryToCleanUpAfterFailedDownload(GameFile gameFile, String filePath) {
+        fileManager.deleteIfExists(filePath);
         gameFile.clearFilePath();
         gameFileRepository.save(gameFile);
     }

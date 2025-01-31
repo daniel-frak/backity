@@ -36,7 +36,7 @@ describe('LogsComponent', () => {
 
     messagesService = TestBed.inject(MessagesService) as SpyObj<MessagesService>;
     MessageTesting.mockWatch(messagesService, (destination, callback) => {
-      if (destination == LogsMessageTopics.Logs) {
+      if (destination == LogsMessageTopics.TopicLogs) {
         logSubscriptions.push(callback);
       }
     });

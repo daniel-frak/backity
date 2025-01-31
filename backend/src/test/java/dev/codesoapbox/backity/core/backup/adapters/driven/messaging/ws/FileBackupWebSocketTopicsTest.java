@@ -12,4 +12,10 @@ class FileBackupWebSocketTopicsTest {
 
         assertThat(result).isEqualTo("/topic/backups/started");
     }
+
+    @Test
+    void toStringShouldReturnWsDestination() {
+        assertThat(FileBackupWebSocketTopics.BACKUP_STARTED)
+                .hasToString("/topic/backups/started");
+    }
 }

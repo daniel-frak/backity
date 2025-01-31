@@ -56,12 +56,16 @@ public class S3OutputStream extends OutputStream {
 
     public void cancel() {
         isOpen = false;
-        if (uploadId != null) {
-            abortMultipartUpload();
+        if (isMultiPartUpload()) {
+            sendAbortMultipartUploadRequest();
         }
     }
 
-    private void abortMultipartUpload() {
+    private boolean isMultiPartUpload() {
+        return uploadId != null;
+    }
+
+    private void sendAbortMultipartUploadRequest() {
         s3Client.abortMultipartUpload(AbortMultipartUploadRequest.builder()
                 .bucket(bucket)
                 .key(key)
@@ -72,30 +76,36 @@ public class S3OutputStream extends OutputStream {
     @Override
     public void write(int byteToWrite) {
         assertOpen();
-        if (positionInBuffer >= temporaryBuffer.length) {
-            flushBufferAndRewind();
+        if (bufferIsOverflowing()) {
+            flushBuffer();
         }
-        temporaryBuffer[positionInBuffer] = (byte) byteToWrite;
-        positionInBuffer++;
+        writeToBuffer((byte) byteToWrite);
     }
 
     private void assertOpen() {
         if (!isOpen) {
-            throw new IllegalStateException("Closed");
+            throw new IllegalStateException("Stream closed");
         }
     }
 
-    protected void flushBufferAndRewind() {
+    private boolean bufferIsOverflowing() {
+        return positionInBuffer >= temporaryBuffer.length;
+    }
+
+    protected void flushBuffer() {
         if (uploadId == null) {
-            CreateMultipartUploadResponse multipartUploadResponse = createMultipartUpload();
+            CreateMultipartUploadResponse multipartUploadResponse = sendCreateMultipartUploadRequest();
             uploadId = multipartUploadResponse.uploadId();
         }
-        UploadPartResponse uploadPartResponse = uploadPart();
-        partETags.add(uploadPartResponse.eTag());
-        positionInBuffer = 0;
+        uploadPart();
     }
 
-    private CreateMultipartUploadResponse createMultipartUpload() {
+    private void writeToBuffer(byte byteToWrite) {
+        temporaryBuffer[positionInBuffer] = byteToWrite;
+        positionInBuffer++;
+    }
+
+    private CreateMultipartUploadResponse sendCreateMultipartUploadRequest() {
         CreateMultipartUploadRequest uploadRequest = CreateMultipartUploadRequest.builder()
                 .bucket(bucket)
                 .key(key)
@@ -104,7 +114,13 @@ public class S3OutputStream extends OutputStream {
         return s3Client.createMultipartUpload(uploadRequest);
     }
 
-    protected UploadPartResponse uploadPart() {
+    protected void uploadPart() {
+        UploadPartResponse uploadPartResponse = sendUploadPartRequest();
+        partETags.add(uploadPartResponse.eTag());
+        positionInBuffer = 0;
+    }
+
+    private UploadPartResponse sendUploadPartRequest() {
         UploadPartRequest uploadRequest = UploadPartRequest.builder()
                 .bucket(bucket)
                 .key(key)
@@ -142,26 +158,33 @@ public class S3OutputStream extends OutputStream {
     @Override
     public void write(byte[] bytesToWrite, int offset, int length) {
         assertOpen();
+        writeAllBytes(bytesToWrite, offset, length);
+    }
+
+    private void writeAllBytes(byte[] bytesToWrite, int offset, int length) {
         int currentOffset = offset;
         int numOfBytesLeft = length;
-        int numOfBytesInBuffer;
-        while (numOfBytesLeft > (numOfBytesInBuffer = getNumOfBytesInBuffer())) { // If bytesToWrite exceeds buffer size
-            copyChunkToBuffer(bytesToWrite, currentOffset,
-                    numOfBytesInBuffer);
+        while (willOverflowBuffer(numOfBytesLeft)) {
+            int numOfBytesInBuffer = getNumOfBytesInBuffer();
+            copyChunkToBuffer(bytesToWrite, currentOffset, numOfBytesInBuffer);
+            flushBuffer();
             currentOffset += numOfBytesInBuffer;
             numOfBytesLeft -= numOfBytesInBuffer;
-            flushBufferAndRewind();
         }
         copyChunkToBuffer(bytesToWrite, currentOffset, numOfBytesLeft);
+    }
+
+    private boolean willOverflowBuffer(int numOfBytesLeft) {
+        return numOfBytesLeft > getNumOfBytesInBuffer();
+    }
+
+    private int getNumOfBytesInBuffer() {
+        return temporaryBuffer.length - positionInBuffer;
     }
 
     private void copyChunkToBuffer(byte[] bytesToWrite, int currentOffset, int numOfBytesToWrite) {
         System.arraycopy(bytesToWrite, currentOffset, temporaryBuffer, positionInBuffer, numOfBytesToWrite);
         positionInBuffer += numOfBytesToWrite;
-    }
-
-    private int getNumOfBytesInBuffer() {
-        return temporaryBuffer.length - positionInBuffer;
     }
 
     /**
@@ -172,7 +195,7 @@ public class S3OutputStream extends OutputStream {
     @Override
     public synchronized void flush() {
         assertOpen();
-        flushBufferAndRewind();
+        flushBuffer();
     }
 
     @Override
@@ -180,19 +203,27 @@ public class S3OutputStream extends OutputStream {
         if (!isOpen) {
             return;
         }
-
         isOpen = false;
-        if (uploadId != null) {
-            if (positionInBuffer > 0) {
-                uploadPart();
-            }
+
+        if (isMultiPartUpload()) {
             completeMultipartUpload();
         } else {
-            performSinglePartUpload();
+            sendPutObjectRequest();
         }
     }
 
+    private boolean hasDataInBuffer() {
+        return positionInBuffer > 0;
+    }
+
     private void completeMultipartUpload() {
+        if (hasDataInBuffer()) {
+            uploadPart();
+        }
+        sendCompleteMultipartUploadRequest();
+    }
+
+    private void sendCompleteMultipartUploadRequest() {
         CompletedPart[] completedParts = getCompletedParts();
 
         s3Client.completeMultipartUpload(request -> request
@@ -203,24 +234,28 @@ public class S3OutputStream extends OutputStream {
     }
 
     private CompletedPart[] getCompletedParts() {
-        CompletedPart[] completedParts = new CompletedPart[partETags.size()];
+        var completedParts = new CompletedPart[partETags.size()];
         for (int i = 0; i < partETags.size(); i++) {
-            completedParts[i] = CompletedPart.builder()
-                    .eTag(partETags.get(i))
-                    .partNumber(i + 1)
-                    .build();
+            completedParts[i] = buildCompletedPart(i);
         }
         return completedParts;
     }
 
-    private void performSinglePartUpload() {
+    private CompletedPart buildCompletedPart(int i) {
+        return CompletedPart.builder()
+                .eTag(partETags.get(i))
+                .partNumber(i + 1)
+                .build();
+    }
+
+    private void sendPutObjectRequest() {
         PutObjectRequest putRequest = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
                 .contentLength((long) positionInBuffer)
                 .build();
-
         RequestBody requestBody = createRequestBody();
+
         s3Client.putObject(putRequest, requestBody);
     }
 }

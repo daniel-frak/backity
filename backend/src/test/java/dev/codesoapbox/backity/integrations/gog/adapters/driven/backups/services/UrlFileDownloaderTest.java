@@ -4,7 +4,6 @@ import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
 import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileManager;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameProviderFile;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileBackupException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,13 +40,13 @@ class UrlFileDownloaderTest {
     @Test
     void downloadFileShouldDownloadToDisk() throws IOException {
         GameFile gameFile = TestGameFile.discovered();
-        String originalFileName = gameFile.getGameProviderFile().originalFileName();
+        String filePath = "testFilePath";
         fileBufferProvider.mockDataForDownload(gameFile, "Test data");
         BackupProgress backupProgress = mockBackupProgress();
 
-        urlFileDownloader.downloadFile(fileBufferProvider, gameFile, "tempFilePath", backupProgress);
+        urlFileDownloader.downloadFile(fileBufferProvider, gameFile, filePath, backupProgress);
 
-        assertThat(fileManager.containsFile(originalFileName)).isTrue();
+        assertThat(fileManager.fileExists(filePath)).isTrue();
     }
 
     private BackupProgress mockBackupProgress() {
@@ -73,7 +72,7 @@ class UrlFileDownloaderTest {
         GameFile gameFile = TestGameFile.discovered();
         fileBufferProvider.mockDataForDownload(gameFile, "Test data");
 
-        urlFileDownloader.downloadFile(fileBufferProvider, gameFile, "tempFilePath", backupProgress);
+        urlFileDownloader.downloadFile(fileBufferProvider, gameFile, "someFilePath", backupProgress);
 
         InOrder inOrder = Mockito.inOrder(backupProgress);
         inOrder.verify(backupProgress).initializeTracking(9, clock);
@@ -81,52 +80,18 @@ class UrlFileDownloaderTest {
     }
 
     @Test
-    void downloadFileShouldReturnDownloadedFilePath() throws IOException {
-        String originalFileName = "originalFileName.txt";
-        String tempFilePath = "tempFilePath";
-        GameFile gameFile = TestGameFile.discoveredBuilder()
-                .gameProviderFile(TestGameProviderFile.gogBuilder()
-                        .originalFileName(originalFileName)
-                        .build())
-                .build();
-        fileBufferProvider.mockDataForDownload(gameFile, "Test data");
-        BackupProgress backupProgress = mockBackupProgress();
-
-        String filePath = urlFileDownloader.downloadFile(fileBufferProvider, gameFile, tempFilePath, backupProgress);
-
-        assertThat(filePath).isEqualTo(originalFileName);
-    }
-
-    @Test
-    void downloadFileShouldDownloadAndUpdateProgressAndRename() throws IOException {
-        String originalFileName = "originalFileName.txt";
-        String tempFilePath = "tempFilePath";
-        GameFile gameFile = TestGameFile.discoveredBuilder()
-                .gameProviderFile(TestGameProviderFile.gogBuilder()
-                        .originalFileName(originalFileName)
-                        .build())
-                .build();
-        fileBufferProvider.mockDataForDownload(gameFile, "Test data");
-        BackupProgress backupProgress = mockBackupProgress();
-
-        urlFileDownloader.downloadFile(fileBufferProvider, gameFile, tempFilePath, backupProgress);
-
-        assertThat(fileManager.fileWasRenamed(tempFilePath, originalFileName)).isTrue();
-    }
-
-    @Test
     void downloadFileShouldThrowGivenFileSizeDoesNotMatch() {
-        String tempFilePath = "tempFilePath";
+        String filePath = "someFilePath";
         GameFile gameFile = TestGameFile.discovered();
         fileBufferProvider.mockDataForDownload(gameFile, "Test data");
-        fileManager.overrideDownloadedSizeFor(tempFilePath, 999L);
+        fileManager.overrideDownloadedSizeFor(filePath, 999L);
         BackupProgress backupProgress = mockBackupProgress();
 
         assertThatThrownBy(() -> urlFileDownloader.downloadFile(
-                fileBufferProvider, gameFile, tempFilePath, backupProgress))
+                fileBufferProvider, gameFile, filePath, backupProgress))
                 .isInstanceOf(FileBackupException.class)
                 .message()
                 .isEqualTo(
-                        "The downloaded size of tempFilePath is not what was expected (was 999, expected 9)");
+                        "The downloaded size of someFilePath is not what was expected (was 999, expected 9)");
     }
 }

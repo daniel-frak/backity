@@ -17,4 +17,9 @@ public enum LogWebSocketTopics {
     LOGS("/topic/logs");
 
     private final String wsDestination;
+
+    @Override
+    public String toString() {
+        return wsDestination;
+    }
 }

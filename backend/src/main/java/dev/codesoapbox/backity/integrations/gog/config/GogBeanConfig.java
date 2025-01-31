@@ -7,10 +7,12 @@ import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.auth.GogAuthClient;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.auth.GogAuthSpringService;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.embed.GogEmbedWebClient;
+import dev.codesoapbox.backity.integrations.gog.application.GetGogConfigUseCase;
+import dev.codesoapbox.backity.integrations.gog.application.GogConfigInfo;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -19,21 +21,28 @@ import java.time.Clock;
 
 @Slf4j
 @Configuration
+@RequiredArgsConstructor
 public class GogBeanConfig {
 
-    private final String clientId;
-    private final String clientSecret;
+    protected static final String USER_AUTH_URL_SUFFIX =
+            "/auth?client_id=46899977096215655" +
+            "&redirect_uri=https%3A%2F%2Fembed.gog.com%2Fon_login_success%3Forigin%3Dclient" +
+            "&response_type=code&layout=client2";
 
-    public GogBeanConfig(@Value("${backity.gog.client-id}") String clientId,
-                         @Value("${backity.gog.client-secret}") String clientSecret) {
-        this.clientId = clientId;
-        this.clientSecret = clientSecret;
+    private final GogProperties gogProperties;
+
+    @Bean
+    GetGogConfigUseCase getGogConfigUseCase() {
+        var gogConfigInfo = new GogConfigInfo(gogProperties.auth().baseUrl() + USER_AUTH_URL_SUFFIX);
+        return new GetGogConfigUseCase(gogConfigInfo);
     }
 
     @Bean
-    GogAuthClient gogAuthClient(@Qualifier("gogAuth") WebClient webClientAuth,
-                                @Value("${backity.gog.embed.redirect-uri}") String redirectUri) {
-        return new GogAuthClient(webClientAuth, clientId, clientSecret, redirectUri);
+    GogAuthClient gogAuthClient(@Qualifier("gogAuth") WebClient webClientAuth) {
+        return new GogAuthClient(webClientAuth,
+                gogProperties.clientId(),
+                gogProperties.clientSecret(),
+                gogProperties.auth().redirectUri());
     }
 
     @Bean

@@ -3,7 +3,6 @@ package dev.codesoapbox.backity.core.filemanagement.domain;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -12,34 +11,57 @@ public class FilePathProvider {
     private static final Pattern ILLEGAL_CHARACTERS = Pattern.compile("[<>\"|?\n`';!@#$%^&*{}\\[\\]~]");
 
     final String defaultPathTemplate;
-    private final String separator;
+    private final FileManager fileManager;
 
     public FilePathProvider(String defaultPathTemplate, FileManager fileManager) {
-        this.separator = fileManager.getSeparator();
+        this.fileManager = fileManager;
         this.defaultPathTemplate = replaceWithCorrectFileSeparator(defaultPathTemplate);
     }
 
     private String replaceWithCorrectFileSeparator(String defaultPathTemplate) {
         return defaultPathTemplate
-                .replace("/", separator)
-                .replace("\\", separator);
+                .replace("/", fileManager.getSeparator())
+                .replace("\\", fileManager.getSeparator());
     }
 
     /**
      * @return the path that was created
      */
-    public String createTemporaryFilePath(GameProviderId gameProviderId, String gameTitle) {
-        String tempFileName = "TEMP_" + UUID.randomUUID();
-        return getFilePath(gameTitle, tempFileName, gameProviderId.value());
+    public String buildUniqueFilePath(GameProviderId gameProviderId, String gameTitle, String fileName) {
+        int suffixIndex = 0;
+        String baseName = getBaseName(fileName);
+        String extension = fileName.substring(baseName.length());
+
+        String filePath = buildUniqueFilePath(gameProviderId, gameTitle, baseName, extension, suffixIndex);
+        while(fileManager.fileExists(filePath)) {
+            suffixIndex++;
+            filePath = buildUniqueFilePath(gameProviderId, gameTitle, baseName, extension, suffixIndex);
+        }
+
+        return filePath;
     }
 
-    private String getFilePath(String gameTitle, String fileName, String gameProviderId) {
+    private String buildUniqueFilePath(GameProviderId gameProviderId, String gameTitle, String baseName,
+                                       String extension, int suffixIndex) {
+        String targetBaseName = baseName;
+        if (suffixIndex > 0) {
+            targetBaseName = baseName + "_" + suffixIndex;
+        }
+        String targetFileName = targetBaseName + extension;
         return defaultPathTemplate
-                .replace("{GAME_PROVIDER_ID}", sanitize(gameProviderId))
+                .replace("{GAME_PROVIDER_ID}", sanitize(gameProviderId.value()))
                 .replace("{TITLE}", sanitize(gameTitle))
-                .replace("{FILENAME}", sanitize(fileName))
+                .replace("{FILENAME}", sanitize(targetFileName))
                 .replace("\t", " ")
                 .replace(":", " -");
+    }
+
+    private String getBaseName(String fileName) {
+        int dotIndex = fileName.lastIndexOf(".");
+        if (dotIndex != -1) {
+            return fileName.substring(0, dotIndex);
+        }
+        return fileName;
     }
 
     private String sanitize(String value) {

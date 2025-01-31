@@ -4,7 +4,8 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
-import dev.codesoapbox.backity.integrations.gog.config.WebClientConfig;
+import dev.codesoapbox.backity.integrations.gog.config.GogProperties;
+import dev.codesoapbox.backity.integrations.gog.config.GogWebClientConfig;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileDiscoveryException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameBackupRequestFailedException;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameListRequestFailedException;
@@ -75,10 +76,13 @@ class GogEmbedWebClientIT {
 
     @BeforeEach
     void setUp() {
-        WebClient webClientEmbed = new WebClientConfig().webClientEmbed(WebClient.builder(),
-                        "test-base-url").mutate()
-                .baseUrl(wireMockEmbed.baseUrl())
-                .build();
+        var gogProperties = new GogProperties(
+                null,
+                null,
+                null,
+                new GogProperties.EmbedProperties(wireMockEmbed.baseUrl())
+        );
+        WebClient webClientEmbed = new GogWebClientConfig(gogProperties).webClientEmbed(WebClient.builder());
 
         gogEmbedClient = new GogEmbedWebClient(webClientEmbed, authService, clock);
 

@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import software.amazon.awssdk.services.s3.S3Client;
 
 import java.io.*;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -55,47 +56,13 @@ class S3FileSystemIT {
     protected static final String S3_FILE_WITHOUT_EXTENSION_KEY = S3_FILE_PATH + S3_FILE_WITHOUT_EXTENSION_NAME;
     protected static final String S3_FILE_WITHOUT_EXTENSION_CONTENT = "This is a mock game file (3).";
 
+    private static final int BUFFER_SIZE_IN_BYTES = 5_000;
+
     private S3FileSystem s3FileSystem;
 
     @BeforeEach
     void setUp(S3Client s3Client) {
-        s3FileSystem = new S3FileSystem(s3Client, BUCKET_NAME);
-    }
-
-    @Test
-    void shouldRenameFileWithoutExtensionAddingSuffixGivenFileNameCollides() {
-        s3FileSystem.renameFileAddingSuffixIfExists(S3_FILE_1_KEY, S3_FILE_WITHOUT_EXTENSION_NAME);
-
-        assertFileDoesNotExist(S3_FILE_1_KEY);
-        assertFileExists(S3_FILE_PATH + S3_FILE_WITHOUT_EXTENSION_NAME + "_1");
-    }
-
-    private void assertFileDoesNotExist(String key) {
-        assertThatThrownBy(() -> s3FileSystem.getFileResource(key).close())
-                .isInstanceOf(FileNotFoundException.class);
-    }
-
-    private void assertFileExists(String key) {
-        assertThatCode(() -> s3FileSystem.getFileResource(key).close())
-                .doesNotThrowAnyException();
-    }
-
-    @Test
-    void shouldRenameFileAddingSuffixBeforeExtensionGivenFileNameCollides() {
-        s3FileSystem.renameFileAddingSuffixIfExists(S3_FILE_1_KEY, S3_FILE_2_NAME);
-
-        assertFileDoesNotExist(S3_FILE_1_KEY);
-        assertFileExists(S3_FILE_PATH + S3_FILE_2_NAME_BASE + "_1" + S3_FILE_2_NAME_EXTENSION);
-    }
-
-    @Test
-    void shouldRenameFileWithoutAddingSuffixGivenFileNameDoesNotCollide() {
-        var renamedFileName = "renamed_game_file.txt";
-
-        s3FileSystem.renameFileAddingSuffixIfExists(S3_FILE_1_KEY, renamedFileName);
-
-        assertFileDoesNotExist(S3_FILE_1_KEY);
-        assertFileExists(S3_FILE_PATH + renamedFileName);
+        s3FileSystem = new S3FileSystem(s3Client, BUCKET_NAME, BUFFER_SIZE_IN_BYTES);
     }
 
     @Test
@@ -130,10 +97,21 @@ class S3FileSystemIT {
     }
 
     @Test
+    void getOutputStreamShouldFailGivenFileAlreadyExists() {
+        assertThatThrownBy(() -> s3FileSystem.getOutputStream(S3_FILE_1_KEY))
+                .isInstanceOf(FileAlreadyExistsException.class);
+    }
+
+    @Test
     void shouldDeleteGivenFileExists() {
         s3FileSystem.deleteIfExists(S3_FILE_1_KEY);
 
         assertFileDoesNotExist(S3_FILE_1_KEY);
+    }
+
+    private void assertFileDoesNotExist(String key) {
+        assertThatThrownBy(() -> s3FileSystem.getFileResource(key).close())
+                .isInstanceOf(FileNotFoundException.class);
     }
 
     @SuppressWarnings("unchecked")
@@ -143,7 +121,7 @@ class S3FileSystemIT {
         var expectedCause = new RuntimeException("Test exception");
         when(s3Client.deleteObject(any(Consumer.class)))
                 .thenThrow(expectedCause);
-        s3FileSystem = new S3FileSystem(s3Client, BUCKET_NAME);
+        s3FileSystem = new S3FileSystem(s3Client, BUCKET_NAME, BUFFER_SIZE_IN_BYTES);
 
         assertThatThrownBy(() -> s3FileSystem.deleteIfExists(S3_FILE_1_KEY))
                 .isInstanceOf(FileCouldNotBeDeletedException.class)
@@ -199,5 +177,21 @@ class S3FileSystemIT {
         assertThatThrownBy(() -> s3FileSystem.getFileResource(S3_FILE_PATH))
                 .isInstanceOf(FileNotFoundException.class)
                 .hasMessage("File not found: " + S3_FILE_PATH);
+    }
+
+    @Test
+    void fileExistsShouldReturnTrueGivenFileExists() {
+        boolean result = s3FileSystem.fileExists(S3_FILE_1_KEY);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void fileExistsShouldReturnTrueGivenFileDoesNotExist() {
+        String nonExistentFilePath = "someFilePath";
+
+        boolean result = s3FileSystem.fileExists(nonExistentFilePath);
+
+        assertThat(result).isFalse();
     }
 }

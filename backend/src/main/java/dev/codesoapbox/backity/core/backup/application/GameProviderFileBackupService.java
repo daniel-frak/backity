@@ -13,7 +13,7 @@ public interface GameProviderFileBackupService {
     /**
      * @return the path of the downloaded file
      */
-    String backUpFile(GameFile gameFile, String tempFilePath, BackupProgress backupProgress) throws IOException;
+    void backUpFile(GameFile gameFile, BackupProgress backupProgress) throws IOException;
 
     boolean isReady();
 }

@@ -39,14 +39,6 @@ public class FakeUnixFileManager implements FileManager {
     }
 
     @Override
-    public String renameFileAddingSuffixIfExists(String filePath, String fileName) {
-        filesRenamed.put(filePath, fileName);
-        Long sizeInBytes = bytesWrittenPerFilePath.get(filePath);
-        bytesWrittenPerFilePath.put(fileName, sizeInBytes);
-        return fileName;
-    }
-
-    @Override
     public ByteArrayOutputStream getOutputStream(String path) {
         return new ByteArrayOutputStream() {
             @Override
@@ -125,7 +117,12 @@ public class FakeUnixFileManager implements FileManager {
         fakeBytesWrittenPerFilePath.put(filePath, sizeInBytes);
     }
 
-    public boolean containsFile(String filePath) {
+    @Override
+    public boolean fileExists(String filePath) {
         return bytesWrittenPerFilePath.getOrDefault(filePath, 0L) > 0;
+    }
+
+    public void createFile(String filePath) {
+        bytesWrittenPerFilePath.put(filePath, 1L);
     }
 }

@@ -1,7 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services;
 
 import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
-import dev.codesoapbox.backity.core.backup.domain.BackupProgressFactory;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileBackupException;
@@ -20,24 +19,20 @@ public class UrlFileDownloader {
 
     private final FileManager fileManager;
 
-    public String downloadFile(FileBufferProvider fileBufferProvider, GameFile gameFile, String tempFilePath,
-                               BackupProgress progress)
-            throws IOException {
+    public void downloadFile(FileBufferProvider fileBufferProvider, GameFile gameFile, String filePath,
+                             BackupProgress progress) throws IOException {
         String url = gameFile.getGameProviderFile().url();
         Flux<DataBuffer> dataBufferFlux = fileBufferProvider.getFileBuffer(url, progress);
-        writeToDisk(dataBufferFlux, tempFilePath, progress);
+        writeToDisk(dataBufferFlux, filePath, progress);
 
-        log.info("Downloaded file {} to {}", gameFile, tempFilePath);
+        log.info("Downloaded file {} to {}", gameFile, filePath);
 
-        validateDownloadedFileSize(tempFilePath, progress.getContentLengthBytes());
-
-        String originalFileName = gameFile.getGameProviderFile().originalFileName();
-        return fileManager.renameFileAddingSuffixIfExists(tempFilePath, originalFileName);
+        validateDownloadedFileSize(filePath, progress.getContentLengthBytes());
     }
 
-    private void writeToDisk(Flux<DataBuffer> dataBufferFlux, String tempFilePath, BackupProgress progress)
+    private void writeToDisk(Flux<DataBuffer> dataBufferFlux, String filePath, BackupProgress progress)
             throws IOException {
-        try (OutputStream outputStream = fileManager.getOutputStream(tempFilePath)) {
+        try (OutputStream outputStream = fileManager.getOutputStream(filePath)) {
             DataBufferUtils
                     .write(dataBufferFlux, progress.track(outputStream))
                     .map(DataBufferUtils::release)
@@ -45,13 +40,13 @@ public class UrlFileDownloader {
         }
     }
 
-    private void validateDownloadedFileSize(String tempFilePath, long expectedSizeInBytes) {
-        long sizeInBytesOnDisk = fileManager.getSizeInBytes(tempFilePath);
+    private void validateDownloadedFileSize(String filePath, long expectedSizeInBytes) {
+        long sizeInBytesOnDisk = fileManager.getSizeInBytes(filePath);
         if (sizeInBytesOnDisk != expectedSizeInBytes) {
-            throw new FileBackupException("The downloaded size of " + tempFilePath + " is not what was expected (was "
+            throw new FileBackupException("The downloaded size of " + filePath + " is not what was expected (was "
                                           + sizeInBytesOnDisk + ", expected " + expectedSizeInBytes + ")");
         } else {
-            log.info("Filesize check for {} passed successfully", tempFilePath);
+            log.info("Filesize check for {} passed successfully", filePath);
         }
     }
 }

@@ -40,7 +40,7 @@ public class TestFileBackup {
     public static FileBackup inProgress() {
         return discoveredBuilder()
                 .status(FileBackupStatus.IN_PROGRESS)
-                .filePath("tempFilePath")
+                .filePath("someFilePath")
                 .build();
     }
 

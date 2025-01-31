@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
+import java.nio.file.FileAlreadyExistsException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,57 +20,11 @@ public class S3FileSystem implements FileManager {
 
     private final S3Client s3Client;
     private final String bucketName;
+    private final int bufferSizeInBytes;
 
     @Override
-    public String renameFileAddingSuffixIfExists(String fullFilePath, String targetFileName) {
-        String directory = extractDirectory(fullFilePath);
-        String uniqueTargetFileName = getUniqueFileName(directory, targetFileName);
-        String destinationKey = directory + getSeparator() + uniqueTargetFileName;
-        s3Client.copyObject(request -> request
-                .sourceBucket(bucketName)
-                .sourceKey(fullFilePath)
-                .destinationBucket(bucketName)
-                .destinationKey(destinationKey)
-        );
-        s3Client.deleteObject(request -> request.bucket(bucketName).key(fullFilePath));
-        log.info("Renamed file {} to {}", fullFilePath, destinationKey);
-
-        return destinationKey;
-    }
-
-    private String extractDirectory(String path) {
-        return path.substring(0, path.lastIndexOf(getSeparator()));
-    }
-
-    @Override
-    public String getSeparator() {
-        return "/";
-    }
-
-    private String getUniqueFileName(String directory, String fileName) {
-        String baseName = getBaseName(fileName);
-        String targetBaseName = baseName;
-        String extension = fileName.substring(baseName.length());
-        int counter = 1;
-
-        while (exists(directory + getSeparator() + targetBaseName + extension)) {
-            targetBaseName = baseName + "_" + counter;
-            counter++;
-        }
-
-        return targetBaseName + extension;
-    }
-
-    private String getBaseName(String fileName) {
-        int dotIndex = fileName.lastIndexOf(".");
-        if (dotIndex != -1) {
-            return fileName.substring(0, dotIndex);
-        }
-        return fileName;
-    }
-
     @SuppressWarnings("java:S1166")
-    private boolean exists(String key) {
+    public boolean fileExists(String key) {
         try {
             s3Client.headObject(request -> request.bucket(bucketName).key(key));
             return true;
@@ -79,8 +34,11 @@ public class S3FileSystem implements FileManager {
     }
 
     @Override
-    public OutputStream getOutputStream(String stringPath) {
-        return new S3OutputStream(s3Client, bucketName, stringPath, 10_000_000);
+    public OutputStream getOutputStream(String stringPath) throws FileAlreadyExistsException {
+        if(fileExists(stringPath)) {
+            throw new FileAlreadyExistsException(stringPath);
+        }
+        return new S3OutputStream(s3Client, bucketName, stringPath, bufferSizeInBytes);
     }
 
     @Override
@@ -122,5 +80,10 @@ public class S3FileSystem implements FileManager {
                 responseInputStream.response().contentLength(),
                 filePath.substring(filePath.lastIndexOf(getSeparator()) + 1)
         );
+    }
+
+    @Override
+    public String getSeparator() {
+        return "/";
     }
 }

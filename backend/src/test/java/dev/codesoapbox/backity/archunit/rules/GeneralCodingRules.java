@@ -1,9 +1,18 @@
 package dev.codesoapbox.backity.archunit.rules;
 
+import com.tngtech.archunit.base.DescribedPredicate;
+import com.tngtech.archunit.core.domain.JavaAnnotation;
+import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.properties.HasType;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
+import java.util.List;
+
+import static com.tngtech.archunit.core.domain.Formatters.ensureSimpleName;
 import static com.tngtech.archunit.core.domain.properties.CanBeAnnotated.Predicates.annotatedWith;
+import static com.tngtech.archunit.core.domain.properties.HasName.Functions.GET_NAME;
+import static com.tngtech.archunit.core.domain.properties.HasType.Functions.GET_RAW_TYPE;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
 import static com.tngtech.archunit.library.GeneralCodingRules.*;
 
@@ -52,8 +61,26 @@ public class GeneralCodingRules {
 
     @ArchTest
     static final ArchRule FIELD_INJECTION_SHOULD_NOT_BE_USED = noFields().that()
-            .areDeclaredInClassesThat()
-            .areNotAnnotatedWith("org.springframework.context.annotation.Configuration")
+            .areDeclaredInClassesThat(new DescribedPredicate<>(
+                    "don't have configuration annotation on themselves or on parent classes") {
+                @Override
+                public boolean test(JavaClass javaClass) {
+                    while (javaClass != null) {
+                        for (JavaAnnotation<?> javaAnnotation : javaClass.getAnnotations()) {
+                            List<String> configurationAnnotations = List.of(
+                                    "org.springframework.context.annotation.Configuration",
+                                    "org.springframework.boot.context.properties.ConfigurationProperties"
+                            );
+                            String annotationName = javaAnnotation.getRawType().getName();
+                            if (configurationAnnotations.contains(annotationName)) {
+                                return false;
+                            }
+                        }
+                        javaClass = javaClass.getEnclosingClass().orElse(null);
+                    }
+                    return true;
+                }
+            })
             .should(BE_ANNOTATED_WITH_AN_INJECTION_ANNOTATION)
             .as("no classes should use field injection")
             .because("""

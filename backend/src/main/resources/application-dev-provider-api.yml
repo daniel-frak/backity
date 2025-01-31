@@ -1,0 +1,7 @@
+backity:
+    gog:
+        auth:
+            base-url: "http://localhost:1080/gog/auth"
+            redirect-uri: "http://localhost:1080/gog/embed/on_login_success"
+        embed:
+            base-url: "http://localhost:1080/gog/embed"

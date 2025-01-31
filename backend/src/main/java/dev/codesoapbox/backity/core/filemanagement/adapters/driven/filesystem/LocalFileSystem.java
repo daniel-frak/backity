@@ -12,53 +12,15 @@ import java.nio.file.*;
 public class LocalFileSystem implements FileManager {
 
     @Override
-    public String renameFileAddingSuffixIfExists(String fullFilePath, String targetFileName) throws IOException {
-        Path originalPath = Paths.get(fullFilePath);
-        String fileName = getUniqueFileName(extractDirectory(fullFilePath), targetFileName);
-        Path newPath = Paths.get(extractDirectory(fullFilePath) + getSeparator() + fileName);
-
-        Files.move(originalPath, newPath, StandardCopyOption.REPLACE_EXISTING);
-        log.info("Renamed file {} to {}", originalPath, newPath);
-
-        return newPath.toAbsolutePath().toString();
-    }
-
-    private String getUniqueFileName(String directory, String fileName) {
-        String baseName = getBaseName(fileName);
-        String targetBaseName = baseName;
-        String extension = fileName.substring(baseName.length());
-        int counter = 1;
-
-        while (Files.exists(Paths.get(directory + getSeparator() + targetBaseName + extension))) {
-            targetBaseName = baseName + "_" + counter;
-            counter++;
-        }
-
-        return targetBaseName + extension;
-    }
-
-    private String getBaseName(String fileName) {
-        int dotIndex = fileName.lastIndexOf(".");
-        if (dotIndex != -1) {
-            return fileName.substring(0, dotIndex);
-        }
-        return fileName;
-    }
-
-    @Override
     public String getSeparator() {
         return File.separator;
-    }
-
-    private String extractDirectory(String path) {
-        return path.substring(0, path.lastIndexOf(getSeparator()));
     }
 
     @Override
     public OutputStream getOutputStream(String stringPath) throws IOException {
         Path path = FileSystems.getDefault().getPath(stringPath);
         Files.createDirectories(path.getParent());
-        return Files.newOutputStream(path);
+        return Files.newOutputStream(path, StandardOpenOption.CREATE_NEW);
     }
 
     @Override
@@ -88,5 +50,10 @@ public class LocalFileSystem implements FileManager {
         long sizeInBytes = file.length();
 
         return new FileResource(inputStream, sizeInBytes, file.getName());
+    }
+
+    @Override
+    public boolean fileExists(String filePath) {
+        return Files.exists(Paths.get(filePath));
     }
 }

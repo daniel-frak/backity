@@ -82,7 +82,7 @@ describe('InProgressFilesCardComponent', () => {
 
     expect(topicsSubscribed).toEqual([
       FileBackupMessageTopics.Started,
-      FileBackupMessageTopics.ProgressChanged,
+      FileBackupMessageTopics.ProgressUpdate,
       FileBackupMessageTopics.StatusChanged
     ]);
     expect(component['subscriptions'].length).toBe(3);
@@ -148,7 +148,7 @@ describe('InProgressFilesCardComponent', () => {
     const progressUpdatedEvent: FileBackupProgressUpdatedEvent = TestProgressUpdatedEvent.twentyFivePercent();
 
     await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
-      FileBackupMessageTopics.ProgressChanged, progressUpdatedEvent);
+      FileBackupMessageTopics.ProgressUpdate, progressUpdatedEvent);
 
     const progressBar = fixture.debugElement.query(By.css('.progress'));
     expect(progressBar.nativeElement.textContent).toContain('25%');

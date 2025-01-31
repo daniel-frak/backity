@@ -9,9 +9,7 @@
  */
 
 
-export type LogsMessageTopics = '/topic/logs';
-
-export const LogsMessageTopics = {
-    TopicLogs: '/topic/logs' as LogsMessageTopics
-};
+export interface GogConfigResponseHttpDto { 
+    userAuthUrl: string;
+}
 

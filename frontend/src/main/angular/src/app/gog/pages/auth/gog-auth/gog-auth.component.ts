@@ -1,9 +1,8 @@
 import {Component, OnInit} from '@angular/core';
-import {GOGAuthenticationClient} from "@backend";
-import {environment} from "@environment/environment";
+import {GOGAuthenticationClient, GogConfigResponseHttpDto, GOGConfigurationClient} from "@backend";
 import {AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
-import {finalize, firstValueFrom} from "rxjs";
+import {finalize, firstValueFrom, forkJoin, Observable} from "rxjs";
 import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from '@app/shared/components/button/button.component';
@@ -27,7 +26,7 @@ import {CardComponent} from "@app/shared/components/card/card.component";
 })
 export class GogAuthComponent implements OnInit {
 
-  private readonly GOG_AUTH_URL = environment.gogAuthUrl;
+  private gogAuthUrl?: string;
 
   public gogAuthenticated: boolean = false;
   public gogIsLoading: boolean = true;
@@ -44,22 +43,29 @@ export class GogAuthComponent implements OnInit {
     return this.gogAuthForm.get('gogCodeUrl')!;
   }
 
-  constructor(private readonly gogAuthClient: GOGAuthenticationClient,
+  constructor(private readonly gogConfigClient: GOGConfigurationClient,
+              private readonly gogAuthClient: GOGAuthenticationClient,
               private readonly notificationService: NotificationService) {
   }
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.gogIsLoading = true;
-    this.gogAuthClient.checkAuthentication()
+    const auth$: Observable<boolean> = this.gogAuthClient.checkAuthentication();
+    const config$: Observable<GogConfigResponseHttpDto> = this.gogConfigClient.getGogConfig();
+
+    forkJoin([auth$, config$])
       .pipe(finalize(() => this.gogIsLoading = false))
       .subscribe({
-        next: isAuthenticated => this.gogAuthenticated = isAuthenticated,
-        error: error => this.notificationService.showFailure('Failed to check GOG authentication', error)
+        next: ([isAuthenticated, gogConfig]) => {
+          this.gogAuthenticated = isAuthenticated;
+          this.gogAuthUrl = gogConfig.userAuthUrl;
+        },
+        error: error => this.notificationService.showFailure('Failed to configure GOG', error)
       });
   }
 
   showGogAuthPopup = () => {
-    window.open(this.GOG_AUTH_URL, '_blank', 'toolbar=0,location=0,menubar=0');
+    window.open(this.gogAuthUrl, '_blank', 'toolbar=0,location=0,menubar=0');
   }
 
   authenticateGog() {

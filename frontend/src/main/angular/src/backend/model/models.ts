@@ -16,6 +16,7 @@ export * from './gameFileProcessingStatus';
 export * from './gameFileResponse';
 export * from './gameProviderFile';
 export * from './gameWithFiles';
+export * from './gogConfigResponseHttpDto';
 export * from './logCreatedEvent';
 export * from './logsMessageTopics';
 export * from './pageGameFile';

@@ -61,11 +61,11 @@ export class FileDiscoveryInfoCardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.push(
-      this.messageService.watch(FileDiscoveryWebSocketTopics.Discovered)
+      this.messageService.watch(FileDiscoveryWebSocketTopics.FileDiscovered)
         .subscribe(p => this.onFileDiscovered(p)),
-      this.messageService.watch(FileDiscoveryWebSocketTopics.DiscoveryStatusChanged)
+      this.messageService.watch(FileDiscoveryWebSocketTopics.FileStatusChanged)
         .subscribe(p => this.onDiscoveryStatusChanged(p)),
-      this.messageService.watch(FileDiscoveryWebSocketTopics.DiscoveryProgressChanged)
+      this.messageService.watch(FileDiscoveryWebSocketTopics.ProgressUpdate)
         .subscribe(p => this.onDiscoveryProgressChanged(p))
     )
 

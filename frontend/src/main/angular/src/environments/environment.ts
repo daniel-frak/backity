@@ -4,8 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: "http://localhost:8080/api",
-  gogAuthUrl: "http://localhost:1080/gog/auth/auth"
+  apiUrl: "http://localhost:8080/api"
 };
 
 /*

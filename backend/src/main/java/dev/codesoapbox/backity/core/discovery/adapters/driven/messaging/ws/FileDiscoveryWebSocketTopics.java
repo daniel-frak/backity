@@ -16,4 +16,9 @@ public enum FileDiscoveryWebSocketTopics {
     FILE_DISCOVERY_PROGRESS_CHANGED("/topic/file-discovery/progress-update");
 
     private final String wsDestination;
+
+    @Override
+    public String toString() {
+        return wsDestination;
+    }
 }

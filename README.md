@@ -35,6 +35,7 @@ The information below is aimed at developers who want to extend this project's f
   * [Basic configuration](#basic-configuration)
   * [Advanced configuration](#advanced-configuration)
   * [S3 support](#s3-support)
+- [Application behavior](#application-behavior)
 
 ## Getting Started
 
@@ -91,6 +92,19 @@ Further properties should also be configured:
 
 Check the [Spring Cloud AWS documentation](https://docs.awspring.io/spring-cloud-aws/docs/3.0.0-M1/reference/html/index.html)
 for more advanced configuration options.
+
+The following optional properties are also available:
+- `backity.filesystem.s3.buffer-size-in-bytes` - the buffer size for multipart uploads
+  (see: [AWS S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html))
+
+## Application Behavior
+
+The following information is useful to know about the application's functionality:
+
+- If downloading a file would result in overwriting an existing file, an exception will be thrown.
+  This helps to protect the existing file
+  and prevents multiple Game File aggregates from pointing to the same physical file.
+
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with
 markdown-toc</a></i></small>

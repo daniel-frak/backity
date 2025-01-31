@@ -18,4 +18,9 @@ public enum FileBackupWebSocketTopics {
     BACKUP_STATUS_CHANGED("/topic/backups/status-changed");
 
     private final String wsDestination;
+
+    @Override
+    public String toString() {
+        return wsDestination;
+    }
 }

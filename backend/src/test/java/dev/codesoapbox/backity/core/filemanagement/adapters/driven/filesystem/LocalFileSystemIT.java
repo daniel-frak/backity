@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.*;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -19,56 +20,6 @@ class LocalFileSystemIT {
     @BeforeEach
     void setUp() {
         localFileSystem = new LocalFileSystem();
-    }
-
-    @Test
-    void shouldRenameFileWithoutAddingSuffixGivenFileNameDoesNotCollide(@TempDir Path tempDir) throws IOException {
-        String originalFilePath = tempDir + File.separator + "someFile";
-        String newFileName = "newFileName";
-        var fileCreated = new File(originalFilePath).createNewFile();
-
-        String result = localFileSystem.renameFileAddingSuffixIfExists(originalFilePath, newFileName);
-
-        assertThat(fileCreated).isTrue();
-        assertThat(new File(tempDir + File.separator + newFileName)).exists();
-        assertThat(result).isEqualTo(tempDir + File.separator + newFileName);
-    }
-
-    @Test
-    void shouldRenameFileWithoutExtensionAddingSuffixGivenFileNameCollides(@TempDir Path tempDir) throws IOException {
-        String originalFilePath = tempDir + File.separator + "someFile";
-        String newFileName = "newFileName";
-        String newFilePath = tempDir + File.separator + newFileName;
-        var existingFile1Created = new File(newFilePath).createNewFile();
-        var existingFile2Created = new File(newFilePath + "_1").createNewFile();
-        var fileToRenameCreated = new File(originalFilePath).createNewFile();
-
-        localFileSystem.renameFileAddingSuffixIfExists(originalFilePath, newFileName);
-
-        assertThat(existingFile1Created).isTrue();
-        assertThat(existingFile2Created).isTrue();
-        assertThat(fileToRenameCreated).isTrue();
-        assertThat(new File(tempDir + File.separator + newFileName + "_2")).exists();
-    }
-
-    @Test
-    void shouldRenameFileAddingSuffixBeforeExtensionGivenFileNameCollides(@TempDir Path tempDir) throws IOException {
-        String originalFilePath = tempDir + File.separator + "someFile";
-        String newFileNameWithoutExtension = "newFileName";
-        String extension = ".exe";
-        String newFileNameWithExtension = newFileNameWithoutExtension + extension;
-        String newFilePathWithoutExtension = tempDir + File.separator + newFileNameWithoutExtension;
-        var existingFile1Created = new File(newFilePathWithoutExtension + extension).createNewFile();
-        var existingFile2Created = new File(newFilePathWithoutExtension + "_1" + extension).createNewFile();
-        var fileToRenameCreated = new File(originalFilePath).createNewFile();
-
-        localFileSystem.renameFileAddingSuffixIfExists(originalFilePath, newFileNameWithExtension);
-
-        assertThat(existingFile1Created).isTrue();
-        assertThat(existingFile2Created).isTrue();
-        assertThat(fileToRenameCreated).isTrue();
-        assertThat(new File(tempDir + File.separator + newFileNameWithoutExtension + "_2" + extension))
-                .exists();
     }
 
     @Test
@@ -142,6 +93,15 @@ class LocalFileSystemIT {
     }
 
     @Test
+    void getOutputStreamShouldFailGivenFileAlreadyExists(@TempDir Path tempDir) throws IOException {
+        String filePath = tempDir + File.separator + "someFile";
+        new File(filePath).createNewFile();
+
+        assertThatThrownBy(() -> localFileSystem.getOutputStream(filePath))
+                .isInstanceOf(FileAlreadyExistsException.class);
+    }
+
+    @Test
     void shouldGetSeparator() {
         String result = localFileSystem.getSeparator();
 
@@ -193,5 +153,24 @@ class LocalFileSystemIT {
         assertThatThrownBy(() -> localFileSystem.getFileResource(tempDirectory.toString()).close())
                 .isInstanceOf(FileNotFoundException.class)
                 .hasMessage("File not found: " + tempDirectory);
+    }
+
+    @Test
+    void fileExistsShouldReturnTrueGivenFileExists(@TempDir Path tempDir) throws IOException {
+        String filePath = tempDir + File.separator + "someFile";
+        new File(filePath).createNewFile();
+
+        boolean result = localFileSystem.fileExists(filePath);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void fileExistsShouldReturnTrueGivenFileDoesNotExist(@TempDir Path tempDir) {
+        String nonExistentFilePath = tempDir + File.separator + "someFile";
+
+        boolean result = localFileSystem.fileExists(nonExistentFilePath);
+
+        assertThat(result).isFalse();
     }
 }

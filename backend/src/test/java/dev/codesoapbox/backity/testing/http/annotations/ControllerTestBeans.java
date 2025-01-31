@@ -63,6 +63,7 @@ import java.lang.annotation.Target;
         GetDiscoveredFileListUseCase.class,
         GetEnqueuedFileListUseCase.class,
         GetProcessedFileListUseCase.class,
+        GetGogConfigUseCase.class,
         AuthenticateGogUseCase.class,
         CheckGogAuthenticationUseCase.class,
         RefreshGogAccessTokenUseCase.class,

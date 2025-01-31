@@ -12,4 +12,10 @@ class FileDiscoveryWebSocketTopicsTest {
 
         assertThat(result).isEqualTo("/topic/file-discovery/file-discovered");
     }
+
+    @Test
+    void toStringShouldReturnWsDestination() {
+        assertThat(FileDiscoveryWebSocketTopics.FILE_DISCOVERED)
+                .hasToString("/topic/file-discovery/file-discovered");
+    }
 }

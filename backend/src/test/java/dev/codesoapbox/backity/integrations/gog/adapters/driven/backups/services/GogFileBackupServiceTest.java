@@ -35,33 +35,12 @@ class GogFileBackupServiceTest {
     @Test
     void backUpFileShouldDownloadFile() throws IOException {
         GameFile gameFile = TestGameFile.discovered();
-        String tempFilePath = "someTempFilePath";
+        String filePath = gameFile.getFileBackup().getFilePath();
         BackupProgress backupProgress = mock(BackupProgress.class);
 
-        gogFileBackupService.backUpFile(gameFile, tempFilePath, backupProgress);
+        gogFileBackupService.backUpFile(gameFile, backupProgress);
 
-        verify(urlFileDownloader).downloadFile(gogEmbedClient, gameFile, tempFilePath, backupProgress);
-    }
-
-    @Test
-    void backUpFileShouldReturnFilePath() throws IOException {
-        GameFile gameFile = TestGameFile.discovered();
-        var tempFilePath = "someTempFilePath";
-        BackupProgress backupProgress = mock(BackupProgress.class);
-        String finalFilePath = mockSuccessfulFileDownload(gameFile, tempFilePath, backupProgress);
-
-        String result = gogFileBackupService.backUpFile(gameFile, tempFilePath, backupProgress);
-
-        assertThat(result).isEqualTo(finalFilePath);
-    }
-
-    private String mockSuccessfulFileDownload(GameFile gameFile, String tempFilePath, BackupProgress backupProgress)
-            throws IOException {
-        var finalFilePath = "finalFilePath";
-        when(urlFileDownloader.downloadFile(gogEmbedClient, gameFile, tempFilePath, backupProgress))
-                .thenReturn(finalFilePath);
-
-        return finalFilePath;
+        verify(urlFileDownloader).downloadFile(gogEmbedClient, gameFile, filePath, backupProgress);
     }
 
     @Test

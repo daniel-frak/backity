@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.core.backup.application;
 
-import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
 import dev.codesoapbox.backity.core.backup.domain.BackupProgressFactory;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
@@ -58,13 +57,10 @@ class FileBackupServiceTest {
     }
 
     @Test
-    void shouldDownloadFile() throws IOException {
+    void shouldDownloadFile() {
         GameFile gameFile = TestGameFile.discovered();
         GameFilePersistedChanges gameFilePersistedChanges = trackPersistedGameFileChanges();
-        String tempFilePath = mockTempFilePathCreation(gameFile, EXISTING_GAME_PROVIDER_ID);
-        BackupProgress backupProgress = mockBackupProgressCreation();
-        String expectedFilePath = mockGameProviderServiceSuccessfullyBackupsUp(
-                gameFile, tempFilePath, backupProgress);
+        String expectedFilePath = mockFilePathCreation(gameFile, EXISTING_GAME_PROVIDER_ID);
 
         fileBackupService.backUpFile(gameFile);
 
@@ -72,25 +68,19 @@ class FileBackupServiceTest {
                 .isEqualTo(List.of(FileBackupStatus.IN_PROGRESS, FileBackupStatus.IN_PROGRESS,
                         FileBackupStatus.SUCCESS));
         assertThat(gameFilePersistedChanges.savedFilePaths())
-                .isEqualTo(Arrays.asList(null, tempFilePath, expectedFilePath));
+                .isEqualTo(Arrays.asList(null, // Mark 'in progress' with no file path
+                        expectedFilePath, // Set file path before starting download
+                        expectedFilePath // Mark 'done'
+                ));
     }
 
-    private String mockGameProviderServiceSuccessfullyBackupsUp(
-            GameFile gameFile, String tempFilePath, BackupProgress backupProgress) throws IOException {
-        var expectedFilePath = "finalFilePath";
-        when(gameProviderFileBackupService.backUpFile(gameFile, tempFilePath, backupProgress))
-                .thenReturn(expectedFilePath);
+    private String mockFilePathCreation(GameFile gameFile, GameProviderId gameProviderId) {
+        var filePath = "someFileDir/someFile";
+        when(filePathProvider.buildUniqueFilePath(gameProviderId,
+                gameFile.getGameProviderFile().originalGameTitle(), gameFile.getGameProviderFile().originalFileName()))
+                .thenReturn(filePath);
 
-        return expectedFilePath;
-    }
-
-    private String mockTempFilePathCreation(GameFile gameFile, GameProviderId gameProviderId) {
-        var tempFilePath = "someFileDir/someFile";
-        when(filePathProvider.createTemporaryFilePath(gameProviderId,
-                gameFile.getGameProviderFile().originalGameTitle()))
-                .thenReturn(tempFilePath);
-
-        return tempFilePath;
+        return filePath;
     }
 
     private GameFilePersistedChanges trackPersistedGameFileChanges() {
@@ -106,21 +96,11 @@ class FileBackupServiceTest {
         return gameFilePersistedChanges;
     }
 
-    private BackupProgress mockBackupProgressCreation() {
-        BackupProgress backupProgress = mock(BackupProgress.class);
-        when(backupProgressFactory.create())
-                .thenReturn(backupProgress);
-
-        return backupProgress;
-    }
-
     @Test
-    void shouldTryToRemoveTempFileAndRethrowWrappedOnIOExceptionGivenFilePathIsTempFilePath() throws IOException {
+    void shouldTryToRemoveFileAndRethrowWrappedGivenIOException() throws IOException {
         GameFile gameFile = TestGameFile.discovered();
-        String tempFilePath = mockTempFilePathCreation(gameFile, EXISTING_GAME_PROVIDER_ID);
-        BackupProgress backupProgress = mockBackupProgressCreation();
-        IOException coreException = mockGameProviderServiceSetsFilePathAsTempThenThrowsExceptionDuringBackup(
-                gameFile, tempFilePath, backupProgress);
+        String filePath = mockFilePathCreation(gameFile, EXISTING_GAME_PROVIDER_ID);
+        IOException coreException = mockGameProviderServiceThrowsExceptionDuringBackup();
 
         assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
                 .isInstanceOf(FileBackupFailedException.class)
@@ -131,19 +111,14 @@ class FileBackupServiceTest {
                     softly.assertThat(fileBackup.getFailedReason()).isEqualTo(coreException.getMessage());
                 }));
         verify(gameFileRepository, times(4)).save(gameFile);
-        assertThat(fileManager.fileDeleteWasAttempted(tempFilePath)).isTrue();
+        assertThat(fileManager.fileDeleteWasAttempted(filePath)).isTrue();
         assertThat(gameFile.getFileBackup().getFilePath()).isNull();
     }
 
-    private IOException mockGameProviderServiceSetsFilePathAsTempThenThrowsExceptionDuringBackup(
-            GameFile gameFile, String tempFilePath, BackupProgress backupProgress) throws IOException {
+    private IOException mockGameProviderServiceThrowsExceptionDuringBackup() throws IOException {
         var coreException = new IOException("someMessage");
-        when(gameProviderFileBackupService.backUpFile(gameFile, tempFilePath, backupProgress))
-                .thenAnswer(inv -> {
-                    gameFile.getFileBackup().setFilePath(tempFilePath);
-                    throw coreException;
-                })
-                .thenThrow(coreException);
+        doThrow(coreException)
+                .when(gameProviderFileBackupService).backUpFile(any(), any());
 
         return coreException;
     }
@@ -170,7 +145,7 @@ class FileBackupServiceTest {
                         .gameProviderId(nonExistentGameProviderId)
                         .build())
                 .build();
-        mockTempFilePathCreation(gameFile, nonExistentGameProviderId);
+        mockFilePathCreation(gameFile, nonExistentGameProviderId);
 
         assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
                 .isInstanceOf(FileBackupFailedException.class)
@@ -194,8 +169,8 @@ class FileBackupServiceTest {
     }
 
     private void mockFileBackupThrowsIOException() throws IOException {
-        when(gameProviderFileBackupService.backUpFile(any(), any(), any()))
-                .thenThrow(new IOException());
+        doThrow(new IOException())
+                .when(gameProviderFileBackupService).backUpFile(any(), any());
     }
 
     @Test
