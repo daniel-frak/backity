@@ -10,11 +10,14 @@
 
     <app-table [content]="filePage?.content" [isLoading]="filesAreLoading"
                id="processed-files" [testId]="'processed-files-table'">
-      <ng-template app-table-column="Game title" let-item>
+      <ng-template app-table-column="Provider game title" let-item>
         {{ asGameFile(item).gameProviderFile!.originalGameTitle }}
       </ng-template>
-      <ng-template app-table-column="File name" let-item>
-        {{ asGameFile(item).gameProviderFile!.fileTitle }}
+      <ng-template app-table-column="Provider" let-item>
+        {{ asGameFile(item).gameProviderFile!.gameProviderId }}
+      </ng-template>
+      <ng-template app-table-column="Provider file name" let-item>
+        {{ asGameFile(item).gameProviderFile!.originalFileName }}
       </ng-template>
       <ng-template app-table-column="Version" let-item>
         {{ asGameFile(item).gameProviderFile!.version }}

@@ -10,6 +10,9 @@
       <ng-template app-table-column="File title" let-item>
         {{ asGameFile(item).gameProviderFile!.fileTitle }}
       </ng-template>
+      <ng-template app-table-column="Provider" let-item>
+        {{ asGameFile(item).gameProviderFile!.gameProviderId }}
+      </ng-template>
       <ng-template app-table-column="Version" let-item>
         {{ asGameFile(item).gameProviderFile!.version }}
       </ng-template>
