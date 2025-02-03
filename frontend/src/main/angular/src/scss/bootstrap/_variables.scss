@@ -26,7 +26,7 @@ $popover-max-width: 300px;
 
 $toast-spacing: .75rem;
 
-$enable-rounded: false;
+$enable-rounded: true;
 
 // Dark mode alternative
 
@@ -42,11 +42,13 @@ $border-color-translucent: rgba($white, .175);
 $dark: #2a2f32; // Or something brown, e.g.: #322d2a;
 $light: lighten($dark, 75%);
 $body-color: $light;
-$body-bg: $dark;
 $body-secondary-color: rgba($body-color, .75);
 $body-tertiary-color: rgba($body-color, .5);
 $body-secondary-bg: desaturate(darken($dark, 5%), 15%);
 $body-tertiary-bg: desaturate(darken($dark, 7.5%), 30%);
+$body-bg: $body-tertiary-bg;
+$card-bg: $dark;
+$table-bg: $dark;
 $table-color: $light;
 $border-color: $border-color-translucent;
 $form-select-indicator-color: $light;
@@ -55,5 +57,4 @@ $form-invalid-color: $red-300;
 $form-invalid-border-color: $red-300;
 $form-feedback-icon-invalid-color: $red-300;
 $component-active-color: color-contrast($component-active-bg) if($enable-important-utilities, !important, null);
-
 // END of Dark mode alternative

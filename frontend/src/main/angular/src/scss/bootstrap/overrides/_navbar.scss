@@ -1,0 +1,10 @@
+@import "../basics";
+
+.navbar {
+  --#{$prefix}card-border-width: #{$card-border-width};
+  --#{$prefix}card-border-color: #{$card-border-color};
+  --#{$prefix}card-box-shadow: #{$card-box-shadow};
+
+  border-bottom: var(--#{$prefix}card-border-width) solid var(--#{$prefix}card-border-color);
+  @include box-shadow(var(--#{$prefix}card-box-shadow));
+}
