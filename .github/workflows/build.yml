@@ -1,37 +1,108 @@
-name: Build
+name: Build and analyze
+
 on:
   push:
     branches:
       - main
   pull_request:
     types: [opened, synchronize, reopened]
+
+env:
+  JAVA_VERSION: 21
+  JAVA_DISTRIBUTION: adopt
+  SONAR_CACHE_PATH: ~/.sonar/cache
+  MAVEN_CACHE_PATH: ~/.m2
+
 jobs:
   build:
-    name: Build
+    name: Build and Analyze
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Set up JDK 21
-        uses: actions/setup-java@v2
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
-          java-version: 21
-          distribution: 'adopt'
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
-          path: ~/.sonar/cache
+          path: ${{ env.SONAR_CACHE_PATH }}
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+
       - name: Cache Maven packages
-        uses: actions/cache@v1
+        uses: actions/cache@v4
         with:
-          path: ~/.m2
+          path: ${{ env.MAVEN_CACHE_PATH }}
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze
+
+      - name: Build and Analyze
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify sonar:sonar -P frontend-pre-sonar -P sonar-cloud -Ppitest-new-code -Ppitest-strict
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: backend/target/*.jar
+
+  e2e:
+    needs: build
+    name: End-to-End Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.MAVEN_CACHE_PATH }}
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Download application jar
+        uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+          path: backend/target
+
+      - name: Start Docker containers
+        working-directory: docker/e2e
+        run: |
+          docker compose up -d --build \
+          && ./wait-until "curl -sLf -o /dev/null http://localhost:1080/gog/auth/auth" 300
+
+      - name: Configure Playwright
+        working-directory: e2e
+        run: sudo mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
+
+      - name: Start application
+        run: java -jar ./backend/target/*.jar --spring.profiles.active=dev,dev-provider-api &
+
+      - name: Wait for application to start
+        run: |
+          echo "Waiting for the application to start..."
+          while ! nc -z localhost 8080; do
+            sleep 1
+          done
+          echo "Application is up and running!"
+
+      - name: Run E2E tests
+        working-directory: e2e
+        run: mvn test -Dheadless=true
