@@ -16,6 +16,8 @@
         {{ asGameFile(item).gameProviderFile!.gameProviderId }}
       </ng-template>
       <ng-template app-table-column="Provider file name" let-item>
+        {{ asGameFile(item).gameProviderFile!.fileTitle }}
+        -
         {{ asGameFile(item).gameProviderFile!.originalFileName }}
       </ng-template>
       <ng-template app-table-column="Version" let-item>

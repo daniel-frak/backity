@@ -127,9 +127,26 @@ mvn verify
 
 Run all tests for the Angular code with:
 
-```
+```shell
 cd frontend/src/main/angular
 ng test
+```
+
+### End-to-end
+
+Run end-to-end tests with:
+
+```shell
+# Build the project
+mvn clean install
+
+# Run the project
+cd backend
+mvn spring-boot:run -Dspring-boot.run.profiles=dev,dev-provider-api
+
+# Run the tests
+cd ../e2e
+mvn test
 ```
 
 ## SonarQube analysis on a local environment

@@ -21,8 +21,7 @@ import java.net.URL;
 import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 
 @UsePlaywright(CustomOptions.class)
 class BackityTest {
@@ -66,7 +65,7 @@ class BackityTest {
         fileDiscoveryPage.navigate();
         discoverNewFiles(fileDiscoveryPage);
         fileDiscoveryPage.backUpFile(FILE_TO_DOWNLOAD_TITLE);
-        assertThatFileWasDownloaded();
+        assertThatFileWasDownloaded(FILE_TO_DOWNLOAD_TITLE);
 
         gamesPage.visit();
         Download download = gamesPage.startFileDownload(FILE_TO_DOWNLOAD_TITLE);
@@ -88,6 +87,7 @@ class BackityTest {
     private void authenticateGog() {
         authenticationPage.navigate();
         authenticationPage.authenticateGog();
+        assertTrue(authenticationPage.isAuthenticated());
     }
 
     private void discoverNewFiles(FileDiscoveryPage fileDiscoveryPage) {
@@ -95,9 +95,10 @@ class BackityTest {
         assertThat(fileDiscoveryPage.getDiscoveredFileRow(FILE_TO_DOWNLOAD_TITLE)).isVisible();
     }
 
-    private void assertThatFileWasDownloaded() {
+    private void assertThatFileWasDownloaded(String fileTitle) {
         fileBackupPage.navigate();
-        Locator processedFileStatus = fileBackupPage.getProcessedFilesGameTitleStatus(FILE_TO_DOWNLOAD_TITLE);
+        Locator processedFileStatus = fileBackupPage.getProcessedFilesGameTitleStatus(fileTitle);
+        assertThat(processedFileStatus).isVisible();
         assertThat(processedFileStatus).containsText("SUCCESS");
     }
 }

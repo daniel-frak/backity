@@ -8,6 +8,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 @RequiredArgsConstructor
 public class Repeat {
 
@@ -48,6 +50,10 @@ public class Repeat {
                         page.waitForTimeout(1000);
                     }
                 } while (!exitCondition.getAsBoolean() && retryCounter.decrementAndGet() != 0);
+
+                if(!exitCondition.getAsBoolean()) {
+                    fail("The exit condition was not met");
+                }
             }
         }
     }

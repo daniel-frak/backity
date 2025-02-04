@@ -51,6 +51,7 @@ mvn clean install
 You can run the project with the following command:
 
 ```shell
+cd backend
 mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
