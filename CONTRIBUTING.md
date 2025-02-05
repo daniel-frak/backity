@@ -1,4 +1,6 @@
 - [General](#general)
+    * [Dependencies (optional)](#dependencies-optional)
+      * [Prerequisites](#prerequisites)
     * [Profiles summary](#profiles-summary)
         + [Spring profiles](#spring-profiles)
         + [Maven profiles](#maven-profiles)
@@ -11,7 +13,7 @@
         + [Backend](#backend)
         + [Frontend](#frontend)
     * [SonarQube analysis on a local environment](#sonarqube-analysis-on-a-local-environment)
-        + [Prerequisites](#prerequisites)
+        + [Prerequisites](#prerequisites-1)
         + [Launching SonarQube on a local environment](#launching-sonarqube-on-a-local-environment)
         + [Full analysis](#full-analysis)
         + [Backend analysis](#backend-analysis)
@@ -34,6 +36,29 @@ The project utilizes the **Ports & Adapters (aka hexagonal) architecture**. Lear
 
 - ["Ports & Adapters (aka hexagonal) architecture explained" - codesoapbox.dev](https://codesoapbox.dev/ports-adapters-aka-hexagonal-architecture-explained/)
 - ["Hexagonal architecture" - Alistair Cockburn](https://alistair.cockburn.us/hexagonal-architecture/)
+
+## Dependencies (optional)
+
+### Prerequisites
+
+* You need to have [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed.
+
+While Backity can work on its own, you may want to mock some services, such as the GOG API, or an S3 server.
+These mock dependencies are provided as Docker containers.
+
+To start the common mock dependencies, use the following command in the root of this repository:
+
+```shell
+docker compose -f docker/e2e/docker-compose.yml --env-file docker/e2e/.env up -d
+```
+
+This will start a mock GOG API.
+
+Optionally, to start a mock S3 server, add the `s3` profile:
+
+```shell
+docker compose --profile s3 -f docker/e2e/docker-compose.yml --env-file docker/e2e/.env up -d
+```
 
 ## Profiles summary
 
@@ -98,14 +123,16 @@ cd frontend/src/main/angular
 ng serve
 ```
 
-and visit [http://localhost:4200/](http://localhost:4200/).
-The application reloads automatically which speeds up your work.
+The application will become available at [http://localhost:4200/](http://localhost:4200/).
+It reloads automatically, which speeds up your work.
 
-In order to incorporate changes into the project, rebuild the whole application from the main project directory with:
+To incorporate changes into the project, rebuild the whole application from the main project directory with:
 
 ```shell
 mvn clean package
 ```
+
+This will copy the compiled frontend into the backend module, as a resource. 
 
 ## Running test suites
 
@@ -157,8 +184,7 @@ within Sonar.
 
 ### Prerequisites
 
-* You need to have [Docker](https://docs.docker.com/get-docker/) and
-  [Docker-Compose](https://docs.docker.com/compose/install/) installed.
+* You need to have [Docker](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/) installed.
 * You need Chrome installed on your machine to run a frontend analysis with code coverage.
 
 ### Launching SonarQube on a local environment
@@ -166,7 +192,7 @@ within Sonar.
 To start a local instance of SonarQube, use the following command in the root of this repository:
 
 ```shell
-docker-compose -f docker/sonarqube/docker-compose_sonar.yml --env-file docker/sonarqube/.env up -d
+docker compose -f docker/sonarqube/docker-compose.yml --env-file docker/sonarqube/.env up -d
 ```
 
 You should only need to do this once.
