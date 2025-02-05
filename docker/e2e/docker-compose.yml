@@ -29,6 +29,7 @@ services:
 
   ### S3 ###
   localstack: # https://docs.localstack.cloud/overview/
+    profiles: [ "s3" ]
     image: localstack/localstack:$LOCALSTACK_VERSION
     ports:
       - "4566:4566" # LocalStack Gateway

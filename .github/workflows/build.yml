@@ -47,8 +47,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#        run: mvn -B verify sonar:sonar -P frontend-pre-sonar -P sonar-cloud -Ppitest-new-code -Ppitest-strict
-        run: mvn -B verify -DskipTests # @TODO Temporarily disabled tests! DO NOT MERGE
+        run: mvn -B verify sonar:sonar -P frontend-pre-sonar -P sonar-cloud -Ppitest-new-code -Ppitest-strict
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
