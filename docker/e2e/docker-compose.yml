@@ -1,13 +1,22 @@
 services:
   ### API MOCKING ###
   mockserver:
-    image: mockserver/mockserver:$MOCKSERVER_VERSION
+    build:
+      context: .
+      dockerfile: mockserver/Dockerfile
+      args:
+        MOCKSERVER_VERSION: ${MOCKSERVER_VERSION}
     ports:
       - "1080:1080"
     environment:
       MOCKSERVER_PROPERTY_FILE: /config/mockserver.properties
       MOCKSERVER_INITIALIZATION_JSON_PATH: /config/api_*.json
       MOCKSERVER_WATCH_INITIALIZATION_JSON: true
+    healthcheck:
+      test: ["CMD", "curl", "-sSf", "-X", "PUT", "http://localhost:1080/mockserver/status"]
+      interval: 5s
+      timeout: 10s
+      retries: 30
     volumes:
       - type: bind
         source: ./mockserver_config
@@ -30,6 +39,11 @@ services:
     environment:
       - DEBUG=1 # Increases log level, prints more verbose logs
     #      - DOCKER_HOST=unix:///var/run/docker.sock # Only necessary for some services
+    healthcheck:
+      test: ["CMD", "curl", "-sSf", "-X", "GET", "http://localhost:4566/_localstack/health"]
+      interval: 5s
+      timeout: 10s
+      retries: 30
     volumes:
       - ./localstack/localstack-script.sh:/etc/localstack/init/ready.d/script.sh # Init script
       - localstack:/var/lib/localstack"
