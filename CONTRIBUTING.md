@@ -62,10 +62,29 @@ docker compose --profile s3 -f docker/e2e/docker-compose.yml --env-file docker/e
 
 ## Profiles summary
 
-The project can be built with various different profiles to allow for flexible configuration. Below you'll find a short
-summary of the available profiles.
+The project can be built and run with various different profiles to allow for flexible configuration.
 
-### Spring profiles
+To build the application with the selected Maven profiles, use the `-P` flag, e.g.:
+```shell
+mvn clean verify -Psome-maven-profile-1 -Psome-maven-profile-2
+```
+
+To run the application with the selected Spring profiles, use the `-Dspring-boot.run.profiles` flag, e.g.:
+
+```shell
+mvn spring-boot:run -Dspring-boot.run.profiles=some-spring-profile1,some-spring-profile2
+```
+
+Below you'll find a short summary of the available profiles.
+
+### Maven profiles (compile-time)
+
+* `sonar-cloud` - for code analysis on push to `main`
+* `frontend-pre-sonar` - for including code coverage reports from the `frontend` module during a sonar analysis
+* `frontend-sonar` - for running only a sonar analysis for the `frontend module`
+* `angular-client-code-gen` - for [generating client code](https://codesoapbox.dev/generate-client-code-from-spring-boot-using-maven/)
+
+### Spring profiles (run-time)
 
 * `dev` - for local development. Allows things like handling requests from `http://localhost:4200/`.
 * `dev-provider-api` - for local development. Uses mock APIs for Game Providers
@@ -75,14 +94,6 @@ summary of the available profiles.
 * `angular-client-code-gen` - special profile used for
   [client code generation](https://codesoapbox.dev/generate-client-code-from-spring-boot-using-maven/).
   Applied automatically when the `angular` Maven profile is enabled.
-
-### Maven profiles
-
-* `sonar-cloud` - for code analysis on push to `main`
-* `frontend-pre-sonar` - for including code coverage reports from the `frontend` module during a sonar analysis
-* `frontend-sonar` - for running only a sonar analysis for the `frontend module`
-* `angular-client-code-gen` -
-  for [generating client code](https://codesoapbox.dev/generate-client-code-from-spring-boot-using-maven/)
 
 ## API documentation
 

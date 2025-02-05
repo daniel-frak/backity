@@ -39,8 +39,7 @@ The information below is aimed at developers who want to extend this project's f
 
 ## Getting Started
 
-First, [clone](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository-from-github/cloning-a-repository)
-this repository.
+First, [clone](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository-from-github/cloning-a-repository) this repository.
 
 Then, build it locally with:
 
@@ -52,7 +51,7 @@ You can run the project with the following command:
 
 ```shell
 cd backend
-mvn spring-boot:run -Dspring-boot.run.profiles=dev
+mvn spring-boot:run
 ```
 
 As a result, you should be able to visit the home page on [http://localhost:8080/](http://localhost:8080/):
@@ -61,12 +60,19 @@ As a result, you should be able to visit the home page on [http://localhost:8080
 
 ## Configuration
 
+To customize the application, use the `-Dspring-boot.run.arguments` flag to pass custom property values, e.g.:
+
+```shell
+cd backend
+mvn spring-boot:run -Dspring-boot.run.arguments="--some-property-1=value1 --some-property-2=value2"
+```
+
 ### Basic configuration
 
 The following basic properties can be customized:
 
-- `backity.default-path-template` - the template to use when constructing the file download path. 
-  Available placeholders:
+- `backity.default-path-template` - the template to use when constructing the file download path
+  (e.g., `games/{GAME_PROVIDER_ID}/{TITLE}/{FILENAME}`). Available placeholders:
   - `{GAME_PROVIDER_ID}` - the ID of the game provider, e.g., "GOG"
   - `{TITLE}` - the game title
   - `{FILENAME}` - the full name of the file being downloaded
