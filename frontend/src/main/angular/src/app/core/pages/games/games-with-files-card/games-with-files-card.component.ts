@@ -7,6 +7,7 @@ import {
   GameFile,
   GameFilesClient,
   GamesClient,
+  GameWithFiles,
   PageGameWithFiles
 } from "@backend";
 import {catchError} from "rxjs/operators";
@@ -15,7 +16,7 @@ import {NotificationService} from "@app/shared/services/notification/notificatio
 import {ModalService} from "@app/shared/services/modal-service/modal.service";
 import {ButtonComponent} from '@app/shared/components/button/button.component';
 import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
-import {NgForOf, NgSwitch, NgSwitchCase} from '@angular/common';
+import {NgSwitch, NgSwitchCase} from '@angular/common';
 import {TableComponent} from '@app/shared/components/table/table.component';
 import {TableColumnDirective} from '@app/shared/components/table/column-directive/table-column.directive';
 import {CardComponent} from "@app/shared/components/card/card.component";
@@ -23,6 +24,7 @@ import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {Message} from "@stomp/stompjs";
 import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
 import {FileStatusBadgeComponent} from "@app/core/pages/games/file-status-badge/file-status-badge.component";
+import {TableContentGroup} from "@app/shared/components/table/table-content-group";
 
 @Component({
   selector: 'app-games-with-files-card',
@@ -32,7 +34,6 @@ import {FileStatusBadgeComponent} from "@app/core/pages/games/file-status-badge/
     CardComponent,
     FileStatusBadgeComponent,
     LoadedContentComponent,
-    NgForOf,
     NgSwitchCase,
     PaginationComponent,
     TableColumnDirective,
@@ -180,5 +181,17 @@ export class GamesWithFilesCardComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
+  }
+
+  group(content: Array<GameWithFiles> | undefined): TableContentGroup[] {
+    if (!content) {
+      return [];
+    }
+    return content.map(game => {
+      return {
+        caption: game.title,
+        items: game.files
+      }
+    });
   }
 }

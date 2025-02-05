@@ -1,26 +1,44 @@
 <app-loaded-content [isLoading]="isLoading">
   <table [attr.data-testid]="testId" class="table table-custom-responsive-lg-down">
-    <caption *ngIf="caption">{{caption}}</caption>
-    <thead *ngIf="content?.length">
-      <tr>
-        <th *ngFor="let columnTitle of getColumnTitles()" scope="col">
-          {{columnTitle}}
-        </th>
-      </tr>
+    <caption *ngIf="caption">{{ caption }}</caption>
+    <thead *ngIf="templateRefs.length">
+    <tr>
+      <th *ngFor="let columnTitle of getColumnTitles()" scope="col">
+        {{ columnTitle }}
+      </th>
+    </tr>
     </thead>
-    <tbody>
-      <ng-container *ngIf="content?.length">
-        <tr *ngFor="let row of content">
+    <ng-container *ngIf="groupedContent; else singleContent">
+      <ng-container *ngFor="let group of groupedContent">
+        <tbody>
+        <tr class="caption">
+          <th scope="rowgroup" [attr.colspan]="getColumnTitles().length" *ngIf="group.caption" class="group-caption">
+            {{ group.caption }}
+          </th>
+        </tr>
+        <tr *ngFor="let row of group.items">
           <td *ngFor="let columnContent of templateRefs; let i = index" [attr.data-title]="columnContent.columnTitle"
               [ngClass]="getTdClass(columnContent)">
             <ng-container
-              *ngTemplateOutlet="columnContent.template; context: { $implicit: row, index: i}"></ng-container>
+              *ngTemplateOutlet="columnContent.template; context: { $implicit: row, index: i }"></ng-container>
           </td>
         </tr>
+        </tbody>
       </ng-container>
-      <tr *ngIf="content?.length === 0">
-        <td class="hide-title">No data</td>
+    </ng-container>
+    <ng-template #singleContent>
+      <tbody>
+      <tr *ngFor="let row of content">
+        <td *ngFor="let columnContent of templateRefs; let i = index" [attr.data-title]="columnContent.columnTitle"
+            [ngClass]="getTdClass(columnContent)">
+          <ng-container
+            *ngTemplateOutlet="columnContent.template; context: { $implicit: row, index: i }"></ng-container>
+        </td>
       </tr>
-    </tbody>
+      <tr *ngIf="!content?.length">
+        <td [attr.colspan]="getColumnTitles().length" class="hide-title">No data</td>
+      </tr>
+      </tbody>
+    </ng-template>
   </table>
 </app-loaded-content>

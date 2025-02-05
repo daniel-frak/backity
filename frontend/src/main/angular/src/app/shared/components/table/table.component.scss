@@ -1,1 +1,6 @@
-// Nothing to style
+@import "src/scss/bootstrap/basics";
+
+.group-caption {
+  color: $table-caption-color;
+  padding-left: 0;
+}

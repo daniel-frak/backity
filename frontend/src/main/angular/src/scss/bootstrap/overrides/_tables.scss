@@ -35,9 +35,12 @@ table {
 
         tr {
           //&:not(:last-of-type) {
-          border-bottom: $table-border-width solid $table-border-color;
-          padding-bottom: map_get($spacers, 2);
-          margin-bottom: map_get($spacers, 2);
+          &:not(.caption) {
+            border-bottom: $table-border-width solid $table-border-color;
+            padding-bottom: map_get($spacers, 4);
+          }
+
+          margin-bottom: map_get($spacers, 4);
           //}
         }
 
@@ -49,6 +52,7 @@ table {
 
           padding-top: 0;
           padding-bottom: 0;
+          margin-bottom: map_get($spacers, 1);
 
           &:not(.hide-title) {
             &:before {

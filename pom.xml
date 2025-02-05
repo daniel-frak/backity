@@ -80,17 +80,10 @@
 
     <profiles>
         <profile>
-            <id>sonar-cloud</id>
-            <properties>
-                <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-            </properties>
-        </profile>
-        <profile>
             <id>e2e</id>
             <modules>
                 <module>e2e</module>
             </modules>
         </profile>
     </profiles>
-
 </project>

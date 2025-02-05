@@ -1,7 +1,8 @@
-import {Component, ContentChildren, Input, OnInit, QueryList} from '@angular/core';
-import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
-import {LoadedContentComponent} from '../loaded-content/loaded-content.component';
-import {NgClass, NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
+import { Component, ContentChildren, Input, OnInit, QueryList } from '@angular/core';
+import { TableColumnDirective } from "@app/shared/components/table/column-directive/table-column.directive";
+import { LoadedContentComponent } from '../loaded-content/loaded-content.component';
+import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
+import {TableContentGroup} from "@app/shared/components/table/table-content-group";
 
 @Component({
   selector: 'app-table',
@@ -12,7 +13,7 @@ import {NgClass, NgFor, NgIf, NgTemplateOutlet} from '@angular/common';
 })
 export class TableComponent implements OnInit {
 
-  @ContentChildren(TableColumnDirective, {descendants: false})
+  @ContentChildren(TableColumnDirective, { descendants: false })
   templateRefs!: QueryList<TableColumnDirective>;
 
   @Input()
@@ -22,13 +23,15 @@ export class TableComponent implements OnInit {
   content?: any[];
 
   @Input()
+  groupedContent?: TableContentGroup[];
+
+  @Input()
   caption: string | undefined;
 
   @Input()
   isLoading: boolean = false;
 
-  constructor() {
-  }
+  constructor() { }
 
   ngOnInit(): void {
     // Nothing to initialize
