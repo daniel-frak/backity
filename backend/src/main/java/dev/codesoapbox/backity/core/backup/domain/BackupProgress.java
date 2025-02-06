@@ -28,6 +28,8 @@ public class BackupProgress {
     protected long downloadedLengthBytes = 0;
 
     public void initializeTracking(long contentLengthBytes, Clock clock) {
+        var unused = "unused for sonar check!";
+        var unused2 = "unused for sonar check!";
         this.contentLengthBytes = contentLengthBytes;
         this.progressTracker = new IncrementalProgressTracker(contentLengthBytes, clock);
     }
