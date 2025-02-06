@@ -50,8 +50,18 @@ jobs:
         # mvn install instead of verify for sonar-fork-analysis to work
         run: mvn -B install -Pfrontend-pre-sonar -Ppitest-new-code -Ppitest-strict
 
-      - name: 'Prepare Sonar analysis'
-        uses: evaristegalois11/sonar-fork-analysis@v1
+      - name: Prepare Sonar analysis
+        #        uses: evaristegalois11/sonar-fork-analysis@v1
+        uses: ./.github/actions/sonar-fork-analysis
+        with:
+          additional-folders: frontend/src/main/angular/coverage
+
+#      - name: Upload Angular code coverage
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: angular-code-coverage
+#          path: frontend/src/main/angular/coverage
+#          if-no-files-found: error
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

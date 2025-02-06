@@ -23,6 +23,7 @@
 
         <sonar.projectKey>backity-backend</sonar.projectKey>
         <sonar.projectName>Backity (backend)</sonar.projectName>
+        <sonar.coverage.exclusions>**/BackityApplication.java,**/**Config.java</sonar.coverage.exclusions>
     </properties>
 
     <scm>
