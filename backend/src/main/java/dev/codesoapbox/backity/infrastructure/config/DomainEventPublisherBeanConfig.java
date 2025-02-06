@@ -24,6 +24,7 @@ public class DomainEventPublisherBeanConfig {
 
     @Bean
     DomainEventPublisher fileBackupEventPublisher(List<DomainEventHandler<?>> domainEventHandlers) {
+        @SuppressWarnings("java:S6411") // Lack of Comparable implementation is not a performance concern here
         Map<Class<? extends DomainEvent>, DomainEventHandler<? extends DomainEvent>> handlers =
                 domainEventHandlers.stream()
                         .collect(toMap(DomainEventHandler::getEventClass, e -> e));

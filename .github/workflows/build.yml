@@ -48,8 +48,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         # mvn install instead of verify for sonar-fork-analysis to work
-#        run: mvn -B install -P frontend-pre-sonar -Ppitest-new-code -Ppitest-strict
-        run: mvn -B install -Psonar-cloud -DskipTests # TODO DON'T MERGE!
+        run: mvn -B install -Pfrontend-pre-sonar -Ppitest-new-code -Ppitest-strict
 
       - name: 'Prepare Sonar analysis'
         uses: evaristegalois11/sonar-fork-analysis@v1

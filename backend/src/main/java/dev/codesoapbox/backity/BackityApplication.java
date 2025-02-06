@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 @ConfigurationPropertiesScan
 public class BackityApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(BackityApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(BackityApplication.class, args);
+    }
 }
