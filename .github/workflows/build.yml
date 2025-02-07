@@ -10,40 +10,24 @@ on:
 env:
   JAVA_VERSION: 21
   JAVA_DISTRIBUTION: adopt
-  SONAR_CACHE_PATH: ~/.sonar/cache
   MAVEN_CACHE_PATH: ~/.m2
 
 jobs:
   build:
-    name: Build & test (unit, integration, mutation)
+    name: Build & test (unit, integration, architectural, mutation)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: maven
 
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.SONAR_CACHE_PATH }}
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
-      - name: Cache Maven packages
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.MAVEN_CACHE_PATH }}
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-
-      - name: Build, test (unit, integration, mutation) and prepare files for Sonar analysis
+      - name: Build, test (unit, integration, architectural, mutation) and prepare files for Sonar analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -74,13 +58,7 @@ jobs:
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRIBUTION }}
-
-      - name: Cache Maven packages
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.MAVEN_CACHE_PATH }}
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
+          cache: maven
 
       - name: Download application jar
         uses: actions/download-artifact@v4

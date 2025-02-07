@@ -17,8 +17,6 @@ inputs:
     description: 'The GitHub token used to authenticate with the GitHub API.'
   sonar-token:
     description: 'The Sonar token used to authenticate with the Sonar API.'
-  project-key:
-    description: 'The project''s unique key assigned by Sonar.'
   additional-folders:
     description: 'Comma-separated list of additional folders to archive'
     default: ''
@@ -31,13 +29,8 @@ branding:
 runs:
   using: "composite"
   steps:
-    - name: 'Infer build type'
-      if: github.event_name != 'workflow_run'
-      shell: bash
-      run: echo "build_type=$(test -f pom.xml && echo maven || echo gradle)" >> "$GITHUB_ENV"
-
     ### PREPARE ANALYSIS ###
-    - name: 'Prepare pull request artifact'
+    - name: 'Write down pull request info'
       if: github.event_name != 'workflow_run'
       shell: bash
       run: |
@@ -45,11 +38,11 @@ runs:
         echo ${{ github.event.pull_request.head.ref }} >> pr-event.txt
         echo ${{ github.event.pull_request.base.ref }} >> pr-event.txt
 
-    - name: 'Prepare output artifact'
+    - name: 'Package build output files'
       if: github.event_name != 'workflow_run'
       shell: bash
       run: |
-        folders_to_archive=($(test ${build_type} = maven && echo *target || echo *build))
+        folders_to_archive=(*target)
         additional_folders="${{ inputs.additional-folders }}"
         if [ -n "$additional_folders" ]; then
           for folder in $(echo $additional_folders | tr ',' ' '); do
@@ -59,17 +52,17 @@ runs:
         echo "Folders selected to archive: ${folders_to_archive[@]}"
         echo "The following paths will be archived:"
         for folder in "${folders_to_archive[@]}"; do
-          find . -type d -path "./$folder" -exec tar -rf output.tar {} \+ -print
+          find . -type d -path "./$folder" -exec tar -rf build_output.tar {} \+ -print
         done
-        echo "Output artifact is ready."
+        echo "Build output files are ready."
 
-    - name: 'Set groupId'
-      if: github.event_name != 'workflow_run' && env.build_type == 'maven'
+    - name: 'Get groupId (to find project in ~/.m2/repository)'
+      if: github.event_name != 'workflow_run'
       shell: bash
       run: echo "group_id=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.groupId | tr . /)" >> "$GITHUB_ENV"
 
-    - name: 'Prepare ~/.m2/repository artifact'
-      if: github.event_name != 'workflow_run' && env.build_type == 'maven'
+    - name: 'Package ~/.m2/repository/{group_id}'
+      if: github.event_name != 'workflow_run'
       shell: bash
       run: |
         pushd ~/.m2/repository
@@ -77,14 +70,14 @@ runs:
         popd
         mv ~/.m2/repository/m2_repository.tar .
 
-    - name: 'Upload sonar artifact'
+    - name: 'Upload Sonar artifact'
       if: github.event_name != 'workflow_run'
       uses: actions/upload-artifact@v4
       with:
         name: sonar-artifact
         path: |
           pr-event.txt
-          output.tar
+          build_output.tar
           m2_repository.tar
         if-no-files-found: error
         retention-days: 1
@@ -98,28 +91,13 @@ runs:
         ref: ${{ github.event.workflow_run.head_branch }}
         fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of Sonar analysis
 
-    - name: 'Infer build type'
-      if: github.event_name == 'workflow_run'
-      shell: bash
-      run: echo "build_type=$(test -f pom.xml && echo maven || echo gradle)" >> "$GITHUB_ENV"
-
-    - name: 'Infer build command - Maven'
-      if: github.event_name == 'workflow_run' && env.build_type == 'maven'
-      shell: bash
-      run: echo "build_command=mvn" >> "$GITHUB_ENV"
-
-    - name: 'Infer build command - Gradle'
-      if: github.event_name == 'workflow_run' && env.build_type == 'gradle'
-      shell: bash
-      run: echo "build_command=gradle" >> "$GITHUB_ENV"
-
     - name: 'Set up Java'
       if: github.event_name == 'workflow_run'
       uses: actions/setup-java@v4
       with:
         java-version: ${{ inputs.java-version }}
         distribution: ${{ inputs.distribution }}
-        cache: ${{ env.build_type }}
+        cache: maven
 
     - name: 'Cache SonarCloud packages'
       if: github.event_name == 'workflow_run'
@@ -138,19 +116,19 @@ runs:
         github-token: ${{ inputs.github-token }}
         merge-multiple: true
 
-    - name: 'Extract output artifact'
+    - name: 'Extract build output files'
       if: github.event_name == 'workflow_run'
       shell: bash
-      run: tar -xf output.tar
+      run: tar -xf build_output.tar
 
     - name: 'Extract ~/.m2/repository artifact'
-      if: github.event_name == 'workflow_run' && env.build_type == 'maven'
+      if: github.event_name == 'workflow_run'
       shell: bash
       run: |
         mkdir -p ~/.m2/repository
         tar -xf m2_repository.tar -C ~/.m2/repository
 
-    - name: 'Read pull request event'
+    - name: 'Read pull request info'
       if: github.event_name == 'workflow_run'
       shell: bash
       run: |
@@ -159,22 +137,10 @@ runs:
         echo "pr_base_ref=$(sed '3q;d' pr-event.txt)" >> "$GITHUB_ENV"
 
     - name: 'Sonar analysis - Maven'
-      if: github.event_name == 'workflow_run' && env.build_type == 'maven'
+      if: github.event_name == 'workflow_run'
       shell: bash
       run: >
-        ${{ env.build_command }} -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-        -Dsonar.token=${{ inputs.sonar-token }}
-        ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.scm.revision=', github.event.workflow_run.head_sha) || '' }}
-        ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.pullrequest.key=', env.pr_number) || '' }}
-        ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.pullrequest.branch=', env.pr_head_ref) || '' }}
-        ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.pullrequest.base=', env.pr_base_ref) || '' }}
-        ${{ inputs.additional-flags }}
-
-    - name: 'Sonar analysis - Gradle'
-      if: github.event_name == 'workflow_run' && env.build_type == 'gradle'
-      shell: bash
-      run: >
-        ${{ env.build_command }} sonar
+        mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
         -Dsonar.token=${{ inputs.sonar-token }}
         ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.scm.revision=', github.event.workflow_run.head_sha) || '' }}
         ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.pullrequest.key=', env.pr_number) || '' }}
