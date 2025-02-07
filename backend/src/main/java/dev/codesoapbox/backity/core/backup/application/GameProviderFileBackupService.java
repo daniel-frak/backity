@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.backup.application;
 
-import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
+import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgress;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 

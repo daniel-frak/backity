@@ -6,7 +6,7 @@ import dev.codesoapbox.backity.core.gamefile.domain.TestGameProviderFile;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
-import dev.codesoapbox.backity.shared.domain.ProgressInfo;
+import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

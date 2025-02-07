@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.service
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
+import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgress;
 import dev.codesoapbox.backity.integrations.gog.config.GogProperties;
 import dev.codesoapbox.backity.integrations.gog.config.GogWebClientConfig;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileDiscoveryException;
@@ -12,7 +12,7 @@ import dev.codesoapbox.backity.integrations.gog.domain.exceptions.GameListReques
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
-import dev.codesoapbox.backity.shared.domain.ProgressInfo;
+import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.testing.wiremock.CustomWireMockExtension;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;

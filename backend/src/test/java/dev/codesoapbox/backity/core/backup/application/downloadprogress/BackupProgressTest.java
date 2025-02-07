@@ -1,6 +1,5 @@
-package dev.codesoapbox.backity.core.backup.domain;
+package dev.codesoapbox.backity.core.backup.application.downloadprogress;
 
-import dev.codesoapbox.backity.shared.domain.ProgressInfo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

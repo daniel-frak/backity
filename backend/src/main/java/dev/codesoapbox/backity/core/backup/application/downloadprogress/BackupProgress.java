@@ -1,7 +1,5 @@
-package dev.codesoapbox.backity.core.backup.domain;
+package dev.codesoapbox.backity.core.backup.application.downloadprogress;
 
-import dev.codesoapbox.backity.shared.domain.IncrementalProgressTracker;
-import dev.codesoapbox.backity.shared.domain.ProgressInfo;
 import lombok.Getter;
 
 import java.io.OutputStream;
@@ -16,7 +14,7 @@ import java.util.function.Consumer;
  * Based on:
  * https://stackoverflow.com/a/68971635/11247096
  */
-public class BackupProgress {
+public class BackupProgress implements ProgressTracker {
 
     protected final List<Consumer<ProgressInfo>> progressConsumers = new ArrayList<>();
     protected IncrementalProgressTracker progressTracker = null;
@@ -40,7 +38,8 @@ public class BackupProgress {
         progressConsumers.add(progressConsumer);
     }
 
-    void incrementDownloadedBytes(int length) {
+    @Override
+    public void incrementDownloadedBytes(int length) {
         downloadedLengthBytes += length;
         progressTracker.incrementBy(length);
         updateProgress();
@@ -50,13 +49,15 @@ public class BackupProgress {
         progressConsumers.forEach(c -> c.accept(progressTracker.getProgressInfo()));
     }
 
-    void incrementProcessedElements() {
+    @Override
+    public void incrementProcessedElements() {
         downloadedLengthBytes++;
         progressTracker.incrementBy(1);
         updateProgress();
     }
 
-    void updateContentLength() {
+    @Override
+    public void updateContentLength() {
         if (contentLengthBytes == -1) {
             contentLengthBytes = downloadedLengthBytes;
         }

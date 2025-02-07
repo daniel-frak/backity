@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backup.domain;
+package dev.codesoapbox.backity.core.backup.application.downloadprogress;
 
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupProgressChangedEvent;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;

@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.embed;
 
-import dev.codesoapbox.backity.core.backup.domain.BackupProgress;
+import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgress;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.FileBufferProvider;
 import dev.codesoapbox.backity.integrations.gog.domain.exceptions.FileDiscoveryException;

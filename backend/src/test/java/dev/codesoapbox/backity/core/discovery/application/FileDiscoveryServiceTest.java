@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.discovery.application;
 
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
-import dev.codesoapbox.backity.shared.domain.ProgressInfo;
+import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryStatusChangedEvent;

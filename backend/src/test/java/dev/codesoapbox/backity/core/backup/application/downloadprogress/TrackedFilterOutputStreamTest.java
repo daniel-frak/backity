@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backup.domain;
+package dev.codesoapbox.backity.core.backup.application.downloadprogress;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

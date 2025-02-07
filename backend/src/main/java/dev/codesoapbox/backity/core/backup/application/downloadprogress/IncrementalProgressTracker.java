@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.shared.domain;
+package dev.codesoapbox.backity.core.backup.application.downloadprogress;
 
 import dev.codesoapbox.backity.DoNotMutate;
 import lombok.RequiredArgsConstructor;
