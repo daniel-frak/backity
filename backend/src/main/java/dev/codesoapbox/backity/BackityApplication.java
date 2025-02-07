@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 public class BackityApplication {
 
     public static void main(String[] args) {
+        String test = "unused";
         SpringApplication.run(BackityApplication.class, args);
     }
 }
