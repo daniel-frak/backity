@@ -33,7 +33,6 @@
         <!-- Sonar -->
         <sonar.projectKey>backity</sonar.projectKey>
         <sonar.projectName>Backity</sonar.projectName>
-        <sonar.organization>codesoapbox</sonar.organization>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
         <!-- END of Sonar -->
     </properties>
@@ -79,6 +78,13 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>sonar-cloud</id>
+            <properties>
+                <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+                <sonar.organization>codesoapbox</sonar.organization>
+            </properties>
+        </profile>
         <profile>
             <id>e2e</id>
             <modules>

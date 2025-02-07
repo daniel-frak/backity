@@ -1,4 +1,4 @@
-name: 'Sonar'
+name: Sonar
 
 on:
   # `workflow_run` runs in the context of the base repository,
@@ -15,50 +15,21 @@ env:
 
 jobs:
   sonar:
-    name: 'Sonar analysis'
+    name: Sonar analysis
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       actions: read # Required to download artifacts
     steps:
-#      - name: Download Angular code coverage
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: angular-code-coverage
-#          path: frontend/src/main/angular/coverage
-#          run-id: ${{ github.event.workflow_run.id }}
-#          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-#      - name: pwd
-#        run: pwd
-#      - name: List workspace folders
-#        run: ls -la ${{ github.workspace }}
-#      - name: List root folders
-#        run: ls -la
-#      - name: Test folder existence
-#        run: ls -la frontend/src/main/angular/coverage
-#      - name: XDTesting Print Directory Structure
-#        uses: FiorelaCiroku/XDTesting-Print-Directory-Structure@v1.0.2
-
       # Must check out for custom same-repository actions to work
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Sonar analysis
-#        uses: evaristegalois11/sonar-fork-analysis@v1
+      - name: Perform Sonar analysis
         uses: ./.github/actions/sonar-fork-analysis
         with:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           java-version: ${{ env.JAVA_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           sonar-token: ${{ secrets.SONAR_TOKEN }}
-          project-key: backity
-
-#      - name: pwd
-#        run: pwd
-#      - name: List workspace folders
-#        run: ls -la ${{ github.workspace }}
-#      - name: List root folders
-#        run: ls -la
-      - name: Test folder existence
-        run: ls -la frontend/src/main/angular/coverage
+          additional-flags: -Psonar-cloud

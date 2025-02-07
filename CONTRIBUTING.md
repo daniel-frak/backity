@@ -79,7 +79,7 @@ Below you'll find a short summary of the available profiles.
 
 ### Maven profiles (compile-time)
 
-* `sonar-cloud` - for code analysis on push to `main`
+* `sonar-cloud` - for CI code analysis
 * `frontend-pre-sonar` - for including code coverage reports from the `frontend` module during a sonar analysis
 * `frontend-sonar` - for running only a sonar analysis for the `frontend module`
 * `angular-client-code-gen` - for [generating client code](https://codesoapbox.dev/generate-client-code-from-spring-boot-using-maven/)

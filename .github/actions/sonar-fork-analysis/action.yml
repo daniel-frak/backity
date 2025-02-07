@@ -1,4 +1,10 @@
 # Based on https://github.com/EvaristeGalois11/sonar-fork-analysis/
+#
+# External Pull Request workflows can't access repository secrets,
+# which is necessary to use the SonarCloud token safely.
+# As a first step, this action uploads all files necessary for a SonarCloud analysis in the initial `build` workflow.
+# It can then be used in an additional `workflow_run` workflow (which runs in the context of the base repository)
+# to download those files and perform the analysis.
 
 name: 'Sonar Fork Analysis'
 description: 'Sonar scan external forks of your project'
@@ -15,6 +21,9 @@ inputs:
     description: 'The project''s unique key assigned by Sonar.'
   additional-folders:
     description: 'Comma-separated list of additional folders to archive'
+    default: ''
+  additional-flags:
+    description: 'Additional flags for the Sonar analysis step'
     default: ''
 branding:
   icon: search
@@ -47,24 +56,26 @@ runs:
             folders_to_archive+=("$folder")
           done
         fi
-        echo "Folders to archive: ${folders_to_archive[@]}"
+        echo "Folders selected to archive: ${folders_to_archive[@]}"
+        echo "The following paths will be archived:"
         for folder in "${folders_to_archive[@]}"; do
           find . -type d -path "./$folder" -exec tar -rf output.tar {} \+ -print
         done
+        echo "Output artifact is ready."
 
     - name: 'Set groupId'
       if: github.event_name != 'workflow_run' && env.build_type == 'maven'
       shell: bash
       run: echo "group_id=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.groupId | tr . /)" >> "$GITHUB_ENV"
 
-    - name: 'Prepare repository artifact'
+    - name: 'Prepare ~/.m2/repository artifact'
       if: github.event_name != 'workflow_run' && env.build_type == 'maven'
       shell: bash
       run: |
         pushd ~/.m2/repository
-        find -path "./${group_id}/*" -exec tar -rf repository.tar {} \+
+        find -path "./${group_id}/*" -exec tar -rf m2_repository.tar {} \+
         popd
-        mv ~/.m2/repository/repository.tar .
+        mv ~/.m2/repository/m2_repository.tar .
 
     - name: 'Upload sonar artifact'
       if: github.event_name != 'workflow_run'
@@ -74,7 +85,7 @@ runs:
         path: |
           pr-event.txt
           output.tar
-          repository.tar
+          m2_repository.tar
         if-no-files-found: error
         retention-days: 1
 
@@ -132,12 +143,12 @@ runs:
       shell: bash
       run: tar -xf output.tar
 
-    - name: 'Extract repository artifact'
+    - name: 'Extract ~/.m2/repository artifact'
       if: github.event_name == 'workflow_run' && env.build_type == 'maven'
       shell: bash
       run: |
         mkdir -p ~/.m2/repository
-        tar -xf repository.tar -C ~/.m2/repository
+        tar -xf m2_repository.tar -C ~/.m2/repository
 
     - name: 'Read pull request event'
       if: github.event_name == 'workflow_run'
@@ -152,21 +163,21 @@ runs:
       shell: bash
       run: >
         ${{ env.build_command }} -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-        -Dsonar.projectKey=${{ inputs.project-key }}
         -Dsonar.token=${{ inputs.sonar-token }}
         ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.scm.revision=', github.event.workflow_run.head_sha) || '' }}
         ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.pullrequest.key=', env.pr_number) || '' }}
         ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.pullrequest.branch=', env.pr_head_ref) || '' }}
         ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.pullrequest.base=', env.pr_base_ref) || '' }}
+        ${{ inputs.additional-flags }}
 
     - name: 'Sonar analysis - Gradle'
       if: github.event_name == 'workflow_run' && env.build_type == 'gradle'
       shell: bash
       run: >
         ${{ env.build_command }} sonar
-        -Dsonar.projectKey=${{ inputs.project-key }}
         -Dsonar.token=${{ inputs.sonar-token }}
         ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.scm.revision=', github.event.workflow_run.head_sha) || '' }}
         ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.pullrequest.key=', env.pr_number) || '' }}
         ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.pullrequest.branch=', env.pr_head_ref) || '' }}
         ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.pullrequest.base=', env.pr_base_ref) || '' }}
+        ${{ inputs.additional-flags }}
