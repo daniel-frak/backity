@@ -72,5 +72,5 @@ import java.lang.annotation.Target;
         GetGogGameDetailsUseCase.class,
         GetLogsUseCase.class
 })
-public @interface ControllerTestBeans {
+public @interface ConfigureSharedControllerTestBeans {
 }

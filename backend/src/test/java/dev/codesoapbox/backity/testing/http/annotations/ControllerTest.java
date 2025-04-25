@@ -22,6 +22,6 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @WebMvcTest
-@ControllerTestBeans
+@ConfigureSharedControllerTestBeans
 public @interface ControllerTest {
 }

@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.testing.s3.extensions;
 import dev.codesoapbox.backity.BackityApplication;
 import dev.codesoapbox.backity.testing.s3.annotations.S3RepositoryTest;
 import dev.codesoapbox.backity.testing.s3.containers.LocalStackContainerInitializer;
-import dev.codesoapbox.backity.testing.s3.containers.LocalStackContainerWrapper;
+import dev.codesoapbox.backity.testing.s3.containers.PreconfiguredLocalStackContainer;
 import org.junit.jupiter.api.extension.*;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 public class S3RepositoryTestExtension
         implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
-    public static final LocalStackContainerWrapper LOCAL_STACK_CONTAINER =
+    public static final PreconfiguredLocalStackContainer LOCAL_STACK_CONTAINER =
             LocalStackContainerInitializer.getContainer();
     private S3Client s3Client;
     private List<String> buckets;
