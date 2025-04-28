@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.testing.jpa.annotations;
 
-import dev.codesoapbox.backity.core.game.config.GameJpaRepositoryBeanConfig;
-import dev.codesoapbox.backity.core.gamefile.config.GameFileJpaRepositoryBeanConfig;
-import dev.codesoapbox.backity.infrastructure.config.jpa.SharedJpaRepositoryBeanConfig;
+import dev.codesoapbox.backity.core.game.infrastructure.config.GameJpaRepositoryBeanConfig;
+import dev.codesoapbox.backity.core.gamefile.infrastructure.config.GameFileJpaRepositoryBeanConfig;
+import dev.codesoapbox.backity.shared.infrastructure.config.jpa.SharedJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import org.springframework.context.annotation.Import;

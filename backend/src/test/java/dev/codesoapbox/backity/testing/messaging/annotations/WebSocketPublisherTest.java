@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.testing.messaging.annotations;
 
-import dev.codesoapbox.backity.infrastructure.config.DomainEventPublisherBeanConfig;
-import dev.codesoapbox.backity.infrastructure.config.WebSocketConfig;
+import dev.codesoapbox.backity.shared.infrastructure.config.DomainEventPublisherBeanConfig;
+import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketConfig;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.embedded.EmbeddedWebServerFactoryCustomizerAutoConfiguration;

@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.testing.messaging.annotations;
 
-import dev.codesoapbox.backity.core.backup.config.FileBackupWebSocketBeanConfig;
-import dev.codesoapbox.backity.core.discovery.config.FileDiscoveryWebSocketBeanConfig;
-import dev.codesoapbox.backity.core.logs.config.LogsWebSocketBeanConfig;
-import dev.codesoapbox.backity.infrastructure.config.DomainEventPublisherBeanConfig;
-import dev.codesoapbox.backity.infrastructure.config.WebSocketConfig;
+import dev.codesoapbox.backity.core.backup.infrastructure.config.config.FileBackupWebSocketBeanConfig;
+import dev.codesoapbox.backity.core.discovery.infrastructure.config.FileDiscoveryWebSocketBeanConfig;
+import dev.codesoapbox.backity.core.logs.infrastructure.config.LogsWebSocketBeanConfig;
+import dev.codesoapbox.backity.shared.infrastructure.config.DomainEventPublisherBeanConfig;
+import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketConfig;
 import dev.codesoapbox.backity.testing.messaging.config.SharedWebSocketEventHandlerTestConfig;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.websocket.servlet.WebSocketMessagingAutoConfiguration;
