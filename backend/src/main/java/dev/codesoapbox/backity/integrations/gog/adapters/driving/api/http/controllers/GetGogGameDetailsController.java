@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.contr
 
 import dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model.GameDetailsResponseHttpDto;
 import dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model.GameDetailsResponseHttpDtoMapper;
-import dev.codesoapbox.backity.integrations.gog.application.GetGogGameDetailsUseCase;
+import dev.codesoapbox.backity.integrations.gog.application.usecases.GetGogGameDetailsUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

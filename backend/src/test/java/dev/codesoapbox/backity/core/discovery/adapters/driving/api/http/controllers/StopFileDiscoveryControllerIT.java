@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.discovery.application.StopFileDiscoveryUseCase;
+import dev.codesoapbox.backity.core.discovery.application.usecases.StopFileDiscoveryUseCase;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

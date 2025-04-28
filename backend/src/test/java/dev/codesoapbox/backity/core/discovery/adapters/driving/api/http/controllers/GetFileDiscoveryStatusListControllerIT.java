@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.discovery.application.GetFileDiscoveryStatusListUseCase;
+import dev.codesoapbox.backity.core.discovery.application.usecases.GetFileDiscoveryStatusListUseCase;
 import dev.codesoapbox.backity.core.discovery.application.FileDiscoveryStatus;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;

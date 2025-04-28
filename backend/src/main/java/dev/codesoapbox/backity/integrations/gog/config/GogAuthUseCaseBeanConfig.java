@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.integrations.gog.config;
 
-import dev.codesoapbox.backity.integrations.gog.application.AuthenticateGogUseCase;
-import dev.codesoapbox.backity.integrations.gog.application.CheckGogAuthenticationUseCase;
-import dev.codesoapbox.backity.integrations.gog.application.LogOutOfGogUseCase;
-import dev.codesoapbox.backity.integrations.gog.application.RefreshGogAccessTokenUseCase;
+import dev.codesoapbox.backity.integrations.gog.application.usecases.AuthenticateGogUseCase;
+import dev.codesoapbox.backity.integrations.gog.application.usecases.CheckGogAuthenticationUseCase;
+import dev.codesoapbox.backity.integrations.gog.application.usecases.LogOutOfGogUseCase;
+import dev.codesoapbox.backity.integrations.gog.application.usecases.RefreshGogAccessTokenUseCase;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

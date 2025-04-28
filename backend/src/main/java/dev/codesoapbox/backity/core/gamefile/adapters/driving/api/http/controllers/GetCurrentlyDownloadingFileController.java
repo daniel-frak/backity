@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.gamefile.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.gamefile.application.GetCurrentlyDownloadingFileUseCase;
+import dev.codesoapbox.backity.core.gamefile.application.usecases.GetCurrentlyDownloadingFileUseCase;
 import dev.codesoapbox.backity.shared.adapters.driving.api.http.model.gamefile.GameFileHttpDto;
 import dev.codesoapbox.backity.shared.adapters.driving.api.http.model.gamefile.GameFileHttpDtoMapper;
 import io.swagger.v3.oas.annotations.Operation;

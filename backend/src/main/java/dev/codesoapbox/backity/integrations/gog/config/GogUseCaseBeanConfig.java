@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.config;
 
-import dev.codesoapbox.backity.integrations.gog.application.GetGogGameDetailsUseCase;
-import dev.codesoapbox.backity.integrations.gog.application.GetGogLibrarySizeUseCase;
+import dev.codesoapbox.backity.integrations.gog.application.usecases.GetGogGameDetailsUseCase;
+import dev.codesoapbox.backity.integrations.gog.application.usecases.GetGogLibrarySizeUseCase;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

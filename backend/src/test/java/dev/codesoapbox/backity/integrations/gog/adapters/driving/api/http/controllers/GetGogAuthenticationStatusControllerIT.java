@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
-import dev.codesoapbox.backity.integrations.gog.application.CheckGogAuthenticationUseCase;
+import dev.codesoapbox.backity.integrations.gog.application.usecases.CheckGogAuthenticationUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;

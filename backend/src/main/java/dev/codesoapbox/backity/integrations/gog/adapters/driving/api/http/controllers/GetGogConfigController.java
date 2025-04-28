@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.contr
 
 import dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model.GogConfigResponseHttpDto;
 import dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model.GogConfigResponseHttpDtoMapper;
-import dev.codesoapbox.backity.integrations.gog.application.GetGogConfigUseCase;
+import dev.codesoapbox.backity.integrations.gog.application.usecases.GetGogConfigUseCase;
 import dev.codesoapbox.backity.integrations.gog.application.GogConfigInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;

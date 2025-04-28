@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.game.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.game.application.GetGamesWithFilesUseCase;
+import dev.codesoapbox.backity.core.game.application.usecases.GetGamesWithFilesUseCase;
 import dev.codesoapbox.backity.core.game.application.GameWithFiles;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;

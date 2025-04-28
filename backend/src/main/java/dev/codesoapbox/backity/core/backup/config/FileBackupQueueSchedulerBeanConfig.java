@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.backup.config;
 
-import dev.codesoapbox.backity.core.backup.application.BackUpOldestGameFileUseCase;
+import dev.codesoapbox.backity.core.backup.application.usecases.BackUpOldestGameFileUseCase;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

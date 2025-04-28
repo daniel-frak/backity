@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.integrations.gog.application.GetGogConfigUseCase;
+import dev.codesoapbox.backity.integrations.gog.application.usecases.GetGogConfigUseCase;
 import dev.codesoapbox.backity.integrations.gog.application.GogConfigInfo;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;

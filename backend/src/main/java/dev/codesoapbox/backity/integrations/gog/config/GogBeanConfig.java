@@ -7,7 +7,7 @@ import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.auth.GogAuthClient;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.auth.GogAuthSpringService;
 import dev.codesoapbox.backity.integrations.gog.adapters.driven.backups.services.embed.GogEmbedWebClient;
-import dev.codesoapbox.backity.integrations.gog.application.GetGogConfigUseCase;
+import dev.codesoapbox.backity.integrations.gog.application.usecases.GetGogConfigUseCase;
 import dev.codesoapbox.backity.integrations.gog.application.GogConfigInfo;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import lombok.RequiredArgsConstructor;

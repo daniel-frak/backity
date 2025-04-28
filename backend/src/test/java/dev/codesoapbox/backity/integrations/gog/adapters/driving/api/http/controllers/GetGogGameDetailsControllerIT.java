@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
-import dev.codesoapbox.backity.integrations.gog.application.GetGogGameDetailsUseCase;
+import dev.codesoapbox.backity.integrations.gog.application.usecases.GetGogGameDetailsUseCase;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameFileResponse;
 import dev.codesoapbox.backity.integrations.gog.domain.model.embed.GameDetailsResponse;
 import org.junit.jupiter.api.Test;

@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.backup.config;
 
-import dev.codesoapbox.backity.core.backup.application.BackUpOldestGameFileUseCase;
+import dev.codesoapbox.backity.core.backup.application.usecases.BackUpOldestGameFileUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 

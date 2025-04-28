@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.gamefile.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.gamefile.application.GetCurrentlyDownloadingFileUseCase;
+import dev.codesoapbox.backity.core.gamefile.application.usecases.GetCurrentlyDownloadingFileUseCase;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;

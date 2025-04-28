@@ -1,19 +1,19 @@
 package dev.codesoapbox.backity.testing.http.annotations;
 
 import dev.codesoapbox.backity.core.discovery.application.FileDiscoveryService;
-import dev.codesoapbox.backity.core.discovery.application.GetFileDiscoveryStatusListUseCase;
-import dev.codesoapbox.backity.core.discovery.application.StartFileDiscoveryUseCase;
-import dev.codesoapbox.backity.core.discovery.application.StopFileDiscoveryUseCase;
+import dev.codesoapbox.backity.core.discovery.application.usecases.GetFileDiscoveryStatusListUseCase;
+import dev.codesoapbox.backity.core.discovery.application.usecases.StartFileDiscoveryUseCase;
+import dev.codesoapbox.backity.core.discovery.application.usecases.StopFileDiscoveryUseCase;
 import dev.codesoapbox.backity.core.discovery.config.FileDiscoveryControllerBeanConfig;
-import dev.codesoapbox.backity.core.game.application.GetGamesWithFilesUseCase;
+import dev.codesoapbox.backity.core.game.application.usecases.GetGamesWithFilesUseCase;
 import dev.codesoapbox.backity.core.game.config.GameControllerBeanConfig;
-import dev.codesoapbox.backity.core.gamefile.application.*;
+import dev.codesoapbox.backity.core.gamefile.application.usecases.*;
 import dev.codesoapbox.backity.core.gamefile.config.GameFileControllerBeanConfig;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.logs.application.GetLogsUseCase;
 import dev.codesoapbox.backity.core.logs.domain.services.LogService;
 import dev.codesoapbox.backity.infrastructure.config.jpa.SharedControllerBeanConfig;
-import dev.codesoapbox.backity.integrations.gog.application.*;
+import dev.codesoapbox.backity.integrations.gog.application.usecases.*;
 import dev.codesoapbox.backity.integrations.gog.config.GogControllerBeanConfig;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
 import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;

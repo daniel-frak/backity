@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.integrations.gog.adapters.driving.api.http.model.RefreshTokenResponseHttpDto;
-import dev.codesoapbox.backity.integrations.gog.application.RefreshGogAccessTokenUseCase;
+import dev.codesoapbox.backity.integrations.gog.application.usecases.RefreshGogAccessTokenUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PutMapping;

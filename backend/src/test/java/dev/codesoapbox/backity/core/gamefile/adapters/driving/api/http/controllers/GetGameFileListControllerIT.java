@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.gamefile.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.gamefile.application.GetDiscoveredFileListUseCase;
-import dev.codesoapbox.backity.core.gamefile.application.GetEnqueuedFileListUseCase;
-import dev.codesoapbox.backity.core.gamefile.application.GetProcessedFileListUseCase;
+import dev.codesoapbox.backity.core.gamefile.application.usecases.GetDiscoveredFileListUseCase;
+import dev.codesoapbox.backity.core.gamefile.application.usecases.GetEnqueuedFileListUseCase;
+import dev.codesoapbox.backity.core.gamefile.application.usecases.GetProcessedFileListUseCase;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;

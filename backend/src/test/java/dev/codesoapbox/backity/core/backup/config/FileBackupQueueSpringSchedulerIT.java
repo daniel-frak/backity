@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.backup.config;
 
-import dev.codesoapbox.backity.core.backup.application.BackUpOldestGameFileUseCase;
+import dev.codesoapbox.backity.core.backup.application.usecases.BackUpOldestGameFileUseCase;
 import org.junit.jupiter.api.Test;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.test.context.TestPropertySource;

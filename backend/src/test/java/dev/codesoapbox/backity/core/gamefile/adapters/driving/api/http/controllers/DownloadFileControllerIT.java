@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.gamefile.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.filemanagement.domain.FileResource;
-import dev.codesoapbox.backity.core.gamefile.application.DownloadFileUseCase;
+import dev.codesoapbox.backity.core.gamefile.application.usecases.DownloadFileUseCase;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
