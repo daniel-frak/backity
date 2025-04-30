@@ -284,36 +284,11 @@ mvn clean test-compile -Ppitest-new-code -Ppitest-strict
 
 This will fail the build if the mutation threshold is below a certain value.
 
-# Architectural decisions
+# Architectural Design Decisions
 
-## Package naming
-
-Package names should be singular when they contain a single thing (e.g. `strategy`, `payee`, `validation`) and plural  
-when they hold multiple implementations (e.g. `origins`, `bases`, `rates`).
-
-## Database migration using Liquibase
-
-- Migration scripts should be named `db.changelog-{currentTimestamp}_{scriptName}.xml`.
-- Each changeset should be named `{orderNumber}_{changeSetName}`
-- Each migration should be backwards compatible.
-
-## Don't return NULL collections
-
-To reduce the need for null-checks, and thus the amount of NullPointerExceptions, make sure that a method
-(including `@Getter`) never returns `null` when the return type is a collection. If the property itself is `null`, then
-the method should return an empty collection (e.g. `emptyList()`).
-
-Pay close attention to `null` property values which you might receive from the client (e.g. REST API).
-
-## Test Data Builders
-
-This project uses the [Test Data Builder](https://wiki.c2.com/?TestDataBuilder) pattern combined with
-the [Object Mother](https://wiki.c2.com/?ObjectMother) pattern. Static methods provide pre-configured builders which can
-be adjusted per test. This additional level of abstraction not only makes the tests more readable, but also reduces the
-scope of refactoring when an object's constructor changes.
-
-The `@Builder` annotation is intentionally not used on the domain objects themselves, as that could allow them to
-be constructed in an invalid state in production code.
+Whenever possible, Architectural Decision Records have been written as ArchUnit tests.
+Where that was not possible, ADRs were written in Markdown and saved in the `docs/adr` folder.
+Make sure your code adheres to them.
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with
 markdown-toc</a></i></small>
