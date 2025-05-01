@@ -29,3 +29,5 @@ An ADR which verifies itself against the codebase is preferable.
 ### Negative
 
 - Architectural design decisions will be spread across multiple places, making it harder to keep track of
+- Some ArchUnit rules may be challenging to write
+- Adds a dependency on ArchUnit
