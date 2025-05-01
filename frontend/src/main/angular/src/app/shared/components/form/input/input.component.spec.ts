@@ -81,4 +81,16 @@ describe('InputComponent', () => {
     expect(component.value).toBe(inputValue);
     expect(onChangeSpy).toHaveBeenCalledWith(inputValue);
   });
+
+  it('should throw error when formControlName is not defined', () => {
+    component.formControlName = undefined;
+    expect(() => component.formControl)
+      .toThrow(new Error('The form control name is not set.'));
+  });
+
+  it('should throw error when form control is not found', () => {
+    component.formControlName = 'nonexistentControl';
+    expect(() => component.formControl)
+      .toThrow(new Error('The control "nonexistentControl" does not exist in the form.'));
+  });
 });

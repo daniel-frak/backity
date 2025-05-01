@@ -28,9 +28,9 @@ import {
   ]
 })
 export class InputComponent implements OnInit, ControlValueAccessor {
-  formGroup: FormGroup = undefined!;
-  @Input() formControlName: string = undefined!;
-  @Input() id: string = undefined!;
+  formGroup?: FormGroup = undefined;
+  @Input() formControlName?: string;
+  @Input() id?: string = undefined;
   @Input() type: 'text' | 'email' | 'password' = 'text';
   @Input() disabled: boolean = false;
   @Input() placeholder?: string;
@@ -42,11 +42,12 @@ export class InputComponent implements OnInit, ControlValueAccessor {
   }
 
   ngOnInit() {
-    this.formGroup = <FormGroup>this.controlContainer.control;
+    this.formGroup = this.controlContainer.control as FormGroup;
   }
 
   onChange: (value: any) => void = () => {
   };
+
   onTouched: () => void = () => {
   };
 
@@ -73,6 +74,13 @@ export class InputComponent implements OnInit, ControlValueAccessor {
   }
 
   get formControl(): AbstractControl<any, any> {
-    return this.formGroup.get(this.formControlName)!;
+    if (!this.formControlName) {
+      throw new Error('The form control name is not set.');
+    }
+    let control = this.formGroup?.get(this.formControlName);
+    if (!control) {
+      throw new Error('The control "' + this.formControlName + '" does not exist in the form.');
+    }
+    return control;
   }
 }

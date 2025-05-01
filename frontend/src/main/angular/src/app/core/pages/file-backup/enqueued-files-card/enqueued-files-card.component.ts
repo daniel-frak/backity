@@ -71,8 +71,8 @@ export class EnqueuedFilesCardComponent implements OnInit, OnDestroy {
     const foundFile: GameFile | undefined = this.findFileInEnqueuedDownloads(event);
     if (foundFile) {
       const index: number | undefined = this.filePage?.content?.indexOf(foundFile);
-      if (index !== -1) {
-        this.filePage?.content?.splice(index!, 1);
+      if (index !== -1 && index !== undefined && index !== null) {
+        this.filePage?.content?.splice(index, 1);
       }
     }
   }

@@ -40,7 +40,11 @@ export class GogAuthComponent implements OnInit {
   );
 
   get gogCodeUrlInput(): AbstractControl<any, any> {
-    return this.gogAuthForm.get('gogCodeUrl')!;
+    const control = this.gogAuthForm.get('gogCodeUrl');
+    if (!control) {
+      throw new Error('The control "gogCodeUrl" does not exist in the form.');
+    }
+    return control;
   }
 
   constructor(private readonly gogConfigClient: GOGConfigurationClient,

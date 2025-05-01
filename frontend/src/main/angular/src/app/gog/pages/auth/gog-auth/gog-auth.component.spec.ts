@@ -1,15 +1,11 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {GogAuthComponent} from './gog-auth.component';
-import {
-  GOGAuthenticationClient,
-  GogConfigResponseHttpDto,
-  GOGConfigurationClient,
-  RefreshTokenResponse
-} from "@backend";
+import {GOGAuthenticationClient, GOGConfigurationClient, RefreshTokenResponse} from "@backend";
 import {defer, of, throwError} from "rxjs";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {By} from '@angular/platform-browser';
 import {DebugElement} from "@angular/core";
+import {FormGroup} from "@angular/forms";
 import createSpyObj = jasmine.createSpyObj;
 import SpyObj = jasmine.SpyObj;
 
@@ -60,6 +56,12 @@ describe('GogAuthComponent', () => {
 
   it('should create the component', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should throw error when gogCodeUrlInput is not found', () => {
+    component.gogAuthForm = new FormGroup({});
+    expect(() => component.gogCodeUrlInput)
+      .toThrow(new Error('The control "gogCodeUrl" does not exist in the form.'));
   });
 
   it('should check authentication status on init', () => {
