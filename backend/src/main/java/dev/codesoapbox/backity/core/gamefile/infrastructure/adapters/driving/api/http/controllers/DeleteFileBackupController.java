@@ -18,8 +18,10 @@ public class DeleteFileBackupController {
 
     @Operation(summary = "Delete file backup", description = "Deletes an already downloaded file backup")
     @DeleteMapping
-    public ResponseEntity<Void> deleteFileBackup(@PathVariable String gameFileId) {
-        GameFileId id = new GameFileId(gameFileId);
+    public ResponseEntity<Void> deleteFileBackup(
+            @SuppressWarnings("java:S6856")
+            @PathVariable(FileBackupsRestResource.GAME_FILE_ID) String gameFileIdValue) {
+        GameFileId id = new GameFileId(gameFileIdValue);
         useCase.deleteFile(id);
 
         return ResponseEntity.noContent().build();

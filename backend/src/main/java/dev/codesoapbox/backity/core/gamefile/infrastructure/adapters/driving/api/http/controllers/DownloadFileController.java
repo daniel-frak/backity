@@ -25,7 +25,8 @@ public class DownloadFileController {
     @Operation(summary = "Download file", description = "Returns the file currently being downloaded")
     @GetMapping
     public ResponseEntity<InputStreamResource> downloadFile(
-            @PathVariable("gameFileId") String gameFileIdValue) throws IOException {
+            @SuppressWarnings("java:S6856")
+            @PathVariable(FileBackupsRestResource.GAME_FILE_ID) String gameFileIdValue) throws IOException {
         var gameFileId = new GameFileId(gameFileIdValue);
 
         FileResource fileResource = null;

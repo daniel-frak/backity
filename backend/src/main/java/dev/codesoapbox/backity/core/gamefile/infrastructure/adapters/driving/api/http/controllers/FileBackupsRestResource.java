@@ -19,5 +19,6 @@ import static dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driv
 @Validated
 public @interface FileBackupsRestResource {
 
-    String RESOURCE_URL = GameFileRestResource.RESOURCE_URL + "/{gameFileId}/file-backup";
+    String GAME_FILE_ID = "gameFileId";
+    String RESOURCE_URL = GameFileRestResource.RESOURCE_URL + "/{" + GAME_FILE_ID + "}/file-backup";
 }
