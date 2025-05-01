@@ -389,6 +389,7 @@
                         <excludedClass>*WebSocketPublisher</excludedClass>
                         <excludedClass>*WebSocketEventPublisher</excludedClass>
                         <excludedClass>*FileSystem</excludedClass>
+                        <excludedClass>*SpringScheduler</excludedClass>
                     </excludedClasses>
                     <excludedTestClasses>
                         <param>*IntegrationTest</param>
