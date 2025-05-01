@@ -1,0 +1,14 @@
+title: Backity developer documentation
+remote_theme: pmarsceill/just-the-docs
+color_scheme: custom
+markdown: kramdown
+search_enabled: true
+favicon_ico: "/assets/images/docs_favicon.svg"
+aux_links:
+  "Backity on GitHub":
+    - "//github.com/daniel-frak/backity"
+  "Docs source code":
+    - "//github.com/daniel-frak/backity/tree/main/docs"
+aux_links_new_tab: true
+back_to_top: true
+back_to_top_text: "Back to top"

@@ -1,7 +1,11 @@
-# Prefer ArchUnit as an Architectural Decision Record store
+---
+title: 0001 - Prefer ArchUnit as an Architectural Decision Record store
+parent: Architecture Decision Records (backend)
+---
 
 ## Status
 Accepted
+{: .label .label-green}
 
 ## Context
 
