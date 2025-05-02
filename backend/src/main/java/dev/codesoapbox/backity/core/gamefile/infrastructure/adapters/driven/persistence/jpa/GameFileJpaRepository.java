@@ -134,7 +134,7 @@ public class GameFileJpaRepository implements GameFileRepository {
         private final List<DomainEvent> events;
 
         public PublishEventsAfterCommitTransactionSynchronization(List<DomainEvent> events) {
-            this.events = events;
+            this.events = new ArrayList<>(events);
         }
 
         @Override

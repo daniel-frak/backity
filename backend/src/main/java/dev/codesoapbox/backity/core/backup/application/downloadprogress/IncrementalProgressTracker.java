@@ -12,6 +12,7 @@ import java.time.temporal.ChronoUnit;
 @ToString
 public class IncrementalProgressTracker {
 
+    private static final int MULTIPLIER_FOR_PERCENTAGE = 100;
     private final Long totalElements;
     private final Clock clock;
     private final long startTime;
@@ -43,7 +44,7 @@ public class IncrementalProgressTracker {
             return ProgressInfo.none();
         }
 
-        double percentage = (processedElementsCount * 100) / (double) totalElements;
+        double percentage = (processedElementsCount * MULTIPLIER_FOR_PERCENTAGE) / (double) totalElements;
 
         Duration timeLeftDuration = getTimeLeft();
 

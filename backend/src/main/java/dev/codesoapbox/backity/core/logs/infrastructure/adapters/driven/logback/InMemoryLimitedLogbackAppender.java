@@ -13,6 +13,8 @@ import static java.util.Collections.synchronizedList;
 
 public class InMemoryLimitedLogbackAppender extends AppenderBase<ILoggingEvent> {
 
+    private static final int MAX_LOGS_DEFAULT = 100;
+
     @Getter
     private final List<ILoggingEvent> events = synchronizedList(new LinkedList<>());
 
@@ -20,7 +22,7 @@ public class InMemoryLimitedLogbackAppender extends AppenderBase<ILoggingEvent> 
 
     @Getter
     @Setter
-    private Integer maxLogs = 100;
+    private Integer maxLogs = MAX_LOGS_DEFAULT;
 
     @Override
     protected void append(ILoggingEvent event) {

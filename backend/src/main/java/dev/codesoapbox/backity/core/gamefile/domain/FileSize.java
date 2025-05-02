@@ -25,6 +25,8 @@ public class FileSize {
     );
     private static final Pattern SIZE_PATTERN = Pattern.compile("^(\\d++\\.\\d++|\\d++)\\s*+(\\w++)$",
             Pattern.UNICODE_CHARACTER_CLASS);
+    private static final int NUMERIC_VALUE_REGEX_GROUP = 1;
+    private static final int UNIT_REGEX_GROUP = 2;
     private static final int BYTES_IN_KILOBYTE = 1024;
 
     @Getter
@@ -34,8 +36,8 @@ public class FileSize {
         validateNotNullOrEmpty(size);
         size = size.trim();
         Matcher matcher = getValidMatcher(size);
-        double numericValue = Double.parseDouble(matcher.group(1));
-        String unit = matcher.group(2);
+        double numericValue = Double.parseDouble(matcher.group(NUMERIC_VALUE_REGEX_GROUP));
+        String unit = matcher.group(UNIT_REGEX_GROUP);
         Long multiplier = getBytesMultiplier(unit);
 
         return new FileSize((long) (numericValue * multiplier));
@@ -68,7 +70,7 @@ public class FileSize {
         double size = bytes;
         int unitIndex = 0;
 
-        while (size >= BYTES_IN_KILOBYTE && unitIndex < UNITS.length - 1) {
+        while (size >= BYTES_IN_KILOBYTE && unitIndex < UNITS.length - NUMERIC_VALUE_REGEX_GROUP) {
             size /= BYTES_IN_KILOBYTE;
             unitIndex++;
         }
