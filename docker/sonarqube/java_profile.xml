@@ -221,6 +221,24 @@
         </rule>
         <rule>
             <repositoryKey>java</repositoryKey>
+            <key>S109</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters>
+                <parameter>
+                    <key>Authorized numbers</key>
+                    <value>-1,0,1,2</value>
+                </parameter>
+            </parameters>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
             <key>S110</key>
             <type>CODE_SMELL</type>
             <priority>MAJOR</priority>
@@ -3504,6 +3522,19 @@
         </rule>
         <rule>
             <repositoryKey>java</repositoryKey>
+            <key>S2384</key>
+            <type>CODE_SMELL</type>
+            <priority>MINOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
+                    <severity>LOW</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
             <key>S2386</key>
             <type>CODE_SMELL</type>
             <priority>MINOR</priority>
@@ -6559,6 +6590,19 @@
         </rule>
         <rule>
             <repositoryKey>java</repositoryKey>
+            <key>S5977</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>java</repositoryKey>
             <key>S5979</key>
             <type>BUG</type>
             <priority>BLOCKER</priority>
@@ -8094,12 +8138,38 @@
         </rule>
         <rule>
             <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.ARGUMENT_PROPAGATION_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
             <key>mutant.BOOLEAN_FALSE_RETURN</key>
             <type>BUG</type>
             <priority>MAJOR</priority>
             <impacts>
                 <impact>
                     <softwareQuality>RELIABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.BOOLEAN_FALSE_RETURN_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
                     <severity>MEDIUM</severity>
                 </impact>
             </impacts>
@@ -8120,12 +8190,38 @@
         </rule>
         <rule>
             <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.BOOLEAN_TRUE_RETURN_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
             <key>mutant.CONDITIONALS_BOUNDARY</key>
             <type>BUG</type>
             <priority>MAJOR</priority>
             <impacts>
                 <impact>
                     <softwareQuality>RELIABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.CONDITIONALS_BOUNDARY_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
                     <severity>MEDIUM</severity>
                 </impact>
             </impacts>
@@ -8146,12 +8242,38 @@
         </rule>
         <rule>
             <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.CONSTRUCTOR_CALLS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
             <key>mutant.EMPTY_RETURN_VALUES</key>
             <type>BUG</type>
             <priority>MAJOR</priority>
             <impacts>
                 <impact>
                     <softwareQuality>RELIABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.EMPTY_RETURN_VALUES_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
                     <severity>MEDIUM</severity>
                 </impact>
             </impacts>
@@ -8172,12 +8294,38 @@
         </rule>
         <rule>
             <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.EXPERIMENTAL_MEMBER_VARIABLE_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
             <key>mutant.EXPERIMENTAL_NAKED_RECEIVER</key>
             <type>BUG</type>
             <priority>MAJOR</priority>
             <impacts>
                 <impact>
                     <softwareQuality>RELIABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.EXPERIMENTAL_NAKED_RECEIVER_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
                     <severity>MEDIUM</severity>
                 </impact>
             </impacts>
@@ -8198,12 +8346,38 @@
         </rule>
         <rule>
             <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.EXPERIMENTAL_REMOVE_INCREMENTS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
             <key>mutant.EXPERIMENTAL_REMOVE_SWITCH</key>
             <type>BUG</type>
             <priority>MAJOR</priority>
             <impacts>
                 <impact>
                     <softwareQuality>RELIABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.EXPERIMENTAL_REMOVE_SWITCH_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
                     <severity>MEDIUM</severity>
                 </impact>
             </impacts>
@@ -8224,12 +8398,38 @@
         </rule>
         <rule>
             <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.EXPERIMENTAL_RETURN_VALUES_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
             <key>mutant.EXPERIMENTAL_SWITCH</key>
             <type>BUG</type>
             <priority>MAJOR</priority>
             <impacts>
                 <impact>
                     <softwareQuality>RELIABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.EXPERIMENTAL_SWITCH_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
                     <severity>MEDIUM</severity>
                 </impact>
             </impacts>
@@ -8250,12 +8450,38 @@
         </rule>
         <rule>
             <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.INCREMENTS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
             <key>mutant.INLINE_CONSTS</key>
             <type>BUG</type>
             <priority>MAJOR</priority>
             <impacts>
                 <impact>
                     <softwareQuality>RELIABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.INLINE_CONSTS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
                     <severity>MEDIUM</severity>
                 </impact>
             </impacts>
@@ -8276,12 +8502,38 @@
         </rule>
         <rule>
             <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.INVERT_NEGS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
             <key>mutant.MATH</key>
             <type>BUG</type>
             <priority>MAJOR</priority>
             <impacts>
                 <impact>
                     <softwareQuality>RELIABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.MATH_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
                     <severity>MEDIUM</severity>
                 </impact>
             </impacts>
@@ -8302,12 +8554,38 @@
         </rule>
         <rule>
             <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.NEGATE_CONDITIONALS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
             <key>mutant.NON_VOID_METHOD_CALLS</key>
             <type>BUG</type>
             <priority>MAJOR</priority>
             <impacts>
                 <impact>
                     <softwareQuality>RELIABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.NON_VOID_METHOD_CALLS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
                     <severity>MEDIUM</severity>
                 </impact>
             </impacts>
@@ -8328,12 +8606,38 @@
         </rule>
         <rule>
             <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.NULL_RETURN_VALUES_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
             <key>mutant.PRIMITIVE_RETURN_VALS</key>
             <type>BUG</type>
             <priority>MAJOR</priority>
             <impacts>
                 <impact>
                     <softwareQuality>RELIABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.PRIMITIVE_RETURN_VALS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
                     <severity>MEDIUM</severity>
                 </impact>
             </impacts>
@@ -8354,6 +8658,19 @@
         </rule>
         <rule>
             <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.REMOVE_CONDITIONALS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
             <key>mutant.RETURN_VALS</key>
             <type>BUG</type>
             <priority>MAJOR</priority>
@@ -8367,12 +8684,38 @@
         </rule>
         <rule>
             <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.RETURN_VALS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
             <key>mutant.VOID_METHOD_CALLS</key>
             <type>BUG</type>
             <priority>MAJOR</priority>
             <impacts>
                 <impact>
                     <softwareQuality>RELIABILITY</softwareQuality>
+                    <severity>MEDIUM</severity>
+                </impact>
+            </impacts>
+            <parameters></parameters>
+        </rule>
+        <rule>
+            <repositoryKey>mutation.analysis.java</repositoryKey>
+            <key>mutant.VOID_METHOD_CALLS_CODE_SMELL</key>
+            <type>CODE_SMELL</type>
+            <priority>MAJOR</priority>
+            <impacts>
+                <impact>
+                    <softwareQuality>MAINTAINABILITY</softwareQuality>
                     <severity>MEDIUM</severity>
                 </impact>
             </impacts>
