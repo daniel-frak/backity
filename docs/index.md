@@ -1,5 +1,4 @@
 ---
-layout: default
 title: Getting started
 nav_order: 1
 ---
@@ -175,9 +174,13 @@ mvn test
 
 ## SonarQube analysis on a local environment
 
-This project is configured so that its integration tests are taken into consideration when calculating code coverage.
-SonarQube will show these tests as unit tests on the dashboard, as there is currently no native integration test support
-within Sonar.
+Considerations:
+1. Some rules are missing in SonarQube Community compared to SonarCloud.
+   This means that some violations might still show up during Pull Request analysis,
+   even if local analysis reported nothing.
+2. This project is configured so that its integration tests are taken into consideration when calculating code coverage.
+   SonarQube will show these tests as unit tests on the dashboard, as there is currently no native integration test
+   support within Sonar.
 
 ### Prerequisites
 
