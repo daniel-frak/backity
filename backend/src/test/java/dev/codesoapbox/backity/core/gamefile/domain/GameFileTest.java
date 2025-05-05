@@ -3,6 +3,8 @@ package dev.codesoapbox.backity.core.gamefile.domain;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
+import dev.codesoapbox.backity.core.game.domain.Game;
+import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameProviderFileUrlEmptyException;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,24 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.*;
 
 class GameFileTest {
+
+    @Test
+    void shouldAssociateGameAndGameProviderFile() {
+        Game game = TestGame.any();
+        GameProviderFile gameProviderFile = TestGameProviderFile.gog();
+
+        GameFile result = GameFile.associate(game, gameProviderFile);
+
+        GameFile expectedResult = TestGameFile.discoveredBuilder()
+                .id(result.getId())
+                .gameId(game.getId())
+                .gameProviderFile(gameProviderFile)
+                .fileBackup(TestFileBackup.discovered())
+                .dateCreated(null)
+                .dateModified(null)
+                .build();
+        assertThat(result).usingRecursiveComparison().isEqualTo(expectedResult);
+    }
 
     @Test
     void shouldEnqueue() {

@@ -1,10 +1,7 @@
 package dev.codesoapbox.backity.core.gamefile.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
-import dev.codesoapbox.backity.core.game.domain.Game;
 import lombok.NonNull;
-
-import java.util.ArrayList;
 
 public record GameProviderFile(
         @NonNull GameProviderId gameProviderId,
@@ -15,16 +12,4 @@ public record GameProviderFile(
         @NonNull String originalFileName,
         @NonNull FileSize size
 ) {
-
-    public GameFile associateWith(Game game) {
-        return new GameFile(
-                GameFileId.newInstance(),
-                game.getId(),
-                this,
-                new FileBackup(FileBackupStatus.DISCOVERED, null, null),
-                null,
-                null,
-                new ArrayList<>()
-        );
-    }
 }

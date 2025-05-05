@@ -96,7 +96,7 @@ public class FileDiscoveryService {
 
     private void saveDiscoveredFileInfo(GameProviderFile gameProviderFile) {
         Game game = getGameOrCreateNew(gameProviderFile);
-        GameFile gameFile = gameProviderFile.associateWith(game);
+        GameFile gameFile = GameFile.associate(game, gameProviderFile);
 
         if (!fileRepository.existsByUrlAndVersion(gameFile.getGameProviderFile().url(),
                 gameFile.getGameProviderFile().version())) {

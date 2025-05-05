@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.gamefile.domain;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
+import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameProviderFileUrlEmptyException;
@@ -11,6 +12,7 @@ import lombok.*;
 import org.apache.logging.log4j.util.Strings;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,6 +42,18 @@ public class GameFile {
     @Getter
     @NonNull
     private List<DomainEvent> domainEvents;
+
+    public static GameFile associate(Game game, GameProviderFile gameProviderFile) {
+        return new GameFile(
+                GameFileId.newInstance(),
+                game.getId(),
+                gameProviderFile,
+                new FileBackup(FileBackupStatus.DISCOVERED, null, null),
+                null,
+                null,
+                new ArrayList<>()
+        );
+    }
 
     public void enqueue() {
         fileBackup.setStatus(FileBackupStatus.ENQUEUED);
