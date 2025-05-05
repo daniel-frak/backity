@@ -77,7 +77,7 @@ export class InputComponent implements OnInit, ControlValueAccessor {
     if (!this.formControlName) {
       throw new Error('The form control name is not set.');
     }
-    let control = this.formGroup?.get(this.formControlName);
+    const control = this.formGroup?.get(this.formControlName);
     if (!control) {
       throw new Error('The control "' + this.formControlName + '" does not exist in the form.');
     }
