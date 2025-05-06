@@ -88,6 +88,7 @@
 
     <profiles>
         <profile>
+            <!-- Builds for production -->
             <id>prod</id>
             <build>
                 <plugins>
@@ -111,6 +112,7 @@
         </profile>
 
         <profile>
+            <!-- Includes code coverage reports from the `frontend` module during a sonar analysis. -->
             <id>frontend-pre-sonar</id>
             <build>
                 <plugins>
@@ -152,6 +154,7 @@
         </profile>
 
         <profile>
+            <!-- Runs only a sonar analysis -->
             <id>frontend-sonar</id>
             <build>
                 <plugins>

@@ -407,8 +407,8 @@
     </build>
 
     <profiles>
-        <!-- Client code generation -->
         <profile>
+            <!-- Generates client code for the frontend -->
             <id>angular-client-code-gen</id>
             <build>
                 <plugins>
@@ -512,7 +512,7 @@
 
         <!-- Pitest mutation testing (profiles) -->
         <profile>
-            <!-- Generate full Pitest reports -->
+            <!-- Generates full Pitest reports -->
             <id>pitest-full</id>
             <build>
                 <plugins>
@@ -533,7 +533,7 @@
             </build>
         </profile>
         <profile>
-            <!-- Generate Pitest reports for new code -->
+            <!-- Generates Pitest reports for new code -->
             <id>pitest-new-code</id>
             <build>
                 <plugins>

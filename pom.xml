@@ -79,6 +79,7 @@
 
     <profiles>
         <profile>
+            <!-- CI code analysis -->
             <id>sonar-cloud</id>
             <properties>
                 <sonar.host.url>https://sonarcloud.io</sonar.host.url>
