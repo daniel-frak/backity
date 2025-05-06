@@ -75,7 +75,8 @@ export class GogAuthComponent implements OnInit {
   authenticateGog() {
     if (!this.gogAuthForm.valid) {
       this.gogAuthForm.markAllAsTouched();
-      this.notificationService.showFailure("Form is invalid", this.gogCodeUrlInput.errors);
+      this.notificationService.showFailure("Please check the form for errors and try again.",
+        this.getFormErrors(this.gogAuthForm));
       return;
     }
     this.gogIsLoading = true;
@@ -92,6 +93,15 @@ export class GogAuthComponent implements OnInit {
       }
       this.gogIsLoading = false;
     });
+  }
+
+  getFormErrors(form: FormGroup): Record<string, any> {
+    return Object.entries(form.controls)
+      .filter(([_, control]) => control.errors)
+      .reduce((errorMap, [controlName, control]) => ({
+        ...errorMap,
+        [controlName]: control.errors,
+      }), {});
   }
 
   onClickSignOutGog(): () => Promise<void> {

@@ -150,8 +150,11 @@ describe('GogAuthComponent', () => {
     component.authenticateGog();
 
     expect(gogAuthClientMock.authenticate).not.toHaveBeenCalled();
-    const expectedErrors = {required: true};
-    expect(notificationService.showFailure).toHaveBeenCalledWith("Form is invalid", expectedErrors)
+    const expectedErrors = {
+      gogCodeUrl: {required: true}
+    };
+    expect(notificationService.showFailure)
+      .toHaveBeenCalledWith("Please check the form for errors and try again.", expectedErrors)
   });
 
   it('should log out given logged in', async () => {
