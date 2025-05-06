@@ -1,96 +1,80 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {
-  ControlContainer,
-  FormBuilder,
-  FormGroup,
-  FormGroupDirective,
-  NG_VALUE_ACCESSOR,
-  Validators
-} from '@angular/forms';
-import {InputComponent} from './input.component';
-import {By} from '@angular/platform-browser';
-import {DebugElement} from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import { InputComponent } from './input.component';
+import { By } from '@angular/platform-browser';
+import {Component, DebugElement} from '@angular/core';
 
-const TEST_FORM_CONTROL_NAME = 'testInput';
+@Component({
+  template: `
+    <form [formGroup]="form">
+      <app-input formControlName="testInput"></app-input>
+    </form>
+  `
+})
+export class TestHostComponent {
+  form: FormGroup;
+
+  constructor(private fb: FormBuilder) {
+    this.form = this.fb.group({
+      testInput: ['', Validators.required]
+    });
+  }
+}
 
 describe('InputComponent', () => {
-  let component: InputComponent;
-  let fixture: ComponentFixture<InputComponent>;
-  let form: FormGroup = new FormBuilder().group({
-    testInput: ['', Validators.required]
-  });
+  let fixture: ComponentFixture<TestHostComponent>;
+  let hostComponent: TestHostComponent;
+  let inputComponent: InputComponent;
   let inputElement: DebugElement;
 
   beforeEach(async () => {
-    const formGroupDirective = new FormGroupDirective([], []);
-    formGroupDirective.form = form;
-
     await TestBed.configureTestingModule({
-      imports: [InputComponent],
-      providers: [
-        {
-          provide: ControlContainer,
-          useValue: formGroupDirective
-        }
-      ]
+      declarations: [TestHostComponent],
+      imports: [ReactiveFormsModule, InputComponent]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(InputComponent);
-    component = fixture.componentInstance;
-    component.formControlName = TEST_FORM_CONTROL_NAME;
-    component.id = TEST_FORM_CONTROL_NAME;
-    component.type = 'text';
-    component.placeholder = 'Enter text';
-    component.testId = 'test-input';
-    fixture.debugElement.injector.get(NG_VALUE_ACCESSOR);
-
+    fixture = TestBed.createComponent(TestHostComponent);
+    hostComponent = fixture.componentInstance;
     fixture.detectChanges();
 
+    inputComponent = fixture.debugElement.query(By.directive(InputComponent)).componentInstance;
     inputElement = fixture.debugElement.query(By.css('input'));
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(inputComponent).toBeTruthy();
   });
 
   it('should call onTouched on blur event', () => {
-    const onTouchedSpy = spyOn(component, 'onTouched');
+    const onTouchedSpy = spyOn(inputComponent, 'onTouched');
     inputElement.nativeElement.dispatchEvent(new Event('blur'));
     fixture.detectChanges();
     expect(onTouchedSpy).toHaveBeenCalled();
   });
 
   it('should display error message when form control is invalid and touched', () => {
-    form.get(TEST_FORM_CONTROL_NAME)?.markAsTouched();
-    form.get(TEST_FORM_CONTROL_NAME)?.markAsDirty();
-    form.get(TEST_FORM_CONTROL_NAME)?.updateValueAndValidity();
+    const control = hostComponent.form.get('testInput');
+    control?.markAsTouched();
+    control?.markAsDirty();
+    control?.updateValueAndValidity();
+
     fixture.detectChanges();
+
     const errorMsg = fixture.debugElement.query(By.css('.invalid-feedback'));
     expect(errorMsg).toBeTruthy();
     expect(errorMsg.nativeElement.textContent).toContain('Must not be empty');
   });
 
   it('should update value and call onChange when onInput is triggered', () => {
-    const onChangeSpy = spyOn(component, 'onChange');
+    const onChangeSpy = spyOn(inputComponent, 'onChange');
     const inputValue = 'Test value';
+
     inputElement.nativeElement.value = inputValue;
     inputElement.nativeElement.dispatchEvent(new Event('input'));
 
     fixture.detectChanges();
 
-    expect(component.value).toBe(inputValue);
+    expect(inputComponent.value).toBe(inputValue);
     expect(onChangeSpy).toHaveBeenCalledWith(inputValue);
-  });
-
-  it('should throw error when formControlName is not defined', () => {
-    component.formControlName = undefined;
-    expect(() => component.formControl)
-      .toThrow(new Error('The form control name is not set.'));
-  });
-
-  it('should throw error when form control is not found', () => {
-    component.formControlName = 'nonexistentControl';
-    expect(() => component.formControl)
-      .toThrow(new Error('The control "nonexistentControl" does not exist in the form.'));
   });
 });

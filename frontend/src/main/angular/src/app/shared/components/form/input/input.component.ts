@@ -1,13 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, Optional, Self} from '@angular/core';
 import {NgClass, NgIf} from "@angular/common";
-import {
-  AbstractControl,
-  ControlContainer,
-  ControlValueAccessor,
-  FormGroup,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule
-} from "@angular/forms";
+import {ControlValueAccessor, NgControl, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-input',
@@ -18,17 +11,10 @@ import {
     ReactiveFormsModule
   ],
   templateUrl: './input.component.html',
-  styleUrls: ['./input.component.scss'],
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      multi: true,
-      useExisting: InputComponent
-    }
-  ]
+  styleUrls: ['./input.component.scss']
 })
-export class InputComponent implements OnInit, ControlValueAccessor {
-  formGroup?: FormGroup = undefined;
+export class InputComponent implements ControlValueAccessor {
+
   @Input() formControlName?: string;
   @Input() id?: string = undefined;
   @Input() type: 'text' | 'email' | 'password' = 'text';
@@ -38,11 +24,10 @@ export class InputComponent implements OnInit, ControlValueAccessor {
 
   value: any;
 
-  constructor(private readonly controlContainer: ControlContainer) {
-  }
-
-  ngOnInit() {
-    this.formGroup = this.controlContainer.control as FormGroup;
+  constructor(@Optional() @Self() public ngControl: NgControl) {
+    if (this.ngControl != null) {
+      this.ngControl.valueAccessor = this;
+    }
   }
 
   onChange: (value: any) => void = () => {
@@ -71,16 +56,5 @@ export class InputComponent implements OnInit, ControlValueAccessor {
 
   setDisabledState?(isDisabled: boolean): void {
     this.disabled = isDisabled;
-  }
-
-  get formControl(): AbstractControl<any, any> {
-    if (!this.formControlName) {
-      throw new Error('The form control name is not set.');
-    }
-    const control = this.formGroup?.get(this.formControlName);
-    if (!control) {
-      throw new Error(`The control "${this.formControlName}" does not exist in the form.`);
-    }
-    return control;
   }
 }

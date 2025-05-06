@@ -9,24 +9,24 @@
          (input)="onInput($event)"
          [ngClass]="{
          'form-control': true,
-         'is-invalid': formControl.invalid && (formControl.dirty || !formControl.untouched)
+         'is-invalid': ngControl.invalid && (ngControl.dirty || !ngControl.untouched)
          }">
   <label [for]="id"><!--/* //NOSONAR */-->
     <ng-content/>
   </label>
-  <div *ngIf="formControl.errors?.['required']" class="invalid-feedback">
+  <div *ngIf="ngControl.errors?.['required']" class="invalid-feedback">
     Must not be empty
   </div>
-  <div *ngIf="formControl.errors?.['email']" class="invalid-feedback">
+  <div *ngIf="ngControl.errors?.['email']" class="invalid-feedback">
     Please enter a valid email address
   </div>
-  <div *ngIf="formControl.errors?.['minlength']" class="invalid-feedback">
-    Minimum length is {{ formControl.errors?.['minlength'].requiredLength }} characters
+  <div *ngIf="ngControl.errors?.['minlength']" class="invalid-feedback">
+    Minimum length is {{ ngControl.errors?.['minlength'].requiredLength }} characters
   </div>
-  <div *ngIf="formControl.errors?.['maxlength']" class="invalid-feedback">
-    Maximum length is {{ formControl.errors?.['maxlength'].requiredLength }} characters
+  <div *ngIf="ngControl.errors?.['maxlength']" class="invalid-feedback">
+    Maximum length is {{ ngControl.errors?.['maxlength'].requiredLength }} characters
   </div>
-  <div *ngIf="formControl.errors?.['pattern']" class="invalid-feedback">
+  <div *ngIf="ngControl.errors?.['pattern']" class="invalid-feedback">
     Invalid format
   </div>
 </div>
