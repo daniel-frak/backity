@@ -16,12 +16,19 @@ Welcome to the Backity developer documentation!
 Whether you're contributing to the backend, frontend, or documentation,
 this guide will outline everything you need to know.
 
-Backity uses **Domain-Driven Design (DDD)** and the **Ports & Adapters (Hexagonal) architecture**.
+Backity uses **Domain-Driven Design (DDD)[^ddd]** and the **Ports & Adapters (Hexagonal) architecture**.
 Before diving in, it's a good idea to become familiar with these concepts:
 
 - ["Introduction to DDD" - InfoQ](https://www.infoq.com/minibooks/domain-driven-design-quickly/)
 - ["Ports & Adapters (aka hexagonal) architecture explained" - codesoapbox.dev](https://codesoapbox.dev/ports-adapters-aka-hexagonal-architecture-explained/)
 - ["Hexagonal architecture" - Alistair Cockburn](https://alistair.cockburn.us/hexagonal-architecture/)
+
+[^ddd]: Traditional DDD emphasizes collaboration with domain experts and stakeholders.
+For an open-source tool without business stakeholders or formal domain experts, strategic patterns relying on
+structured domain exploration and negotiation are less applicable.
+DDD strategic patterns are necessarily adapted, 
+replacing formal collaboration with domain knowledge drawn from developer experience,
+real-world usage, and decentralized community discussions.
 
 # Quick Start
 
