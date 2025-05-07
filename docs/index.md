@@ -24,11 +24,11 @@ Before diving in, it's a good idea to become familiar with these concepts:
 - ["Hexagonal architecture" - Alistair Cockburn](https://alistair.cockburn.us/hexagonal-architecture/)
 
 [^ddd]: Traditional DDD emphasizes collaboration with domain experts and stakeholders.
-For an open-source tool without business stakeholders or formal domain experts, strategic patterns relying on
-structured domain exploration and negotiation are less applicable.
-DDD strategic patterns are necessarily adapted, 
-replacing formal collaboration with domain knowledge drawn from developer experience,
-real-world usage, and decentralized community discussions.
+  For an open-source tool without business stakeholders or formal domain experts, strategic patterns relying on
+  structured domain exploration and negotiation are less applicable.
+  DDD strategic patterns are necessarily adapted, 
+  replacing formal collaboration with domain knowledge drawn from developer experience,
+  real-world usage, and decentralized community discussions.
 
 # Quick Start
 
