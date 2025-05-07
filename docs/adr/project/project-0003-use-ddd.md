@@ -1,5 +1,5 @@
 ---
-title: Use Domain-Driven Design
+title: 0003 - Use Domain-Driven Design
 parent: Architecture Decision Records (project-wide)
 ---
 
@@ -11,8 +11,8 @@ Accepted
 ## Context
 
 Domain-Driven Design provides a structured approach to modeling complex domains through key concepts
-like bounded contexts, ubiquitous language, and aggregates. 
-These components help to isolate different parts of the domain,
+like bounded contexts, ubiquitous language, and aggregates.
+This helps to isolate different parts of the domain,
 ensuring that the **software reflects real-world processes with clarity and consistency**.
 
 It traditionally relies on collaboration between developers, domain experts, and business stakeholders
