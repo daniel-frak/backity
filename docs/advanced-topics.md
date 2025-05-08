@@ -98,6 +98,8 @@ Backity uses [Pitest](https://pitest.org/) for mutation testing.
 
 {: .note }
 > Mutation testing is the act of automatically modifying existing code in small ways, then checking if our tests fail.
+> This helps identify areas where tests might pass but don't truly verify the expected behavior, or where tests
+> are missing entirely.
 
 Generate a full mutation coverage report with the `pitest-full` profile:
 

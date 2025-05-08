@@ -81,7 +81,11 @@ The OpenAPI description is available at the following urls:
 
 ## Architectural Design Decisions
 
-Architectural Decision Records (ADRs) document the key design choices for the project.
+Architectural Decision Records (ADRs) document the key design choices for the project. They are useful because:
+- They prevent repeating past mistakes or re-discussing settled decisions,
+- They help understand why certain approaches were chosen,
+- They ensure architectural consistency.
+
 Whenever possible, they are written as ArchUnit tests.
 When not practical, they are documented in text form
 and can be found [in the developer documentation](https://daniel-frak.github.io/backity/adr/).
