@@ -26,41 +26,104 @@ Describes how packages relate to each other, where the standard Ports & Adapters
 @SuppressWarnings("unused")
 public class AdditionalArchitectureRules {
 
-    private static final String EXCEPTIONS_PACKAGE = "..exceptions..";
-    private static final String PERSISTENCE_ADAPTER_PACKAGE = ".." +
-            PortsAndAdaptersArchitectureRules.Constants.ADAPTERS_PACKAGE + ".driven.persistence..";
-    private static final String CONTROLLER_PACKAGE = ".." +
-            PortsAndAdaptersArchitectureRules.Constants.ADAPTERS_PACKAGE + ".driving.api.http.controllers..";
-    private static final String SPRING_PACKAGE = "org.springframework..";
-    private static final String DOMAIN_PACKAGE = ".." + PortsAndAdaptersArchitectureRules.Constants.DOMAIN_PACKAGE
-            + "..";
-    private static final String CONFIG_PACKAGE = ".." + PortsAndAdaptersArchitectureRules.Constants.CONFIG_PACKAGE
-            + "..";
-    private static final String APPLICATION_PACKAGE = ".."
-            + PortsAndAdaptersArchitectureRules.Constants.APPLICATION_PACKAGE + "..";
-    private static final String INTEGRATIONS_PACKAGE =
+    static final String EXCEPTIONS_PACKAGE = "..exceptions..";
+    static final String PERSISTENCE_ADAPTER_PACKAGE = ".." +
+                                                      PortsAndAdaptersArchitectureRules.Constants.ADAPTERS_PACKAGE +
+                                                      ".driven.persistence..";
+    static final String CONTROLLER_PACKAGE = ".." +
+                                             PortsAndAdaptersArchitectureRules.Constants.ADAPTERS_PACKAGE +
+                                             ".driving.api.http.controllers..";
+    static final String SPRING_PACKAGE = "org.springframework..";
+    static final String DOMAIN_PACKAGE = ".." + PortsAndAdaptersArchitectureRules.Constants.DOMAIN_PACKAGE
+                                         + "..";
+    static final String CONFIG_PACKAGE = ".." + PortsAndAdaptersArchitectureRules.Constants.CONFIG_PACKAGE
+                                         + "..";
+    static final String APPLICATION_PACKAGE = ".."
+                                              + PortsAndAdaptersArchitectureRules.Constants.APPLICATION_PACKAGE + "..";
+    static final String INTEGRATIONS_PACKAGE =
             BackityApplication.class.getPackageName() + ".integrations.(*)..";
-    private static final String INFRASTRUCTURE_PACKAGE =
+    static final String INFRASTRUCTURE_PACKAGE =
             BackityApplication.class.getPackageName() + ".infrastructure.(*)..";
 
     @ArchTest
     static final ArchRule EXCEPTIONS_SHOULD_BE_IN_CORRECT_PACKAGE = classes().that()
             .areAssignableTo(Exception.class)
             .should().resideInAPackage(EXCEPTIONS_PACKAGE)
-            .because("a consistent structure makes code easier to work with");
+            .because("""
+                    a consistent structure makes code easier to work with.
+                    
+                    Context:
+                    If exceptions are scattered across the project, developers \
+                    may struggle to find and use them properly.
+                    This can lead to duplicated error handling and messy code. \
+                    Keeping exceptions in a dedicated package makes it easier to manage and understand them.
+                    
+                    Positive consequences:
+                    - Provides a predictable location for all exception-related classes.
+                    - Reduces confusion by maintaining a consistent project structure.
+                    
+                    Neutral consequences:
+                    - Exception definitions will still be distributed across modules, \
+                    meaning some fragmentation remains.
+                    
+                    Negative consequences:
+                    - May introduce additional complexity in small modules, \
+                    as each feature package may need its own exception subpackage.
+                    """);
 
     @ArchTest
     static final ArchRule DOMAIN_SHOULD_NOT_DEPEND_ON_SPRING = noClasses().that()
             .resideInAPackage(DOMAIN_PACKAGE)
             .should().dependOnClassesThat(resideInAPackage(SPRING_PACKAGE))
-            .because("domain should not be polluted with infrastructural code");
+            .because("""
+                    domain should not be polluted with infrastructural code.
+                    
+                    Context:
+                    Historically, developers have used Spring annotations \
+                    such as @Service and @Transactional for convenience. \
+                    While these annotations simplify dependency management, \
+                    they also introduce implicit framework dependencies, \
+                    making the domain logic harder to test, reuse, and adapt to different environments.
+                    
+                    However, enforcing this rule strictly means developers can no longer use framework annotations
+                    on domain classes, making things bean instantiation require a bit more code.
+                    
+                    Positive consequences:
+                    - Improves testability and maintainability of domain logic.
+                    - Keeps business rules independent of infrastructure frameworks.
+                    - Allows domain models to be reused in non-Spring environments.
+                    
+                    Neutral consequences:
+                    - Some developers might prefer framework integrations for convenience.
+                    
+                    Negative consequences:
+                    - Developers can no longer use framework annotations on domain classes, which may introduce
+                    more boilerplate code.
+                    """);
 
     @ArchTest
     static final ArchRule REPOSITORY_IMPLEMENTATIONS_SHOULD_RESIDE_IN_CORRECT_PACKAGE = classes().that()
             .areNotInterfaces().and()
             .haveNameMatching(".*Repository")
             .should().resideInAPackage(PERSISTENCE_ADAPTER_PACKAGE)
-            .because("a consistent structure makes code easier to work with");
+            .because("""
+                    a consistent structure makes code easier to work with.
+                    
+                    Context:
+                    If repository implementations are scattered across the project, developers \
+                    may struggle to find and use them properly. This can lead to duplicated and messy code.
+                    Keeping them in a dedicated package makes it easier to manage and understand them.
+                    
+                    Positive consequences:
+                    - Makes repository implementations easier to locate and manage.
+                    - Reduces confusion by maintaining a consistent project structure.
+                    
+                    Neutral consequences:
+                    - Repository definitions will still be spread across feature packages.
+                    
+                    Negative consequences:
+                    - Can introduce unnecessary subpackage complexity in simple modules.
+                    """);
 
     @ArchTest
     static final ArchRule ONLY_REPOSITORY_IMPLEMENTATIONS_SHOULD_DIRECTLY_CALL_SPRING_REPOSITORIES = noClasses().that()
@@ -68,13 +131,53 @@ public class AdditionalArchitectureRules {
                     CONFIG_PACKAGE)
             .should().dependOnClassesThat().areAssignableTo(Repository.class)
             .orShould().accessClassesThat().areAssignableTo(Repository.class)
-            .because("Spring repositories are an implementation detail of repositories");
+            .because("""
+                    Spring repositories are an implementation detail of repositories.
+                    
+                    Context:
+                    Spring repositories offer convenient data access patterns that developers commonly use directly
+                    throughout applications. \
+                    This reduces initial development time and is a familiar pattern for many developers.
+                    
+                    However, this direct usage also leads to persistence implementation details spreading \
+                    across the codebase, including business logic layers. \
+                    When persistence requirements change, modifications ripple through
+                    multiple parts of the application instead of being contained to a single layer.
+                    
+                    Positive consequences:
+                    - Maintains a clear separation of concerns
+                    - Aligns with DDD principles.
+                    - Aligns with Ports & Adapters (Hexagonal) architecture.
+                    - Improves modularity and flexibility in changing persistence implementations.
+                    
+                    Negative consequences:
+                    - Developers may be used to interacting directly with Spring repositories, \
+                    requiring a shift in habits and mindset
+                    - Adds some complexity due to requiring an additional layer of abstraction.
+                    """);
 
     @ArchTest
     static final ArchRule CONTROLLERS_SHOULD_RESIDE_IN_CORRECT_PACKAGE = classes().that()
             .areAnnotatedWith(RestController.class)
             .should().resideInAPackage(CONTROLLER_PACKAGE)
-            .because("a consistent structure makes code easier to work with");
+            .because("""
+                    a consistent structure makes code easier to work with.
+                    
+                    Context:
+                    If controllers are scattered across the project, developers \
+                    may struggle to find and use them properly. This can lead to duplicated and messy code.
+                    Keeping them in a dedicated package makes it easier to manage and understand them.
+                    
+                    Positive consequences:
+                    - Makes controllers easier to locate and manage.
+                    - Reduces confusion by maintaining a consistent project structure.
+                    
+                    Neutral consequences:
+                    - Controllers will still be spread across feature packages.
+                    
+                    Negative consequences:
+                    - Can introduce unnecessary subpackage complexity in simple modules.
+                    """);
 
     @ArchTest
     static final ArchRule CONTROLLERS_SHOULD_NOT_HAVE_DOMAIN_CLASSES_AS_PROPERTIES =
@@ -92,7 +195,31 @@ public class AdditionalArchitectureRules {
                                 }
                             }
                         }
-                    }).because("controllers should interact with the domain through application services");
+                    }).because("""
+                            controllers should interact with the domain through application services.
+                            
+                            Context:
+                            In Ports & Adapters architecture, controllers act as driving adapters that \
+                            interact with application ports. \
+                            In Use-Case Driven design, Use Case classes define application-level interactions \
+                            and encapsulate business workflows, making it easier to reason about application functionality.
+                            Because Use Cases expose well-defined application operations, \
+                            they also serve as natural ports for driving adapters.
+                            While directly calling domain services simplifies development, \
+                            it weakens the use-case-driven approach \
+                            and increases the likelihood of complex logic appearing in controllers.
+                            This can lead to code duplication if multiple driving adapters need to invoke the same use case.
+                            
+                            Positive consequences:
+                            - Reduces the likelihood of controllers accumulating unnecessary complexity.
+                            - Reduces the likelihood of duplication in driving adapters.
+                            - Aligns with Ports & Adapters architecture (with Use Case classes as ports).
+                            - Improves adaptability when evolving domain models or replacing delivery mechanisms.
+                            
+                            Negative consequences:
+                            - Developers accustomed to direct domain service calls may need to adjust their approach.
+                            - Requires an extra layer of abstraction, which adds complexity.
+                            """);
 
     @ArchTest
     static final ArchRule CONTROLLER_METHODS_SHOULD_NOT_RETURN_DOMAIN_CLASSES = methods()
@@ -135,7 +262,8 @@ public class AdditionalArchitectureRules {
                     events.add(SimpleConditionEvent.violated(javaMethod, message));
                 }
 
-                private String createDependencyInMethodReturnViolationMessage(JavaMethod javaMethod, List<JavaClass> domainDependencies, JavaClass returnType) {
+                private String createDependencyInMethodReturnViolationMessage(
+                        JavaMethod javaMethod, List<JavaClass> domainDependencies, JavaClass returnType) {
                     String message;
                     if (domainDependencies.contains(returnType)) {
                         message = String.format("%s returns %s which is a domain class",
@@ -150,7 +278,28 @@ public class AdditionalArchitectureRules {
                     }
                     return message;
                 }
-            }).because("small changes to the domain should not affect the API");
+            }).because("""
+                    small changes to the domain should not affect the API.
+                    
+                    Context:
+                    Returning domain classes in controllers couples the API to internal business logic, \
+                    making changes in domain models impact external consumers. \
+                    This approach risks exposing internal implementation details, \
+                    and entangling domain models with controller-specific code, \
+                    making refactoring more difficult and reducing flexibility in evolving the domain model.
+                    
+                    DTOs separate domain models from API contracts, ensuring that modifications to domain models \
+                    do not propagate unexpected changes to API contracts, and vice versa.
+                    
+                    Positive consequences:
+                    - Strengthens separation of concerns between the public API and domain logic, \
+                    improving maintainability.
+                    - Reduces the risk of breaking the API when domain models evolve.
+                    - Provides flexibility in shaping API responses independent of domain implementation details.
+                    
+                    Negative consequences:
+                    - Requires explicit mapping between domain objects and DTOs, adding development overhead.
+                    """);
 
     @ArchTest
     static final ArchRule CONTROLLER_METHODS_SHOULD_NOT_ACCEPT_DOMAIN_CLASSES = methods()
@@ -228,7 +377,7 @@ public class AdditionalArchitectureRules {
                         JavaMethod javaMethod, ConditionEvents events, Map.Entry<JavaClass, List<JavaClass>> entry) {
                     String message = String.format(
                             "%s accepts class %s as argument which transitively depends on the following" +
-                                    " domain classes:%n - %s",
+                            " domain classes:%n - %s",
                             javaMethod.getFullName(),
                             entry.getKey().getFullName(),
                             entry.getValue().stream()
@@ -236,25 +385,100 @@ public class AdditionalArchitectureRules {
                                     .collect(Collectors.joining("%n - ")));
                     events.add(SimpleConditionEvent.violated(javaMethod, message));
                 }
-            }).because("small changes to the domain should not affect the API");
+            }).because("""
+                    small changes to the domain should not affect the API.
+                    
+                    Context:
+                    Accepting domain classes as arguments in controllers couples the API to internal business logic, \
+                    making changes in domain models impact external consumers.
+                    This approach risks exposing internal implementation details \
+                    and entangling domain models with controller-specific code, \
+                    making refactoring more difficult and reducing flexibility in evolving the domain model.
+                    
+                    DTOs separate domain models from API contracts, ensuring that modifications to domain models \
+                    do not propagate unexpected changes to API contracts, and vice versa.
+                    
+                    Positive consequences:
+                    - Strengthens separation of concerns between the public API and domain logic, \
+                    improving maintainability.
+                    - Reduces the risk of breaking the API when domain models evolve.
+                    - Provides flexibility in shaping API responses independent of domain implementation details.
+                    
+                    Negative consequences:
+                    - Requires explicit mapping between domain objects and DTOs, adding development overhead.
+                    """);
 
     @ArchTest
     static final ArchRule CORE_SHOULD_NOT_DEPEND_ON_INTEGRATIONS = noClasses().that()
             .resideInAPackage(BackityApplication.class.getPackageName() + ".core..")
             .should().dependOnClassesThat()
             .resideInAPackage(BackityApplication.class.getPackageName() + ".integrations..")
-            .because("making the core unaware of specific integrations will increase maintainability");
+            .because("""
+                    making the core unaware of specific integrations will increase maintainability.
+                    
+                    Context:
+                    Referencing integrations in the core package is convenient.
+                    However, it would tightly couple the core to those integrations, violating separation of concerns.
+                    This would make the core more difficult to reason about and require modifications to the core \
+                    when an integration changes.
+                    
+                    Positive consequences:
+                    - Improves maintainability by keeping core logic independent of external dependencies.
+                    - Enhances modularity, allowing integrations to evolve separately without affecting the core.
+                    
+                    Negative consequences:
+                    - Adds some complexity due to requiring an additional layer of abstraction.
+                    """);
 
     @ArchTest
     static final ArchRule INTEGRATIONS_SHOULD_NOT_DEPEND_ON_EACH_OTHER = slices()
             .matching(INTEGRATIONS_PACKAGE)
             .should().notDependOnEachOther()
-            .because("making integrations unaware of each other will increase maintainability");
+            .because("""
+                    making integrations unaware of each other will increase maintainability.
+                    
+                    Context:
+                    Integrations may need to interact with each other, \
+                    but referencing other integrations creates dependencies between them.
+                    This introduces coupling, meaning a change in one integration \
+                    could require modifications in another, reducing their ability to evolve independently.
+                    By keeping integrations isolated, each can be modified, replaced, or extended \
+                    without unintended side effects in other integrations.
+                    
+                    Positive consequences:
+                    - Improves maintainability by preventing unnecessary dependencies between integrations.
+                    - Allows integrations to evolve independently without impacting others.
+                    - Reduces the risk of cascading changes when modifying or replacing an integration.
+                    
+                    Negative consequences:
+                    - Adds some complexity due to requiring an additional layer of abstraction, if integrations
+                    need to communicate with each other.
+                    """);
 
     @ArchTest
     static final ArchRule NOTHING_SHOULD_NOT_DEPEND_ON_INFRASTRUCTURE = noClasses().that()
             .resideOutsideOfPackage(INFRASTRUCTURE_PACKAGE)
             .should().dependOnClassesThat()
             .resideInAPackage(INFRASTRUCTURE_PACKAGE)
-            .because("the infrastructure package should only contain plumbing necessary to run the application");
+            .because("""
+                    the infrastructure package should only contain plumbing necessary to run the application.
+                    
+                    Context:
+                    Infrastructure code provides technical support for the application, \
+                    such as database access, messaging, and external system integrations.
+                    Allowing external dependencies on infrastructure code \
+                    couples application logic to technical details, \
+                    making modifications and refactoring more challenging.
+                    By keeping infrastructure isolated, feature logic remains independent of technical concerns, \
+                    improving flexibility and maintainability.
+                    
+                    Positive consequences:
+                    - Improves maintainability by preventing business logic from depending on technical infrastructure.
+                    - Enhances flexibility by allowing infrastructure changes without impacting application logic.
+                    - Makes it easier to reason about the application,
+                      as the application code remains free of technical details.
+                    
+                    Negative consequences:
+                    - Adds some complexity due to requiring an additional layer of abstraction
+                    """);
 }
