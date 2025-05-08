@@ -57,20 +57,8 @@ See [Profiles overview](#profiles-overview) for more mock dependencies.
    `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev,dev-provider-api`
 3. Access the application at [http://localhost:8080](http://localhost:8080).
 
-{: .note }
-> The frontend is automatically bundled into the backend jar when the project is built,
+The frontend is automatically bundled into the backend jar when the project is built,
 so you don't need to start the frontend unless you need it to automatically react to changes in its code.
-
-## Backend API documentation
-
-The Swagger UI page is available at [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html).
-
-The OpenAPI description is available at the following urls:
-
-* [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs) - in `json` format
-* [http://localhost:8080/v3/api-docs.yaml](http://localhost:8080/v3/api-docs.yaml) - in `yml` format
-
-## Frontend development
 
 To run the Angular frontend independently for faster iteration:
 
@@ -81,6 +69,15 @@ ng serve
 
 Access the frontend at [http://localhost:4200](http://localhost:4200).
 It reloads automatically, which speeds up your work.
+
+## Backend API documentation
+
+The Swagger UI page is available at [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html).
+
+The OpenAPI description is available at the following urls:
+
+* [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs) - in `json` format
+* [http://localhost:8080/v3/api-docs.yaml](http://localhost:8080/v3/api-docs.yaml) - in `yml` format
 
 ## Architectural Design Decisions
 
