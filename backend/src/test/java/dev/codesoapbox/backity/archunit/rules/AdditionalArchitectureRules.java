@@ -40,8 +40,8 @@ public class AdditionalArchitectureRules {
                                          + "..";
     static final String APPLICATION_PACKAGE = ".."
                                               + PortsAndAdaptersArchitectureRules.Constants.APPLICATION_PACKAGE + "..";
-    static final String INTEGRATIONS_PACKAGE =
-            BackityApplication.class.getPackageName() + ".integrations.(*)..";
+    static final String GAME_PROVIDERS_PACKAGE =
+            BackityApplication.class.getPackageName() + ".gameproviders.(*)..";
     static final String INFRASTRUCTURE_PACKAGE =
             BackityApplication.class.getPackageName() + ".infrastructure.(*)..";
 
@@ -431,8 +431,8 @@ public class AdditionalArchitectureRules {
                     """);
 
     @ArchTest
-    static final ArchRule INTEGRATIONS_SHOULD_NOT_DEPEND_ON_EACH_OTHER = slices()
-            .matching(INTEGRATIONS_PACKAGE)
+    static final ArchRule GAME_PROVIDER_INTEGRATIONS_SHOULD_NOT_DEPEND_ON_EACH_OTHER = slices()
+            .matching(GAME_PROVIDERS_PACKAGE)
             .should().notDependOnEachOther()
             .because("""
                     making integrations unaware of each other will increase maintainability.

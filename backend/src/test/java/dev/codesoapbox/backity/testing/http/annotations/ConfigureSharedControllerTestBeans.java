@@ -12,11 +12,11 @@ import dev.codesoapbox.backity.core.gamefile.infrastructure.config.GameFileContr
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.logs.application.GetLogsUseCase;
 import dev.codesoapbox.backity.core.logs.domain.services.LogService;
+import dev.codesoapbox.backity.gameproviders.gog.application.usecases.*;
 import dev.codesoapbox.backity.shared.infrastructure.config.jpa.SharedControllerBeanConfig;
-import dev.codesoapbox.backity.integrations.gog.application.usecases.*;
-import dev.codesoapbox.backity.integrations.gog.infrastructure.config.GogControllerBeanConfig;
-import dev.codesoapbox.backity.integrations.gog.domain.services.GogAuthService;
-import dev.codesoapbox.backity.integrations.gog.domain.services.GogEmbedClient;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.config.GogControllerBeanConfig;
+import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
+import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import jakarta.persistence.EntityManager;
 import org.springframework.context.annotation.Import;
@@ -49,7 +49,7 @@ import java.lang.annotation.Target;
         FileDiscoveryService.class,
         LogService.class,
         GogAuthService.class,
-        GogEmbedClient.class,
+        GogLibraryService.class,
 
         // Use cases
         GetGamesWithFilesUseCase.class,

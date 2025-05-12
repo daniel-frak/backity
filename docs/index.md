@@ -163,7 +163,7 @@ Ensure the application is running, then execute:
 
 ```shell
 cd e2e
-./mvnw test
+../mvnw test
 ```
 
 # Contributing to the documentation
