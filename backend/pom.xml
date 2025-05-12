@@ -336,7 +336,7 @@
                     </properties>
                 </configuration>
             </plugin>
-            <!-- END Test configuration -->
+            <!-- END of Test configuration -->
 
             <!-- Sonarqube code coverage -->
             <plugin>
@@ -358,7 +358,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- END Sonarqube code coverage -->
+            <!-- END of Sonarqube code coverage -->
 
             <!-- Pitest mutation testing (general configuration) -->
             <plugin>
@@ -378,31 +378,42 @@
                     <threads>4</threads>
                     <withHistory>true</withHistory>
                     <excludedClasses>
-                        <excludedClass>**.config.**</excludedClass>
-                        <excludedClass>**.adapters.driving.**.http.**.*Controller</excludedClass>
+                        <!--
+                        MapStruct may generate untestable paths such as null-checks for non-nullable fields like IDs
+                        -->
                         <excludedClass>*MapperImpl</excludedClass>
+
+                        <!--
+                        Configuration classes are tested implicitly during integration tests using Spring context
+                         -->
+                        <excludedClass>**.config.**</excludedClass>
+
+                        <!-- The classes below are tested using integration tests -->
+                        <excludedClass>**.adapters.driving.**.http.**.*Controller</excludedClass>
                         <excludedClass>**jpa.**.*Repository</excludedClass>
-                        <excludedClass>*GogEmbedWebClient</excludedClass>
-                        <excludedClass>*LogbackLogService</excludedClass>
-                        <excludedClass>*GogAuthClient</excludedClass>
+                        <excludedClass>*SpringScheduler</excludedClass>
                         <excludedClass>*WebSocketHandler</excludedClass>
                         <excludedClass>*WebSocketPublisher</excludedClass>
                         <excludedClass>*WebSocketEventPublisher</excludedClass>
+                        <excludedClass>*LogbackLogService</excludedClass>
                         <excludedClass>*FileSystem</excludedClass>
-                        <excludedClass>*SpringScheduler</excludedClass>
+                        <excludedClass>*GogEmbedWebClient</excludedClass>
+                        <excludedClass>*GogAuthClient</excludedClass>
                     </excludedClasses>
                     <excludedTestClasses>
+                        <!-- Integration tests are too costly for mutation testing -->
                         <param>*IntegrationTest</param>
                         <param>*IT</param>
                     </excludedTestClasses>
                     <outputFormats>
+                        <!-- HTML format is convenient for human verification -->
                         <outputFormat>html</outputFormat>
                         <!-- XML format is required for the SonarQube plugin -->
                         <outputFormat>xml</outputFormat>
                     </outputFormats>
                 </configuration>
             </plugin>
-            <!-- END Pitest mutation testing (general configuration) -->
+            <!-- END of Pitest mutation testing (general configuration) -->
         </plugins>
     </build>
 
@@ -508,7 +519,7 @@
                 </plugins>
             </build>
         </profile>
-        <!-- END Client code generation -->
+        <!-- END of Client code generation -->
 
         <!-- Pitest mutation testing (profiles) -->
         <profile>
@@ -589,7 +600,7 @@
                 </plugins>
             </build>
         </profile>
-        <!-- END Pitest mutation testing (profiles) -->
+        <!-- END of Pitest mutation testing (profiles) -->
     </profiles>
 
     <reporting>
