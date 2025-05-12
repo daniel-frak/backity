@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backup.infrastructure.config.config;
+package dev.codesoapbox.backity.core.backup.infrastructure.config;
 
 import dev.codesoapbox.backity.core.backup.application.usecases.BackUpOldestGameFileUseCase;
 import dev.codesoapbox.backity.core.backup.application.FileBackupService;

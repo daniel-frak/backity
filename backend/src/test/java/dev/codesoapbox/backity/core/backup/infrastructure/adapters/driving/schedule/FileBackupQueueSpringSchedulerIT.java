@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.schedule;
 
 import dev.codesoapbox.backity.core.backup.application.usecases.BackUpOldestGameFileUseCase;
-import dev.codesoapbox.backity.core.backup.infrastructure.config.config.FileBackupQueueSchedulerBeanConfig;
+import dev.codesoapbox.backity.core.backup.infrastructure.config.FileBackupQueueSchedulerBeanConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.test.context.TestPropertySource;

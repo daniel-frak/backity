@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backup.infrastructure.config.config;
+package dev.codesoapbox.backity.core.backup.infrastructure.config;
 
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers.FileBackupFailedEventWebSocketHandler;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers.FileBackupFinishedEventWebSocketHandler;
