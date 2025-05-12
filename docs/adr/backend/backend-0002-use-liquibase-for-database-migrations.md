@@ -11,11 +11,12 @@ Accepted
 ## Context
 
 The project needs a reliable way to manage database schema changes.
-Liquibase is the chosen tool due to its ability to handle schema migrations with rollback support.
+Liquibase is a popular tool for this due to its ability to handle schema migrations with rollback support.
 However, a lack of standardization in naming scripts and changesets can cause confusion and errors during migration.
 
 ## Decision
  
+- Use Liquibase for database migrations
 - Name migration scripts as `db.changelog-{currentTimestamp}_{scriptName}.xml`.
 - Name changesets within scripts using the pattern `{orderNumber}_{changeSetName}`.
 - Ensure all migrations are **backwards compatible** to allow safe rollbacks and non-breaking deployments.
