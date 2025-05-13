@@ -28,14 +28,13 @@ Furthermore, contributors often **come from diverse backgrounds and may lack a u
 This makes it difficult to maintain a consistent ubiquitous language or to define bounded contexts collaboratively. 
 Moreover, **without a central authority like a business domain expert**, 
 the process of refining and validating the domain model becomes more difficult.
+Because the domain revolves around de facto file management, 
+separating domain concerns from technical infrastructure presents a further challenge.
 
 Finally, **contributors may be unfamiliar with DDD**. This may be somewhat alleviated by directing them to resources
 like ["Introduction to DDD" by InfoQ](https://www.infoq.com/minibooks/domain-driven-design-quickly/).
 The difficulty will be further **reduced if the entire codebase is consistent**
 (at least in terms of writing compliant code), as they can just emulate the style.
-
-A unique challenge for this project is that the domain is focused on de facto file management, which may make it that
-much harder to separate domain concerns from technical infrastructure.
 
 ## Decision
 
