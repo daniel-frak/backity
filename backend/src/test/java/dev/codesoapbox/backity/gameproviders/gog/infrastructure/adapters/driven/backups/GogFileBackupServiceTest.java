@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupPr
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.gameproviders.gog.application.TrackableFileStream;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.library.GogEmbedWebClient;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ class GogFileBackupServiceTest {
     private GogFileBackupService gogFileBackupService;
 
     @Mock
-    private GogEmbedWebClient gogEmbedClient;
+    private GogEmbedWebClient gogFileProvider;
 
     @Mock
     private GogAuthService authService;
@@ -35,12 +36,21 @@ class GogFileBackupServiceTest {
     @Test
     void backUpFileShouldDownloadFile() throws IOException {
         GameFile gameFile = TestGameFile.discovered();
-        String filePath = gameFile.getFileBackup().getFilePath();
         BackupProgress backupProgress = mock(BackupProgress.class);
+        TrackableFileStream trackableFileStream =
+                mockProgressAwareFileStreamCreation(gameFile, backupProgress);
 
         gogFileBackupService.backUpFile(gameFile, backupProgress);
 
-        verify(urlFileDownloader).downloadFile(gogEmbedClient, gameFile, filePath, backupProgress);
+        String filePath = gameFile.getFileBackup().getFilePath();
+        verify(urlFileDownloader).downloadFile(trackableFileStream, gameFile, filePath);
+    }
+
+    private TrackableFileStream mockProgressAwareFileStreamCreation(GameFile gameFile, BackupProgress backupProgress) {
+        TrackableFileStream trackableFileStream = mock(TrackableFileStream.class);
+        when(gogFileProvider.initializeProgressAndStreamFile(gameFile.getGameProviderFile(), backupProgress))
+                .thenReturn(trackableFileStream);
+        return trackableFileStream;
     }
 
     @Test

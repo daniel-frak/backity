@@ -4,7 +4,9 @@ import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupPr
 import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileSystem;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.gameproviders.gog.application.TrackableFileStream;
 import dev.codesoapbox.backity.gameproviders.gog.domain.exceptions.FileBackupException;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.backups.testing.FakeProgressAwareFileStreamFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +27,7 @@ class UrlFileDownloaderTest {
 
     private UrlFileDownloader urlFileDownloader;
     private FakeUnixFileSystem fileManager;
-    private FakeFileBufferProvider fileBufferProvider;
+    private FakeProgressAwareFileStreamFactory fileStreamFactory;
 
     @Mock
     private Clock clock;
@@ -33,7 +35,7 @@ class UrlFileDownloaderTest {
     @BeforeEach
     void setUp() {
         fileManager = new FakeUnixFileSystem();
-        fileBufferProvider = new FakeFileBufferProvider(clock);
+        fileStreamFactory = new FakeProgressAwareFileStreamFactory(clock);
         urlFileDownloader = new UrlFileDownloader(fileManager);
     }
 
@@ -41,10 +43,10 @@ class UrlFileDownloaderTest {
     void downloadFileShouldDownloadToDisk() throws IOException {
         GameFile gameFile = TestGameFile.discovered();
         String filePath = "testFilePath";
-        fileBufferProvider.mockDataForDownload(gameFile, "Test data");
         BackupProgress backupProgress = mockBackupProgress();
+        TrackableFileStream fileStream = fileStreamFactory.create(backupProgress, "Test data");
 
-        urlFileDownloader.downloadFile(fileBufferProvider, gameFile, filePath, backupProgress);
+        urlFileDownloader.downloadFile(fileStream, gameFile, filePath);
 
         assertThat(fileManager.fileExists(filePath)).isTrue();
     }
@@ -63,16 +65,16 @@ class UrlFileDownloaderTest {
     void downloadFileShouldTrackProgress() throws IOException {
         BackupProgress backupProgress = mockBackupProgress();
         fileManager = new FakeUnixFileSystem();
-        fileBufferProvider = new FakeFileBufferProvider(clock);
+        fileStreamFactory = new FakeProgressAwareFileStreamFactory(clock);
         urlFileDownloader = new UrlFileDownloader(fileManager);
         when(backupProgress.track(any()))
                 .thenAnswer(inv -> inv.getArgument(0));
         when(backupProgress.getContentLengthBytes())
                 .thenReturn(9L);
         GameFile gameFile = TestGameFile.discovered();
-        fileBufferProvider.mockDataForDownload(gameFile, "Test data");
+        TrackableFileStream fileStream = fileStreamFactory.create(backupProgress, "Test data");
 
-        urlFileDownloader.downloadFile(fileBufferProvider, gameFile, "someFilePath", backupProgress);
+        urlFileDownloader.downloadFile(fileStream, gameFile, "someFilePath");
 
         InOrder inOrder = Mockito.inOrder(backupProgress);
         inOrder.verify(backupProgress).initializeTracking(9, clock);
@@ -83,12 +85,11 @@ class UrlFileDownloaderTest {
     void downloadFileShouldThrowGivenFileSizeDoesNotMatch() {
         String filePath = "someFilePath";
         GameFile gameFile = TestGameFile.discovered();
-        fileBufferProvider.mockDataForDownload(gameFile, "Test data");
         fileManager.overrideDownloadedSizeFor(filePath, 999L);
         BackupProgress backupProgress = mockBackupProgress();
+        TrackableFileStream fileStream = fileStreamFactory.create(backupProgress, "Test data");
 
-        assertThatThrownBy(() -> urlFileDownloader.downloadFile(
-                fileBufferProvider, gameFile, filePath, backupProgress))
+        assertThatThrownBy(() -> urlFileDownloader.downloadFile(fileStream, gameFile, filePath))
                 .isInstanceOf(FileBackupException.class)
                 .message()
                 .isEqualTo(

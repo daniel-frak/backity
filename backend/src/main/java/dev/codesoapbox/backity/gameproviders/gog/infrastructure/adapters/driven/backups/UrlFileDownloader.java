@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgress;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileSystem;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.gameproviders.gog.application.FileBufferProvider;
+import dev.codesoapbox.backity.gameproviders.gog.application.TrackableFileStream;
 import dev.codesoapbox.backity.gameproviders.gog.domain.exceptions.FileBackupException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +20,10 @@ public class UrlFileDownloader {
 
     private final FileSystem fileSystem;
 
-    public void downloadFile(FileBufferProvider fileBufferProvider, GameFile gameFile, String filePath,
-                             BackupProgress progress) throws IOException {
-        String url = gameFile.getGameProviderFile().url();
-        Flux<DataBuffer> dataBufferFlux = fileBufferProvider.getFileBuffer(url, progress);
-        writeToDisk(dataBufferFlux, filePath, progress);
+    public void downloadFile(TrackableFileStream trackableFileStream, GameFile gameFile, String filePath)
+            throws IOException {
+        BackupProgress progress = trackableFileStream.progress();
+        writeToDisk(trackableFileStream.dataStream(), filePath, progress);
 
         log.info("Downloaded file {} to {}", gameFile, filePath);
 

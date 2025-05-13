@@ -2,15 +2,17 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgress;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
-import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
+import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
+import dev.codesoapbox.backity.gameproviders.gog.application.GogFileProvider;
+import dev.codesoapbox.backity.gameproviders.gog.application.TrackableFileStream;
+import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameFile;
+import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
+import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
 import dev.codesoapbox.backity.gameproviders.gog.domain.exceptions.FileDiscoveryException;
 import dev.codesoapbox.backity.gameproviders.gog.domain.exceptions.GameBackupRequestFailedException;
 import dev.codesoapbox.backity.gameproviders.gog.domain.exceptions.GameListRequestFailedException;
-import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
-import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.library.model.remote.GogGameDetailsApiResponse;
-import dev.codesoapbox.backity.gameproviders.gog.application.FileBufferProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -33,7 +35,7 @@ import static java.util.Collections.emptyList;
 // https://gogapidocs.readthedocs.io/en/latest/index.html
 @Slf4j
 @RequiredArgsConstructor
-public class GogEmbedWebClient implements GogLibraryService, FileBufferProvider {
+public class GogEmbedWebClient implements GogLibraryService, GogFileProvider {
 
     static final String HEADER_AUTHORIZATION = "Authorization";
     private static final String VERSION_UNKNOWN_VALUE = "unknown";
@@ -192,16 +194,19 @@ public class GogEmbedWebClient implements GogLibraryService, FileBufferProvider 
     }
 
     @Override
-    public Flux<DataBuffer> getFileBuffer(String fileUrl,
-                                          BackupProgress progress) {
-        return webClientEmbed.get()
-                .uri(fileUrl)
+    public TrackableFileStream initializeProgressAndStreamFile(
+            GameProviderFile gameProviderFile, BackupProgress progress) {
+        String url = gameProviderFile.url();
+        Flux<DataBuffer> dataStream = webClientEmbed.get()
+                .uri(url)
                 .header(HEADER_AUTHORIZATION, getBearerToken())
                 .exchangeToFlux(response -> {
-                    verifyResponseIsSuccessful(response, fileUrl);
+                    verifyResponseIsSuccessful(response, url);
                     progress.initializeTracking(extractSizeInBytes(response), clock);
                     return response.bodyToFlux(DataBuffer.class);
                 });
+
+        return new TrackableFileStream(dataStream, progress);
     }
 
     private long extractSizeInBytes(ClientResponse response) {
