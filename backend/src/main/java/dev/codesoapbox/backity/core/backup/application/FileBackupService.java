@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupPr
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgressFactory;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
-import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
+import dev.codesoapbox.backity.core.filemanagement.domain.FileSystem;
 import dev.codesoapbox.backity.core.filemanagement.domain.FilePathProvider;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
@@ -25,17 +25,17 @@ public class FileBackupService {
 
     private final FilePathProvider filePathProvider;
     private final GameFileRepository gameFileRepository;
-    private final FileManager fileManager;
+    private final FileSystem fileSystem;
     private final Map<GameProviderId, GameProviderFileBackupService> gameProviderFileBackupServices;
     private final BackupProgressFactory backupProgressFactory;
 
     public FileBackupService(FilePathProvider filePathProvider, GameFileRepository gameFileRepository,
-                             FileManager fileManager,
+                             FileSystem fileSystem,
                              List<GameProviderFileBackupService> gameProviderFileBackupServices,
                              BackupProgressFactory backupProgressFactory) {
         this.filePathProvider = filePathProvider;
         this.gameFileRepository = gameFileRepository;
-        this.fileManager = fileManager;
+        this.fileSystem = fileSystem;
         this.gameProviderFileBackupServices = gameProviderFileBackupServices.stream()
                 .collect(Collectors.toMap(GameProviderFileBackupService::getGameProviderId,
                         d -> d));
@@ -107,7 +107,7 @@ public class FileBackupService {
     }
 
     private void tryToCleanUpAfterFailedDownload(GameFile gameFile, String filePath) {
-        fileManager.deleteIfExists(filePath);
+        fileSystem.deleteIfExists(filePath);
         gameFile.clearFilePath();
         gameFileRepository.save(gameFile);
     }

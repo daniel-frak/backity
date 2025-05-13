@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.backup.application;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgressFactory;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
-import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileManager;
+import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileSystem;
 import dev.codesoapbox.backity.core.filemanagement.domain.FilePathProvider;
 import dev.codesoapbox.backity.core.gamefile.domain.*;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameProviderFileUrlEmptyException;
@@ -45,13 +45,13 @@ class FileBackupServiceTest {
     @Mock
     private BackupProgressFactory backupProgressFactory;
 
-    private FakeUnixFileManager fileManager;
+    private FakeUnixFileSystem fileManager;
 
     @BeforeEach
     void setUp() {
         when(gameProviderFileBackupService.getGameProviderId())
                 .thenReturn(EXISTING_GAME_PROVIDER_ID);
-        fileManager = new FakeUnixFileManager(5120);
+        fileManager = new FakeUnixFileSystem(5120);
         fileBackupService = new FileBackupService(filePathProvider, gameFileRepository, fileManager,
                 singletonList(gameProviderFileBackupService), backupProgressFactory);
     }

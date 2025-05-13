@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.gamefile.infrastructure.config;
 
-import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
+import dev.codesoapbox.backity.core.filemanagement.domain.FileSystem;
 import dev.codesoapbox.backity.core.gamefile.application.usecases.*;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import org.springframework.context.annotation.Bean;
@@ -39,12 +39,12 @@ public class GameFileUseCaseBeanConfig {
     }
 
     @Bean
-    public DeleteFileUseCase deleteFileUseCase(FileManager fileManager, GameFileRepository gameFileRepository) {
-        return new DeleteFileUseCase(fileManager, gameFileRepository);
+    public DeleteFileUseCase deleteFileUseCase(FileSystem fileSystem, GameFileRepository gameFileRepository) {
+        return new DeleteFileUseCase(fileSystem, gameFileRepository);
     }
 
     @Bean
-    public DownloadFileUseCase downloadFileUseCase(GameFileRepository gameFileRepository, FileManager fileManager) {
-        return new DownloadFileUseCase(gameFileRepository, fileManager);
+    public DownloadFileUseCase downloadFileUseCase(GameFileRepository gameFileRepository, FileSystem fileSystem) {
+        return new DownloadFileUseCase(gameFileRepository, fileSystem);
     }
 }

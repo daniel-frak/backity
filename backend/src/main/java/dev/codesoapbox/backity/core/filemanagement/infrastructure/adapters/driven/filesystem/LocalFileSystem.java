@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.filemanagement.infrastructure.adapters.driven.filesystem;
 
-import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
+import dev.codesoapbox.backity.core.filemanagement.domain.FileSystem;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileResource;
 import dev.codesoapbox.backity.core.filemanagement.domain.exceptions.FileCouldNotBeDeletedException;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +9,7 @@ import java.io.*;
 import java.nio.file.*;
 
 @Slf4j
-public class LocalFileSystem implements FileManager {
+public class LocalFileSystem implements FileSystem {
 
     @Override
     public String getSeparator() {

@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 @NoArgsConstructor
-public class FakeUnixFileManager implements FileManager {
+public class FakeUnixFileSystem implements FileSystem {
 
     private final Set<String> pathsCheckedForSize = new HashSet<>();
     private final Set<String> directoriesCreated = new HashSet<>();
@@ -29,7 +29,7 @@ public class FakeUnixFileManager implements FileManager {
     @Setter
     private RuntimeException shouldThrowOnFileDeletion;
 
-    public FakeUnixFileManager(long availableSizeInBytes) {
+    public FakeUnixFileSystem(long availableSizeInBytes) {
         this.availableSizeInBytes = availableSizeInBytes;
     }
 

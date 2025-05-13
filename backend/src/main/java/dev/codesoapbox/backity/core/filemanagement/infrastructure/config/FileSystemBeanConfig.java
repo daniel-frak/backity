@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.filemanagement.infrastructure.config;
 
 import dev.codesoapbox.backity.core.filemanagement.infrastructure.adapters.driven.filesystem.S3FileSystem;
-import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
+import dev.codesoapbox.backity.core.filemanagement.domain.FileSystem;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 public class FileSystemBeanConfig {
 
     @Bean
-    FileManager s3FileSystem(S3Client s3Client, S3Properties s3Properties) {
+    FileSystem s3FileSystem(S3Client s3Client, S3Properties s3Properties) {
         return new S3FileSystem(s3Client, s3Properties.bucket(), s3Properties.bufferSizeInBytes());
     }
 

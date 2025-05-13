@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.gamefile.application.usecases;
 
-import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileManager;
+import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileSystem;
 import dev.codesoapbox.backity.core.gamefile.domain.*;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,14 +18,14 @@ class DeleteFileUseCaseTest {
 
     private DeleteFileUseCase useCase;
 
-    private FakeUnixFileManager fileManager;
+    private FakeUnixFileSystem fileManager;
 
     @Mock
     private GameFileRepository gameFileRepository;
 
     @BeforeEach
     void setUp() {
-        fileManager = new FakeUnixFileManager();
+        fileManager = new FakeUnixFileSystem();
         useCase = new DeleteFileUseCase(fileManager, gameFileRepository);
     }
 

@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.filemanagement.infrastructure.config;
 
-import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
+import dev.codesoapbox.backity.core.filemanagement.domain.FileSystem;
 import dev.codesoapbox.backity.core.filemanagement.domain.FilePathProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,7 +11,7 @@ public class SharedFileManagementBeanConfig {
 
     @Bean
     FilePathProvider filePathProvider(@Value("${backity.default-path-template}") String defaultPathTemplate,
-                                      FileManager fileManager) {
-        return new FilePathProvider(defaultPathTemplate, fileManager);
+                                      FileSystem fileSystem) {
+        return new FilePathProvider(defaultPathTemplate, fileSystem);
     }
 }

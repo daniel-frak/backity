@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.filemanagement.infrastructure.adapters.driven.filesystem;
 
-import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
+import dev.codesoapbox.backity.core.filemanagement.domain.FileSystem;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileResource;
 import dev.codesoapbox.backity.core.filemanagement.domain.exceptions.FileCouldNotBeDeletedException;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import java.nio.file.FileAlreadyExistsException;
 
 @Slf4j
 @RequiredArgsConstructor
-public class S3FileSystem implements FileManager {
+public class S3FileSystem implements FileSystem {
 
     private final S3Client s3Client;
     private final String bucketName;

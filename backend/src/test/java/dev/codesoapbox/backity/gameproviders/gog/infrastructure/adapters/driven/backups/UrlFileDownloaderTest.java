@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.backups;
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgress;
-import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileManager;
+import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileSystem;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.exceptions.FileBackupException;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 class UrlFileDownloaderTest {
 
     private UrlFileDownloader urlFileDownloader;
-    private FakeUnixFileManager fileManager;
+    private FakeUnixFileSystem fileManager;
     private FakeFileBufferProvider fileBufferProvider;
 
     @Mock
@@ -32,7 +32,7 @@ class UrlFileDownloaderTest {
 
     @BeforeEach
     void setUp() {
-        fileManager = new FakeUnixFileManager();
+        fileManager = new FakeUnixFileSystem();
         fileBufferProvider = new FakeFileBufferProvider(clock);
         urlFileDownloader = new UrlFileDownloader(fileManager);
     }
@@ -62,7 +62,7 @@ class UrlFileDownloaderTest {
     @Test
     void downloadFileShouldTrackProgress() throws IOException {
         BackupProgress backupProgress = mockBackupProgress();
-        fileManager = new FakeUnixFileManager();
+        fileManager = new FakeUnixFileSystem();
         fileBufferProvider = new FakeFileBufferProvider(clock);
         urlFileDownloader = new UrlFileDownloader(fileManager);
         when(backupProgress.track(any()))

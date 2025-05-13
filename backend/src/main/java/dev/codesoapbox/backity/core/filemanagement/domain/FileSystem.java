@@ -4,7 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public interface FileManager {
+public interface FileSystem {
 
     OutputStream getOutputStream(String path) throws IOException;
 

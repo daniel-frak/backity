@@ -14,11 +14,11 @@ class FilePathProviderTest {
 
     private FilePathProvider filePathProvider;
 
-    private FakeUnixFileManager fakeUnixFileManager;
+    private FakeUnixFileSystem fakeUnixFileManager;
 
     @BeforeEach
     void setUp() {
-        fakeUnixFileManager = new FakeUnixFileManager();
+        fakeUnixFileManager = new FakeUnixFileSystem();
         filePathProvider = new FilePathProvider(PATH_TEMPLATE, fakeUnixFileManager);
     }
 

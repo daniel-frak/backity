@@ -11,17 +11,17 @@ public class FilePathProvider {
     private static final Pattern ILLEGAL_CHARACTERS = Pattern.compile("[<>\"|?\n`';!@#$%^&*{}\\[\\]~]");
 
     final String defaultPathTemplate;
-    private final FileManager fileManager;
+    private final FileSystem fileSystem;
 
-    public FilePathProvider(String defaultPathTemplate, FileManager fileManager) {
-        this.fileManager = fileManager;
+    public FilePathProvider(String defaultPathTemplate, FileSystem fileSystem) {
+        this.fileSystem = fileSystem;
         this.defaultPathTemplate = replaceWithCorrectFileSeparator(defaultPathTemplate);
     }
 
     private String replaceWithCorrectFileSeparator(String defaultPathTemplate) {
         return defaultPathTemplate
-                .replace("/", fileManager.getSeparator())
-                .replace("\\", fileManager.getSeparator());
+                .replace("/", fileSystem.getSeparator())
+                .replace("\\", fileSystem.getSeparator());
     }
 
     /**
@@ -33,7 +33,7 @@ public class FilePathProvider {
         String extension = fileName.substring(baseName.length());
 
         String filePath = buildUniqueFilePath(gameProviderId, gameTitle, baseName, extension, suffixIndex);
-        while(fileManager.fileExists(filePath)) {
+        while(fileSystem.fileExists(filePath)) {
             suffixIndex++;
             filePath = buildUniqueFilePath(gameProviderId, gameTitle, baseName, extension, suffixIndex);
         }

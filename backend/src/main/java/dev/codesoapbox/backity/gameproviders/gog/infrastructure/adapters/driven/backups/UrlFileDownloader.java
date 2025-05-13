@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.backups;
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgress;
-import dev.codesoapbox.backity.core.filemanagement.domain.FileManager;
+import dev.codesoapbox.backity.core.filemanagement.domain.FileSystem;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.gameproviders.gog.application.FileBufferProvider;
 import dev.codesoapbox.backity.gameproviders.gog.domain.exceptions.FileBackupException;
@@ -18,7 +18,7 @@ import java.io.OutputStream;
 @RequiredArgsConstructor
 public class UrlFileDownloader {
 
-    private final FileManager fileManager;
+    private final FileSystem fileSystem;
 
     public void downloadFile(FileBufferProvider fileBufferProvider, GameFile gameFile, String filePath,
                              BackupProgress progress) throws IOException {
@@ -33,7 +33,7 @@ public class UrlFileDownloader {
 
     private void writeToDisk(Flux<DataBuffer> dataBufferFlux, String filePath, BackupProgress progress)
             throws IOException {
-        try (OutputStream outputStream = fileManager.getOutputStream(filePath)) {
+        try (OutputStream outputStream = fileSystem.getOutputStream(filePath)) {
             DataBufferUtils
                     .write(dataBufferFlux, progress.track(outputStream))
                     .map(DataBufferUtils::release)
@@ -42,7 +42,7 @@ public class UrlFileDownloader {
     }
 
     private void validateDownloadedFileSize(String filePath, long expectedSizeInBytes) {
-        long sizeInBytesOnDisk = fileManager.getSizeInBytes(filePath);
+        long sizeInBytesOnDisk = fileSystem.getSizeInBytes(filePath);
         if (sizeInBytesOnDisk != expectedSizeInBytes) {
             throw new FileBackupException("The downloaded size of " + filePath + " is not what was expected (was "
                                           + sizeInBytesOnDisk + ", expected " + expectedSizeInBytes + ")");
