@@ -1,26 +1,10 @@
 ---
-title: Domain Vision Statement
-parent: Getting started
+title: Backup workflow
 nav_order: 3
 ---
 
-{: .important }
-This document is a work in progress.
-
-The domain centers around automated preservation of digital game libraries. Its core elements are:
-
-- **Game Providers**: Sources of games and their files,
-- **Games**: Digital products containing downloadable files,
-- **Game Files**: Actual content that needs to be preserved,
-- **Backup Target / File System**: Storage system maintaining preserved files.
-
-The model ensures reliable automation of the preservation process while maintaining clear traceability
-between provider files and their backups.
-It must be flexible enough to accommodate various Game Providers and Backup Targets (or File Systems).
-Unique authentication mechanisms should be supported for every Game Provider.
-Game Files should be directly connected to their Games, and their backup status should be clearly represented.
-
-A standard workflow for backing up game files is quite tedious and, at a high level, looks something like this:
+The following diagram illustrates the tedious manual process that users typically face when trying to preserve their
+game libraries:
 
 ```mermaid
 sequenceDiagram
@@ -32,7 +16,6 @@ sequenceDiagram
     box transparent Backup Target
         participant FileSystem as File System
     end
-
 
     loop for each Game Provider
         User->>GameProviderAuth: Authenticate
@@ -60,8 +43,12 @@ sequenceDiagram
     end
 ```
 
-Backity automates a lot of the busywork, only requiring the user to authenticate with the Game Providers,
-while the backups are done continuously in the background:
+This workflow includes several pain points:
+- Manual tracking of already backed-up files
+- Time-consuming file-by-file verification
+- No automation of recurring tasks
+
+Backity can transform this manual process into an automated workflow:
 
 ```mermaid
 sequenceDiagram
@@ -106,3 +93,6 @@ sequenceDiagram
 
     Backity-->>User: Report backup outcome
 ```
+
+At the same time, if complete automation is not desired, the user can manually choose which games or files they want
+backed up. The process then continues automatically.
