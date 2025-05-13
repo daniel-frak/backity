@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.auth;
 
-import dev.codesoapbox.backity.gameproviders.gog.domain.exceptions.GogAuthException;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.auth.exceptions.GogAuthException;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.auth.model.remote.GogAuthenticationResponse;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import lombok.RequiredArgsConstructor;

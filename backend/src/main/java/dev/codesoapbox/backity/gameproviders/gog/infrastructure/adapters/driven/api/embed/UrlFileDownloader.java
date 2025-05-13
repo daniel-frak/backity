@@ -1,10 +1,9 @@
-package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.backups;
+package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed;
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileSystem;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.gameproviders.gog.application.TrackableFileStream;
-import dev.codesoapbox.backity.gameproviders.gog.domain.exceptions.FileBackupException;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.exceptions.FileDownloadException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -43,8 +42,8 @@ public class UrlFileDownloader {
     private void validateDownloadedFileSize(String filePath, long expectedSizeInBytes) {
         long sizeInBytesOnDisk = fileSystem.getSizeInBytes(filePath);
         if (sizeInBytesOnDisk != expectedSizeInBytes) {
-            throw new FileBackupException("The downloaded size of " + filePath + " is not what was expected (was "
-                                          + sizeInBytesOnDisk + ", expected " + expectedSizeInBytes + ")");
+            throw new FileDownloadException("The downloaded size of " + filePath + " is not what was expected (was "
+                                            + sizeInBytesOnDisk + ", expected " + expectedSizeInBytes + ")");
         } else {
             log.info("Filesize check for {} passed successfully", filePath);
         }

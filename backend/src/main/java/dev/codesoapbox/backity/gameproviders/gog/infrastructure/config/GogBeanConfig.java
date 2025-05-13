@@ -1,12 +1,12 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.config;
 
 import dev.codesoapbox.backity.core.filemanagement.domain.FileSystem;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.backups.GogFileBackupService;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.backups.GogFileDiscoveryService;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.backups.UrlFileDownloader;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.GogFileBackupService;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.GogFileDiscoveryService;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.UrlFileDownloader;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.auth.GogAuthClient;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.auth.GogAuthSpringService;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.library.GogEmbedWebClient;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.GogEmbedWebClient;
 import dev.codesoapbox.backity.gameproviders.gog.application.usecases.GetGogConfigUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.application.GogConfigInfo;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;

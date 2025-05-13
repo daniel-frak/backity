@@ -1,15 +1,15 @@
-package dev.codesoapbox.backity.gameproviders.gog.domain.exceptions;
+package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.exceptions;
 
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class FileBackupExceptionTest {
+class FileDownloadExceptionTest {
 
     @Test
     void shouldGetMessage() {
         var expectedResult = "someMessage";
-        var exception = new FileBackupException(expectedResult);
+        var exception = new FileDownloadException(expectedResult);
 
         String result = exception.getMessage();
 
@@ -20,7 +20,7 @@ class FileBackupExceptionTest {
     void shouldGetMessageWithCause() {
         var expectedMessage = "someMessage";
         var expectedCause = new RuntimeException("someThrowable");
-        var exception = new FileBackupException(expectedMessage, expectedCause);
+        var exception = new FileDownloadException(expectedMessage, expectedCause);
 
         assertThat(exception.getMessage()).isEqualTo(expectedMessage);
         assertThat(exception.getCause()).isEqualTo(expectedCause);

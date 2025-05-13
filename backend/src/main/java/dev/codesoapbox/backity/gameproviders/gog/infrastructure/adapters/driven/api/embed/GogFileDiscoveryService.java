@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.backups;
+package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
@@ -8,7 +8,6 @@ import dev.codesoapbox.backity.core.discovery.application.GameProviderFileDiscov
 import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
-import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,7 +23,7 @@ public class GogFileDiscoveryService implements GameProviderFileDiscoveryService
 
     private static final GameProviderId GAME_PROVIDER_ID = new GameProviderId("GOG");
 
-    private final GogLibraryService gogLibraryService;
+    private final GogEmbedWebClient gogEmbedWebClient;
 
     private final List<Consumer<ProgressInfo>> progressConsumers = new ArrayList<>();
 
@@ -40,14 +39,14 @@ public class GogFileDiscoveryService implements GameProviderFileDiscoveryService
         log.info("Discovering new files...");
 
         shouldStopFileDiscovery.set(false);
-        List<String> libraryGameIds = gogLibraryService.getLibraryGameIds();
+        List<String> libraryGameIds = gogEmbedWebClient.getLibraryGameIds();
         int totalGames = libraryGameIds.size();
         progressTracker = new IncrementalProgressTracker((long) totalGames, Clock.systemDefaultZone());
 
         libraryGameIds.stream()
                 .takeWhile(id -> !shouldStopFileDiscovery.get())
                 .forEach(id -> {
-                    GogGameWithFiles details = gogLibraryService.getGameDetails(id);
+                    GogGameWithFiles details = gogEmbedWebClient.getGameDetails(id);
                     processFiles(fileConsumer, details);
                     incrementProgress();
                 });

@@ -1,18 +1,16 @@
-package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.library;
+package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed;
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
 import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
-import dev.codesoapbox.backity.gameproviders.gog.application.GogFileProvider;
-import dev.codesoapbox.backity.gameproviders.gog.application.TrackableFileStream;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
-import dev.codesoapbox.backity.gameproviders.gog.domain.exceptions.FileDiscoveryException;
-import dev.codesoapbox.backity.gameproviders.gog.domain.exceptions.GameBackupRequestFailedException;
-import dev.codesoapbox.backity.gameproviders.gog.domain.exceptions.GameListRequestFailedException;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.library.model.remote.GogGameDetailsApiResponse;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.exceptions.FileDiscoveryException;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.exceptions.GameBackupRequestFailedException;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.exceptions.GameListRequestFailedException;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.model.remote.GogGameDetailsApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -35,7 +33,7 @@ import static java.util.Collections.emptyList;
 // https://gogapidocs.readthedocs.io/en/latest/index.html
 @Slf4j
 @RequiredArgsConstructor
-public class GogEmbedWebClient implements GogLibraryService, GogFileProvider {
+public class GogEmbedWebClient implements GogLibraryService {
 
     static final String HEADER_AUTHORIZATION = "Authorization";
     private static final String VERSION_UNKNOWN_VALUE = "unknown";
@@ -164,7 +162,6 @@ public class GogEmbedWebClient implements GogLibraryService, GogFileProvider {
         return version;
     }
 
-    @Override
     public List<String> getLibraryGameIds() {
         log.info("Retrieving library game ids...");
 
@@ -193,7 +190,6 @@ public class GogEmbedWebClient implements GogLibraryService, GogFileProvider {
         return "Bearer " + authService.getAccessToken();
     }
 
-    @Override
     public TrackableFileStream initializeProgressAndStreamFile(
             GameProviderFile gameProviderFile, DownloadProgress progress) {
         String url = gameProviderFile.url();

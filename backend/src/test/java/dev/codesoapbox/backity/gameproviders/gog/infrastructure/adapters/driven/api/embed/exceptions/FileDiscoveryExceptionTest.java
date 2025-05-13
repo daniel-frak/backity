@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.gameproviders.gog.domain.exceptions;
+package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.exceptions;
 
 import org.junit.jupiter.api.Test;
 

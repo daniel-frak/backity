@@ -1,7 +1,7 @@
-package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.backups.testing;
+package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.testing;
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
-import dev.codesoapbox.backity.gameproviders.gog.application.TrackableFileStream;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.TrackableFileStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.buffer.DefaultDataBuffer;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;

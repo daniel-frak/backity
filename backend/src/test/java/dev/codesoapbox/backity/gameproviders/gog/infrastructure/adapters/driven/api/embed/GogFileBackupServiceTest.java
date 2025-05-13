@@ -1,11 +1,9 @@
-package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.backups;
+package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed;
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
-import dev.codesoapbox.backity.gameproviders.gog.application.TrackableFileStream;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.library.GogEmbedWebClient;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.library.model.remote;
+package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.model.remote;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

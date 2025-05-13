@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.library;
+package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
@@ -7,13 +7,12 @@ import dev.codesoapbox.backity.core.backup.application.downloadprogress.Download
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameProviderFile;
-import dev.codesoapbox.backity.gameproviders.gog.application.TrackableFileStream;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
-import dev.codesoapbox.backity.gameproviders.gog.domain.exceptions.FileDiscoveryException;
-import dev.codesoapbox.backity.gameproviders.gog.domain.exceptions.GameBackupRequestFailedException;
-import dev.codesoapbox.backity.gameproviders.gog.domain.exceptions.GameListRequestFailedException;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.exceptions.FileDiscoveryException;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.exceptions.GameBackupRequestFailedException;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.exceptions.GameListRequestFailedException;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.config.GogProperties;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.config.GogWebClientConfig;
 import dev.codesoapbox.backity.testing.wiremock.CustomWireMockExtension;

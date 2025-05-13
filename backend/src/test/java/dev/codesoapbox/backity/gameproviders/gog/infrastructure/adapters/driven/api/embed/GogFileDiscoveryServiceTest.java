@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.backups;
+package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed;
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
@@ -6,7 +6,6 @@ import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameProviderFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameFile;
-import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,7 +27,7 @@ class GogFileDiscoveryServiceTest {
     private GogFileDiscoveryService gogFileDiscoveryService;
 
     @Mock
-    private GogLibraryService gogLibraryService;
+    private GogEmbedWebClient gogEmbedWebClient;
 
     @Test
     void startFileDiscoveryShouldDiscoverNewFiles() {
@@ -90,15 +89,15 @@ class GogFileDiscoveryServiceTest {
                         "fileName3")
         ), null);
 
-        when(gogLibraryService.getLibraryGameIds())
+        when(gogEmbedWebClient.getLibraryGameIds())
                 .thenReturn(List.of(gameId1, gameId2, gameId3, gameId4));
-        when(gogLibraryService.getGameDetails(gameId1))
+        when(gogEmbedWebClient.getGameDetails(gameId1))
                 .thenReturn(game1Details);
-        when(gogLibraryService.getGameDetails(gameId2))
+        when(gogEmbedWebClient.getGameDetails(gameId2))
                 .thenReturn(game2Details);
-        when(gogLibraryService.getGameDetails(gameId3))
+        when(gogEmbedWebClient.getGameDetails(gameId3))
                 .thenReturn(null);
-        when(gogLibraryService.getGameDetails(gameId4))
+        when(gogEmbedWebClient.getGameDetails(gameId4))
                 .thenReturn(game4Details);
     }
 
@@ -117,7 +116,7 @@ class GogFileDiscoveryServiceTest {
     void shouldStopFileDiscoveryBeforeProcessingFiles() {
         var gameId1 = "gameId1";
 
-        when(gogLibraryService.getLibraryGameIds())
+        when(gogEmbedWebClient.getLibraryGameIds())
                 .thenAnswer(inv -> {
                     gogFileDiscoveryService.stopFileDiscovery();
                     return List.of(gameId1, "gameId2", "gameId3", "gameId4");
@@ -127,7 +126,7 @@ class GogFileDiscoveryServiceTest {
         gogFileDiscoveryService.startFileDiscovery(fileVersionBackups::add);
 
         assertThat(fileVersionBackups).isEmpty();
-        verify(gogLibraryService, never()).getGameDetails(any());
+        verify(gogEmbedWebClient, never()).getGameDetails(any());
     }
 
     @Test
@@ -139,9 +138,9 @@ class GogFileDiscoveryServiceTest {
                         "setup.exe")
         ), null);
 
-        when(gogLibraryService.getLibraryGameIds())
+        when(gogEmbedWebClient.getLibraryGameIds())
                 .thenReturn(List.of(gameId1, "gameId2", "gameId3", "gameId4"));
-        when(gogLibraryService.getGameDetails(gameId1))
+        when(gogEmbedWebClient.getGameDetails(gameId1))
                 .thenAnswer(inv -> {
                     gogFileDiscoveryService.stopFileDiscovery();
                     return game1Details;
@@ -151,7 +150,7 @@ class GogFileDiscoveryServiceTest {
         gogFileDiscoveryService.startFileDiscovery(gameProviderFileDetails::add);
 
         assertThat(gameProviderFileDetails.size()).isOne();
-        verify(gogLibraryService, times(1)).getGameDetails(any());
+        verify(gogEmbedWebClient, times(1)).getGameDetails(any());
     }
 
     @Test
