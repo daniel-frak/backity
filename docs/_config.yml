@@ -12,5 +12,26 @@ aux_links:
 aux_links_new_tab: true
 back_to_top: true
 back_to_top_text: "Back to top"
+
+# Diagrams
 mermaid:
   version: "11.6.0" # https://cdn.jsdelivr.net/npm/mermaid/
+
+# Callout feature configs https://just-the-docs.com/docs/configuration/#callouts
+callouts_level: loud # or quiet
+callouts:
+  highlight:
+    title: Highlight
+    color: yellow
+  important:
+    title: Important
+    color: blue
+  new:
+    title: New
+    color: green
+  note:
+    title: Note
+    color: purple
+  warning:
+    title: Warning
+    color: red
