@@ -3,7 +3,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {InProgressFilesCardComponent} from './in-progress-files-card.component';
 import {
   FileBackupMessageTopics,
-  FileBackupProgressUpdatedEvent,
+  FileDownloadProgressUpdatedEvent,
   FileBackupStartedEvent,
   FileBackupStatus,
   FileBackupStatusChangedEvent,
@@ -145,7 +145,7 @@ describe('InProgressFilesCardComponent', () => {
   });
 
   it('should update download progress', async () => {
-    const progressUpdatedEvent: FileBackupProgressUpdatedEvent = TestProgressUpdatedEvent.twentyFivePercent();
+    const progressUpdatedEvent: FileDownloadProgressUpdatedEvent = TestProgressUpdatedEvent.twentyFivePercent();
 
     await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
       FileBackupMessageTopics.ProgressUpdate, progressUpdatedEvent);

@@ -17,14 +17,14 @@ class TrackedFilterOutputStreamTest {
     private TrackedFilterOutputStream trackedFilterOutputStream;
 
     @Mock
-    private BackupProgress backupProgress;
+    private DownloadProgress downloadProgress;
 
     @Mock
     private OutputStream outputStream;
 
     @BeforeEach
     void setUp() {
-        trackedFilterOutputStream = new TrackedFilterOutputStream(backupProgress, outputStream);
+        trackedFilterOutputStream = new TrackedFilterOutputStream(downloadProgress, outputStream);
     }
 
     @Test
@@ -35,10 +35,10 @@ class TrackedFilterOutputStreamTest {
     }
 
     @Test
-    void writeWithLengthShouldUpdateBackupProgress() throws IOException {
+    void writeWithLengthShouldUpdateDownloadProgress() throws IOException {
         trackedFilterOutputStream.write(new byte[]{1, 2}, 20, 30);
 
-        verify(backupProgress).incrementDownloadedBytes(30);
+        verify(downloadProgress).incrementDownloadedBytes(30);
     }
 
     @Test
@@ -49,10 +49,10 @@ class TrackedFilterOutputStreamTest {
     }
 
     @Test
-    void writeShouldUpdateBackupProgress() throws IOException {
+    void writeShouldUpdateDownloadProgress() throws IOException {
         trackedFilterOutputStream.write(12);
 
-        verify(backupProgress).incrementProcessedElements();
+        verify(downloadProgress).incrementProcessedElements();
     }
 
     @Test
@@ -66,6 +66,6 @@ class TrackedFilterOutputStreamTest {
     void closeShouldUpdateContentLength() throws IOException {
         trackedFilterOutputStream.close();
 
-        verify(backupProgress).updateContentLength();
+        verify(downloadProgress).updateContentLength();
     }
 }

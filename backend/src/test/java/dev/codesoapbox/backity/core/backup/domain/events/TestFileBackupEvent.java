@@ -32,8 +32,8 @@ public final class TestFileBackupEvent {
         );
     }
 
-    public static FileBackupProgressChangedEvent progressChanged() {
-        return new FileBackupProgressChangedEvent(
+    public static FileDownloadProgressChangedEvent progressChanged() {
+        return new FileDownloadProgressChangedEvent(
                 50,
                 999
         );

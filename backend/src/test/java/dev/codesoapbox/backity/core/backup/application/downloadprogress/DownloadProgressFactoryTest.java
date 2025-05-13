@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.backup.application.downloadprogress;
 
-import dev.codesoapbox.backity.core.backup.domain.events.FileBackupProgressChangedEvent;
+import dev.codesoapbox.backity.core.backup.domain.events.FileDownloadProgressChangedEvent;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.testing.time.FakeClock;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,9 +19,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class BackupProgressFactoryTest {
+class DownloadProgressFactoryTest {
 
-    private BackupProgressFactory backupProgressFactory;
+    private DownloadProgressFactory downloadProgressFactory;
 
     @Mock
     private DomainEventPublisher domainEventPublisher;
@@ -31,28 +31,28 @@ class BackupProgressFactoryTest {
     @BeforeEach
     void setUp() {
         clock = new FakeClock(Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")));
-        backupProgressFactory = new BackupProgressFactory(domainEventPublisher);
+        downloadProgressFactory = new DownloadProgressFactory(domainEventPublisher);
     }
 
     @Test
     void shouldCreate() {
-        BackupProgress result = backupProgressFactory.create();
+        DownloadProgress result = downloadProgressFactory.create();
 
         assertThat(result).isNotNull();
     }
 
     @Test
-    void createdBackupProgressShouldPublishEventOnChange() {
+    void createdDownloadProgressShouldPublishEventOnChange() {
         long entireContentLengthBytes = 10L;
         int halfContentLengthBytes = 5;
         long timeToDownloadHalfOfContentInSeconds = 2L;
-        BackupProgress backupProgress = backupProgressFactory.create();
-        backupProgress.initializeTracking(entireContentLengthBytes, clock);
+        DownloadProgress downloadProgress = downloadProgressFactory.create();
+        downloadProgress.initializeTracking(entireContentLengthBytes, clock);
         clock.moveForward(Duration.of(timeToDownloadHalfOfContentInSeconds, ChronoUnit.SECONDS));
 
-        backupProgress.incrementDownloadedBytes(halfContentLengthBytes);
+        downloadProgress.incrementDownloadedBytes(halfContentLengthBytes);
 
         verify(domainEventPublisher).publish(
-                new FileBackupProgressChangedEvent(50, timeToDownloadHalfOfContentInSeconds));
+                new FileDownloadProgressChangedEvent(50, timeToDownloadHalfOfContentInSeconds));
     }
 }

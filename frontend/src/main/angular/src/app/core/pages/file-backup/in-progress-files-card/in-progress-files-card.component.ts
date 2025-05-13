@@ -5,7 +5,7 @@ import {TableColumnDirective} from "@app/shared/components/table/column-directiv
 import {TableComponent} from "@app/shared/components/table/table.component";
 import {
   FileBackupMessageTopics,
-  FileBackupProgressUpdatedEvent,
+  FileDownloadProgressUpdatedEvent,
   FileBackupStartedEvent,
   FileBackupStatus,
   FileBackupStatusChangedEvent,
@@ -35,7 +35,7 @@ export class InProgressFilesCardComponent implements OnInit, OnDestroy {
 
   currentDownloadIsLoading: boolean = false;
   currentDownload?: GameFile;
-  downloadProgress?: FileBackupProgressUpdatedEvent;
+  downloadProgress?: FileDownloadProgressUpdatedEvent;
 
   private readonly subscriptions: Subscription[] = [];
 

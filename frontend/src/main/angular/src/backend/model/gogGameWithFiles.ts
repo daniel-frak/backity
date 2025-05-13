@@ -7,15 +7,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { GameFileResponse } from './gameFileResponse';
+import { GogGameFile } from './gogGameFile';
 
 
-export interface GameDetailsResponse { 
+export interface GogGameWithFiles { 
     title?: string;
     backgroundImage?: string;
     cdKey?: string;
     textInformation?: string;
-    files?: Array<GameFileResponse>;
+    files?: Array<GogGameFile>;
     changelog?: string;
 }
 

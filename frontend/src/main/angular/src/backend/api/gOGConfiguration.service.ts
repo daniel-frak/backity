@@ -19,7 +19,7 @@ import { Observable }                                        from 'rxjs';
 // @ts-ignore
 import { ErrorMessage } from '../model/errorMessage';
 // @ts-ignore
-import { GogConfigResponseHttpDto } from '../model/gogConfigResponseHttpDto';
+import { GogConfig } from '../model/gogConfig';
 // @ts-ignore
 import { ValidationError } from '../model/validationError';
 
@@ -100,9 +100,9 @@ export class GOGConfigurationClient {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getGogConfig(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<GogConfigResponseHttpDto>;
-    public getGogConfig(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<GogConfigResponseHttpDto>>;
-    public getGogConfig(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<GogConfigResponseHttpDto>>;
+    public getGogConfig(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<GogConfig>;
+    public getGogConfig(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<GogConfig>>;
+    public getGogConfig(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<GogConfig>>;
     public getGogConfig(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
@@ -142,7 +142,7 @@ export class GOGConfigurationClient {
         }
 
         let localVarPath = `/api/gog/config`;
-        return this.httpClient.request<GogConfigResponseHttpDto>('get', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request<GogConfig>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.backups;
 
-import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgress;
+import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.application.GameProviderFileBackupService;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
@@ -26,10 +26,10 @@ public class GogFileBackupService implements GameProviderFileBackupService {
     }
 
     @Override
-    public void backUpFile(GameFile gameFile, BackupProgress backupProgress) throws IOException {
+    public void backUpFile(GameFile gameFile, DownloadProgress downloadProgress) throws IOException {
         GameProviderFile gameProviderFile = gameFile.getGameProviderFile();
         TrackableFileStream fileStream =
-                gogFileProvider.initializeProgressAndStreamFile(gameProviderFile, backupProgress);
+                gogFileProvider.initializeProgressAndStreamFile(gameProviderFile, downloadProgress);
         String filePath = gameFile.getFileBackup().getFilePath();
         urlFileDownloader.downloadFile(fileStream, gameFile, filePath);
     }

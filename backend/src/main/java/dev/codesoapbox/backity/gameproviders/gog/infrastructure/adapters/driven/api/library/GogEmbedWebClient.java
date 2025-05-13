@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.library;
 
-import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgress;
+import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
 import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
 import dev.codesoapbox.backity.gameproviders.gog.application.GogFileProvider;
@@ -195,7 +195,7 @@ public class GogEmbedWebClient implements GogLibraryService, GogFileProvider {
 
     @Override
     public TrackableFileStream initializeProgressAndStreamFile(
-            GameProviderFile gameProviderFile, BackupProgress progress) {
+            GameProviderFile gameProviderFile, DownloadProgress progress) {
         String url = gameProviderFile.url();
         Flux<DataBuffer> dataStream = webClientEmbed.get()
                 .uri(url)

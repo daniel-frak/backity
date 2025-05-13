@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.backup.application;
 
-import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgress;
+import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 
@@ -13,7 +13,7 @@ public interface GameProviderFileBackupService {
     /**
      * @return the path of the downloaded file
      */
-    void backUpFile(GameFile gameFile, BackupProgress backupProgress) throws IOException;
+    void backUpFile(GameFile gameFile, DownloadProgress downloadProgress) throws IOException;
 
     boolean isReady();
 }

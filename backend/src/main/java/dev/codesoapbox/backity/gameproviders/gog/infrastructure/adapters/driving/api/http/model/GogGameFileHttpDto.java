@@ -2,8 +2,8 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.drivin
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(name = "GameFile")
-public record GameFileHttpDto(
+@Schema(name = "GogGameFile")
+public record GogGameFileHttpDto(
         String version,
         String manualUrl,
         String name,

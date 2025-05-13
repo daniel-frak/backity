@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  * Based on:
  * https://stackoverflow.com/a/68971635/11247096
  */
-public class BackupProgress implements ProgressTracker {
+public class DownloadProgress implements ProgressTracker {
 
     protected final List<Consumer<ProgressInfo>> progressConsumers = new ArrayList<>();
     protected IncrementalProgressTracker progressTracker = null;

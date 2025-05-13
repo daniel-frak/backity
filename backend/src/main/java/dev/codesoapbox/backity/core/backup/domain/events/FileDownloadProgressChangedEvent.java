@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.backup.domain.events;
 
 import dev.codesoapbox.backity.shared.domain.DomainEvent;
 
-public record FileBackupProgressChangedEvent(
+public record FileDownloadProgressChangedEvent(
         int percentage,
         long timeLeftSeconds
 ) implements DomainEvent {

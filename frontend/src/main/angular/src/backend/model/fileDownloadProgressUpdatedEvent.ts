@@ -9,7 +9,8 @@
  */
 
 
-export interface GogConfigResponseHttpDto { 
-    userAuthUrl: string;
+export interface FileDownloadProgressUpdatedEvent { 
+    percentage: number;
+    timeLeftSeconds: number;
 }
 

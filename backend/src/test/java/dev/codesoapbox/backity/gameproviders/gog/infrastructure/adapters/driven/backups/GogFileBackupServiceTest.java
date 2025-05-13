@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.backups;
 
-import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgress;
+import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
@@ -36,19 +36,19 @@ class GogFileBackupServiceTest {
     @Test
     void backUpFileShouldDownloadFile() throws IOException {
         GameFile gameFile = TestGameFile.discovered();
-        BackupProgress backupProgress = mock(BackupProgress.class);
+        DownloadProgress downloadProgress = mock(DownloadProgress.class);
         TrackableFileStream trackableFileStream =
-                mockProgressAwareFileStreamCreation(gameFile, backupProgress);
+                mockProgressAwareFileStreamCreation(gameFile, downloadProgress);
 
-        gogFileBackupService.backUpFile(gameFile, backupProgress);
+        gogFileBackupService.backUpFile(gameFile, downloadProgress);
 
         String filePath = gameFile.getFileBackup().getFilePath();
         verify(urlFileDownloader).downloadFile(trackableFileStream, gameFile, filePath);
     }
 
-    private TrackableFileStream mockProgressAwareFileStreamCreation(GameFile gameFile, BackupProgress backupProgress) {
+    private TrackableFileStream mockProgressAwareFileStreamCreation(GameFile gameFile, DownloadProgress downloadProgress) {
         TrackableFileStream trackableFileStream = mock(TrackableFileStream.class);
-        when(gogFileProvider.initializeProgressAndStreamFile(gameFile.getGameProviderFile(), backupProgress))
+        when(gogFileProvider.initializeProgressAndStreamFile(gameFile.getGameProviderFile(), downloadProgress))
                 .thenReturn(trackableFileStream);
         return trackableFileStream;
     }

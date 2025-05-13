@@ -42,8 +42,8 @@ public final class TestFileBackupWsEvent {
         );
     }
 
-    public static FileBackupProgressUpdatedWsEvent progressChanged() {
-        return new FileBackupProgressUpdatedWsEvent(
+    public static FileDownloadProgressUpdatedWsEvent progressChanged() {
+        return new FileDownloadProgressUpdatedWsEvent(
                 50,
                 999
         );

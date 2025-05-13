@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.backup.infrastructure.config;
 import dev.codesoapbox.backity.core.backup.application.usecases.BackUpOldestGameFileUseCase;
 import dev.codesoapbox.backity.core.backup.application.FileBackupService;
 import dev.codesoapbox.backity.core.backup.application.GameProviderFileBackupService;
-import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgressFactory;
+import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgressFactory;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileSystem;
 import dev.codesoapbox.backity.core.filemanagement.domain.FilePathProvider;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
@@ -21,14 +21,14 @@ public class FileBackupUseCaseBeanConfig {
                                         GameFileRepository gameFileSpringRepository,
                                         List<GameProviderFileBackupService> fileBackupServices,
                                         FileSystem fileSystem,
-                                        BackupProgressFactory backupProgressFactory) {
+                                        DownloadProgressFactory downloadProgressFactory) {
         return new FileBackupService(filePathProvider, gameFileSpringRepository, fileSystem, fileBackupServices,
-                backupProgressFactory);
+                downloadProgressFactory);
     }
 
     @Bean
-    BackupProgressFactory backupProgressFactory(DomainEventPublisher domainEventPublisher) {
-        return new BackupProgressFactory(domainEventPublisher);
+    DownloadProgressFactory downloadProgressFactory(DomainEventPublisher domainEventPublisher) {
+        return new DownloadProgressFactory(domainEventPublisher);
     }
 
     @Bean

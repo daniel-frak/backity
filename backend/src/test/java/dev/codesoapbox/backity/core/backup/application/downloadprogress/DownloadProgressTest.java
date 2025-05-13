@@ -16,40 +16,40 @@ import java.util.function.Consumer;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
-class BackupProgressTest {
+class DownloadProgressTest {
 
     @Mock
     private Clock clock;
 
     @Test
     void shouldTrackOutputStream() throws IOException {
-        var backupProgress = new BackupProgress();
+        var downloadProgress = new DownloadProgress();
         AtomicInteger currentPercentage = new AtomicInteger();
-        backupProgress.subscribeToProgress(progressInfo -> currentPercentage.set(progressInfo.percentage()));
+        downloadProgress.subscribeToProgress(progressInfo -> currentPercentage.set(progressInfo.percentage()));
 
-        try (OutputStream outputStream = backupProgress.track(new ByteArrayOutputStream(4))) {
-            backupProgress.initializeTracking(4, clock);
+        try (OutputStream outputStream = downloadProgress.track(new ByteArrayOutputStream(4))) {
+            downloadProgress.initializeTracking(4, clock);
 
             outputStream.write(new byte[]{0}, 0, 1);
             outputStream.write(1);
         }
 
-        assertThat(backupProgress.getDownloadedLengthBytes()).isEqualTo(2);
+        assertThat(downloadProgress.getDownloadedLengthBytes()).isEqualTo(2);
         assertThat(currentPercentage.get()).isEqualTo(50);
-        assertThat(backupProgress.getContentLengthBytes()).isEqualTo(4);
+        assertThat(downloadProgress.getContentLengthBytes()).isEqualTo(4);
     }
 
     @Test
     void trackShouldSetContentLengthAfterDownloading() throws IOException {
-        var backupProgress = new BackupProgress();
+        var downloadProgress = new DownloadProgress();
 
-        try (OutputStream outputStream = backupProgress.track(new ByteArrayOutputStream(4))) {
-            backupProgress.initializeTracking(-1, clock);
+        try (OutputStream outputStream = downloadProgress.track(new ByteArrayOutputStream(4))) {
+            downloadProgress.initializeTracking(-1, clock);
             outputStream.write(new byte[]{0}, 0, 1);
             outputStream.write(1);
         }
 
-        assertThat(backupProgress.getContentLengthBytes()).isEqualTo(2);
+        assertThat(downloadProgress.getContentLengthBytes()).isEqualTo(2);
     }
 
     @Test
@@ -57,11 +57,11 @@ class BackupProgressTest {
         var progressInfoReference = new AtomicReference<ProgressInfo>();
         Consumer<ProgressInfo> progressConsumer = progressInfoReference::set;
 
-        var backupProgress = new BackupProgress();
+        var downloadProgress = new DownloadProgress();
 
-        backupProgress.subscribeToProgress(progressConsumer);
-        OutputStream outputStream = backupProgress.track(new ByteArrayOutputStream(4));
-        backupProgress.initializeTracking(4, clock);
+        downloadProgress.subscribeToProgress(progressConsumer);
+        OutputStream outputStream = downloadProgress.track(new ByteArrayOutputStream(4));
+        downloadProgress.initializeTracking(4, clock);
 
         outputStream.write(1);
         assertThat(progressInfoReference.get().percentage()).isEqualTo(25);

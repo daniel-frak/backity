@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {GOGAuthenticationClient, GogConfigResponseHttpDto, GOGConfigurationClient} from "@backend";
+import {GOGAuthenticationClient, GogConfig, GOGConfigurationClient} from "@backend";
 import {AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {finalize, firstValueFrom, forkJoin, Observable} from "rxjs";
@@ -55,7 +55,7 @@ export class GogAuthComponent implements OnInit {
   ngOnInit() {
     this.gogIsLoading = true;
     const auth$: Observable<boolean> = this.gogAuthClient.checkAuthentication();
-    const config$: Observable<GogConfigResponseHttpDto> = this.gogConfigClient.getGogConfig();
+    const config$: Observable<GogConfig> = this.gogConfigClient.getGogConfig();
 
     forkJoin([auth$, config$])
       .pipe(finalize(() => this.gogIsLoading = false))

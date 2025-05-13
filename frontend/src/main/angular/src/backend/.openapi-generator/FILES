@@ -19,7 +19,6 @@ index.ts
 model/errorMessage.ts
 model/fileBackup.ts
 model/fileBackupMessageTopics.ts
-model/fileBackupProgressUpdatedEvent.ts
 model/fileBackupStartedEvent.ts
 model/fileBackupStatus.ts
 model/fileBackupStatusChangedEvent.ts
@@ -28,13 +27,14 @@ model/fileDiscoveryProgressUpdateEvent.ts
 model/fileDiscoveryStatus.ts
 model/fileDiscoveryStatusChangedEvent.ts
 model/fileDiscoveryWebSocketTopics.ts
-model/gameDetailsResponse.ts
+model/fileDownloadProgressUpdatedEvent.ts
 model/gameFile.ts
 model/gameFileProcessingStatus.ts
-model/gameFileResponse.ts
 model/gameProviderFile.ts
 model/gameWithFiles.ts
-model/gogConfigHttpDto.ts
+model/gogConfig.ts
+model/gogGameFile.ts
+model/gogGameWithFiles.ts
 model/logCreatedEvent.ts
 model/logsMessageTopics.ts
 model/models.ts

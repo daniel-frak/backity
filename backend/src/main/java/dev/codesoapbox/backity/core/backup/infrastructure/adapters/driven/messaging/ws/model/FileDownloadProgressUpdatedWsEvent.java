@@ -5,8 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
 @IncludeInDocumentation
-@Schema(name = "FileBackupProgressUpdatedEvent")
-public record FileBackupProgressUpdatedWsEvent(
+@Schema(name = "FileDownloadProgressUpdatedEvent")
+public record FileDownloadProgressUpdatedWsEvent(
         @NotNull int percentage,
         @NotNull long timeLeftSeconds
 ) {

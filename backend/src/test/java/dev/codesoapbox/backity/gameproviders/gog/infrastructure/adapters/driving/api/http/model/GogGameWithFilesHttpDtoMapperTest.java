@@ -47,7 +47,7 @@ class GogGameWithFilesHttpDtoMapperTest {
                 "someBackgroundImage",
                 "someCdKey",
                 "someTextInformation",
-                singletonList(new GameFileHttpDto(
+                singletonList(new GogGameFileHttpDto(
                         "1.0.0",
                         "someManualUrl",
                         "someName",

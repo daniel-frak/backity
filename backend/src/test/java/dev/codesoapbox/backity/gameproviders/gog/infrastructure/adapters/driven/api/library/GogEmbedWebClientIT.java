@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
-import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgress;
+import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameProviderFile;
@@ -283,7 +283,7 @@ class GogEmbedWebClientIT {
     void initializeProgressAndStreamFileShouldStreamFile() {
         var expectedFileContent = "abcd";
         GameProviderFile gogFile = mockAuthenticatedGogFileRetrievalWithoutRedirects(expectedFileContent);
-        BackupProgress progress = new BackupProgress();
+        DownloadProgress progress = new DownloadProgress();
 
         TrackableFileStream trackableFileStream = gogEmbedClient
                 .initializeProgressAndStreamFile(gogFile, progress);
@@ -292,7 +292,7 @@ class GogEmbedWebClientIT {
         assertThat(fileContent).isEqualTo(expectedFileContent);
     }
 
-    private String downloadFile(TrackableFileStream trackableFileStream, BackupProgress progress) {
+    private String downloadFile(TrackableFileStream trackableFileStream, DownloadProgress progress) {
         var outputStream = new ByteArrayOutputStream();
         DataBufferUtils.write(trackableFileStream.dataStream(), progress.track(outputStream)).blockFirst();
         return outputStream.toString();
@@ -316,10 +316,10 @@ class GogEmbedWebClientIT {
     }
 
     @Test
-    void initializeProgressAndStreamFileShouldInitializeBackupProgress() {
+    void initializeProgressAndStreamFileShouldInitializeDownloadProgress() {
         var expectedFileContent = "abcd";
         GameProviderFile gogFile = mockAuthenticatedGogFileRetrievalWithoutRedirects(expectedFileContent);
-        var progress = new BackupProgress();
+        var progress = new DownloadProgress();
         List<ProgressInfo> progressHistory = trackProgressHistory(progress);
 
         TrackableFileStream trackableFileStream = gogEmbedClient
@@ -329,13 +329,13 @@ class GogEmbedWebClientIT {
         assertProgressWasTrackedCorrectly(progress, progressHistory, expectedFileContent);
     }
 
-    private List<ProgressInfo> trackProgressHistory(BackupProgress progress) {
+    private List<ProgressInfo> trackProgressHistory(DownloadProgress progress) {
         var progressHistory = new ArrayList<ProgressInfo>();
         progress.subscribeToProgress(progressHistory::add);
         return progressHistory;
     }
 
-    private void assertProgressWasTrackedCorrectly(BackupProgress progress, List<ProgressInfo> progressHistory,
+    private void assertProgressWasTrackedCorrectly(DownloadProgress progress, List<ProgressInfo> progressHistory,
                                                    String expectedFileContent) {
         assertThat(progress.getContentLengthBytes()).isEqualTo(expectedFileContent.getBytes().length);
         assertThat(progressHistory).hasSize(1);
@@ -345,7 +345,7 @@ class GogEmbedWebClientIT {
     @Test
     void initializeProgressAndStreamFileShouldStreamFileGivenUrlRedirects() {
         var expectedFileContent = "abcd";
-        var progress = new BackupProgress();
+        var progress = new DownloadProgress();
         GameProviderFile gogFile =
                 mockAuthenticatedGogFileRetrievalWithRedirects(expectedFileContent);
 
@@ -380,7 +380,7 @@ class GogEmbedWebClientIT {
     @Test
     void initializeProgressAndStreamFileShouldStreamFileGivenUrlRedirectsAndHasQueryParams() {
         var expectedFileContent = "abcd";
-        var progress = new BackupProgress();
+        var progress = new DownloadProgress();
         GameProviderFile gogFile = mockAuthenticatedGogFileRetrievalWithRedirectsAndQueryParams(expectedFileContent);
 
         TrackableFileStream fileStream = gogEmbedClient
@@ -413,7 +413,7 @@ class GogEmbedWebClientIT {
     @Test
     void initializeProgressAndStreamFileShouldThrowIfRequestFails() {
         GameProviderFile gogFile = aGogFile();
-        var progress = new BackupProgress();
+        var progress = new DownloadProgress();
         mockGogFileRetrievalFails(gogFile);
 
         TrackableFileStream fileStream = gogEmbedClient

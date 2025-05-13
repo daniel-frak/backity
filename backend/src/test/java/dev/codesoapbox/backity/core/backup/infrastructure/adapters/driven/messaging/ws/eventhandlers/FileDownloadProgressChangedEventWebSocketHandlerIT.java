@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messa
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.codesoapbox.backity.core.backup.domain.events.FileBackupProgressChangedEvent;
+import dev.codesoapbox.backity.core.backup.domain.events.FileDownloadProgressChangedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.TestFileBackupEvent;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.FileBackupWebSocketTopics;
 import dev.codesoapbox.backity.testing.messaging.TestMessageChannel;
@@ -11,20 +11,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @WebSocketEventHandlerTest
-class FileBackupProgressChangedEventWebSocketHandlerIT {
+class FileDownloadProgressChangedEventWebSocketHandlerIT {
 
     @Autowired
     private TestMessageChannel messageChannel;
 
     @Autowired
-    private FileBackupProgressChangedEventWebSocketHandler eventHandler;
+    private FileDownloadProgressChangedEventWebSocketHandler eventHandler;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
     void shouldPublishWebSocketEvent() throws JsonProcessingException {
-        FileBackupProgressChangedEvent event = TestFileBackupEvent.progressChanged();
+        FileDownloadProgressChangedEvent event = TestFileBackupEvent.progressChanged();
 
         eventHandler.handle(event);
 

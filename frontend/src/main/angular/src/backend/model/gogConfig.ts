@@ -9,11 +9,7 @@
  */
 
 
-export interface GameFileResponse { 
-    version?: string;
-    manualUrl?: string;
-    name?: string;
-    size?: string;
-    fileTitle?: string;
+export interface GogConfig { 
+    userAuthUrl: string;
 }
 

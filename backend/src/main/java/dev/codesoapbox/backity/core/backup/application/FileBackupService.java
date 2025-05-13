@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.backup.application;
 
-import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgress;
-import dev.codesoapbox.backity.core.backup.application.downloadprogress.BackupProgressFactory;
+import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
+import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgressFactory;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
 import dev.codesoapbox.backity.core.filemanagement.domain.FileSystem;
@@ -27,19 +27,19 @@ public class FileBackupService {
     private final GameFileRepository gameFileRepository;
     private final FileSystem fileSystem;
     private final Map<GameProviderId, GameProviderFileBackupService> gameProviderFileBackupServices;
-    private final BackupProgressFactory backupProgressFactory;
+    private final DownloadProgressFactory downloadProgressFactory;
 
     public FileBackupService(FilePathProvider filePathProvider, GameFileRepository gameFileRepository,
                              FileSystem fileSystem,
                              List<GameProviderFileBackupService> gameProviderFileBackupServices,
-                             BackupProgressFactory backupProgressFactory) {
+                             DownloadProgressFactory downloadProgressFactory) {
         this.filePathProvider = filePathProvider;
         this.gameFileRepository = gameFileRepository;
         this.fileSystem = fileSystem;
         this.gameProviderFileBackupServices = gameProviderFileBackupServices.stream()
                 .collect(Collectors.toMap(GameProviderFileBackupService::getGameProviderId,
                         d -> d));
-        this.backupProgressFactory = backupProgressFactory;
+        this.downloadProgressFactory = downloadProgressFactory;
     }
 
     public void backUpFile(GameFile gameFile) {
@@ -88,9 +88,9 @@ public class FileBackupService {
     private void downloadToDisk(GameFile gameFile) throws IOException {
         GameProviderId gameProviderId = gameFile.getGameProviderFile().gameProviderId();
         GameProviderFileBackupService gameProviderFileBackupService = getGameProviderFileBackupService(gameProviderId);
-        BackupProgress backupProgress = backupProgressFactory.create();
+        DownloadProgress downloadProgress = downloadProgressFactory.create();
 
-        gameProviderFileBackupService.backUpFile(gameFile, backupProgress);
+        gameProviderFileBackupService.backUpFile(gameFile, downloadProgress);
     }
 
     private GameProviderFileBackupService getGameProviderFileBackupService(GameProviderId gameProviderId) {
