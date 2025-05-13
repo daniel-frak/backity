@@ -34,6 +34,9 @@ like ["Introduction to DDD" by InfoQ](https://www.infoq.com/minibooks/domain-dri
 The difficulty will be further **reduced if the entire codebase is consistent**
 (at least in terms of writing compliant code), as they can just emulate the style.
 
+A unique challenge for this project is that the domain is focused on de facto file management, which may make it that
+much harder to separate domain concerns from technical infrastructure.
+
 ## Decision
 
 We will **apply DDD principles with adaptations that reflect the nature of open-source development**. Specifically:
