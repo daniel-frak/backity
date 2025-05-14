@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.testing.http.annotations;
 
 import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryService;
-import dev.codesoapbox.backity.core.discovery.application.usecases.GetFileDiscoveryStatusListUseCase;
-import dev.codesoapbox.backity.core.discovery.application.usecases.StartFileDiscoveryUseCase;
-import dev.codesoapbox.backity.core.discovery.application.usecases.StopFileDiscoveryUseCase;
-import dev.codesoapbox.backity.core.discovery.infrastructure.config.FileDiscoveryControllerBeanConfig;
+import dev.codesoapbox.backity.core.discovery.application.usecases.GetGameContentDiscoveryStatusListUseCase;
+import dev.codesoapbox.backity.core.discovery.application.usecases.StartGameContentDiscoveryUseCase;
+import dev.codesoapbox.backity.core.discovery.application.usecases.StopGameContentDiscoveryUseCase;
+import dev.codesoapbox.backity.core.discovery.infrastructure.config.GameContentDiscoveryControllerBeanConfig;
 import dev.codesoapbox.backity.core.game.application.usecases.GetGamesWithFilesUseCase;
 import dev.codesoapbox.backity.core.game.infrastructure.config.GameControllerBeanConfig;
 import dev.codesoapbox.backity.core.gamefile.application.usecases.*;
@@ -35,7 +35,7 @@ import java.lang.annotation.Target;
         FakeTimeBeanConfig.class,
 
         // Specific
-        FileDiscoveryControllerBeanConfig.class,
+        GameContentDiscoveryControllerBeanConfig.class,
         GogControllerBeanConfig.class,
         GameControllerBeanConfig.class,
         GameFileControllerBeanConfig.class
@@ -53,9 +53,9 @@ import java.lang.annotation.Target;
 
         // Use cases
         GetGamesWithFilesUseCase.class,
-        StartFileDiscoveryUseCase.class,
-        StopFileDiscoveryUseCase.class,
-        GetFileDiscoveryStatusListUseCase.class,
+        StartGameContentDiscoveryUseCase.class,
+        StopGameContentDiscoveryUseCase.class,
+        GetGameContentDiscoveryStatusListUseCase.class,
         EnqueueFileUseCase.class,
         DeleteFileUseCase.class,
         DownloadFileUseCase.class,

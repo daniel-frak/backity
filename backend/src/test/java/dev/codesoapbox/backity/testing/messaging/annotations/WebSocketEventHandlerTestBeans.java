@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.testing.messaging.annotations;
 
 import dev.codesoapbox.backity.core.backup.infrastructure.config.FileBackupWebSocketBeanConfig;
-import dev.codesoapbox.backity.core.discovery.infrastructure.config.FileDiscoveryWebSocketBeanConfig;
+import dev.codesoapbox.backity.core.discovery.infrastructure.config.GameContentDiscoveryWebSocketBeanConfig;
 import dev.codesoapbox.backity.core.logs.infrastructure.config.LogsWebSocketBeanConfig;
 import dev.codesoapbox.backity.shared.infrastructure.config.DomainEventPublisherBeanConfig;
 import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketConfig;
@@ -26,7 +26,7 @@ import java.lang.annotation.*;
 
         // Project - specific
         LogsWebSocketBeanConfig.class,
-        FileDiscoveryWebSocketBeanConfig.class,
+        GameContentDiscoveryWebSocketBeanConfig.class,
         FileBackupWebSocketBeanConfig.class
 })
 @Target(ElementType.TYPE)

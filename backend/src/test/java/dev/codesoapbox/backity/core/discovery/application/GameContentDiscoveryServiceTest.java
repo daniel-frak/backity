@@ -1,11 +1,11 @@
 package dev.codesoapbox.backity.core.discovery.application;
 
+import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
+import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStatusChangedEvent;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
-import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryProgressChangedEvent;
-import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryStatusChangedEvent;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
@@ -88,9 +88,9 @@ class GameContentDiscoveryServiceTest {
     }
 
     @Test
-    void completedFileDiscoveryHandlerShouldChangeStatusOnFailure() {
-        GameContentDiscoveryService.CompletedFileDiscoveryHandler handler =
-                gameContentDiscoveryService.getCompletedFileDiscoveryHandler();
+    void completedGameContentDiscoveryHandlerShouldChangeStatusOnFailure() {
+        GameContentDiscoveryService.CompletedGameContentDiscoveryHandler handler =
+                gameContentDiscoveryService.getCompletedGameContentDiscoveryHandler();
 
         handler.handle(gameProviderFileDiscoveryService).accept(null, new RuntimeException("test exception"));
 
@@ -153,7 +153,7 @@ class GameContentDiscoveryServiceTest {
         Game game = mockGameExists(discoveredFile.originalGameTitle());
         mockDoesNotExistLocally(discoveredFile);
 
-        List<FileDiscoveryProgressChangedEvent> progressUpdates = trackProgressUpdateEvents();
+        List<GameContentDiscoveryProgressChangedEvent> progressUpdates = trackProgressUpdateEvents();
         gameContentDiscoveryService = new GameContentDiscoveryService(List.of(gameProviderFileDiscoveryService),
                 gameRepository, fileRepository, eventPublisher);
 
@@ -170,7 +170,7 @@ class GameContentDiscoveryServiceTest {
         verify(eventPublisher).publish(FileDiscoveredEvent.from(expectedGameFile));
         assertThat(progressUpdates.size()).isOne();
         finishFileDiscovery();
-        verify(eventPublisher, times(2)).publish(any(FileDiscoveryStatusChangedEvent.class));
+        verify(eventPublisher, times(2)).publish(any(GameContentDiscoveryStatusChangedEvent.class));
     }
 
     private void mockDoesNotExistLocally(GameProviderFile discoveredFile) {
@@ -178,17 +178,17 @@ class GameContentDiscoveryServiceTest {
                 .thenReturn(false);
     }
 
-    private List<FileDiscoveryProgressChangedEvent> trackProgressUpdateEvents() {
-        List<FileDiscoveryProgressChangedEvent> progressList = new ArrayList<>();
+    private List<GameContentDiscoveryProgressChangedEvent> trackProgressUpdateEvents() {
+        List<GameContentDiscoveryProgressChangedEvent> progressList = new ArrayList<>();
         doAnswer(inv -> {
             progressList.add(inv.getArgument(0));
             return null;
-        }).when(eventPublisher).publish(any(FileDiscoveryProgressChangedEvent.class));
+        }).when(eventPublisher).publish(any(GameContentDiscoveryProgressChangedEvent.class));
         return progressList;
     }
 
     @Test
-    void startFileDiscoveryShouldNotSaveDiscoveredFileIfAlreadyExists() {
+    void startContentDiscoveryShouldNotSaveDiscoveredFileIfAlreadyExists() {
         GameProviderFile gameProviderFile = TestGameFile.discovered().getGameProviderFile();
         mockExistsLocally(gameProviderFile);
 

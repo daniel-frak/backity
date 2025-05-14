@@ -1,7 +1,8 @@
 package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.eventhandlers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
+import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStatusChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.TestGameContentDiscoveryEvent;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.GameContentDiscoveryWebSocketTopics;
 import dev.codesoapbox.backity.testing.messaging.TestMessageChannel;
@@ -9,35 +10,31 @@ import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketEventHandl
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.IOException;
-
 @WebSocketEventHandlerTest
-class FileDiscoveredEventWebSocketHandlerIT {
+class GameGameGameContentDiscoveryStatusChangedEventWebSocketHandlerIT {
 
     @Autowired
     private TestMessageChannel messageChannel;
 
     @Autowired
-    private FileDiscoveredEventWebSocketHandler eventHandler;
+    private GameContentDiscoveryStatusChangedEventWebSocketHandler eventHandler;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
-    void shouldPublishWebSocketEvent() throws IOException {
-        FileDiscoveredEvent event = TestGameContentDiscoveryEvent.fileDiscovered();
+    void shouldPublishWebSocketEvent() throws JsonProcessingException {
+        GameContentDiscoveryStatusChangedEvent event = TestGameContentDiscoveryEvent.statusChanged();
 
         eventHandler.handle(event);
 
         var expectedJson = """
                 {
-                  "originalGameTitle": "Original game title",
-                  "originalFileName": "originalFileName",
-                  "fileTitle": "fileTitle",
-                  "size": "5 KB"
+                    "gameProviderId":"TestGameProviderId",
+                    "isInProgress": true
                 }
                 """;
         messageChannel.assertPublishedWebSocketEvent(
-                GameContentDiscoveryWebSocketTopics.FILE_DISCOVERED.wsDestination(), expectedJson);
+                GameContentDiscoveryWebSocketTopics.GAME_CONTENT_DISCOVERY_STATUS_CHANGED.wsDestination(), expectedJson);
     }
 }

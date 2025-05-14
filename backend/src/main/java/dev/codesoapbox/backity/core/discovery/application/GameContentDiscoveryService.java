@@ -2,9 +2,9 @@ package dev.codesoapbox.backity.core.discovery.application;
 
 import dev.codesoapbox.backity.DoNotMutate;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
+import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
+import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStatusChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
-import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryProgressChangedEvent;
-import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveryStatusChangedEvent;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
@@ -48,7 +48,7 @@ public class GameContentDiscoveryService {
                                              ProgressInfo progress) {
         int percentage = progress.percentage();
         long seconds = progress.timeLeft().getSeconds();
-        var event = new FileDiscoveryProgressChangedEvent(gameProviderId, percentage, seconds);
+        var event = new GameContentDiscoveryProgressChangedEvent(gameProviderId, percentage, seconds);
         eventPublisher.publish(event);
         log.debug("Discovery progress: {}", progress);
     }
@@ -71,11 +71,11 @@ public class GameContentDiscoveryService {
         changeDiscoveryStatus(discoveryService, true);
 
         CompletableFuture.runAsync(() -> discoveryService.startFileDiscovery(this::saveDiscoveredFileInfo))
-                .whenComplete(getCompletedFileDiscoveryHandler().handle(discoveryService));
+                .whenComplete(getCompletedGameContentDiscoveryHandler().handle(discoveryService));
     }
 
-    CompletedFileDiscoveryHandler getCompletedFileDiscoveryHandler() {
-        return new CompletedFileDiscoveryHandler();
+    CompletedGameContentDiscoveryHandler getCompletedGameContentDiscoveryHandler() {
+        return new CompletedGameContentDiscoveryHandler();
     }
 
     private boolean alreadyInProgress(GameProviderFileDiscoveryService discoveryService) {
@@ -90,7 +90,7 @@ public class GameContentDiscoveryService {
 
     private void sendDiscoveryStatusChangedEvent(GameProviderFileDiscoveryService discoveryService,
                                                  boolean isInProgress) {
-        var event = new FileDiscoveryStatusChangedEvent(discoveryService.getGameProviderId(), isInProgress);
+        var event = new GameContentDiscoveryStatusChangedEvent(discoveryService.getGameProviderId(), isInProgress);
         domainEventPublisher.publish(event);
     }
 
@@ -121,7 +121,7 @@ public class GameContentDiscoveryService {
     }
 
     public void stopContentDiscovery() {
-        log.info("Stopping file discovery...");
+        log.info("Stopping game content discovery...");
 
         gameProviderFileDiscoveryServices.forEach(this::stopContentDiscovery);
     }
@@ -137,13 +137,13 @@ public class GameContentDiscoveryService {
         discoveryService.stopFileDiscovery();
     }
 
-    public List<FileDiscoveryStatus> getStatuses() {
+    public List<GameContentDiscoveryStatus> getStatuses() {
         return discoveryStatuses.entrySet().stream()
-                .map(s -> new FileDiscoveryStatus(s.getKey(), s.getValue()))
+                .map(s -> new GameContentDiscoveryStatus(s.getKey(), s.getValue()))
                 .toList();
     }
 
-    class CompletedFileDiscoveryHandler {
+    class CompletedGameContentDiscoveryHandler {
 
         BiConsumer<Void, Throwable> handle(GameProviderFileDiscoveryService discoveryService) {
             return (v, e) -> handle(discoveryService, e);

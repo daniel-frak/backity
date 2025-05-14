@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.model;
 
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
-import dev.codesoapbox.backity.core.discovery.domain.events.TestFileDiscoveryEvent;
+import dev.codesoapbox.backity.core.discovery.domain.events.TestGameContentDiscoveryEvent;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -13,11 +13,11 @@ class FileDiscoveredWsEventMapperTest {
 
     @Test
     void shouldMapToMessage() {
-        FileDiscoveredEvent event = TestFileDiscoveryEvent.discovered();
+        FileDiscoveredEvent event = TestGameContentDiscoveryEvent.fileDiscovered();
 
         FileDiscoveredWsEvent result = MAPPER.toWsEvent(event);
 
-        FileDiscoveredWsEvent expectedResult = TestFileDiscoveryWsEvent.discovered();
+        FileDiscoveredWsEvent expectedResult = TestGameContentDiscoveryWsEvent.fileDiscovered();
         assertThat(result).isEqualTo(expectedResult);
     }
 }

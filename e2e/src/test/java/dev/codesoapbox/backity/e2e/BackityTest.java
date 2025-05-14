@@ -6,7 +6,7 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.junit.UsePlaywright;
 import dev.codesoapbox.backity.e2e.pages.AuthenticationPage;
 import dev.codesoapbox.backity.e2e.pages.FileBackupPage;
-import dev.codesoapbox.backity.e2e.pages.FileDiscoveryPage;
+import dev.codesoapbox.backity.e2e.pages.GameContentDiscoveryPage;
 import dev.codesoapbox.backity.e2e.pages.GamesPage;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,14 +31,14 @@ class BackityTest {
     private static final String FILE_TO_DOWNLOAD_EXPECTED_CONTENTS = "Game file contents";
 
     private AuthenticationPage authenticationPage;
-    private FileDiscoveryPage fileDiscoveryPage;
+    private GameContentDiscoveryPage gameContentDiscoveryPage;
     private FileBackupPage fileBackupPage;
     private GamesPage gamesPage;
 
     @BeforeEach
     void setUp(Page page) {
         this.authenticationPage = new AuthenticationPage(page);
-        this.fileDiscoveryPage = new FileDiscoveryPage(page);
+        this.gameContentDiscoveryPage = new GameContentDiscoveryPage(page);
         this.fileBackupPage = new FileBackupPage(page);
         this.gamesPage = new GamesPage(page);
         tryToLogOutOfGog();
@@ -62,9 +62,9 @@ class BackityTest {
     void shouldBackupGogFiles() {
         authenticateGog();
 
-        fileDiscoveryPage.navigate();
-        discoverNewFiles(fileDiscoveryPage);
-        fileDiscoveryPage.backUpFile(FILE_TO_DOWNLOAD_TITLE);
+        gameContentDiscoveryPage.navigate();
+        discoverNewFiles(gameContentDiscoveryPage);
+        gameContentDiscoveryPage.backUpFile(FILE_TO_DOWNLOAD_TITLE);
         assertThatFileWasDownloaded(FILE_TO_DOWNLOAD_TITLE);
 
         gamesPage.visit();
@@ -90,9 +90,9 @@ class BackityTest {
         assertTrue(authenticationPage.isAuthenticated());
     }
 
-    private void discoverNewFiles(FileDiscoveryPage fileDiscoveryPage) {
-        fileDiscoveryPage.discoverNewFiles();
-        assertThat(fileDiscoveryPage.getDiscoveredFileRow(FILE_TO_DOWNLOAD_TITLE)).isVisible();
+    private void discoverNewFiles(GameContentDiscoveryPage gameContentDiscoveryPage) {
+        gameContentDiscoveryPage.startDiscovery();
+        assertThat(gameContentDiscoveryPage.getDiscoveredFileRow(FILE_TO_DOWNLOAD_TITLE)).isVisible();
     }
 
     private void assertThatFileWasDownloaded(String fileTitle) {

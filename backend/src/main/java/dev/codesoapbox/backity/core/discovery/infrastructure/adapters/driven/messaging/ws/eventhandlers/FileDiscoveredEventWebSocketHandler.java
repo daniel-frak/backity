@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.eventhandlers;
 
-import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.FileDiscoveryWebSocketTopics;
+import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.GameContentDiscoveryWebSocketTopics;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.model.FileDiscoveredWsEvent;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.model.FileDiscoveredWsEventMapper;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
@@ -22,6 +22,6 @@ public class FileDiscoveredEventWebSocketHandler implements DomainEventHandler<F
     @Override
     public void handle(FileDiscoveredEvent event) {
         FileDiscoveredWsEvent payload = wsEventMapper.toWsEvent(event);
-        wsEventPublisher.publish(FileDiscoveryWebSocketTopics.FILE_DISCOVERED.wsDestination(), payload);
+        wsEventPublisher.publish(GameContentDiscoveryWebSocketTopics.FILE_DISCOVERED.wsDestination(), payload);
     }
 }

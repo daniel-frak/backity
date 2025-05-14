@@ -39,12 +39,14 @@ public class GameFileUseCaseBeanConfig {
     }
 
     @Bean
-    public DeleteFileUseCase deleteFileUseCase(StorageSolution storageSolution, GameFileRepository gameFileRepository) {
+    public DeleteFileUseCase deleteFileUseCase(
+            StorageSolution storageSolution, GameFileRepository gameFileRepository) {
         return new DeleteFileUseCase(storageSolution, gameFileRepository);
     }
 
     @Bean
-    public DownloadFileUseCase downloadFileUseCase(GameFileRepository gameFileRepository, StorageSolution storageSolution) {
+    public DownloadFileUseCase downloadFileUseCase(
+            GameFileRepository gameFileRepository, StorageSolution storageSolution) {
         return new DownloadFileUseCase(gameFileRepository, storageSolution);
     }
 }

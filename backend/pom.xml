@@ -396,7 +396,7 @@
                         <excludedClass>*WebSocketPublisher</excludedClass>
                         <excludedClass>*WebSocketEventPublisher</excludedClass>
                         <excludedClass>*LogbackLogService</excludedClass>
-                        <excludedClass>*FileSystem</excludedClass>
+                        <excludedClass>*StorageSolution</excludedClass>
                         <excludedClass>*GogEmbedWebClient</excludedClass>
                         <excludedClass>*GogAuthClient</excludedClass>
                     </excludedClasses>
