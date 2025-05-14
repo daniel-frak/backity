@@ -4,15 +4,15 @@ nav_order: 2
 ---
 
 The domain model ensures reliable automation of the game preservation process
-while maintaining clear traceability between source files and their backups.
+while allowing clear traceability between source files and their backups.
 
-Specific game providers and backup targets are abstracted away from the core,
+Specific game providers and backup targets are abstracted away from the core and designed as supporting subdomains, 
 so that adding new ones is straightforward.
 
 Tracking mechanisms offer clear visibility into every file's status,
 making the backup process transparent at each stage.
 
-Files are directly linked to their games yet remain accessible for independent browsing when needed.
+Files are directly linked to their games while remaining accessible for independent browsing when needed.
 
 Since simultaneous use of multiple backup targets is not expected to be required,
 the model is streamlined to support only one at a time.
