@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.gamefile.application.usecases;
 
-import dev.codesoapbox.backity.core.filemanagement.domain.FileSystem;
-import dev.codesoapbox.backity.core.filemanagement.domain.FileResource;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
+import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
@@ -25,13 +25,13 @@ class DownloadFileUseCaseTest {
     private GameFileRepository gameFileRepository;
 
     @Mock
-    private FileSystem fileSystem;
+    private StorageSolution storageSolution;
 
     private DownloadFileUseCase downloadFileUseCase;
 
     @BeforeEach
     void setUp() {
-        downloadFileUseCase = new DownloadFileUseCase(gameFileRepository, fileSystem);
+        downloadFileUseCase = new DownloadFileUseCase(gameFileRepository, storageSolution);
     }
 
     @Test
@@ -46,7 +46,7 @@ class DownloadFileUseCaseTest {
 
     private FileResource mockFileResourceExists(GameFile gameFile) throws FileNotFoundException {
         FileResource fileResource = new FileResource(mock(InputStream.class), 5120L, "test_file.exe");
-        when(fileSystem.getFileResource(gameFile.getFileBackup().getFilePath()))
+        when(storageSolution.getFileResource(gameFile.getFileBackup().getFilePath()))
                 .thenReturn(fileResource);
 
         return fileResource;

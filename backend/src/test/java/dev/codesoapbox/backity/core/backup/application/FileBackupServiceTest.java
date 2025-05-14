@@ -3,8 +3,8 @@ package dev.codesoapbox.backity.core.backup.application;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgressFactory;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
-import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileSystem;
-import dev.codesoapbox.backity.core.filemanagement.domain.FilePathProvider;
+import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePathProvider;
 import dev.codesoapbox.backity.core.gamefile.domain.*;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameProviderFileUrlEmptyException;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,14 +45,14 @@ class FileBackupServiceTest {
     @Mock
     private DownloadProgressFactory downloadProgressFactory;
 
-    private FakeUnixFileSystem fileManager;
+    private FakeUnixStorageSolution storageSolution;
 
     @BeforeEach
     void setUp() {
         when(gameProviderFileBackupService.getGameProviderId())
                 .thenReturn(EXISTING_GAME_PROVIDER_ID);
-        fileManager = new FakeUnixFileSystem(5120);
-        fileBackupService = new FileBackupService(filePathProvider, gameFileRepository, fileManager,
+        storageSolution = new FakeUnixStorageSolution(5120);
+        fileBackupService = new FileBackupService(filePathProvider, gameFileRepository, storageSolution,
                 singletonList(gameProviderFileBackupService), downloadProgressFactory);
     }
 
@@ -111,7 +111,7 @@ class FileBackupServiceTest {
                     softly.assertThat(fileBackup.getFailedReason()).isEqualTo(coreException.getMessage());
                 }));
         verify(gameFileRepository, times(4)).save(gameFile);
-        assertThat(fileManager.fileDeleteWasAttempted(filePath)).isTrue();
+        assertThat(storageSolution.fileDeleteWasAttempted(filePath)).isTrue();
         assertThat(gameFile.getFileBackup().getFilePath()).isNull();
     }
 

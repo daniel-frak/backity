@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.filemanagement.domain.FileResource;
+import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
 import dev.codesoapbox.backity.core.gamefile.application.usecases.DownloadFileUseCase;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 import io.swagger.v3.oas.annotations.Operation;

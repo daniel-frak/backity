@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.config;
 
-import dev.codesoapbox.backity.core.filemanagement.domain.FileSystem;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.GogFileBackupService;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.GogFileDiscoveryService;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.UrlFileDownloader;
@@ -57,8 +57,8 @@ public class GogBeanConfig {
     }
 
     @Bean
-    UrlFileDownloader urlFileDownloader(FileSystem fileSystem) {
-        return new UrlFileDownloader(fileSystem);
+    UrlFileDownloader urlFileDownloader(StorageSolution storageSolution) {
+        return new UrlFileDownloader(storageSolution);
     }
 
     @Bean

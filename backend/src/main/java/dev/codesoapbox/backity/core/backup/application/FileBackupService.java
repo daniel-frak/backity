@@ -4,8 +4,8 @@ import dev.codesoapbox.backity.core.backup.application.downloadprogress.Download
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgressFactory;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
-import dev.codesoapbox.backity.core.filemanagement.domain.FileSystem;
-import dev.codesoapbox.backity.core.filemanagement.domain.FilePathProvider;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePathProvider;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -25,17 +25,17 @@ public class FileBackupService {
 
     private final FilePathProvider filePathProvider;
     private final GameFileRepository gameFileRepository;
-    private final FileSystem fileSystem;
+    private final StorageSolution storageSolution;
     private final Map<GameProviderId, GameProviderFileBackupService> gameProviderFileBackupServices;
     private final DownloadProgressFactory downloadProgressFactory;
 
     public FileBackupService(FilePathProvider filePathProvider, GameFileRepository gameFileRepository,
-                             FileSystem fileSystem,
+                             StorageSolution storageSolution,
                              List<GameProviderFileBackupService> gameProviderFileBackupServices,
                              DownloadProgressFactory downloadProgressFactory) {
         this.filePathProvider = filePathProvider;
         this.gameFileRepository = gameFileRepository;
-        this.fileSystem = fileSystem;
+        this.storageSolution = storageSolution;
         this.gameProviderFileBackupServices = gameProviderFileBackupServices.stream()
                 .collect(Collectors.toMap(GameProviderFileBackupService::getGameProviderId,
                         d -> d));
@@ -107,7 +107,7 @@ public class FileBackupService {
     }
 
     private void tryToCleanUpAfterFailedDownload(GameFile gameFile, String filePath) {
-        fileSystem.deleteIfExists(filePath);
+        storageSolution.deleteIfExists(filePath);
         gameFile.clearFilePath();
         gameFileRepository.save(gameFile);
     }

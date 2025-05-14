@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.gamefile.application.usecases;
 
-import dev.codesoapbox.backity.core.filemanagement.domain.FileSystem;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.gamefile.domain.FileBackupStatus;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DeleteFileUseCase {
 
-    private final FileSystem fileSystem;
+    private final StorageSolution storageSolution;
     private final GameFileRepository gameFileRepository;
 
     public void deleteFile(GameFileId gameFileId) {
@@ -25,6 +25,6 @@ public class DeleteFileUseCase {
 
     private void deleteFile(GameFile gameFile) {
         String filePath = gameFile.getFileBackup().getFilePath();
-        fileSystem.deleteIfExists(filePath);
+        storageSolution.deleteIfExists(filePath);
     }
 }

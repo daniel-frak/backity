@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed;
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
-import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileSystem;
+import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.exceptions.FileDownloadException;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.*;
 class UrlFileDownloaderTest {
 
     private UrlFileDownloader urlFileDownloader;
-    private FakeUnixFileSystem fileManager;
+    private FakeUnixStorageSolution storageSolution;
     private FakeProgressAwareFileStreamFactory fileStreamFactory;
 
     @Mock
@@ -33,9 +33,9 @@ class UrlFileDownloaderTest {
 
     @BeforeEach
     void setUp() {
-        fileManager = new FakeUnixFileSystem();
+        storageSolution = new FakeUnixStorageSolution();
         fileStreamFactory = new FakeProgressAwareFileStreamFactory(clock);
-        urlFileDownloader = new UrlFileDownloader(fileManager);
+        urlFileDownloader = new UrlFileDownloader(storageSolution);
     }
 
     @Test
@@ -47,7 +47,7 @@ class UrlFileDownloaderTest {
 
         urlFileDownloader.downloadFile(fileStream, gameFile, filePath);
 
-        assertThat(fileManager.fileExists(filePath)).isTrue();
+        assertThat(storageSolution.fileExists(filePath)).isTrue();
     }
 
     private DownloadProgress mockDownloadProgress() {
@@ -63,9 +63,9 @@ class UrlFileDownloaderTest {
     @Test
     void downloadFileShouldTrackProgress() throws IOException {
         DownloadProgress downloadProgress = mockDownloadProgress();
-        fileManager = new FakeUnixFileSystem();
+        storageSolution = new FakeUnixStorageSolution();
         fileStreamFactory = new FakeProgressAwareFileStreamFactory(clock);
-        urlFileDownloader = new UrlFileDownloader(fileManager);
+        urlFileDownloader = new UrlFileDownloader(storageSolution);
         when(downloadProgress.track(any()))
                 .thenAnswer(inv -> inv.getArgument(0));
         when(downloadProgress.getContentLengthBytes())
@@ -84,7 +84,7 @@ class UrlFileDownloaderTest {
     void downloadFileShouldThrowGivenFileSizeDoesNotMatch() {
         String filePath = "someFilePath";
         GameFile gameFile = TestGameFile.discovered();
-        fileManager.overrideDownloadedSizeFor(filePath, 999L);
+        storageSolution.overrideDownloadedSizeFor(filePath, 999L);
         DownloadProgress downloadProgress = mockDownloadProgress();
         TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, "Test data");
 

@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.gamefile.application.usecases;
 
-import dev.codesoapbox.backity.core.filemanagement.domain.FakeUnixFileSystem;
+import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
 import dev.codesoapbox.backity.core.gamefile.domain.*;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,15 +18,15 @@ class DeleteFileUseCaseTest {
 
     private DeleteFileUseCase useCase;
 
-    private FakeUnixFileSystem fileManager;
+    private FakeUnixStorageSolution storageSolution;
 
     @Mock
     private GameFileRepository gameFileRepository;
 
     @BeforeEach
     void setUp() {
-        fileManager = new FakeUnixFileSystem();
-        useCase = new DeleteFileUseCase(fileManager, gameFileRepository);
+        storageSolution = new FakeUnixStorageSolution();
+        useCase = new DeleteFileUseCase(storageSolution, gameFileRepository);
     }
 
     @Test
@@ -36,7 +36,7 @@ class DeleteFileUseCaseTest {
 
         useCase.deleteFile(gameFile.getId());
 
-        assertThat(fileManager.fileDeleteWasAttempted(filePath)).isTrue();
+        assertThat(storageSolution.fileDeleteWasAttempted(filePath)).isTrue();
     }
 
     private GameFile mockSuccessfulGameFileExists() {
@@ -59,7 +59,7 @@ class DeleteFileUseCaseTest {
     @Test
     void shouldNotChangeStatusOfGameFileGivenFileDeletionFailed() {
         var exception = new RuntimeException("test");
-        fileManager.setShouldThrowOnFileDeletion(exception);
+        storageSolution.setShouldThrowOnFileDeletion(exception);
         GameFile gameFile = mockSuccessfulGameFileExists();
 
         assertThatThrownBy(() -> useCase.deleteFile(gameFile.getId()))
@@ -77,7 +77,7 @@ class DeleteFileUseCaseTest {
         assertThatThrownBy(() -> useCase.deleteFile(gameFileId))
                 .isInstanceOf(GameFileNotBackedUpException.class)
                 .hasMessageContaining(gameFileId.toString());
-        assertThat(fileManager.anyFileDeleteWasAttempted()).isFalse();
+        assertThat(storageSolution.anyFileDeleteWasAttempted()).isFalse();
     }
 
     private GameFile mockEnqueuedGameFileExists() {

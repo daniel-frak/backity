@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.filemanagement.infrastructure.config.LocalFileSystemBeanConfig;
+import dev.codesoapbox.backity.core.storagesolution.infrastructure.config.LocalFileSystemBeanConfig;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
