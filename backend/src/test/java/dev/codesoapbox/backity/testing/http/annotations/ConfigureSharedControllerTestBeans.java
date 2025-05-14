@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.testing.http.annotations;
 
-import dev.codesoapbox.backity.core.discovery.application.FileDiscoveryService;
+import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryService;
 import dev.codesoapbox.backity.core.discovery.application.usecases.GetFileDiscoveryStatusListUseCase;
 import dev.codesoapbox.backity.core.discovery.application.usecases.StartFileDiscoveryUseCase;
 import dev.codesoapbox.backity.core.discovery.application.usecases.StopFileDiscoveryUseCase;
@@ -46,7 +46,7 @@ import java.lang.annotation.Target;
 
         // Specific
         GameFileRepository.class,
-        FileDiscoveryService.class,
+        GameContentDiscoveryService.class,
         LogService.class,
         GogAuthService.class,
         GogLibraryService.class,

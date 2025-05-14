@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.application.usecases;
 
-import dev.codesoapbox.backity.core.discovery.application.FileDiscoveryService;
+import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,17 +15,17 @@ class StopFileDiscoveryUseCaseTest {
     private StopFileDiscoveryUseCase useCase;
 
     @Mock
-    private FileDiscoveryService fileDiscoveryService;
+    private GameContentDiscoveryService gameContentDiscoveryService;
 
     @BeforeEach
     void setUp() {
-        useCase = new StopFileDiscoveryUseCase(fileDiscoveryService);
+        useCase = new StopFileDiscoveryUseCase(gameContentDiscoveryService);
     }
 
     @Test
     void shouldStopFileDiscovery() {
         useCase.stopFileDiscovery();
 
-        verify(fileDiscoveryService).stopFileDiscovery();
+        verify(gameContentDiscoveryService).stopContentDiscovery();
     }
 }

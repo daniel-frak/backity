@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.application.usecases;
 
-import dev.codesoapbox.backity.core.discovery.application.FileDiscoveryService;
+import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryService;
 import dev.codesoapbox.backity.core.discovery.application.FileDiscoveryStatus;
 import lombok.RequiredArgsConstructor;
 
@@ -9,9 +9,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GetFileDiscoveryStatusListUseCase {
 
-    private final FileDiscoveryService fileDiscoveryService;
+    private final GameContentDiscoveryService gameContentDiscoveryService;
 
     public List<FileDiscoveryStatus> getStatusList() {
-        return fileDiscoveryService.getStatuses();
+        return gameContentDiscoveryService.getStatuses();
     }
 }

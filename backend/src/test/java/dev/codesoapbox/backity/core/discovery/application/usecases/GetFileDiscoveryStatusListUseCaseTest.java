@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.application.usecases;
 
-import dev.codesoapbox.backity.core.discovery.application.FileDiscoveryService;
+import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryService;
 import dev.codesoapbox.backity.core.discovery.application.FileDiscoveryStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,11 +19,11 @@ class GetFileDiscoveryStatusListUseCaseTest {
     private GetFileDiscoveryStatusListUseCase useCase;
 
     @Mock
-    private FileDiscoveryService fileDiscoveryService;
+    private GameContentDiscoveryService gameContentDiscoveryService;
 
     @BeforeEach
     void setUp() {
-        useCase = new GetFileDiscoveryStatusListUseCase(fileDiscoveryService);
+        useCase = new GetFileDiscoveryStatusListUseCase(gameContentDiscoveryService);
     }
 
     @Test
@@ -39,7 +39,7 @@ class GetFileDiscoveryStatusListUseCaseTest {
     private List<FileDiscoveryStatus> mockFileDiscoveryStatuses() {
         List<FileDiscoveryStatus> statuses =
                 List.of(new FileDiscoveryStatus("GOG", true));
-        when(fileDiscoveryService.getStatuses())
+        when(gameContentDiscoveryService.getStatuses())
                 .thenReturn(statuses);
 
         return statuses;

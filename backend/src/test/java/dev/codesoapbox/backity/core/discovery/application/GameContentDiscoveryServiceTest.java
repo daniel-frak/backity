@@ -41,9 +41,9 @@ import static org.mockito.Mockito.*;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-class FileDiscoveryServiceTest {
+class GameContentDiscoveryServiceTest {
 
-    private FileDiscoveryService fileDiscoveryService;
+    private GameContentDiscoveryService gameContentDiscoveryService;
 
     private FakeGameProviderFileDiscoveryService gameProviderFileDiscoveryService;
 
@@ -59,7 +59,7 @@ class FileDiscoveryServiceTest {
     @BeforeEach
     void setUp() {
         gameProviderFileDiscoveryService = new FakeGameProviderFileDiscoveryService();
-        fileDiscoveryService = new FileDiscoveryService(singletonList(gameProviderFileDiscoveryService),
+        gameContentDiscoveryService = new GameContentDiscoveryService(singletonList(gameProviderFileDiscoveryService),
                 gameRepository, fileRepository, eventPublisher);
     }
 
@@ -76,37 +76,37 @@ class FileDiscoveryServiceTest {
 
     private void waitForFileDiscoveryToStop() {
         await().atMost(2, TimeUnit.SECONDS)
-                .until(() -> !fileDiscoveryService.getStatuses().getFirst().isInProgress());
+                .until(() -> !gameContentDiscoveryService.getStatuses().getFirst().isInProgress());
     }
 
     @Test
-    void shouldStartFileDiscovery() {
-        fileDiscoveryService.startFileDiscovery();
+    void shouldStartContentDiscovery() {
+        gameContentDiscoveryService.startContentDiscovery();
 
-        assertThat(fileDiscoveryService.getStatuses().size()).isOne();
-        assertThat(fileDiscoveryService.getStatuses().getFirst().isInProgress()).isTrue();
+        assertThat(gameContentDiscoveryService.getStatuses().size()).isOne();
+        assertThat(gameContentDiscoveryService.getStatuses().getFirst().isInProgress()).isTrue();
     }
 
     @Test
     void completedFileDiscoveryHandlerShouldChangeStatusOnFailure() {
-        FileDiscoveryService.CompletedFileDiscoveryHandler handler =
-                fileDiscoveryService.getCompletedFileDiscoveryHandler();
+        GameContentDiscoveryService.CompletedFileDiscoveryHandler handler =
+                gameContentDiscoveryService.getCompletedFileDiscoveryHandler();
 
         handler.handle(gameProviderFileDiscoveryService).accept(null, new RuntimeException("test exception"));
 
-        assertThat(fileDiscoveryService.getStatuses().size()).isOne();
-        assertThat(fileDiscoveryService.getStatuses().getFirst().isInProgress()).isFalse();
+        assertThat(gameContentDiscoveryService.getStatuses().size()).isOne();
+        assertThat(gameContentDiscoveryService.getStatuses().getFirst().isInProgress()).isFalse();
     }
 
     @Test
-    void startFileDiscoveryShouldNotSaveGameInformationGivenGameAlreadyExists() {
+    void startContentDiscoveryShouldNotSaveGameInformationGivenGameAlreadyExists() {
         GameProviderFile discoveredFile = TestGameFile.discovered().getGameProviderFile();
         mockGameExists(discoveredFile.originalGameTitle());
 
-        fileDiscoveryService = new FileDiscoveryService(singletonList(gameProviderFileDiscoveryService),
+        gameContentDiscoveryService = new GameContentDiscoveryService(singletonList(gameProviderFileDiscoveryService),
                 gameRepository, fileRepository, eventPublisher);
 
-        fileDiscoveryService.startFileDiscovery();
+        gameContentDiscoveryService.startContentDiscovery();
 
         waitForGameProviderFileDiscoveryToBeTriggered();
         gameProviderFileDiscoveryService.simulateFileDiscovery(discoveredFile);
@@ -129,11 +129,11 @@ class FileDiscoveryServiceTest {
     }
 
     @Test
-    void startFileDiscoveryShouldSaveGameInformationGivenItDoesNotYetExist() {
+    void startContentDiscoveryShouldSaveGameInformationGivenItDoesNotYetExist() {
         GameProviderFile discoveredFile = TestGameFile.discovered().getGameProviderFile();
         mockGameDoesNotExist(discoveredFile.originalGameTitle());
 
-        fileDiscoveryService.startFileDiscovery();
+        gameContentDiscoveryService.startContentDiscovery();
 
         waitForGameProviderFileDiscoveryToBeTriggered();
         gameProviderFileDiscoveryService.simulateFileDiscovery(discoveredFile);
@@ -148,16 +148,16 @@ class FileDiscoveryServiceTest {
     }
 
     @Test
-    void startFileDiscoveryShouldSaveDiscoveredFilesAndPublishEvents() {
+    void startContentDiscoveryShouldSaveDiscoveredFilesAndPublishEvents() {
         GameProviderFile discoveredFile = TestGameFile.discovered().getGameProviderFile();
         Game game = mockGameExists(discoveredFile.originalGameTitle());
         mockDoesNotExistLocally(discoveredFile);
 
         List<FileDiscoveryProgressChangedEvent> progressUpdates = trackProgressUpdateEvents();
-        fileDiscoveryService = new FileDiscoveryService(List.of(gameProviderFileDiscoveryService),
+        gameContentDiscoveryService = new GameContentDiscoveryService(List.of(gameProviderFileDiscoveryService),
                 gameRepository, fileRepository, eventPublisher);
 
-        fileDiscoveryService.startFileDiscovery();
+        gameContentDiscoveryService.startContentDiscovery();
 
         waitForGameProviderFileDiscoveryToBeTriggered();
         gameProviderFileDiscoveryService.simulateFileDiscovery(discoveredFile);
@@ -192,7 +192,7 @@ class FileDiscoveryServiceTest {
         GameProviderFile gameProviderFile = TestGameFile.discovered().getGameProviderFile();
         mockExistsLocally(gameProviderFile);
 
-        fileDiscoveryService.startFileDiscovery();
+        gameContentDiscoveryService.startContentDiscovery();
 
         waitForGameProviderFileDiscoveryToBeTriggered();
         gameProviderFileDiscoveryService.simulateFileDiscovery(gameProviderFile);
@@ -207,38 +207,38 @@ class FileDiscoveryServiceTest {
     }
 
     @Test
-    void startFileDiscoveryShouldSetGameProviderIdServiceAsNotInProgressWhenDone() {
-        fileDiscoveryService.startFileDiscovery();
+    void startContentDiscoveryShouldSetGameProviderIdServiceAsNotInProgressWhenDone() {
+        gameContentDiscoveryService.startContentDiscovery();
 
         gameProviderFileDiscoveryService.complete();
 
         waitForFileDiscoveryToStop();
-        assertThat(fileDiscoveryService.getStatuses().size()).isOne();
+        assertThat(gameContentDiscoveryService.getStatuses().size()).isOne();
     }
 
     @Test
-    void startFileDiscoveryShouldNotTriggerWhenGameProviderIdDiscoveryServiceAlreadyInProgress() {
-        fileDiscoveryService.startFileDiscovery();
-        fileDiscoveryService.startFileDiscovery();
+    void startContentDiscoveryServiceAlreadyInProgress() {
+        gameContentDiscoveryService.startContentDiscovery();
+        gameContentDiscoveryService.startContentDiscovery();
         gameProviderFileDiscoveryService.complete();
         waitForFileDiscoveryToStop();
 
-        assertThat(fileDiscoveryService.getStatuses().size()).isOne();
+        assertThat(gameContentDiscoveryService.getStatuses().size()).isOne();
         assertThat(gameProviderFileDiscoveryService.getTimesTriggered().get()).isOne();
     }
 
     @Test
-    void shouldStopFileDiscovery() {
-        fileDiscoveryService.startFileDiscovery();
-        fileDiscoveryService.stopFileDiscovery();
+    void shouldStopContentDiscovery() {
+        gameContentDiscoveryService.startContentDiscovery();
+        gameContentDiscoveryService.stopContentDiscovery();
 
         waitForFileDiscoveryToStop();
         assertThat(gameProviderFileDiscoveryService.getStoppedTimes()).isOne();
     }
 
     @Test
-    void shouldNotStopFileDiscoveryIfAlreadyStopped() {
-        fileDiscoveryService.stopFileDiscovery();
+    void shouldNotStopContentDiscoveryIfAlreadyStopped() {
+        gameContentDiscoveryService.stopContentDiscovery();
         assertThat(gameProviderFileDiscoveryService.getStoppedTimes()).isZero();
     }
 

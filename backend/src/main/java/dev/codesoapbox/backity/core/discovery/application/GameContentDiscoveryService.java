@@ -20,24 +20,24 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 
 @Slf4j
-public class FileDiscoveryService {
+public class GameContentDiscoveryService {
 
-    private final List<GameProviderFileDiscoveryService> discoveryServices;
+    private final List<GameProviderFileDiscoveryService> gameProviderFileDiscoveryServices;
     private final GameRepository gameRepository;
     private final GameFileRepository fileRepository;
     private final DomainEventPublisher domainEventPublisher;
     private final Map<String, Boolean> discoveryStatuses = new ConcurrentHashMap<>();
 
-    public FileDiscoveryService(List<GameProviderFileDiscoveryService> discoveryServices,
-                                GameRepository gameRepository,
-                                GameFileRepository fileRepository,
-                                DomainEventPublisher domainEventPublisher) {
-        this.discoveryServices = discoveryServices.stream().toList();
+    public GameContentDiscoveryService(List<GameProviderFileDiscoveryService> gameProviderFileDiscoveryServices,
+                                       GameRepository gameRepository,
+                                       GameFileRepository fileRepository,
+                                       DomainEventPublisher domainEventPublisher) {
+        this.gameProviderFileDiscoveryServices = gameProviderFileDiscoveryServices.stream().toList();
         this.gameRepository = gameRepository;
         this.fileRepository = fileRepository;
         this.domainEventPublisher = domainEventPublisher;
 
-        discoveryServices.forEach(discoveryService -> {
+        gameProviderFileDiscoveryServices.forEach(discoveryService -> {
             discoveryStatuses.put(discoveryService.getGameProviderId(), false);
             discoveryService.subscribeToProgress(progressInfo -> publishProgressChangedEvent(
                     domainEventPublisher, discoveryService.getGameProviderId(), progressInfo));
@@ -53,20 +53,20 @@ public class FileDiscoveryService {
         log.debug("Discovery progress: {}", progress);
     }
 
-    public void startFileDiscovery() {
-        log.info("Discovering new files...");
+    public void startContentDiscovery() {
+        log.info("Discovering content...");
 
-        discoveryServices.forEach(this::startFileDiscovery);
+        gameProviderFileDiscoveryServices.forEach(this::startContentDiscovery);
     }
 
-    private void startFileDiscovery(GameProviderFileDiscoveryService discoveryService) {
+    private void startContentDiscovery(GameProviderFileDiscoveryService discoveryService) {
         if (alreadyInProgress(discoveryService)) {
             log.info("Discovery for {} is already in progress. Aborting additional discovery.",
                     discoveryService.getGameProviderId());
             return;
         }
 
-        log.info("Discovering files for gameProviderId: {}", discoveryService.getGameProviderId());
+        log.info("Discovering content for gameProviderId: {}", discoveryService.getGameProviderId());
 
         changeDiscoveryStatus(discoveryService, true);
 
@@ -95,7 +95,7 @@ public class FileDiscoveryService {
     }
 
     private void saveDiscoveredFileInfo(GameProviderFile gameProviderFile) {
-        Game game = getGameOrCreateNew(gameProviderFile);
+        Game game = getGameOrAddNew(gameProviderFile);
         GameFile gameFile = GameFile.associate(game, gameProviderFile);
 
         if (!fileRepository.existsByUrlAndVersion(gameFile.getGameProviderFile().url(),
@@ -107,22 +107,26 @@ public class FileDiscoveryService {
         }
     }
 
-    private Game getGameOrCreateNew(GameProviderFile gameProviderFile) {
+    private Game getGameOrAddNew(GameProviderFile gameProviderFile) {
         return gameRepository.findByTitle(gameProviderFile.originalGameTitle())
-                .orElseGet(() -> {
-                    var newGame = Game.createNew(gameProviderFile.originalGameTitle());
-                    gameRepository.save(newGame);
-                    return newGame;
-                });
+                .orElseGet(() -> addNewGame(gameProviderFile));
     }
 
-    public void stopFileDiscovery() {
+    private Game addNewGame(GameProviderFile gameProviderFile) {
+        var newGame = Game.createNew(gameProviderFile.originalGameTitle());
+        gameRepository.save(newGame);
+        log.info("Discovered new game: {} (id: {})", newGame.getTitle(), newGame.getId().value());
+
+        return newGame;
+    }
+
+    public void stopContentDiscovery() {
         log.info("Stopping file discovery...");
 
-        discoveryServices.forEach(this::stopFileDiscovery);
+        gameProviderFileDiscoveryServices.forEach(this::stopContentDiscovery);
     }
 
-    private void stopFileDiscovery(GameProviderFileDiscoveryService discoveryService) {
+    private void stopContentDiscovery(GameProviderFileDiscoveryService discoveryService) {
         if (!alreadyInProgress(discoveryService)) {
             log.info("Discovery for {} is not in progress. No need to stop.", discoveryService.getGameProviderId());
             return;

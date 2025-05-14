@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.infrastructure.config;
 
-import dev.codesoapbox.backity.core.discovery.application.FileDiscoveryService;
+import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryService;
 import dev.codesoapbox.backity.core.discovery.application.GameProviderFileDiscoveryService;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
@@ -14,10 +14,10 @@ import java.util.List;
 public class FileDiscoveryBeanConfig {
 
     @Bean
-    FileDiscoveryService fileDiscoveryService(List<GameProviderFileDiscoveryService> discoveryServices,
-                                              GameRepository gameRepository,
-                                              GameFileRepository fileRepository,
-                                              DomainEventPublisher eventPublisher) {
-        return new FileDiscoveryService(discoveryServices, gameRepository, fileRepository, eventPublisher);
+    GameContentDiscoveryService gameContentDiscoveryService(List<GameProviderFileDiscoveryService> discoveryServices,
+                                                     GameRepository gameRepository,
+                                                     GameFileRepository fileRepository,
+                                                     DomainEventPublisher eventPublisher) {
+        return new GameContentDiscoveryService(discoveryServices, gameRepository, fileRepository, eventPublisher);
     }
 }

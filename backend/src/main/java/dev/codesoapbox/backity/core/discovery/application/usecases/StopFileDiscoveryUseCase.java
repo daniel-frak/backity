@@ -1,14 +1,14 @@
 package dev.codesoapbox.backity.core.discovery.application.usecases;
 
-import dev.codesoapbox.backity.core.discovery.application.FileDiscoveryService;
+import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryService;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class StopFileDiscoveryUseCase {
 
-    private final FileDiscoveryService fileDiscoveryService;
+    private final GameContentDiscoveryService gameContentDiscoveryService;
 
     public void stopFileDiscovery() {
-        fileDiscoveryService.stopFileDiscovery();
+        gameContentDiscoveryService.stopContentDiscovery();
     }
 }
