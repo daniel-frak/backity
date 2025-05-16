@@ -75,7 +75,7 @@ class GetGameFileListControllerIT {
                         "originalGameTitle": "Game 1",
                         "fileTitle": "Game 1 (Installer)",
                         "version": "1.0.0",
-                        "url": "http://some.url",
+                        "url": "/downlink/some_game/some_file",
                         "originalFileName": "game_1_installer.exe",
                         "size": "5 KB"
                       },

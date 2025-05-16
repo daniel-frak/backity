@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record GogGameFileHttpDto(
         String version,
         String manualUrl,
-        String name,
+        String fileTitle,
         String size,
-        String fileTitle
+        String fileName
 ) {
 }

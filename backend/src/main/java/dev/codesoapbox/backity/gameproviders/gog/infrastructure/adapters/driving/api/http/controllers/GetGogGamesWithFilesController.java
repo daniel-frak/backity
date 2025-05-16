@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @GogRestResource
 @RequiredArgsConstructor
-public class GetGogGameDetailsController {
+public class GetGogGamesWithFilesController {
 
     private final GetGogGameDetailsUseCase useCase;
     private final GogGameWithFilesHttpDtoMapper gameDetailsResponseMapper;

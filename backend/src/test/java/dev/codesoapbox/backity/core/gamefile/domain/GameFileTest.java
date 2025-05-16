@@ -16,7 +16,7 @@ class GameFileTest {
     @Test
     void shouldAssociateGameAndGameProviderFile() {
         Game game = TestGame.any();
-        GameProviderFile gameProviderFile = TestGameProviderFile.gog();
+        GameProviderFile gameProviderFile = TestGameProviderFile.minimalGog();
 
         GameFile result = GameFile.associate(game, gameProviderFile);
 
@@ -145,7 +145,7 @@ class GameFileTest {
 
     private GameFile aGameFileWithABlankUrl() {
         return TestGameFile.discoveredBuilder()
-                .gameProviderFile(TestGameProviderFile.gogBuilder()
+                .gameProviderFile(TestGameProviderFile.minimalGogBuilder()
                         .url(" ")
                         .build())
                 .build();

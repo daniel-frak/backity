@@ -8,11 +8,12 @@ class GameBackupRequestFailedExceptionTest {
 
     @Test
     void shouldGetMessage() {
-        var exception = new GameBackupRequestFailedException("http://some.url", "someMessage");
+        var exception = new GameBackupRequestFailedException("/downlink/some_game/some_file", "someMessage");
 
         String result = exception.getMessage();
 
-        assertThat(result).isEqualTo("An error occurred while backing up file: http://some.url. someMessage");
+        assertThat(result)
+                .isEqualTo("An error occurred while backing up file: /downlink/some_game/some_file. someMessage");
     }
 
     @Test

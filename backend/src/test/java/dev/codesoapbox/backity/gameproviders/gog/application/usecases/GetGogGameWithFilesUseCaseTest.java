@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.gameproviders.gog.application.usecases;
 
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
+import dev.codesoapbox.backity.gameproviders.gog.domain.TestGogGameWithFiles;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,20 +37,9 @@ class GetGogGameWithFilesUseCaseTest {
     }
 
     private GogGameWithFiles mockGameDetailsExist(String id) {
-        GogGameWithFiles gogGameWithFiles = aGameDetailsResponse();
+        GogGameWithFiles gogGameWithFiles = TestGogGameWithFiles.minimal();
         when(gogLibraryService.getGameDetails(id))
                 .thenReturn(gogGameWithFiles);
         return gogGameWithFiles;
-    }
-
-    private GogGameWithFiles aGameDetailsResponse() {
-        return new GogGameWithFiles(
-                "Test game",
-                null,
-                null,
-                null,
-                null,
-                null
-        );
     }
 }
