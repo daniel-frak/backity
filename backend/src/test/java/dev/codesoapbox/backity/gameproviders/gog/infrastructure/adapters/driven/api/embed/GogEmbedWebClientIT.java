@@ -102,7 +102,7 @@ class GogEmbedWebClientIT {
 
         var expectedResult = new GogGameWithFiles("Unreal Tournament 2004 Editor's Choice Edition",
                 "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
-                "someCdKey", "someTextInformation", singletonList(new GogGameFile(
+                "some-cd-key", "someTextInformation", singletonList(new GogGameFile(
                 "1.0.0", "/downlink/unreal_tournament_2004_ece/en1installer3",
                 "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)", "1 MB",
                 "en1installer3")),
@@ -139,7 +139,7 @@ class GogEmbedWebClientIT {
 
         GogGameWithFiles result = gogEmbedClient.getGameDetails("someGameId");
 
-        assertThat(result.files().getFirst().fileTitle()).isEqualTo("en1installer3");
+        assertThat(result.files().getFirst().fileName()).isEqualTo("en1installer3");
     }
 
     @Test
@@ -152,7 +152,7 @@ class GogEmbedWebClientIT {
 
         var expectedResult = new GogGameWithFiles("Unreal Tournament 2004 Editor's Choice Edition",
                 "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
-                "someCdKey", "someTextInformation", singletonList(new GogGameFile(
+                "some-cd-key", "someTextInformation", singletonList(new GogGameFile(
                 "unknown", "/downlink/unreal_tournament_2004_ece/en1installer3",
                 "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)", "1 MB",
                 "en1installer3")),
@@ -172,7 +172,7 @@ class GogEmbedWebClientIT {
 
         var expectedResult = new GogGameWithFiles("Unreal Tournament 2004 Editor's Choice Edition",
                 "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
-                "someCdKey", "someTextInformation", emptyList(), "someChangelog");
+                "some-cd-key", "someTextInformation", emptyList(), "someChangelog");
         assertThat(result).isEqualTo(expectedResult);
     }
 
@@ -309,7 +309,7 @@ class GogEmbedWebClientIT {
     }
 
     private GameProviderFile aGogFile() {
-        return TestGameProviderFile.gogBuilder()
+        return TestGameProviderFile.minimalGogBuilder()
                 .url("/someUrl1")
                 .build();
     }

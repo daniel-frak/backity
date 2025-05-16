@@ -27,7 +27,7 @@ class GogGameFileHttpDtoMapperTest {
                         "Game 1",
                         "Game 1 (Installer)",
                         "1.0.0",
-                        "http://some.url",
+                        "/downlink/some_game/some_file",
                         "game_1_installer.exe",
                         "5 KB"
                 ),

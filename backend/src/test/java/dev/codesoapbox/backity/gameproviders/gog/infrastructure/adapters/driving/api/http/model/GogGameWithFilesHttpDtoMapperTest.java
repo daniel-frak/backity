@@ -1,10 +1,11 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driving.api.http.model;
 
-import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
+import dev.codesoapbox.backity.gameproviders.gog.domain.TestGogGameWithFiles;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,47 +15,52 @@ class GogGameWithFilesHttpDtoMapperTest {
             Mappers.getMapper(GogGameWithFilesHttpDtoMapper.class);
 
     @Test
-    void shouldMapToDto() {
-        GogGameWithFiles domain = domainObject();
+    void shouldMapMinimalToDto() {
+        GogGameWithFiles domain = TestGogGameWithFiles.minimal();
 
         GogGameWithFilesHttpDto result = MAPPER.toDto(domain);
 
-        GogGameWithFilesHttpDto expectedResult = dto();
+        GogGameWithFilesHttpDto expectedResult = minimalDto();
         assertThat(result).usingRecursiveComparison()
                 .isEqualTo(expectedResult);
     }
 
-    private GogGameWithFiles domainObject() {
-        return new GogGameWithFiles(
-                "someTitle",
-                "someBackgroundImage",
-                "someCdKey",
-                "someTextInformation",
-                singletonList(new GogGameFile(
-                        "1.0.0",
-                        "someManualUrl",
-                        "someName",
-                        "100 KB",
-                        "Game 1 (Installer)"
-                )),
-                "someChangelog"
+    private GogGameWithFilesHttpDto minimalDto() {
+        return new GogGameWithFilesHttpDto(
+                "Test Game",
+                null,
+                null,
+                null,
+                emptyList(),
+                null
         );
     }
 
-    private GogGameWithFilesHttpDto dto() {
+    @Test
+    void shouldMapFullToDto() {
+        GogGameWithFiles domain = TestGogGameWithFiles.fullWithMinimalFile();
+
+        GogGameWithFilesHttpDto result = MAPPER.toDto(domain);
+
+        GogGameWithFilesHttpDto expectedResult = fullDto();
+        assertThat(result).usingRecursiveComparison()
+                .isEqualTo(expectedResult);
+    }
+
+    private GogGameWithFilesHttpDto fullDto() {
         return new GogGameWithFilesHttpDto(
-                "someTitle",
-                "someBackgroundImage",
-                "someCdKey",
-                "someTextInformation",
+                "Test Game",
+                "//images-4.gog.com/somePath",
+                "some-cd-key",
+                "Some text information",
                 singletonList(new GogGameFileHttpDto(
-                        "1.0.0",
-                        "someManualUrl",
-                        "someName",
-                        "100 KB",
-                        "Game 1 (Installer)"
+                        "unknown",
+                        "/downlink/some_game/some_file",
+                        "Game 1 (Installer)",
+                        "1 MB",
+                        "game_1_installer.exe"
                 )),
-                "someChangelog"
+                "Some changelog"
         );
     }
 }

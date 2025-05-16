@@ -1,17 +1,15 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.config;
 
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.GogFileBackupService;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.GogFileDiscoveryService;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.UrlFileDownloader;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.*;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.auth.GogAuthClient;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.auth.GogAuthSpringService;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.GogEmbedWebClient;
 import dev.codesoapbox.backity.gameproviders.gog.application.usecases.GetGogConfigUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.application.GogConfigInfo;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,6 +67,7 @@ public class GogBeanConfig {
 
     @Bean
     GogFileDiscoveryService gogFileDiscoveryService(GogEmbedWebClient gogEmbedClient) {
-        return new GogFileDiscoveryService(gogEmbedClient);
+        GogGameWithFilesMapper mapper = Mappers.getMapper(GogGameWithFilesMapper.class);
+        return new GogFileDiscoveryService(gogEmbedClient, mapper);
     }
 }

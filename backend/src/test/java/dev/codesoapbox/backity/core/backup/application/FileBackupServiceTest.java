@@ -127,7 +127,7 @@ class FileBackupServiceTest {
     @ValueSource(strings = {"", " "})
     void downloadFileShouldThrowIfUrlIsEmpty(String url) {
         GameFile gameFile = TestGameFile.discoveredBuilder()
-                .gameProviderFile(TestGameProviderFile.gogBuilder()
+                .gameProviderFile(TestGameProviderFile.minimalGogBuilder()
                         .url(url)
                         .build())
                 .build();
@@ -141,7 +141,7 @@ class FileBackupServiceTest {
     void downloadFileShouldThrowIfGameProviderFileBackupServiceNotFound() {
         var nonExistentGameProviderId = new GameProviderId("nonExistentGameProviderId1");
         GameFile gameFile = TestGameFile.discoveredBuilder()
-                .gameProviderFile(TestGameProviderFile.gogBuilder()
+                .gameProviderFile(TestGameProviderFile.minimalGogBuilder()
                         .gameProviderId(nonExistentGameProviderId)
                         .build())
                 .build();
@@ -157,7 +157,7 @@ class FileBackupServiceTest {
     void downloadFileShouldThrowIfIOExceptionOccurs() throws IOException {
         GameProviderId gameProviderId = gameProviderFileBackupService.getGameProviderId();
         GameFile gameFile = TestGameFile.discoveredBuilder()
-                .gameProviderFile(TestGameProviderFile.gogBuilder()
+                .gameProviderFile(TestGameProviderFile.minimalGogBuilder()
                         .gameProviderId(gameProviderId)
                         .build())
                 .build();

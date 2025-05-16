@@ -1,13 +1,15 @@
 package dev.codesoapbox.backity.gameproviders.gog.domain;
 
+import lombok.NonNull;
+
 import java.util.List;
 
 public record GogGameWithFiles(
-        String title,
+        @NonNull String title,
         String backgroundImage,
         String cdKey,
         String textInformation,
-        List<GogGameFile> files,
+        @NonNull List<GogGameFile> files,
         String changelog
 ) {
 }

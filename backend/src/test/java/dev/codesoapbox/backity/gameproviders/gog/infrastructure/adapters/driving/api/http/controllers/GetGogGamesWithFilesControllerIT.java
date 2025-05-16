@@ -16,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ControllerTest
-class GetGogGameWithFilesControllerIT {
+class GetGogGamesWithFilesControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -29,15 +29,15 @@ class GetGogGameWithFilesControllerIT {
         var gameId = "someGameId";
         var expectedResponse = """
                 {
-                  "title": "someTitle",
+                  "title": "someGameTitle",
                   "backgroundImage": "someBgImage",
-                  "cdKey": "someCdKey",
+                  "cdKey": "some-cd-key",
                   "textInformation": "someTextInfo",
                   "files": [
                     {
                       "version": "1.0.0",
-                      "manualUrl": "http://some.url",
-                      "name": "someFileName",
+                      "manualUrl": "/downlink/some_game/some_file",
+                      "fileTitle": "someFileTitle",
                       "size": "someFileSize"
                     }
                   ],
@@ -46,14 +46,14 @@ class GetGogGameWithFilesControllerIT {
                 """;
 
         var gogGameDetails = new GogGameWithFiles(
-                "someTitle",
+                "someGameTitle",
                 "someBgImage",
-                "someCdKey",
+                "some-cd-key",
                 "someTextInfo",
                 singletonList(new GogGameFile(
                         "1.0.0",
-                        "http://some.url",
-                        "someFileName",
+                        "/downlink/some_game/some_file",
+                        "someFileTitle",
                         "someFileSize",
                         "setup.exe"
                 )),

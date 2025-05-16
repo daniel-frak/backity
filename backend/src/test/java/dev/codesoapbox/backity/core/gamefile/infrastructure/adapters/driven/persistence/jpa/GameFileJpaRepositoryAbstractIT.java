@@ -179,7 +179,7 @@ abstract class GameFileJpaRepositoryAbstractIT {
     @CsvSource(value = {"1.0.0,true", "fakeVersion,false"})
     void existsByUrlAndVersion(String version, boolean shouldFind) {
         populateDatabase(FILE_DETAILS.getAll());
-        boolean exists = gameFileJpaRepository.existsByUrlAndVersion("http://some.url", version);
+        boolean exists = gameFileJpaRepository.existsByUrlAndVersion("/downlink/some_game/some_file", version);
 
         assertThat(exists).isEqualTo(shouldFind);
     }
