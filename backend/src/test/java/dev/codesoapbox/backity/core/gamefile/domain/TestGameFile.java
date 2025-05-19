@@ -30,18 +30,6 @@ public final class TestGameFile {
     @lombok.Builder.Default
     private LocalDateTime dateModified = LocalDateTime.parse("2023-04-29T14:15:53");
 
-    public static GameFile full() {
-        return fullBuilder().build();
-    }
-
-    public static Builder fullBuilder() {
-        return discoveredBuilder()
-                .fileBackup(TestFileBackup.discoveredBuilder()
-                        .failedReason("someFailedReason")
-                        .filePath("someFilePath")
-                        .build());
-    }
-
     public static Builder discoveredBuilder() {
         return new Builder();
     }

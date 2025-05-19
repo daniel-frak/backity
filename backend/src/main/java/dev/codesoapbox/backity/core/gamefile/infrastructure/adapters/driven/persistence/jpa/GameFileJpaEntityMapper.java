@@ -1,10 +1,7 @@
 package dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driven.persistence.jpa;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
-import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
-import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
+import dev.codesoapbox.backity.core.gamefile.domain.*;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -42,6 +39,11 @@ public abstract class GameFileJpaEntityMapper {
 
     @Mapping(target = "size", source = "sizeInBytes")
     protected abstract FileSource toModel(FileSourceJpaEntity entity);
+
+    @Mapping(target = "toSuccessful", ignore = true)
+    @Mapping(target = "toFailed", ignore = true)
+    @Mapping(target = "withFilePath", ignore = true)
+    protected abstract FileBackup toModel(FileBackupJpaEntity entity);
 
     protected GameFileId toGameFileId(UUID uuid) {
         return new GameFileId(uuid);

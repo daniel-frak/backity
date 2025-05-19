@@ -17,6 +17,8 @@ public class DownloadFileUseCase {
 
     public FileResource downloadFile(GameFileId gameFileId) throws FileNotFoundException {
         GameFile gameFile = gameFileRepository.getById(gameFileId);
-        return storageSolution.getFileResource(gameFile.getFileBackup().getFilePath());
+        String filePath = gameFile.getFileBackup().filePath();
+
+        return storageSolution.getFileResource(filePath);
     }
 }

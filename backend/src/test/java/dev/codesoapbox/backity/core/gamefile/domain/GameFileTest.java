@@ -34,12 +34,21 @@ class GameFileTest {
     }
 
     @Test
+    void shouldMarkAsDiscovered() {
+        GameFile gameFile = TestGameFile.discovered();
+
+        gameFile.markAsDiscovered();
+
+        assertThat(gameFile.getFileBackup().status()).isEqualTo(FileBackupStatus.DISCOVERED);
+    }
+
+    @Test
     void shouldMarkAsEnqueued() {
         GameFile gameFile = TestGameFile.discovered();
 
         gameFile.markAsEnqueued();
 
-        assertThat(gameFile.getFileBackup().getStatus()).isEqualTo(FileBackupStatus.ENQUEUED);
+        assertThat(gameFile.getFileBackup().status()).isEqualTo(FileBackupStatus.ENQUEUED);
     }
 
     @Test
@@ -50,8 +59,8 @@ class GameFileTest {
 
         gameFile.markAsFailed(failedReason);
 
-        assertThat(gameFile.getFileBackup().getFailedReason()).isEqualTo(failedReason);
-        assertThat(gameFile.getFileBackup().getStatus()).isEqualTo(FileBackupStatus.FAILED);
+        assertThat(gameFile.getFileBackup().failedReason()).isEqualTo(failedReason);
+        assertThat(gameFile.getFileBackup().status()).isEqualTo(FileBackupStatus.FAILED);
         assertThat(gameFile.getDomainEvents()).containsExactly(expectedEvent);
     }
 
@@ -66,7 +75,7 @@ class GameFileTest {
 
         gameFile.markAsInProgress();
 
-        assertThat(gameFile.getFileBackup().getStatus()).isEqualTo(FileBackupStatus.IN_PROGRESS);
+        assertThat(gameFile.getFileBackup().status()).isEqualTo(FileBackupStatus.IN_PROGRESS);
         assertThat(gameFile.getDomainEvents()).containsExactly(expectedEvent);
     }
 
@@ -81,7 +90,7 @@ class GameFileTest {
                 fileSource.version(),
                 fileSource.originalFileName(),
                 fileSource.size(),
-                fileBackup.getFilePath()
+                fileBackup.filePath()
         );
     }
 
@@ -92,8 +101,8 @@ class GameFileTest {
 
         gameFile.markAsDownloaded("someFilePath");
 
-        assertThat(gameFile.getFileBackup().getFilePath()).isEqualTo("someFilePath");
-        assertThat(gameFile.getFileBackup().getStatus()).isEqualTo(FileBackupStatus.SUCCESS);
+        assertThat(gameFile.getFileBackup().filePath()).isEqualTo("someFilePath");
+        assertThat(gameFile.getFileBackup().status()).isEqualTo(FileBackupStatus.SUCCESS);
         assertThat(gameFile.getDomainEvents()).containsExactly(expectedEvent);
     }
 

@@ -21,27 +21,35 @@ class GameWithFilesHttpDtoMapperTest {
     private static final GameWithFilesHttpDtoMapper MAPPER = Mappers.getMapper(GameWithFilesHttpDtoMapper.class);
 
     @Test
-    void shouldMapToDto() {
-        GameWithFiles model = domainObject();
+    void shouldMapSuccessfulToDto() {
+        GameWithFiles model = domainObjectSuccessful();
 
         GameWithFilesHttpDto result = MAPPER.toDto(model);
 
-        var expectedResult = dto();
+        var expectedResult = dtoSuccessful();
         assertThat(result)
                 .usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
-    private GameWithFiles domainObject() {
+    private GameWithFiles domainObjectSuccessful() {
         Game game = TestGame.any();
         return new GameWithFiles(
                 game,
-                singletonList(TestGameFile.fullBuilder()
+                singletonList(TestGameFile.successfulBuilder()
                         .gameId(game.getId())
                         .build())
         );
     }
 
-    private GameWithFilesHttpDto dto() {
+    private GameWithFilesHttpDto dtoSuccessful() {
+        return dto(new FileBackupHttpDto(
+                FileBackupStatusHttpDto.SUCCESS,
+                null,
+                "someFilePath"
+        ));
+    }
+
+    private GameWithFilesHttpDto dto(FileBackupHttpDto fileBackupHttpDto) {
         return new GameWithFilesHttpDto(
                 "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
                 "Test Game",
@@ -58,16 +66,41 @@ class GameWithFilesHttpDtoMapperTest {
                                         "game_1_installer.exe",
                                         "5 KB"
                                 ),
-                                new FileBackupHttpDto(
-                                        FileBackupStatusHttpDto.DISCOVERED,
-                                        "someFailedReason",
-                                        "someFilePath"
-                                ),
+                                fileBackupHttpDto,
                                 LocalDateTime.parse("2022-04-29T14:15:53"),
                                 LocalDateTime.parse("2023-04-29T14:15:53")
                         )
                 )
         );
+    }
+
+    @Test
+    void shouldMapFailedToDto() {
+        GameWithFiles model = domainObjectFailed();
+
+        GameWithFilesHttpDto result = MAPPER.toDto(model);
+
+        var expectedResult = dtoFailed();
+        assertThat(result)
+                .usingRecursiveComparison().isEqualTo(expectedResult);
+    }
+
+    private GameWithFiles domainObjectFailed() {
+        Game game = TestGame.any();
+        return new GameWithFiles(
+                game,
+                singletonList(TestGameFile.failedBuilder()
+                        .gameId(game.getId())
+                        .build())
+        );
+    }
+
+    private GameWithFilesHttpDto dtoFailed() {
+        return dto(new FileBackupHttpDto(
+                FileBackupStatusHttpDto.FAILED,
+                "someFailedReason",
+                null
+        ));
     }
 
     @Test
