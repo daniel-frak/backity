@@ -1,9 +1,10 @@
 package dev.codesoapbox.backity.core.discovery.application;
 
+import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import lombok.NonNull;
 
 public record GameContentDiscoveryStatus(
-        @NonNull String gameProviderId,
+        @NonNull GameProviderId gameProviderId,
         boolean isInProgress
 ) {
 }

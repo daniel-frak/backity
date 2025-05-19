@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.application.usecases;
 
+import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryStatus;
 import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryService;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,8 +38,9 @@ class GetGameContentDiscoveryStatusListUseCaseTest {
     }
 
     private List<GameContentDiscoveryStatus> mockGameContentDiscoveryStatuses() {
+        var gameProviderId = new GameProviderId("TestGameProviderId");
         List<GameContentDiscoveryStatus> statuses =
-                List.of(new GameContentDiscoveryStatus("GOG", true));
+                List.of(new GameContentDiscoveryStatus(gameProviderId, true));
         when(gameContentDiscoveryService.getStatuses())
                 .thenReturn(statuses);
 

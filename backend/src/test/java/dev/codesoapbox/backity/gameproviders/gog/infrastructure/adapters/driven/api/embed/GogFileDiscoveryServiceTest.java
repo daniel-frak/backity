@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed;
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
+import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameProviderFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
@@ -43,7 +44,7 @@ class GogFileDiscoveryServiceTest {
 
     @Test
     void shouldReturnGameProviderId() {
-        assertThat(gogFileDiscoveryService.getGameProviderId()).isEqualTo("GOG");
+        assertThat(gogFileDiscoveryService.getGameProviderId()).isEqualTo(new GameProviderId("GOG"));
     }
 
     @SuppressWarnings("UnusedReturnValue")

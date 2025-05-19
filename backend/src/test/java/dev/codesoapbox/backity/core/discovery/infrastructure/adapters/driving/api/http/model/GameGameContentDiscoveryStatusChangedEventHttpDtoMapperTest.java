@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driving.api.http.model;
 
+import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryStatus;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -13,7 +14,7 @@ class GameGameContentDiscoveryStatusChangedEventHttpDtoMapperTest {
 
     @Test
     void shouldMapToDto() {
-        var domain = new GameContentDiscoveryStatus("someGameProviderId", true);
+        var domain = new GameContentDiscoveryStatus(new GameProviderId("someGameProviderId"), true);
 
         GameContentDiscoveryStatusHttpDto result = MAPPER.toDto(domain);
 

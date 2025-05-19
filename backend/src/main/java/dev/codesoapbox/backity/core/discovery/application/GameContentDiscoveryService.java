@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.discovery.application;
 
 import dev.codesoapbox.backity.DoNotMutate;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
+import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStatusChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
@@ -26,7 +27,7 @@ public class GameContentDiscoveryService {
     private final GameRepository gameRepository;
     private final GameFileRepository fileRepository;
     private final DomainEventPublisher domainEventPublisher;
-    private final Map<String, Boolean> discoveryStatuses = new ConcurrentHashMap<>();
+    private final Map<GameProviderId, Boolean> discoveryStatuses = new ConcurrentHashMap<>();
 
     public GameContentDiscoveryService(List<GameProviderFileDiscoveryService> gameProviderFileDiscoveryServices,
                                        GameRepository gameRepository,
@@ -44,7 +45,7 @@ public class GameContentDiscoveryService {
         });
     }
 
-    private void publishProgressChangedEvent(DomainEventPublisher eventPublisher, String gameProviderId,
+    private void publishProgressChangedEvent(DomainEventPublisher eventPublisher, GameProviderId gameProviderId,
                                              ProgressInfo progress) {
         int percentage = progress.percentage();
         long seconds = progress.timeLeft().getSeconds();

@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driving.api.http.controllers;
 
+import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryStatus;
 import dev.codesoapbox.backity.core.discovery.application.usecases.GetGameContentDiscoveryStatusListUseCase;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
@@ -26,14 +27,14 @@ class GetGameContentDiscoveryStatusListControllerIT {
 
     @Test
     void shouldGetStatuses() throws Exception {
-        var status = new GameContentDiscoveryStatus("GOG", true);
+        var status = new GameContentDiscoveryStatus(new GameProviderId("TestGameProviderId"), true);
 
         when(useCase.getStatusList())
                 .thenReturn(List.of(status));
 
         var expectedJson = """
                 [{
-                  "gameProviderId": "GOG",
+                  "gameProviderId": "TestGameProviderId",
                   "isInProgress": true
                 }]""";
 
