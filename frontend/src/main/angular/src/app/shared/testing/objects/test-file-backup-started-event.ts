@@ -18,11 +18,11 @@ export class TestFileBackupStartedEvent {
     return {
       ...this.anEvent(),
       gameFileId: gameFile.id,
-      originalGameTitle: gameFile.gameProviderFile.originalGameTitle,
-      originalFileName: gameFile.gameProviderFile.originalFileName,
-      version: gameFile.gameProviderFile.version,
-      size: gameFile.gameProviderFile.size,
-      fileTitle: gameFile.gameProviderFile.fileTitle,
+      originalGameTitle: gameFile.fileSource.originalGameTitle,
+      originalFileName: gameFile.fileSource.originalFileName,
+      version: gameFile.fileSource.version,
+      size: gameFile.fileSource.size,
+      fileTitle: gameFile.fileSource.fileTitle,
       filePath: gameFile.fileBackup.filePath
     };
   }

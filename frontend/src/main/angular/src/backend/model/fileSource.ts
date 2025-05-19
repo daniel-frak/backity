@@ -9,7 +9,7 @@
  */
 
 
-export interface GameProviderFile { 
+export interface FileSource { 
     gameProviderId: string;
     originalGameTitle: string;
     fileTitle: string;

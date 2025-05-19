@@ -122,7 +122,7 @@ describe('InProgressFilesCardComponent', () => {
     expect(component.currentDownload).toEqual(inProgressGameFile);
     expect(component.currentDownloadIsLoading).toBe(false);
 
-    expectCurrentlyDownloadingGameTitleToContain(inProgressGameFile.gameProviderFile.originalGameTitle);
+    expectCurrentlyDownloadingGameTitleToContain(inProgressGameFile.fileSource.originalGameTitle);
   });
 
   function expectCurrentlyDownloadingGameTitleToContain(expectedGameTitle: string) {

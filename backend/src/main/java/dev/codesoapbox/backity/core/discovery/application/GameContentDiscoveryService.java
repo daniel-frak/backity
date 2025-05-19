@@ -8,9 +8,9 @@ import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscovery
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
+import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 
@@ -95,26 +95,26 @@ public class GameContentDiscoveryService {
         domainEventPublisher.publish(event);
     }
 
-    private void saveDiscoveredFileInfo(GameProviderFile gameProviderFile) {
-        Game game = getGameOrAddNew(gameProviderFile);
-        GameFile gameFile = GameFile.associate(game, gameProviderFile);
+    private void saveDiscoveredFileInfo(FileSource fileSource) {
+        Game game = getGameOrAddNew(fileSource);
+        GameFile gameFile = GameFile.associate(game, fileSource);
 
-        if (!fileRepository.existsByUrlAndVersion(gameFile.getGameProviderFile().url(),
-                gameFile.getGameProviderFile().version())) {
+        if (!fileRepository.existsByUrlAndVersion(gameFile.getFileSource().url(),
+                gameFile.getFileSource().version())) {
             fileRepository.save(gameFile);
             domainEventPublisher.publish(FileDiscoveredEvent.from(gameFile));
-            log.info("Discovered new file: {} (gameId: {})", gameFile.getGameProviderFile().url(),
+            log.info("Discovered new file: {} (gameId: {})", gameFile.getFileSource().url(),
                     gameFile.getGameId().value());
         }
     }
 
-    private Game getGameOrAddNew(GameProviderFile gameProviderFile) {
-        return gameRepository.findByTitle(gameProviderFile.originalGameTitle())
-                .orElseGet(() -> addNewGame(gameProviderFile));
+    private Game getGameOrAddNew(FileSource fileSource) {
+        return gameRepository.findByTitle(fileSource.originalGameTitle())
+                .orElseGet(() -> addNewGame(fileSource));
     }
 
-    private Game addNewGame(GameProviderFile gameProviderFile) {
-        var newGame = Game.createNew(gameProviderFile.originalGameTitle());
+    private Game addNewGame(FileSource fileSource) {
+        var newGame = Game.createNew(fileSource.originalGameTitle());
         gameRepository.save(newGame);
         log.info("Discovered new game: {} (id: {})", newGame.getTitle(), newGame.getId().value());
 

@@ -33,7 +33,7 @@ public class BackUpOldestGameFileUseCase {
 
         enqueuedFileBackupReference.set(gameFile);
 
-        log.info("Backing up enqueued file {}", gameFile.getGameProviderFile().url());
+        log.info("Backing up enqueued file {}", gameFile.getFileSource().url());
 
         try {
             fileBackupService.backUpFile(gameFile);

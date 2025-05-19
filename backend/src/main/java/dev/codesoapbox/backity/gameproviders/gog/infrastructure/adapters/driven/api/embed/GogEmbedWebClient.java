@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
-import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
+import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
@@ -120,6 +120,8 @@ public class GogEmbedWebClient implements GogLibraryService {
                 .toList();
     }
 
+
+    @SuppressWarnings("java:S2637") // Nulls are handled GogGameFile
     private GogGameFile toGameFileResponse(Map<String, Object> gameFileResponse) {
         String version = getVersion((String) gameFileResponse.get("version"));
         String manualUrl = (String) gameFileResponse.get("manualUrl");
@@ -191,8 +193,8 @@ public class GogEmbedWebClient implements GogLibraryService {
     }
 
     public TrackableFileStream initializeProgressAndStreamFile(
-            GameProviderFile gameProviderFile, DownloadProgress progress) {
-        String url = gameProviderFile.url();
+            FileSource fileSource, DownloadProgress progress) {
+        String url = fileSource.url();
         Flux<DataBuffer> dataStream = webClientEmbed.get()
                 .uri(url)
                 .header(HEADER_AUTHORIZATION, getBearerToken())

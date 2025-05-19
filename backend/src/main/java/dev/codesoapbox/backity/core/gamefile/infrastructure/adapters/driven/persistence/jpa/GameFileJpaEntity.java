@@ -35,7 +35,7 @@ public class GameFileJpaEntity {
     private UUID gameId;
 
     @Embedded
-    private GameProviderFileJpaEntity gameProviderFile;
+    private FileSourceJpaEntity fileSource;
 
     @Embedded
     private FileBackupJpaEntity fileBackup;

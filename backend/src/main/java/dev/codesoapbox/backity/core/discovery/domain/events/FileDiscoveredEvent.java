@@ -13,10 +13,10 @@ public record FileDiscoveredEvent(
 
     public static FileDiscoveredEvent from(GameFile gameFile) {
         return new FileDiscoveredEvent(
-                gameFile.getGameProviderFile().originalGameTitle(),
-                gameFile.getGameProviderFile().originalFileName(),
-                gameFile.getGameProviderFile().fileTitle(),
-                gameFile.getGameProviderFile().size()
+                gameFile.getFileSource().originalGameTitle(),
+                gameFile.getFileSource().originalFileName(),
+                gameFile.getFileSource().fileTitle(),
+                gameFile.getFileSource().size()
         );
     }
 }

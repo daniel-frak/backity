@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed;
 
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
-import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameProviderFile;
+import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
+import dev.codesoapbox.backity.core.gamefile.domain.TestFileSource;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import dev.codesoapbox.backity.gameproviders.gog.domain.TestGogGameFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.TestGogGameWithFiles;
@@ -18,15 +18,15 @@ class GogGameWithFilesMapperTest {
     private static final GogGameWithFilesMapper MAPPER = Mappers.getMapper(GogGameWithFilesMapper.class);
 
     @Test
-    void shouldMapMinimalWithFileToGameProviderFile() {
+    void shouldMapMinimalWithFileToFileSourceList() {
         GogGameWithFiles gogGame = TestGogGameWithFiles.minimalBuilder()
                 .withFiles(List.of(TestGogGameFile.minimal()))
                 .build();
 
-        List<GameProviderFile> result = MAPPER.toGameProviderFiles(gogGame);
+        List<FileSource> result = MAPPER.toFileSources(gogGame);
 
-        List<GameProviderFile> expectedResult = List.of(
-                TestGameProviderFile.minimalGogBuilder()
+        List<FileSource> expectedResult = List.of(
+                TestFileSource.minimalGogBuilder()
                         .originalGameTitle("Test Game")
                         .fileTitle("Game 1 (Installer)")
                         .version("unknown")
@@ -40,10 +40,10 @@ class GogGameWithFilesMapperTest {
     }
 
     @Test
-    void shouldMapMinimalWithNoFilesToGameProviderFile() {
+    void shouldMapMinimalWithNoFilesToFileSourceList() {
         GogGameWithFiles gogGame = TestGogGameWithFiles.minimal();
 
-        List<GameProviderFile> result = MAPPER.toGameProviderFiles(gogGame);
+        List<FileSource> result = MAPPER.toFileSources(gogGame);
 
         assertThat(result).isEmpty();
     }

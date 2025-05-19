@@ -6,7 +6,7 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
-import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameProviderFileUrlEmptyException;
+import dev.codesoapbox.backity.core.gamefile.domain.exceptions.FileSourceUrlEmptyException;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
@@ -14,16 +14,16 @@ import static org.assertj.core.api.Assertions.*;
 class GameFileTest {
 
     @Test
-    void shouldAssociateGameAndGameProviderFile() {
+    void shouldAssociateGameAndFileSource() {
         Game game = TestGame.any();
-        GameProviderFile gameProviderFile = TestGameProviderFile.minimalGog();
+        FileSource fileSource = TestFileSource.minimalGog();
 
-        GameFile result = GameFile.associate(game, gameProviderFile);
+        GameFile result = GameFile.associate(game, fileSource);
 
         GameFile expectedResult = TestGameFile.discoveredBuilder()
                 .id(result.getId())
                 .gameId(game.getId())
-                .gameProviderFile(gameProviderFile)
+                .fileSource(fileSource)
                 .fileBackup(TestFileBackup.discovered())
                 .dateCreated(null)
                 .dateModified(null)
@@ -69,16 +69,16 @@ class GameFileTest {
     }
 
     private FileBackupStartedEvent fileBackupStartedEvent(GameFile gameFile) {
-        GameProviderFile gameProviderFile = gameFile.getGameProviderFile();
+        FileSource fileSource = gameFile.getFileSource();
         FileBackup fileBackup = gameFile.getFileBackup();
 
         return new FileBackupStartedEvent(
                 gameFile.getId(),
-                gameProviderFile.originalGameTitle(),
-                gameProviderFile.fileTitle(),
-                gameProviderFile.version(),
-                gameProviderFile.originalFileName(),
-                gameProviderFile.size(),
+                fileSource.originalGameTitle(),
+                fileSource.fileTitle(),
+                fileSource.version(),
+                fileSource.originalFileName(),
+                fileSource.size(),
                 fileBackup.getFilePath()
         );
     }
@@ -135,17 +135,17 @@ class GameFileTest {
     }
 
     @Test
-    void validateReadyForDownloadShouldDoNothingGivenGameProviderFileUrlIsBlank() {
+    void validateReadyForDownloadShouldDoNothingGivenFileSourceUrlIsBlank() {
         GameFile gameFile = aGameFileWithABlankUrl();
 
         assertThatThrownBy(gameFile::validateReadyForDownload)
-                .isInstanceOf(GameProviderFileUrlEmptyException.class)
+                .isInstanceOf(FileSourceUrlEmptyException.class)
                 .hasMessageContaining(gameFile.getId().toString());
     }
 
     private GameFile aGameFileWithABlankUrl() {
         return TestGameFile.discoveredBuilder()
-                .gameProviderFile(TestGameProviderFile.minimalGogBuilder()
+                .fileSource(TestFileSource.minimalGogBuilder()
                         .url(" ")
                         .build())
                 .build();

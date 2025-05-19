@@ -7,16 +7,16 @@
     </div>
     <app-table [groupedContent]="group(gameWithFilesPage?.content)" testId="game-list">
       <ng-template app-table-column="File title" let-item>
-        {{ asGameFile(item).gameProviderFile!.fileTitle }}
+        {{ asGameFile(item).fileSource!.fileTitle }}
       </ng-template>
       <ng-template app-table-column="Provider" let-item>
-        {{ asGameFile(item).gameProviderFile!.gameProviderId }}
+        {{ asGameFile(item).fileSource!.gameProviderId }}
       </ng-template>
       <ng-template app-table-column="Version" let-item>
-        {{ asGameFile(item).gameProviderFile!.version }}
+        {{ asGameFile(item).fileSource!.version }}
       </ng-template>
       <ng-template app-table-column="Size" let-item>
-        {{ asGameFile(item).gameProviderFile!.size }}
+        {{ asGameFile(item).fileSource!.size }}
       </ng-template>
       <ng-template app-table-column="Status" let-item>
         <app-file-status-badge [status]="asGameFile(item).fileBackup!.status"></app-file-status-badge>

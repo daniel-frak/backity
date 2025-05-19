@@ -7,12 +7,10 @@ import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.game.GameIdHttpDtoMapper;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 @Mapper(uses = GameIdHttpDtoMapper.class)
 public abstract class GameFileHttpDtoMapper {
 
-    @Mapping(target = "gameProviderFile.size", source = "gameProviderFile.size")
     @BeanMapping(ignoreUnmappedSourceProperties = "domainEvents")
     public abstract GameFileHttpDto toDto(GameFile domain);
 

@@ -120,7 +120,7 @@ describe('EnqueuedFilesCardComponent', () => {
       size: component.pageSize
     });
     expect(component.filesAreLoading).toBe(false);
-    expectEnqueuedGameTitleToContain(enqueuedGameFile.gameProviderFile.originalGameTitle);
+    expectEnqueuedGameTitleToContain(enqueuedGameFile.fileSource.originalGameTitle);
   });
 
   function expectEnqueuedGameTitleToContain(expectedGameTitle: string) {

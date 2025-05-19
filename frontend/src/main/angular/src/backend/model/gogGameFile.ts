@@ -12,8 +12,8 @@
 export interface GogGameFile { 
     version?: string;
     manualUrl?: string;
-    name?: string;
-    size?: string;
     fileTitle?: string;
+    size?: string;
+    fileName?: string;
 }
 

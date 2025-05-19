@@ -2,10 +2,10 @@ package dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driven.per
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
+import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 import dev.codesoapbox.backity.core.game.domain.GameId;
-import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -19,7 +19,7 @@ public abstract class GameFileJpaEntityMapper {
     public abstract GameFileJpaEntity toEntity(GameFile model);
 
     @Mapping(target = "sizeInBytes", source = "size")
-    protected abstract GameProviderFileJpaEntity toEntity(GameProviderFile model);
+    protected abstract FileSourceJpaEntity toEntity(FileSource model);
 
     protected UUID toUuid(GameId id) {
         return id.value();
@@ -41,7 +41,7 @@ public abstract class GameFileJpaEntityMapper {
     public abstract GameFile toModel(GameFileJpaEntity entity);
 
     @Mapping(target = "size", source = "sizeInBytes")
-    protected abstract GameProviderFile toModel(GameProviderFileJpaEntity entity);
+    protected abstract FileSource toModel(FileSourceJpaEntity entity);
 
     protected GameFileId toGameFileId(UUID uuid) {
         return new GameFileId(uuid);

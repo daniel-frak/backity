@@ -46,7 +46,7 @@ class GogFileBackupServiceTest {
 
     private TrackableFileStream mockProgressAwareFileStreamCreation(GameFile gameFile, DownloadProgress downloadProgress) {
         TrackableFileStream trackableFileStream = mock(TrackableFileStream.class);
-        when(gogFileProvider.initializeProgressAndStreamFile(gameFile.getGameProviderFile(), downloadProgress))
+        when(gogFileProvider.initializeProgressAndStreamFile(gameFile.getFileSource(), downloadProgress))
                 .thenReturn(trackableFileStream);
         return trackableFileStream;
     }

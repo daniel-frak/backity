@@ -16,7 +16,7 @@ public final class TestGameFile {
     private GameId gameId = new GameId("1eec1c19-25bf-4094-b926-84b5bb8fa281");
 
     @lombok.Builder.Default
-    private GameProviderFile gameProviderFile = TestGameProviderFile.minimalGog();
+    private FileSource fileSource = TestFileSource.minimalGog();
 
     @lombok.Builder.Default
     private FileBackup fileBackup = TestFileBackup.discovered();
@@ -93,7 +93,7 @@ public final class TestGameFile {
             return new GameFile(
                     temp.id,
                     temp.gameId,
-                    temp.gameProviderFile,
+                    temp.fileSource,
                     temp.fileBackup,
                     temp.dateCreated,
                     temp.dateModified,

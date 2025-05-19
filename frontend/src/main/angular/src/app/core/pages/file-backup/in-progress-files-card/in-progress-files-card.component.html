@@ -5,17 +5,17 @@
   <ng-container *ngIf="currentDownload">
     <app-table [content]="[currentDownload]" [isLoading]="currentDownloadIsLoading">
       <ng-template app-table-column="Game title" let-item>
-        {{ asGameFile(item)!.gameProviderFile.originalGameTitle }}
+        {{ asGameFile(item)!.fileSource.originalGameTitle }}
       </ng-template>
       <ng-template app-table-column="File name" let-item>
-        {{ asGameFile(item)!.gameProviderFile.fileTitle }}
-        - {{ asGameFile(item)!.gameProviderFile.originalFileName }}
+        {{ asGameFile(item)!.fileSource.fileTitle }}
+        - {{ asGameFile(item)!.fileSource.originalFileName }}
       </ng-template>
       <ng-template app-table-column="Version" let-item>
-        {{ asGameFile(item)!.gameProviderFile.version }}
+        {{ asGameFile(item)!.fileSource.version }}
       </ng-template>
       <ng-template app-table-column="Size" let-item>
-        {{ asGameFile(item)!.gameProviderFile.size }}
+        {{ asGameFile(item)!.fileSource.size }}
       </ng-template>
       <ng-template app-table-column="Path" style="max-width: 5%" let-item>
         <span class="file-path">{{ asGameFile(item)!.fileBackup.filePath }}</span>
