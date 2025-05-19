@@ -3,15 +3,12 @@ package dev.codesoapbox.backity.core.backup.application;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgressFactory;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
+import dev.codesoapbox.backity.core.gamefile.domain.*;
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePathProvider;
-import dev.codesoapbox.backity.core.gamefile.domain.*;
-import dev.codesoapbox.backity.core.gamefile.domain.exceptions.FileSourceUrlEmptyException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -121,20 +118,6 @@ class FileBackupServiceTest {
                 .when(gameProviderFileBackupService).backUpFile(any(), any());
 
         return coreException;
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"", " "})
-    void downloadFileShouldThrowIfUrlIsEmpty(String url) {
-        GameFile gameFile = TestGameFile.discoveredBuilder()
-                .fileSource(TestFileSource.minimalGogBuilder()
-                        .url(url)
-                        .build())
-                .build();
-
-        assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
-                .isInstanceOf(FileBackupFailedException.class)
-                .cause().isInstanceOf(FileSourceUrlEmptyException.class);
     }
 
     @Test

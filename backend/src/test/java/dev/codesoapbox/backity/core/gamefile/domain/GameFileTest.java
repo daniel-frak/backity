@@ -6,7 +6,6 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
-import dev.codesoapbox.backity.core.gamefile.domain.exceptions.FileSourceUrlEmptyException;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
@@ -124,30 +123,5 @@ class GameFileTest {
         gameFile.clearDomainEvents();
 
         assertThat(gameFile.getDomainEvents()).isEmpty();
-    }
-
-    @Test
-    void validateReadyForDownloadShouldDoNothingGivenTrue() {
-        GameFile gameFile = TestGameFile.discovered();
-
-        assertThatCode(gameFile::validateReadyForDownload)
-                .doesNotThrowAnyException();
-    }
-
-    @Test
-    void validateReadyForDownloadShouldDoNothingGivenFileSourceUrlIsBlank() {
-        GameFile gameFile = aGameFileWithABlankUrl();
-
-        assertThatThrownBy(gameFile::validateReadyForDownload)
-                .isInstanceOf(FileSourceUrlEmptyException.class)
-                .hasMessageContaining(gameFile.getId().toString());
-    }
-
-    private GameFile aGameFileWithABlankUrl() {
-        return TestGameFile.discoveredBuilder()
-                .fileSource(TestFileSource.minimalGogBuilder()
-                        .url(" ")
-                        .build())
-                .build();
     }
 }
