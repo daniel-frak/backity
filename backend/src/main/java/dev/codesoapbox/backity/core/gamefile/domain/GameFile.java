@@ -43,7 +43,7 @@ public class GameFile {
     @NonNull
     private List<DomainEvent> domainEvents;
 
-    public static GameFile associate(Game game, FileSource fileSource) {
+    public static GameFile createFor(Game game, FileSource fileSource) {
         return new GameFile(
                 GameFileId.newInstance(),
                 game.getId(),
@@ -55,11 +55,11 @@ public class GameFile {
         );
     }
 
-    public void enqueue() {
+    public void markAsEnqueued() {
         fileBackup.setStatus(FileBackupStatus.ENQUEUED);
     }
 
-    public void fail(String failedReason) {
+    public void markAsFailed(String failedReason) {
         fileBackup.setStatus(FileBackupStatus.FAILED);
         fileBackup.setFailedReason(failedReason);
 

@@ -64,7 +64,7 @@ class BackUpOldestGameFileUseCaseTest {
     }
 
     @Test
-    void shouldFailGracefully() {
+    void shouldMarkAsFailedGracefully() {
         GameFile gameFile = TestGameFile.discovered();
         mockIsNextInQueue(gameFile);
         mockBackupServiceIsReadyFor(gameFile);

@@ -14,11 +14,11 @@ import static org.assertj.core.api.Assertions.*;
 class GameFileTest {
 
     @Test
-    void shouldAssociateGameAndFileSource() {
+    void shouldCreateForGameAndFileSource() {
         Game game = TestGame.any();
         FileSource fileSource = TestFileSource.minimalGog();
 
-        GameFile result = GameFile.associate(game, fileSource);
+        GameFile result = GameFile.createFor(game, fileSource);
 
         GameFile expectedResult = TestGameFile.discoveredBuilder()
                 .id(result.getId())
@@ -32,21 +32,21 @@ class GameFileTest {
     }
 
     @Test
-    void shouldEnqueue() {
+    void shouldMarkAsEnqueued() {
         GameFile gameFile = TestGameFile.discovered();
 
-        gameFile.enqueue();
+        gameFile.markAsEnqueued();
 
         assertThat(gameFile.getFileBackup().getStatus()).isEqualTo(FileBackupStatus.ENQUEUED);
     }
 
     @Test
-    void shouldFailWithEvent() {
+    void shouldMarkAsFailedWithEvent() {
         GameFile gameFile = TestGameFile.discovered();
         String failedReason = "someFailedReason";
         FileBackupFailedEvent expectedEvent = fileBackupFailedEvent(gameFile, failedReason);
 
-        gameFile.fail(failedReason);
+        gameFile.markAsFailed(failedReason);
 
         assertThat(gameFile.getFileBackup().getFailedReason()).isEqualTo(failedReason);
         assertThat(gameFile.getFileBackup().getStatus()).isEqualTo(FileBackupStatus.FAILED);

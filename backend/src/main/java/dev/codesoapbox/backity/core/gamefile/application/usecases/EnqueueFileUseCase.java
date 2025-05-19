@@ -12,7 +12,7 @@ public class EnqueueFileUseCase {
 
     public void enqueue(GameFileId gameFileId) {
         GameFile gameFile = gameFileRepository.getById(gameFileId);
-        gameFile.enqueue();
+        gameFile.markAsEnqueued();
         gameFileRepository.save(gameFile);
     }
 }

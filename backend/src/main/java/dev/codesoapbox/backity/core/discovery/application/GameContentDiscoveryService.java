@@ -97,7 +97,7 @@ public class GameContentDiscoveryService {
 
     private void saveDiscoveredFileInfo(FileSource fileSource) {
         Game game = getGameOrAddNew(fileSource);
-        GameFile gameFile = GameFile.associate(game, fileSource);
+        GameFile gameFile = GameFile.createFor(game, fileSource);
 
         if (!fileRepository.existsByUrlAndVersion(gameFile.getFileSource().url(),
                 gameFile.getFileSource().version())) {

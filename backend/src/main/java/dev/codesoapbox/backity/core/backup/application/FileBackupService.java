@@ -113,7 +113,7 @@ public class FileBackupService {
     }
 
     private void markFailed(GameFile gameFile, Exception e) {
-        gameFile.fail(e.getMessage());
+        gameFile.markAsFailed(e.getMessage());
         gameFileRepository.save(gameFile);
     }
 

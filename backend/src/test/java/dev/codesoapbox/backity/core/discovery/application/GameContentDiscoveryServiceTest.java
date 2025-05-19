@@ -166,7 +166,7 @@ class GameContentDiscoveryServiceTest {
         var gameFileArgumentCaptor = ArgumentCaptor.forClass(GameFile.class);
         verify(fileRepository).save(gameFileArgumentCaptor.capture());
         GameFile savedGameFile = gameFileArgumentCaptor.getValue();
-        GameFile expectedGameFile = GameFile.associate(game, discoveredFile);
+        GameFile expectedGameFile = GameFile.createFor(game, discoveredFile);
         expectedGameFile.setId(savedGameFile.getId());
         verify(eventPublisher).publish(FileDiscoveredEvent.from(expectedGameFile));
         assertThat(progressUpdates.size()).isOne();
