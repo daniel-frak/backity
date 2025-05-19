@@ -6,7 +6,10 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
+import dev.codesoapbox.backity.shared.domain.DomainEvent;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -123,5 +126,15 @@ class GameFileTest {
         gameFile.clearDomainEvents();
 
         assertThat(gameFile.getDomainEvents()).isEmpty();
+    }
+
+    @Test
+    void getDomainEventsShouldReturnUnmodifiableList() {
+        GameFile gameFile = TestGameFile.discovered();
+
+        List<DomainEvent> result = gameFile.getDomainEvents();
+
+        assertThatThrownBy(result::clear)
+                .isInstanceOf(UnsupportedOperationException.class);
     }
 }

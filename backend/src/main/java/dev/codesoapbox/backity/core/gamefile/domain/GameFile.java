@@ -6,14 +6,17 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
-import dev.codesoapbox.backity.core.gamefile.domain.exceptions.FileSourceUrlEmptyException;
 import dev.codesoapbox.backity.shared.domain.DomainEvent;
-import lombok.*;
-import org.apache.logging.log4j.util.Strings;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Collections.unmodifiableList;
 
 /**
  * A version of a game file, either not yet downloaded, already downloaded or anything in-between.
@@ -39,7 +42,6 @@ public class GameFile {
     private LocalDateTime dateCreated;
     private LocalDateTime dateModified;
 
-    @Getter
     @NonNull
     private List<DomainEvent> domainEvents;
 
@@ -106,5 +108,9 @@ public class GameFile {
 
     public void clearDomainEvents() {
         domainEvents.clear();
+    }
+
+    public List<DomainEvent> getDomainEvents() {
+        return unmodifiableList(this.domainEvents);
     }
 }
