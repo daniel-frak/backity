@@ -59,19 +59,19 @@ public class GameContentDiscoveryService {
         gameProviderFileDiscoveryServices.forEach(this::startContentDiscovery);
     }
 
-    private void startContentDiscovery(GameProviderFileDiscoveryService discoveryService) {
-        if (alreadyInProgress(discoveryService)) {
+    private void startContentDiscovery(GameProviderFileDiscoveryService gameProviderDiscoveryService) {
+        if (alreadyInProgress(gameProviderDiscoveryService)) {
             log.info("Discovery for {} is already in progress. Aborting additional discovery.",
-                    discoveryService.getGameProviderId());
+                    gameProviderDiscoveryService.getGameProviderId());
             return;
         }
 
-        log.info("Discovering content for gameProviderId: {}", discoveryService.getGameProviderId());
+        log.info("Discovering content for gameProviderId: {}", gameProviderDiscoveryService.getGameProviderId());
 
-        changeDiscoveryStatus(discoveryService, true);
+        changeDiscoveryStatus(gameProviderDiscoveryService, true);
 
-        CompletableFuture.runAsync(() -> discoveryService.startFileDiscovery(this::saveDiscoveredFileInfo))
-                .whenComplete(getCompletedGameContentDiscoveryHandler().handle(discoveryService));
+        CompletableFuture.runAsync(() -> gameProviderDiscoveryService.discoverAllFiles(this::saveDiscoveredFileInfo))
+                .whenComplete(getCompletedGameContentDiscoveryHandler().handle(gameProviderDiscoveryService));
     }
 
     CompletedGameContentDiscoveryHandler getCompletedGameContentDiscoveryHandler() {

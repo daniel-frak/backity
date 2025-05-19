@@ -9,7 +9,7 @@ public interface GameProviderFileDiscoveryService {
 
     String getGameProviderId();
 
-    void startFileDiscovery(Consumer<GameProviderFile> fileConsumer);
+    void discoverAllFiles(Consumer<GameProviderFile> fileConsumer);
 
     void stopFileDiscovery();
 

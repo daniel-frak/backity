@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,10 +42,11 @@ class GogFileDiscoveryServiceTest {
     }
 
     @Test
-    void shouldGetSource() {
+    void shouldReturnGameProviderId() {
         assertThat(gogFileDiscoveryService.getGameProviderId()).isEqualTo("GOG");
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     class GogLibraryTestSetup {
 
         private final Map<String, GogGameWithFiles> gogGamesById = new HashMap<>();
@@ -55,7 +55,7 @@ class GogFileDiscoveryServiceTest {
         public GogLibraryTestSetup() {
             when(gogEmbedWebClient.getLibraryGameIds())
                     .thenAnswer(inv -> {
-                        if(this.onInteractionRunnable != null) {
+                        if (this.onInteractionRunnable != null) {
                             this.onInteractionRunnable.run();
                         }
                         return gogGamesById.keySet().stream().toList();
@@ -67,7 +67,7 @@ class GogFileDiscoveryServiceTest {
                     });
         }
 
-        GogLibraryTestSetup withGame(GameProviderFile file) {
+        public GogLibraryTestSetup withGame(GameProviderFile file) {
             gogGamesById.put("gameId" + gogGamesById.size() + 1, TestGogGameWithFiles.fromSingleFile(file));
             return this;
         }
@@ -75,7 +75,7 @@ class GogFileDiscoveryServiceTest {
         public void withGameMissingDetails() {
             when(gogEmbedWebClient.getLibraryGameIds())
                     .thenAnswer(inv -> {
-                        if(this.onInteractionRunnable != null) {
+                        if (this.onInteractionRunnable != null) {
                             this.onInteractionRunnable.run();
                         }
                         return List.of("gameId1");
@@ -84,7 +84,6 @@ class GogFileDiscoveryServiceTest {
                     .thenReturn(null);
         }
 
-        @SuppressWarnings("UnusedReturnValue")
         public GogLibraryTestSetup onInteraction(Runnable runnable) {
             this.onInteractionRunnable = runnable;
             return this;
@@ -95,25 +94,25 @@ class GogFileDiscoveryServiceTest {
     class DiscoveringFiles {
 
         @Test
-        void startFileDiscoveryShouldDiscoverNewFiles() {
+        void shouldEmitEachDiscoveredFile() {
             GameProviderFile gogGameProviderFile = TestGameProviderFile.minimalGog();
             mockGogGameLibrary()
                     .withGame(gogGameProviderFile);
             List<GameProviderFile> discoveredGameProviderFiles = new ArrayList<>();
 
-            gogFileDiscoveryService.startFileDiscovery(discoveredGameProviderFiles::add);
+            gogFileDiscoveryService.discoverAllFiles(discoveredGameProviderFiles::add);
 
             List<GameProviderFile> expectedGameProviderFiles = List.of(gogGameProviderFile);
             assertThat(discoveredGameProviderFiles).isEqualTo(expectedGameProviderFiles);
         }
 
         @Test
-        void startFileDiscoveryShouldIgnoreGamesWithoutDetails() {
+        void shouldSkipGamesWithoutDetails() {
             mockGogGameLibrary()
                     .withGameMissingDetails();
             List<GameProviderFile> discoveredGameProviderFiles = new ArrayList<>();
 
-            gogFileDiscoveryService.startFileDiscovery(discoveredGameProviderFiles::add);
+            gogFileDiscoveryService.discoverAllFiles(discoveredGameProviderFiles::add);
 
             assertThat(discoveredGameProviderFiles).isEmpty();
         }
@@ -123,38 +122,26 @@ class GogFileDiscoveryServiceTest {
     class StoppingDiscovery {
 
         @Test
-        void startFileDiscoveryShouldRestartFileDiscoveryAfterStopping() {
-            mockGogGameLibrary()
-                    .withGame(TestGameProviderFile.minimalGog());
-            var discoveredFilesCount = new AtomicInteger();
-
-            gogFileDiscoveryService.stopFileDiscovery();
-            gogFileDiscoveryService.startFileDiscovery(gf -> discoveredFilesCount.getAndIncrement());
-
-            assertThat(discoveredFilesCount.get()).isEqualTo(1);
-        }
-
-        @Test
         void shouldStopFileDiscoveryBeforeProcessingFiles() {
             mockGogGameLibrary()
                     .withGame(TestGameProviderFile.minimalGog())
                     .onInteraction(() -> gogFileDiscoveryService.stopFileDiscovery());
             List<GameProviderFile> discoveredGameProviderFiles = new ArrayList<>();
 
-            gogFileDiscoveryService.startFileDiscovery(discoveredGameProviderFiles::add);
+            gogFileDiscoveryService.discoverAllFiles(discoveredGameProviderFiles::add);
 
             assertThat(discoveredGameProviderFiles).isEmpty();
             verify(gogEmbedWebClient, never()).getGameDetails(any());
         }
 
         @Test
-        void shouldStopInProgressDiscovery() {
+        void shouldStopFileDiscoveryAfterSomeFilesAlreadyDiscovered() {
             mockGogGameLibrary()
                     .withGame(TestGameProviderFile.minimalGog())
                     .withGame(TestGameProviderFile.minimalGog());
             List<GameProviderFile> discoveredGameProviderFiles = new ArrayList<>();
 
-            gogFileDiscoveryService.startFileDiscovery(e -> {
+            gogFileDiscoveryService.discoverAllFiles(e -> {
                 discoveredGameProviderFiles.add(e);
 
                 // Stop discovery immediately after processing the first game's file
@@ -167,10 +154,33 @@ class GogFileDiscoveryServiceTest {
     }
 
     @Nested
+    class RestartingDiscovery {
+
+        @Test
+        void shouldRestartDiscoveryFromBeginningAfterStop() {
+            mockGogGameLibrary()
+                    .withGame(TestGameProviderFile.minimalGog())
+                    .withGame(TestGameProviderFile.minimalGog());
+            List<GameProviderFile> discoveredGameProviderFiles = new ArrayList<>();
+
+            gogFileDiscoveryService.discoverAllFiles(e -> {
+                discoveredGameProviderFiles.add(e);
+
+                // Stop discovery immediately after processing the first game's file
+                gogFileDiscoveryService.stopFileDiscovery();
+            });
+            gogFileDiscoveryService.discoverAllFiles(discoveredGameProviderFiles::add);
+
+            assertThat(discoveredGameProviderFiles).hasSize(3);
+            verify(gogEmbedWebClient, times(3)).getGameDetails(any());
+        }
+    }
+
+    @Nested
     class ProgressReporting {
 
         @Test
-        void shouldSubscribeToProgress() {
+        void shouldEmitProgressUpdatesAsEachGameIsProcessed() {
             mockGogGameLibrary()
                     .withGame(TestGameProviderFile.minimalGog())
                     .withGame(TestGameProviderFile.minimalGog())
@@ -178,7 +188,7 @@ class GogFileDiscoveryServiceTest {
             List<ProgressInfo> progressInfos = new ArrayList<>();
 
             gogFileDiscoveryService.subscribeToProgress(progressInfos::add);
-            gogFileDiscoveryService.startFileDiscovery(df -> {
+            gogFileDiscoveryService.discoverAllFiles(df -> {
                 // We don't care about the GameProviderFiles for this
             });
 
@@ -188,15 +198,16 @@ class GogFileDiscoveryServiceTest {
         }
 
         @Test
-        void shouldGetProgressWhenNoProgress() {
-            assertThat(gogFileDiscoveryService.getProgress()).isEqualTo(ProgressInfo.none());
+        void shouldReturnNoneWhenNoDiscoveryHasStarted() {
+            assertThat(gogFileDiscoveryService.getProgress())
+                    .isEqualTo(ProgressInfo.none());
         }
 
         @Test
-        void getProgressShouldReturnCurrentProgress() {
+        void shouldReturnCurrentProgressAfterDiscovery() {
             mockGogGameLibrary()
                     .withGame(TestGameProviderFile.minimalGog());
-            gogFileDiscoveryService.startFileDiscovery(df -> {
+            gogFileDiscoveryService.discoverAllFiles(df -> {
                 // We don't care about the GameProviderFiles for this
             });
 

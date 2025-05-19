@@ -275,7 +275,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Override
-        public void startFileDiscovery(Consumer<GameProviderFile> fileConsumer) {
+        public void discoverAllFiles(Consumer<GameProviderFile> fileConsumer) {
             if (exception != null) {
                 throw exception;
             }

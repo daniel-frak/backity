@@ -32,7 +32,7 @@ public class GogFileDiscoveryService implements GameProviderFileDiscoveryService
     }
 
     @Override
-    public void startFileDiscovery(Consumer<GameProviderFile> fileConsumer) {
+    public void discoverAllFiles(Consumer<GameProviderFile> fileConsumer) {
         log.info("Discovering new files...");
 
         shouldStopFileDiscovery.set(false);
