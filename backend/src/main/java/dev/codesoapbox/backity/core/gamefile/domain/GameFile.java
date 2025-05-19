@@ -57,20 +57,23 @@ public class GameFile {
         );
     }
 
+    public void markAsDiscovered() {
+        fileBackup = fileBackup.toDiscovered();
+    }
+
     public void markAsEnqueued() {
-        fileBackup.setStatus(FileBackupStatus.ENQUEUED);
+        fileBackup = fileBackup.toEnqueued();
     }
 
     public void markAsFailed(String failedReason) {
-        fileBackup.setStatus(FileBackupStatus.FAILED);
-        fileBackup.setFailedReason(failedReason);
+        fileBackup = fileBackup.toFailed(failedReason);
 
         var event = new FileBackupFailedEvent(id, failedReason);
         domainEvents.add(event);
     }
 
     public void markAsInProgress() {
-        fileBackup.setStatus(FileBackupStatus.IN_PROGRESS);
+        fileBackup = fileBackup.toInProgress();
 
         var fileBackupStartedEvent = new FileBackupStartedEvent(
                 id,
@@ -79,29 +82,28 @@ public class GameFile {
                 fileSource.version(),
                 fileSource.originalFileName(),
                 fileSource.size(),
-                fileBackup.getFilePath()
+                fileBackup.filePath()
         );
         domainEvents.add(fileBackupStartedEvent);
     }
 
     public void markAsDownloaded(String filePath) {
-        fileBackup.setFilePath(filePath);
-        fileBackup.setStatus(FileBackupStatus.SUCCESS);
+        fileBackup = fileBackup.toSuccessful(filePath);
 
         var event = new FileBackupFinishedEvent(id);
         domainEvents.add(event);
     }
 
     public void updateFilePath(String filePath) {
-        fileBackup.setFilePath(filePath);
+        fileBackup = fileBackup.withFilePath(filePath);
     }
 
     public void clearFilePath() {
-        fileBackup.setFilePath(null);
+        fileBackup = fileBackup.withFilePath(null);
     }
 
     public void validateIsBackedUp() {
-        if (fileBackup.getStatus() != FileBackupStatus.SUCCESS) {
+        if (fileBackup.status() != FileBackupStatus.SUCCESS) {
             throw new GameFileNotBackedUpException(id);
         }
     }

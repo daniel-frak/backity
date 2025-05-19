@@ -104,12 +104,12 @@ class FileBackupServiceTest {
                 .hasCause(coreException);
         assertThat(gameFile.getFileBackup())
                 .satisfies(fileBackup -> assertSoftly(softly -> {
-                    softly.assertThat(fileBackup.getStatus()).isEqualTo(FileBackupStatus.FAILED);
-                    softly.assertThat(fileBackup.getFailedReason()).isEqualTo(coreException.getMessage());
+                    softly.assertThat(fileBackup.status()).isEqualTo(FileBackupStatus.FAILED);
+                    softly.assertThat(fileBackup.failedReason()).isEqualTo(coreException.getMessage());
                 }));
         verify(gameFileRepository, times(4)).save(gameFile);
         assertThat(storageSolution.fileDeleteWasAttempted(filePath)).isTrue();
-        assertThat(gameFile.getFileBackup().getFilePath()).isNull();
+        assertThat(gameFile.getFileBackup().filePath()).isNull();
     }
 
     private IOException mockGameProviderServiceThrowsExceptionDuringBackup() throws IOException {
@@ -149,6 +149,11 @@ class FileBackupServiceTest {
         assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
                 .isInstanceOf(FileBackupFailedException.class)
                 .cause().isInstanceOf(IOException.class);
+        assertThat(gameFile.getFileBackup())
+                .satisfies(fileBackup -> assertSoftly(softly -> {
+                    softly.assertThat(fileBackup.status()).isEqualTo(FileBackupStatus.FAILED);
+                    softly.assertThat(fileBackup.failedReason()).isEqualTo("Unknown error");
+                }));
     }
 
     private void mockFileBackupThrowsIOException() throws IOException {
@@ -184,8 +189,8 @@ class FileBackupServiceTest {
         }
 
         public void addFor(GameFile gameFile) {
-            savedFileBackupStatuses.add(gameFile.getFileBackup().getStatus());
-            savedFilePaths.add(gameFile.getFileBackup().getFilePath());
+            savedFileBackupStatuses.add(gameFile.getFileBackup().status());
+            savedFilePaths.add(gameFile.getFileBackup().filePath());
         }
     }
 }

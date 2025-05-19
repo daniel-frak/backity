@@ -28,7 +28,7 @@ public class GogFileBackupService implements GameProviderFileBackupService {
         FileSource fileSource = gameFile.getFileSource();
         TrackableFileStream fileStream =
                 gogEmbedWebClient.initializeProgressAndStreamFile(fileSource, downloadProgress);
-        String filePath = gameFile.getFileBackup().getFilePath();
+        String filePath = gameFile.getFileBackup().filePath();
         urlFileDownloader.downloadFile(fileStream, gameFile, filePath);
     }
 

@@ -98,7 +98,7 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
     @Test
     void shouldSave() {
-        GameFile newGameFile = TestGameFile.full();
+        GameFile newGameFile = TestGameFile.discovered();
 
         GameFile result = gameFileJpaRepository.save(newGameFile);
         entityManager.flush();
@@ -129,7 +129,7 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
     @Test
     void saveShouldPublishEventsAfterCommitting() {
-        GameFile gameFile = TestGameFile.full();
+        GameFile gameFile = TestGameFile.discovered();
         gameFile.markAsInProgress();
         gameFileJpaRepository.save(gameFile);
 
@@ -140,7 +140,7 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
     @Test
     void saveShouldClearEvents() {
-        GameFile gameFile = TestGameFile.full();
+        GameFile gameFile = TestGameFile.discovered();
         gameFile.markAsInProgress();
         gameFileJpaRepository.save(gameFile);
 

@@ -111,8 +111,12 @@ public class FileBackupService {
         gameFileRepository.save(gameFile);
     }
 
-    private void markFailed(GameFile gameFile, Exception e) {
-        gameFile.markAsFailed(e.getMessage());
+    private void markFailed(GameFile gameFile, Exception exception) {
+        String message = exception.getMessage();
+        if(message == null) {
+            message = "Unknown error";
+        }
+        gameFile.markAsFailed(message);
         gameFileRepository.save(gameFile);
     }
 

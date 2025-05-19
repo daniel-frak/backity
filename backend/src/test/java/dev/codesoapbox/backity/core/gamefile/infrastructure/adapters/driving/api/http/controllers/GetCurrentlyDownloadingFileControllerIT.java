@@ -30,7 +30,7 @@ class GetCurrentlyDownloadingFileControllerIT {
 
     @Test
     void shouldGetCurrentlyDownloadingFile() throws Exception {
-        GameFile gameFile = TestGameFile.full();
+        GameFile gameFile = TestGameFile.inProgress();
 
         when(useCase.findCurrentlyDownloadingFile())
                 .thenReturn(Optional.of(gameFile));
@@ -49,8 +49,8 @@ class GetCurrentlyDownloadingFileControllerIT {
                         "size": "5 KB"
                       },
                       "fileBackup": {
-                        "status": "DISCOVERED",
-                        "failedReason": "someFailedReason",
+                        "status": "IN_PROGRESS",
+                        "failedReason": null,
                         "filePath": "someFilePath"
                       },
                       "dateCreated": "2022-04-29T14:15:53",
