@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.application;
 
+import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStatusChangedEvent;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
@@ -270,8 +271,8 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Override
-        public String getGameProviderId() {
-            return "someGameProviderId";
+        public GameProviderId getGameProviderId() {
+            return new GameProviderId("someGameProviderId");
         }
 
         @Override

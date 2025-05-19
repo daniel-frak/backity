@@ -1,10 +1,11 @@
 package dev.codesoapbox.backity.core.discovery.domain.events;
 
+import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
 
 public final class TestGameContentDiscoveryEvent {
 
-    private static final String GAME_PROVIDER_ID = "TestGameProviderId";
+    private static final GameProviderId GAME_PROVIDER_ID = new GameProviderId("TestGameProviderId");
 
     public static FileDiscoveredEvent fileDiscovered() {
         return new FileDiscoveredEvent(

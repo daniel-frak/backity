@@ -27,8 +27,8 @@ public class GogFileDiscoveryService implements GameProviderFileDiscoveryService
     private final GogGameWithFilesMapper gogGameWithFilesMapper;
     private IncrementalProgressTracker progressTracker;
 
-    public String getGameProviderId() {
-        return GogGameProviderId.get().value();
+    public GameProviderId getGameProviderId() {
+        return GogGameProviderId.get();
     }
 
     @Override

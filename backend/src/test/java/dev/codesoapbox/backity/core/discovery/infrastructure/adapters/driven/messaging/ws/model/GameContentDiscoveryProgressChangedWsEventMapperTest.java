@@ -7,7 +7,7 @@ import org.mapstruct.factory.Mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class GameContentDiscoveryProgressChangedEventUpdateWsMessageMapperTest {
+class GameContentDiscoveryProgressChangedWsEventMapperTest {
 
     private static final GameContentDiscoveryProgressChangedWsEventMapper MAPPER =
             Mappers.getMapper(GameContentDiscoveryProgressChangedWsEventMapper.class);
