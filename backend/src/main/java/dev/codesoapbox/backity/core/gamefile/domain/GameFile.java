@@ -107,10 +107,4 @@ public class GameFile {
     public void clearDomainEvents() {
         domainEvents.clear();
     }
-
-    public void validateReadyForDownload() {
-        if (Strings.isBlank(fileSource.url())) {
-            throw new FileSourceUrlEmptyException(id);
-        }
-    }
 }

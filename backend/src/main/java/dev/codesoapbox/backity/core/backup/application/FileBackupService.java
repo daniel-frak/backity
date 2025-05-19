@@ -4,10 +4,10 @@ import dev.codesoapbox.backity.core.backup.application.downloadprogress.Download
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgressFactory;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
-import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
-import dev.codesoapbox.backity.core.storagesolution.domain.FilePathProvider;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePathProvider;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -48,7 +48,6 @@ public class FileBackupService {
 
         try {
             markInProgress(gameFile);
-            gameFile.validateReadyForDownload();
             String filePath = buildFilePath(gameFile);
             tryToBackUp(gameFile, filePath);
         } catch (IOException | RuntimeException e) {
