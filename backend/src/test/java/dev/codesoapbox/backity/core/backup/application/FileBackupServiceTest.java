@@ -6,7 +6,7 @@ import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedExc
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePathProvider;
 import dev.codesoapbox.backity.core.gamefile.domain.*;
-import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameProviderFileUrlEmptyException;
+import dev.codesoapbox.backity.core.gamefile.domain.exceptions.FileSourceUrlEmptyException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -77,7 +77,7 @@ class FileBackupServiceTest {
     private String mockFilePathCreation(GameFile gameFile, GameProviderId gameProviderId) {
         var filePath = "someFileDir/someFile";
         when(filePathProvider.buildUniqueFilePath(gameProviderId,
-                gameFile.getGameProviderFile().originalGameTitle(), gameFile.getGameProviderFile().originalFileName()))
+                gameFile.getFileSource().originalGameTitle(), gameFile.getFileSource().originalFileName()))
                 .thenReturn(filePath);
 
         return filePath;
@@ -127,21 +127,21 @@ class FileBackupServiceTest {
     @ValueSource(strings = {"", " "})
     void downloadFileShouldThrowIfUrlIsEmpty(String url) {
         GameFile gameFile = TestGameFile.discoveredBuilder()
-                .gameProviderFile(TestGameProviderFile.minimalGogBuilder()
+                .fileSource(TestFileSource.minimalGogBuilder()
                         .url(url)
                         .build())
                 .build();
 
         assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
                 .isInstanceOf(FileBackupFailedException.class)
-                .cause().isInstanceOf(GameProviderFileUrlEmptyException.class);
+                .cause().isInstanceOf(FileSourceUrlEmptyException.class);
     }
 
     @Test
     void downloadFileShouldThrowIfGameProviderFileBackupServiceNotFound() {
         var nonExistentGameProviderId = new GameProviderId("nonExistentGameProviderId1");
         GameFile gameFile = TestGameFile.discoveredBuilder()
-                .gameProviderFile(TestGameProviderFile.minimalGogBuilder()
+                .fileSource(TestFileSource.minimalGogBuilder()
                         .gameProviderId(nonExistentGameProviderId)
                         .build())
                 .build();
@@ -157,7 +157,7 @@ class FileBackupServiceTest {
     void downloadFileShouldThrowIfIOExceptionOccurs() throws IOException {
         GameProviderId gameProviderId = gameProviderFileBackupService.getGameProviderId();
         GameFile gameFile = TestGameFile.discoveredBuilder()
-                .gameProviderFile(TestGameProviderFile.minimalGogBuilder()
+                .fileSource(TestFileSource.minimalGogBuilder()
                         .gameProviderId(gameProviderId)
                         .build())
                 .build();

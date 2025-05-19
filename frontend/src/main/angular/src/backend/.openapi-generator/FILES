@@ -24,13 +24,13 @@ model/fileBackupStatus.ts
 model/fileBackupStatusChangedEvent.ts
 model/fileDiscoveredEvent.ts
 model/fileDownloadProgressUpdatedEvent.ts
+model/fileSource.ts
 model/gameContentDiscoveryProgressUpdateEvent.ts
 model/gameContentDiscoveryStatus.ts
 model/gameContentDiscoveryStatusChangedEvent.ts
 model/gameContentDiscoveryWebSocketTopics.ts
 model/gameFile.ts
 model/gameFileProcessingStatus.ts
-model/gameProviderFile.ts
 model/gameWithFiles.ts
 model/gogConfig.ts
 model/gogGameFile.ts

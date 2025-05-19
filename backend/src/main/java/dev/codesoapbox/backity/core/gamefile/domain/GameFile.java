@@ -6,7 +6,7 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
-import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameProviderFileUrlEmptyException;
+import dev.codesoapbox.backity.core.gamefile.domain.exceptions.FileSourceUrlEmptyException;
 import dev.codesoapbox.backity.shared.domain.DomainEvent;
 import lombok.*;
 import org.apache.logging.log4j.util.Strings;
@@ -31,7 +31,7 @@ public class GameFile {
     private GameId gameId;
 
     @NonNull
-    private GameProviderFile gameProviderFile;
+    private FileSource fileSource;
 
     @NonNull
     private FileBackup fileBackup;
@@ -43,11 +43,11 @@ public class GameFile {
     @NonNull
     private List<DomainEvent> domainEvents;
 
-    public static GameFile associate(Game game, GameProviderFile gameProviderFile) {
+    public static GameFile associate(Game game, FileSource fileSource) {
         return new GameFile(
                 GameFileId.newInstance(),
                 game.getId(),
-                gameProviderFile,
+                fileSource,
                 new FileBackup(FileBackupStatus.DISCOVERED, null, null),
                 null,
                 null,
@@ -72,11 +72,11 @@ public class GameFile {
 
         var fileBackupStartedEvent = new FileBackupStartedEvent(
                 id,
-                gameProviderFile.originalGameTitle(),
-                gameProviderFile.fileTitle(),
-                gameProviderFile.version(),
-                gameProviderFile.originalFileName(),
-                gameProviderFile.size(),
+                fileSource.originalGameTitle(),
+                fileSource.fileTitle(),
+                fileSource.version(),
+                fileSource.originalFileName(),
+                fileSource.size(),
                 fileBackup.getFilePath()
         );
         domainEvents.add(fileBackupStartedEvent);
@@ -109,8 +109,8 @@ public class GameFile {
     }
 
     public void validateReadyForDownload() {
-        if (Strings.isBlank(gameProviderFile.url())) {
-            throw new GameProviderFileUrlEmptyException(id);
+        if (Strings.isBlank(fileSource.url())) {
+            throw new FileSourceUrlEmptyException(id);
         }
     }
 }

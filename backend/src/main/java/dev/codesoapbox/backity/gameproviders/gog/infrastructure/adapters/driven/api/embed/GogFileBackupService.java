@@ -3,8 +3,8 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.application.GameProviderFileBackupService;
+import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +25,9 @@ public class GogFileBackupService implements GameProviderFileBackupService {
 
     @Override
     public void backUpFile(GameFile gameFile, DownloadProgress downloadProgress) throws IOException {
-        GameProviderFile gameProviderFile = gameFile.getGameProviderFile();
+        FileSource fileSource = gameFile.getFileSource();
         TrackableFileStream fileStream =
-                gogEmbedWebClient.initializeProgressAndStreamFile(gameProviderFile, downloadProgress);
+                gogEmbedWebClient.initializeProgressAndStreamFile(fileSource, downloadProgress);
         String filePath = gameFile.getFileBackup().getFilePath();
         urlFileDownloader.downloadFile(fileStream, gameFile, filePath);
     }

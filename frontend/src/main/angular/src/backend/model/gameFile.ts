@@ -7,14 +7,14 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { GameProviderFile } from './gameProviderFile';
+import { FileSource } from './fileSource';
 import { FileBackup } from './fileBackup';
 
 
 export interface GameFile { 
     id: string;
     gameId: string;
-    gameProviderFile: GameProviderFile;
+    fileSource: FileSource;
     fileBackup: FileBackup;
     dateCreated?: string;
     dateModified?: string;

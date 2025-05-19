@@ -13,7 +13,7 @@ public interface GameFileJpaEntitySpringRepository extends JpaRepository<GameFil
 
     Optional<GameFileJpaEntity> findByFileBackupStatus(FileBackupStatus status);
 
-    boolean existsByGameProviderFileUrlAndGameProviderFileVersion(String url, String version);
+    boolean existsByFileSourceUrlAndFileSourceVersion(String url, String version);
 
     Page<GameFileJpaEntity> findAllByFileBackupStatusIn(Pageable pageable, List<FileBackupStatus> status);
 

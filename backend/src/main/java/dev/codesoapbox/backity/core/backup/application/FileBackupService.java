@@ -44,7 +44,7 @@ public class FileBackupService {
 
     public void backUpFile(GameFile gameFile) {
         log.info("Backing up game file {} (url={})...", gameFile.getId(),
-                gameFile.getGameProviderFile().url());
+                gameFile.getFileSource().url());
 
         try {
             markInProgress(gameFile);
@@ -64,9 +64,9 @@ public class FileBackupService {
 
     private String buildFilePath(GameFile gameFile) {
         return filePathProvider.buildUniqueFilePath(
-                gameFile.getGameProviderFile().gameProviderId(),
-                gameFile.getGameProviderFile().originalGameTitle(),
-                gameFile.getGameProviderFile().originalFileName());
+                gameFile.getFileSource().gameProviderId(),
+                gameFile.getFileSource().originalGameTitle(),
+                gameFile.getFileSource().originalFileName());
     }
 
     private void tryToBackUp(GameFile gameFile, String filePath) throws IOException {
@@ -86,7 +86,7 @@ public class FileBackupService {
     }
 
     private void downloadToDisk(GameFile gameFile) throws IOException {
-        GameProviderId gameProviderId = gameFile.getGameProviderFile().gameProviderId();
+        GameProviderId gameProviderId = gameFile.getFileSource().gameProviderId();
         GameProviderFileBackupService gameProviderFileBackupService = getGameProviderFileBackupService(gameProviderId);
         DownloadProgress downloadProgress = downloadProgressFactory.create();
 
@@ -118,6 +118,6 @@ public class FileBackupService {
     }
 
     public boolean isReadyFor(GameFile gameFile) {
-        return getGameProviderFileBackupService(gameFile.getGameProviderFile().gameProviderId()).isReady();
+        return getGameProviderFileBackupService(gameFile.getFileSource().gameProviderId()).isReady();
     }
 }

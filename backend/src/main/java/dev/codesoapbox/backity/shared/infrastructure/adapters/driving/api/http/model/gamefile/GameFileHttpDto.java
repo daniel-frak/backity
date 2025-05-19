@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public record GameFileHttpDto(
         @NotNull String id,
         @NotNull String gameId,
-        @NotNull GameProviderFileHttpDto gameProviderFile,
+        @NotNull FileSourceHttpDto fileSource,
         @NotNull FileBackupHttpDto fileBackup,
         LocalDateTime dateCreated,
         LocalDateTime dateModified

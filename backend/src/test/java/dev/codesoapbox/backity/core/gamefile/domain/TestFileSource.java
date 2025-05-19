@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 
 @lombok.Builder(builderClassName = "Builder", buildMethodName = "internalBuild",
         builderMethodName = "minimalGogBuilder")
-public class TestGameProviderFile {
+public class TestFileSource {
 
     @lombok.Builder.Default
     private GameProviderId gameProviderId = new GameProviderId("GOG");
@@ -27,15 +27,16 @@ public class TestGameProviderFile {
     @lombok.Builder.Default
     private FileSize size = new FileSize(5120L);
 
-    public static GameProviderFile minimalGog() {
+    public static FileSource minimalGog() {
         return minimalGogBuilder().build();
     }
 
     public static class Builder {
 
-        public GameProviderFile build() {
-            var temp = internalBuild();
-            return new GameProviderFile(
+        public FileSource build() {
+            TestFileSource temp = internalBuild();
+
+            return new FileSource(
                     temp.gameProviderId,
                     temp.originalGameTitle,
                     temp.fileTitle,

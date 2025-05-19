@@ -11,19 +11,19 @@
 
     <app-table [content]="filePage?.content" [isLoading]="filesAreLoading" [testId]="'discovered-files-table'">
       <ng-template app-table-column="Provider game title" let-item>
-        {{ asGameFile(item).gameProviderFile!.originalFileName }}
+        {{ asGameFile(item).fileSource!.originalFileName }}
       </ng-template>
       <ng-template app-table-column="Provider" let-item>
-        {{ asGameFile(item).gameProviderFile!.gameProviderId }}
+        {{ asGameFile(item).fileSource!.gameProviderId }}
       </ng-template>
       <ng-template app-table-column="File name" let-item>
-        {{ asGameFile(item).gameProviderFile!.fileTitle }} - {{ asGameFile(item).gameProviderFile!.originalFileName }}
+        {{ asGameFile(item).fileSource!.fileTitle }} - {{ asGameFile(item).fileSource!.originalFileName }}
       </ng-template>
       <ng-template app-table-column="Version" let-item>
-        {{ asGameFile(item).gameProviderFile!.version }}
+        {{ asGameFile(item).fileSource!.version }}
       </ng-template>
       <ng-template app-table-column="Size" let-item>
-        {{ asGameFile(item).gameProviderFile!.size }}
+        {{ asGameFile(item).fileSource!.size }}
       </ng-template>
       <ng-template app-table-column="Actions"
                    hide-title-on-mobile

@@ -64,7 +64,7 @@ export class InProgressFilesCardComponent implements OnInit, OnDestroy {
     this.currentDownload = {
       id: event.gameFileId,
       gameId: 'UNKNOWN',
-      gameProviderFile: {
+      fileSource: {
         originalGameTitle: event.originalGameTitle,
         gameProviderId: 'UNKNOWN',
         fileTitle: event.fileTitle,

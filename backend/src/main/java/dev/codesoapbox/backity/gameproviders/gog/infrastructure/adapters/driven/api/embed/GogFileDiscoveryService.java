@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.backup.application.downloadprogress.Incremen
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.application.GameProviderFileDiscoveryService;
-import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
+import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ public class GogFileDiscoveryService implements GameProviderFileDiscoveryService
     }
 
     @Override
-    public void discoverAllFiles(Consumer<GameProviderFile> fileConsumer) {
+    public void discoverAllFiles(Consumer<FileSource> fileSourceConsumer) {
         log.info("Discovering new files...");
 
         shouldStopFileDiscovery.set(false);
@@ -44,18 +44,18 @@ public class GogFileDiscoveryService implements GameProviderFileDiscoveryService
                 .takeWhile(id -> !shouldStopFileDiscovery.get())
                 .forEach(id -> {
                     GogGameWithFiles details = gogEmbedWebClient.getGameDetails(id);
-                    processFiles(fileConsumer, details);
+                    processFiles(fileSourceConsumer, details);
                     incrementProgress();
                 });
     }
 
-    private void processFiles(Consumer<GameProviderFile> discoveredFileConsumer, GogGameWithFiles gogGame) {
+    private void processFiles(Consumer<FileSource> discoveredFileConsumer, GogGameWithFiles gogGame) {
         if (gogGame == null) {
             return;
         }
-        List<GameProviderFile> gameProviderFiles = gogGameWithFilesMapper.toGameProviderFiles(gogGame);
-        for (GameProviderFile gameProviderFile : gameProviderFiles) {
-            discoveredFileConsumer.accept(gameProviderFile);
+        List<FileSource> fileSources = gogGameWithFilesMapper.toFileSources(gogGame);
+        for (FileSource fileSource : fileSources) {
+            discoveredFileConsumer.accept(fileSource);
         }
     }
 

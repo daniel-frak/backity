@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class GogGameFileHttpDtoMapperTest {
+class GameFileHttpDtoMapperTest {
 
     private static final GameFileHttpDtoMapper MAPPER = Mappers.getMapper(GameFileHttpDtoMapper.class);
 
@@ -22,7 +22,7 @@ class GogGameFileHttpDtoMapperTest {
         var expectedResult = new GameFileHttpDto(
                 "acde26d7-33c7-42ee-be16-bca91a604b48",
                 "1eec1c19-25bf-4094-b926-84b5bb8fa281",
-                new GameProviderFileHttpDto(
+                new FileSourceHttpDto(
                         "GOG",
                         "Game 1",
                         "Game 1 (Installer)",

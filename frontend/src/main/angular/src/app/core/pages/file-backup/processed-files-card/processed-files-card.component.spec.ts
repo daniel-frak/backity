@@ -85,7 +85,7 @@ describe('ProcessedFilesCardComponent', () => {
       size: component.pageSize
     });
     expect(component.filesAreLoading).toBe(false);
-    expectProcessedGameTitleToContain(processedGameFile.gameProviderFile.originalGameTitle);
+    expectProcessedGameTitleToContain(processedGameFile.fileSource.originalGameTitle);
   });
 
   function expectProcessedGameTitleToContain(expectedGameTitle: string) {

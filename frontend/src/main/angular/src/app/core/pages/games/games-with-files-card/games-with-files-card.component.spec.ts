@@ -99,7 +99,7 @@ describe('GamesWithFilesCardComponent', () => {
 
     const pageText = fixture.debugElement.nativeElement.textContent;
     expect(pageText).toContain(game.title);
-    expect(pageText).toContain(gameFile.gameProviderFile.fileTitle);
+    expect(pageText).toContain(gameFile.fileSource.fileTitle);
   });
 
   it('should log an error when games cannot be retrieved', async () => {

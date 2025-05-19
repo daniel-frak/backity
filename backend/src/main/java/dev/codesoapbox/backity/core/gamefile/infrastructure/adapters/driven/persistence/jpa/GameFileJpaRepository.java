@@ -92,7 +92,7 @@ public class GameFileJpaRepository implements GameFileRepository {
 
     @Override
     public boolean existsByUrlAndVersion(String url, String version) {
-        return springRepository.existsByGameProviderFileUrlAndGameProviderFileVersion(url, version);
+        return springRepository.existsByFileSourceUrlAndFileSourceVersion(url, version);
     }
 
     @Override

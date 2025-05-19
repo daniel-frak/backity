@@ -6,8 +6,8 @@ import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.gamefile.FileBackupHttpDto;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.gamefile.FileBackupStatusHttpDto;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.gamefile.FileSourceHttpDto;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.gamefile.GameFileHttpDto;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.gamefile.GameProviderFileHttpDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -49,7 +49,7 @@ class GameWithFilesHttpDtoMapperTest {
                         new GameFileHttpDto(
                                 "acde26d7-33c7-42ee-be16-bca91a604b48",
                                 "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
-                                new GameProviderFileHttpDto(
+                                new FileSourceHttpDto(
                                         "GOG",
                                         "Game 1",
                                         "Game 1 (Installer)",

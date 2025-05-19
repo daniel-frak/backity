@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GameProviderFileJpaEntity {
+public class FileSourceJpaEntity {
 
     @NotNull
     private String gameProviderId;

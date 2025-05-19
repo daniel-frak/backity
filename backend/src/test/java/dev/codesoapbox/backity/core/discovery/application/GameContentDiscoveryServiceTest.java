@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStatusChangedEvent;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
+import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
@@ -11,7 +12,6 @@ import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.GameProviderFile;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import lombok.Getter;
 import lombok.Setter;
@@ -101,7 +101,7 @@ class GameContentDiscoveryServiceTest {
 
     @Test
     void startContentDiscoveryShouldNotSaveGameInformationGivenGameAlreadyExists() {
-        GameProviderFile discoveredFile = TestGameFile.discovered().getGameProviderFile();
+        FileSource discoveredFile = TestGameFile.discovered().getFileSource();
         mockGameExists(discoveredFile.originalGameTitle());
 
         gameContentDiscoveryService = new GameContentDiscoveryService(singletonList(gameProviderFileDiscoveryService),
@@ -131,7 +131,7 @@ class GameContentDiscoveryServiceTest {
 
     @Test
     void startContentDiscoveryShouldSaveGameInformationGivenItDoesNotYetExist() {
-        GameProviderFile discoveredFile = TestGameFile.discovered().getGameProviderFile();
+        FileSource discoveredFile = TestGameFile.discovered().getFileSource();
         mockGameDoesNotExist(discoveredFile.originalGameTitle());
 
         gameContentDiscoveryService.startContentDiscovery();
@@ -150,7 +150,7 @@ class GameContentDiscoveryServiceTest {
 
     @Test
     void startContentDiscoveryShouldSaveDiscoveredFilesAndPublishEvents() {
-        GameProviderFile discoveredFile = TestGameFile.discovered().getGameProviderFile();
+        FileSource discoveredFile = TestGameFile.discovered().getFileSource();
         Game game = mockGameExists(discoveredFile.originalGameTitle());
         mockDoesNotExistLocally(discoveredFile);
 
@@ -174,7 +174,7 @@ class GameContentDiscoveryServiceTest {
         verify(eventPublisher, times(2)).publish(any(GameContentDiscoveryStatusChangedEvent.class));
     }
 
-    private void mockDoesNotExistLocally(GameProviderFile discoveredFile) {
+    private void mockDoesNotExistLocally(FileSource discoveredFile) {
         when(fileRepository.existsByUrlAndVersion(discoveredFile.url(), discoveredFile.version()))
                 .thenReturn(false);
     }
@@ -190,20 +190,20 @@ class GameContentDiscoveryServiceTest {
 
     @Test
     void startContentDiscoveryShouldNotSaveDiscoveredFileIfAlreadyExists() {
-        GameProviderFile gameProviderFile = TestGameFile.discovered().getGameProviderFile();
-        mockExistsLocally(gameProviderFile);
+        FileSource fileSource = TestGameFile.discovered().getFileSource();
+        mockExistsLocally(fileSource);
 
         gameContentDiscoveryService.startContentDiscovery();
 
         waitForGameProviderFileDiscoveryToBeTriggered();
-        gameProviderFileDiscoveryService.simulateFileDiscovery(gameProviderFile);
+        gameProviderFileDiscoveryService.simulateFileDiscovery(fileSource);
 
         verify(fileRepository, never()).save(any());
         verify(eventPublisher, never()).publish(any(FileDiscoveredEvent.class));
     }
 
-    private void mockExistsLocally(GameProviderFile gameProviderFile) {
-        when(fileRepository.existsByUrlAndVersion(gameProviderFile.url(), gameProviderFile.version()))
+    private void mockExistsLocally(FileSource fileSource) {
+        when(fileRepository.existsByUrlAndVersion(fileSource.url(), fileSource.version()))
                 .thenReturn(true);
     }
 
@@ -246,7 +246,7 @@ class GameContentDiscoveryServiceTest {
     private static class FakeGameProviderFileDiscoveryService implements GameProviderFileDiscoveryService {
 
         private final CountDownLatch finishLatch = new CountDownLatch(1);
-        private final AtomicReference<Consumer<GameProviderFile>> gameProviderFileConsumerRef =
+        private final AtomicReference<Consumer<FileSource>> fileSourceConsumerRef =
                 new AtomicReference<>();
 
         @Getter
@@ -262,8 +262,8 @@ class GameContentDiscoveryServiceTest {
             return timesTriggered.get() > 0;
         }
 
-        public void simulateFileDiscovery(GameProviderFile gameProviderFile) {
-            gameProviderFileConsumerRef.get().accept(gameProviderFile);
+        public void simulateFileDiscovery(FileSource fileSource) {
+            fileSourceConsumerRef.get().accept(fileSource);
         }
 
         public void complete() {
@@ -276,11 +276,11 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Override
-        public void discoverAllFiles(Consumer<GameProviderFile> fileConsumer) {
+        public void discoverAllFiles(Consumer<FileSource> fileSourceConsumer) {
             if (exception != null) {
                 throw exception;
             }
-            this.gameProviderFileConsumerRef.set(fileConsumer);
+            this.fileSourceConsumerRef.set(fileSourceConsumer);
             timesTriggered.incrementAndGet();
 
             try {

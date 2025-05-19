@@ -6,7 +6,7 @@ export class TestGameFile {
     return {
       id: "someFileId",
       gameId: "someGameId",
-      gameProviderFile: {
+      fileSource: {
         gameProviderId: "someGameProviderId",
         originalGameTitle: "Some game",
         originalFileName: "Some original file name",

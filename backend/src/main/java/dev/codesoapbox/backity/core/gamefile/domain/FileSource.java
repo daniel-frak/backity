@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.gamefile.domain;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import lombok.NonNull;
 
-public record GameProviderFile(
+public record FileSource(
         @NonNull GameProviderId gameProviderId,
         @NonNull String originalGameTitle,
         @NonNull String fileTitle,
