@@ -63,14 +63,14 @@ describe('DiscoveredFilesCardComponent', () => {
   it('should enqueue file', async () => {
     const file: GameFile = TestGameFile.discovered();
     const fakeObservable: Observable<HttpResponse<any>> = of(new HttpResponse()).pipe(catchError(e => {
-      file.fileBackup.status = FileBackupStatus.Discovered;
+      file.fileCopy.status = FileBackupStatus.Discovered;
       throw e;
     }));
     gameFilesClient.enqueueFileBackup.and.returnValue(fakeObservable);
 
     await component.onClickEnqueueFile(file)();
 
-    expect(file.fileBackup?.status).toEqual(FileBackupStatus.Enqueued);
+    expect(file.fileCopy?.status).toEqual(FileBackupStatus.Enqueued);
     expect(gameFilesClient.enqueueFileBackup).toHaveBeenCalledWith(file.id);
     expect(notificationService.showSuccess).toHaveBeenCalledWith(`File backup enqueued`);
   });
@@ -82,13 +82,13 @@ describe('DiscoveredFilesCardComponent', () => {
     observableMock.pipe.and.returnValue(observableMock);
 
     gameFilesClient.enqueueFileBackup.and.returnValue(new Observable(subscriber => {
-      expect(gameFile.fileBackup?.status).toEqual(FileBackupStatus.Enqueued);
+      expect(gameFile.fileCopy?.status).toEqual(FileBackupStatus.Enqueued);
       subscriber.error(mockError);
     }));
 
     await component.enqueueFile(gameFile);
 
-    expect(gameFile.fileBackup?.status).toEqual(FileBackupStatus.Discovered);
+    expect(gameFile.fileCopy?.status).toEqual(FileBackupStatus.Discovered);
     expect(notificationService.showFailure).toHaveBeenCalledWith(
       'An error occurred while trying to enqueue a file', gameFile, mockError);
   });

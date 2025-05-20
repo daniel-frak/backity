@@ -13,13 +13,13 @@ import lombok.With;
  * The physical file resource must be deleted before its path is removed.
  * Use the `withFilePath` method to manage both updates and removals.
  */
-public record FileBackup(
+public record FileCopy(
         @NonNull FileBackupStatus status,
         String failedReason,
         @With String filePath
 ) {
 
-    public FileBackup {
+    public FileCopy {
         if (status == FileBackupStatus.FAILED && failedReason == null) {
             throw new IllegalArgumentException("failedReason is required");
         }
@@ -32,23 +32,23 @@ public record FileBackup(
 
     }
 
-    public FileBackup toDiscovered() {
-        return new FileBackup(FileBackupStatus.DISCOVERED, null, filePath);
+    public FileCopy toDiscovered() {
+        return new FileCopy(FileBackupStatus.DISCOVERED, null, filePath);
     }
 
-    public FileBackup toEnqueued() {
-        return new FileBackup(FileBackupStatus.ENQUEUED, null, filePath);
+    public FileCopy toEnqueued() {
+        return new FileCopy(FileBackupStatus.ENQUEUED, null, filePath);
     }
 
-    public FileBackup toInProgress() {
-        return new FileBackup(FileBackupStatus.IN_PROGRESS, null, filePath);
+    public FileCopy toInProgress() {
+        return new FileCopy(FileBackupStatus.IN_PROGRESS, null, filePath);
     }
 
-    public FileBackup toSuccessful(String filePath) {
-        return new FileBackup(FileBackupStatus.SUCCESS, null, filePath);
+    public FileCopy toSuccessful(String filePath) {
+        return new FileCopy(FileBackupStatus.SUCCESS, null, filePath);
     }
 
-    public FileBackup toFailed(String failedReason) {
-        return new FileBackup(FileBackupStatus.FAILED, failedReason, filePath);
+    public FileCopy toFailed(String failedReason) {
+        return new FileCopy(FileBackupStatus.FAILED, failedReason, filePath);
     }
 }

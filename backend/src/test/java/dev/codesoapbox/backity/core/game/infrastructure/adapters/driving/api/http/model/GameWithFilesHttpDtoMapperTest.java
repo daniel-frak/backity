@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.game.application.GameWithFiles;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.gamefile.FileBackupHttpDto;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.gamefile.FileCopyHttpDto;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.gamefile.FileBackupStatusHttpDto;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.gamefile.FileSourceHttpDto;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.gamefile.GameFileHttpDto;
@@ -42,14 +42,14 @@ class GameWithFilesHttpDtoMapperTest {
     }
 
     private GameWithFilesHttpDto dtoSuccessful() {
-        return dto(new FileBackupHttpDto(
+        return dto(new FileCopyHttpDto(
                 FileBackupStatusHttpDto.SUCCESS,
                 null,
                 "someFilePath"
         ));
     }
 
-    private GameWithFilesHttpDto dto(FileBackupHttpDto fileBackupHttpDto) {
+    private GameWithFilesHttpDto dto(FileCopyHttpDto fileCopyHttpDto) {
         return new GameWithFilesHttpDto(
                 "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
                 "Test Game",
@@ -66,7 +66,7 @@ class GameWithFilesHttpDtoMapperTest {
                                         "game_1_installer.exe",
                                         "5 KB"
                                 ),
-                                fileBackupHttpDto,
+                                fileCopyHttpDto,
                                 LocalDateTime.parse("2022-04-29T14:15:53"),
                                 LocalDateTime.parse("2023-04-29T14:15:53")
                         )
@@ -96,7 +96,7 @@ class GameWithFilesHttpDtoMapperTest {
     }
 
     private GameWithFilesHttpDto dtoFailed() {
-        return dto(new FileBackupHttpDto(
+        return dto(new FileCopyHttpDto(
                 FileBackupStatusHttpDto.FAILED,
                 "someFailedReason",
                 null

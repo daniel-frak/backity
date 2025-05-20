@@ -3,8 +3,8 @@ package dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
-@Schema(name = "FileBackup")
-public record FileBackupHttpDto(
+@Schema(name = "FileCopy")
+public record FileCopyHttpDto(
         @NotNull FileBackupStatusHttpDto status,
         String failedReason,
         String filePath

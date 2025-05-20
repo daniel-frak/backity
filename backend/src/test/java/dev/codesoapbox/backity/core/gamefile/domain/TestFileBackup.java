@@ -13,31 +13,31 @@ public class TestFileBackup {
     @lombok.Builder.Default
     private String filePath = null;
 
-    public static FileBackup discovered() {
+    public static FileCopy discovered() {
         return discoveredBuilder().build();
     }
 
-    public static FileBackup successful() {
+    public static FileCopy successful() {
         return discoveredBuilder()
                 .status(FileBackupStatus.SUCCESS)
                 .filePath("someFilePath")
                 .build();
     }
 
-    public static FileBackup enqueued() {
+    public static FileCopy enqueued() {
         return discoveredBuilder()
                 .status(FileBackupStatus.ENQUEUED)
                 .build();
     }
 
-    public static FileBackup failed() {
+    public static FileCopy failed() {
         return discoveredBuilder()
                 .status(FileBackupStatus.FAILED)
                 .failedReason("someFailedReason")
                 .build();
     }
 
-    public static FileBackup inProgress() {
+    public static FileCopy inProgress() {
         return discoveredBuilder()
                 .status(FileBackupStatus.IN_PROGRESS)
                 .filePath("someFilePath")
@@ -46,9 +46,9 @@ public class TestFileBackup {
 
     public static class Builder {
 
-        public FileBackup build() {
+        public FileCopy build() {
             var temp = internalBuild();
-            return new FileBackup(
+            return new FileCopy(
                     temp.status,
                     temp.failedReason,
                     temp.filePath

@@ -43,7 +43,7 @@ public abstract class GameFileJpaEntityMapper {
     @Mapping(target = "toSuccessful", ignore = true)
     @Mapping(target = "toFailed", ignore = true)
     @Mapping(target = "withFilePath", ignore = true)
-    protected abstract FileBackup toModel(FileBackupJpaEntity entity);
+    protected abstract FileCopy toModel(FileCopyJpaEntity entity);
 
     protected GameFileId toGameFileId(UUID uuid) {
         return new GameFileId(uuid);

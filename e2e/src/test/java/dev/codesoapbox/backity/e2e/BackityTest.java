@@ -9,6 +9,7 @@ import dev.codesoapbox.backity.e2e.pages.FileBackupPage;
 import dev.codesoapbox.backity.e2e.pages.GameContentDiscoveryPage;
 import dev.codesoapbox.backity.e2e.pages.GamesPage;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -55,6 +56,11 @@ class BackityTest {
 
     private void deleteAllFileBackups() {
         gamesPage.visit();
+        gamesPage.deleteAllFileBackups();
+    }
+
+    @AfterEach
+    void tearDown() {
         gamesPage.deleteAllFileBackups();
     }
 

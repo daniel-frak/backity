@@ -36,7 +36,7 @@ class DownloadFileControllerIT {
         FileResource fileResource = mockFileResourceExists(fileContent, gameFileId);
 
         mockMvc.perform(get("/api/"
-                            + FileBackupsRestResource.RESOURCE_URL.replace("{gameFileId}", stringUuid))
+                            + FileCopiesRestResource.RESOURCE_URL.replace("{gameFileId}", stringUuid))
                         .accept(MediaType.APPLICATION_OCTET_STREAM))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -68,7 +68,7 @@ class DownloadFileControllerIT {
                 .thenThrow(new FileNotFoundException("File not found"));
 
         mockMvc.perform(get("/api/"
-                            + FileBackupsRestResource.RESOURCE_URL.replace("{gameFileId}", stringUuid)))
+                            + FileCopiesRestResource.RESOURCE_URL.replace("{gameFileId}", stringUuid)))
                 .andExpect(status().isNotFound());
     }
 
@@ -81,7 +81,7 @@ class DownloadFileControllerIT {
                 .thenThrow(new RuntimeException("Something went wrong"));
 
         mockMvc.perform(get("/api/"
-                            + FileBackupsRestResource.RESOURCE_URL.replace("{gameFileId}", stringUuid)))
+                            + FileCopiesRestResource.RESOURCE_URL.replace("{gameFileId}", stringUuid)))
                 .andExpect(status().isInternalServerError());
     }
 
@@ -92,7 +92,7 @@ class DownloadFileControllerIT {
         FileResource fileResource = mockThrowingFileResourceExists(gameFileId);
 
         mockMvc.perform(get("/api/"
-                            + FileBackupsRestResource.RESOURCE_URL.replace("{gameFileId}", stringUuid)))
+                            + FileCopiesRestResource.RESOURCE_URL.replace("{gameFileId}", stringUuid)))
                 .andExpect(status().isInternalServerError());
         verify(fileResource).close();
     }
@@ -115,7 +115,7 @@ class DownloadFileControllerIT {
                 .thenThrow(new RuntimeException("Test exception"));
 
         mockMvc.perform(get("/api/"
-                            + FileBackupsRestResource.RESOURCE_URL.replace("{gameFileId}", stringUuid)))
+                            + FileCopiesRestResource.RESOURCE_URL.replace("{gameFileId}", stringUuid)))
                 .andExpect(status().isInternalServerError());
     }
 }

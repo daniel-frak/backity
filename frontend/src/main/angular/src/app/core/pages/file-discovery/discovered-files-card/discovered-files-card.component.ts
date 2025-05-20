@@ -70,10 +70,10 @@ export class DiscoveredFilesCardComponent {
   }
 
   async enqueueFile(gameFile: GameFile): Promise<void> {
-    gameFile.fileBackup.status = FileBackupStatus.Enqueued;
+    gameFile.fileCopy.status = FileBackupStatus.Enqueued;
     try {
       await firstValueFrom(this.gameFilesClient.enqueueFileBackup(gameFile.id).pipe(catchError(e => {
-        gameFile.fileBackup.status = FileBackupStatus.Discovered;
+        gameFile.fileCopy.status = FileBackupStatus.Discovered;
         throw e;
       })));
       this.notificationService.showSuccess("File backup enqueued");

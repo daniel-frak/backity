@@ -61,7 +61,7 @@ class GetGamesControllerIT {
                                         "originalFileName": "game_1_installer.exe",
                                         "size": "5 KB"
                                       },
-                                      "fileBackup": {
+                                      "fileCopy": {
                                         "status": "SUCCESS",
                                         "failedReason": null,
                                         "filePath": "someFilePath"
@@ -81,7 +81,7 @@ class GetGamesControllerIT {
                                         "originalFileName": "game_1_installer.exe",
                                         "size": "5 KB"
                                       },
-                                      "fileBackup": {
+                                      "fileCopy": {
                                         "status": "FAILED",
                                         "failedReason": "someFailedReason",
                                         "filePath": null

@@ -15,7 +15,7 @@ export class TestGameFile {
         size: "3 GB",
         fileTitle: "currentGame.exe"
       },
-      fileBackup: {
+      fileCopy: {
         status: FileBackupStatus.Discovered
       }
     };
@@ -24,7 +24,7 @@ export class TestGameFile {
   public static enqueued(): GameFile {
     return {
       ...this.discovered(),
-      fileBackup: {
+      fileCopy: {
         status: FileBackupStatus.Enqueued
       }
     };
@@ -33,7 +33,7 @@ export class TestGameFile {
   public static inProgress(): GameFile {
     return {
       ...this.discovered(),
-      fileBackup: {
+      fileCopy: {
         status: FileBackupStatus.InProgress
       }
     };
@@ -42,7 +42,7 @@ export class TestGameFile {
   public static successfullyProcessed(): GameFile {
     return {
       ...this.discovered(),
-      fileBackup: {
+      fileCopy: {
         status: FileBackupStatus.Success
       }
     };

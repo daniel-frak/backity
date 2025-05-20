@@ -13,7 +13,7 @@ import static dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driv
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@GameFileTag
+@GameFilesTag
 @RestController
 @RequestMapping(RESOURCE_URL)
 @Validated

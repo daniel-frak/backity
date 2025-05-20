@@ -39,9 +39,9 @@ public class GameFileUseCaseBeanConfig {
     }
 
     @Bean
-    public DeleteFileUseCase deleteFileUseCase(
+    public DeleteFileCopyUseCase deleteFileCopyUseCase(
             StorageSolution storageSolution, GameFileRepository gameFileRepository) {
-        return new DeleteFileUseCase(storageSolution, gameFileRepository);
+        return new DeleteFileCopyUseCase(storageSolution, gameFileRepository);
     }
 
     @Bean

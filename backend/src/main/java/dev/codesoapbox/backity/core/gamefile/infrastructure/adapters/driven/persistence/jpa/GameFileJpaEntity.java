@@ -38,7 +38,7 @@ public class GameFileJpaEntity {
     private FileSourceJpaEntity fileSource;
 
     @Embedded
-    private FileBackupJpaEntity fileBackup;
+    private FileCopyJpaEntity fileCopy;
 
     @NotNull
     @CreatedDate

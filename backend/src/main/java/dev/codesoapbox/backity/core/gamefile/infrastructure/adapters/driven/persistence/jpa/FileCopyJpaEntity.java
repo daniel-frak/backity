@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FileBackupJpaEntity {
+public class FileCopyJpaEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING)

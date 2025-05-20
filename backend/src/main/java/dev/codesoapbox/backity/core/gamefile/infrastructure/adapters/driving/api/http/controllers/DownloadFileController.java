@@ -15,18 +15,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-@FileBackupsRestResource
+@FileCopiesRestResource
 @RequiredArgsConstructor
 public class DownloadFileController {
 
     private final DownloadFileUseCase useCase;
 
     @SuppressWarnings("java:S1166") // No need to log or rethrow exception when file not found
-    @Operation(summary = "Download file", description = "Returns the file currently being downloaded")
+    @Operation(summary = "Download file", description = "Returns a file copy as a resource")
     @GetMapping
     public ResponseEntity<InputStreamResource> downloadFile(
             @SuppressWarnings("java:S6856")
-            @PathVariable(FileBackupsRestResource.GAME_FILE_ID) String gameFileIdValue) throws IOException {
+            @PathVariable(FileCopiesRestResource.GAME_FILE_ID) String gameFileIdValue) throws IOException {
         var gameFileId = new GameFileId(gameFileIdValue);
 
         FileResource fileResource = null;

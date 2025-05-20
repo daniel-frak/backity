@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
   Configuration,
   FileBackupMessageTopics,
-  FileBackupsClient,
+  FileCopiesClient,
   FileBackupStatus,
   FileBackupStatusChangedEvent,
   GameFile,
@@ -33,7 +33,7 @@ describe('GamesWithFilesCardComponent', () => {
 
   let gamesClient: SpyObj<GamesClient>;
   let gameFilesClient: SpyObj<GameFilesClient>;
-  let fileBackupsClient: SpyObj<FileBackupsClient>;
+  let fileCopiesClient: SpyObj<FileCopiesClient>;
   let messagesService: SpyObj<MessagesService>;
   let notificationService: SpyObj<NotificationService>;
   let modalService: SpyObj<ModalService>;
@@ -46,7 +46,7 @@ describe('GamesWithFilesCardComponent', () => {
         provideRouter([]),
         {provide: GamesClient, useValue: createSpyObj('GamesClient', ['getGames'])},
         {provide: GameFilesClient, useValue: createSpyObj('GameFilesClient', ['enqueueFileBackup'])},
-        {provide: FileBackupsClient, useValue: createSpyObj('FileBackupsClient', ['deleteFileBackup'])},
+        {provide: FileCopiesClient, useValue: createSpyObj('FileCopiesClient', ['deleteFileCopy'])},
         {provide: MessagesService, useValue: createSpyObj('MessagesService', ['watch'])},
         {provide: NotificationService, useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])},
         {provide: ModalService, useValue: createSpyObj('ModalService', ['withConfirmationModal'])},
@@ -58,7 +58,7 @@ describe('GamesWithFilesCardComponent', () => {
     component = fixture.componentInstance;
     gamesClient = TestBed.inject(GamesClient) as SpyObj<GamesClient>;
     gameFilesClient = TestBed.inject(GameFilesClient) as SpyObj<GameFilesClient>;
-    fileBackupsClient = TestBed.inject(FileBackupsClient) as SpyObj<FileBackupsClient>;
+    fileCopiesClient = TestBed.inject(FileCopiesClient) as SpyObj<FileCopiesClient>;
     messagesService = TestBed.inject(MessagesService) as SpyObj<MessagesService>;
     notificationService = TestBed.inject(NotificationService) as SpyObj<NotificationService>;
     modalService = TestBed.inject(ModalService) as SpyObj<ModalService>;
@@ -120,7 +120,7 @@ describe('GamesWithFilesCardComponent', () => {
 
     await component.enqueueFileBackup(gameFile);
 
-    expect(gameFile.fileBackup?.status).toBe(FileBackupStatus.Enqueued);
+    expect(gameFile.fileCopy?.status).toBe(FileBackupStatus.Enqueued);
     expect(gameFilesClient.enqueueFileBackup).toHaveBeenCalledWith(gameFile.id);
     expect(notificationService.showSuccess).toHaveBeenCalledWith(`File backup enqueued`);
   });
@@ -132,7 +132,7 @@ describe('GamesWithFilesCardComponent', () => {
 
     await component.enqueueFileBackup(gameFile);
 
-    expect(gameFile.fileBackup?.status).toBe(FileBackupStatus.Discovered);
+    expect(gameFile.fileCopy?.status).toBe(FileBackupStatus.Discovered);
     expect(gameFilesClient.enqueueFileBackup).toHaveBeenCalledWith(gameFile.id);
     expect(notificationService.showFailure).toHaveBeenCalledWith(
       `An error occurred while trying to enqueue a file`,
@@ -163,13 +163,13 @@ describe('GamesWithFilesCardComponent', () => {
 
   it('should delete file backup and refresh list', async () => {
     const gameFileId = 'someGameFileId';
-    fileBackupsClient.deleteFileBackup.and.returnValue(of(null) as any);
+    fileCopiesClient.deleteFileCopy.and.returnValue(of(null) as any);
     const gameWithFilesPage: PageGameWithFiles = TestPage.of([TestGame.withDiscoveredFile()]);
     gamesClient.getGames.and.returnValue(of(gameWithFilesPage) as any);
 
-    await component.deleteBackup(gameFileId);
+    await component.deleteFileCopy(gameFileId);
 
-    expect(fileBackupsClient.deleteFileBackup).toHaveBeenCalledWith(gameFileId);
+    expect(fileCopiesClient.deleteFileCopy).toHaveBeenCalledWith(gameFileId);
     expect(gamesClient.getGames).toHaveBeenCalled();
     expect(notificationService.showSuccess).toHaveBeenCalledWith('Deleted file backup');
   });
@@ -177,9 +177,9 @@ describe('GamesWithFilesCardComponent', () => {
   it('should log error when file backup could not be deleted', async () => {
     const gameFileId = 'someGameFileId';
     const mockError = new Error('Backup error');
-    fileBackupsClient.deleteFileBackup.and.returnValue(throwError(() => mockError));
+    fileCopiesClient.deleteFileCopy.and.returnValue(throwError(() => mockError));
 
-    await component.deleteBackup(gameFileId);
+    await component.deleteFileCopy(gameFileId);
 
     expect(notificationService.showFailure).toHaveBeenCalledWith(
       `An error occurred while trying to delete a file backup`, gameFileId, mockError);
@@ -190,7 +190,7 @@ describe('GamesWithFilesCardComponent', () => {
     component.gameWithFilesPage = TestPage.of([TestGame.withFiles([gameFile])]);
     await simulateBackupStatusChangedEventReceived(gameFile.id, FileBackupStatus.InProgress);
 
-    expect(component.gameWithFilesPage?.content?.[0].files?.[0].fileBackup?.status).toBe(FileBackupStatus.InProgress);
+    expect(component.gameWithFilesPage?.content?.[0].files?.[0].fileCopy?.status).toBe(FileBackupStatus.InProgress);
     const gameListTable: DebugElement = getGameListTable();
     expect(gameListTable.nativeElement.textContent).toContain(FileBackupStatus.InProgress);
   });
@@ -212,7 +212,7 @@ describe('GamesWithFilesCardComponent', () => {
     component.gameWithFilesPage = TestPage.of([TestGame.withFiles([gameFile])]);
     await simulateBackupStatusChangedEventReceived("nonExistentGameId", FileBackupStatus.InProgress);
 
-    expect(component.gameWithFilesPage?.content?.[0].files?.[0].fileBackup?.status).toBe(FileBackupStatus.Discovered);
+    expect(component.gameWithFilesPage?.content?.[0].files?.[0].fileCopy?.status).toBe(FileBackupStatus.Discovered);
     const gameListTable: DebugElement = getGameListTable();
     expect(gameListTable.nativeElement.textContent).not.toContain(FileBackupStatus.InProgress);
   });
@@ -228,7 +228,7 @@ describe('GamesWithFilesCardComponent', () => {
       name: "gameFileId", value: gameFile.id, in: "path", style: "simple", explode: false, dataType: "string",
       dataFormat: undefined
     }).and.returnValue(gameFile.id);
-    fileBackupsClient.configuration = configuration;
+    fileCopiesClient.configuration = configuration;
 
     fixture.detectChanges();
     await fixture.whenStable();
@@ -239,6 +239,6 @@ describe('GamesWithFilesCardComponent', () => {
 
     downloadBtn.nativeElement.click();
 
-    expect(mockWindow.location.href).toBe(`someBasePath/api/game-files/${gameFile.id}/file-backup`);
+    expect(mockWindow.location.href).toBe(`someBasePath/api/game-files/${gameFile.id}/file-copy`);
   });
 });

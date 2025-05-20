@@ -73,7 +73,7 @@ export class InProgressFilesCardComponent implements OnInit, OnDestroy {
         originalFileName: event.originalFileName,
         size: event.size,
       },
-      fileBackup: {
+      fileCopy: {
         filePath: event.filePath,
         status: FileBackupStatus.InProgress
       }

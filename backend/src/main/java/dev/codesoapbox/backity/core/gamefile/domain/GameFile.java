@@ -37,7 +37,7 @@ public class GameFile {
     private FileSource fileSource;
 
     @NonNull
-    private FileBackup fileBackup;
+    private FileCopy fileCopy;
 
     private LocalDateTime dateCreated;
     private LocalDateTime dateModified;
@@ -50,7 +50,7 @@ public class GameFile {
                 GameFileId.newInstance(),
                 game.getId(),
                 fileSource,
-                new FileBackup(FileBackupStatus.DISCOVERED, null, null),
+                new FileCopy(FileBackupStatus.DISCOVERED, null, null),
                 null,
                 null,
                 new ArrayList<>()
@@ -58,22 +58,22 @@ public class GameFile {
     }
 
     public void markAsDiscovered() {
-        fileBackup = fileBackup.toDiscovered();
+        fileCopy = fileCopy.toDiscovered();
     }
 
     public void markAsEnqueued() {
-        fileBackup = fileBackup.toEnqueued();
+        fileCopy = fileCopy.toEnqueued();
     }
 
     public void markAsFailed(String failedReason) {
-        fileBackup = fileBackup.toFailed(failedReason);
+        fileCopy = fileCopy.toFailed(failedReason);
 
         var event = new FileBackupFailedEvent(id, failedReason);
         domainEvents.add(event);
     }
 
     public void markAsInProgress() {
-        fileBackup = fileBackup.toInProgress();
+        fileCopy = fileCopy.toInProgress();
 
         var fileBackupStartedEvent = new FileBackupStartedEvent(
                 id,
@@ -82,28 +82,28 @@ public class GameFile {
                 fileSource.version(),
                 fileSource.originalFileName(),
                 fileSource.size(),
-                fileBackup.filePath()
+                fileCopy.filePath()
         );
         domainEvents.add(fileBackupStartedEvent);
     }
 
     public void markAsDownloaded(String filePath) {
-        fileBackup = fileBackup.toSuccessful(filePath);
+        fileCopy = fileCopy.toSuccessful(filePath);
 
         var event = new FileBackupFinishedEvent(id);
         domainEvents.add(event);
     }
 
     public void updateFilePath(String filePath) {
-        fileBackup = fileBackup.withFilePath(filePath);
+        fileCopy = fileCopy.withFilePath(filePath);
     }
 
     public void clearFilePath() {
-        fileBackup = fileBackup.withFilePath(null);
+        fileCopy = fileCopy.withFilePath(null);
     }
 
     public void validateIsBackedUp() {
-        if (fileBackup.status() != FileBackupStatus.SUCCESS) {
+        if (fileCopy.status() != FileBackupStatus.SUCCESS) {
             throw new GameFileNotBackedUpException(id);
         }
     }

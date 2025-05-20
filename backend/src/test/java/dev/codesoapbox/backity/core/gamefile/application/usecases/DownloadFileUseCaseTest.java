@@ -46,7 +46,7 @@ class DownloadFileUseCaseTest {
 
     private FileResource mockFileResourceExists(GameFile gameFile) throws FileNotFoundException {
         FileResource fileResource = new FileResource(mock(InputStream.class), 5120L, "test_file.exe");
-        when(storageSolution.getFileResource(gameFile.getFileBackup().filePath()))
+        when(storageSolution.getFileResource(gameFile.getFileCopy().filePath()))
                 .thenReturn(fileResource);
 
         return fileResource;

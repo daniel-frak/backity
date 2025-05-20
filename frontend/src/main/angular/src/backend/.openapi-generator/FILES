@@ -3,7 +3,7 @@
 README.md
 api.module.ts
 api/api.ts
-api/fileBackups.service.ts
+api/fileCopies.service.ts
 api/gOG.service.ts
 api/gOGAuthentication.service.ts
 api/gOGConfiguration.service.ts
@@ -17,11 +17,11 @@ encoder.ts
 git_push.sh
 index.ts
 model/errorMessage.ts
-model/fileBackup.ts
 model/fileBackupMessageTopics.ts
 model/fileBackupStartedEvent.ts
 model/fileBackupStatus.ts
 model/fileBackupStatusChangedEvent.ts
+model/fileCopy.ts
 model/fileDiscoveredEvent.ts
 model/fileDownloadProgressUpdatedEvent.ts
 model/fileSource.ts

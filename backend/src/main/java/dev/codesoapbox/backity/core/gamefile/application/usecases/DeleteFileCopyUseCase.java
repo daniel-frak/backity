@@ -7,23 +7,22 @@ import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class DeleteFileUseCase {
+public class DeleteFileCopyUseCase {
 
     private final StorageSolution storageSolution;
     private final GameFileRepository gameFileRepository;
 
-    public void deleteFile(GameFileId gameFileId) {
+    public void deleteFileCopy(GameFileId gameFileId) {
         GameFile gameFile = gameFileRepository.getById(gameFileId);
         gameFile.validateIsBackedUp();
 
-        deleteFile(gameFile);
+        deleteFileCopy(gameFile);
         gameFile.markAsDiscovered();
         gameFileRepository.save(gameFile);
     }
 
-
-    private void deleteFile(GameFile gameFile) {
-        String filePath = gameFile.getFileBackup().filePath();
+    private void deleteFileCopy(GameFile gameFile) {
+        String filePath = gameFile.getFileCopy().filePath();
         storageSolution.deleteIfExists(filePath);
     }
 }

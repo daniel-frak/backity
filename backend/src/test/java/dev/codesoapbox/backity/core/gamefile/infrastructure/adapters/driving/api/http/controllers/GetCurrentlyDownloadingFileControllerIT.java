@@ -48,7 +48,7 @@ class GetCurrentlyDownloadingFileControllerIT {
                         "originalFileName": "game_1_installer.exe",
                         "size": "5 KB"
                       },
-                      "fileBackup": {
+                      "fileCopy": {
                         "status": "IN_PROGRESS",
                         "failedReason": null,
                         "filePath": "someFilePath"

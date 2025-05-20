@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.e2e.actions;
 
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.PlaywrightException;
 import com.microsoft.playwright.Response;
 import lombok.RequiredArgsConstructor;
 
@@ -45,7 +46,12 @@ public class Repeat {
                 var retryCounter = new AtomicInteger(10);
 
                 do {
-                    page.waitForResponse(responseCondition::apply, action);
+                    System.out.println("Waiting for response " + retryCounter.get() + " times.");
+                    try {
+                        page.waitForResponse(responseCondition::apply, action);
+                    } catch (PlaywrightException e) {
+                        fail("The expected response was not received after performing action");
+                    }
                     if (retryCounter.get() > 0) {
                         page.waitForTimeout(1000);
                     }

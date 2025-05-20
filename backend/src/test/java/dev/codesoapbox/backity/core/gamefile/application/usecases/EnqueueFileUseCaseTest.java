@@ -30,7 +30,7 @@ class EnqueueFileUseCaseTest {
 
         useCase.enqueue(gameFile.getId());
 
-        assertThat(gameFile.getFileBackup().status()).isEqualTo(FileBackupStatus.ENQUEUED);
+        assertThat(gameFile.getFileCopy().status()).isEqualTo(FileBackupStatus.ENQUEUED);
         verify(gameFileRepository).save(gameFile);
     }
 

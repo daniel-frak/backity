@@ -30,7 +30,7 @@ import { Configuration }                                     from '../configurat
 @Injectable({
   providedIn: 'root'
 })
-export class FileBackupsClient {
+export class FileCopiesClient {
 
     protected basePath = 'http://localhost:8080';
     public defaultHeaders = new HttpHeaders();
@@ -94,17 +94,17 @@ export class FileBackupsClient {
 
     /**
      * Delete file backup
-     * Deletes an already downloaded file backup
+     * Deletes an already downloaded file copy
      * @param gameFileId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public deleteFileBackup(gameFileId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
-    public deleteFileBackup(gameFileId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
-    public deleteFileBackup(gameFileId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
-    public deleteFileBackup(gameFileId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public deleteFileCopy(gameFileId: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
+    public deleteFileCopy(gameFileId: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
+    public deleteFileCopy(gameFileId: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<any>>;
+    public deleteFileCopy(gameFileId: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (gameFileId === null || gameFileId === undefined) {
-            throw new Error('Required parameter gameFileId was null or undefined when calling deleteFileBackup.');
+            throw new Error('Required parameter gameFileId was null or undefined when calling deleteFileCopy.');
         }
 
         let localVarHeaders = this.defaultHeaders;
@@ -143,7 +143,7 @@ export class FileBackupsClient {
             }
         }
 
-        let localVarPath = `/api/game-files/${this.configuration.encodeParam({name: "gameFileId", value: gameFileId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/file-backup`;
+        let localVarPath = `/api/game-files/${this.configuration.encodeParam({name: "gameFileId", value: gameFileId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/file-copy`;
         return this.httpClient.request<any>('delete', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -159,7 +159,7 @@ export class FileBackupsClient {
 
     /**
      * Download file
-     * Returns the file currently being downloaded
+     * Returns a file copy as a resource
      * @param gameFileId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -197,7 +197,7 @@ export class FileBackupsClient {
         }
 
 
-        let localVarPath = `/api/game-files/${this.configuration.encodeParam({name: "gameFileId", value: gameFileId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/file-backup`;
+        let localVarPath = `/api/game-files/${this.configuration.encodeParam({name: "gameFileId", value: gameFileId, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}/file-copy`;
         return this.httpClient.request('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

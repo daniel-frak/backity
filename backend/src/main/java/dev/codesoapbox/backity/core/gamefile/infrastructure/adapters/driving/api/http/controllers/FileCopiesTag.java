@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Tag(name = "Game files", description = "Everything to do with game files")
-public @interface GameFileTag {
+@Tag(name = "File copies", description = "Everything to do with file copies")
+public @interface FileCopiesTag {
 }

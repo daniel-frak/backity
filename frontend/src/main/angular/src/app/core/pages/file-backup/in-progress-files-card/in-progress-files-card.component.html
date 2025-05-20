@@ -18,7 +18,7 @@
         {{ asGameFile(item)!.fileSource.size }}
       </ng-template>
       <ng-template app-table-column="Path" style="max-width: 5%" let-item>
-        <span class="file-path">{{ asGameFile(item)!.fileBackup.filePath }}</span>
+        <span class="file-path">{{ asGameFile(item)!.fileCopy.filePath }}</span>
       </ng-template>
       <ng-template app-table-column="Progress">
         <ng-container *ngIf="downloadProgress">
