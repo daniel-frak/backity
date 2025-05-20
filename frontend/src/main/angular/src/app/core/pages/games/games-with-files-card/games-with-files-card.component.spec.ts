@@ -235,7 +235,7 @@ describe('GamesWithFilesCardComponent', () => {
     fixture.detectChanges();
 
     const gameListTable: DebugElement = getGameListTable();
-    const downloadBtn: DebugElement = gameListTable.query(By.css('[data-testid="download-file-backup-btn"]'));
+    const downloadBtn: DebugElement = gameListTable.query(By.css('[data-testid="download-file-copy-btn"]'));
 
     downloadBtn.nativeElement.click();
 

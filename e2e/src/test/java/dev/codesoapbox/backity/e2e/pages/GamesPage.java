@@ -8,7 +8,7 @@ public class GamesPage {
 
     private static final String GAMES_URL = "/games";
     private static final String FILE_COPY_URL = "/file-copy";
-    private static final String DOWNLOAD_FILE_BACKUP_BTN_TEST_ID = "download-file-backup-btn";
+    private static final String DOWNLOAD_FILE_BACKUP_BTN_TEST_ID = "download-file-copy-btn";
 
     private final Page page;
     private final Locator loader;

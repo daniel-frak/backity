@@ -50,7 +50,7 @@
             </app-button>
             <ng-container *ngSwitchCase="FileBackupStatus.Success">
               <app-button [actionAsync]="onClickDownload(asGameFile(item).id!)"
-                          testId="download-file-backup-btn"
+                          testId="download-file-copy-btn"
                           buttonSize="small">
                 <i class="bi bi-download" aria-hidden="true"></i>
                 Download
