@@ -10,12 +10,12 @@
 import { FileBackupStatus } from './fileBackupStatus';
 
 
-export interface FileBackup { 
+export interface FileCopy { 
     status: FileBackupStatus;
     failedReason?: string;
     filePath?: string;
 }
-export namespace FileBackup {
+export namespace FileCopy {
 }
 
 

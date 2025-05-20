@@ -10,7 +10,7 @@ public record GameFileHttpDto(
         @NotNull String id,
         @NotNull String gameId,
         @NotNull FileSourceHttpDto fileSource,
-        @NotNull FileBackupHttpDto fileBackup,
+        @NotNull FileCopyHttpDto fileCopy,
         LocalDateTime dateCreated,
         LocalDateTime dateModified
 ) {

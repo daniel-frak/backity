@@ -6,14 +6,14 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class FileBackupTest {
+class FileCopyTest {
 
     @Nested
     class Creation {
 
         @Test
         void shouldCreate() {
-            var result = new FileBackup(FileBackupStatus.DISCOVERED, null, null);
+            var result = new FileCopy(FileBackupStatus.DISCOVERED, null, null);
 
             assertThat(result).isNotNull();
         }
@@ -21,7 +21,7 @@ class FileBackupTest {
         @SuppressWarnings("DataFlowIssue")
         @Test
         void constructorShouldThrowGivenNullStatus() {
-            assertThatThrownBy(() -> new FileBackup(
+            assertThatThrownBy(() -> new FileCopy(
                     null,
                     null,
                     null
@@ -31,7 +31,7 @@ class FileBackupTest {
 
         @Test
         void constructorShouldThrowGivenFailedWithoutReason() {
-            assertThatThrownBy(() -> new FileBackup(
+            assertThatThrownBy(() -> new FileCopy(
                     FileBackupStatus.FAILED,
                     null,
                     null
@@ -41,7 +41,7 @@ class FileBackupTest {
 
         @Test
         void constructorShouldThrowGivenSuccessfulWithoutFilePath() {
-            assertThatThrownBy(() -> new FileBackup(
+            assertThatThrownBy(() -> new FileCopy(
                     FileBackupStatus.SUCCESS,
                     null,
                     null
@@ -51,7 +51,7 @@ class FileBackupTest {
 
         @Test
         void constructorShouldThrowGivenFailedReasonButNotFailed() {
-            assertThatThrownBy(() -> new FileBackup(
+            assertThatThrownBy(() -> new FileCopy(
                     FileBackupStatus.DISCOVERED,
                     "someFailedReason",
                     null
@@ -64,15 +64,15 @@ class FileBackupTest {
     class Transitions {
         @Test
         void toDiscoveredShouldReturnNewInstanceWithoutFailedReason() {
-            var fileBackup = new FileBackup(
+            var fileBackup = new FileCopy(
                     FileBackupStatus.FAILED,
                     "someFailedReason",
                     null
             );
 
-            FileBackup result = fileBackup.toDiscovered();
+            FileCopy result = fileBackup.toDiscovered();
 
-            var expectedResult = new FileBackup(
+            var expectedResult = new FileCopy(
                     FileBackupStatus.DISCOVERED,
                     null,
                     null
@@ -83,15 +83,15 @@ class FileBackupTest {
 
         @Test
         void toDiscoveredShouldReturnNewInstanceWithFilePath() {
-            var fileBackup = new FileBackup(
+            var fileBackup = new FileCopy(
                     FileBackupStatus.SUCCESS,
                     null,
                     "someFilePath"
             );
 
-            FileBackup result = fileBackup.toDiscovered();
+            FileCopy result = fileBackup.toDiscovered();
 
-            var expectedResult = new FileBackup(
+            var expectedResult = new FileCopy(
                     FileBackupStatus.DISCOVERED,
                     null,
                     "someFilePath"
@@ -102,15 +102,15 @@ class FileBackupTest {
 
         @Test
         void toEnqueuedShouldReturnNewInstanceWithoutFailedReason() {
-            var fileBackup = new FileBackup(
+            var fileBackup = new FileCopy(
                     FileBackupStatus.FAILED,
                     "someFailedReason",
                     null
             );
 
-            FileBackup result = fileBackup.toEnqueued();
+            FileCopy result = fileBackup.toEnqueued();
 
-            var expectedResult = new FileBackup(
+            var expectedResult = new FileCopy(
                     FileBackupStatus.ENQUEUED,
                     null,
                     null
@@ -121,15 +121,15 @@ class FileBackupTest {
 
         @Test
         void toEnqueuedShouldReturnNewInstanceWithFilePath() {
-            var fileBackup = new FileBackup(
+            var fileBackup = new FileCopy(
                     FileBackupStatus.SUCCESS,
                     null,
                     "someFilePath"
             );
 
-            FileBackup result = fileBackup.toEnqueued();
+            FileCopy result = fileBackup.toEnqueued();
 
-            var expectedResult = new FileBackup(
+            var expectedResult = new FileCopy(
                     FileBackupStatus.ENQUEUED,
                     null,
                     "someFilePath"
@@ -140,15 +140,15 @@ class FileBackupTest {
 
         @Test
         void toInProgressShouldReturnNewInstanceWithoutFailedReason() {
-            var fileBackup = new FileBackup(
+            var fileBackup = new FileCopy(
                     FileBackupStatus.FAILED,
                     "someFailedReason",
                     null
             );
 
-            FileBackup result = fileBackup.toInProgress();
+            FileCopy result = fileBackup.toInProgress();
 
-            var expectedResult = new FileBackup(
+            var expectedResult = new FileCopy(
                     FileBackupStatus.IN_PROGRESS,
                     null,
                     null
@@ -159,15 +159,15 @@ class FileBackupTest {
 
         @Test
         void toInProgressShouldReturnNewInstanceWithFilePath() {
-            var fileBackup = new FileBackup(
+            var fileBackup = new FileCopy(
                     FileBackupStatus.SUCCESS,
                     null,
                     "someFilePath"
             );
 
-            FileBackup result = fileBackup.toInProgress();
+            FileCopy result = fileBackup.toInProgress();
 
-            var expectedResult = new FileBackup(
+            var expectedResult = new FileCopy(
                     FileBackupStatus.IN_PROGRESS,
                     null,
                     "someFilePath"
@@ -178,15 +178,15 @@ class FileBackupTest {
 
         @Test
         void toSuccessfulShouldReturnNewInstanceWithoutFailedReason() {
-            var fileBackup = new FileBackup(
+            var fileBackup = new FileCopy(
                     FileBackupStatus.FAILED,
                     "someFailedReason",
                     null
             );
 
-            FileBackup result = fileBackup.toSuccessful("someFilePath");
+            FileCopy result = fileBackup.toSuccessful("someFilePath");
 
-            var expectedResult = new FileBackup(
+            var expectedResult = new FileCopy(
                     FileBackupStatus.SUCCESS,
                     null,
                     "someFilePath"
@@ -197,15 +197,15 @@ class FileBackupTest {
 
         @Test
         void toFailedShouldReturnNewInstanceWithFilePath() {
-            var fileBackup = new FileBackup(
+            var fileBackup = new FileCopy(
                     FileBackupStatus.SUCCESS,
                     null,
                     "someFilePath"
             );
 
-            FileBackup result = fileBackup.toFailed("someFailedReason");
+            FileCopy result = fileBackup.toFailed("someFailedReason");
 
-            var expectedResult = new FileBackup(
+            var expectedResult = new FileCopy(
                     FileBackupStatus.FAILED,
                     "someFailedReason",
                     "someFilePath"

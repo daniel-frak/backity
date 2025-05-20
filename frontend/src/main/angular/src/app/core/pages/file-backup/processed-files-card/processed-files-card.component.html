@@ -28,21 +28,21 @@
         {{ asGameFile(item).fileSource!.size }}
       </ng-template>
       <ng-template app-table-column="Path" style="max-width: 5%" let-item>
-        <span class="file-path">{{ asGameFile(item).fileBackup!.filePath }}</span>
+        <span class="file-path">{{ asGameFile(item).fileCopy!.filePath }}</span>
       </ng-template>
       <ng-template app-table-column="Status" let-item>
         <ng-container *ngFor="let file of [asGameFile(item)]">
           <span
-            [ngClass]="{'bg-success': file.fileBackup.status == FileBackupStatus.Success,
-             'bg-danger': file.fileBackup.status != FileBackupStatus.Success}"
+            [ngClass]="{'bg-success': file.fileCopy.status == FileBackupStatus.Success,
+             'bg-danger': file.fileCopy.status != FileBackupStatus.Success}"
             class="badge">
-            <i [ngClass]="{'bi bi-check-circle': file.fileBackup.status == FileBackupStatus.Success,
-             'bi bi-x-circle': file.fileBackup.status != FileBackupStatus.Success}"
+            <i [ngClass]="{'bi bi-check-circle': file.fileCopy.status == FileBackupStatus.Success,
+             'bi bi-x-circle': file.fileCopy.status != FileBackupStatus.Success}"
                aria-hidden="true"
                class="me-1">
             </i>
 
-            {{ file.fileBackup.status }}
+            {{ file.fileCopy.status }}
           </span>
         </ng-container>
       </ng-template>

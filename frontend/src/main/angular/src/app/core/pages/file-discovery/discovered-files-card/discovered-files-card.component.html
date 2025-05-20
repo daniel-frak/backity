@@ -31,7 +31,7 @@
         <div class="button-container justify-content-end">
           <ng-container *ngFor="let gameFile of [asGameFile(item)]">
             <app-button [actionAsync]="onClickEnqueueFile(gameFile)"
-                        [disabled]="gameFile.fileBackup.status != FileBackupStatus.Discovered"
+                        [disabled]="gameFile.fileCopy.status != FileBackupStatus.Discovered"
                         testId="back-up-btn">
               Back up
             </app-button>

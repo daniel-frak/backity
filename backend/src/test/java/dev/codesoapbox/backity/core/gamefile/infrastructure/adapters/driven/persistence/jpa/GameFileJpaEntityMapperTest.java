@@ -44,7 +44,7 @@ class GameFileJpaEntityMapperTest {
                         "game_1_installer.exe",
                         5120L
                 ),
-                new FileBackupJpaEntity(
+                new FileCopyJpaEntity(
                         FileBackupStatus.DISCOVERED,
                         null,
                         null

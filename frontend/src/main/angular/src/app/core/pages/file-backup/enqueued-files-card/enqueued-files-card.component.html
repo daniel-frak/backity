@@ -32,7 +32,7 @@
         <ng-container *ngFor="let file of [asGameFile(item)]">
           <div class="button-container justify-content-end">
             <app-button [actionAsync]="onClickRemoveFromQueue(file.id!)" buttonStyle="primary"
-                        *ngIf="file.fileBackup?.status == FileBackupStatus.Enqueued">
+                        *ngIf="file.fileCopy?.status == FileBackupStatus.Enqueued">
               Cancel
             </app-button>
           </div>

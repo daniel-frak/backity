@@ -14,9 +14,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class DeleteFileUseCaseTest {
+class DeleteFileCopyUseCaseTest {
 
-    private DeleteFileUseCase useCase;
+    private DeleteFileCopyUseCase useCase;
 
     private FakeUnixStorageSolution storageSolution;
 
@@ -26,15 +26,15 @@ class DeleteFileUseCaseTest {
     @BeforeEach
     void setUp() {
         storageSolution = new FakeUnixStorageSolution();
-        useCase = new DeleteFileUseCase(storageSolution, gameFileRepository);
+        useCase = new DeleteFileCopyUseCase(storageSolution, gameFileRepository);
     }
 
     @Test
-    void shouldDeleteFileGivenGameFileStatusIsSuccess() {
+    void shouldDeleteFileCopyGivenGameFileStatusIsSuccess() {
         GameFile gameFile = mockSuccessfulGameFileExists();
-        String filePath = gameFile.getFileBackup().filePath();
+        String filePath = gameFile.getFileCopy().filePath();
 
-        useCase.deleteFile(gameFile.getId());
+        useCase.deleteFileCopy(gameFile.getId());
 
         assertThat(storageSolution.fileDeleteWasAttempted(filePath)).isTrue();
     }
@@ -50,9 +50,9 @@ class DeleteFileUseCaseTest {
     void shouldChangeStatusOfGameFileWhenDeletingFile() {
         GameFile gameFile = mockSuccessfulGameFileExists();
 
-        useCase.deleteFile(gameFile.getId());
+        useCase.deleteFileCopy(gameFile.getId());
 
-        assertThat(gameFile.getFileBackup().status()).isEqualTo(FileBackupStatus.DISCOVERED);
+        assertThat(gameFile.getFileCopy().status()).isEqualTo(FileBackupStatus.DISCOVERED);
         verify(gameFileRepository).save(gameFile);
     }
 
@@ -62,10 +62,10 @@ class DeleteFileUseCaseTest {
         storageSolution.setShouldThrowOnFileDeletion(exception);
         GameFile gameFile = mockSuccessfulGameFileExists();
 
-        assertThatThrownBy(() -> useCase.deleteFile(gameFile.getId()))
+        assertThatThrownBy(() -> useCase.deleteFileCopy(gameFile.getId()))
                 .isSameAs(exception);
 
-        assertThat(gameFile.getFileBackup().status()).isNotEqualTo(FileBackupStatus.DISCOVERED);
+        assertThat(gameFile.getFileCopy().status()).isNotEqualTo(FileBackupStatus.DISCOVERED);
         verify(gameFileRepository, never()).save(any());
     }
 
@@ -74,7 +74,7 @@ class DeleteFileUseCaseTest {
         GameFile gameFile = mockEnqueuedGameFileExists();
         GameFileId gameFileId = gameFile.getId();
 
-        assertThatThrownBy(() -> useCase.deleteFile(gameFileId))
+        assertThatThrownBy(() -> useCase.deleteFileCopy(gameFileId))
                 .isInstanceOf(GameFileNotBackedUpException.class)
                 .hasMessageContaining(gameFileId.toString());
         assertThat(storageSolution.anyFileDeleteWasAttempted()).isFalse();

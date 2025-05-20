@@ -1,21 +1,19 @@
 package dev.codesoapbox.backity.e2e.pages;
 
-import com.microsoft.playwright.Download;
-import com.microsoft.playwright.Locator;
-import com.microsoft.playwright.Page;
+import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import dev.codesoapbox.backity.e2e.actions.Repeat;
 
 public class GamesPage {
 
     private static final String GAMES_URL = "/games";
-    private static final String FILE_BACKUP_URL = "/file-backup";
+    private static final String FILE_COPY_URL = "/file-copy";
     private static final String DOWNLOAD_FILE_BACKUP_BTN_TEST_ID = "download-file-backup-btn";
 
     private final Page page;
     private final Locator loader;
     private final Locator refreshGamesButton;
-    private final Locator deleteFileBackupButtons;
+    private final Locator deleteFileCopyButtons;
     private final Locator confirmFileBackupDeleteButton;
     private final Locator gameList;
 
@@ -23,7 +21,7 @@ public class GamesPage {
         this.page = page;
         this.loader = page.getByTestId("loader");
         this.refreshGamesButton = page.getByTestId("refresh-games-btn");
-        this.deleteFileBackupButtons = page.getByTestId("delete-file-backup-btn");
+        this.deleteFileCopyButtons = page.getByTestId("delete-file-copy-btn");
         this.confirmFileBackupDeleteButton = page.getByTestId("confirmation-modal-yes-btn");
         this.gameList = page.getByTestId("game-list");
     }
@@ -47,13 +45,20 @@ public class GamesPage {
     private void deleteAllFileBackupsOneByOne() {
         Repeat.on(page)
                 .action(() -> {
-                    deleteFileBackupButtons.first().click();
+                    Locator currentDeleteButton = deleteFileCopyButtons.first();
+                    currentDeleteButton.click();
                     confirmFileBackupDeleteButton.click();
+                    loader.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
+                    currentDeleteButton.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
                 })
-                .expectingResponse(response -> response.url().contains(FILE_BACKUP_URL)
-                                               && response.request().method().equals("DELETE")
-                                               && response.status() == 204)
-                .until(() -> !loader.first().isVisible() && !deleteFileBackupButtons.first().isVisible());
+                .expectingResponse(this::deleteApiResponseIsSuccessful)
+                .until(() -> deleteFileCopyButtons.count() == 0);
+    }
+
+    private boolean deleteApiResponseIsSuccessful(Response response) {
+        return response.url().contains(FILE_COPY_URL)
+               && response.request().method().equals("DELETE")
+               && response.status() == 204;
     }
 
     public Download startFileDownload(String fileTitle) {

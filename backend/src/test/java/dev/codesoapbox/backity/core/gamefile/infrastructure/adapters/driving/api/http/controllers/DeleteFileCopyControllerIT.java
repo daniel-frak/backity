@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.gamefile.application.usecases.DeleteFileUseCase;
+import dev.codesoapbox.backity.core.gamefile.application.usecases.DeleteFileCopyUseCase;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
@@ -13,23 +13,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ControllerTest
-class DeleteFileBackupControllerIT {
+class DeleteFileCopyControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private DeleteFileUseCase useCase;
+    private DeleteFileCopyUseCase useCase;
 
     @Test
-    void shouldDeleteFileBackup() throws Exception {
+    void shouldDeleteFileCopy() throws Exception {
         var stringUuid = "acde26d7-33c7-42ee-be16-bca91a604b48";
 
         mockMvc.perform(delete("/api/"
-                               + FileBackupsRestResource.RESOURCE_URL.replace("{gameFileId}", stringUuid)))
+                               + FileCopiesRestResource.RESOURCE_URL.replace("{gameFileId}", stringUuid)))
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        verify(useCase).deleteFile(new GameFileId(stringUuid));
+        verify(useCase).deleteFileCopy(new GameFileId(stringUuid));
     }
 }

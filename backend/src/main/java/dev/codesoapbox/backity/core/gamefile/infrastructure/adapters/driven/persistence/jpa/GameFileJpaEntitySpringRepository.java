@@ -11,11 +11,11 @@ import java.util.UUID;
 
 public interface GameFileJpaEntitySpringRepository extends JpaRepository<GameFileJpaEntity, UUID> {
 
-    Optional<GameFileJpaEntity> findByFileBackupStatus(FileBackupStatus status);
+    Optional<GameFileJpaEntity> findByFileCopyStatus(FileBackupStatus status);
 
     boolean existsByFileSourceUrlAndFileSourceVersion(String url, String version);
 
-    Page<GameFileJpaEntity> findAllByFileBackupStatusIn(Pageable pageable, List<FileBackupStatus> status);
+    Page<GameFileJpaEntity> findAllByFileCopyStatusIn(Pageable pageable, List<FileBackupStatus> status);
 
     List<GameFileJpaEntity> findAllByGameId(UUID gameId);
 }

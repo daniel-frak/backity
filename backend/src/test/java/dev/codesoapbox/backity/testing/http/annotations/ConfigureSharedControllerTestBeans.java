@@ -57,7 +57,7 @@ import java.lang.annotation.Target;
         StopGameContentDiscoveryUseCase.class,
         GetGameContentDiscoveryStatusListUseCase.class,
         EnqueueFileUseCase.class,
-        DeleteFileUseCase.class,
+        DeleteFileCopyUseCase.class,
         DownloadFileUseCase.class,
         GetCurrentlyDownloadingFileUseCase.class,
         GetDiscoveredFileListUseCase.class,

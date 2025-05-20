@@ -79,7 +79,7 @@ class GetGameFileListControllerIT {
                         "originalFileName": "game_1_installer.exe",
                         "size": "5 KB"
                       },
-                      "fileBackup": {
+                      "fileCopy": {
                         "status": "%s",
                         "failedReason": null,
                         "filePath": %s

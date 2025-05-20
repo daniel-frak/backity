@@ -31,7 +31,7 @@ class GameFileHttpDtoMapperTest {
                         "game_1_installer.exe",
                         "5 KB"
                 ),
-                new FileBackupHttpDto(
+                new FileCopyHttpDto(
                         FileBackupStatusHttpDto.SUCCESS,
                         null,
                         "someFilePath"
@@ -62,7 +62,7 @@ class GameFileHttpDtoMapperTest {
                         "game_1_installer.exe",
                         "5 KB"
                 ),
-                new FileBackupHttpDto(
+                new FileCopyHttpDto(
                         FileBackupStatusHttpDto.FAILED,
                         "someFailedReason",
                         null

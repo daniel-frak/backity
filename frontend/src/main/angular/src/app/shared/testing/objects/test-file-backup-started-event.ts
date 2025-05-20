@@ -23,7 +23,7 @@ export class TestFileBackupStartedEvent {
       version: gameFile.fileSource.version,
       size: gameFile.fileSource.size,
       fileTitle: gameFile.fileSource.fileTitle,
-      filePath: gameFile.fileBackup.filePath
+      filePath: gameFile.fileCopy.filePath
     };
   }
 }

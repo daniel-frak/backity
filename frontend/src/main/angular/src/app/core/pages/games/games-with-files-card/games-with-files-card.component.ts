@@ -1,7 +1,7 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
 import {
   FileBackupMessageTopics,
-  FileBackupsClient,
+  FileCopiesClient,
   FileBackupStatus,
   FileBackupStatusChangedEvent,
   GameFile,
@@ -57,7 +57,7 @@ export class GamesWithFilesCardComponent implements OnInit, OnDestroy {
 
   constructor(private readonly gamesClient: GamesClient,
               private readonly gameFilesClient: GameFilesClient,
-              private readonly fileBackupsClient: FileBackupsClient,
+              private readonly fileCopiesClient: FileCopiesClient,
               private readonly messageService: MessagesService,
               private readonly notificationService: NotificationService,
               private readonly modalService: ModalService,
@@ -77,7 +77,7 @@ export class GamesWithFilesCardComponent implements OnInit, OnDestroy {
     const fileInTable: GameFile | undefined = this.findFileInTable(event);
 
     if (fileInTable) {
-      fileInTable.fileBackup.status = event.newStatus as FileBackupStatus;
+      fileInTable.fileCopy.status = event.newStatus as FileBackupStatus;
     }
   }
 
@@ -114,11 +114,11 @@ export class GamesWithFilesCardComponent implements OnInit, OnDestroy {
       await firstValueFrom(this.gameFilesClient.enqueueFileBackup(gameFile.id).pipe(catchError(e => {
         throw e;
       })));
-      gameFile.fileBackup.status = FileBackupStatus.Enqueued;
+      gameFile.fileCopy.status = FileBackupStatus.Enqueued;
       this.notificationService.showSuccess("File backup enqueued");
     } catch (error) {
       this.notificationService.showFailure('An error occurred while trying to enqueue a file', gameFile, error);
-      gameFile.fileBackup.status = FileBackupStatus.Discovered;
+      gameFile.fileCopy.status = FileBackupStatus.Discovered;
     }
   }
 
@@ -130,15 +130,15 @@ export class GamesWithFilesCardComponent implements OnInit, OnDestroy {
     this.notificationService.showFailure('Removing from queue not yet implemented');
   }
 
-  onClickDeleteBackup(gameFileId: string): () => Promise<void> {
-    return async () => this.deleteBackup(gameFileId);
+  onClickDeleteFileCopy(gameFileId: string): () => Promise<void> {
+    return async () => this.deleteFileCopy(gameFileId);
   }
 
-  async deleteBackup(gameFileId: string): Promise<void> {
+  async deleteFileCopy(gameFileId: string): Promise<void> {
     try {
       await this.modalService.withConfirmationModal("Are you sure you want to delete the file backup?",
         async () => {
-          await firstValueFrom(this.fileBackupsClient.deleteFileBackup(gameFileId));
+          await firstValueFrom(this.fileCopiesClient.deleteFileCopy(gameFileId));
           this.notificationService.showSuccess('Deleted file backup');
           return this.refresh();
         });
@@ -164,11 +164,11 @@ export class GamesWithFilesCardComponent implements OnInit, OnDestroy {
     The file interaction here is hardcoded because there seems to be no easy way to use the auto-generated HttpClient
     code to show the download dialog before first downloading the entire file into memory.
      */
-    const configuration = this.fileBackupsClient.configuration;
+    const configuration = this.fileCopiesClient.configuration;
     this.window.location.href = `${configuration.basePath}/api/game-files/${configuration.encodeParam({
       name: "gameFileId", value: gameFileId, in: "path", style: "simple", explode: false, dataType: "string",
       dataFormat: undefined
-    })}/file-backup`;
+    })}/file-copy`;
   }
 
   onClickViewError(gameFileId: string): () => Promise<void> {

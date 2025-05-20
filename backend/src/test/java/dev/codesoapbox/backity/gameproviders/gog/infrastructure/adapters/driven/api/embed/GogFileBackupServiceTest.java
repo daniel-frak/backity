@@ -40,7 +40,7 @@ class GogFileBackupServiceTest {
 
         gogFileBackupService.backUpFile(gameFile, downloadProgress);
 
-        String filePath = gameFile.getFileBackup().filePath();
+        String filePath = gameFile.getFileCopy().filePath();
         verify(urlFileDownloader).downloadFile(trackableFileStream, gameFile, filePath);
     }
 

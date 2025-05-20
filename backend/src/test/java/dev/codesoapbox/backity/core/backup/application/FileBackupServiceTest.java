@@ -102,14 +102,14 @@ class FileBackupServiceTest {
         assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
                 .isInstanceOf(FileBackupFailedException.class)
                 .hasCause(coreException);
-        assertThat(gameFile.getFileBackup())
-                .satisfies(fileBackup -> assertSoftly(softly -> {
-                    softly.assertThat(fileBackup.status()).isEqualTo(FileBackupStatus.FAILED);
-                    softly.assertThat(fileBackup.failedReason()).isEqualTo(coreException.getMessage());
+        assertThat(gameFile.getFileCopy())
+                .satisfies(fileCopy -> assertSoftly(softly -> {
+                    softly.assertThat(fileCopy.status()).isEqualTo(FileBackupStatus.FAILED);
+                    softly.assertThat(fileCopy.failedReason()).isEqualTo(coreException.getMessage());
                 }));
         verify(gameFileRepository, times(4)).save(gameFile);
         assertThat(storageSolution.fileDeleteWasAttempted(filePath)).isTrue();
-        assertThat(gameFile.getFileBackup().filePath()).isNull();
+        assertThat(gameFile.getFileCopy().filePath()).isNull();
     }
 
     private IOException mockGameProviderServiceThrowsExceptionDuringBackup() throws IOException {
@@ -149,7 +149,7 @@ class FileBackupServiceTest {
         assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
                 .isInstanceOf(FileBackupFailedException.class)
                 .cause().isInstanceOf(IOException.class);
-        assertThat(gameFile.getFileBackup())
+        assertThat(gameFile.getFileCopy())
                 .satisfies(fileBackup -> assertSoftly(softly -> {
                     softly.assertThat(fileBackup.status()).isEqualTo(FileBackupStatus.FAILED);
                     softly.assertThat(fileBackup.failedReason()).isEqualTo("Unknown error");
@@ -189,8 +189,8 @@ class FileBackupServiceTest {
         }
 
         public void addFor(GameFile gameFile) {
-            savedFileBackupStatuses.add(gameFile.getFileBackup().status());
-            savedFilePaths.add(gameFile.getFileBackup().filePath());
+            savedFileBackupStatuses.add(gameFile.getFileCopy().status());
+            savedFilePaths.add(gameFile.getFileCopy().filePath());
         }
     }
 }

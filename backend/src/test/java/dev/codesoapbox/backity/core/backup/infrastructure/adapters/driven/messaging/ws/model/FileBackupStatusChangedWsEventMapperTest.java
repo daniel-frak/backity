@@ -9,7 +9,7 @@ import org.mapstruct.factory.Mappers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class FileFileBackupStatusChangedWsEventMapperTest {
+class FileBackupStatusChangedWsEventMapperTest {
 
     private static final FileBackupStatusChangedWsEventMapper MAPPER =
             Mappers.getMapper(FileBackupStatusChangedWsEventMapper.class);
