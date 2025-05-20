@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.e2e.pages;
 
 import com.microsoft.playwright.*;
+import com.microsoft.playwright.options.ElementState;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import dev.codesoapbox.backity.e2e.actions.Repeat;
 
@@ -14,7 +15,7 @@ public class GamesPage {
     private final Locator loader;
     private final Locator refreshGamesButton;
     private final Locator deleteFileCopyButtons;
-    private final Locator confirmFileBackupDeleteButton;
+    private final Locator confirmFileCopyDeleteButton;
     private final Locator gameList;
 
     public GamesPage(final Page page) {
@@ -22,7 +23,7 @@ public class GamesPage {
         this.loader = page.getByTestId("loader");
         this.refreshGamesButton = page.getByTestId("refresh-games-btn");
         this.deleteFileCopyButtons = page.getByTestId("delete-file-copy-btn");
-        this.confirmFileBackupDeleteButton = page.getByTestId("confirmation-modal-yes-btn");
+        this.confirmFileCopyDeleteButton = page.getByTestId("confirmation-modal-yes-btn");
         this.gameList = page.getByTestId("game-list");
     }
 
@@ -30,9 +31,9 @@ public class GamesPage {
         page.navigate("/games");
     }
 
-    public void deleteAllFileBackups() {
+    public void deleteAllFileCopies() {
         refreshGames();
-        deleteAllFileBackupsOneByOne();
+        deleteAllFileCopiesOneByOne();
     }
 
     private void refreshGames() {
@@ -42,14 +43,14 @@ public class GamesPage {
                 .setState(WaitForSelectorState.HIDDEN));
     }
 
-    private void deleteAllFileBackupsOneByOne() {
+    private void deleteAllFileCopiesOneByOne() {
         Repeat.on(page)
                 .action(() -> {
-                    Locator currentDeleteButton = deleteFileCopyButtons.first();
+                    ElementHandle currentDeleteButton = deleteFileCopyButtons.first().elementHandle();
                     currentDeleteButton.click();
-                    confirmFileBackupDeleteButton.click();
+                    confirmFileCopyDeleteButton.click();
                     loader.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
-                    currentDeleteButton.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
+                    currentDeleteButton.waitForElementState(ElementState.HIDDEN);
                 })
                 .expectingResponse(this::deleteApiResponseIsSuccessful)
                 .until(() -> deleteFileCopyButtons.count() == 0);

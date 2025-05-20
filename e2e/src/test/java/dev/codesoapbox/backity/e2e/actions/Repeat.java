@@ -50,7 +50,7 @@ public class Repeat {
                     try {
                         page.waitForResponse(responseCondition::apply, action);
                     } catch (PlaywrightException e) {
-                        fail("The expected response was not received after performing action");
+                        fail("The expected response was not received or action timed out", e);
                     }
                     if (retryCounter.get() > 0) {
                         page.waitForTimeout(1000);

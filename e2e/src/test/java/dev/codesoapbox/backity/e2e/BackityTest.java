@@ -42,6 +42,10 @@ class BackityTest {
         this.gameContentDiscoveryPage = new GameContentDiscoveryPage(page);
         this.fileBackupPage = new FileBackupPage(page);
         this.gamesPage = new GamesPage(page);
+        resetState();
+    }
+
+    private void resetState() {
         tryToLogOutOfGog();
         deleteAllFileBackups();
     }
@@ -56,12 +60,12 @@ class BackityTest {
 
     private void deleteAllFileBackups() {
         gamesPage.visit();
-        gamesPage.deleteAllFileBackups();
+        gamesPage.deleteAllFileCopies();
     }
 
     @AfterEach
     void tearDown() {
-        gamesPage.deleteAllFileBackups();
+        resetState();
     }
 
     @Test
