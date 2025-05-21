@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.storagesolution.infrastructure.config.LocalFileSystemBeanConfig;
+import dev.codesoapbox.backity.core.storagesolution.infrastructure.config.LocalFileSystemStorageSolutionBeanConfig;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = H2DbController.class, properties = "backity.h2dump.path=test_dump.sql")
 @Import({
-        LocalFileSystemBeanConfig.class,
+        LocalFileSystemStorageSolutionBeanConfig.class,
         GameJpaRepositoryBeanConfig.class,
         GameFileJpaRepositoryBeanConfig.class,
         SharedJpaRepositoryBeanConfig.class,
