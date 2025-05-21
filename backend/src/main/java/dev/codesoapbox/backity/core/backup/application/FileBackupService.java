@@ -6,7 +6,7 @@ import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
-import dev.codesoapbox.backity.core.storagesolution.domain.FilePathProvider;
+import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolver;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,17 +23,17 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FileBackupService {
 
-    private final FilePathProvider filePathProvider;
+    private final UniqueFilePathResolver uniqueFilePathResolver;
     private final GameFileRepository gameFileRepository;
     private final StorageSolution storageSolution;
     private final Map<GameProviderId, GameProviderFileBackupService> gameProviderFileBackupServices;
     private final DownloadProgressFactory downloadProgressFactory;
 
-    public FileBackupService(FilePathProvider filePathProvider, GameFileRepository gameFileRepository,
+    public FileBackupService(UniqueFilePathResolver uniqueFilePathResolver, GameFileRepository gameFileRepository,
                              StorageSolution storageSolution,
                              List<GameProviderFileBackupService> gameProviderFileBackupServices,
                              DownloadProgressFactory downloadProgressFactory) {
-        this.filePathProvider = filePathProvider;
+        this.uniqueFilePathResolver = uniqueFilePathResolver;
         this.gameFileRepository = gameFileRepository;
         this.storageSolution = storageSolution;
         this.gameProviderFileBackupServices = gameProviderFileBackupServices.stream()
@@ -48,7 +48,7 @@ public class FileBackupService {
 
         try {
             markInProgress(gameFile);
-            String filePath = buildFilePath(gameFile);
+            String filePath = uniqueFilePathResolver.resolve(gameFile.getFileSource());
             tryToBackUp(gameFile, filePath);
         } catch (IOException | RuntimeException e) {
             markFailed(gameFile, e);
@@ -59,13 +59,6 @@ public class FileBackupService {
     private void markInProgress(GameFile gameFile) {
         gameFile.markAsInProgress();
         gameFileRepository.save(gameFile);
-    }
-
-    private String buildFilePath(GameFile gameFile) {
-        return filePathProvider.buildUniqueFilePath(
-                gameFile.getFileSource().gameProviderId(),
-                gameFile.getFileSource().originalGameTitle(),
-                gameFile.getFileSource().originalFileName());
     }
 
     private void tryToBackUp(GameFile gameFile, String filePath) throws IOException {

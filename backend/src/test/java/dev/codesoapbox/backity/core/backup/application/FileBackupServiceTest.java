@@ -5,7 +5,7 @@ import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
 import dev.codesoapbox.backity.core.gamefile.domain.*;
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
-import dev.codesoapbox.backity.core.storagesolution.domain.FilePathProvider;
+import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolver;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,7 +31,7 @@ class FileBackupServiceTest {
     private FileBackupService fileBackupService;
 
     @Mock
-    private FilePathProvider filePathProvider;
+    private UniqueFilePathResolver uniqueFilePathResolver;
 
     @Mock
     private GameFileRepository gameFileRepository;
@@ -49,7 +49,7 @@ class FileBackupServiceTest {
         when(gameProviderFileBackupService.getGameProviderId())
                 .thenReturn(EXISTING_GAME_PROVIDER_ID);
         storageSolution = new FakeUnixStorageSolution(5120);
-        fileBackupService = new FileBackupService(filePathProvider, gameFileRepository, storageSolution,
+        fileBackupService = new FileBackupService(uniqueFilePathResolver, gameFileRepository, storageSolution,
                 singletonList(gameProviderFileBackupService), downloadProgressFactory);
     }
 
@@ -57,7 +57,7 @@ class FileBackupServiceTest {
     void shouldDownloadFile() {
         GameFile gameFile = TestGameFile.discovered();
         GameFilePersistedChanges gameFilePersistedChanges = trackPersistedGameFileChanges();
-        String expectedFilePath = mockFilePathCreation(gameFile, EXISTING_GAME_PROVIDER_ID);
+        String expectedFilePath = mockFilePathCreation(gameFile);
 
         fileBackupService.backUpFile(gameFile);
 
@@ -71,10 +71,9 @@ class FileBackupServiceTest {
                 ));
     }
 
-    private String mockFilePathCreation(GameFile gameFile, GameProviderId gameProviderId) {
+    private String mockFilePathCreation(GameFile gameFile) {
         var filePath = "someFileDir/someFile";
-        when(filePathProvider.buildUniqueFilePath(gameProviderId,
-                gameFile.getFileSource().originalGameTitle(), gameFile.getFileSource().originalFileName()))
+        when(uniqueFilePathResolver.resolve(gameFile.getFileSource()))
                 .thenReturn(filePath);
 
         return filePath;
@@ -96,7 +95,7 @@ class FileBackupServiceTest {
     @Test
     void shouldTryToRemoveFileAndRethrowWrappedGivenIOException() throws IOException {
         GameFile gameFile = TestGameFile.discovered();
-        String filePath = mockFilePathCreation(gameFile, EXISTING_GAME_PROVIDER_ID);
+        String filePath = mockFilePathCreation(gameFile);
         IOException coreException = mockGameProviderServiceThrowsExceptionDuringBackup();
 
         assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
@@ -128,7 +127,7 @@ class FileBackupServiceTest {
                         .gameProviderId(nonExistentGameProviderId)
                         .build())
                 .build();
-        mockFilePathCreation(gameFile, nonExistentGameProviderId);
+        mockFilePathCreation(gameFile);
 
         assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
                 .isInstanceOf(FileBackupFailedException.class)

@@ -5,7 +5,7 @@ import dev.codesoapbox.backity.core.backup.application.FileBackupService;
 import dev.codesoapbox.backity.core.backup.application.GameProviderFileBackupService;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgressFactory;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
-import dev.codesoapbox.backity.core.storagesolution.domain.FilePathProvider;
+import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolver;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -17,12 +17,12 @@ import java.util.List;
 public class FileBackupUseCaseBeanConfig {
 
     @Bean
-    FileBackupService fileBackupService(FilePathProvider filePathProvider,
+    FileBackupService fileBackupService(UniqueFilePathResolver uniqueFilePathResolver,
                                         GameFileRepository gameFileSpringRepository,
                                         List<GameProviderFileBackupService> fileBackupServices,
                                         StorageSolution storageSolution,
                                         DownloadProgressFactory downloadProgressFactory) {
-        return new FileBackupService(filePathProvider, gameFileSpringRepository, storageSolution, fileBackupServices,
+        return new FileBackupService(uniqueFilePathResolver, gameFileSpringRepository, storageSolution, fileBackupServices,
                 downloadProgressFactory);
     }
 
