@@ -22,8 +22,8 @@ public class FileBackupUseCaseBeanConfig {
                                         List<GameProviderFileBackupService> fileBackupServices,
                                         StorageSolution storageSolution,
                                         DownloadProgressFactory downloadProgressFactory) {
-        return new FileBackupService(uniqueFilePathResolver, gameFileSpringRepository, storageSolution, fileBackupServices,
-                downloadProgressFactory);
+        return new FileBackupService(uniqueFilePathResolver, gameFileSpringRepository, storageSolution,
+                fileBackupServices, downloadProgressFactory);
     }
 
     @Bean

@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.storagesolution.domain;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
 import dev.codesoapbox.backity.core.gamefile.domain.TestFileSource;
+import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.CouldNotResolveUniqueFilePathException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class UniqueFilePathResolverTest {
 
@@ -29,30 +31,29 @@ class UniqueFilePathResolverTest {
         return result.replace("\\", "/");
     }
 
-    @Test
-    void shouldFixSeparatorCharInPathTemplate() {
-        String wrongSeparator = getWrongSeparator();
-        var wrongPathTemplate = "one" + wrongSeparator + "two";
+    @Nested
+    class Creation {
 
-        uniqueFilePathResolver = new UniqueFilePathResolver(wrongPathTemplate, fakeUnixFileManager);
-
-        assertThat(uniqueFilePathResolver.defaultPathTemplate).isEqualTo("one" + File.separator + "two")
-                .isNotEqualTo(wrongPathTemplate);
-    }
-
-    private String getWrongSeparator() {
-        var wrongSeparator = "\\";
-        if (wrongSeparator.equals(File.separator)) {
-            wrongSeparator = "/";
+        @SuppressWarnings("DataFlowIssue")
+        @Test
+        void constructorShouldThrowGivenNullPathTemplate() {
+            assertThatThrownBy(() -> new UniqueFilePathResolver(null, fakeUnixFileManager))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("defaultPathTemplate is marked non-null but is null");
         }
-        return wrongSeparator;
-    }
 
+        @Test
+        void constructorShouldThrowGivenNullStorageSolution() {
+            assertThatThrownBy(() -> new UniqueFilePathResolver(PATH_TEMPLATE, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("storageSolution is marked non-null but is null");
+        }
+    }
     @Nested
     class BasicFilePathConstruction {
 
         @Test
-        void shouldBuildFilePath() {
+        void shouldResolveFilePath() {
             FileSource fileSource = TestFileSource.minimalGogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle("someGameTitle")
@@ -67,7 +68,7 @@ class UniqueFilePathResolverTest {
         }
 
         @Test
-        void shouldBuildFilePathWhenNoSeparatorInPathTemplate() {
+        void shouldResolveFilePathWhenNoSeparatorInPathTemplate() {
             FileSource fileSource = TestFileSource.minimalGogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle("someGameTitle")
@@ -82,6 +83,30 @@ class UniqueFilePathResolverTest {
             assertThat(result).doesNotContain(File.separator);
             assertThat(toUnixPath(result)).isEqualTo(expectedPath);
             assertThat(fakeUnixFileManager.anyDirectoriesWereCreated()).isFalse();
+        }
+
+        @Test
+        void shouldResolveValidFilePathGivenWrongSeparatorInPathTemplate() {
+            String wrongSeparator = getWrongSeparator();
+            String wrongPathTemplate = "{TITLE}" + wrongSeparator + "{FILENAME}";
+            uniqueFilePathResolver = new UniqueFilePathResolver(wrongPathTemplate, fakeUnixFileManager);
+            FileSource fileSource = TestFileSource.minimalGogBuilder()
+                    .originalGameTitle("someGameTitle")
+                    .originalFileName("someFileName")
+                    .build();
+
+            String result = uniqueFilePathResolver.resolve(fileSource);
+
+            String expectedPath = "someGameTitle" + File.separator + "someFileName";
+            assertThat(result).isEqualTo(expectedPath);
+        }
+
+        private String getWrongSeparator() {
+            var wrongSeparator = "\\";
+            if (wrongSeparator.equals(File.separator)) {
+                wrongSeparator = "/";
+            }
+            return wrongSeparator;
         }
     }
 
@@ -155,7 +180,7 @@ class UniqueFilePathResolverTest {
     class UniqueFilePathConstruction {
 
         @Test
-        void shouldBuildUniqueFilePathGivenFileWithExtensionAlreadyExists() {
+        void shouldResolveUniqueFilePathGivenFileWithExtensionAlreadyExists() {
             FileSource fileSource = TestFileSource.minimalGogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle("someGameTitle")
@@ -171,7 +196,7 @@ class UniqueFilePathResolverTest {
         }
 
         @Test
-        void shouldBuildUniqueFilePathGivenSeveralFilesWithExtensionAlreadyExist() {
+        void shouldResolveUniqueFilePathGivenSeveralFilesWithExtensionAlreadyExist() {
             FileSource fileSource = TestFileSource.minimalGogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle("someGameTitle")
@@ -188,7 +213,7 @@ class UniqueFilePathResolverTest {
         }
 
         @Test
-        void shouldBuildUniqueFilePathGivenFileWithoutExtensionAlreadyExists() {
+        void shouldResolveUniqueFilePathGivenFileWithoutExtensionAlreadyExists() {
             FileSource fileSource = TestFileSource.minimalGogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle("someGameTitle")
@@ -204,7 +229,7 @@ class UniqueFilePathResolverTest {
         }
 
         @Test
-        void shouldBuildUniqueFilePathGivenSeveralFilesWithoutExtensionAlreadyExist() {
+        void shouldResolveUniqueFilePathGivenSeveralFilesWithoutExtensionAlreadyExist() {
             FileSource fileSource = TestFileSource.minimalGogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle("someGameTitle")
@@ -218,6 +243,25 @@ class UniqueFilePathResolverTest {
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_2";
 
             assertThat(toUnixPath(result)).isEqualTo(expectedPath);
+        }
+
+        @Test
+        void shouldThrowAfterFailingToFindUniqueFilePathTooManyTimes() {
+            FileSource fileSource = TestFileSource.minimalGogBuilder()
+                    .gameProviderId(new GameProviderId("someGameProviderId"))
+                    .originalGameTitle("someGameTitle")
+                    .originalFileName("someFileName.exe")
+                    .build();
+            fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName.exe");
+            for (int i = 0; i < 999; i++) {
+                fakeUnixFileManager.createFile(
+                        "/test/someGameProviderId/someGameTitle/someFileName_" + i + ".exe");
+            }
+
+            assertThatThrownBy(() -> uniqueFilePathResolver.resolve(fileSource))
+                    .isInstanceOf(CouldNotResolveUniqueFilePathException.class)
+                    .hasMessageContaining("someGameTitle")
+                    .hasMessageContaining("someFileName.exe");
         }
     }
 }
