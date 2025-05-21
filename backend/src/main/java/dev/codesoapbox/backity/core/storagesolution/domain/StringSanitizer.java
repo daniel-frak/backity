@@ -6,13 +6,13 @@ import java.util.Set;
 
 class StringSanitizer {
 
-    // Using specifically HashSet::contains for illegal character removal is much faster than, e.g., using regex
-    private final HashSet<Character> charactersToRemove;
+    private final Set<Character> charactersToRemove;
     private final List<StringReplacement> charactersToReplace;
 
     public StringSanitizer(Set<Character> charactersToRemove, List<StringReplacement> charactersToReplace) {
+        // Using specifically HashSet::contains for illegal character removal is much faster than, e.g., using regex
         this.charactersToRemove = new HashSet<>(charactersToRemove);
-        this.charactersToReplace = charactersToReplace;
+        this.charactersToReplace = List.copyOf(charactersToReplace);
     }
 
     public String sanitize(String value) {
@@ -33,8 +33,7 @@ class StringSanitizer {
         return sanitized.toString();
     }
 
-    public StringSanitizer withAdditionalCharactersToRemove(
-            Set<Character> additionalCharactersToRemove) {
+    public StringSanitizer withAdditionalCharactersToRemove(Set<Character> additionalCharactersToRemove) {
         HashSet<Character> mergedCharactersToRemove = new HashSet<>(this.charactersToRemove);
         mergedCharactersToRemove.addAll(additionalCharactersToRemove);
 

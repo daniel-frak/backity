@@ -3,6 +3,8 @@ package dev.codesoapbox.backity.core.storagesolution.domain;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +16,28 @@ class StringSanitizerTest {
 
     @Nested
     class Creation {
+
+        @Test
+        void constructorShouldDefensivelyCopyCharactersToRemove() {
+            Set<Character> charactersToRemove = new HashSet<>();
+
+            var sanitizer = new StringSanitizer(charactersToRemove, emptyList());
+
+            charactersToRemove.add('$');
+            String result = sanitizer.sanitize("$");
+            assertThat(result).isEqualTo("$");
+        }
+
+        @Test
+        void constructorShouldDefensivelyCopyCharactersToReplace() {
+            List<StringSanitizer.StringReplacement> charactersToReplace = new ArrayList<>();
+
+            var sanitizer = new StringSanitizer(emptySet(), charactersToReplace);
+
+            charactersToReplace.add(new StringSanitizer.StringReplacement("-", "_"));
+            String result = sanitizer.sanitize("-");
+            assertThat(result).isEqualTo("-");
+        }
 
         @Test
         void shouldConstructWithAdditionalCharactersToRemove() {
