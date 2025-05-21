@@ -2,33 +2,32 @@ package dev.codesoapbox.backity.core.storagesolution.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.CouldNotResolveUniqueFilePathException;
+import lombok.NonNull;
 import org.apache.commons.io.FilenameUtils;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Slf4j
 public class UniqueFilePathResolver {
 
-    private static final HashSet<Character> CHARACTERS_TO_REMOVE_FROM_TEMPLATE = new HashSet<>(Set.of(
+    private static final int MAX_ATTEMPTS = 1000;
+    private static final Set<Character> CHARACTERS_TO_REMOVE_FROM_TEMPLATE = Set.of(
             '<', '>', '"', '|', '?', '\n', '`', ';', '!', '@', '#', '$', '%', '^', '&', '*', '[', ']', '~', '\''
-    ));
-    private static final List<CharacterReplacement> CHARACTERS_TO_REPLACE = List.of(
-            new CharacterReplacement(":", " -"),
-            new CharacterReplacement("\t", " ")
+    );
+    private static final List<StringSanitizer.StringReplacement> CHARACTERS_TO_REPLACE = List.of(
+            new StringSanitizer.StringReplacement(":", " -"),
+            new StringSanitizer.StringReplacement("\t", " ")
     );
     private static final StringSanitizer PATH_TEMPLATE_SANITIZER = new StringSanitizer(
             CHARACTERS_TO_REMOVE_FROM_TEMPLATE, CHARACTERS_TO_REPLACE);
     private static final StringSanitizer PLACEHOLDER_SANITIZER = PATH_TEMPLATE_SANITIZER
             .withAdditionalCharactersToRemove(Set.of('{', '}'));
 
-    final String defaultPathTemplate;
+    private final String defaultPathTemplate;
     private final StorageSolution storageSolution;
 
-    public UniqueFilePathResolver(String defaultPathTemplate, StorageSolution storageSolution) {
+    public UniqueFilePathResolver(@NonNull String defaultPathTemplate, @NonNull StorageSolution storageSolution) {
         this.storageSolution = storageSolution;
         this.defaultPathTemplate = PATH_TEMPLATE_SANITIZER.sanitize(
                 replaceWithCorrectFileSeparator(defaultPathTemplate));
@@ -48,8 +47,16 @@ public class UniqueFilePathResolver {
     private String constructPathUntilUnique(RawPathData rawPathData) {
         int suffixIndex = 0;
         String filePath;
+        int attemptNumber = 0;
         do {
-            filePath = constructPath(rawPathData, suffixIndex++);
+            attemptNumber++;
+            if (attemptNumber >= MAX_ATTEMPTS) {
+                throw new CouldNotResolveUniqueFilePathException(rawPathData.gameTitle(),
+                        rawPathData.baseName() + rawPathData.extensionWithDot, attemptNumber);
+            }
+
+            filePath = constructPath(rawPathData, suffixIndex);
+            suffixIndex++;
         } while (storageSolution.fileExists(filePath));
 
         return filePath;
@@ -66,55 +73,14 @@ public class UniqueFilePathResolver {
     }
 
     private String constructFileName(RawPathData rawPathData, int suffixIndex) {
-        String targetBaseName = (suffixIndex > 0) ? rawPathData.baseName() + "_" + suffixIndex : rawPathData.baseName();
+        String targetBaseName =
+                (suffixIndex > 0) ? (rawPathData.baseName() + "_" + suffixIndex) : rawPathData.baseName();
         return targetBaseName + rawPathData.extensionWithDot();
-    }
-
-    @SuppressWarnings("ClassCanBeRecord")
-    @RequiredArgsConstructor
-    private static class StringSanitizer {
-
-        // Using specifically HashSet::contains for illegal character removal is much faster than, e.g., using regex
-        private final HashSet<Character> charactersToRemove;
-        private final List<CharacterReplacement> charactersToReplace;
-
-        public String sanitize(String value) {
-            String sanitized = removeIllegalCharacters(value);
-            for (CharacterReplacement characterReplacement : charactersToReplace) {
-                sanitized = sanitized.replace(characterReplacement.from(), characterReplacement.to());
-            }
-            return sanitized;
-        }
-
-        private String removeIllegalCharacters(String value) {
-            var sanitized = new StringBuilder(value.length());
-            for (char c : value.toCharArray()) {
-                if (!charactersToRemove.contains(c)) {
-                    sanitized.append(c);
-                }
-            }
-            return sanitized.toString();
-        }
-
-        public StringSanitizer withAdditionalCharactersToRemove(
-                Set<Character> additionalCharactersToRemove) {
-            HashSet<Character> mergedCharactersToRemove = new HashSet<>(this.charactersToRemove);
-            mergedCharactersToRemove.addAll(additionalCharactersToRemove);
-
-            return new StringSanitizer(mergedCharactersToRemove, this.charactersToReplace);
-        }
-    }
-
-    private record CharacterReplacement(
-            String from,
-            String to
-    ) {
     }
 
     private record RawPathData(
             GameProviderId gameProviderId,
             String gameTitle,
-            String fileName,
             String baseName,
             String extensionWithDot
     ) {
@@ -127,7 +93,6 @@ public class UniqueFilePathResolver {
             return new RawPathData(
                     fileSource.gameProviderId(),
                     fileSource.originalGameTitle(),
-                    fileName,
                     baseName,
                     extensionWithDot
             );
