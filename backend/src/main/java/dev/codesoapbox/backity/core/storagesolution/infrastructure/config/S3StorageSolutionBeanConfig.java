@@ -11,10 +11,10 @@ import software.amazon.awssdk.services.s3.S3Client;
 
 @ConditionalOnProperty(value = "backity.filesystem.s3.enabled", havingValue = "true")
 @Configuration
-public class FileSystemBeanConfig {
+public class S3StorageSolutionBeanConfig {
 
     @Bean
-    StorageSolution s3FileSystem(S3Client s3Client, S3Properties s3Properties) {
+    StorageSolution s3StorageSolution(S3Client s3Client, S3Properties s3Properties) {
         return new S3StorageSolution(s3Client, s3Properties.bucket(), s3Properties.bufferSizeInBytes());
     }
 

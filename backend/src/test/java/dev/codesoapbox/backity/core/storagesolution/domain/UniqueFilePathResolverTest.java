@@ -29,22 +29,23 @@ class UniqueFilePathResolverTest {
         return result.replace("\\", "/");
     }
 
-    @Nested
-    class PathTemplateSanitization {
+    @Test
+    void shouldFixSeparatorCharInPathTemplate() {
+        String wrongSeparator = getWrongSeparator();
+        var wrongPathTemplate = "one" + wrongSeparator + "two";
 
-        @Test
-        void shouldFixSeparatorCharInPathTemplate() {
-            var wrongSeparator = "\\";
-            if (wrongSeparator.equals(File.separator)) {
-                wrongSeparator = "/";
-            }
+        uniqueFilePathResolver = new UniqueFilePathResolver(wrongPathTemplate, fakeUnixFileManager);
 
-            String wrongPathTemplate = "one" + wrongSeparator + "two";
-            uniqueFilePathResolver = new UniqueFilePathResolver(wrongPathTemplate, fakeUnixFileManager);
+        assertThat(uniqueFilePathResolver.defaultPathTemplate).isEqualTo("one" + File.separator + "two")
+                .isNotEqualTo(wrongPathTemplate);
+    }
 
-            assertThat(uniqueFilePathResolver.defaultPathTemplate).isEqualTo("one" + File.separator + "two")
-                    .isNotEqualTo(wrongPathTemplate);
+    private String getWrongSeparator() {
+        var wrongSeparator = "\\";
+        if (wrongSeparator.equals(File.separator)) {
+            wrongSeparator = "/";
         }
+        return wrongSeparator;
     }
 
     @Nested
@@ -60,13 +61,9 @@ class UniqueFilePathResolverTest {
 
             String result = uniqueFilePathResolver.resolve(fileSource);
 
-            String expectedPath = "/test/someGameProviderId/someGameTitle/" + extractFileName(result);
+            String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName";
 
             assertThat(toUnixPath(result)).isEqualTo(expectedPath);
-        }
-
-        private String extractFileName(String result) {
-            return result.substring(result.lastIndexOf("/") + 1);
         }
 
         @Test
@@ -80,25 +77,75 @@ class UniqueFilePathResolverTest {
 
             String result = uniqueFilePathResolver.resolve(fileSource);
 
-            String expectedPath = extractFileName(result);
+            String expectedPath = "someFileName";
 
             assertThat(result).doesNotContain(File.separator);
             assertThat(toUnixPath(result)).isEqualTo(expectedPath);
             assertThat(fakeUnixFileManager.anyDirectoriesWereCreated()).isFalse();
         }
+    }
+
+    @Nested
+    class FilePathSanitization {
 
         @Test
-        void shouldRemoveOrReplaceIllegalCharacters() {
-            String charactersToRemoveOrReplace = "<>\"|?\n`';!@#$%^&*{}[]~";
+        void shouldRemoveIllegalCharactersFromPathTemplate() {
+            var charactersToRemove = "<>\"|?\n`';!@#$%^&*[]~";
+            var pathTemplate = "/test" + charactersToRemove + "/{FILENAME}";
+            uniqueFilePathResolver = new UniqueFilePathResolver(pathTemplate, fakeUnixFileManager);
             FileSource fileSource = TestFileSource.minimalGogBuilder()
-                    .gameProviderId(new GameProviderId("someGameProviderId" + charactersToRemoveOrReplace))
-                    .originalGameTitle("some:\tGameTitle")
                     .originalFileName("someFileName")
                     .build();
 
             String result = uniqueFilePathResolver.resolve(fileSource);
 
-            String expectedPath = "/test/someGameProviderId/some - GameTitle/" + extractFileName(result);
+            String expectedPath = "/test/someFileName";
+
+            assertThat(toUnixPath(result)).isEqualTo(expectedPath);
+        }
+
+        @Test
+        void shouldReplaceIllegalCharactersFromPathTemplate() {
+            var pathTemplate = "/some:test\tfolder 1/{FILENAME}";
+            uniqueFilePathResolver = new UniqueFilePathResolver(pathTemplate, fakeUnixFileManager);
+            FileSource fileSource = TestFileSource.minimalGogBuilder()
+                    .originalFileName("someFileName")
+                    .build();
+
+            String result = uniqueFilePathResolver.resolve(fileSource);
+
+            String expectedPath = "/some -test folder 1/someFileName";
+
+            assertThat(toUnixPath(result)).isEqualTo(expectedPath);
+        }
+
+        @Test
+        void shouldRemoveIllegalCharactersEachPlaceholder() {
+            String charactersToRemove = "<>\"|?\n`';!@#$%^&*[]~{}";
+            FileSource fileSource = TestFileSource.minimalGogBuilder()
+                    .gameProviderId(new GameProviderId("someGameProviderId" + charactersToRemove))
+                    .originalGameTitle("someGameTitle" + charactersToRemove)
+                    .originalFileName("someFileName" + charactersToRemove)
+                    .build();
+
+            String result = uniqueFilePathResolver.resolve(fileSource);
+
+            String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName";
+
+            assertThat(toUnixPath(result)).isEqualTo(expectedPath);
+        }
+
+        @Test
+        void shouldReplaceIllegalCharactersEachPlaceholder() {
+            FileSource fileSource = TestFileSource.minimalGogBuilder()
+                    .gameProviderId(new GameProviderId("some:Game\tProviderId 1"))
+                    .originalGameTitle("some:Game\tTitle 1")
+                    .originalFileName("some:File\tName 1")
+                    .build();
+
+            String result = uniqueFilePathResolver.resolve(fileSource);
+
+            String expectedPath = "/test/some -Game ProviderId 1/some -Game Title 1/some -File Name 1";
 
             assertThat(toUnixPath(result)).isEqualTo(expectedPath);
         }

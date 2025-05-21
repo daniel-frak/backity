@@ -10,8 +10,9 @@ import org.springframework.context.annotation.Configuration;
 public class SharedFileManagementBeanConfig {
 
     @Bean
-    UniqueFilePathResolver filePathProvider(@Value("${backity.default-path-template}") String defaultPathTemplate,
-                                            StorageSolution storageSolution) {
+    UniqueFilePathResolver uniqueFilePathResolver(
+            @Value("${backity.default-path-template}") String defaultPathTemplate,
+            StorageSolution storageSolution) {
         return new UniqueFilePathResolver(defaultPathTemplate, storageSolution);
     }
 }
