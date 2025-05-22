@@ -2,7 +2,10 @@ package dev.codesoapbox.backity.core.gamefile.domain;
 
 @lombok.Builder(builderClassName = "Builder", buildMethodName = "internalBuild",
         builderMethodName = "discoveredBuilder")
-public class TestFileBackup {
+public class TestFileCopy {
+
+    @lombok.Builder.Default
+    private FileCopyId id = new FileCopyId("6df888e8-90b9-4df5-a237-0cba422c0310");
 
     @lombok.Builder.Default
     private FileBackupStatus status = FileBackupStatus.DISCOVERED;
@@ -18,30 +21,46 @@ public class TestFileBackup {
     }
 
     public static FileCopy successful() {
+        return successfulBuilder()
+                .build();
+    }
+
+    public static Builder successfulBuilder() {
         return discoveredBuilder()
                 .status(FileBackupStatus.SUCCESS)
-                .filePath("someFilePath")
-                .build();
+                .filePath("someFilePath");
     }
 
     public static FileCopy enqueued() {
-        return discoveredBuilder()
-                .status(FileBackupStatus.ENQUEUED)
+        return enqueuedBuilder()
                 .build();
+    }
+
+    public static Builder enqueuedBuilder() {
+        return discoveredBuilder()
+                .status(FileBackupStatus.ENQUEUED);
     }
 
     public static FileCopy failed() {
-        return discoveredBuilder()
-                .status(FileBackupStatus.FAILED)
-                .failedReason("someFailedReason")
+        return failedBuilder()
                 .build();
     }
 
+    public static Builder failedBuilder() {
+        return discoveredBuilder()
+                .status(FileBackupStatus.FAILED)
+                .failedReason("someFailedReason");
+    }
+
     public static FileCopy inProgress() {
+        return inProgressBuilder()
+                .build();
+    }
+
+    public static Builder inProgressBuilder() {
         return discoveredBuilder()
                 .status(FileBackupStatus.IN_PROGRESS)
-                .filePath("someFilePath")
-                .build();
+                .filePath("someFilePath");
     }
 
     public static class Builder {
@@ -49,6 +68,7 @@ public class TestFileBackup {
         public FileCopy build() {
             var temp = internalBuild();
             return new FileCopy(
+                    temp.id,
                     temp.status,
                     temp.failedReason,
                     temp.filePath

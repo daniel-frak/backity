@@ -15,8 +15,8 @@ public record FileBackupStatusChangedEvent(
     public static FileBackupStatusChangedEvent from(GameFile gameFile) {
         return new FileBackupStatusChangedEvent(
                 gameFile.getId(),
-                gameFile.getFileCopy().status(),
-                gameFile.getFileCopy().failedReason()
+                gameFile.getFileCopy().getStatus(),
+                gameFile.getFileCopy().getFailedReason()
         );
     }
 }

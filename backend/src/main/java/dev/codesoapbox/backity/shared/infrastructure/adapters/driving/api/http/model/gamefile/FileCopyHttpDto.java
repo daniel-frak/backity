@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 @Schema(name = "FileCopy")
 public record FileCopyHttpDto(
+        @NotNull String id,
         @NotNull FileBackupStatusHttpDto status,
         String failedReason,
         String filePath

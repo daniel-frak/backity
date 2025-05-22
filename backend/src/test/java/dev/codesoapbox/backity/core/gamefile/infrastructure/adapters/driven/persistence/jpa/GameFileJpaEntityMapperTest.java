@@ -45,6 +45,7 @@ class GameFileJpaEntityMapperTest {
                         5120L
                 ),
                 new FileCopyJpaEntity(
+                        UUID.fromString("6df888e8-90b9-4df5-a237-0cba422c0310"),
                         FileBackupStatus.DISCOVERED,
                         null,
                         null

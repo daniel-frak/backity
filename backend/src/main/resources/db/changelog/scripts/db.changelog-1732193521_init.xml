@@ -38,6 +38,8 @@
             <column name="size_in_bytes" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
+
+            <column name="file_copy_id" type="UUID"/>
             <column name="status" type="VARCHAR">
                 <constraints nullable="false"/>
             </column>

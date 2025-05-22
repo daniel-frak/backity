@@ -4,16 +4,16 @@ import lombok.NonNull;
 
 import java.util.UUID;
 
-public record GameFileId(
+public record FileCopyId(
         @NonNull UUID value
 ) {
 
-    public GameFileId(String value) {
+    public FileCopyId(String value) {
         this(UUID.fromString(value));
     }
 
-    public static GameFileId newInstance() {
-        return new GameFileId(UUID.randomUUID());
+    public static FileCopyId newInstance() {
+        return new FileCopyId(UUID.randomUUID());
     }
 
     @Override

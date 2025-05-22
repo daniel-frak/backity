@@ -45,12 +45,12 @@ public class GameFile {
     @NonNull
     private List<DomainEvent> domainEvents;
 
-    public static GameFile createFor(Game game, FileSource fileSource) {
+    public static GameFile createFor(Game game, FileSource fileSource, FileCopy fileCopy) {
         return new GameFile(
                 GameFileId.newInstance(),
                 game.getId(),
                 fileSource,
-                new FileCopy(FileBackupStatus.DISCOVERED, null, null),
+                fileCopy,
                 null,
                 null,
                 new ArrayList<>()
@@ -58,22 +58,22 @@ public class GameFile {
     }
 
     public void markAsDiscovered() {
-        fileCopy = fileCopy.toDiscovered();
+        fileCopy.toDiscovered();
     }
 
     public void markAsEnqueued() {
-        fileCopy = fileCopy.toEnqueued();
+        fileCopy.toEnqueued();
     }
 
     public void markAsFailed(String failedReason) {
-        fileCopy = fileCopy.toFailed(failedReason);
+        fileCopy.toFailed(failedReason);
 
         var event = new FileBackupFailedEvent(id, failedReason);
         domainEvents.add(event);
     }
 
     public void markAsInProgress() {
-        fileCopy = fileCopy.toInProgress();
+        fileCopy.toInProgress();
 
         var fileBackupStartedEvent = new FileBackupStartedEvent(
                 id,
@@ -82,28 +82,28 @@ public class GameFile {
                 fileSource.version(),
                 fileSource.originalFileName(),
                 fileSource.size(),
-                fileCopy.filePath()
+                fileCopy.getFilePath()
         );
         domainEvents.add(fileBackupStartedEvent);
     }
 
     public void markAsDownloaded(String filePath) {
-        fileCopy = fileCopy.toSuccessful(filePath);
+        fileCopy.toSuccessful(filePath);
 
         var event = new FileBackupFinishedEvent(id);
         domainEvents.add(event);
     }
 
     public void updateFilePath(String filePath) {
-        fileCopy = fileCopy.withFilePath(filePath);
+        fileCopy.setFilePath(filePath);
     }
 
     public void clearFilePath() {
-        fileCopy = fileCopy.withFilePath(null);
+        fileCopy.setFilePath(null);
     }
 
     public void validateIsBackedUp() {
-        if (fileCopy.status() != FileBackupStatus.SUCCESS) {
+        if (fileCopy.getStatus() != FileBackupStatus.SUCCESS) {
             throw new GameFileNotBackedUpException(id);
         }
     }

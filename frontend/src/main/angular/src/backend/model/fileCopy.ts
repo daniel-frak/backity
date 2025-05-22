@@ -11,6 +11,7 @@ import { FileBackupStatus } from './fileBackupStatus';
 
 
 export interface FileCopy { 
+    id: string;
     status: FileBackupStatus;
     failedReason?: string;
     filePath?: string;

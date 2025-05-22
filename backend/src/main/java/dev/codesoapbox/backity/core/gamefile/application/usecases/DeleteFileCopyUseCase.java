@@ -22,7 +22,7 @@ public class DeleteFileCopyUseCase {
     }
 
     private void deleteFileCopy(GameFile gameFile) {
-        String filePath = gameFile.getFileCopy().filePath();
+        String filePath = gameFile.getFileCopy().getFilePath();
         storageSolution.deleteIfExists(filePath);
     }
 }

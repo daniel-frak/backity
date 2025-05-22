@@ -103,12 +103,12 @@ class FileBackupServiceTest {
                 .hasCause(coreException);
         assertThat(gameFile.getFileCopy())
                 .satisfies(fileCopy -> assertSoftly(softly -> {
-                    softly.assertThat(fileCopy.status()).isEqualTo(FileBackupStatus.FAILED);
-                    softly.assertThat(fileCopy.failedReason()).isEqualTo(coreException.getMessage());
+                    softly.assertThat(fileCopy.getStatus()).isEqualTo(FileBackupStatus.FAILED);
+                    softly.assertThat(fileCopy.getFailedReason()).isEqualTo(coreException.getMessage());
                 }));
         verify(gameFileRepository, times(4)).save(gameFile);
         assertThat(storageSolution.fileDeleteWasAttempted(filePath)).isTrue();
-        assertThat(gameFile.getFileCopy().filePath()).isNull();
+        assertThat(gameFile.getFileCopy().getFilePath()).isNull();
     }
 
     private IOException mockGameProviderServiceThrowsExceptionDuringBackup() throws IOException {
@@ -150,8 +150,8 @@ class FileBackupServiceTest {
                 .cause().isInstanceOf(IOException.class);
         assertThat(gameFile.getFileCopy())
                 .satisfies(fileBackup -> assertSoftly(softly -> {
-                    softly.assertThat(fileBackup.status()).isEqualTo(FileBackupStatus.FAILED);
-                    softly.assertThat(fileBackup.failedReason()).isEqualTo("Unknown error");
+                    softly.assertThat(fileBackup.getStatus()).isEqualTo(FileBackupStatus.FAILED);
+                    softly.assertThat(fileBackup.getFailedReason()).isEqualTo("Unknown error");
                 }));
     }
 
@@ -188,8 +188,8 @@ class FileBackupServiceTest {
         }
 
         public void addFor(GameFile gameFile) {
-            savedFileBackupStatuses.add(gameFile.getFileCopy().status());
-            savedFilePaths.add(gameFile.getFileCopy().filePath());
+            savedFileBackupStatuses.add(gameFile.getFileCopy().getStatus());
+            savedFilePaths.add(gameFile.getFileCopy().getFilePath());
         }
     }
 }

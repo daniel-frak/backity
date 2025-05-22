@@ -32,7 +32,7 @@ class DeleteFileCopyUseCaseTest {
     @Test
     void shouldDeleteFileCopyGivenGameFileStatusIsSuccess() {
         GameFile gameFile = mockSuccessfulGameFileExists();
-        String filePath = gameFile.getFileCopy().filePath();
+        String filePath = gameFile.getFileCopy().getFilePath();
 
         useCase.deleteFileCopy(gameFile.getId());
 
@@ -52,7 +52,7 @@ class DeleteFileCopyUseCaseTest {
 
         useCase.deleteFileCopy(gameFile.getId());
 
-        assertThat(gameFile.getFileCopy().status()).isEqualTo(FileBackupStatus.DISCOVERED);
+        assertThat(gameFile.getFileCopy().getStatus()).isEqualTo(FileBackupStatus.DISCOVERED);
         verify(gameFileRepository).save(gameFile);
     }
 
@@ -65,7 +65,7 @@ class DeleteFileCopyUseCaseTest {
         assertThatThrownBy(() -> useCase.deleteFileCopy(gameFile.getId()))
                 .isSameAs(exception);
 
-        assertThat(gameFile.getFileCopy().status()).isNotEqualTo(FileBackupStatus.DISCOVERED);
+        assertThat(gameFile.getFileCopy().getStatus()).isNotEqualTo(FileBackupStatus.DISCOVERED);
         verify(gameFileRepository, never()).save(any());
     }
 

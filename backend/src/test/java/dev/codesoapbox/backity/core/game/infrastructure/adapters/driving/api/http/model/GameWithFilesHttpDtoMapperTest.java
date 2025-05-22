@@ -43,6 +43,7 @@ class GameWithFilesHttpDtoMapperTest {
 
     private GameWithFilesHttpDto dtoSuccessful() {
         return dto(new FileCopyHttpDto(
+                "6df888e8-90b9-4df5-a237-0cba422c0310",
                 FileBackupStatusHttpDto.SUCCESS,
                 null,
                 "someFilePath"
@@ -97,6 +98,7 @@ class GameWithFilesHttpDtoMapperTest {
 
     private GameWithFilesHttpDto dtoFailed() {
         return dto(new FileCopyHttpDto(
+                "6df888e8-90b9-4df5-a237-0cba422c0310",
                 FileBackupStatusHttpDto.FAILED,
                 "someFailedReason",
                 null
