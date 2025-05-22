@@ -1,8 +1,8 @@
 import {Component} from '@angular/core';
 import {PageHeaderComponent} from '@app/shared/components/page-header/page-header.component';
 import {
-  DiscoveredFilesCardComponent
-} from "@app/core/pages/file-discovery/discovered-files-card/discovered-files-card.component";
+  DiscoveredFileCopiesCardComponent
+} from "@app/core/pages/file-discovery/discovered-file-copies-card/discovered-file-copies-card.component";
 import {
   GameContentDiscoveryInfoCardComponent
 } from "@app/core/pages/file-discovery/game-content-discovery-info-card/game-content-discovery-info-card.component";
@@ -12,7 +12,7 @@ import {
   templateUrl: './game-content-discovery.component.html',
   styleUrls: ['./game-content-discovery.component.scss'],
   standalone: true,
-  imports: [PageHeaderComponent, DiscoveredFilesCardComponent, GameContentDiscoveryInfoCardComponent]
+  imports: [PageHeaderComponent, DiscoveredFileCopiesCardComponent, GameContentDiscoveryInfoCardComponent]
 })
 export class GameContentDiscoveryComponent {
 

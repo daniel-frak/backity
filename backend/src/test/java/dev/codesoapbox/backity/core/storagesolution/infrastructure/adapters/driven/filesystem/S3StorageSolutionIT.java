@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.driven.filesystem;
 
 import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.FileCouldNotBeDeletedException;
 import dev.codesoapbox.backity.testing.s3.annotations.S3RepositoryTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,6 +64,14 @@ class S3StorageSolutionIT {
     @BeforeEach
     void setUp(S3Client s3Client) {
         s3StorageSolution = new S3StorageSolution(s3Client, BUCKET_NAME, BUFFER_SIZE_IN_BYTES);
+    }
+
+    @Test
+    void shouldGetId() {
+        StorageSolutionId result = s3StorageSolution.getId();
+
+        StorageSolutionId expectedResult = new StorageSolutionId("S3");
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test

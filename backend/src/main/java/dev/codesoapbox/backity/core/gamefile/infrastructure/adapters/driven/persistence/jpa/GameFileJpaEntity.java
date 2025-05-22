@@ -35,10 +35,7 @@ public class GameFileJpaEntity {
     private UUID gameId;
 
     @Embedded
-    private FileSourceJpaEntity fileSource;
-
-    @Embedded
-    private FileCopyJpaEntity fileCopy;
+    private FileSourceJpaEmbeddable fileSource;
 
     @NotNull
     @CreatedDate

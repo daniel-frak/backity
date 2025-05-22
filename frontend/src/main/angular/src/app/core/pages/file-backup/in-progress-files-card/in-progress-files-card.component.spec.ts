@@ -5,10 +5,10 @@ import {
   FileBackupMessageTopics,
   FileDownloadProgressUpdatedEvent,
   FileBackupStartedEvent,
-  FileBackupStatus,
-  FileBackupStatusChangedEvent,
+  FileCopyStatus,
+  FileCopyStatusChangedEvent,
   GameFile,
-  GameFilesClient
+  FileCopiesClient, FileCopy, FileCopyNaturalId, FileCopyWithContext
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
@@ -22,26 +22,38 @@ import {TestProgressUpdatedEvent} from "@app/shared/testing/objects/test-progres
 import SpyObj = jasmine.SpyObj;
 import createSpy = jasmine.createSpy;
 import createSpyObj = jasmine.createSpyObj;
-import {TestFileBackupStatusChangedEvent} from "@app/shared/testing/objects/test-file-backup-status-changed-event";
+import {TestFileCopyStatusChangedEvent} from "@app/shared/testing/objects/test-file-copy-status-changed-event";
+import {TestFileCopy} from "@app/shared/testing/objects/test-file-copy";
+import {DebugElement} from "@angular/core";
 
 const NOTHING_BEING_BACKED_UP_TEXT = 'Nothing is currently being backed up';
 
 describe('InProgressFilesCardComponent', () => {
   let component: InProgressFilesCardComponent;
   let fixture: ComponentFixture<InProgressFilesCardComponent>;
-  let gameFilesClient: SpyObj<GameFilesClient>;
+  let fileCopiesClient: SpyObj<FileCopiesClient>;
   let messagesService: SpyObj<MessagesService>;
   let notificationService: NotificationService;
 
-  const inProgressGameFile: GameFile = TestGameFile.inProgress();
+  const inProgressFileCopy: FileCopy = TestFileCopy.inProgress();
+  const aGameFile: GameFile = TestGameFile.any();
+  const inProgressFileCopyWithContext: FileCopyWithContext = {
+    fileCopy: inProgressFileCopy,
+    gameFile: {
+      fileSource: aGameFile.fileSource
+    },
+    game: {
+      title: "someGameTitle"
+    }
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [InProgressFilesCardComponent],
       providers: [
         {
-          provide: GameFilesClient,
-          useValue: createSpyObj('GameFilesClient', ['getCurrentlyDownloading'])
+          provide: FileCopiesClient,
+          useValue: createSpyObj('FileCopiesClient', ['getCurrentlyDownloading'])
         },
         {
           provide: MessagesService,
@@ -57,12 +69,12 @@ describe('InProgressFilesCardComponent', () => {
 
     fixture = TestBed.createComponent(InProgressFilesCardComponent);
     component = fixture.componentInstance;
-    gameFilesClient = TestBed.inject(GameFilesClient) as SpyObj<GameFilesClient>;
+    fileCopiesClient = TestBed.inject(FileCopiesClient) as SpyObj<FileCopiesClient>;
     messagesService = TestBed.inject(MessagesService) as SpyObj<MessagesService>;
     notificationService = TestBed.inject(NotificationService);
 
-    gameFilesClient.getCurrentlyDownloading
-      .and.returnValue(of(JSON.parse(JSON.stringify(inProgressGameFile))) as any);
+    fileCopiesClient.getCurrentlyDownloading
+      .and.returnValue(of(JSON.parse(JSON.stringify(inProgressFileCopyWithContext))) as any);
 
     MessageTesting.mockWatch(messagesService, (destination, callback) => {
       // Do nothing
@@ -91,7 +103,7 @@ describe('InProgressFilesCardComponent', () => {
   it('should show failure notification given error when refreshCurrentlyDownloaded is called',
     async () => {
       const mockError = new Error('test error');
-      gameFilesClient.getCurrentlyDownloading.and.returnValue(throwError(() => mockError));
+      fileCopiesClient.getCurrentlyDownloading.and.returnValue(throwError(() => mockError));
 
       await component.refreshCurrentlyDownloaded();
 
@@ -118,11 +130,11 @@ describe('InProgressFilesCardComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(gameFilesClient.getCurrentlyDownloading).toHaveBeenCalled();
-    expect(component.currentDownload).toEqual(inProgressGameFile);
+    expect(fileCopiesClient.getCurrentlyDownloading).toHaveBeenCalled();
+    expect(component.currentDownload).toEqual(inProgressFileCopyWithContext);
     expect(component.currentDownloadIsLoading).toBe(false);
 
-    expectCurrentlyDownloadingGameTitleToContain(inProgressGameFile.fileSource.originalGameTitle);
+    expectCurrentlyDownloadingGameTitleToContain(aGameFile.fileSource.originalGameTitle);
   });
 
   function expectCurrentlyDownloadingGameTitleToContain(expectedGameTitle: string) {
@@ -135,7 +147,8 @@ describe('InProgressFilesCardComponent', () => {
   }
 
   it('should update currently downloaded game', async () => {
-    const fileBackupStartedEvent: FileBackupStartedEvent = TestFileBackupStartedEvent.for(inProgressGameFile);
+    const fileBackupStartedEvent: FileBackupStartedEvent =
+      TestFileBackupStartedEvent.for(aGameFile, inProgressFileCopy);
     fileBackupStartedEvent.originalGameTitle = "Updated game title";
 
     await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
@@ -154,33 +167,38 @@ describe('InProgressFilesCardComponent', () => {
     expect(progressBar.nativeElement.textContent).toContain('25%');
   });
 
-  it('should clear currently downloaded game when FileBackupStatusChangedEvent' +
+  it('should clear currently downloaded game when FileCopyStatusChangedEvent' +
     ' is received with status Success', async () => {
-    await simulateFileBackupStatusChangedEventReceived(inProgressGameFile.id, FileBackupStatus.Success);
+    await simulateFileCopyStatusChangedEventReceived(inProgressFileCopy.id,
+      inProgressFileCopy.naturalId, FileCopyStatus.Success);
 
-    const currentlyDownloadingTable = getInProgressFileTable();
+    const currentlyDownloadingTable: DebugElement = getInProgressFileTable();
     expect(currentlyDownloadingTable.nativeElement.textContent).toContain(NOTHING_BEING_BACKED_UP_TEXT);
   });
 
-  async function simulateFileBackupStatusChangedEventReceived(id: string, newStatus: FileBackupStatus) {
-    const statusChangedMessage: FileBackupStatusChangedEvent = TestFileBackupStatusChangedEvent.with(id, newStatus);
+  async function simulateFileCopyStatusChangedEventReceived(
+    fileCopyId: string, fileCopyNaturalId: FileCopyNaturalId, newStatus: FileCopyStatus) {
+    const statusChangedMessage: FileCopyStatusChangedEvent = TestFileCopyStatusChangedEvent.with(
+      fileCopyId, fileCopyNaturalId, newStatus);
     await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
       FileBackupMessageTopics.StatusChanged, statusChangedMessage);
   }
 
-  it('should clear currently downloaded game when FileBackupStatusChangedEvent' +
+  it('should clear currently downloaded game when FileCopyStatusChangedEvent' +
     ' is received with status Failed', () => {
-    simulateFileBackupStatusChangedEventReceived(inProgressGameFile.id, FileBackupStatus.Failed);
+    simulateFileCopyStatusChangedEventReceived(inProgressFileCopy.id, inProgressFileCopy.naturalId,
+      FileCopyStatus.Failed);
 
-    const currentlyDownloadingTable = getInProgressFileTable();
+    const currentlyDownloadingTable: DebugElement = getInProgressFileTable();
     expect(currentlyDownloadingTable.nativeElement.textContent).toContain(NOTHING_BEING_BACKED_UP_TEXT);
   });
 
-  it('should not clear currently downloaded game when FileBackupStatusChangedEvent' +
+  it('should not clear currently downloaded game when FileCopyStatusChangedEvent' +
     ' is received with status other than Success or Failed', async () => {
-    await simulateFileBackupStatusChangedEventReceived(inProgressGameFile.id, FileBackupStatus.InProgress);
+    await simulateFileCopyStatusChangedEventReceived(
+      inProgressFileCopy.id, inProgressFileCopy.naturalId, FileCopyStatus.InProgress);
 
-    const currentlyDownloadingTable = getInProgressFileTable();
+    const currentlyDownloadingTable: DebugElement = getInProgressFileTable();
     expect(currentlyDownloadingTable.nativeElement.textContent).not.toContain(NOTHING_BEING_BACKED_UP_TEXT);
   });
 
@@ -188,28 +206,43 @@ describe('InProgressFilesCardComponent', () => {
     return fixture.debugElement.query(By.css('#currently-downloading'));
   }
 
-  it('should not clear currently downloaded game when FileBackupStatusChangedEvent' +
-    ' is received with id other than current and status Success', async () => {
-    await simulateFileBackupStatusChangedEventReceived('anotherGameFileId', FileBackupStatus.Success);
+  it('should not clear currently downloaded game when FileCopyStatusChangedEvent' +
+    ' is received with natural id other than current and status Success', async () => {
+    let fileCopyNaturalId: FileCopyNaturalId = {
+      gameFileId: 'anotherGameFileId',
+      backupTargetId: 'someBackupTargetId'
+    };
+    await simulateFileCopyStatusChangedEventReceived(
+      inProgressFileCopy.id, fileCopyNaturalId, FileCopyStatus.Success);
 
-    const currentlyDownloadingTable = getInProgressFileTable();
+    const currentlyDownloadingTable: DebugElement = getInProgressFileTable();
     expect(currentlyDownloadingTable.nativeElement.textContent).not.toContain(NOTHING_BEING_BACKED_UP_TEXT);
   });
 
-  it('should not clear currently downloaded game when FileBackupStatusChangedEvent' +
-    ' is received with id other than current and status Failed', async () => {
-    await simulateFileBackupStatusChangedEventReceived('anotherGameFileId', FileBackupStatus.Failed);
+  it('should not clear currently downloaded game when FileCopyStatusChangedEvent' +
+    ' is received with natural id other than current and status Failed', async () => {
+    let fileCopyNaturalId: FileCopyNaturalId = {
+      gameFileId: 'anotherGameFileId',
+      backupTargetId: 'someBackupTargetId'
+    };
+    await simulateFileCopyStatusChangedEventReceived(
+      inProgressFileCopy.id, fileCopyNaturalId, FileCopyStatus.Failed);
 
-    const currentlyDownloadingTable = getInProgressFileTable();
+    const currentlyDownloadingTable: DebugElement = getInProgressFileTable();
     expect(currentlyDownloadingTable.nativeElement.textContent).not.toContain(NOTHING_BEING_BACKED_UP_TEXT);
   });
 
-  it('should do nothing when FileBackupStatusChangedEvent' +
+  it('should do nothing when FileCopyStatusChangedEvent' +
     ' is received and currently downloaded file is already cleared', () => {
-    gameFilesClient.getCurrentlyDownloading.and.returnValue(of(undefined) as any);
-    simulateFileBackupStatusChangedEventReceived('anotherGameFileId', FileBackupStatus.Failed);
+    fileCopiesClient.getCurrentlyDownloading.and.returnValue(of(undefined) as any);
+    let fileCopyNaturalId: FileCopyNaturalId = {
+      gameFileId: 'anotherGameFileId',
+      backupTargetId: 'someBackupTargetId'
+    };
+    simulateFileCopyStatusChangedEventReceived(
+      inProgressFileCopy.id, fileCopyNaturalId, FileCopyStatus.Failed);
 
-    const currentlyDownloadingTable = getInProgressFileTable();
+    const currentlyDownloadingTable: DebugElement = getInProgressFileTable();
     expect(currentlyDownloadingTable.nativeElement.textContent).toContain(NOTHING_BEING_BACKED_UP_TEXT);
   });
 });

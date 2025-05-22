@@ -1,0 +1,47 @@
+<app-card cardTitle="Processed files">
+  <app-loaded-content [isLoading]="fileCopiesAreLoading">
+    <div class="button-container">
+      <app-button [actionAsync]="onClickRefreshProcessedFiles()"
+                  [disabled]="fileCopiesAreLoading"
+                  testId="refresh-processed-files-btn" buttonStyle="secondary">
+        Refresh
+      </app-button>
+    </div>
+
+    <app-table [content]="fileCopyPage?.content" [isLoading]="fileCopiesAreLoading"
+               id="processed-files" [testId]="'processed-files-table'">
+      <ng-template app-table-column="File path" let-item>
+        {{ asFileCopy(item).filePath }}
+      </ng-template>
+      <ng-template app-table-column="Game file id" let-item>
+        {{ asFileCopy(item).naturalId.gameFileId }}
+      </ng-template>
+      <ng-template app-table-column="Backup target id" let-item>
+        {{ asFileCopy(item).naturalId.backupTargetId }}
+      </ng-template>
+      <ng-template app-table-column="Status" let-item>
+        <ng-container *ngFor="let fileCopy of [asFileCopy(item)]">
+          <span
+            [ngClass]="{'bg-success': fileCopy.status == FileCopyStatus.Success,
+             'bg-danger': fileCopy.status != FileCopyStatus.Success}"
+            class="badge">
+            <i [ngClass]="{'bi bi-check-circle': fileCopy.status == FileCopyStatus.Success,
+             'bi bi-x-circle': fileCopy.status != FileCopyStatus.Success}"
+               aria-hidden="true"
+               class="me-1">
+            </i>
+
+            {{ fileCopy.status }}
+          </span>
+        </ng-container>
+      </ng-template>
+    </app-table>
+    <app-pagination pageSizeQueryParamName="processed-file-copies-page-size"
+                    pageNumberQueryParamName="processed-file-copies-page"
+                    [disabled]="fileCopiesAreLoading"
+                    [currentPage]="fileCopyPage"
+                    [(pageNumber)]="pageNumber"
+                    [(pageSize)]="pageSize"
+                    (onPageChange)="refreshProcessedFileCopies()"/>
+  </app-loaded-content>
+</app-card>

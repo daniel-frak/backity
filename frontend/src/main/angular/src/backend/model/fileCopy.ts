@@ -7,14 +7,18 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { FileBackupStatus } from './fileBackupStatus';
+import { FileCopyNaturalId } from './fileCopyNaturalId';
+import { FileCopyStatus } from './fileCopyStatus';
 
 
 export interface FileCopy { 
     id: string;
-    status: FileBackupStatus;
+    naturalId: FileCopyNaturalId;
+    status: FileCopyStatus;
     failedReason?: string;
     filePath?: string;
+    dateCreated?: string;
+    dateModified?: string;
 }
 export namespace FileCopy {
 }

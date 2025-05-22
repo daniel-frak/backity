@@ -15,6 +15,8 @@ import java.util.Set;
 @NoArgsConstructor
 public class FakeUnixStorageSolution implements StorageSolution {
 
+    public static final StorageSolutionId ID = new StorageSolutionId("FakeUnixStorageSolution");
+
     private final Set<String> pathsCheckedForSize = new HashSet<>();
     private final Set<String> directoriesCreated = new HashSet<>();
     private final Map<String, String> filesRenamed = new HashMap<>();
@@ -36,6 +38,11 @@ public class FakeUnixStorageSolution implements StorageSolution {
     private String fixSeparatorChar(String filePath) {
         return filePath
                 .replace("/", "\\");
+    }
+
+    @Override
+    public StorageSolutionId getId() {
+        return ID;
     }
 
     @Override

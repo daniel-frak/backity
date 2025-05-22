@@ -1,10 +1,10 @@
-import {FileBackupStatus, GameFile} from "@backend";
+import {GameFile} from "@backend";
 
 export class TestGameFile {
 
-  public static discovered(): GameFile {
+  public static any(): GameFile {
     return {
-      id: "someFileId",
+      id: "someGameFileId",
       gameId: "someGameId",
       fileSource: {
         gameProviderId: "someGameProviderId",
@@ -14,36 +14,6 @@ export class TestGameFile {
         url: "some.url",
         size: "3 GB",
         fileTitle: "currentGame.exe"
-      },
-      fileCopy: {
-        status: FileBackupStatus.Discovered
-      }
-    };
-  }
-
-  public static enqueued(): GameFile {
-    return {
-      ...this.discovered(),
-      fileCopy: {
-        status: FileBackupStatus.Enqueued
-      }
-    };
-  }
-
-  public static inProgress(): GameFile {
-    return {
-      ...this.discovered(),
-      fileCopy: {
-        status: FileBackupStatus.InProgress
-      }
-    };
-  }
-
-  public static successfullyProcessed(): GameFile {
-    return {
-      ...this.discovered(),
-      fileCopy: {
-        status: FileBackupStatus.Success
       }
     };
   }

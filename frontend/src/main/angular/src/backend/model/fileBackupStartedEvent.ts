@@ -7,10 +7,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { FileCopyNaturalIdWsDto } from './fileCopyNaturalIdWsDto';
 
 
 export interface FileBackupStartedEvent { 
-    gameFileId: string;
+    fileCopyId: string;
+    fileCopyNaturalId: FileCopyNaturalIdWsDto;
     originalGameTitle: string;
     fileTitle: string;
     version: string;

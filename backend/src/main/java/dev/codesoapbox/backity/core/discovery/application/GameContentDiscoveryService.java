@@ -3,12 +3,14 @@ package dev.codesoapbox.backity.core.discovery.application;
 import dev.codesoapbox.backity.DoNotMutate;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
+import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStatusChangedEvent;
-import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.*;
+import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,19 +24,16 @@ import java.util.function.BiConsumer;
 public class GameContentDiscoveryService {
 
     private final List<GameProviderFileDiscoveryService> gameProviderFileDiscoveryServices;
-    private final FileCopyFactory fileCopyFactory;
     private final GameFileRepository gameFileRepository;
     private final GameRepository gameRepository;
     private final DomainEventPublisher domainEventPublisher;
     private final Map<GameProviderId, Boolean> discoveryStatuses = new ConcurrentHashMap<>();
 
     public GameContentDiscoveryService(List<GameProviderFileDiscoveryService> gameProviderFileDiscoveryServices,
-                                       FileCopyFactory fileCopyFactory,
                                        GameRepository gameRepository,
                                        GameFileRepository gameFileRepository,
                                        DomainEventPublisher domainEventPublisher) {
         this.gameProviderFileDiscoveryServices = gameProviderFileDiscoveryServices.stream().toList();
-        this.fileCopyFactory = fileCopyFactory;
         this.gameRepository = gameRepository;
         this.gameFileRepository = gameFileRepository;
         this.domainEventPublisher = domainEventPublisher;
@@ -98,8 +97,7 @@ public class GameContentDiscoveryService {
 
     private void saveDiscoveredFileInfo(FileSource fileSource) {
         Game game = getGameOrAddNew(fileSource);
-        FileCopy fileCopy = fileCopyFactory.create();
-        GameFile gameFile = GameFile.createFor(game, fileSource, fileCopy);
+        GameFile gameFile = GameFile.createFor(game, fileSource);
 
         if (!gameFileRepository.existsByUrlAndVersion(gameFile.getFileSource().url(),
                 gameFile.getFileSource().version())) {

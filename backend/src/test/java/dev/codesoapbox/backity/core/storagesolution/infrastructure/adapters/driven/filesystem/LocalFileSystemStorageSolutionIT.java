@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.driven.filesystem;
 
 import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.FileCouldNotBeDeletedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,14 @@ class LocalFileSystemStorageSolutionIT {
     @BeforeEach
     void setUp() {
         localFileSystem = new LocalFileSystemStorageSolution();
+    }
+
+    @Test
+    void shouldGetId() {
+        StorageSolutionId result = localFileSystem.getId();
+
+        StorageSolutionId expectedResult = new StorageSolutionId("LOCAL_FILE_SYSTEM");
+        assertThat(result).isEqualTo(expectedResult);
     }
 
     @Test

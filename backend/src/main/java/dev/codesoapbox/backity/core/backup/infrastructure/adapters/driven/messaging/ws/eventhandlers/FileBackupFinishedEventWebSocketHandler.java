@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers;
 
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.FileBackupWebSocketTopics;
-import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileBackupStatusChangedWsEvent;
-import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileBackupStatusChangedWsEventMapper;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileCopyStatusChangedWsEvent;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileCopyStatusChangedWsEventMapper;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.WebSocketEventPublisher;
 import dev.codesoapbox.backity.shared.domain.DomainEventHandler;
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 public class FileBackupFinishedEventWebSocketHandler implements DomainEventHandler<FileBackupFinishedEvent> {
 
     private final WebSocketEventPublisher wsEventPublisher;
-    private final FileBackupStatusChangedWsEventMapper wsEventMapper;
+    private final FileCopyStatusChangedWsEventMapper wsEventMapper;
 
     @Override
     public Class<FileBackupFinishedEvent> getEventClass() {
@@ -21,7 +21,7 @@ public class FileBackupFinishedEventWebSocketHandler implements DomainEventHandl
 
     @Override
     public void handle(FileBackupFinishedEvent event) {
-        FileBackupStatusChangedWsEvent payload = wsEventMapper.toWsEvent(event);
+        FileCopyStatusChangedWsEvent payload = wsEventMapper.toWsEvent(event);
         wsEventPublisher.publish(FileBackupWebSocketTopics.BACKUP_STATUS_CHANGED.wsDestination(), payload);
     }
 }

@@ -4,17 +4,17 @@ import {
   InProgressFilesCardComponentStub
 } from "@app/core/pages/file-backup/in-progress-files-card/in-progress-files-card.component.stub";
 import {
-  EnqueuedFilesCardComponentStub
-} from "@app/core/pages/file-backup/enqueued-files-card/enqueued-files-card.component.stub";
+  EnqueuedFileCopiesCardComponentStub
+} from "@app/core/pages/file-backup/enqueued-file-copies-card/enqueued-file-copies-card-component-stub.component";
 import {
   ProcessedFilesCardComponentStub
 } from "@app/core/pages/file-backup/processed-files-card/processed-files-card.component.stub";
 import {
-  EnqueuedFilesCardComponent
-} from "@app/core/pages/file-backup/enqueued-files-card/enqueued-files-card.component";
+  EnqueuedFileCopiesCardComponent
+} from "@app/core/pages/file-backup/enqueued-file-copies-card/enqueued-file-copies-card.component";
 import {
-  ProcessedFilesCardComponent
-} from "@app/core/pages/file-backup/processed-files-card/processed-files-card.component";
+  ProcessedFileCopiesCardComponent
+} from "@app/core/pages/file-backup/processed-files-card/processed-file-copies-card.component";
 import {
   InProgressFilesCardComponent
 } from "@app/core/pages/file-backup/in-progress-files-card/in-progress-files-card.component";
@@ -31,14 +31,14 @@ describe('FileBackupComponent', () => {
         remove: {
           imports: [
             InProgressFilesCardComponent,
-            EnqueuedFilesCardComponent,
-            ProcessedFilesCardComponent
+            EnqueuedFileCopiesCardComponent,
+            ProcessedFileCopiesCardComponent
           ]
         },
         add: {
           imports: [
             InProgressFilesCardComponentStub,
-            EnqueuedFilesCardComponentStub,
+            EnqueuedFileCopiesCardComponentStub,
             ProcessedFilesCardComponentStub
           ]
         }

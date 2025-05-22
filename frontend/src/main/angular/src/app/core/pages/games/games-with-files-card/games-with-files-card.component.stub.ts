@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'app-games-with-files-card',
+  selector: 'app-games-with-file-copies-card',
   standalone: true,
   template: ''
 })

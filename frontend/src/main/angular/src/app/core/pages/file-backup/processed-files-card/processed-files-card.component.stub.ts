@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 @Component({
-  selector: 'app-processed-files-card',
+  selector: 'app-processed-file-copies-card',
   standalone: true,
   template: ''
 })

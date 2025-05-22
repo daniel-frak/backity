@@ -1,10 +1,12 @@
 package dev.codesoapbox.backity.core.backup.domain.events;
 
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyNaturalId;
 import dev.codesoapbox.backity.shared.domain.DomainEvent;
-import jakarta.validation.constraints.NotNull;
+import lombok.NonNull;
 
 public record FileBackupFinishedEvent(
-        @NotNull GameFileId gameFileId
+        @NonNull FileCopyId fileCopyId,
+        @NonNull FileCopyNaturalId fileCopyNaturalId
 ) implements DomainEvent {
 }

@@ -2,6 +2,8 @@ package dev.codesoapbox.backity.core.game.domain;
 
 import lombok.Builder;
 
+import java.time.LocalDateTime;
+
 @Builder(builderClassName = "Builder", builderMethodName = "anyBuilder", buildMethodName = "internalBuilder",
         setterPrefix = "with")
 public final class TestGame {
@@ -11,6 +13,12 @@ public final class TestGame {
 
     @lombok.Builder.Default
     private String title = "Test Game";
+
+    @lombok.Builder.Default
+    private LocalDateTime dateCreated = LocalDateTime.parse("2022-04-29T14:15:53");
+
+    @lombok.Builder.Default
+    private LocalDateTime dateModified = LocalDateTime.parse("2023-04-29T14:15:53");
 
     public static Game any() {
         return anyBuilder().build();
@@ -24,7 +32,7 @@ public final class TestGame {
 
         public Game build() {
             TestGame temp = internalBuilder();
-            return new Game(temp.id, temp.title);
+            return new Game(temp.id, temp.dateCreated, temp.dateModified, temp.title);
         }
     }
 }

@@ -35,17 +35,17 @@ class UrlFileDownloaderTest {
     void setUp() {
         storageSolution = new FakeUnixStorageSolution();
         fileStreamFactory = new FakeProgressAwareFileStreamFactory(clock);
-        urlFileDownloader = new UrlFileDownloader(storageSolution);
+        urlFileDownloader = new UrlFileDownloader();
     }
 
     @Test
     void downloadFileShouldDownloadToDisk() throws IOException {
-        GameFile gameFile = TestGameFile.discovered();
+        GameFile gameFile = TestGameFile.gog();
         String filePath = "testFilePath";
         DownloadProgress downloadProgress = mockDownloadProgress();
         TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, "Test data");
 
-        urlFileDownloader.downloadFile(fileStream, gameFile, filePath);
+        urlFileDownloader.downloadFile(storageSolution, fileStream, gameFile, filePath);
 
         assertThat(storageSolution.fileExists(filePath)).isTrue();
     }
@@ -65,15 +65,14 @@ class UrlFileDownloaderTest {
         DownloadProgress downloadProgress = mockDownloadProgress();
         storageSolution = new FakeUnixStorageSolution();
         fileStreamFactory = new FakeProgressAwareFileStreamFactory(clock);
-        urlFileDownloader = new UrlFileDownloader(storageSolution);
         when(downloadProgress.track(any()))
                 .thenAnswer(inv -> inv.getArgument(0));
         when(downloadProgress.getContentLengthBytes())
                 .thenReturn(9L);
-        GameFile gameFile = TestGameFile.discovered();
+        GameFile gameFile = TestGameFile.gog();
         TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, "Test data");
 
-        urlFileDownloader.downloadFile(fileStream, gameFile, "someFilePath");
+        urlFileDownloader.downloadFile(storageSolution, fileStream, gameFile, "someFilePath");
 
         InOrder inOrder = Mockito.inOrder(downloadProgress);
         inOrder.verify(downloadProgress).initializeTracking(9, clock);
@@ -83,12 +82,12 @@ class UrlFileDownloaderTest {
     @Test
     void downloadFileShouldThrowGivenFileSizeDoesNotMatch() {
         String filePath = "someFilePath";
-        GameFile gameFile = TestGameFile.discovered();
+        GameFile gameFile = TestGameFile.gog();
         storageSolution.overrideDownloadedSizeFor(filePath, 999L);
         DownloadProgress downloadProgress = mockDownloadProgress();
         TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, "Test data");
 
-        assertThatThrownBy(() -> urlFileDownloader.downloadFile(fileStream, gameFile, filePath))
+        assertThatThrownBy(() -> urlFileDownloader.downloadFile(storageSolution, fileStream, gameFile, filePath))
                 .isInstanceOf(FileDownloadException.class)
                 .message()
                 .isEqualTo(

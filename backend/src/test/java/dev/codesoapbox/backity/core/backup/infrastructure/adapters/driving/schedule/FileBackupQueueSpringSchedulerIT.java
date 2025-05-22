@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.schedule;
 
-import dev.codesoapbox.backity.core.backup.application.usecases.BackUpOldestGameFileUseCase;
+import dev.codesoapbox.backity.core.backup.application.usecases.BackUpOldestFileCopyUseCase;
 import dev.codesoapbox.backity.core.backup.infrastructure.config.FileBackupQueueSchedulerBeanConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -19,15 +19,15 @@ import static org.mockito.Mockito.*;
 class FileBackupQueueSpringSchedulerIT {
 
     @MockitoBean
-    private BackUpOldestGameFileUseCase backUpOldestGameFileUseCase;
+    private BackUpOldestFileCopyUseCase backUpOldestFileCopyUseCase;
 
     @Test
     void shouldProcessQueueOnSchedule() {
         await()
                 .pollInterval(Duration.ofMillis(5))
                 .atMost(Duration.ofMillis(100))
-                .untilAsserted(() -> verify(backUpOldestGameFileUseCase,
+                .untilAsserted(() -> verify(backUpOldestFileCopyUseCase,
                         atLeast(2)) // First time always happens on startup
-                        .backUpOldestGameFile());
+                        .backUpOldestFileCopy());
     }
 }

@@ -3,10 +3,9 @@ package dev.codesoapbox.backity.core.gamefile.domain;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 @lombok.Builder(builderClassName = "Builder", buildMethodName = "internalBuild",
-        builderMethodName = "discoveredBuilder")
+        builderMethodName = "gogBuilder")
 public final class TestGameFile {
 
     @lombok.Builder.Default
@@ -19,59 +18,17 @@ public final class TestGameFile {
     private FileSource fileSource = TestFileSource.minimalGog();
 
     @lombok.Builder.Default
-    private FileCopy fileCopy = TestFileCopy.discovered();
-
-    @lombok.Builder.Default
-    private String filePath = null;
-
-    @lombok.Builder.Default
     private LocalDateTime dateCreated = LocalDateTime.parse("2022-04-29T14:15:53");
 
     @lombok.Builder.Default
     private LocalDateTime dateModified = LocalDateTime.parse("2023-04-29T14:15:53");
 
-    public static Builder discoveredBuilder() {
+    public static GameFile gog() {
+        return gogBuilder().build();
+    }
+
+    public static Builder gogBuilder() {
         return new Builder();
-    }
-
-    public static GameFile discovered() {
-        return discoveredBuilder().build();
-    }
-
-    public static GameFile successful() {
-        return successfulBuilder().build();
-    }
-
-    public static Builder successfulBuilder() {
-        return discoveredBuilder()
-                .fileCopy(TestFileCopy.successful());
-    }
-
-    public static GameFile enqueued() {
-        return enqueuedBuilder().build();
-    }
-
-    public static Builder enqueuedBuilder() {
-        return discoveredBuilder()
-                .fileCopy(TestFileCopy.enqueued());
-    }
-
-    public static GameFile failed() {
-        return failedBuilder().build();
-    }
-
-    public static Builder failedBuilder() {
-        return discoveredBuilder()
-                .fileCopy(TestFileCopy.failed());
-    }
-
-    public static GameFile inProgress() {
-        return inProgressBuilder().build();
-    }
-
-    public static Builder inProgressBuilder() {
-        return discoveredBuilder()
-                .fileCopy(TestFileCopy.inProgress());
     }
 
     public static class Builder {
@@ -82,10 +39,8 @@ public final class TestGameFile {
                     temp.id,
                     temp.gameId,
                     temp.fileSource,
-                    temp.fileCopy,
                     temp.dateCreated,
-                    temp.dateModified,
-                    new ArrayList<>()
+                    temp.dateModified
             );
         }
     }

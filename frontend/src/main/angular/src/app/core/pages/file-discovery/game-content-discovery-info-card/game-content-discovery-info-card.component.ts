@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
-  FileBackupStatus,
+  FileCopyStatus,
   FileDiscoveredEvent,
   GameContentDiscoveryClient,
   GameContentDiscoveryProgressUpdateEvent,
@@ -42,7 +42,7 @@ import {
 })
 export class GameContentDiscoveryInfoCardComponent implements OnInit, OnDestroy {
 
-  FileBackupStatus = FileBackupStatus;
+  FileCopyStatus = FileCopyStatus;
 
   newestDiscoveredFile?: FileDiscoveredEvent;
   newDiscoveredFilesCount: number = 0;

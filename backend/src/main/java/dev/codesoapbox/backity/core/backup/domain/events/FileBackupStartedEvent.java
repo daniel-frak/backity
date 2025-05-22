@@ -1,18 +1,13 @@
 package dev.codesoapbox.backity.core.backup.domain.events;
 
-import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyNaturalId;
 import dev.codesoapbox.backity.shared.domain.DomainEvent;
-import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 
 public record FileBackupStartedEvent(
-        @NotNull GameFileId gameFileId,
-        @NotNull String originalGameTitle,
-        @NotNull String fileTitle,
-        @NotNull String version,
-        @NotNull String originalFileName,
-        @NonNull FileSize size,
+        @NonNull FileCopyId fileCopyId,
+        @NonNull FileCopyNaturalId fileCopyNaturalId,
         String filePath
 ) implements DomainEvent {
 }

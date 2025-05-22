@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.shared.infrastructure.config.exceptionhandling;
 
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
-import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
+import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotBackedUpException;
 import dev.codesoapbox.backity.shared.domain.exceptions.DomainInvariantViolationException;
 import dev.codesoapbox.backity.testing.matchers.UuidMatcher;
 import jakarta.persistence.OptimisticLockException;
@@ -80,26 +80,26 @@ class RestExceptionHandlerIT {
 
     @Test
     void shouldHandleDomainInvariantViolationExceptionsWithNoCauseWithMessageKeys() throws Exception {
-        var expectedException = new GameFileNotBackedUpException(GameFileId.newInstance());
+        var expectedException = new FileCopyNotBackedUpException(FileCopyId.newInstance());
         when(testController.testEndpoint())
                 .thenThrow(expectedException);
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.message").value(expectedException.getMessage()))
-                .andExpect(jsonPath("$.messageKey").value("GAME_FILE_NOT_BACKED_UP"));
+                .andExpect(jsonPath("$.messageKey").value("FILE_COPY_NOT_BACKED_UP"));
     }
 
     @Test
     void shouldHandleDomainInvariantViolationExceptionsWithCauseWithMessageKeys() throws Exception {
         String expectedMessage = "Domain error message";
         when(testController.testEndpoint()).thenThrow(new DomainInvariantViolationException(expectedMessage,
-                new GameFileNotBackedUpException(GameFileId.newInstance())));
+                new FileCopyNotBackedUpException(FileCopyId.newInstance())));
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isUnprocessableEntity())
                 .andExpect(jsonPath("$.message").value(expectedMessage))
-                .andExpect(jsonPath("$.messageKey").value("GAME_FILE_NOT_BACKED_UP"));
+                .andExpect(jsonPath("$.messageKey").value("FILE_COPY_NOT_BACKED_UP"));
     }
 
     @Test
