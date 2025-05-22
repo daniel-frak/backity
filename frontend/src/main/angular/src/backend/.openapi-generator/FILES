@@ -31,7 +31,7 @@ model/gameContentDiscoveryStatusChangedEvent.ts
 model/gameContentDiscoveryWebSocketTopics.ts
 model/gameFile.ts
 model/gameFileProcessingStatus.ts
-model/gameWithFiles.ts
+model/gameWithFileCopies.ts
 model/gogConfig.ts
 model/gogGameFile.ts
 model/gogGameWithFiles.ts

@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.gamefile.infrastructure.config;
 
-import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
-import dev.codesoapbox.backity.core.gamefile.application.usecases.*;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
+import dev.codesoapbox.backity.core.gamefile.application.usecases.GetCurrentlyDownloadingFileUseCase;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,44 +9,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class GameFileUseCaseBeanConfig {
 
-    @Bean
-    public EnqueueFileUseCase enqueueFileUseCase(GameFileRepository gameFileRepository) {
-        return new EnqueueFileUseCase(gameFileRepository);
-    }
-
+    // @TODO Consider changing this use case to retrieve FileCopy
     @Bean
     public GetCurrentlyDownloadingFileUseCase getCurrentlyDownloadingFileUseCase(
+            FileCopyRepository fileCopyRepository,
             GameFileRepository gameFileRepository) {
-        return new GetCurrentlyDownloadingFileUseCase(gameFileRepository);
-    }
-
-    @Bean
-    public GetDiscoveredFileListUseCase getDiscoveredFileListUseCase(
-            GameFileRepository gameFileRepository) {
-        return new GetDiscoveredFileListUseCase(gameFileRepository);
-    }
-
-    @Bean
-    public GetEnqueuedFileListUseCase getEnqueuedFileListUseCase(
-            GameFileRepository gameFileRepository) {
-        return new GetEnqueuedFileListUseCase(gameFileRepository);
-    }
-
-    @Bean
-    public GetProcessedFileListUseCase getProcessedFileListUseCase(
-            GameFileRepository gameFileRepository) {
-        return new GetProcessedFileListUseCase(gameFileRepository);
-    }
-
-    @Bean
-    public DeleteFileCopyUseCase deleteFileCopyUseCase(
-            StorageSolution storageSolution, GameFileRepository gameFileRepository) {
-        return new DeleteFileCopyUseCase(storageSolution, gameFileRepository);
-    }
-
-    @Bean
-    public DownloadFileUseCase downloadFileUseCase(
-            GameFileRepository gameFileRepository, StorageSolution storageSolution) {
-        return new DownloadFileUseCase(gameFileRepository, storageSolution);
+        return new GetCurrentlyDownloadingFileUseCase(fileCopyRepository, gameFileRepository);
     }
 }

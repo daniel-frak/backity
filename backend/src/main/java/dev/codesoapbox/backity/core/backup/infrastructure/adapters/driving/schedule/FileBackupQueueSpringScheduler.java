@@ -1,16 +1,16 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.schedule;
 
-import dev.codesoapbox.backity.core.backup.application.usecases.BackUpOldestGameFileUseCase;
+import dev.codesoapbox.backity.core.backup.application.usecases.BackUpOldestFileCopyUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 
 @RequiredArgsConstructor
 public class FileBackupQueueSpringScheduler {
 
-    private final BackUpOldestGameFileUseCase backUpOldestGameFileUseCase;
+    private final BackUpOldestFileCopyUseCase backUpOldestFileCopyUseCase;
 
     @Scheduled(fixedRateString = "${backity.file-download-queue-scheduler.rate-ms}")
     public void processQueue() {
-        backUpOldestGameFileUseCase.backUpOldestGameFile();
+        backUpOldestFileCopyUseCase.backUpOldestFileCopy();
     }
 }

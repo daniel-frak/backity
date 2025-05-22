@@ -6,6 +6,8 @@ import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messag
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileBackupStatusChangedWsEvent;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileBackupStatusChangedWsEventMapper;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.WebSocketEventPublisher;
 import dev.codesoapbox.backity.shared.domain.DomainEventHandler;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class FileBackupStartedEventWebSocketHandler implements DomainEventHandler<FileBackupStartedEvent> {
 
+    private final GameFileRepository gameFileRepository;
     private final WebSocketEventPublisher wsEventPublisher;
     private final FileBackupStartedWsEventMapper backupStartedWsEventMapper;
     private final FileBackupStatusChangedWsEventMapper statusChangedWsEventMapper;
@@ -24,7 +27,8 @@ public class FileBackupStartedEventWebSocketHandler implements DomainEventHandle
 
     @Override
     public void handle(FileBackupStartedEvent event) {
-        FileBackupStartedWsEvent backupStartedPayload = backupStartedWsEventMapper.toWsEvent(event);
+        GameFile gameFile = gameFileRepository.getById(event.gameFileId());
+        FileBackupStartedWsEvent backupStartedPayload = backupStartedWsEventMapper.toWsEvent(event, gameFile);
         wsEventPublisher.publish(FileBackupWebSocketTopics.BACKUP_STARTED.wsDestination(), backupStartedPayload);
 
         FileBackupStatusChangedWsEvent payload = statusChangedWsEventMapper.toWsEvent(event);

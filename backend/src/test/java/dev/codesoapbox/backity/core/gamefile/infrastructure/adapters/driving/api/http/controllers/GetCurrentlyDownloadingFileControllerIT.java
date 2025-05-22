@@ -30,7 +30,7 @@ class GetCurrentlyDownloadingFileControllerIT {
 
     @Test
     void shouldGetCurrentlyDownloadingFile() throws Exception {
-        GameFile gameFile = TestGameFile.inProgress();
+        GameFile gameFile = TestGameFile.gog();
 
         when(useCase.findCurrentlyDownloadingFile())
                 .thenReturn(Optional.of(gameFile));
@@ -47,11 +47,6 @@ class GetCurrentlyDownloadingFileControllerIT {
                         "url": "/downlink/some_game/some_file",
                         "originalFileName": "game_1_installer.exe",
                         "size": "5 KB"
-                      },
-                      "fileCopy": {
-                        "status": "IN_PROGRESS",
-                        "failedReason": null,
-                        "filePath": "someFilePath"
                       },
                       "dateCreated": "2022-04-29T14:15:53",
                       "dateModified": "2023-04-29T14:15:53"

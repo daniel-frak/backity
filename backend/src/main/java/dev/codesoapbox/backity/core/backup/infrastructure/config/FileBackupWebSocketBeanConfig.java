@@ -7,6 +7,7 @@ import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messag
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileDownloadProgressUpdatedWsEventMapper;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileBackupStartedWsEventMapper;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileBackupStatusChangedWsEventMapper;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.WebSocketEventPublisher;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ public class FileBackupWebSocketBeanConfig {
 
     @Bean
     FileBackupStartedEventWebSocketHandler fileBackupStartedEventWebSocketHandler(
+            GameFileRepository gameFileRepository,
             WebSocketEventPublisher webSocketEventPublisher) {
         FileBackupStartedWsEventMapper backupStartedMapper =
                 Mappers.getMapper(FileBackupStartedWsEventMapper.class);
@@ -24,7 +26,7 @@ public class FileBackupWebSocketBeanConfig {
                 Mappers.getMapper(FileBackupStatusChangedWsEventMapper.class);
 
         return new FileBackupStartedEventWebSocketHandler(
-                webSocketEventPublisher, backupStartedMapper, backupStatusChangedMapper);
+                gameFileRepository, webSocketEventPublisher, backupStartedMapper, backupStatusChangedMapper);
     }
 
     @Bean

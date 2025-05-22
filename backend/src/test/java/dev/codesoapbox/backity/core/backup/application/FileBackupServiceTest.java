@@ -3,6 +3,10 @@ package dev.codesoapbox.backity.core.backup.application;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgressFactory;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
+import dev.codesoapbox.backity.core.filecopy.domain.FileBackupStatus;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
+import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.gamefile.domain.*;
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolver;
@@ -34,7 +38,7 @@ class FileBackupServiceTest {
     private UniqueFilePathResolver uniqueFilePathResolver;
 
     @Mock
-    private GameFileRepository gameFileRepository;
+    private FileCopyRepository fileCopyRepository;
 
     @Mock
     private GameProviderFileBackupService gameProviderFileBackupService;
@@ -49,22 +53,23 @@ class FileBackupServiceTest {
         when(gameProviderFileBackupService.getGameProviderId())
                 .thenReturn(EXISTING_GAME_PROVIDER_ID);
         storageSolution = new FakeUnixStorageSolution(5120);
-        fileBackupService = new FileBackupService(uniqueFilePathResolver, gameFileRepository, storageSolution,
+        fileBackupService = new FileBackupService(uniqueFilePathResolver, fileCopyRepository, storageSolution,
                 singletonList(gameProviderFileBackupService), downloadProgressFactory);
     }
 
     @Test
     void shouldDownloadFile() {
-        GameFile gameFile = TestGameFile.discovered();
-        GameFilePersistedChanges gameFilePersistedChanges = trackPersistedGameFileChanges();
+        GameFile gameFile = TestGameFile.gog();
+        FileCopy fileCopy = TestFileCopy.discovered();
+        PersistedChanges persistedChanges = trackPersistedChanges();
         String expectedFilePath = mockFilePathCreation(gameFile);
 
-        fileBackupService.backUpFile(gameFile);
+        fileBackupService.backUpFile(gameFile, fileCopy);
 
-        assertThat(gameFilePersistedChanges.savedFileBackupStatuses())
+        assertThat(persistedChanges.savedFileBackupStatuses())
                 .isEqualTo(List.of(FileBackupStatus.IN_PROGRESS, FileBackupStatus.IN_PROGRESS,
                         FileBackupStatus.SUCCESS));
-        assertThat(gameFilePersistedChanges.savedFilePaths())
+        assertThat(persistedChanges.savedFilePaths())
                 .isEqualTo(Arrays.asList(null, // Mark 'in progress' with no file path
                         expectedFilePath, // Set file path before starting download
                         expectedFilePath // Mark 'done'
@@ -79,42 +84,43 @@ class FileBackupServiceTest {
         return filePath;
     }
 
-    private GameFilePersistedChanges trackPersistedGameFileChanges() {
-        var gameFilePersistedChanges = new GameFilePersistedChanges();
-        when(gameFileRepository.save(any()))
+    private PersistedChanges trackPersistedChanges() {
+        var persistedChanges = new PersistedChanges();
+        when(fileCopyRepository.save(any()))
                 .then(a -> {
-                    GameFile argument = a.getArgument(0, GameFile.class);
-                    gameFilePersistedChanges.addFor(argument);
+                    FileCopy fileCopy = a.getArgument(0, FileCopy.class);
+                    persistedChanges.addFor(fileCopy);
 
-                    return argument;
+                    return fileCopy;
                 });
 
-        return gameFilePersistedChanges;
+        return persistedChanges;
     }
 
     @Test
     void shouldTryToRemoveFileAndRethrowWrappedGivenIOException() throws IOException {
-        GameFile gameFile = TestGameFile.discovered();
+        GameFile gameFile = TestGameFile.gog();
+        FileCopy fileCopy = TestFileCopy.discovered();
         String filePath = mockFilePathCreation(gameFile);
         IOException coreException = mockGameProviderServiceThrowsExceptionDuringBackup();
 
-        assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
+        assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile, fileCopy))
                 .isInstanceOf(FileBackupFailedException.class)
                 .hasCause(coreException);
-        assertThat(gameFile.getFileCopy())
-                .satisfies(fileCopy -> assertSoftly(softly -> {
-                    softly.assertThat(fileCopy.getStatus()).isEqualTo(FileBackupStatus.FAILED);
-                    softly.assertThat(fileCopy.getFailedReason()).isEqualTo(coreException.getMessage());
+        assertThat(fileCopy)
+                .satisfies(it -> assertSoftly(softly -> {
+                    softly.assertThat(it.getStatus()).isEqualTo(FileBackupStatus.FAILED);
+                    softly.assertThat(it.getFailedReason()).isEqualTo(coreException.getMessage());
                 }));
-        verify(gameFileRepository, times(4)).save(gameFile);
+        verify(fileCopyRepository, times(4)).save(fileCopy);
         assertThat(storageSolution.fileDeleteWasAttempted(filePath)).isTrue();
-        assertThat(gameFile.getFileCopy().getFilePath()).isNull();
+        assertThat(fileCopy.getFilePath()).isNull();
     }
 
     private IOException mockGameProviderServiceThrowsExceptionDuringBackup() throws IOException {
         var coreException = new IOException("someMessage");
         doThrow(coreException)
-                .when(gameProviderFileBackupService).backUpFile(any(), any());
+                .when(gameProviderFileBackupService).backUpFile(any(), any(), any());
 
         return coreException;
     }
@@ -122,14 +128,15 @@ class FileBackupServiceTest {
     @Test
     void downloadFileShouldThrowIfGameProviderFileBackupServiceNotFound() {
         var nonExistentGameProviderId = new GameProviderId("nonExistentGameProviderId1");
-        GameFile gameFile = TestGameFile.discoveredBuilder()
+        GameFile gameFile = TestGameFile.gogBuilder()
                 .fileSource(TestFileSource.minimalGogBuilder()
                         .gameProviderId(nonExistentGameProviderId)
                         .build())
                 .build();
+        FileCopy fileCopy = TestFileCopy.discovered();
         mockFilePathCreation(gameFile);
 
-        assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
+        assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile, fileCopy))
                 .isInstanceOf(FileBackupFailedException.class)
                 .cause().isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("File backup service for gameProviderId not found: nonExistentGameProviderId1");
@@ -138,31 +145,32 @@ class FileBackupServiceTest {
     @Test
     void downloadFileShouldThrowIfIOExceptionOccurs() throws IOException {
         GameProviderId gameProviderId = gameProviderFileBackupService.getGameProviderId();
-        GameFile gameFile = TestGameFile.discoveredBuilder()
+        GameFile gameFile = TestGameFile.gogBuilder()
                 .fileSource(TestFileSource.minimalGogBuilder()
                         .gameProviderId(gameProviderId)
                         .build())
                 .build();
+        FileCopy fileCopy = TestFileCopy.discovered();
         mockFileBackupThrowsIOException();
 
-        assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile))
+        assertThatThrownBy(() -> fileBackupService.backUpFile(gameFile, fileCopy))
                 .isInstanceOf(FileBackupFailedException.class)
                 .cause().isInstanceOf(IOException.class);
-        assertThat(gameFile.getFileCopy())
-                .satisfies(fileBackup -> assertSoftly(softly -> {
-                    softly.assertThat(fileBackup.getStatus()).isEqualTo(FileBackupStatus.FAILED);
-                    softly.assertThat(fileBackup.getFailedReason()).isEqualTo("Unknown error");
+        assertThat(fileCopy)
+                .satisfies(it -> assertSoftly(softly -> {
+                    softly.assertThat(it.getStatus()).isEqualTo(FileBackupStatus.FAILED);
+                    softly.assertThat(it.getFailedReason()).isEqualTo("Unknown error");
                 }));
     }
 
     private void mockFileBackupThrowsIOException() throws IOException {
         doThrow(new IOException())
-                .when(gameProviderFileBackupService).backUpFile(any(), any());
+                .when(gameProviderFileBackupService).backUpFile(any(), any(), any());
     }
 
     @Test
     void isReadyForShouldReturnTrueIfFileIsReadyToDownload() {
-        GameFile gameFile = TestGameFile.discovered();
+        GameFile gameFile = TestGameFile.gog();
         when(gameProviderFileBackupService.isReady())
                 .thenReturn(true);
 
@@ -171,25 +179,25 @@ class FileBackupServiceTest {
 
     @Test
     void isReadyForShouldReturnFalseIfFileIsNotReadyToDownload() {
-        GameFile gameFile = TestGameFile.discovered();
+        GameFile gameFile = TestGameFile.gog();
         when(gameProviderFileBackupService.isReady())
                 .thenReturn(false);
 
         assertThat(fileBackupService.isReadyFor(gameFile)).isFalse();
     }
 
-    private record GameFilePersistedChanges(
+    private record PersistedChanges(
             List<FileBackupStatus> savedFileBackupStatuses,
             List<String> savedFilePaths
     ) {
 
-        private GameFilePersistedChanges() {
+        private PersistedChanges() {
             this(new ArrayList<>(), new ArrayList<>());
         }
 
-        public void addFor(GameFile gameFile) {
-            savedFileBackupStatuses.add(gameFile.getFileCopy().getStatus());
-            savedFilePaths.add(gameFile.getFileCopy().getFilePath());
+        public void addFor(FileCopy fileCopy) {
+            savedFileBackupStatuses.add(fileCopy.getStatus());
+            savedFilePaths.add(fileCopy.getFilePath());
         }
     }
 }

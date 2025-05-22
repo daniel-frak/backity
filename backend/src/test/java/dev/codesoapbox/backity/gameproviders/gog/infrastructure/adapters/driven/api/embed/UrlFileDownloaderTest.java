@@ -40,7 +40,7 @@ class UrlFileDownloaderTest {
 
     @Test
     void downloadFileShouldDownloadToDisk() throws IOException {
-        GameFile gameFile = TestGameFile.discovered();
+        GameFile gameFile = TestGameFile.gog();
         String filePath = "testFilePath";
         DownloadProgress downloadProgress = mockDownloadProgress();
         TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, "Test data");
@@ -70,7 +70,7 @@ class UrlFileDownloaderTest {
                 .thenAnswer(inv -> inv.getArgument(0));
         when(downloadProgress.getContentLengthBytes())
                 .thenReturn(9L);
-        GameFile gameFile = TestGameFile.discovered();
+        GameFile gameFile = TestGameFile.gog();
         TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, "Test data");
 
         urlFileDownloader.downloadFile(fileStream, gameFile, "someFilePath");
@@ -83,7 +83,7 @@ class UrlFileDownloaderTest {
     @Test
     void downloadFileShouldThrowGivenFileSizeDoesNotMatch() {
         String filePath = "someFilePath";
-        GameFile gameFile = TestGameFile.discovered();
+        GameFile gameFile = TestGameFile.gog();
         storageSolution.overrideDownloadedSizeFor(filePath, 999L);
         DownloadProgress downloadProgress = mockDownloadProgress();
         TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, "Test data");

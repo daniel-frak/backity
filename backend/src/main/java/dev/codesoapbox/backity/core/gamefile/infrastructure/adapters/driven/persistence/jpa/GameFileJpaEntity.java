@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driven.persistence.jpa;
 
+import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.persistence.jpa.FileCopyJpaEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -36,9 +37,6 @@ public class GameFileJpaEntity {
 
     @Embedded
     private FileSourceJpaEntity fileSource;
-
-    @Embedded
-    private FileCopyJpaEntity fileCopy;
 
     @NotNull
     @CreatedDate

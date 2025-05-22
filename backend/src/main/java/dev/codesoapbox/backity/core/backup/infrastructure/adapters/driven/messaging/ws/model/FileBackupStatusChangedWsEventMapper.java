@@ -3,7 +3,8 @@ package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messa
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
-import dev.codesoapbox.backity.core.gamefile.domain.FileBackupStatus;
+import dev.codesoapbox.backity.core.filecopy.domain.FileBackupStatus;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -21,6 +22,10 @@ public abstract class FileBackupStatusChangedWsEventMapper {
         return FileBackupStatus.SUCCESS.name();
     }
 
+    protected String toString(FileCopyId id) {
+        return id.value().toString();
+    }
+
     protected String toString(GameFileId id) {
         return id.value().toString();
     }
@@ -32,6 +37,7 @@ public abstract class FileBackupStatusChangedWsEventMapper {
         return FileBackupStatus.FAILED.name();
     }
 
+    @Mapping(target = "fileCopyId", source = "fileCopyId")
     @Mapping(target = "gameFileId", source = "gameFileId")
     @Mapping(target = "newStatus", expression = "java( statusInProgress() )")
     @Mapping(target = "failedReason", ignore = true)

@@ -14,17 +14,17 @@ class GameJpaEntityMapperTest {
     private final GameJpaEntityMapper mapper = Mappers.getMapper(GameJpaEntityMapper.class);
 
     @Test
-    void shouldMapToEntity() {
-        Game domain = domainObject();
+    void shouldMapDomainToJpa() {
+        Game domain = domain();
 
         GameJpaEntity result = mapper.toEntity(domain);
 
-        GameJpaEntity expectedResult = entity();
+        GameJpaEntity expectedResult = jpa();
         assertThat(result).hasNoNullFieldsOrPropertiesExcept("dateCreated", "dateModified")
                 .usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
-    private GameJpaEntity entity() {
+    private GameJpaEntity jpa() {
         var expectedResult = new GameJpaEntity();
         expectedResult.setId(UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"));
         expectedResult.setTitle("Test Game");
@@ -32,17 +32,17 @@ class GameJpaEntityMapperTest {
         return expectedResult;
     }
 
-    private Game domainObject() {
+    private Game domain() {
         return TestGame.any();
     }
 
     @Test
-    void shouldMapToDomain() {
-        GameJpaEntity entity = entity();
+    void shouldMapJpaToDomain() {
+        GameJpaEntity entity = jpa();
 
         Game result = mapper.toDomain(entity);
 
-        Game expectedResult = domainObject();
+        Game expectedResult = domain();
         assertThat(result).hasNoNullFieldsOrProperties()
                 .usingRecursiveComparison().isEqualTo(expectedResult);
     }

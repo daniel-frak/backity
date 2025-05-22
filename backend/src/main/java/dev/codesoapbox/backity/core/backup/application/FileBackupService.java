@@ -4,10 +4,11 @@ import dev.codesoapbox.backity.core.backup.application.downloadprogress.Download
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgressFactory;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
-import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolver;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
+import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolver;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -24,17 +25,18 @@ import java.util.stream.Collectors;
 public class FileBackupService {
 
     private final UniqueFilePathResolver uniqueFilePathResolver;
-    private final GameFileRepository gameFileRepository;
+    private final FileCopyRepository fileCopyRepository;
     private final StorageSolution storageSolution;
     private final Map<GameProviderId, GameProviderFileBackupService> gameProviderFileBackupServices;
     private final DownloadProgressFactory downloadProgressFactory;
 
-    public FileBackupService(UniqueFilePathResolver uniqueFilePathResolver, GameFileRepository gameFileRepository,
+    public FileBackupService(UniqueFilePathResolver uniqueFilePathResolver,
+                             FileCopyRepository fileCopyRepository,
                              StorageSolution storageSolution,
                              List<GameProviderFileBackupService> gameProviderFileBackupServices,
                              DownloadProgressFactory downloadProgressFactory) {
         this.uniqueFilePathResolver = uniqueFilePathResolver;
-        this.gameFileRepository = gameFileRepository;
+        this.fileCopyRepository = fileCopyRepository;
         this.storageSolution = storageSolution;
         this.gameProviderFileBackupServices = gameProviderFileBackupServices.stream()
                 .collect(Collectors.toMap(GameProviderFileBackupService::getGameProviderId,
@@ -42,47 +44,37 @@ public class FileBackupService {
         this.downloadProgressFactory = downloadProgressFactory;
     }
 
-    public void backUpFile(GameFile gameFile) {
-        log.info("Backing up game file {} (url={})...", gameFile.getId(),
-                gameFile.getFileSource().url());
+    public void backUpFile(GameFile gameFile, FileCopy fileCopy) {
+        log.info("Backing up game file {} (url={}, fileCopyId={})...", gameFile.getId(),
+                gameFile.getFileSource().url(), fileCopy.getId());
 
         try {
-            markInProgress(gameFile);
+            markInProgress(fileCopy);
             String filePath = uniqueFilePathResolver.resolve(gameFile.getFileSource());
-            updateFilePath(gameFile, filePath);
-            tryToDownloadToDisk(gameFile, filePath);
-            markDownloaded(gameFile, filePath);
+            updateFilePath(fileCopy, filePath);
+            tryToDownloadToDisk(gameFile, fileCopy, filePath);
+            markDownloaded(fileCopy, filePath);
         } catch (IOException | RuntimeException e) {
-            markFailed(gameFile, e);
-            throw new FileBackupFailedException(gameFile, e);
+            markFailed(fileCopy, e);
+            throw new FileBackupFailedException(gameFile, fileCopy, e);
         }
     }
 
-    private void tryToDownloadToDisk(GameFile gameFile, String filePath) throws IOException {
+    private void tryToDownloadToDisk(GameFile gameFile, FileCopy fileCopy, String filePath) throws IOException {
         try {
-            downloadToDisk(gameFile);
+            downloadToDisk(gameFile, fileCopy);
         } catch (IOException e) {
-            tryToCleanUpAfterFailedDownload(gameFile, filePath);
+            tryToCleanUpAfterFailedDownload(fileCopy, filePath);
             throw e;
         }
     }
 
-    private void markInProgress(GameFile gameFile) {
-        gameFile.markAsInProgress();
-        gameFileRepository.save(gameFile);
-    }
-
-    private void updateFilePath(GameFile gameFile, String filePath) {
-        gameFile.updateFilePath(filePath);
-        gameFileRepository.save(gameFile);
-    }
-
-    private void downloadToDisk(GameFile gameFile) throws IOException {
+    private void downloadToDisk(GameFile gameFile, FileCopy fileCopy) throws IOException {
         GameProviderId gameProviderId = gameFile.getFileSource().gameProviderId();
         GameProviderFileBackupService gameProviderFileBackupService = getGameProviderFileBackupService(gameProviderId);
         DownloadProgress downloadProgress = downloadProgressFactory.create();
 
-        gameProviderFileBackupService.backUpFile(gameFile, downloadProgress);
+        gameProviderFileBackupService.backUpFile(gameFile, fileCopy, downloadProgress);
     }
 
     private GameProviderFileBackupService getGameProviderFileBackupService(GameProviderId gameProviderId) {
@@ -93,24 +85,34 @@ public class FileBackupService {
         return gameProviderFileBackupServices.get(gameProviderId);
     }
 
-    private void markDownloaded(GameFile gameFile, String downloadedPath) {
-        gameFile.markAsDownloaded(downloadedPath);
-        gameFileRepository.save(gameFile);
-    }
-
-    private void tryToCleanUpAfterFailedDownload(GameFile gameFile, String filePath) {
+    private void tryToCleanUpAfterFailedDownload(FileCopy fileCopy, String filePath) {
         storageSolution.deleteIfExists(filePath);
-        gameFile.clearFilePath();
-        gameFileRepository.save(gameFile);
+        fileCopy.setFilePath(null);
+        fileCopyRepository.save(fileCopy);
     }
 
-    private void markFailed(GameFile gameFile, Exception exception) {
+    private void markInProgress(FileCopy fileCopy) {
+        fileCopy.toInProgress();
+        fileCopyRepository.save(fileCopy);
+    }
+
+    private void updateFilePath(FileCopy fileCopy, String filePath) {
+        fileCopy.setFilePath(filePath);
+        fileCopyRepository.save(fileCopy);
+    }
+
+    private void markDownloaded(FileCopy fileCopy, String downloadedPath) {
+        fileCopy.toSuccessful(downloadedPath);
+        fileCopyRepository.save(fileCopy);
+    }
+
+    private void markFailed(FileCopy fileCopy, Exception exception) {
         String message = exception.getMessage();
-        if(message == null) {
+        if (message == null) {
             message = "Unknown error";
         }
-        gameFile.markAsFailed(message);
-        gameFileRepository.save(gameFile);
+        fileCopy.toFailed(message);
+        fileCopyRepository.save(fileCopy);
     }
 
     public boolean isReadyFor(GameFile gameFile) {
