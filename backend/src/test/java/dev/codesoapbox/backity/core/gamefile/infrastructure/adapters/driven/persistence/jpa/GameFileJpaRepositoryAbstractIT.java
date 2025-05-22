@@ -63,12 +63,12 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindOldestWaitingForDownload() {
-        populateDatabase(FILE_DETAILS.getAll());
+        populateDatabase(GAME_FILES.getAll());
         Optional<GameFile> result = gameFileJpaRepository.findOldestWaitingForDownload();
 
         assertThat(result).get().usingRecursiveComparison()
                 .ignoringFields("dateCreated", "dateModified")
-                .isEqualTo(FILE_DETAILS.ENQUEUED_FOR_GAME_1.get());
+                .isEqualTo(GAME_FILES.ENQUEUED_FOR_GAME_1.get());
     }
 
     private void populateDatabase(List<GameFile> gameFiles) {
@@ -81,12 +81,12 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindAllWaitingForDownload() {
-        populateDatabase(FILE_DETAILS.getAll());
+        populateDatabase(GAME_FILES.getAll());
         var pagination = new Pagination(0, 2);
         Page<GameFile> result = gameFileJpaRepository.findAllWaitingForDownload(pagination);
 
         Page<GameFile> expectedResult = new Page<>(
-                List.of(FILE_DETAILS.ENQUEUED_FOR_GAME_1.get(), FILE_DETAILS.ENQUEUED_FOR_GAME_2.get()),
+                List.of(GAME_FILES.ENQUEUED_FOR_GAME_1.get(), GAME_FILES.ENQUEUED_FOR_GAME_2.get()),
                 2, 1, 2, 2, 0);
         assertThat(result).usingRecursiveComparison()
                 .ignoringFields("content")
@@ -151,23 +151,23 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindCurrentlyDownloading() {
-        populateDatabase(FILE_DETAILS.getAll());
+        populateDatabase(GAME_FILES.getAll());
         Optional<GameFile> result = gameFileJpaRepository.findCurrentlyDownloading();
 
         assertThat(result).get().usingRecursiveComparison()
                 .ignoringFields("dateCreated", "dateModified")
-                .isEqualTo(FILE_DETAILS.IN_PROGRESS_FOR_GAME_2.get());
+                .isEqualTo(GAME_FILES.IN_PROGRESS_FOR_GAME_2.get());
     }
 
     @Test
     void shouldFindAllProcessed() {
-        populateDatabase(FILE_DETAILS.getAll());
+        populateDatabase(GAME_FILES.getAll());
         var pagination = new Pagination(0, 2);
         Page<GameFile> result = gameFileJpaRepository.findAllProcessed(pagination);
 
         List<GameFile> expectedResult = List.of(
-                FILE_DETAILS.SUCCESSFUL_FOR_GAME_1.get(),
-                FILE_DETAILS.FAILED_FOR_GAME_2.get()
+                GAME_FILES.SUCCESSFUL_FOR_GAME_1.get(),
+                GAME_FILES.FAILED_FOR_GAME_2.get()
         );
         assertThat(result.content())
                 .usingRecursiveComparison()
@@ -178,7 +178,7 @@ abstract class GameFileJpaRepositoryAbstractIT {
     @ParameterizedTest(name = "should return {1} for version={0}")
     @CsvSource(value = {"1.0.0,true", "fakeVersion,false"})
     void existsByUrlAndVersion(String version, boolean shouldFind) {
-        populateDatabase(FILE_DETAILS.getAll());
+        populateDatabase(GAME_FILES.getAll());
         boolean exists = gameFileJpaRepository.existsByUrlAndVersion("/downlink/some_game/some_file", version);
 
         assertThat(exists).isEqualTo(shouldFind);
@@ -186,8 +186,8 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindById() {
-        populateDatabase(FILE_DETAILS.getAll());
-        GameFile expectedGameFile = FILE_DETAILS.ENQUEUED_FOR_GAME_1.get();
+        populateDatabase(GAME_FILES.getAll());
+        GameFile expectedGameFile = GAME_FILES.ENQUEUED_FOR_GAME_1.get();
 
         Optional<GameFile> result = gameFileJpaRepository.findById(expectedGameFile.getId());
 
@@ -198,8 +198,8 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
     @Test
     void shouldGetById() {
-        populateDatabase(FILE_DETAILS.getAll());
-        GameFile expectedGameFile = FILE_DETAILS.ENQUEUED_FOR_GAME_1.get();
+        populateDatabase(GAME_FILES.getAll());
+        GameFile expectedGameFile = GAME_FILES.ENQUEUED_FOR_GAME_1.get();
 
         GameFile result = gameFileJpaRepository.getById(expectedGameFile.getId());
 
@@ -216,11 +216,11 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindAllDiscovered() {
-        populateDatabase(FILE_DETAILS.getAll());
+        populateDatabase(GAME_FILES.getAll());
         var pagination = new Pagination(0, 2);
         Page<GameFile> result = gameFileJpaRepository.findAllDiscovered(pagination);
 
-        List<GameFile> expectedResult = singletonList(FILE_DETAILS.DISCOVERED_FOR_GAME_1.get());
+        List<GameFile> expectedResult = singletonList(GAME_FILES.DISCOVERED_FOR_GAME_1.get());
         assertThat(result.content())
                 .usingRecursiveComparison()
                 .ignoringFields("dateCreated", "dateModified")
@@ -229,19 +229,19 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindByGameId() {
-        populateDatabase(FILE_DETAILS.getAll());
+        populateDatabase(GAME_FILES.getAll());
         List<GameFile> result = gameFileJpaRepository.findAllByGameId(EXISTING_GAMES.GAME_1.getId());
 
         assertThat(result).containsExactlyInAnyOrder(
-                FILE_DETAILS.ENQUEUED_FOR_GAME_1.get(),
-                FILE_DETAILS.SUCCESSFUL_FOR_GAME_1.get(),
-                FILE_DETAILS.DISCOVERED_FOR_GAME_1.get()
+                GAME_FILES.ENQUEUED_FOR_GAME_1.get(),
+                GAME_FILES.SUCCESSFUL_FOR_GAME_1.get(),
+                GAME_FILES.DISCOVERED_FOR_GAME_1.get()
         );
     }
 
     @Test
     void shouldDeleteById() {
-        GameFile gameFile = FILE_DETAILS.ENQUEUED_FOR_GAME_1.get();
+        GameFile gameFile = GAME_FILES.ENQUEUED_FOR_GAME_1.get();
         populateDatabase(List.of(gameFile));
 
         gameFileJpaRepository.deleteById(gameFile.getId());
@@ -269,7 +269,7 @@ abstract class GameFileJpaRepositoryAbstractIT {
         }
     }
 
-    private static class FILE_DETAILS {
+    private static class GAME_FILES {
 
         public static final Supplier<GameFile> ENQUEUED_FOR_GAME_1 = () -> TestGameFile.enqueuedBuilder()
                 .id(new GameFileId("acde26d7-33c7-42ee-be16-bca91a604b48"))
@@ -303,9 +303,9 @@ abstract class GameFileJpaRepositoryAbstractIT {
 
         public static List<GameFile> getAll() {
             return List.of(
-                    FILE_DETAILS.ENQUEUED_FOR_GAME_1.get(), FILE_DETAILS.SUCCESSFUL_FOR_GAME_1.get(),
-                    FILE_DETAILS.ENQUEUED_FOR_GAME_2.get(), FILE_DETAILS.FAILED_FOR_GAME_2.get(),
-                    FILE_DETAILS.IN_PROGRESS_FOR_GAME_2.get(), FILE_DETAILS.DISCOVERED_FOR_GAME_1.get()
+                    GAME_FILES.ENQUEUED_FOR_GAME_1.get(), GAME_FILES.SUCCESSFUL_FOR_GAME_1.get(),
+                    GAME_FILES.ENQUEUED_FOR_GAME_2.get(), GAME_FILES.FAILED_FOR_GAME_2.get(),
+                    GAME_FILES.IN_PROGRESS_FOR_GAME_2.get(), GAME_FILES.DISCOVERED_FOR_GAME_1.get()
             );
         }
     }

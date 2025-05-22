@@ -19,7 +19,7 @@ public final class TestGameFile {
     private FileSource fileSource = TestFileSource.minimalGog();
 
     @lombok.Builder.Default
-    private FileCopy fileCopy = TestFileBackup.discovered();
+    private FileCopy fileCopy = TestFileCopy.discovered();
 
     @lombok.Builder.Default
     private String filePath = null;
@@ -44,7 +44,7 @@ public final class TestGameFile {
 
     public static Builder successfulBuilder() {
         return discoveredBuilder()
-                .fileCopy(TestFileBackup.successful());
+                .fileCopy(TestFileCopy.successful());
     }
 
     public static GameFile enqueued() {
@@ -53,7 +53,7 @@ public final class TestGameFile {
 
     public static Builder enqueuedBuilder() {
         return discoveredBuilder()
-                .fileCopy(TestFileBackup.enqueued());
+                .fileCopy(TestFileCopy.enqueued());
     }
 
     public static GameFile failed() {
@@ -62,7 +62,7 @@ public final class TestGameFile {
 
     public static Builder failedBuilder() {
         return discoveredBuilder()
-                .fileCopy(TestFileBackup.failed());
+                .fileCopy(TestFileCopy.failed());
     }
 
     public static GameFile inProgress() {
@@ -71,7 +71,7 @@ public final class TestGameFile {
 
     public static Builder inProgressBuilder() {
         return discoveredBuilder()
-                .fileCopy(TestFileBackup.inProgress());
+                .fileCopy(TestFileCopy.inProgress());
     }
 
     public static class Builder {

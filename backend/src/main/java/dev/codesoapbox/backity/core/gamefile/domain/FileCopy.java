@@ -1,7 +1,10 @@
 package dev.codesoapbox.backity.core.gamefile.domain;
 
+import dev.codesoapbox.backity.core.gamefile.domain.exceptions.FilePathMustNotBeNullForSuccessfulFileCopy;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NonNull;
-import lombok.With;
+import lombok.ToString;
 
 /**
  * Represents a backup copy of a file in a Backup Target.
@@ -13,42 +16,71 @@ import lombok.With;
  * The physical file resource must be deleted before its path is removed.
  * Use the `withFilePath` method to manage both updates and removals.
  */
-public record FileCopy(
-        @NonNull FileBackupStatus status,
-        String failedReason,
-        @With String filePath
-) {
+@Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString
+public class FileCopy {
 
-    public FileCopy {
-        if (status == FileBackupStatus.FAILED && failedReason == null) {
+    @EqualsAndHashCode.Include
+    private final FileCopyId id;
+
+    private @NonNull FileBackupStatus status;
+    private String failedReason;
+
+    private String filePath;
+
+    public FileCopy(@NonNull FileCopyId id, @NonNull FileBackupStatus status,
+                    String failedReason, String filePath) {
+        this.id = id;
+        this.status = status;
+        this.failedReason = failedReason;
+        this.filePath = filePath;
+
+        validateIntegrity();
+    }
+
+    private void validateIntegrity() {
+        if (this.status == FileBackupStatus.FAILED && this.failedReason == null) {
             throw new IllegalArgumentException("failedReason is required");
         }
-        if (status == FileBackupStatus.SUCCESS && filePath == null) {
+        if (this.status == FileBackupStatus.SUCCESS && this.filePath == null) {
             throw new IllegalArgumentException("filePath is required");
         }
-        if (status != FileBackupStatus.FAILED && failedReason != null) {
+        if (this.status != FileBackupStatus.FAILED && this.failedReason != null) {
             throw new IllegalArgumentException("failedReason must be null for this status");
         }
-
     }
 
-    public FileCopy toDiscovered() {
-        return new FileCopy(FileBackupStatus.DISCOVERED, null, filePath);
+    public void toDiscovered() {
+        this.status = FileBackupStatus.DISCOVERED;
+        this.failedReason = null;
     }
 
-    public FileCopy toEnqueued() {
-        return new FileCopy(FileBackupStatus.ENQUEUED, null, filePath);
+    public void toEnqueued() {
+        this.status = FileBackupStatus.ENQUEUED;
+        this.failedReason = null;
     }
 
-    public FileCopy toInProgress() {
-        return new FileCopy(FileBackupStatus.IN_PROGRESS, null, filePath);
+    public void toInProgress() {
+        this.status = FileBackupStatus.IN_PROGRESS;
+        this.failedReason = null;
     }
 
-    public FileCopy toSuccessful(String filePath) {
-        return new FileCopy(FileBackupStatus.SUCCESS, null, filePath);
+    public void toSuccessful(@NonNull String filePath) {
+        this.status = FileBackupStatus.SUCCESS;
+        this.failedReason = null;
+        this.filePath = filePath;
     }
 
-    public FileCopy toFailed(String failedReason) {
-        return new FileCopy(FileBackupStatus.FAILED, failedReason, filePath);
+    public void toFailed(@NonNull String failedReason) {
+        this.status = FileBackupStatus.FAILED;
+        this.failedReason = failedReason;
+    }
+
+    public void setFilePath(String filePath) {
+        if(filePath == null && status == FileBackupStatus.SUCCESS) {
+            throw new FilePathMustNotBeNullForSuccessfulFileCopy(id);
+        }
+        this.filePath = filePath;
     }
 }

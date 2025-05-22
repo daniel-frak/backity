@@ -26,6 +26,10 @@ public abstract class GameFileJpaEntityMapper {
         return id.value();
     }
 
+    protected UUID toUuid(FileCopyId id) {
+        return id.value();
+    }
+
     protected String getValue(GameProviderId gameProviderId) {
         return gameProviderId.value();
     }
@@ -40,13 +44,12 @@ public abstract class GameFileJpaEntityMapper {
     @Mapping(target = "size", source = "sizeInBytes")
     protected abstract FileSource toModel(FileSourceJpaEntity entity);
 
-    @Mapping(target = "toSuccessful", ignore = true)
-    @Mapping(target = "toFailed", ignore = true)
-    @Mapping(target = "withFilePath", ignore = true)
-    protected abstract FileCopy toModel(FileCopyJpaEntity entity);
-
     protected GameFileId toGameFileId(UUID uuid) {
         return new GameFileId(uuid);
+    }
+
+    protected FileCopyId toFileCopyId(UUID uuid) {
+        return new FileCopyId(uuid);
     }
 
     protected GameId toGameId(UUID uuid) {

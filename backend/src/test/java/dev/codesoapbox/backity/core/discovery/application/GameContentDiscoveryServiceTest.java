@@ -4,14 +4,11 @@ import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStatusChangedEvent;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
-import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.*;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import lombok.Getter;
 import lombok.Setter;
@@ -49,6 +46,9 @@ class GameContentDiscoveryServiceTest {
     private FakeGameProviderFileDiscoveryService gameProviderFileDiscoveryService;
 
     @Mock
+    private FileCopyFactory fileCopyFactory;
+
+    @Mock
     private GameRepository gameRepository;
 
     @Mock
@@ -61,7 +61,10 @@ class GameContentDiscoveryServiceTest {
     void setUp() {
         gameProviderFileDiscoveryService = new FakeGameProviderFileDiscoveryService();
         gameContentDiscoveryService = new GameContentDiscoveryService(singletonList(gameProviderFileDiscoveryService),
-                gameRepository, fileRepository, eventPublisher);
+                fileCopyFactory, gameRepository, fileRepository, eventPublisher);
+
+        lenient().when(fileCopyFactory.create())
+                .thenReturn(TestFileCopy.discovered());
     }
 
     @AfterEach
@@ -105,7 +108,7 @@ class GameContentDiscoveryServiceTest {
         mockGameExists(discoveredFile.originalGameTitle());
 
         gameContentDiscoveryService = new GameContentDiscoveryService(singletonList(gameProviderFileDiscoveryService),
-                gameRepository, fileRepository, eventPublisher);
+                fileCopyFactory, gameRepository, fileRepository, eventPublisher);
 
         gameContentDiscoveryService.startContentDiscovery();
 
@@ -156,7 +159,7 @@ class GameContentDiscoveryServiceTest {
 
         List<GameContentDiscoveryProgressChangedEvent> progressUpdates = trackProgressUpdateEvents();
         gameContentDiscoveryService = new GameContentDiscoveryService(List.of(gameProviderFileDiscoveryService),
-                gameRepository, fileRepository, eventPublisher);
+                fileCopyFactory, gameRepository, fileRepository, eventPublisher);
 
         gameContentDiscoveryService.startContentDiscovery();
 
@@ -166,7 +169,7 @@ class GameContentDiscoveryServiceTest {
         var gameFileArgumentCaptor = ArgumentCaptor.forClass(GameFile.class);
         verify(fileRepository).save(gameFileArgumentCaptor.capture());
         GameFile savedGameFile = gameFileArgumentCaptor.getValue();
-        GameFile expectedGameFile = GameFile.createFor(game, discoveredFile);
+        GameFile expectedGameFile = GameFile.createFor(game, discoveredFile, TestFileCopy.discovered());
         expectedGameFile.setId(savedGameFile.getId());
         verify(eventPublisher).publish(FileDiscoveredEvent.from(expectedGameFile));
         assertThat(progressUpdates.size()).isOne();
