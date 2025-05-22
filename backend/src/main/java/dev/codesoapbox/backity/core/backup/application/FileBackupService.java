@@ -49,27 +49,27 @@ public class FileBackupService {
         try {
             markInProgress(gameFile);
             String filePath = uniqueFilePathResolver.resolve(gameFile.getFileSource());
-            tryToBackUp(gameFile, filePath);
+            updateFilePath(gameFile, filePath);
+            tryToDownloadToDisk(gameFile, filePath);
+            markDownloaded(gameFile, filePath);
         } catch (IOException | RuntimeException e) {
             markFailed(gameFile, e);
             throw new FileBackupFailedException(gameFile, e);
         }
     }
 
-    private void markInProgress(GameFile gameFile) {
-        gameFile.markAsInProgress();
-        gameFileRepository.save(gameFile);
-    }
-
-    private void tryToBackUp(GameFile gameFile, String filePath) throws IOException {
+    private void tryToDownloadToDisk(GameFile gameFile, String filePath) throws IOException {
         try {
-            updateFilePath(gameFile, filePath);
             downloadToDisk(gameFile);
-            markDownloaded(gameFile, filePath);
         } catch (IOException e) {
             tryToCleanUpAfterFailedDownload(gameFile, filePath);
             throw e;
         }
+    }
+
+    private void markInProgress(GameFile gameFile) {
+        gameFile.markAsInProgress();
+        gameFileRepository.save(gameFile);
     }
 
     private void updateFilePath(GameFile gameFile, String filePath) {
