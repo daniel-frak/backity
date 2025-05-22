@@ -8,8 +8,11 @@ import dev.codesoapbox.backity.e2e.actions.Repeat;
 public class GamesPage {
 
     private static final String GAMES_URL = "/games";
-    private static final String FILE_COPY_URL = "/file-copy";
+    private static final String FILE_COPY_URL = "/file-copies";
     private static final String DOWNLOAD_FILE_BACKUP_BTN_TEST_ID = "download-file-copy-btn";
+    private static final String BACKUP_FILE_COPY_BTN_TEST_ID = "backup-file-btn";
+    private static final String FILE_COPY_ENQUEUE_URL = "/file-copy-actions/enqueue";
+    private static final String FILE_COPY_ELEMENT = "tr";
 
     private final Page page;
     private final Locator loader;
@@ -62,13 +65,35 @@ public class GamesPage {
                && response.status() == 204;
     }
 
+    public void backUpFile(String fileTitle) {
+        Locator backupFileBtn = getBackupFileCopyBackupButton(fileTitle);
+        page.waitForResponse(response -> response.url().contains(FILE_COPY_ENQUEUE_URL)
+                                         && response.status() == 200,
+                backupFileBtn::click);
+    }
+
+    private Locator getBackupFileCopyBackupButton(String fileTitle) {
+        return gameList
+                .locator(FILE_COPY_ELEMENT)
+                .filter(new Locator.FilterOptions().setHasText(fileTitle))
+                .getByTestId(BACKUP_FILE_COPY_BTN_TEST_ID);
+    }
+
+    public Locator getFileCopyStatus(String fileTitle) {
+        return gameList
+                .locator(FILE_COPY_ELEMENT)
+                .filter(new Locator.FilterOptions().setHasText(fileTitle))
+                .locator("[data-title=\"Status\"]");
+    }
+
     public Download startFileDownload(String fileTitle) {
-        Locator downloadFileBackupButton = getDownloadFileBackupButton(fileTitle);
+        Locator downloadFileBackupButton = getDownloadFileCopyButton(fileTitle);
         return page.waitForDownload(downloadFileBackupButton::click);
     }
 
-    private Locator getDownloadFileBackupButton(String fileTitle) {
+    private Locator getDownloadFileCopyButton(String fileTitle) {
         return gameList
+                .locator(FILE_COPY_ELEMENT)
                 .filter(new Locator.FilterOptions().setHasText(fileTitle))
                 .getByTestId(DOWNLOAD_FILE_BACKUP_BTN_TEST_ID);
     }

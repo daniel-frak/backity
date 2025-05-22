@@ -1,22 +1,13 @@
 package dev.codesoapbox.backity.core.gamefile.domain;
 
-import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
-import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
-import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
-import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
-import dev.codesoapbox.backity.shared.domain.DomainEvent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static java.util.Collections.unmodifiableList;
 
 /**
  * A version of a game file, either not yet downloaded, already downloaded or anything in-between.
@@ -36,83 +27,16 @@ public class GameFile {
     @NonNull
     private FileSource fileSource;
 
-    @NonNull
-    private FileCopy fileCopy;
-
     private LocalDateTime dateCreated;
     private LocalDateTime dateModified;
 
-    @NonNull
-    private List<DomainEvent> domainEvents;
-
-    public static GameFile createFor(Game game, FileSource fileSource, FileCopy fileCopy) {
+    public static GameFile createFor(Game game, FileSource fileSource) {
         return new GameFile(
                 GameFileId.newInstance(),
                 game.getId(),
                 fileSource,
-                fileCopy,
                 null,
-                null,
-                new ArrayList<>()
+                null
         );
-    }
-
-    public void markAsDiscovered() {
-        fileCopy.toDiscovered();
-    }
-
-    public void markAsEnqueued() {
-        fileCopy.toEnqueued();
-    }
-
-    public void markAsFailed(String failedReason) {
-        fileCopy.toFailed(failedReason);
-
-        var event = new FileBackupFailedEvent(id, failedReason);
-        domainEvents.add(event);
-    }
-
-    public void markAsInProgress() {
-        fileCopy.toInProgress();
-
-        var fileBackupStartedEvent = new FileBackupStartedEvent(
-                id,
-                fileSource.originalGameTitle(),
-                fileSource.fileTitle(),
-                fileSource.version(),
-                fileSource.originalFileName(),
-                fileSource.size(),
-                fileCopy.getFilePath()
-        );
-        domainEvents.add(fileBackupStartedEvent);
-    }
-
-    public void markAsDownloaded(String filePath) {
-        fileCopy.toSuccessful(filePath);
-
-        var event = new FileBackupFinishedEvent(id);
-        domainEvents.add(event);
-    }
-
-    public void updateFilePath(String filePath) {
-        fileCopy.setFilePath(filePath);
-    }
-
-    public void clearFilePath() {
-        fileCopy.setFilePath(null);
-    }
-
-    public void validateIsBackedUp() {
-        if (fileCopy.getStatus() != FileBackupStatus.SUCCESS) {
-            throw new GameFileNotBackedUpException(id);
-        }
-    }
-
-    public void clearDomainEvents() {
-        domainEvents.clear();
-    }
-
-    public List<DomainEvent> getDomainEvents() {
-        return unmodifiableList(this.domainEvents);
     }
 }

@@ -24,31 +24,13 @@ class UniqueFilePathResolverTest {
     @BeforeEach
     void setUp() {
         fakeUnixFileManager = new FakeUnixStorageSolution();
-        uniqueFilePathResolver = new UniqueFilePathResolver(PATH_TEMPLATE, fakeUnixFileManager);
+        uniqueFilePathResolver = new UniqueFilePathResolver();
     }
 
     private String toUnixPath(String result) {
         return result.replace("\\", "/");
     }
 
-    @Nested
-    class Creation {
-
-        @SuppressWarnings("DataFlowIssue")
-        @Test
-        void constructorShouldThrowGivenNullPathTemplate() {
-            assertThatThrownBy(() -> new UniqueFilePathResolver(null, fakeUnixFileManager))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("defaultPathTemplate is marked non-null but is null");
-        }
-
-        @Test
-        void constructorShouldThrowGivenNullStorageSolution() {
-            assertThatThrownBy(() -> new UniqueFilePathResolver(PATH_TEMPLATE, null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("storageSolution is marked non-null but is null");
-        }
-    }
     @Nested
     class BasicFilePathConstruction {
 
@@ -60,7 +42,7 @@ class UniqueFilePathResolverTest {
                     .originalFileName("someFileName")
                     .build();
 
-            String result = uniqueFilePathResolver.resolve(fileSource);
+            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, fileSource, fakeUnixFileManager);
 
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName";
 
@@ -74,12 +56,10 @@ class UniqueFilePathResolverTest {
                     .originalGameTitle("someGameTitle")
                     .originalFileName("someFileName")
                     .build();
-            uniqueFilePathResolver = new UniqueFilePathResolver("{FILENAME}", fakeUnixFileManager);
 
-            String result = uniqueFilePathResolver.resolve(fileSource);
+            String result = uniqueFilePathResolver.resolve("{FILENAME}", fileSource, fakeUnixFileManager);
 
             String expectedPath = "someFileName";
-
             assertThat(result).doesNotContain(File.separator);
             assertThat(toUnixPath(result)).isEqualTo(expectedPath);
             assertThat(fakeUnixFileManager.anyDirectoriesWereCreated()).isFalse();
@@ -89,13 +69,12 @@ class UniqueFilePathResolverTest {
         void shouldResolveValidFilePathGivenWrongSeparatorInPathTemplate() {
             String wrongSeparator = getWrongSeparator();
             String wrongPathTemplate = "{TITLE}" + wrongSeparator + "{FILENAME}";
-            uniqueFilePathResolver = new UniqueFilePathResolver(wrongPathTemplate, fakeUnixFileManager);
             FileSource fileSource = TestFileSource.minimalGogBuilder()
                     .originalGameTitle("someGameTitle")
                     .originalFileName("someFileName")
                     .build();
 
-            String result = uniqueFilePathResolver.resolve(fileSource);
+            String result = uniqueFilePathResolver.resolve(wrongPathTemplate, fileSource, fakeUnixFileManager);
 
             String expectedPath = "someGameTitle" + File.separator + "someFileName";
             assertThat(result).isEqualTo(expectedPath);
@@ -117,12 +96,11 @@ class UniqueFilePathResolverTest {
         void shouldRemoveIllegalCharactersFromPathTemplate() {
             var charactersToRemove = "<>\"|?\n`';!@#$%^&*[]~";
             var pathTemplate = "/test" + charactersToRemove + "/{FILENAME}";
-            uniqueFilePathResolver = new UniqueFilePathResolver(pathTemplate, fakeUnixFileManager);
             FileSource fileSource = TestFileSource.minimalGogBuilder()
                     .originalFileName("someFileName")
                     .build();
 
-            String result = uniqueFilePathResolver.resolve(fileSource);
+            String result = uniqueFilePathResolver.resolve(pathTemplate, fileSource, fakeUnixFileManager);
 
             String expectedPath = "/test/someFileName";
 
@@ -132,12 +110,12 @@ class UniqueFilePathResolverTest {
         @Test
         void shouldReplaceIllegalCharactersFromPathTemplate() {
             var pathTemplate = "/some:test\tfolder 1/{FILENAME}";
-            uniqueFilePathResolver = new UniqueFilePathResolver(pathTemplate, fakeUnixFileManager);
+            uniqueFilePathResolver = new UniqueFilePathResolver();
             FileSource fileSource = TestFileSource.minimalGogBuilder()
                     .originalFileName("someFileName")
                     .build();
 
-            String result = uniqueFilePathResolver.resolve(fileSource);
+            String result = uniqueFilePathResolver.resolve(pathTemplate, fileSource, fakeUnixFileManager);
 
             String expectedPath = "/some -test folder 1/someFileName";
 
@@ -153,7 +131,7 @@ class UniqueFilePathResolverTest {
                     .originalFileName("someFileName" + charactersToRemove)
                     .build();
 
-            String result = uniqueFilePathResolver.resolve(fileSource);
+            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, fileSource, fakeUnixFileManager);
 
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName";
 
@@ -168,7 +146,7 @@ class UniqueFilePathResolverTest {
                     .originalFileName("some:File\tName 1")
                     .build();
 
-            String result = uniqueFilePathResolver.resolve(fileSource);
+            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, fileSource, fakeUnixFileManager);
 
             String expectedPath = "/test/some -Game ProviderId 1/some -Game Title 1/some -File Name 1";
 
@@ -188,7 +166,7 @@ class UniqueFilePathResolverTest {
                     .build();
             fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName.txt");
 
-            String result = uniqueFilePathResolver.resolve(fileSource);
+            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, fileSource, fakeUnixFileManager);
 
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_1.txt";
 
@@ -205,7 +183,7 @@ class UniqueFilePathResolverTest {
             fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName.txt");
             fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName_1.txt");
 
-            String result = uniqueFilePathResolver.resolve(fileSource);
+            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, fileSource, fakeUnixFileManager);
 
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_2.txt";
 
@@ -221,7 +199,7 @@ class UniqueFilePathResolverTest {
                     .build();
             fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName");
 
-            String result = uniqueFilePathResolver.resolve(fileSource);
+            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, fileSource, fakeUnixFileManager);
 
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_1";
 
@@ -238,7 +216,7 @@ class UniqueFilePathResolverTest {
             fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName");
             fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName_1");
 
-            String result = uniqueFilePathResolver.resolve(fileSource);
+            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, fileSource, fakeUnixFileManager);
 
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_2";
 
@@ -258,7 +236,7 @@ class UniqueFilePathResolverTest {
                         "/test/someGameProviderId/someGameTitle/someFileName_" + i + ".exe");
             }
 
-            assertThatThrownBy(() -> uniqueFilePathResolver.resolve(fileSource))
+            assertThatThrownBy(() -> uniqueFilePathResolver.resolve(PATH_TEMPLATE, fileSource, fakeUnixFileManager))
                     .isInstanceOf(CouldNotResolveUniqueFilePathException.class)
                     .hasMessageContaining("someGameTitle")
                     .hasMessageContaining("someFileName.exe");

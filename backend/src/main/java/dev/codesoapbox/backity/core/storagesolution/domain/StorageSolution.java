@@ -6,6 +6,8 @@ import java.io.OutputStream;
 
 public interface StorageSolution {
 
+    StorageSolutionId getId();
+
     OutputStream getOutputStream(String path) throws IOException;
 
     void deleteIfExists(String path);

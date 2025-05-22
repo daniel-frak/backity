@@ -77,7 +77,7 @@ class H2DbControllerIT {
     @Test
     void shouldDumpSql() throws Exception {
         Game game = TestGame.any();
-        GameFile gameFile = TestGameFile.discoveredBuilder()
+        GameFile gameFile = TestGameFile.gogBuilder()
                 .gameId(game.getId())
                 .build();
         gameRepository.save(game);

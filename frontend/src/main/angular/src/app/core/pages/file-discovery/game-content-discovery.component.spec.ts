@@ -6,13 +6,13 @@ import {
 } from "@app/core/pages/file-discovery/game-content-discovery-info-card/game-content-discovery-info-card-component-stub.component";
 import {
   DiscoveredFilesCardComponentStub
-} from "@app/core/pages/file-discovery/discovered-files-card/discovered-files-card.component.stub";
+} from "@app/core/pages/file-discovery/discovered-file-copies-card/discovered-files-card.component.stub";
 import {
   GameContentDiscoveryInfoCardComponent
 } from "@app/core/pages/file-discovery/game-content-discovery-info-card/game-content-discovery-info-card.component";
 import {
-  DiscoveredFilesCardComponent
-} from "@app/core/pages/file-discovery/discovered-files-card/discovered-files-card.component";
+  DiscoveredFileCopiesCardComponent
+} from "@app/core/pages/file-discovery/discovered-file-copies-card/discovered-file-copies-card.component";
 
 describe('GameContentDiscoveryComponent', () => {
   let component: GameContentDiscoveryComponent;
@@ -28,7 +28,7 @@ describe('GameContentDiscoveryComponent', () => {
       remove: {
         imports: [
           GameContentDiscoveryInfoCardComponent,
-          DiscoveredFilesCardComponent
+          DiscoveredFileCopiesCardComponent
         ]
       },
       add: {

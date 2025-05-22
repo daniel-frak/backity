@@ -1,10 +1,14 @@
-import {FileBackupStartedEvent, GameFile} from "@backend";
+import {FileBackupStartedEvent, FileCopy, GameFile} from "@backend";
 
 export class TestFileBackupStartedEvent {
 
   public static anEvent(): FileBackupStartedEvent {
     return {
-      gameFileId: "someFileId",
+      fileCopyId: "someFileCopyId",
+      fileCopyNaturalId: {
+        gameFileId: "someGameFileId",
+        backupTargetId: "someBackupTargetId"
+      },
       originalGameTitle: "Some current game",
       originalFileName: "Some original file name",
       version: "Some version",
@@ -14,16 +18,19 @@ export class TestFileBackupStartedEvent {
     };
   }
 
-  public static for(gameFile: GameFile): FileBackupStartedEvent {
+  public static for(gameFile: GameFile, fileCopy: FileCopy): FileBackupStartedEvent {
     return {
       ...this.anEvent(),
-      gameFileId: gameFile.id,
+      fileCopyNaturalId: {
+        gameFileId: gameFile.id,
+        backupTargetId: fileCopy.naturalId.backupTargetId
+      },
       originalGameTitle: gameFile.fileSource.originalGameTitle,
       originalFileName: gameFile.fileSource.originalFileName,
       version: gameFile.fileSource.version,
       size: gameFile.fileSource.size,
       fileTitle: gameFile.fileSource.fileTitle,
-      filePath: gameFile.fileCopy.filePath
+      filePath: fileCopy.filePath
     };
   }
 }

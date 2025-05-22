@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.dri
 
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.FileCouldNotBeDeletedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,8 @@ import java.nio.file.FileAlreadyExistsException;
 @RequiredArgsConstructor
 public class S3StorageSolution implements StorageSolution {
 
+    public static final StorageSolutionId ID = new StorageSolutionId("S3");
+
     private final S3Client s3Client;
     private final String bucketName;
     private final int bufferSizeInBytes;
@@ -31,6 +34,11 @@ public class S3StorageSolution implements StorageSolution {
         } catch (NoSuchKeyException e) {
             return false;
         }
+    }
+
+    @Override
+    public StorageSolutionId getId() {
+        return ID;
     }
 
     @Override

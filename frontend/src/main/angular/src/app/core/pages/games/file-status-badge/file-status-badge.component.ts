@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FileBackupStatus} from "@backend";
+import {FileCopyStatus} from "@backend";
 import {CommonModule} from '@angular/common';
 
 @Component({
@@ -12,7 +12,7 @@ import {CommonModule} from '@angular/common';
 export class FileStatusBadgeComponent implements OnInit {
 
   @Input()
-  public status: FileBackupStatus | undefined = FileBackupStatus.Discovered;
+  public status: FileCopyStatus | undefined = FileCopyStatus.Discovered;
 
   constructor() {
   }
@@ -21,17 +21,17 @@ export class FileStatusBadgeComponent implements OnInit {
     // Nothing to initialize
   }
 
-  public readonly FileBackupStatus = FileBackupStatus;
+  public readonly FileCopyStatus = FileCopyStatus;
 
   getBadgeClass() {
     switch (this.status) {
-      case FileBackupStatus.Success:
+      case FileCopyStatus.Success:
         return 'bg-success';
-      case FileBackupStatus.InProgress:
+      case FileCopyStatus.InProgress:
         return 'bg-warning';
-      case FileBackupStatus.Failed:
+      case FileCopyStatus.Failed:
         return 'bg-danger';
-      case FileBackupStatus.Enqueued:
+      case FileCopyStatus.Enqueued:
         return 'bg-info';
       default:
         return 'bg-secondary'

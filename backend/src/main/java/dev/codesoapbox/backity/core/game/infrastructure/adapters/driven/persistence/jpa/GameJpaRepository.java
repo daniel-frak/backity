@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persist
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
+import dev.codesoapbox.backity.core.game.domain.exceptions.GameNotFoundException;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.PageEntityMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.PaginationEntityMapper;
 import dev.codesoapbox.backity.shared.domain.Page;
@@ -27,10 +28,11 @@ public class GameJpaRepository implements GameRepository {
 
     @Transactional
     @Override
-    public void save(Game game) {
+    public Game save(Game game) {
         GameJpaEntity entity = entityMapper.toEntity(game);
 
-        springRepository.save(entity);
+        GameJpaEntity savedEntity = springRepository.save(entity);
+        return entityMapper.toDomain(savedEntity);
     }
 
     @Override
@@ -43,6 +45,12 @@ public class GameJpaRepository implements GameRepository {
     public Optional<Game> findById(GameId id) {
         return springRepository.findById(id.value())
                 .map(entityMapper::toDomain);
+    }
+
+    @Override
+    public Game getById(GameId gameId) {
+        return findById(gameId)
+                .orElseThrow(() -> new GameNotFoundException(gameId));
     }
 
     @Override

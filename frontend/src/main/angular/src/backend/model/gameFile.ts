@@ -8,14 +8,12 @@
  * Do not edit the class manually.
  */
 import { FileSource } from './fileSource';
-import { FileCopy } from './fileCopy';
 
 
 export interface GameFile { 
     id: string;
     gameId: string;
     fileSource: FileSource;
-    fileCopy: FileCopy;
     dateCreated?: string;
     dateModified?: string;
 }

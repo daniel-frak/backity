@@ -17,19 +17,19 @@ import java.io.OutputStream;
 @RequiredArgsConstructor
 public class UrlFileDownloader {
 
-    private final StorageSolution storageSolution;
-
-    public void downloadFile(TrackableFileStream trackableFileStream, GameFile gameFile, String filePath)
+    public void downloadFile(StorageSolution storageSolution, TrackableFileStream trackableFileStream,
+                             GameFile gameFile, String filePath)
             throws IOException {
         DownloadProgress progress = trackableFileStream.progress();
-        writeToDisk(trackableFileStream.dataStream(), filePath, progress);
+        writeToDisk(storageSolution, trackableFileStream.dataStream(), filePath, progress);
 
         log.info("Downloaded file {} to {}", gameFile, filePath);
 
-        validateDownloadedFileSize(filePath, progress.getContentLengthBytes());
+        validateDownloadedFileSize(storageSolution, filePath, progress.getContentLengthBytes());
     }
 
-    private void writeToDisk(Flux<DataBuffer> dataBufferFlux, String filePath, DownloadProgress progress)
+    private void writeToDisk(StorageSolution storageSolution, Flux<DataBuffer> dataBufferFlux, String filePath,
+                             DownloadProgress progress)
             throws IOException {
         try (OutputStream outputStream = storageSolution.getOutputStream(filePath)) {
             DataBufferUtils
@@ -39,7 +39,8 @@ public class UrlFileDownloader {
         }
     }
 
-    private void validateDownloadedFileSize(String filePath, long expectedSizeInBytes) {
+    private void validateDownloadedFileSize(
+            StorageSolution storageSolution, String filePath, long expectedSizeInBytes) {
         long sizeInBytesOnDisk = storageSolution.getSizeInBytes(filePath);
         if (sizeInBytesOnDisk != expectedSizeInBytes) {
             throw new FileDownloadException("The downloaded size of " + filePath + " is not what was expected (was "

@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.shared.infrastructure.config.exceptionhandling;
 
-import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotBackedUpException;
+import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotBackedUpException;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.exceptionhandling.ErrorMessageHttpDto;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.exceptionhandling.ValidationErrorHttpDto;
 import dev.codesoapbox.backity.shared.domain.exceptions.DomainInvariantViolationException;
@@ -33,7 +33,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @SuppressWarnings("java:S6411") // Cannot implement Comparable for Class type
     private final Map<Class<? extends Throwable>, String> messageKeysByExceptionClass = Map.of(
-            GameFileNotBackedUpException.class, "GAME_FILE_NOT_BACKED_UP"
+            FileCopyNotBackedUpException.class, "FILE_COPY_NOT_BACKED_UP"
     );
 
     @ExceptionHandler(RuntimeException.class)

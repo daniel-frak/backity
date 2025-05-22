@@ -55,8 +55,8 @@ public class GogBeanConfig {
     }
 
     @Bean
-    UrlFileDownloader urlFileDownloader(StorageSolution storageSolution) {
-        return new UrlFileDownloader(storageSolution);
+    UrlFileDownloader urlFileDownloader() {
+        return new UrlFileDownloader();
     }
 
     @Bean

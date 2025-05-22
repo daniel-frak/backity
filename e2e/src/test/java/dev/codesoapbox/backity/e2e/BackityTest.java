@@ -3,9 +3,9 @@ package dev.codesoapbox.backity.e2e;
 import com.microsoft.playwright.Download;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.assertions.LocatorAssertions;
 import com.microsoft.playwright.junit.UsePlaywright;
 import dev.codesoapbox.backity.e2e.pages.AuthenticationPage;
-import dev.codesoapbox.backity.e2e.pages.FileBackupPage;
 import dev.codesoapbox.backity.e2e.pages.GameContentDiscoveryPage;
 import dev.codesoapbox.backity.e2e.pages.GamesPage;
 import lombok.SneakyThrows;
@@ -31,16 +31,17 @@ class BackityTest {
     private static final String FILE_TO_DOWNLOAD_NAME = "test_game_1_installer_1.exe";
     private static final String FILE_TO_DOWNLOAD_EXPECTED_CONTENTS = "Game file contents";
 
+    // The file backup scheduler runs once every N seconds
+    private static final long EXPECTED_FILE_BACKUP_SCHEDULER_DELAY = 60_000L;
+
     private AuthenticationPage authenticationPage;
     private GameContentDiscoveryPage gameContentDiscoveryPage;
-    private FileBackupPage fileBackupPage;
     private GamesPage gamesPage;
 
     @BeforeEach
     void setUp(Page page) {
         this.authenticationPage = new AuthenticationPage(page);
         this.gameContentDiscoveryPage = new GameContentDiscoveryPage(page);
-        this.fileBackupPage = new FileBackupPage(page);
         this.gamesPage = new GamesPage(page);
         resetState();
     }
@@ -73,15 +74,19 @@ class BackityTest {
         authenticateGog();
 
         gameContentDiscoveryPage.navigate();
-        discoverNewFiles(gameContentDiscoveryPage);
-        gameContentDiscoveryPage.backUpFile(FILE_TO_DOWNLOAD_TITLE);
-        assertThatFileWasDownloaded(FILE_TO_DOWNLOAD_TITLE);
+        gameContentDiscoveryPage.discoverAllFiles();
 
         gamesPage.visit();
+        gamesPage.backUpFile(FILE_TO_DOWNLOAD_TITLE);
+        assertThatFileWasBackedUp(FILE_TO_DOWNLOAD_TITLE);
         Download download = gamesPage.startFileDownload(FILE_TO_DOWNLOAD_TITLE);
-        assertEquals(FILE_TO_DOWNLOAD_NAME, download.suggestedFilename());
-        String fileContent = downloadFileAndReadContent(download.url());
-        assertEquals(FILE_TO_DOWNLOAD_EXPECTED_CONTENTS, fileContent);
+        try {
+            assertEquals(FILE_TO_DOWNLOAD_NAME, download.suggestedFilename());
+            String fileContent = downloadFileAndReadContent(download.url());
+            assertEquals(FILE_TO_DOWNLOAD_EXPECTED_CONTENTS, fileContent);
+        } finally {
+            download.delete();
+        }
     }
 
     @SneakyThrows
@@ -100,15 +105,11 @@ class BackityTest {
         assertTrue(authenticationPage.isAuthenticated());
     }
 
-    private void discoverNewFiles(GameContentDiscoveryPage gameContentDiscoveryPage) {
-        gameContentDiscoveryPage.startDiscovery();
-        assertThat(gameContentDiscoveryPage.getDiscoveredFileRow(FILE_TO_DOWNLOAD_TITLE)).isVisible();
-    }
-
-    private void assertThatFileWasDownloaded(String fileTitle) {
-        fileBackupPage.navigate();
-        Locator processedFileStatus = fileBackupPage.getProcessedFilesGameTitleStatus(fileTitle);
+    @SuppressWarnings("SameParameterValue")
+    private void assertThatFileWasBackedUp(String fileTitle) {
+        Locator processedFileStatus = gamesPage.getFileCopyStatus(fileTitle);
         assertThat(processedFileStatus).isVisible();
-        assertThat(processedFileStatus).containsText("SUCCESS");
+        assertThat(processedFileStatus).containsText("SUCCESS", new LocatorAssertions.ContainsTextOptions()
+                .setTimeout(EXPECTED_FILE_BACKUP_SCHEDULER_DELAY + 5000L));
     }
 }

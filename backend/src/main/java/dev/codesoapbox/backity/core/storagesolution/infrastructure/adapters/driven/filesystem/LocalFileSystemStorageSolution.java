@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.dri
 
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.FileCouldNotBeDeletedException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,9 +12,16 @@ import java.nio.file.*;
 @Slf4j
 public class LocalFileSystemStorageSolution implements StorageSolution {
 
+    public static final StorageSolutionId ID = new StorageSolutionId("LOCAL_FILE_SYSTEM");
+
     @Override
     public String getSeparator() {
         return File.separator;
+    }
+
+    @Override
+    public StorageSolutionId getId() {
+        return ID;
     }
 
     @Override

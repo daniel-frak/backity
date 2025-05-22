@@ -2,8 +2,11 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,18 +36,21 @@ class GogFileBackupServiceTest {
 
     @Test
     void backUpFileShouldDownloadFile() throws IOException {
-        GameFile gameFile = TestGameFile.discovered();
+        GameFile gameFile = TestGameFile.gog();
+        FileCopy fileCopy = TestFileCopy.discovered();
         DownloadProgress downloadProgress = mock(DownloadProgress.class);
         TrackableFileStream trackableFileStream =
                 mockProgressAwareFileStreamCreation(gameFile, downloadProgress);
+        StorageSolution storageSolution = mock(StorageSolution.class);
 
-        gogFileBackupService.backUpFile(gameFile, downloadProgress);
+        gogFileBackupService.backUpFile(storageSolution, gameFile, fileCopy, downloadProgress);
 
-        String filePath = gameFile.getFileCopy().getFilePath();
-        verify(urlFileDownloader).downloadFile(trackableFileStream, gameFile, filePath);
+        String filePath = fileCopy.getFilePath();
+        verify(urlFileDownloader).downloadFile(storageSolution, trackableFileStream, gameFile, filePath);
     }
 
-    private TrackableFileStream mockProgressAwareFileStreamCreation(GameFile gameFile, DownloadProgress downloadProgress) {
+    private TrackableFileStream mockProgressAwareFileStreamCreation(
+            GameFile gameFile, DownloadProgress downloadProgress) {
         TrackableFileStream trackableFileStream = mock(TrackableFileStream.class);
         when(gogFileProvider.initializeProgressAndStreamFile(gameFile.getFileSource(), downloadProgress))
                 .thenReturn(trackableFileStream);

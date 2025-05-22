@@ -1,0 +1,86 @@
+<app-card>
+  <app-loaded-content [isLoading]="gamesAreLoading">
+    <div class="button-container mb-3">
+      <app-button [actionAsync]="onClickRefresh()"
+                  [disabled]="gamesAreLoading"
+                  testId="refresh-games-btn" buttonStyle="secondary">Refresh</app-button>
+    </div>
+    <app-table [groupedContent]="group(potentialFileCopiesWithContextByGameTitle)" testId="game-list">
+      <ng-template app-table-column="File title" let-item>
+        {{ asFileCopyTableItem(item).gameFile.fileSource.fileTitle }}
+      </ng-template>
+      <ng-template app-table-column="Provider" let-item>
+        {{ asFileCopyTableItem(item).gameFile.fileSource.gameProviderId }}
+      </ng-template>
+      <ng-template app-table-column="Backup target" let-item>
+        {{ getBackupTargetName(asFileCopyTableItem(item).potentialFileCopy.naturalId.backupTargetId) }}
+      </ng-template>
+      <ng-template app-table-column="Version" let-item>
+        {{ asFileCopyTableItem(item).gameFile.fileSource.version }}
+      </ng-template>
+      <ng-template app-table-column="Size" let-item>
+        {{ asFileCopyTableItem(item).gameFile.fileSource.size }}
+      </ng-template>
+      <ng-template app-table-column="Status" let-item>
+        <app-file-status-badge [status]="asFileCopyTableItem(item).potentialFileCopy.status"></app-file-status-badge>
+      </ng-template>
+      <ng-template app-table-column="Actions"
+                   hide-title-on-mobile
+                   let-item>
+        <div class="button-container justify-content-end">
+          <ng-container [ngSwitch]="asFileCopyTableItem(item).potentialFileCopy.status">
+            <app-button [actionAsync]="onClickEnqueueFileCopy(asFileCopyTableItem(item).potentialFileCopy)"
+                        *ngSwitchCase="FileCopyStatus.Discovered"
+                        testId="backup-file-btn"
+                        buttonSize="small">
+              <i class="bi bi-cloud-download" aria-hidden="true"></i>
+              Back up
+            </app-button>
+            <app-button [actionAsync]="onClickCancelBackup(asFileCopyTableItem(item).potentialFileCopy.id!)"
+                        *ngSwitchCase="FileCopyStatus.Enqueued"
+                        testId="cancel-file-backup-btn"
+                        buttonStyle="secondary"
+                        buttonSize="small">
+              Cancel backup
+            </app-button>
+            <app-button [actionAsync]="onClickViewError(asFileCopyTableItem(item).potentialFileCopy.id!)"
+                        *ngSwitchCase="FileCopyStatus.Failed"
+                        testId="view-error-btn"
+                        buttonStyle="secondary"
+                        buttonSize="small">
+              <i class="bi bi-bug" aria-hidden="true"></i>
+              View error
+            </app-button>
+            <ng-container *ngSwitchCase="FileCopyStatus.Success">
+              <app-button [actionAsync]="onClickDownload(asFileCopyTableItem(item).potentialFileCopy.id!)"
+                          testId="download-file-copy-btn"
+                          buttonSize="small">
+                <i class="bi bi-download" aria-hidden="true"></i>
+                Download
+              </app-button>
+              <app-button [actionAsync]="onClickViewFilePath(asFileCopyTableItem(item).potentialFileCopy.id!)"
+                          testId="view-file-path-btn"
+                          buttonStyle="secondary"
+                          buttonSize="small">
+                <i class="bi bi-device-hdd" aria-hidden="true"></i>
+                View file path
+              </app-button>
+              <app-button [actionAsync]="onClickDeleteFileCopy(asFileCopyTableItem(item).potentialFileCopy.id!)"
+                          testId="delete-file-copy-btn"
+                          buttonStyle="danger"
+                          buttonSize="small">
+                <i class="bi bi-trash" aria-hidden="true"></i>
+                Delete copy
+              </app-button>
+            </ng-container>
+          </ng-container>
+        </div>
+      </ng-template>
+    </app-table>
+    <app-pagination [disabled]="gamesAreLoading"
+                    [currentPage]="gameWithFileCopiesPage"
+                    [(pageNumber)]="pageNumber"
+                    [(pageSize)]="pageSize"
+                    (onPageChange)="refresh()"/>
+  </app-loaded-content>
+</app-card>

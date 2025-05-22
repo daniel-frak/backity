@@ -1,6 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {GamesComponent} from './games.component';
-import {GamesWithFilesCardComponent} from "@app/core/pages/games/games-with-files-card/games-with-files-card.component";
+import {GamesWithFileCopiesCardComponent} from "@app/core/pages/games/games-with-files-card/games-with-file-copies-card.component";
 import {
   GamesWithFilesCardComponentStub
 } from "@app/core/pages/games/games-with-files-card/games-with-files-card.component.stub";
@@ -14,7 +14,7 @@ describe('GamesComponent', () => {
       imports: [GamesComponent]
     })
       .overrideComponent(GamesComponent, {
-        remove: {imports: [GamesWithFilesCardComponent]},
+        remove: {imports: [GamesWithFileCopiesCardComponent]},
         add: {imports: [GamesWithFilesCardComponentStub]}
       })
       .compileComponents();

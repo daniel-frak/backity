@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.http.model.GameWithFilesHttpDto;
-import dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.http.model.GameWithFilesHttpDtoMapper;
+import dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.http.model.GameWithFileCopiesHttpDto;
+import dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.http.model.GameWithFileCopiesHttpDtoMapper;
 import dev.codesoapbox.backity.core.game.application.usecases.GetGamesWithFilesUseCase;
-import dev.codesoapbox.backity.core.game.application.GameWithFiles;
+import dev.codesoapbox.backity.core.game.application.GameWithFileCopies;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.PageHttpDto;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.PageHttpDtoMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.PaginationHttpDto;
@@ -21,16 +21,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class GetGamesController {
 
     private final GetGamesWithFilesUseCase getGamesWithFilesUseCase;
-    private final GameWithFilesHttpDtoMapper mapper;
+    private final GameWithFileCopiesHttpDtoMapper mapper;
     private final PaginationHttpDtoMapper paginationMapper;
     private final PageHttpDtoMapper pageHttpDtoMapper;
 
     @Operation(summary = "Get games", description = "Returns a paginated list of discovered games")
     @GetMapping
-    public PageHttpDto<GameWithFilesHttpDto> getGames(
+    public PageHttpDto<GameWithFileCopiesHttpDto> getGames(
             @Valid @Parameter(name = "pagination") PaginationHttpDto paginationHttpDto) {
         Pagination pagination = paginationMapper.toModel(paginationHttpDto);
-        Page<GameWithFiles> gamesWithFiles = getGamesWithFilesUseCase.getGamesWithFiles(pagination);
+        Page<GameWithFileCopies> gamesWithFiles = getGamesWithFilesUseCase.getGamesWithFiles(pagination);
         return pageHttpDtoMapper.toDto(gamesWithFiles, mapper::toDto);
     }
 }

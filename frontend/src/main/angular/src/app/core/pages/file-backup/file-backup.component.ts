@@ -4,11 +4,11 @@ import {
   InProgressFilesCardComponent
 } from "@app/core/pages/file-backup/in-progress-files-card/in-progress-files-card.component";
 import {
-  EnqueuedFilesCardComponent
-} from "@app/core/pages/file-backup/enqueued-files-card/enqueued-files-card.component";
+  EnqueuedFileCopiesCardComponent
+} from "@app/core/pages/file-backup/enqueued-file-copies-card/enqueued-file-copies-card.component";
 import {
-  ProcessedFilesCardComponent
-} from "@app/core/pages/file-backup/processed-files-card/processed-files-card.component";
+  ProcessedFileCopiesCardComponent
+} from "@app/core/pages/file-backup/processed-files-card/processed-file-copies-card.component";
 
 @Component({
   selector: 'app-downloads',
@@ -18,8 +18,8 @@ import {
   imports: [
     PageHeaderComponent,
     InProgressFilesCardComponent,
-    EnqueuedFilesCardComponent,
-    ProcessedFilesCardComponent
+    EnqueuedFileCopiesCardComponent,
+    ProcessedFileCopiesCardComponent
   ]
 })
 export class FileBackupComponent {

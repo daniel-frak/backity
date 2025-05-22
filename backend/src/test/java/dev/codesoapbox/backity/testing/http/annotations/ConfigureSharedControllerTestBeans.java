@@ -1,19 +1,22 @@
 package dev.codesoapbox.backity.testing.http.annotations;
 
+import dev.codesoapbox.backity.core.backuptarget.application.GetBackupTargetsUseCase;
+import dev.codesoapbox.backity.core.backuptarget.config.BackupTargetControllerBeanConfig;
 import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryService;
 import dev.codesoapbox.backity.core.discovery.application.usecases.GetGameContentDiscoveryStatusListUseCase;
 import dev.codesoapbox.backity.core.discovery.application.usecases.StartGameContentDiscoveryUseCase;
 import dev.codesoapbox.backity.core.discovery.application.usecases.StopGameContentDiscoveryUseCase;
 import dev.codesoapbox.backity.core.discovery.infrastructure.config.GameContentDiscoveryControllerBeanConfig;
+import dev.codesoapbox.backity.core.filecopy.application.usecases.*;
+import dev.codesoapbox.backity.core.filecopy.infrastructure.config.FileCopyControllerBeanConfig;
 import dev.codesoapbox.backity.core.game.application.usecases.GetGamesWithFilesUseCase;
 import dev.codesoapbox.backity.core.game.infrastructure.config.GameControllerBeanConfig;
-import dev.codesoapbox.backity.core.gamefile.application.usecases.*;
 import dev.codesoapbox.backity.core.gamefile.infrastructure.config.GameFileControllerBeanConfig;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.logs.application.GetLogsUseCase;
 import dev.codesoapbox.backity.core.logs.domain.services.LogService;
 import dev.codesoapbox.backity.gameproviders.gog.application.usecases.*;
-import dev.codesoapbox.backity.shared.infrastructure.config.jpa.SharedControllerBeanConfig;
+import dev.codesoapbox.backity.shared.infrastructure.config.SharedControllerBeanConfig;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.config.GogControllerBeanConfig;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
@@ -38,7 +41,9 @@ import java.lang.annotation.Target;
         GameContentDiscoveryControllerBeanConfig.class,
         GogControllerBeanConfig.class,
         GameControllerBeanConfig.class,
-        GameFileControllerBeanConfig.class
+        GameFileControllerBeanConfig.class,
+        FileCopyControllerBeanConfig.class,
+        BackupTargetControllerBeanConfig.class
 })
 @MockitoBean(types = {
         // Common
@@ -56,13 +61,13 @@ import java.lang.annotation.Target;
         StartGameContentDiscoveryUseCase.class,
         StopGameContentDiscoveryUseCase.class,
         GetGameContentDiscoveryStatusListUseCase.class,
-        EnqueueFileUseCase.class,
+        EnqueueFileCopyUseCase.class,
         DeleteFileCopyUseCase.class,
-        DownloadFileUseCase.class,
-        GetCurrentlyDownloadingFileUseCase.class,
-        GetDiscoveredFileListUseCase.class,
-        GetEnqueuedFileListUseCase.class,
-        GetProcessedFileListUseCase.class,
+        DownloadFileCopyUseCase.class,
+        GetCurrentlyDownloadingFileCopyUseCase.class,
+        GetDiscoveredFileCopiesUseCase.class,
+        GetEnqueuedFileCopiesUseCase.class,
+        GetProcessedFileCopiesUseCase.class,
         GetGogConfigUseCase.class,
         AuthenticateGogUseCase.class,
         CheckGogAuthenticationUseCase.class,
@@ -70,7 +75,8 @@ import java.lang.annotation.Target;
         LogOutOfGogUseCase.class,
         GetGogLibrarySizeUseCase.class,
         GetGogGameDetailsUseCase.class,
-        GetLogsUseCase.class
+        GetLogsUseCase.class,
+        GetBackupTargetsUseCase.class
 })
 public @interface ConfigureSharedControllerTestBeans {
 }

@@ -5,12 +5,13 @@ import {TableColumnDirective} from "@app/shared/components/table/column-directiv
 import {TableComponent} from "@app/shared/components/table/table.component";
 import {
   FileBackupMessageTopics,
-  FileDownloadProgressUpdatedEvent,
   FileBackupStartedEvent,
-  FileBackupStatus,
-  FileBackupStatusChangedEvent,
-  GameFile,
-  GameFilesClient
+  FileCopiesClient, FileCopy,
+  FileCopyStatus,
+  FileCopyStatusChangedEvent,
+  FileCopyWithContext,
+  FileDownloadProgressUpdatedEvent,
+  GameFile
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {Message} from "@stomp/stompjs";
@@ -34,17 +35,18 @@ import {firstValueFrom, Subscription} from "rxjs";
 export class InProgressFilesCardComponent implements OnInit, OnDestroy {
 
   currentDownloadIsLoading: boolean = false;
-  currentDownload?: GameFile;
+  currentDownload?: FileCopyWithContext;
   downloadProgress?: FileDownloadProgressUpdatedEvent;
 
   private readonly subscriptions: Subscription[] = [];
 
-  constructor(private readonly gameFilesClient: GameFilesClient,
+  constructor(private readonly fileCopiesClient: FileCopiesClient,
               private readonly messageService: MessagesService,
               private readonly notificationService: NotificationService) {
   }
 
-  asGameFile = (gameFile: GameFile) => gameFile;
+  asFileCopyWithContext =
+    (fileCopyWithContext: FileCopyWithContext) => fileCopyWithContext;
 
   ngOnInit(): void {
     this.subscriptions.push(
@@ -62,20 +64,25 @@ export class InProgressFilesCardComponent implements OnInit, OnDestroy {
   private onBackupStarted(payload: Message) {
     const event: FileBackupStartedEvent = JSON.parse(payload.body);
     this.currentDownload = {
-      id: event.gameFileId,
-      gameId: 'UNKNOWN',
-      fileSource: {
-        originalGameTitle: event.originalGameTitle,
-        gameProviderId: 'UNKNOWN',
-        fileTitle: event.fileTitle,
-        version: event.version,
-        url: 'UNKNOWN',
-        originalFileName: event.originalFileName,
-        size: event.size,
-      },
       fileCopy: {
-        filePath: event.filePath,
-        status: FileBackupStatus.InProgress
+        id: event.fileCopyId,
+        naturalId: event.fileCopyNaturalId,
+        status: FileCopyStatus.InProgress,
+        filePath: event.filePath
+      },
+      gameFile: {
+        fileSource: {
+          originalGameTitle: event.originalGameTitle,
+          gameProviderId: 'UNKNOWN',
+          fileTitle: event.fileTitle,
+          version: event.version,
+          url: 'UNKNOWN',
+          originalFileName: event.originalFileName,
+          size: event.size,
+        }
+      },
+      game: {
+        title: "Game title not passed yet" // @TODO Pass Game title in event
       }
     }
   }
@@ -85,11 +92,13 @@ export class InProgressFilesCardComponent implements OnInit, OnDestroy {
   }
 
   private onStatusChanged(payload: Message) {
-    const event: FileBackupStatusChangedEvent = JSON.parse(payload.body);
-    if (event.gameFileId != this.currentDownload?.id) {
+    const event: FileCopyStatusChangedEvent = JSON.parse(payload.body);
+    console.warn(event);
+    console.warn(this.currentDownload);
+    if (event.fileCopyNaturalId.gameFileId != this.currentDownload?.fileCopy.naturalId.gameFileId) {
       return;
     }
-    if (event.newStatus == FileBackupStatus.Success || event.newStatus == FileBackupStatus.Failed) {
+    if (event.newStatus == FileCopyStatus.Success || event.newStatus == FileCopyStatus.Failed) {
       this.currentDownload = undefined;
     }
   }
@@ -98,11 +107,11 @@ export class InProgressFilesCardComponent implements OnInit, OnDestroy {
     this.currentDownloadIsLoading = true;
 
     try {
-      const gameFile = await firstValueFrom(this.gameFilesClient.getCurrentlyDownloading());
-      if (!gameFile) {
+      const fileCopyWithContext = await firstValueFrom(this.fileCopiesClient.getCurrentlyDownloading());
+      if (!fileCopyWithContext) {
         this.currentDownload = undefined;
       } else {
-        this.currentDownload = gameFile;
+        this.currentDownload = fileCopyWithContext;
       }
     } catch (error) {
       this.notificationService.showFailure('Error fetching currently downloaded file', error);

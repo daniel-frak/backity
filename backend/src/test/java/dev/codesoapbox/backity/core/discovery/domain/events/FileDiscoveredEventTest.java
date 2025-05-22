@@ -11,7 +11,7 @@ class FileDiscoveredEventTest {
 
     @Test
     void shouldCreateFrom() {
-        GameFile gameFile = TestGameFile.discovered();
+        GameFile gameFile = TestGameFile.gog();
 
         FileDiscoveredEvent result = FileDiscoveredEvent.from(gameFile);
 

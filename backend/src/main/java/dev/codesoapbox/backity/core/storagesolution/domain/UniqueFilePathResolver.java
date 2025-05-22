@@ -3,7 +3,6 @@ package dev.codesoapbox.backity.core.storagesolution.domain;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.CouldNotResolveUniqueFilePathException;
-import lombok.NonNull;
 import org.apache.commons.io.FilenameUtils;
 
 import java.util.List;
@@ -24,27 +23,22 @@ public class UniqueFilePathResolver {
     private static final StringSanitizer PLACEHOLDER_SANITIZER = PATH_TEMPLATE_SANITIZER
             .withAdditionalCharactersToRemove(Set.of('{', '}'));
 
-    private final String defaultPathTemplate;
-    private final StorageSolution storageSolution;
 
-    public UniqueFilePathResolver(@NonNull String defaultPathTemplate, @NonNull StorageSolution storageSolution) {
-        this.storageSolution = storageSolution;
-        this.defaultPathTemplate = PATH_TEMPLATE_SANITIZER.sanitize(
-                replaceWithCorrectFileSeparator(defaultPathTemplate));
-    }
-
-    private String replaceWithCorrectFileSeparator(String defaultPathTemplate) {
-        return defaultPathTemplate
+    private String replaceWithCorrectFileSeparator(String pathTemplate, StorageSolution storageSolution) {
+        return pathTemplate
                 .replace("/", storageSolution.getSeparator())
                 .replace("\\", storageSolution.getSeparator());
     }
 
-    public String resolve(FileSource fileSource) {
+    public String resolve(String pathTemplate, FileSource fileSource, StorageSolution storageSolution) {
+        String sanitizedPathTemplate = PATH_TEMPLATE_SANITIZER.sanitize(
+                replaceWithCorrectFileSeparator(pathTemplate, storageSolution));
         RawPathData rawPathData = RawPathData.from(fileSource);
-        return constructPathUntilUnique(rawPathData);
+        return constructPathUntilUnique(sanitizedPathTemplate, rawPathData, storageSolution);
     }
 
-    private String constructPathUntilUnique(RawPathData rawPathData) {
+    private String constructPathUntilUnique(String sanitizedPathTemplate, RawPathData rawPathData,
+                                            StorageSolution storageSolution) {
         int suffixIndex = 0;
         String filePath;
         int attemptNumber = 0;
@@ -55,17 +49,17 @@ public class UniqueFilePathResolver {
                         rawPathData.baseName() + rawPathData.extensionWithDot, attemptNumber);
             }
 
-            filePath = constructPath(rawPathData, suffixIndex);
+            filePath = constructPath(sanitizedPathTemplate, rawPathData, suffixIndex);
             suffixIndex++;
         } while (storageSolution.fileExists(filePath));
 
         return filePath;
     }
 
-    private String constructPath(RawPathData rawPathData, int suffixIndex) {
+    private String constructPath(String sanitizedPathTemplate, RawPathData rawPathData, int suffixIndex) {
         String targetFileName = constructFileName(rawPathData, suffixIndex);
 
-        return defaultPathTemplate
+        return sanitizedPathTemplate
                 .replace("{GAME_PROVIDER_ID}",
                         PLACEHOLDER_SANITIZER.sanitize(rawPathData.gameProviderId().value()))
                 .replace("{TITLE}", PLACEHOLDER_SANITIZER.sanitize(rawPathData.gameTitle()))

@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driven.persistence.jpa;
 
-import dev.codesoapbox.backity.core.gamefile.domain.FileBackupStatus;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import org.junit.jupiter.api.Test;
@@ -16,26 +15,25 @@ class GameFileJpaEntityMapperTest {
     private static final GameFileJpaEntityMapper MAPPER = Mappers.getMapper(GameFileJpaEntityMapper.class);
 
     @Test
-    void shouldMapToEntity() {
-        GameFile model = domainModel();
+    void shouldMapDomainToJpa() {
+        GameFile domain = domain();
 
-        GameFileJpaEntity result = MAPPER.toEntity(model);
+        GameFileJpaEntity result = MAPPER.toEntity(domain);
 
-        var expectedResult = entity();
-
+        GameFileJpaEntity expectedResult = jpa();
         assertThat(result)
                 .usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
-    private GameFile domainModel() {
-        return TestGameFile.discovered();
+    private GameFile domain() {
+        return TestGameFile.gog();
     }
 
-    private GameFileJpaEntity entity() {
+    private GameFileJpaEntity jpa() {
         return new GameFileJpaEntity(
                 UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48"),
                 UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281"),
-                new FileSourceJpaEntity(
+                new FileSourceJpaEmbeddable(
                         "GOG",
                         "Game 1",
                         "Game 1 (Installer)",
@@ -44,25 +42,18 @@ class GameFileJpaEntityMapperTest {
                         "game_1_installer.exe",
                         5120L
                 ),
-                new FileCopyJpaEntity(
-                        UUID.fromString("6df888e8-90b9-4df5-a237-0cba422c0310"),
-                        FileBackupStatus.DISCOVERED,
-                        null,
-                        null
-                ),
                 LocalDateTime.parse("2022-04-29T14:15:53"),
                 LocalDateTime.parse("2023-04-29T14:15:53")
         );
     }
 
     @Test
-    void shouldMapToModel() {
-        var model = entity();
+    void shouldMapJpaToDomain() {
+        GameFileJpaEntity jpa = jpa();
 
-        GameFile result = MAPPER.toModel(model);
+        GameFile result = MAPPER.toDomain(jpa);
 
-        var expectedResult = domainModel();
-
+        GameFile expectedResult = domain();
         assertThat(result)
                 .usingRecursiveComparison().isEqualTo(expectedResult);
     }

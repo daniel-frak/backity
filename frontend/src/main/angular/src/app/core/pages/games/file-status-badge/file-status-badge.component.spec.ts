@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {FileStatusBadgeComponent} from './file-status-badge.component';
-import {FileBackupStatus} from "@backend";
+import {FileCopyStatus} from "@backend";
 
 describe('FileStatusBadgeComponent', () => {
   let component: FileStatusBadgeComponent;
@@ -25,35 +25,35 @@ describe('FileStatusBadgeComponent', () => {
   });
 
   it('should have the default status as "Discovered"', () => {
-    expect(component.status).toBe(FileBackupStatus.Discovered);
+    expect(component.status).toBe(FileCopyStatus.Discovered);
   });
 
   it('should return the correct badge class for "Discovered"', () => {
-    component.status = FileBackupStatus.Discovered;
+    component.status = FileCopyStatus.Discovered;
     fixture.detectChanges();
     expect(component.getBadgeClass()).toBe('bg-secondary');
   });
 
   it('should return the correct badge class for "Success"', () => {
-    component.status = FileBackupStatus.Success;
+    component.status = FileCopyStatus.Success;
     fixture.detectChanges();
     expect(component.getBadgeClass()).toBe('bg-success');
   });
 
   it('should return the correct badge class for "In Progress"', () => {
-    component.status = FileBackupStatus.InProgress;
+    component.status = FileCopyStatus.InProgress;
     fixture.detectChanges();
     expect(component.getBadgeClass()).toBe('bg-warning');
   });
 
   it('should return the correct badge class for "Failed"', () => {
-    component.status = FileBackupStatus.Failed;
+    component.status = FileCopyStatus.Failed;
     fixture.detectChanges();
     expect(component.getBadgeClass()).toBe('bg-danger');
   });
 
   it('should return the correct badge class for "Enqueued"', () => {
-    component.status = FileBackupStatus.Enqueued;
+    component.status = FileCopyStatus.Enqueued;
     fixture.detectChanges();
     expect(component.getBadgeClass()).toBe('bg-info');
   });
