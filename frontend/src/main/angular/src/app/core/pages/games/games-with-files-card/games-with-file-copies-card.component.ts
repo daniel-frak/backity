@@ -102,7 +102,8 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
       .flatMap(potentialFileCopiesWithContext => potentialFileCopiesWithContext)
       .map(potentialFileCopyWithContext => potentialFileCopyWithContext.potentialFileCopy)
       .find((potentialFileCopy) => {
-        console.info(potentialFileCopy.naturalId.backupTargetId + " vs " + event.fileCopyNaturalId.backupTargetId);
+        console.info(
+          `${potentialFileCopy.naturalId.backupTargetId} vs ${event.fileCopyNaturalId.backupTargetId}`);
         return this.fileCopyNaturalIdsAreEqual(potentialFileCopy.naturalId, event.fileCopyNaturalId);
       });
   }
@@ -249,6 +250,6 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
   }
 
   getBackupTargetName(backupTargetId: string): string {
-    return this.backupTargets?.find(backupTarget => backupTarget.id == backupTargetId)?.title!;
+    return this.backupTargets?.find(backupTarget => backupTarget.id == backupTargetId)?.title ?? "";
   }
 }
