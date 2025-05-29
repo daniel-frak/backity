@@ -7,12 +7,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyMap;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DomainEventWebSocketPublisherTest {
@@ -24,7 +24,10 @@ class DomainEventWebSocketPublisherTest {
 
     @Test
     void shouldPassEventToHandlerGivenHandlerExists() {
-        eventPublisher = new DomainEventWebSocketPublisher(withTestDomainEventHandler());
+        eventPublisher = new DomainEventWebSocketPublisher();
+        when(testEventHandler.getEventClass())
+                .thenReturn(TestDomainEvent.class);
+        eventPublisher.addHandlers(List.of(testEventHandler));
         var event = new TestDomainEvent();
 
         eventPublisher.publish(event);
@@ -32,22 +35,14 @@ class DomainEventWebSocketPublisherTest {
         verify(testEventHandler, times(1)).handle(event);
     }
 
-    private Map<Class<? extends DomainEvent>, DomainEventHandler<? extends DomainEvent>> withTestDomainEventHandler() {
-        return Map.of(TestDomainEvent.class, testEventHandler);
-    }
-
     @Test
     void shouldThrowExceptionGivenHandlerDoesNotExist() {
-        eventPublisher = new DomainEventWebSocketPublisher(withNoEventHandlers());
+        eventPublisher = new DomainEventWebSocketPublisher();
         var event = new TestDomainEvent();
 
         assertThatThrownBy(() -> eventPublisher.publish(event))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("No handler found for event type: " + event.getClass().getName());
-    }
-
-    private Map<Class<? extends DomainEvent>, DomainEventHandler<? extends DomainEvent>> withNoEventHandlers() {
-        return emptyMap();
     }
 
     static class TestDomainEvent implements DomainEvent {
