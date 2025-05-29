@@ -2,9 +2,7 @@
 
 <div align="center">
 
-# Backity
-
-![Backity Logo](readme-images/logo.svg)
+# ![Backity](readme-images/logo.svg)
 
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=backity&metric=alert_status)](https://sonarcloud.io/dashboard?id=backity)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=backity&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=backity)
