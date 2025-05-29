@@ -113,11 +113,6 @@ public class FileCopyJpaRepository implements FileCopyRepository {
                 .map(entityMapper::toDomain);
     }
 
-    @Override
-    public Page<FileCopy> findAllDiscovered(Pagination pagination) {
-        return findAllByStatusOrderedByDateModified(pagination, List.of(FileCopyStatus.DISCOVERED));
-    }
-
     private Page<FileCopy> findAllByStatusOrderedByDateModified(Pagination pagination, List<FileCopyStatus> statuses) {
         Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_DATE_MODIFIED_ASC);
         org.springframework.data.domain.Page<FileCopyJpaEntity> foundPage =
@@ -126,6 +121,7 @@ public class FileCopyJpaRepository implements FileCopyRepository {
         return pageMapper.toDomain(foundPage, entityMapper::toDomain);
     }
 
+    // @TODO Rename 'waiting for download' to 'enqueued'
     @Override
     public Page<FileCopy> findAllWaitingForDownload(Pagination pagination) {
         return findAllByStatusOrderedByDateModified(pagination, List.of(FileCopyStatus.ENQUEUED));

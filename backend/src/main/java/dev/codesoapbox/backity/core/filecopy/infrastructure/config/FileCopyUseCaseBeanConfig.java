@@ -23,12 +23,6 @@ public class FileCopyUseCaseBeanConfig {
     }
 
     @Bean
-    public GetDiscoveredFileCopiesUseCase getDiscoveredFileListUseCase(
-            FileCopyRepository fileCopyRepository) {
-        return new GetDiscoveredFileCopiesUseCase(fileCopyRepository);
-    }
-
-    @Bean
     public GetEnqueuedFileCopiesUseCase getEnqueuedFileListUseCase(
             FileCopyRepository fileCopyRepository) {
         return new GetEnqueuedFileCopiesUseCase(fileCopyRepository);

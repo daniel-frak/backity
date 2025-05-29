@@ -5,14 +5,8 @@ import {
   GameContentDiscoveryInfoCardComponentStub
 } from "@app/core/pages/file-discovery/game-content-discovery-info-card/game-content-discovery-info-card-component-stub.component";
 import {
-  DiscoveredFilesCardComponentStub
-} from "@app/core/pages/file-discovery/discovered-file-copies-card/discovered-files-card.component.stub";
-import {
   GameContentDiscoveryInfoCardComponent
 } from "@app/core/pages/file-discovery/game-content-discovery-info-card/game-content-discovery-info-card.component";
-import {
-  DiscoveredFileCopiesCardComponent
-} from "@app/core/pages/file-discovery/discovered-file-copies-card/discovered-file-copies-card.component";
 
 describe('GameContentDiscoveryComponent', () => {
   let component: GameContentDiscoveryComponent;
@@ -27,14 +21,12 @@ describe('GameContentDiscoveryComponent', () => {
     }).overrideComponent(GameContentDiscoveryComponent, {
       remove: {
         imports: [
-          GameContentDiscoveryInfoCardComponent,
-          DiscoveredFileCopiesCardComponent
+          GameContentDiscoveryInfoCardComponent
         ]
       },
       add: {
         imports: [
-          GameContentDiscoveryInfoCardComponentStub,
-          DiscoveredFilesCardComponentStub
+          GameContentDiscoveryInfoCardComponentStub
         ]
       },
     })

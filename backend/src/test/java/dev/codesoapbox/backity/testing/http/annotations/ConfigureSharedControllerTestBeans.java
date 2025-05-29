@@ -11,15 +11,15 @@ import dev.codesoapbox.backity.core.filecopy.application.usecases.*;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.config.FileCopyControllerBeanConfig;
 import dev.codesoapbox.backity.core.game.application.usecases.GetGamesWithFilesUseCase;
 import dev.codesoapbox.backity.core.game.infrastructure.config.GameControllerBeanConfig;
-import dev.codesoapbox.backity.core.gamefile.infrastructure.config.GameFileControllerBeanConfig;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.gamefile.infrastructure.config.GameFileControllerBeanConfig;
 import dev.codesoapbox.backity.core.logs.application.GetLogsUseCase;
 import dev.codesoapbox.backity.core.logs.domain.services.LogService;
 import dev.codesoapbox.backity.gameproviders.gog.application.usecases.*;
-import dev.codesoapbox.backity.shared.infrastructure.config.SharedControllerBeanConfig;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.config.GogControllerBeanConfig;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.config.GogControllerBeanConfig;
+import dev.codesoapbox.backity.shared.infrastructure.config.SharedControllerBeanConfig;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import jakarta.persistence.EntityManager;
 import org.springframework.context.annotation.Import;
@@ -65,7 +65,6 @@ import java.lang.annotation.Target;
         DeleteFileCopyUseCase.class,
         DownloadFileCopyUseCase.class,
         GetCurrentlyDownloadingFileCopyUseCase.class,
-        GetDiscoveredFileCopiesUseCase.class,
         GetEnqueuedFileCopiesUseCase.class,
         GetProcessedFileCopiesUseCase.class,
         GetGogConfigUseCase.class,

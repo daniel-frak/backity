@@ -1,18 +1,17 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
-import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers.model.FileCopyProcessingStatusHttpDto;
-import dev.codesoapbox.backity.core.filecopy.application.usecases.GetDiscoveredFileCopiesUseCase;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.GetEnqueuedFileCopiesUseCase;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.GetProcessedFileCopiesUseCase;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
+import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers.model.FileCopyProcessingStatusHttpDto;
+import dev.codesoapbox.backity.shared.domain.Page;
+import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.PageHttpDto;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.PageHttpDtoMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.PaginationHttpDto;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.PaginationHttpDtoMapper;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyHttpDtoMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyHttpDto;
-import dev.codesoapbox.backity.shared.domain.Page;
-import dev.codesoapbox.backity.shared.domain.Pagination;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyHttpDtoMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Slf4j
 public class GetFileCopyListController {
 
-    private final GetDiscoveredFileCopiesUseCase getDiscoveredFilesUseCase;
     private final GetEnqueuedFileCopiesUseCase getEnqueuedFilesUseCase;
     private final GetProcessedFileCopiesUseCase getProcessedFilesUseCase;
     private final FileCopyHttpDtoMapper fileCopyMapper;
@@ -48,7 +46,6 @@ public class GetFileCopyListController {
 
     private Page<FileCopy> getFileCopyPage(FileCopyProcessingStatusHttpDto status, Pagination pagination) {
         return switch (status) {
-            case DISCOVERED -> getDiscoveredFilesUseCase.getDiscoveredFileCopies(pagination);
             case ENQUEUED -> getEnqueuedFilesUseCase.getEnqueuedFileCopies(pagination);
             case PROCESSED -> getProcessedFilesUseCase.getProcessedFileCopies(pagination);
         };
