@@ -27,9 +27,14 @@ public final class PortsAndAdaptersArchitectureRules {
             .whereLayer(CONFIG_LAYER).mayNotBeAccessedByAnyLayer()
             .whereLayer(APPLICATION_LAYER).mayOnlyBeAccessedByLayers(ADAPTER_LAYER, CONFIG_LAYER);
 
-    // @TODO Rename to ADAPTER_TYPES_SHOULD_NOT_DEPEND_ON_EACH_OTHER?
     @ArchTest
     static final SliceRule ADAPTERS_SHOULD_NOT_DEPEND_ON_EACH_OTHER = slices()
+            // Assumed package structure: *.adapters.driven/driving.adaptertype.(actualadapter)
+            .matching(".." + ADAPTERS_PACKAGE + ".*.*.(*)..").should().notDependOnEachOther();
+
+    @ArchTest
+    static final SliceRule ADAPTER_TYPES_SHOULD_NOT_DEPEND_ON_EACH_OTHER = slices()
+            // Assumed package structure: *.adapters.driven/driving.(adaptertype)
             .matching(".." + ADAPTERS_PACKAGE + ".*.(*)..").should().notDependOnEachOther();
 
     private PortsAndAdaptersArchitectureRules() {
