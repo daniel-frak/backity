@@ -19,9 +19,9 @@ public class TestRules {
     @ArchTest
     static final ArchRule ASSERTJ_SHOULD_BE_USED_INSTEAD_OF_JUNIT_ASSERTIONS =
             noClasses().that().resideOutsideOfPackage("..archunit..").should()
-                    .transitivelyDependOnClassesThat()
+                    .dependOnClassesThat()
                     .haveFullyQualifiedName(org.junit.jupiter.api.Assertions.class.getName())
-                    .orShould().transitivelyDependOnClassesThat()
+                    .orShould().dependOnClassesThat()
                     .haveFullyQualifiedName(org.junit.Assert.class.getName())
                     .because("AssertJ assertions provide a more fluent and expressive API," +
                             " offering a wider range of assertion options and clearer failure messages");
