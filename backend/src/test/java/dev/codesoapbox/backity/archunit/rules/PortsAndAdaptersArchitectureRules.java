@@ -27,6 +27,7 @@ public final class PortsAndAdaptersArchitectureRules {
             .whereLayer(CONFIG_LAYER).mayNotBeAccessedByAnyLayer()
             .whereLayer(APPLICATION_LAYER).mayOnlyBeAccessedByLayers(ADAPTER_LAYER, CONFIG_LAYER);
 
+    // @TODO Rename to ADAPTER_TYPES_SHOULD_NOT_DEPEND_ON_EACH_OTHER?
     @ArchTest
     static final SliceRule ADAPTERS_SHOULD_NOT_DEPEND_ON_EACH_OTHER = slices()
             .matching(".." + ADAPTERS_PACKAGE + ".*.(*)..").should().notDependOnEachOther();

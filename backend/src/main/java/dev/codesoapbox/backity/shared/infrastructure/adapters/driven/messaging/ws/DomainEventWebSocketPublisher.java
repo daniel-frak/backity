@@ -6,14 +6,24 @@ import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static java.util.stream.Collectors.toMap;
 
 @Slf4j
 @RequiredArgsConstructor
 public class DomainEventWebSocketPublisher implements DomainEventPublisher {
 
     @SuppressWarnings("java:S6411") // Cannot implement Comparable for Class type
-    private final Map<Class<? extends DomainEvent>, DomainEventHandler<? extends DomainEvent>> handlers;
+    private final Map<Class<? extends DomainEvent>, DomainEventHandler<? extends DomainEvent>> handlers =
+            new HashMap<>();
+
+    public void addHandlers(List<DomainEventHandler<?>> domainEventHandlers) {
+        handlers.putAll(domainEventHandlers.stream()
+                .collect(toMap(DomainEventHandler::getEventClass, e -> e)));
+    }
 
     @Override
     public <T extends DomainEvent> void publish(T event) {
