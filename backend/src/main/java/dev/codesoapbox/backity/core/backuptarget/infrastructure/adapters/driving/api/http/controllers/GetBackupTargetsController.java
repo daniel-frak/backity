@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.backuptarget.application.GetBackupTargetsUseCase;
-import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driving.api.http.controllers.model.BackupTargetHttpDto;
-import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driving.api.http.controllers.model.BackupTargetHttpDtoMapper;
+import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driving.api.http.model.BackupTargetHttpDto;
+import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driving.api.http.model.BackupTargetHttpDtoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 
