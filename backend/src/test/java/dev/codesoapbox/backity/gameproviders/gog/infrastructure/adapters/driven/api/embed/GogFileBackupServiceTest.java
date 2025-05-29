@@ -37,7 +37,7 @@ class GogFileBackupServiceTest {
     @Test
     void backUpFileShouldDownloadFile() throws IOException {
         GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.discovered();
+        FileCopy fileCopy = TestFileCopy.tracked();
         DownloadProgress downloadProgress = mock(DownloadProgress.class);
         TrackableFileStream trackableFileStream =
                 mockProgressAwareFileStreamCreation(gameFile, downloadProgress);

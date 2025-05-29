@@ -9,13 +9,14 @@
  */
 
 
-export type FileCopyStatus = 'DISCOVERED' | 'ENQUEUED' | 'IN_PROGRESS' | 'SUCCESS' | 'FAILED';
+export type FileCopyStatus = 'TRACKED' | 'ENQUEUED' | 'IN_PROGRESS' | 'STORED_INTEGRITY_UNKNOWN' | 'STORED_INTEGRITY_VERIFIED' | 'FAILED';
 
 export const FileCopyStatus = {
-    Discovered: 'DISCOVERED' as FileCopyStatus,
+    Tracked: 'TRACKED' as FileCopyStatus,
     Enqueued: 'ENQUEUED' as FileCopyStatus,
     InProgress: 'IN_PROGRESS' as FileCopyStatus,
-    Success: 'SUCCESS' as FileCopyStatus,
+    StoredIntegrityUnknown: 'STORED_INTEGRITY_UNKNOWN' as FileCopyStatus,
+    StoredIntegrityVerified: 'STORED_INTEGRITY_VERIFIED' as FileCopyStatus,
     Failed: 'FAILED' as FileCopyStatus
 };
 

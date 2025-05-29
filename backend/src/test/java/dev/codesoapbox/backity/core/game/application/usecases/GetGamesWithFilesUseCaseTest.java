@@ -47,7 +47,7 @@ class GetGamesWithFilesUseCaseTest {
     void shouldGetGamesWithFiles() {
         var pagination = new Pagination(0, 2);
         GameFile gameFile = TestGameFile.gog();
-        FileCopy localCopy = TestFileCopy.successful();
+        FileCopy localCopy = TestFileCopy.storedIntegrityUnknown();
         Game game = mockGameExists(pagination);
         mockGameFilesExistFor(game, List.of(gameFile));
         mockFileCopiesExist(gameFile, List.of(localCopy));

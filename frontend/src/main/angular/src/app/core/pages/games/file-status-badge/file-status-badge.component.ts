@@ -12,7 +12,7 @@ import {CommonModule} from '@angular/common';
 export class FileStatusBadgeComponent implements OnInit {
 
   @Input()
-  public status: FileCopyStatus | undefined = FileCopyStatus.Discovered;
+  public status: FileCopyStatus | undefined = undefined;
 
   constructor() {
   }
@@ -25,7 +25,7 @@ export class FileStatusBadgeComponent implements OnInit {
 
   getBadgeClass() {
     switch (this.status) {
-      case FileCopyStatus.Success:
+      case FileCopyStatus.StoredIntegrityUnknown:
         return 'bg-success';
       case FileCopyStatus.InProgress:
         return 'bg-warning';

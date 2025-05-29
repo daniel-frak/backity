@@ -1,4 +1,4 @@
 <span class="badge" [ngClass]="getBadgeClass()">
   <i class="me-1 bi bi-play-circle" *ngIf="status == FileCopyStatus.InProgress" aria-hidden="true"></i>
-  {{status}}
+  {{status || "Untracked"}}
 </span>

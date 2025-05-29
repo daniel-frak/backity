@@ -49,6 +49,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
     private static final LocalDateTime NOW = FakeTimeBeanConfig.FIXED_DATE_TIME;
     private static final LocalDate TODAY = NOW.toLocalDate();
     private static final LocalDate YESTERDAY = TODAY.minusDays(1);
+    private static final LocalDate BEFORE_YESTERDAY = TODAY.minusDays(2);
 
     @Autowired
     protected FileCopyJpaRepository repository;
@@ -76,12 +77,24 @@ abstract class FileCopyJpaRepositoryAbstractIT {
         }
         for (FileCopy fileCopy : EXISTING_FILE_COPIES.getAll()) {
             entityManager.persist(entityMapper.toEntity(fileCopy));
+            updateDateModified(fileCopy);
         }
+    }
+
+    /*
+    DateModified gets overwritten by the database on every INSERT/UPDATE, so we need to update it manually.
+     */
+    private void updateDateModified(FileCopy fileCopy) {
+        entityManager.getEntityManager()
+                .createQuery("UPDATE FileCopy f SET f.dateModified = :date WHERE f.id = :id")
+                .setParameter("date", fileCopy.getDateModified())
+                .setParameter("id", fileCopy.getId().value())
+                .executeUpdate();
     }
 
     @Test
     void saveShouldPersistNew() {
-        FileCopy fileCopy = TestFileCopy.discoveredBuilder()
+        FileCopy fileCopy = TestFileCopy.trackedBuilder()
                 .naturalId(new FileCopyNaturalId(
                         EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1.get().getId(),
                         new BackupTargetId("290035b5-388c-4705-b89c-73950eb61b75")
@@ -126,7 +139,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void saveShouldPublishEventsAfterCommitting() {
-        FileCopy fileCopy = TestFileCopy.discovered();
+        FileCopy fileCopy = TestFileCopy.tracked();
         fileCopy.toInProgress();
         repository.save(fileCopy);
 
@@ -137,7 +150,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void saveShouldClearEvents() {
-        FileCopy fileCopy = TestFileCopy.discovered();
+        FileCopy fileCopy = TestFileCopy.tracked();
         fileCopy.toInProgress();
         repository.save(fileCopy);
 
@@ -148,10 +161,10 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void saveShouldThrowGivenNaturalIdIsNotUnique() {
-        FileCopy fileCopy1 = TestFileCopy.discoveredBuilder()
+        FileCopy fileCopy1 = TestFileCopy.trackedBuilder()
                 .id(new FileCopyId("7bf408f7-9b6e-4ee7-a2f2-27a454a4f5ba"))
                 .build();
-        FileCopy fileCopy2 = TestFileCopy.discoveredBuilder()
+        FileCopy fileCopy2 = TestFileCopy.trackedBuilder()
                 .id(new FileCopyId("09366863-b707-4e5c-8315-ed7e7c56d0a9"))
                 .naturalId(fileCopy1.getNaturalId())
                 .build();
@@ -189,7 +202,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void findByNaturalIdOrCreateShouldFindGivenNotExists() {
-        FileCopy expectedFileCopy = TestFileCopy.discoveredBuilder()
+        FileCopy expectedFileCopy = TestFileCopy.trackedBuilder()
                 .id(new FileCopyId("7bf408f7-9b6e-4ee7-a2f2-27a454a4f5ba"))
                 .build();
         FileCopy result = repository.findByNaturalIdOrCreate(expectedFileCopy.getNaturalId(), () -> expectedFileCopy);
@@ -204,7 +217,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                 mock(PageEntityMapper.class), mock(PaginationEntityMapper.class), domainEventPublisher);
         FileCopy expectedExisting = EXISTING_FILE_COPIES.DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1.get();
         FileCopyNaturalId naturalId = expectedExisting.getNaturalId();
-        FileCopy newFileCopy = TestFileCopy.discoveredBuilder()
+        FileCopy newFileCopy = TestFileCopy.trackedBuilder()
                 .naturalId(naturalId)
                 .build();
         when(mockSpringRepository.findByNaturalIdGameFileIdAndNaturalIdBackupTargetId(
@@ -284,16 +297,17 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindAllProcessedInOrderOfDateModifiedAscending() {
-        var pagination = new Pagination(0, 2);
+        var pagination = new Pagination(0, 3);
 
         Page<FileCopy> result = repository.findAllProcessed(pagination);
 
         List<FileCopy> expectedItems = List.of(
-                EXISTING_FILE_COPIES.SUCCESSFUL_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2.get(),
+                EXISTING_FILE_COPIES.STORED_VERIFIED_FILE_COPY_FROM_BEFORE_YESTERDAY_FOR_GAME_FILE_2.get(),
+                EXISTING_FILE_COPIES.STORED_UNVERIFIED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2.get(),
                 EXISTING_FILE_COPIES.FAILED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_2.get()
         );
         int totalPages = 1;
-        int totalElements = 2;
+        int totalElements = 3;
         assertContainsInOrder(result, pagination, totalPages, totalElements, expectedItems);
     }
 
@@ -349,7 +363,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
     private static class EXISTING_FILE_COPIES {
 
         public static final Supplier<FileCopy> DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1 =
-                () -> TestFileCopy.discoveredBuilder()
+                () -> TestFileCopy.trackedBuilder()
                         .id(new FileCopyId("9fdad52f-b4a6-46bc-af6d-bf27f9661eae"))
                         .naturalId(new FileCopyNaturalId(
                                 EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1.get().getId(),
@@ -359,7 +373,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                         .build();
 
         public static final Supplier<FileCopy> DISCOVERED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_1 =
-                () -> TestFileCopy.discoveredBuilder()
+                () -> TestFileCopy.trackedBuilder()
                         .id(new FileCopyId("773a79ae-6cfa-4264-b76e-7accffdb9f34"))
                         .naturalId(new FileCopyNaturalId(
                                 EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1.get().getId(),
@@ -398,14 +412,24 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                         .dateModified(TODAY.atStartOfDay())
                         .build();
 
-        public static final Supplier<FileCopy> SUCCESSFUL_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2 =
-                () -> TestFileCopy.successfulBuilder()
+        public static final Supplier<FileCopy> STORED_UNVERIFIED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2 =
+                () -> TestFileCopy.storedIntegrityUnknownBuilder()
                         .id(new FileCopyId("e3e5636d-bb13-4506-87eb-c22d238defce"))
                         .naturalId(new FileCopyNaturalId(
                                 EXISTING_GAME_FILES.GOG_GAME_FILE_2_FOR_GAME_1.get().getId(),
                                 new BackupTargetId("9a22c5d8-7540-4bd3-8cd3-e56c97fe6550")
                         ))
                         .dateModified(YESTERDAY.atStartOfDay())
+                        .build();
+
+        public static final Supplier<FileCopy> STORED_VERIFIED_FILE_COPY_FROM_BEFORE_YESTERDAY_FOR_GAME_FILE_2 =
+                () -> TestFileCopy.storedIntegrityVerifiedBuilder()
+                        .id(new FileCopyId("3ff35991-86a4-4225-8d80-d157bd60193c"))
+                        .naturalId(new FileCopyNaturalId(
+                                EXISTING_GAME_FILES.GOG_GAME_FILE_2_FOR_GAME_1.get().getId(),
+                                new BackupTargetId("9f8b7374-0041-4cdf-9003-c3c3b08f32ac")
+                        ))
+                        .dateModified(BEFORE_YESTERDAY.atStartOfDay())
                         .build();
 
         public static final Supplier<FileCopy> FAILED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_2 =
@@ -425,7 +449,8 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                     IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2.get(),
                     ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2.get(),
                     ENQUEUED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_2.get(),
-                    SUCCESSFUL_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2.get(),
+                    STORED_UNVERIFIED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2.get(),
+                    STORED_VERIFIED_FILE_COPY_FROM_BEFORE_YESTERDAY_FOR_GAME_FILE_2.get(),
                     FAILED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_2.get()
             );
         }

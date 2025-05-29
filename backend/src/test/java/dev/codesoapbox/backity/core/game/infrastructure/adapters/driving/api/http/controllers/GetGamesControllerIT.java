@@ -39,7 +39,7 @@ class GetGamesControllerIT {
                 new GameWithFileCopies(
                         new Game(gameId, null, null, "Test Game"),
                         List.of(new GameFileWithCopies(TestGameFile.gog(),
-                                List.of(TestFileCopy.discovered(), TestFileCopy.successful(), TestFileCopy.failed()))
+                                List.of(TestFileCopy.tracked(), TestFileCopy.storedIntegrityUnknown(), TestFileCopy.failed()))
                         ))), pagination);
         when(getGamesWithFilesUseCase.getGamesWithFiles(pagination))
                 .thenReturn(gameWithFileCopiesPage);
@@ -76,7 +76,7 @@ class GetGamesControllerIT {
                                                     "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
                                                     "backupTargetId": "eda52c13-ddf7-406f-97d9-d3ce2cab5a76"
                                                 },
-                                                "status": "DISCOVERED",
+                                                "status": "TRACKED",
                                                 "failedReason": null,
                                                 "filePath": null,
                                                 "dateCreated": "2022-04-29T14:15:53",
@@ -88,7 +88,7 @@ class GetGamesControllerIT {
                                                     "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
                                                     "backupTargetId": "eda52c13-ddf7-406f-97d9-d3ce2cab5a76"
                                                 },
-                                                "status": "SUCCESS",
+                                                "status": "STORED_INTEGRITY_UNKNOWN",
                                                 "failedReason": null,
                                                 "filePath": "someFilePath",
                                                 "dateCreated": "2022-04-29T14:15:53",

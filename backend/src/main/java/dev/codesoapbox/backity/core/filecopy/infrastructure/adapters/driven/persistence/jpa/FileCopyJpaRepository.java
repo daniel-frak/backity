@@ -128,8 +128,12 @@ public class FileCopyJpaRepository implements FileCopyRepository {
 
     @Override
     public Page<FileCopy> findAllProcessed(Pagination pagination) {
-        return findAllByStatusOrderedByDateModified(
-                pagination, List.of(FileCopyStatus.SUCCESS, FileCopyStatus.FAILED));
+        return findAllByStatusOrderedByDateModified(pagination,
+                List.of(
+                        FileCopyStatus.STORED_INTEGRITY_UNKNOWN,
+                        FileCopyStatus.STORED_INTEGRITY_VERIFIED,
+                        FileCopyStatus.FAILED
+                ));
     }
 
     @Override

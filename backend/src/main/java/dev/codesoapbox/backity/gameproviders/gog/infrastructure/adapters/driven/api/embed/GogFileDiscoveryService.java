@@ -49,13 +49,13 @@ public class GogFileDiscoveryService implements GameProviderFileDiscoveryService
                 });
     }
 
-    private void processFiles(Consumer<FileSource> discoveredFileConsumer, GogGameWithFiles gogGame) {
+    private void processFiles(Consumer<FileSource> fileSourceConsumer, GogGameWithFiles gogGame) {
         if (gogGame == null) {
             return;
         }
         List<FileSource> fileSources = gogGameWithFilesMapper.toFileSources(gogGame);
         for (FileSource fileSource : fileSources) {
-            discoveredFileConsumer.accept(fileSource);
+            fileSourceConsumer.accept(fileSource);
         }
     }
 

@@ -168,9 +168,9 @@ describe('InProgressFilesCardComponent', () => {
   });
 
   it('should clear currently downloaded game when FileCopyStatusChangedEvent' +
-    ' is received with status Success', async () => {
+    ' is received with status Stored (integrity unknown)', async () => {
     await simulateFileCopyStatusChangedEventReceived(inProgressFileCopy.id,
-      inProgressFileCopy.naturalId, FileCopyStatus.Success);
+      inProgressFileCopy.naturalId, FileCopyStatus.StoredIntegrityUnknown);
 
     const currentlyDownloadingTable: DebugElement = getInProgressFileTable();
     expect(currentlyDownloadingTable.nativeElement.textContent).toContain(NOTHING_BEING_BACKED_UP_TEXT);
@@ -207,13 +207,13 @@ describe('InProgressFilesCardComponent', () => {
   }
 
   it('should not clear currently downloaded game when FileCopyStatusChangedEvent' +
-    ' is received with natural id other than current and status Success', async () => {
+    ' is received with natural id other than current and status Stored (integrity unknown)', async () => {
     let fileCopyNaturalId: FileCopyNaturalId = {
       gameFileId: 'anotherGameFileId',
       backupTargetId: 'someBackupTargetId'
     };
     await simulateFileCopyStatusChangedEventReceived(
-      inProgressFileCopy.id, fileCopyNaturalId, FileCopyStatus.Success);
+      inProgressFileCopy.id, fileCopyNaturalId, FileCopyStatus.StoredIntegrityUnknown);
 
     const currentlyDownloadingTable: DebugElement = getInProgressFileTable();
     expect(currentlyDownloadingTable.nativeElement.textContent).not.toContain(NOTHING_BEING_BACKED_UP_TEXT);

@@ -15,8 +15,8 @@ class FileCopyHttpDtoMapperTest {
     private static final FileCopyHttpDtoMapper MAPPER = Mappers.getMapper(FileCopyHttpDtoMapper.class);
 
     @Test
-    void shouldMapDiscoveredToDto() {
-        FileCopy domain = TestFileCopy.discovered();
+    void shouldMapTrackedToDto() {
+        FileCopy domain = TestFileCopy.tracked();
 
         FileCopyHttpDto result = MAPPER.toDto(domain);
 
@@ -26,7 +26,7 @@ class FileCopyHttpDtoMapperTest {
                         "acde26d7-33c7-42ee-be16-bca91a604b48",
                         "eda52c13-ddf7-406f-97d9-d3ce2cab5a76"
                 ),
-                FileCopyStatusHttpDto.DISCOVERED,
+                FileCopyStatusHttpDto.TRACKED,
                 null,
                 null,
                 LocalDateTime.parse("2022-04-29T14:15:53"),
@@ -37,8 +37,8 @@ class FileCopyHttpDtoMapperTest {
     }
 
     @Test
-    void shouldMapSuccessfulToDto() {
-        FileCopy domain = TestFileCopy.successful();
+    void shouldMapStoredUnverifiedToDto() {
+        FileCopy domain = TestFileCopy.storedIntegrityUnknown();
 
         FileCopyHttpDto result = MAPPER.toDto(domain);
 
@@ -48,7 +48,7 @@ class FileCopyHttpDtoMapperTest {
                         "acde26d7-33c7-42ee-be16-bca91a604b48",
                         "eda52c13-ddf7-406f-97d9-d3ce2cab5a76"
                 ),
-                FileCopyStatusHttpDto.SUCCESS,
+                FileCopyStatusHttpDto.STORED_INTEGRITY_UNKNOWN,
                 null,
                 "someFilePath",
                 LocalDateTime.parse("2022-04-29T14:15:53"),

@@ -76,7 +76,9 @@ export class InProgressFilesCardComponent implements OnInit, OnDestroy {
     if (event.fileCopyNaturalId.gameFileId != this.currentDownload?.fileCopy.naturalId.gameFileId) {
       return;
     }
-    if (event.newStatus == FileCopyStatus.Success || event.newStatus == FileCopyStatus.Failed) {
+    if (event.newStatus == FileCopyStatus.StoredIntegrityUnknown
+      || event.newStatus == FileCopyStatus.StoredIntegrityVerified
+      || event.newStatus == FileCopyStatus.Failed) {
       this.currentDownload = undefined;
     }
   }

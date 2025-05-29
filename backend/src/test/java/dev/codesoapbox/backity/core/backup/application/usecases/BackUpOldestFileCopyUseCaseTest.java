@@ -36,7 +36,7 @@ class BackUpOldestFileCopyUseCaseTest {
 
     @Test
     void shouldDoNothingGivenAlreadyInProgress() {
-        backUpOldestFileCopyUseCase.enqueuedFileCopyReference.set(TestFileCopy.discovered());
+        backUpOldestFileCopyUseCase.enqueuedFileCopyReference.set(TestFileCopy.tracked());
 
         backUpOldestFileCopyUseCase.backUpOldestFileCopy();
 
@@ -46,7 +46,7 @@ class BackUpOldestFileCopyUseCaseTest {
     @Test
     void shouldBackUpEnqueuedGameFileIfNotCurrentlyDownloading() {
         GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.discovered();
+        FileCopy fileCopy = TestFileCopy.tracked();
         mockIsNextInQueue(gameFile, fileCopy);
         mockBackupServiceIsReadyFor(gameFile);
         AtomicBoolean gameFileWasKeptAsReferenceDuringProcessing =
@@ -84,7 +84,7 @@ class BackUpOldestFileCopyUseCaseTest {
     @Test
     void shouldMarkAsFailedGracefully() {
         GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.discovered();
+        FileCopy fileCopy = TestFileCopy.tracked();
         mockIsNextInQueue(gameFile, fileCopy);
         mockBackupServiceIsReadyFor(gameFile);
         mockBackupServiceFails();
@@ -103,7 +103,7 @@ class BackUpOldestFileCopyUseCaseTest {
     @Test
     void shouldDoNothingIfGameProviderFileBackupServiceNotReady() {
         GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.discovered();
+        FileCopy fileCopy = TestFileCopy.tracked();
         mockIsNextInQueue(gameFile, fileCopy);
         mockBackupServiceIsNotReadyFor(gameFile);
 
@@ -119,7 +119,7 @@ class BackUpOldestFileCopyUseCaseTest {
 
     @Test
     void shouldDoNothingIfCurrentlyDownloading() {
-        FileCopy fileCopy = TestFileCopy.discovered();
+        FileCopy fileCopy = TestFileCopy.tracked();
 
         backUpOldestFileCopyUseCase.enqueuedFileCopyReference.set(fileCopy);
         backUpOldestFileCopyUseCase.backUpOldestFileCopy();

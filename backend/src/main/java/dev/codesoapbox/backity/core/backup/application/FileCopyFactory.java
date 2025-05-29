@@ -14,7 +14,7 @@ public class FileCopyFactory {
     private final Supplier<FileCopyId> idSupplier;
 
     public FileCopy create(FileCopyNaturalId fileCopyNaturalId) {
-        return new FileCopy(idSupplier.get(), fileCopyNaturalId, FileCopyStatus.DISCOVERED,
+        return new FileCopy(idSupplier.get(), fileCopyNaturalId, FileCopyStatus.TRACKED,
                 null, null, null, null);
     }
 }

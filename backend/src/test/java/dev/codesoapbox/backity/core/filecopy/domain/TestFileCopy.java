@@ -6,7 +6,7 @@ import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 import java.time.LocalDateTime;
 
 @lombok.Builder(builderClassName = "Builder", buildMethodName = "internalBuild",
-        builderMethodName = "discoveredBuilder")
+        builderMethodName = "trackedBuilder")
 public class TestFileCopy {
 
     @lombok.Builder.Default
@@ -19,7 +19,7 @@ public class TestFileCopy {
     );
 
     @lombok.Builder.Default
-    private FileCopyStatus status = FileCopyStatus.DISCOVERED;
+    private FileCopyStatus status = FileCopyStatus.TRACKED;
 
     @lombok.Builder.Default
     private String failedReason = null;
@@ -33,18 +33,28 @@ public class TestFileCopy {
     @lombok.Builder.Default
     private LocalDateTime dateModified = LocalDateTime.parse("2023-04-29T14:15:53");
 
-    public static FileCopy discovered() {
-        return discoveredBuilder().build();
+    public static FileCopy tracked() {
+        return trackedBuilder().build();
     }
 
-    public static FileCopy successful() {
-        return successfulBuilder()
+    public static FileCopy storedIntegrityVerified() {
+        return storedIntegrityVerifiedBuilder()
                 .build();
     }
 
-    public static Builder successfulBuilder() {
-        return discoveredBuilder()
-                .status(FileCopyStatus.SUCCESS)
+    public static Builder storedIntegrityVerifiedBuilder() {
+        return storedIntegrityUnknownBuilder()
+                .status(FileCopyStatus.STORED_INTEGRITY_VERIFIED);
+    }
+
+    public static FileCopy storedIntegrityUnknown() {
+        return storedIntegrityUnknownBuilder()
+                .build();
+    }
+
+    public static Builder storedIntegrityUnknownBuilder() {
+        return trackedBuilder()
+                .status(FileCopyStatus.STORED_INTEGRITY_UNKNOWN)
                 .filePath("someFilePath");
     }
 
@@ -54,7 +64,7 @@ public class TestFileCopy {
     }
 
     public static Builder enqueuedBuilder() {
-        return discoveredBuilder()
+        return trackedBuilder()
                 .status(FileCopyStatus.ENQUEUED);
     }
 
@@ -64,7 +74,7 @@ public class TestFileCopy {
     }
 
     public static Builder failedBuilder() {
-        return discoveredBuilder()
+        return trackedBuilder()
                 .status(FileCopyStatus.FAILED)
                 .failedReason("someFailedReason");
     }
@@ -75,7 +85,7 @@ public class TestFileCopy {
     }
 
     public static Builder inProgressWithoutFilePathBuilder() {
-        return discoveredBuilder()
+        return trackedBuilder()
                 .status(FileCopyStatus.IN_PROGRESS);
     }
 

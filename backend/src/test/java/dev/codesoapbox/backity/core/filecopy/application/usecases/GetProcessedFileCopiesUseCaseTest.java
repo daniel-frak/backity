@@ -41,7 +41,7 @@ class GetProcessedFileCopiesUseCaseTest {
     }
 
     private Page<FileCopy> mockFileCopyPageExists(Pagination pagination) {
-        Page<FileCopy> fileCopyPage = TestPage.of(List.of(TestFileCopy.successful()), pagination);
+        Page<FileCopy> fileCopyPage = TestPage.of(List.of(TestFileCopy.storedIntegrityUnknown()), pagination);
         when(fileCopyRepository.findAllProcessed(pagination))
                 .thenReturn(fileCopyPage);
 

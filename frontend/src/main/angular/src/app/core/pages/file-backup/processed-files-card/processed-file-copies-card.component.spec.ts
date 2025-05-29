@@ -21,7 +21,7 @@ describe('ProcessedFileCopiesCardComponent', () => {
   let messagesService: SpyObj<MessagesService>;
   let notificationService: NotificationService;
 
-  const processedFileCopy: FileCopy = TestFileCopy.successfullyProcessed();
+  const processedFileCopy: FileCopy = TestFileCopy.storedIntegrityUnknown();
   const initialProcessedFiles = TestPage.of([processedFileCopy]);
 
   beforeEach(async () => {

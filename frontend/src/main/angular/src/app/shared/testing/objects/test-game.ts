@@ -17,27 +17,27 @@ export class TestGame {
     };
   }
 
-  public static withDiscoveredFileCopy(): GameWithFileCopies {
+  public static withTrackedFileCopy(): GameWithFileCopies {
     return {
       id: "someGameId",
       title: "someGameTitle",
       gameFilesWithCopies: [
         {
           gameFile: TestGameFile.any(),
-          fileCopies: [TestFileCopy.discovered()]
+          fileCopies: [TestFileCopy.tracked()]
         }
       ]
     };
   }
 
-  public static withSuccessfulFileCopy(): GameWithFileCopies {
+  public static withStoredUnverifiedFileCopy(): GameWithFileCopies {
     return {
       id: "someGameId",
       title: "someGameTitle",
       gameFilesWithCopies: [
         {
           gameFile: TestGameFile.any(),
-          fileCopies: [TestFileCopy.successfullyProcessed()]
+          fileCopies: [TestFileCopy.storedIntegrityUnknown()]
         }
       ]
     };

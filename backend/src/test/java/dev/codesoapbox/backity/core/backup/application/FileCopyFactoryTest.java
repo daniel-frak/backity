@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class FileCopyFactoryTest {
 
-    private static final FileCopyId FILE_COPY_ID = TestFileCopy.discovered().getId();
+    private static final FileCopyId FILE_COPY_ID = TestFileCopy.tracked().getId();
 
     private FileCopyFactory factory;
 
@@ -21,7 +21,7 @@ class FileCopyFactoryTest {
 
     @Test
     void shouldCreate() {
-        FileCopy expectedFileCopy = TestFileCopy.discoveredBuilder()
+        FileCopy expectedFileCopy = TestFileCopy.trackedBuilder()
                 .dateCreated(null)
                 .dateModified(null)
                 .build();

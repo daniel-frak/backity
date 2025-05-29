@@ -2,14 +2,14 @@ import {FileCopyStatus, FileCopy} from "@backend";
 
 export class TestFileCopy {
 
-  public static discovered(): FileCopy {
+  public static tracked(): FileCopy {
     return {
       id: "someFileCopyId",
       naturalId: {
         gameFileId: "someGameFileId",
         backupTargetId: "someBackupTargetId"
       },
-      status: FileCopyStatus.Discovered,
+      status: FileCopyStatus.Tracked,
       failedReason: "someFailedReason",
       filePath: "someFilePath",
       dateCreated: "someDateCreated",
@@ -19,22 +19,22 @@ export class TestFileCopy {
 
   public static enqueued(): FileCopy {
     return {
-      ...this.discovered(),
+      ...TestFileCopy.tracked(),
       status: FileCopyStatus.Enqueued
     };
   }
 
   public static inProgress(): FileCopy {
     return {
-      ...this.discovered(),
+      ...TestFileCopy.tracked(),
       status: FileCopyStatus.InProgress
     };
   }
 
-  public static successfullyProcessed(): FileCopy {
+  public static storedIntegrityUnknown(): FileCopy {
     return {
-      ...this.discovered(),
-      status: FileCopyStatus.Success
+      ...TestFileCopy.tracked(),
+      status: FileCopyStatus.StoredIntegrityUnknown
     };
   }
 }

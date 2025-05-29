@@ -34,8 +34,8 @@ class DeleteFileCopyUseCaseTest {
     }
 
     @Test
-    void shouldDeleteFileCopyGivenGameFileStatusIsSuccess() {
-        FileCopy fileCopy = mockSuccessfulFileCopyExists();
+    void shouldDeleteFileCopyGivenGameFileStatusIsStoredIntegrityUnknown() {
+        FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
         String filePath = fileCopy.getFilePath();
 
         useCase.deleteFileCopy(fileCopy.getId());
@@ -43,8 +43,8 @@ class DeleteFileCopyUseCaseTest {
         assertThat(storageSolution.fileDeleteWasAttempted(filePath)).isTrue();
     }
 
-    private FileCopy mockSuccessfulFileCopyExists() {
-        FileCopy fileCopy = TestFileCopy.successful();
+    private FileCopy mockStoredUnverifiedFileCopyExists() {
+        FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
         when(fileCopyRepository.getById(fileCopy.getId()))
                 .thenReturn(fileCopy);
         return fileCopy;
@@ -52,11 +52,11 @@ class DeleteFileCopyUseCaseTest {
 
     @Test
     void shouldChangeStatusOfFileCopyWhenDeletingFile() {
-        FileCopy fileCopy = mockSuccessfulFileCopyExists();
+        FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
 
         useCase.deleteFileCopy(fileCopy.getId());
 
-        assertThat(fileCopy.getStatus()).isEqualTo(FileCopyStatus.DISCOVERED);
+        assertThat(fileCopy.getStatus()).isEqualTo(FileCopyStatus.TRACKED);
         verify(fileCopyRepository).save(fileCopy);
     }
 
@@ -64,17 +64,17 @@ class DeleteFileCopyUseCaseTest {
     void shouldNotChangeStatusOfGameFileGivenFileDeletionFailed() {
         var exception = new RuntimeException("test");
         storageSolution.setShouldThrowOnFileDeletion(exception);
-        FileCopy fileCopy = mockSuccessfulFileCopyExists();
+        FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
 
         assertThatThrownBy(() -> useCase.deleteFileCopy(fileCopy.getId()))
                 .isSameAs(exception);
 
-        assertThat(fileCopy.getStatus()).isNotEqualTo(FileCopyStatus.DISCOVERED);
+        assertThat(fileCopy.getStatus()).isNotEqualTo(FileCopyStatus.TRACKED);
         verify(fileCopyRepository, never()).save(any());
     }
 
     @Test
-    void shouldThrowGivenGameFileStatusIsNotSuccess() {
+    void shouldThrowGivenGameFileStatusIsNotStored() {
         FileCopy fileCopy = mockEnqueuedFileCopyExists();
         FileCopyId fileCopyId = fileCopy.getId();
 

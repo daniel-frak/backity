@@ -46,8 +46,8 @@ class GameWithFileCopiesHttpDtoMapperTest {
                                         .gameId(game.getId())
                                         .build(),
                                 List.of(
-                                        TestFileCopy.discovered(),
-                                        TestFileCopy.successful(),
+                                        TestFileCopy.tracked(),
+                                        TestFileCopy.storedIntegrityUnknown(),
                                         TestFileCopy.failed()
                                 )
                         )
@@ -77,9 +77,9 @@ class GameWithFileCopiesHttpDtoMapperTest {
                                         LocalDateTime.parse("2023-04-29T14:15:53")
                                 ),
                                 List.of(
-                                        fileCopyDto(FileCopyStatusHttpDto.DISCOVERED,
+                                        fileCopyDto(FileCopyStatusHttpDto.TRACKED,
                                                 null, null),
-                                        fileCopyDto(FileCopyStatusHttpDto.SUCCESS,
+                                        fileCopyDto(FileCopyStatusHttpDto.STORED_INTEGRITY_UNKNOWN,
                                                 "someFilePath", null),
                                         fileCopyDto(FileCopyStatusHttpDto.FAILED,
                                                 null, "someFailedReason")

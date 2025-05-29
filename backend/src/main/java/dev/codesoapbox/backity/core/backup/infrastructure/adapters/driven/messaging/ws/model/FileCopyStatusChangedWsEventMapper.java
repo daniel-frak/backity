@@ -16,12 +16,12 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public abstract class FileCopyStatusChangedWsEventMapper {
 
-    @Mapping(target = "newStatus", expression = "java( statusSuccess() )")
+    @Mapping(target = "newStatus", expression = "java( statusStoredIntegrityUnknown() )")
     @Mapping(target = "failedReason", ignore = true)
     public abstract FileCopyStatusChangedWsEvent toWsEvent(FileBackupFinishedEvent event);
 
-    protected String statusSuccess() {
-        return FileCopyStatus.SUCCESS.name();
+    protected String statusStoredIntegrityUnknown() {
+        return FileCopyStatus.STORED_INTEGRITY_UNKNOWN.name();
     }
 
     protected String toString(FileCopyId id) {

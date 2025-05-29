@@ -109,7 +109,8 @@ class BackityTest {
     private void assertThatFileWasBackedUp(String fileTitle) {
         Locator processedFileStatus = gamesPage.getFileCopyStatus(fileTitle);
         assertThat(processedFileStatus).isVisible();
-        assertThat(processedFileStatus).containsText("SUCCESS", new LocatorAssertions.ContainsTextOptions()
-                .setTimeout(EXPECTED_FILE_BACKUP_SCHEDULER_DELAY + 5000L));
+        assertThat(processedFileStatus).containsText("STORED_INTEGRITY_UNKNOWN",
+                new LocatorAssertions.ContainsTextOptions()
+                        .setTimeout(EXPECTED_FILE_BACKUP_SCHEDULER_DELAY + 5000L));
     }
 }
