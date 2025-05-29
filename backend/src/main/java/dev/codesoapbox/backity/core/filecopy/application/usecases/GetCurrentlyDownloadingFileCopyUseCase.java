@@ -18,7 +18,7 @@ public class GetCurrentlyDownloadingFileCopyUseCase {
     private final GameRepository gameRepository;
 
     public Optional<FileCopyWithContext> findCurrentlyDownloadingFileCopy() {
-        return fileCopyRepository.findCurrentlyDownloading()
+        return fileCopyRepository.findOneInProgress()
                 .map(this::addContext);
     }
 

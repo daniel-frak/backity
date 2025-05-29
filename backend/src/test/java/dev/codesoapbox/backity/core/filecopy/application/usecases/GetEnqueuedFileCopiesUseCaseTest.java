@@ -42,7 +42,7 @@ class GetEnqueuedFileCopiesUseCaseTest {
 
     private Page<FileCopy> mockFileCopyPageExists(Pagination pagination) {
         Page<FileCopy> fileCopyPage = TestPage.of(List.of(TestFileCopy.enqueued()), pagination);
-        when(fileCopyRepository.findAllWaitingForDownload(pagination))
+        when(fileCopyRepository.findAllEnqueued(pagination))
                 .thenReturn(fileCopyPage);
 
         return fileCopyPage;

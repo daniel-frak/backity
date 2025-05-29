@@ -16,11 +16,11 @@ public interface FileCopyRepository {
 
     FileCopy findByNaturalIdOrCreate(FileCopyNaturalId naturalId, Supplier<FileCopy> fileCopyFactory);
 
-    Optional<FileCopy> findCurrentlyDownloading();
+    Optional<FileCopy> findOneInProgress();
 
-    Optional<FileCopy> findOldestWaitingForDownload();
+    Optional<FileCopy> findOldestEnqueued();
 
-    Page<FileCopy> findAllWaitingForDownload(Pagination pagination);
+    Page<FileCopy> findAllEnqueued(Pagination pagination);
 
     Page<FileCopy> findAllProcessed(Pagination pagination);
 
