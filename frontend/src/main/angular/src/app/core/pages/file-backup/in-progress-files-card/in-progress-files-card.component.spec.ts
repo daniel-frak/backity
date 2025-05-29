@@ -134,7 +134,7 @@ describe('InProgressFilesCardComponent', () => {
     expect(component.currentDownload).toEqual(inProgressFileCopyWithContext);
     expect(component.currentDownloadIsLoading).toBe(false);
 
-    expectCurrentlyDownloadingGameTitleToContain(aGameFile.fileSource.originalGameTitle);
+    expectCurrentlyDownloadingGameTitleToContain("someGameTitle ");
   });
 
   function expectCurrentlyDownloadingGameTitleToContain(expectedGameTitle: string) {
@@ -149,7 +149,7 @@ describe('InProgressFilesCardComponent', () => {
   it('should update currently downloaded game', async () => {
     const fileBackupStartedEvent: FileBackupStartedEvent =
       TestFileBackupStartedEvent.for(aGameFile, inProgressFileCopy);
-    fileBackupStartedEvent.originalGameTitle = "Updated game title";
+    fileBackupStartedEvent.fileCopyWithContext.game.title = "Updated game title";
 
     await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
       FileBackupMessageTopics.Started, fileBackupStartedEvent);

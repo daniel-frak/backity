@@ -2,18 +2,12 @@ package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messa
 
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.IncludeInDocumentation;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 @IncludeInDocumentation
 @Schema(name = "FileBackupStartedEvent")
 public record FileBackupStartedWsEvent(
-        @NotNull String fileCopyId,
-        @NotNull FileCopyNaturalIdWsDto fileCopyNaturalId,
-        @NotNull String originalGameTitle,
-        @NotNull String fileTitle,
-        @NotNull String version,
-        @NotNull String originalFileName,
-        @NotNull String size,
-        String filePath
+        @NotNull @Valid FileCopyWithContextWsDto fileCopyWithContext
 ) {
 }

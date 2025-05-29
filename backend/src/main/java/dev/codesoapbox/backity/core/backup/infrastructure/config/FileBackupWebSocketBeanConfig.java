@@ -2,11 +2,13 @@ package dev.codesoapbox.backity.core.backup.infrastructure.config;
 
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers.FileBackupFailedEventWebSocketHandler;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers.FileBackupFinishedEventWebSocketHandler;
-import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers.FileDownloadProgressChangedEventWebSocketHandler;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers.FileBackupStartedEventWebSocketHandler;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers.FileDownloadProgressChangedEventWebSocketHandler;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileBackupStartedWsEventMapper;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileCopyStatusChangedWsEventMapper;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileDownloadProgressUpdatedWsEventMapper;
-import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileBackupStartedWsEventMapper;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
+import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.WebSocketEventPublisher;
 import org.mapstruct.factory.Mappers;
@@ -23,14 +25,17 @@ public class FileBackupWebSocketBeanConfig {
 
     @Bean
     FileBackupStartedEventWebSocketHandler fileBackupStartedEventWebSocketHandler(
+            FileCopyRepository fileCopyRepository,
             GameFileRepository gameFileRepository,
+            GameRepository gameRepository,
             WebSocketEventPublisher webSocketEventPublisher,
             FileCopyStatusChangedWsEventMapper fileCopyStatusChangedMapper) {
         FileBackupStartedWsEventMapper backupStartedMapper =
                 Mappers.getMapper(FileBackupStartedWsEventMapper.class);
 
         return new FileBackupStartedEventWebSocketHandler(
-                gameFileRepository, webSocketEventPublisher, backupStartedMapper, fileCopyStatusChangedMapper);
+                fileCopyRepository, gameFileRepository, gameRepository,
+                webSocketEventPublisher, backupStartedMapper, fileCopyStatusChangedMapper);
     }
 
     @Bean

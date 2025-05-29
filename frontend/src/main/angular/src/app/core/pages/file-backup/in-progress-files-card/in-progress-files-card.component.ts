@@ -6,12 +6,11 @@ import {TableComponent} from "@app/shared/components/table/table.component";
 import {
   FileBackupMessageTopics,
   FileBackupStartedEvent,
-  FileCopiesClient, FileCopy,
+  FileCopiesClient,
   FileCopyStatus,
   FileCopyStatusChangedEvent,
   FileCopyWithContext,
-  FileDownloadProgressUpdatedEvent,
-  GameFile
+  FileDownloadProgressUpdatedEvent
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {Message} from "@stomp/stompjs";
@@ -63,28 +62,7 @@ export class InProgressFilesCardComponent implements OnInit, OnDestroy {
 
   private onBackupStarted(payload: Message) {
     const event: FileBackupStartedEvent = JSON.parse(payload.body);
-    this.currentDownload = {
-      fileCopy: {
-        id: event.fileCopyId,
-        naturalId: event.fileCopyNaturalId,
-        status: FileCopyStatus.InProgress,
-        filePath: event.filePath
-      },
-      gameFile: {
-        fileSource: {
-          originalGameTitle: event.originalGameTitle,
-          gameProviderId: 'UNKNOWN',
-          fileTitle: event.fileTitle,
-          version: event.version,
-          url: 'UNKNOWN',
-          originalFileName: event.originalFileName,
-          size: event.size,
-        }
-      },
-      game: {
-        title: "Game title not passed yet" // @TODO Pass Game title in event
-      }
-    }
+    this.currentDownload = event.fileCopyWithContext;
   }
 
   private onProgressChanged(payload: Message) {

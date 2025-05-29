@@ -44,7 +44,7 @@ export class GameContentDiscoveryInfoCardComponent implements OnInit, OnDestroy 
 
   FileCopyStatus = FileCopyStatus;
 
-  newestDiscoveredFile?: FileDiscoveredEvent;
+  newestFileDiscoveredEvent?: FileDiscoveredEvent;
   newDiscoveredFilesCount: number = 0;
   infoIsLoading: boolean = false;
   discoveryStatusByGameProviderId: Map<string, boolean> = new Map<string, boolean>();
@@ -73,7 +73,7 @@ export class GameContentDiscoveryInfoCardComponent implements OnInit, OnDestroy 
   }
 
   private onFileDiscovered(payload: IMessage) {
-    this.newestDiscoveredFile = JSON.parse(payload.body);
+    this.newestFileDiscoveredEvent = JSON.parse(payload.body);
     this.newDiscoveredFilesCount++;
   }
 

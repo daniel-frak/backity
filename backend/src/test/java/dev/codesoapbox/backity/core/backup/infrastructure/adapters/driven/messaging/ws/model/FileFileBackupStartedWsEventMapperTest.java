@@ -2,7 +2,9 @@ package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messa
 
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.TestFileBackupEvent;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.filecopy.application.usecases.FileCopyWithContext;
+import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
+import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -17,9 +19,13 @@ class FileFileBackupStartedWsEventMapperTest {
     @Test
     void shouldMapBackupStartedToWsEvent() {
         FileBackupStartedEvent domain = TestFileBackupEvent.started();
-        GameFile gameFile = TestGameFile.gog();
+        FileCopyWithContext fileCopyWithContext = new FileCopyWithContext(
+                TestFileCopy.inProgressWithFilePath(),
+                TestGameFile.gog(),
+                TestGame.any()
+        );
 
-        FileBackupStartedWsEvent result = MAPPER.toWsEvent(domain, gameFile);
+        FileBackupStartedWsEvent result = MAPPER.toWsEvent(domain, fileCopyWithContext);
 
         FileBackupStartedWsEvent expectedResult = TestFileBackupWsEvent.started();
         assertThat(result).isEqualTo(expectedResult);
