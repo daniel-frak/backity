@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.EnqueueFileCopyUseCase;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyNaturalId;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotFoundException;
-import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers.model.EnqueueFileCopyRequestHttpDto;
+import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.EnqueueFileCopyRequestHttpDto;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;

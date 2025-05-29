@@ -2,8 +2,8 @@ package dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.ap
 
 import dev.codesoapbox.backity.core.filecopy.application.usecases.GetCurrentlyDownloadingFileCopyUseCase;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers.FileCopiesRestResource;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyWithContextHttpDto;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyWithContextHttpDtoMapper;
+import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyWithContextHttpDto;
+import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyWithContextHttpDtoMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

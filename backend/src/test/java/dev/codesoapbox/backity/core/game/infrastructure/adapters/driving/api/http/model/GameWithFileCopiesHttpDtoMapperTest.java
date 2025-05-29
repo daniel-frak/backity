@@ -6,11 +6,11 @@ import dev.codesoapbox.backity.core.game.application.GameWithFileCopies;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyHttpDto;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyNaturalIdHttpDto;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.gamefile.FileCopyStatusHttpDto;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.gamefile.FileSourceHttpDto;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.gamefile.GameFileHttpDto;
+import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyHttpDto;
+import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyNaturalIdHttpDto;
+import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.FileCopyStatusHttpDto;
+import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.FileSourceHttpDto;
+import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.GameFileHttpDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
