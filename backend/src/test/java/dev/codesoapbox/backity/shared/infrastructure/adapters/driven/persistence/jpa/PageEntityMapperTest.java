@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence;
+package dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa;
 
 import dev.codesoapbox.backity.shared.domain.Page;
 import org.junit.jupiter.api.Test;

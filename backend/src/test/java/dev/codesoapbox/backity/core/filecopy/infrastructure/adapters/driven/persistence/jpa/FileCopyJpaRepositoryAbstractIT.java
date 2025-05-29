@@ -17,8 +17,8 @@ import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driven.pers
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.PageEntityMapper;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.PaginationEntityMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.PageEntityMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.PaginationEntityMapper;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
