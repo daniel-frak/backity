@@ -4,13 +4,11 @@ import dev.codesoapbox.backity.shared.domain.DomainEventHandler;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.DomainEventWebSocketPublisher;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
 @Configuration
-@AutoConfigureAfter(DomainEventPublisherBeanConfig.class)
 public class DomainEventPublisherPostConfig {
 
     private final DomainEventWebSocketPublisher domainEventWebSocketPublisher;

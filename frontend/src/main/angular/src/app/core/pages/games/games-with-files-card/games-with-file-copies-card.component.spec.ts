@@ -281,4 +281,22 @@ describe('GamesWithFileCopiesCardComponent', () => {
 
     expect(mockWindow.location.href).toBe(`someBasePath/api/file-copies/${fileCopy.id}`);
   });
+
+  it('should return an empty string when backup target name is unavailable', async () => {
+    const gameWithFileCopies: GameWithFileCopies = TestGame.withDiscoveredFileCopy();
+    // Make sure backupTargetId doesn't match any existing backup target
+    gameWithFileCopies.gameFilesWithCopies[0].fileCopies[0].naturalId.backupTargetId = 'nonExistentBackupTargetId';
+    const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
+
+    gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    // Simulate the `getBackupTargetName` call
+    const backupTargetName = component.getBackupTargetName('nonExistentBackupTargetId');
+
+    expect(backupTargetName).toBe('');
+  });
 });
