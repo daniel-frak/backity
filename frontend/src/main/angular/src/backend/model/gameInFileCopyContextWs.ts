@@ -7,10 +7,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { FileCopyWithContextWs } from './fileCopyWithContextWs';
 
 
-export interface FileBackupStartedEvent { 
-    fileCopyWithContext: FileCopyWithContextWs;
+export interface GameInFileCopyContextWs { 
+    title: string;
 }
 

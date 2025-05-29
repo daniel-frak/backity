@@ -48,7 +48,7 @@ class FileCopyWithContextHttpDtoMapperTest {
                         LocalDateTime.parse("2022-04-29T14:15:53"),
                         LocalDateTime.parse("2023-04-29T14:15:53")
                 ),
-                new GameFileInFileCopyContext(
+                new GameFileInFileCopyContextHttpDto(
                         new FileSourceHttpDto(
                                 "GOG",
                                 "Game 1",

@@ -115,7 +115,7 @@ describe('GameContentDiscoveryInfoCardComponent', () => {
       fileTitle: 'currentGame.exe'
     };
     discoveredSubscriptions[0]({body: JSON.stringify(expectedFileDiscoveredEvent)})
-    expect(component.newestDiscoveredFile).toEqual(expectedFileDiscoveredEvent);
+    expect(component.newestFileDiscoveredEvent).toEqual(expectedFileDiscoveredEvent);
     expect(component.newDiscoveredFilesCount).toEqual(1);
   });
 

@@ -5,7 +5,7 @@
   <ng-container *ngIf="currentDownload">
     <app-table [content]="[currentDownload]" [isLoading]="currentDownloadIsLoading">
       <ng-template app-table-column="Game title" let-item>
-        {{ asFileCopyWithContext(item)!.gameFile.fileSource.originalGameTitle }}
+        {{ asFileCopyWithContext(item)!.game.title }}
       </ng-template>
       <ng-template app-table-column="File name" let-item>
         {{ asFileCopyWithContext(item)!.gameFile.fileSource.fileTitle }}

@@ -79,7 +79,7 @@ export class EnqueuedFileCopiesCardComponent implements OnInit, OnDestroy {
 
   private findFileCopyInEnqueuedDownloads(event: FileBackupStartedEvent) {
     return this.fileCopyPage?.content
-      ?.find(fileCopy => fileCopy?.id == event.fileCopyId);
+      ?.find(fileCopy => fileCopy?.id == event.fileCopyWithContext.fileCopy.id);
   }
 
   onClickRefreshEnqueuedFileCopies(): () => Promise<void> {

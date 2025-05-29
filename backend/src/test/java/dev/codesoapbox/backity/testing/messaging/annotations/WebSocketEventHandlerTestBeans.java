@@ -2,6 +2,8 @@ package dev.codesoapbox.backity.testing.messaging.annotations;
 
 import dev.codesoapbox.backity.core.backup.infrastructure.config.FileBackupWebSocketBeanConfig;
 import dev.codesoapbox.backity.core.discovery.infrastructure.config.GameContentDiscoveryWebSocketBeanConfig;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
+import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.logs.infrastructure.config.LogsWebSocketBeanConfig;
 import dev.codesoapbox.backity.shared.infrastructure.config.DomainEventPublisherBeanConfig;
@@ -32,7 +34,9 @@ import java.lang.annotation.*;
         FileBackupWebSocketBeanConfig.class
 })
 @MockitoBean(types = {
-        GameFileRepository.class
+        FileCopyRepository.class,
+        GameFileRepository.class,
+        GameRepository.class
 })
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

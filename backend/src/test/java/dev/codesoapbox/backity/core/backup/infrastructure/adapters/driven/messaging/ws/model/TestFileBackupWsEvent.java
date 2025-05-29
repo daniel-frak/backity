@@ -2,6 +2,8 @@ package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messa
 
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 
+import java.time.LocalDateTime;
+
 public final class TestFileBackupWsEvent {
 
     private static final String GAME_FILE_ID = "acde26d7-33c7-42ee-be16-bca91a604b48";
@@ -12,14 +14,33 @@ public final class TestFileBackupWsEvent {
 
     public static FileBackupStartedWsEvent started() {
         return new FileBackupStartedWsEvent(
-                FILE_COPY_ID,
-                FILE_COPY_NATURAL_ID,
-                "Game 1",
-                "Game 1 (Installer)",
-                "1.0.0",
-                "game_1_installer.exe",
-                "5 KB",
-                "file/path"
+                new FileCopyWithContextWsDto(
+                        new FileCopyWsDto(
+                                "6df888e8-90b9-4df5-a237-0cba422c0310",
+                                new FileCopyNaturalIdWsDto(
+                                        "acde26d7-33c7-42ee-be16-bca91a604b48",
+                                        "eda52c13-ddf7-406f-97d9-d3ce2cab5a76"
+                                ),
+                                FileCopyStatusWsDto.IN_PROGRESS,
+                                null,
+                                "someFilePath",
+                                LocalDateTime.parse("2022-04-29T14:15:53"),
+                                LocalDateTime.parse("2023-04-29T14:15:53")
+                        ),
+                        new GameFileInFileCopyContextWsDto(
+                                new FileSourceWsDto(
+                                        "GOG",
+                                        "Game 1",
+                                        "Game 1 (Installer)",
+                                        "1.0.0",
+                                        "/downlink/some_game/some_file",
+                                        "game_1_installer.exe",
+                                        "5 KB"
+                                )
+                        ),
+                        new GameInFileCopyContextWsDto(
+                                "Test Game"
+                        ))
         );
     }
 
