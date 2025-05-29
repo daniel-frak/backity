@@ -99,13 +99,13 @@ public class FileCopyJpaRepository implements FileCopyRepository {
     }
 
     @Override
-    public Optional<FileCopy> findCurrentlyDownloading() {
+    public Optional<FileCopy> findOneInProgress() {
         return springRepository.findByStatus(FileCopyStatus.IN_PROGRESS)
                 .map(entityMapper::toDomain);
     }
 
     @Override
-    public Optional<FileCopy> findOldestWaitingForDownload() {
+    public Optional<FileCopy> findOldestEnqueued() {
         PageRequest pageable = PageRequest.of(0, 1, SORT_BY_DATE_MODIFIED_ASC);
 
         return springRepository.findAllByStatusIn(pageable, List.of(FileCopyStatus.ENQUEUED)).get()
@@ -121,9 +121,8 @@ public class FileCopyJpaRepository implements FileCopyRepository {
         return pageMapper.toDomain(foundPage, entityMapper::toDomain);
     }
 
-    // @TODO Rename 'waiting for download' to 'enqueued'
     @Override
-    public Page<FileCopy> findAllWaitingForDownload(Pagination pagination) {
+    public Page<FileCopy> findAllEnqueued(Pagination pagination) {
         return findAllByStatusOrderedByDateModified(pagination, List.of(FileCopyStatus.ENQUEUED));
     }
 

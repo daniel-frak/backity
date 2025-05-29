@@ -51,7 +51,7 @@ class GetCurrentlyDownloadingFileCopyUseCaseTest {
 
     private FileCopy mockFileCopyExists() {
         FileCopy fileCopy = TestFileCopy.inProgressWithoutFilePath();
-        when(fileCopyRepository.findCurrentlyDownloading())
+        when(fileCopyRepository.findOneInProgress())
                 .thenReturn(Optional.of(fileCopy));
         return fileCopy;
     }

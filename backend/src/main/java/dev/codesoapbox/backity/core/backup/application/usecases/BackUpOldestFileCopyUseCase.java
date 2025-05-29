@@ -24,7 +24,7 @@ public class BackUpOldestFileCopyUseCase {
             return;
         }
 
-        fileCopyRepository.findOldestWaitingForDownload()
+        fileCopyRepository.findOldestEnqueued()
                 .ifPresent(this::tryToBackUp);
     }
 

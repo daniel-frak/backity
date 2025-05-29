@@ -65,7 +65,7 @@ class BackUpOldestFileCopyUseCaseTest {
     }
 
     private void mockIsNextInQueue(GameFile gameFile, FileCopy fileCopy) {
-        when(fileCopyRepository.findOldestWaitingForDownload())
+        when(fileCopyRepository.findOldestEnqueued())
                 .thenReturn(Optional.of(fileCopy));
         when(gameFileRepository.getById(fileCopy.getNaturalId().gameFileId()))
                 .thenReturn(gameFile);

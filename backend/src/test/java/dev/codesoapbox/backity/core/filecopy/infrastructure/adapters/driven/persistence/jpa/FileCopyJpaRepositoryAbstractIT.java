@@ -225,16 +225,16 @@ abstract class FileCopyJpaRepositoryAbstractIT {
     }
 
     @Test
-    void shouldFindCurrentlyDownloading() {
-        Optional<FileCopy> result = repository.findCurrentlyDownloading();
+    void shouldFindOneInProgress() {
+        Optional<FileCopy> result = repository.findOneInProgress();
 
         assertThat(result).isPresent();
         assertSame(result.get(), EXISTING_FILE_COPIES.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2.get());
     }
 
     @Test
-    void shouldFindOldestWaitingForDownload() {
-        Optional<FileCopy> result = repository.findOldestWaitingForDownload();
+    void shouldFindOldestEnqueued() {
+        Optional<FileCopy> result = repository.findOldestEnqueued();
 
         FileCopy expectedResult = EXISTING_FILE_COPIES.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2.get();
         assertThat(result).isPresent();
@@ -242,10 +242,10 @@ abstract class FileCopyJpaRepositoryAbstractIT {
     }
 
     @Test
-    void shouldFindAllWaitingForDownloadInOrderOfDateModifiedAscending() {
+    void shouldFindAllEnqueuedInOrderOfDateModifiedAscending() {
         var pagination = new Pagination(0, 2);
 
-        Page<FileCopy> result = repository.findAllWaitingForDownload(pagination);
+        Page<FileCopy> result = repository.findAllEnqueued(pagination);
 
         List<FileCopy> expectedItems = List.of(
                 EXISTING_FILE_COPIES.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2.get(),

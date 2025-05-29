@@ -12,6 +12,6 @@ public class GetEnqueuedFileCopiesUseCase {
     private final FileCopyRepository fileCopyRepository;
 
     public Page<FileCopy> getEnqueuedFileCopies(Pagination pagination) {
-        return fileCopyRepository.findAllWaitingForDownload(pagination);
+        return fileCopyRepository.findAllEnqueued(pagination);
     }
 }
