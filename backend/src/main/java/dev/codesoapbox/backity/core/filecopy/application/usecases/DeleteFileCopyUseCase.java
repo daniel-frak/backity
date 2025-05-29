@@ -17,7 +17,7 @@ public class DeleteFileCopyUseCase {
         fileCopy.validateIsBackedUp();
 
         deleteFileCopy(fileCopy);
-        fileCopy.toDiscovered();
+        fileCopy.toTracked();
         fileCopyRepository.save(fileCopy);
     }
 

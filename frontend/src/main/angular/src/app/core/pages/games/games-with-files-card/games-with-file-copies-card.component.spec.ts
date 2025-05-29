@@ -98,7 +98,7 @@ describe('GamesWithFileCopiesCardComponent', () => {
   });
 
   it('should get games on init', async () => {
-    const gameWithFileCopies: GameWithFileCopies = TestGame.withDiscoveredFileCopy();
+    const gameWithFileCopies: GameWithFileCopies = TestGame.withTrackedFileCopy();
     gameWithFileCopies.gameFilesWithCopies[0].fileCopies[0].naturalId.backupTargetId = localFolderBackupTarget.id;
     const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
     gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
@@ -157,7 +157,7 @@ describe('GamesWithFileCopiesCardComponent', () => {
 
     await component.enqueueFileCopy(fileCopy);
 
-    expect(fileCopy.status).toBe(FileCopyStatus.Discovered);
+    expect(fileCopy.status).toBe(FileCopyStatus.Tracked);
     let enqueueRequest = enqueueFileCopyRequestFrom(fileCopy);
     expect(fileCopiesClient.enqueueFileCopy).toHaveBeenCalledWith(enqueueRequest);
     expect(notificationService.showFailure).toHaveBeenCalledWith(
@@ -190,7 +190,7 @@ describe('GamesWithFileCopiesCardComponent', () => {
   it('should delete file copy and refresh list', async () => {
     const gameFileId = 'someGameFileId';
     fileCopiesClient.deleteFileCopy.and.returnValue(of(null) as any);
-    const gameWithFileCopies = TestGame.withDiscoveredFileCopy();
+    const gameWithFileCopies = TestGame.withTrackedFileCopy();
     gameWithFileCopies.gameFilesWithCopies[0].fileCopies[0].naturalId.backupTargetId = localFolderBackupTarget.id;
     const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
     gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
@@ -214,7 +214,7 @@ describe('GamesWithFileCopiesCardComponent', () => {
   });
 
   it('should update file status when status changed event is received', async () => {
-    const gameWithFileCopies: GameWithFileCopies = TestGame.withDiscoveredFileCopy();
+    const gameWithFileCopies: GameWithFileCopies = TestGame.withTrackedFileCopy();
     gameWithFileCopies.gameFilesWithCopies[0].fileCopies[0].naturalId.backupTargetId = localFolderBackupTarget.id;
     const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
     gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
@@ -242,7 +242,7 @@ describe('GamesWithFileCopiesCardComponent', () => {
   }
 
   it('should handle StatusChanged event when no matching fileCopy exists', async () => {
-    const gameWithFileCopies: GameWithFileCopies = TestGame.withDiscoveredFileCopy();
+    const gameWithFileCopies: GameWithFileCopies = TestGame.withTrackedFileCopy();
     gameWithFileCopies.gameFilesWithCopies[0].fileCopies[0].naturalId.backupTargetId = localFolderBackupTarget.id;
     component.gameWithFileCopiesPage = TestPage.of([gameWithFileCopies]);
     const fileCopy = (gameWithFileCopies.gameFilesWithCopies[0].fileCopies)[0];
@@ -250,13 +250,13 @@ describe('GamesWithFileCopiesCardComponent', () => {
       "nonExistentFileCopyId", fileCopy.naturalId, FileCopyStatus.InProgress);
 
     expect(component.gameWithFileCopiesPage?.content?.[0]?.gameFilesWithCopies[0]?.fileCopies[0]?.status)
-      .toBe(FileCopyStatus.Discovered);
+      .toBe(FileCopyStatus.Tracked);
     const gameListTable: DebugElement = getGameListTable();
     expect(gameListTable.nativeElement.textContent).not.toContain(FileCopyStatus.InProgress);
   });
 
   it('should download file', async () => {
-    const gameWithFileCopies: GameWithFileCopies = TestGame.withSuccessfulFileCopy();
+    const gameWithFileCopies: GameWithFileCopies = TestGame.withStoredUnverifiedFileCopy();
     gameWithFileCopies.gameFilesWithCopies[0].fileCopies[0].naturalId.backupTargetId = localFolderBackupTarget.id;
     const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
     gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
@@ -283,7 +283,7 @@ describe('GamesWithFileCopiesCardComponent', () => {
   });
 
   it('should return an empty string when backup target name is unavailable', async () => {
-    const gameWithFileCopies: GameWithFileCopies = TestGame.withDiscoveredFileCopy();
+    const gameWithFileCopies: GameWithFileCopies = TestGame.withTrackedFileCopy();
     // Make sure backupTargetId doesn't match any existing backup target
     gameWithFileCopies.gameFilesWithCopies[0].fileCopies[0].naturalId.backupTargetId = 'nonExistentBackupTargetId';
     const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);

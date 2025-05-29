@@ -19,7 +19,7 @@ import {NotificationService} from "@app/shared/services/notification/notificatio
 import {ModalService} from "@app/shared/services/modal-service/modal.service";
 import {ButtonComponent} from '@app/shared/components/button/button.component';
 import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
-import {NgSwitch, NgSwitchCase} from '@angular/common';
+import {NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
 import {TableComponent} from '@app/shared/components/table/table.component';
 import {TableColumnDirective} from '@app/shared/components/table/column-directive/table-column.directive';
 import {CardComponent} from "@app/shared/components/card/card.component";
@@ -48,7 +48,8 @@ import {
     PaginationComponent,
     TableColumnDirective,
     TableComponent,
-    NgSwitch
+    NgSwitch,
+    NgIf
   ],
   templateUrl: './games-with-file-copies-card.component.html',
   styleUrl: './games-with-file-copies-card.component.scss'
@@ -102,8 +103,6 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
       .flatMap(potentialFileCopiesWithContext => potentialFileCopiesWithContext)
       .map(potentialFileCopyWithContext => potentialFileCopyWithContext.potentialFileCopy)
       .find((potentialFileCopy) => {
-        console.info(
-          `${potentialFileCopy.naturalId.backupTargetId} vs ${event.fileCopyNaturalId.backupTargetId}`);
         return this.fileCopyNaturalIdsAreEqual(potentialFileCopy.naturalId, event.fileCopyNaturalId);
       });
   }
@@ -157,7 +156,7 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
     } catch (error) {
       this.notificationService.showFailure(
         'An error occurred while trying to enqueue a file', potentialFileCopy, error);
-      potentialFileCopy.status = FileCopyStatus.Discovered;
+      potentialFileCopy.status = FileCopyStatus.Tracked;
     }
   }
 

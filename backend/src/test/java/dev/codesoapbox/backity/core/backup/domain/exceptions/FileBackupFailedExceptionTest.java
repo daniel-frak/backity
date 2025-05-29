@@ -13,7 +13,7 @@ class FileBackupFailedExceptionTest {
     @Test
     void shouldGetMessage() {
         GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.discovered();
+        FileCopy fileCopy = TestFileCopy.tracked();
 
         var exception = new FileBackupFailedException(gameFile, fileCopy, null);
 
@@ -25,7 +25,7 @@ class FileBackupFailedExceptionTest {
     @Test
     void shouldGetCause() {
         GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.discovered();
+        FileCopy fileCopy = TestFileCopy.tracked();
         var cause = new RuntimeException("test");
 
         var exception = new FileBackupFailedException(gameFile, fileCopy, cause);

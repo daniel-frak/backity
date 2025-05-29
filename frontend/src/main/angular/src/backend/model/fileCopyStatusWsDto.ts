@@ -9,13 +9,14 @@
  */
 
 
-export type FileCopyStatusWsDto = 'DISCOVERED' | 'ENQUEUED' | 'IN_PROGRESS' | 'SUCCESS' | 'FAILED';
+export type FileCopyStatusWsDto = 'TRACKED' | 'ENQUEUED' | 'IN_PROGRESS' | 'STORED_INTEGRITY_UNKNOWN' | 'STORED_INTEGRITY_VERIFIED' | 'FAILED';
 
 export const FileCopyStatusWsDto = {
-    Discovered: 'DISCOVERED' as FileCopyStatusWsDto,
+    Tracked: 'TRACKED' as FileCopyStatusWsDto,
     Enqueued: 'ENQUEUED' as FileCopyStatusWsDto,
     InProgress: 'IN_PROGRESS' as FileCopyStatusWsDto,
-    Success: 'SUCCESS' as FileCopyStatusWsDto,
+    StoredIntegrityUnknown: 'STORED_INTEGRITY_UNKNOWN' as FileCopyStatusWsDto,
+    StoredIntegrityVerified: 'STORED_INTEGRITY_VERIFIED' as FileCopyStatusWsDto,
     Failed: 'FAILED' as FileCopyStatusWsDto
 };
 

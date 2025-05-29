@@ -66,7 +66,7 @@ public final class TestFileBackupWsEvent {
         return new FileCopyStatusChangedWsEvent(
                 FILE_COPY_ID,
                 FILE_COPY_NATURAL_ID,
-                FileCopyStatus.SUCCESS.name(),
+                FileCopyStatus.STORED_INTEGRITY_UNKNOWN.name(),
                 null
         );
     }

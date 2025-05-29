@@ -62,7 +62,7 @@ public class FileBackupService {
                     storageSolution);
             updateFilePath(fileCopy, filePath);
             tryToDownloadToDisk(storageSolution, gameFile, fileCopy, filePath);
-            markDownloaded(fileCopy, filePath);
+            markStored(fileCopy, filePath);
         } catch (IOException | RuntimeException e) {
             markFailed(fileCopy, e);
             throw new FileBackupFailedException(gameFile, fileCopy, e);
@@ -112,8 +112,8 @@ public class FileBackupService {
         fileCopyRepository.save(fileCopy);
     }
 
-    private void markDownloaded(FileCopy fileCopy, String downloadedPath) {
-        fileCopy.toSuccessful(downloadedPath);
+    private void markStored(FileCopy fileCopy, String downloadedPath) {
+        fileCopy.toStoredIntegrityUnknown(downloadedPath);
         fileCopyRepository.save(fileCopy);
     }
 

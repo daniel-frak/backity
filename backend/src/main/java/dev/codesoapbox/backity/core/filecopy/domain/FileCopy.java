@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotBackedUpException;
-import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FilePathMustNotBeNullForSuccessfulFileCopy;
+import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FilePathMustNotBeNullForStoredFileCopy;
 import dev.codesoapbox.backity.shared.domain.DomainEvent;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -63,7 +63,7 @@ public class FileCopy {
         if (this.status == FileCopyStatus.FAILED && this.failedReason == null) {
             throw new IllegalArgumentException("failedReason is required");
         }
-        if (this.status == FileCopyStatus.SUCCESS && this.filePath == null) {
+        if (statusIsStored() && this.filePath == null) {
             throw new IllegalArgumentException("filePath is required");
         }
         if (this.status != FileCopyStatus.FAILED && this.failedReason != null) {
@@ -71,8 +71,13 @@ public class FileCopy {
         }
     }
 
-    public void toDiscovered() {
-        this.status = FileCopyStatus.DISCOVERED;
+    private boolean statusIsStored() {
+        return status == FileCopyStatus.STORED_INTEGRITY_UNKNOWN
+               || status == FileCopyStatus.STORED_INTEGRITY_VERIFIED;
+    }
+
+    public void toTracked() {
+        this.status = FileCopyStatus.TRACKED;
         this.failedReason = null;
     }
 
@@ -88,8 +93,8 @@ public class FileCopy {
         domainEvents.add(fileBackupStartedEvent);
     }
 
-    public void toSuccessful(@NonNull String filePath) {
-        this.status = FileCopyStatus.SUCCESS;
+    public void toStoredIntegrityUnknown(@NonNull String filePath) {
+        this.status = FileCopyStatus.STORED_INTEGRITY_UNKNOWN;
         this.failedReason = null;
         this.filePath = filePath;
 
@@ -106,14 +111,14 @@ public class FileCopy {
     }
 
     public void setFilePath(String filePath) {
-        if (filePath == null && status == FileCopyStatus.SUCCESS) {
-            throw new FilePathMustNotBeNullForSuccessfulFileCopy(id);
+        if (filePath == null && statusIsStored()) {
+            throw new FilePathMustNotBeNullForStoredFileCopy(id);
         }
         this.filePath = filePath;
     }
 
     public void validateIsBackedUp() {
-        if (status != FileCopyStatus.SUCCESS) {
+        if (status != FileCopyStatus.STORED_INTEGRITY_UNKNOWN) {
             throw new FileCopyNotBackedUpException(id);
         }
     }

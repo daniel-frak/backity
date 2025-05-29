@@ -89,7 +89,7 @@ class GetFileCopyListControllerIT {
     void shouldGetProcessedFileList() throws Exception {
         var pagination = new Pagination(0, 1);
         mockProcessedFileExists(pagination);
-        var fileStatus = "SUCCESS";
+        var fileStatus = "STORED_INTEGRITY_UNKNOWN";
         String filePath = "someFilePath";
         var expectedJson = getExpectedJson(fileStatus, filePath);
 
@@ -101,7 +101,7 @@ class GetFileCopyListControllerIT {
     }
 
     private void mockProcessedFileExists(Pagination pagination) {
-        FileCopy fileCopy = TestFileCopy.successful();
+        FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
         when(getProcessedFilesUseCase.getProcessedFileCopies(pagination))
                 .thenReturn(pageWith(fileCopy));
     }

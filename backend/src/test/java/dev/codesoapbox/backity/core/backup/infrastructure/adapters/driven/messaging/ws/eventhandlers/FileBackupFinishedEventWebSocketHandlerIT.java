@@ -35,7 +35,7 @@ class FileBackupFinishedEventWebSocketHandlerIT {
                     "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
                     "backupTargetId": "d46dde81-e519-4300-9a54-6f9e7d637926"
                   },
-                  "newStatus": "SUCCESS",
+                  "newStatus": "STORED_INTEGRITY_UNKNOWN",
                   "failedReason": null
                 }
                 """;

@@ -22,11 +22,13 @@
       <ng-template app-table-column="Status" let-item>
         <ng-container *ngFor="let fileCopy of [asFileCopy(item)]">
           <span
-            [ngClass]="{'bg-success': fileCopy.status == FileCopyStatus.Success,
-             'bg-danger': fileCopy.status != FileCopyStatus.Success}"
+            [ngClass]="{'bg-success': fileCopy.status == FileCopyStatus.StoredIntegrityUnknown
+            || fileCopy.status == FileCopyStatus.StoredIntegrityVerified,
+             'bg-danger': fileCopy.status != FileCopyStatus.StoredIntegrityUnknown}"
             class="badge">
-            <i [ngClass]="{'bi bi-check-circle': fileCopy.status == FileCopyStatus.Success,
-             'bi bi-x-circle': fileCopy.status != FileCopyStatus.Success}"
+            <i [ngClass]="{'bi bi-check-circle': fileCopy.status == FileCopyStatus.StoredIntegrityUnknown
+            || fileCopy.status == FileCopyStatus.StoredIntegrityVerified,
+             'bi bi-x-circle': fileCopy.status != FileCopyStatus.StoredIntegrityUnknown}"
                aria-hidden="true"
                class="me-1">
             </i>

@@ -70,7 +70,7 @@ class FileBackupServiceTest {
     @Test
     void shouldDownloadFile() {
         GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.discovered();
+        FileCopy fileCopy = TestFileCopy.tracked();
         PersistedChangesToFileCopy persistedChangesToFileCopy = trackPersistedChangesToFileCopy();
         BackupTarget backupTarget = mockBackupTargetExists(fileCopy);
         FakeUnixStorageSolution storageSolution = mockStorageSolutionExists(backupTarget);
@@ -80,7 +80,7 @@ class FileBackupServiceTest {
 
         assertThat(persistedChangesToFileCopy.savedFileCopyStatuses())
                 .isEqualTo(List.of(FileCopyStatus.IN_PROGRESS, FileCopyStatus.IN_PROGRESS,
-                        FileCopyStatus.SUCCESS));
+                        FileCopyStatus.STORED_INTEGRITY_UNKNOWN));
         assertThat(persistedChangesToFileCopy.savedFilePaths())
                 .isEqualTo(Arrays.asList(null, // Mark 'in progress' with no file path
                         expectedFilePath, // Set file path before starting download
@@ -126,7 +126,7 @@ class FileBackupServiceTest {
     @Test
     void shouldTryToRemoveFileAndRethrowWrappedGivenIOException() throws IOException {
         GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.discovered();
+        FileCopy fileCopy = TestFileCopy.tracked();
         BackupTarget backupTarget = mockBackupTargetExists(fileCopy);
         FakeUnixStorageSolution storageSolution = mockStorageSolutionExists(backupTarget);
         String filePath = mockFilePathCreation(backupTarget.getPathTemplate(), gameFile, storageSolution);
@@ -161,7 +161,7 @@ class FileBackupServiceTest {
                         .gameProviderId(nonExistentGameProviderId)
                         .build())
                 .build();
-        FileCopy fileCopy = TestFileCopy.discovered();
+        FileCopy fileCopy = TestFileCopy.tracked();
         BackupTarget backupTarget = mockBackupTargetExists(fileCopy);
         StorageSolution storageSolution = mockStorageSolutionExists(backupTarget);
         mockFilePathCreation(backupTarget.getPathTemplate(), gameFile, storageSolution);
@@ -180,7 +180,7 @@ class FileBackupServiceTest {
                         .gameProviderId(gameProviderId)
                         .build())
                 .build();
-        FileCopy fileCopy = TestFileCopy.discovered();
+        FileCopy fileCopy = TestFileCopy.tracked();
         BackupTarget backupTarget = mockBackupTargetExists(fileCopy);
         mockStorageSolutionExists(backupTarget);
         mockFileBackupThrowsIOException();

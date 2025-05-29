@@ -1,6 +1,6 @@
 import {FileCopyStatus, FileCopy} from "@backend";
 
-export type PotentialFileCopy = Omit<FileCopy, "id"> & { id?: string };
+export type PotentialFileCopy = Omit<FileCopy, "id" | "status"> & { id?: string, status?: FileCopyStatus };
 
 export class PotentialFileCopyFactory {
 
@@ -11,7 +11,7 @@ export class PotentialFileCopyFactory {
         gameFileId: gameFileId,
         backupTargetId: backupTargetId
       },
-      status: FileCopyStatus.Discovered
+      status: undefined
     };
   }
 }

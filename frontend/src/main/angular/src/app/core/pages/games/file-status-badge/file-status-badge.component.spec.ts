@@ -24,18 +24,24 @@ describe('FileStatusBadgeComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have the default status as "Discovered"', () => {
-    expect(component.status).toBe(FileCopyStatus.Discovered);
+  it('should have the default status as undefined (Untracked)', () => {
+    expect(component.status).toBe(undefined);
   });
 
-  it('should return the correct badge class for "Discovered"', () => {
-    component.status = FileCopyStatus.Discovered;
+  it('should return the correct badge class for "Untracked"', () => {
+    component.status = undefined;
     fixture.detectChanges();
     expect(component.getBadgeClass()).toBe('bg-secondary');
   });
 
-  it('should return the correct badge class for "Success"', () => {
-    component.status = FileCopyStatus.Success;
+  it('should return the correct badge class for "Tracked"', () => {
+    component.status = FileCopyStatus.Tracked;
+    fixture.detectChanges();
+    expect(component.getBadgeClass()).toBe('bg-secondary');
+  });
+
+  it('should return the correct badge class for "Stored (integrity unknown)"', () => {
+    component.status = FileCopyStatus.StoredIntegrityUnknown;
     fixture.detectChanges();
     expect(component.getBadgeClass()).toBe('bg-success');
   });

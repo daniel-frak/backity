@@ -36,7 +36,7 @@ class DownloadFileCopyUseCaseTest {
 
     @Test
     void shouldDownloadFileGivenFileCopyExistsAndFileCopyResourceExists() throws FileNotFoundException {
-        FileCopy fileCopy = mockSuccessfulFileCopyExists();
+        FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
         FileResource fileResource = mockFileResourceExists(fileCopy);
 
         FileResource result = downloadFileCopyUseCase.downloadFileCopy(fileCopy.getId());
@@ -52,8 +52,8 @@ class DownloadFileCopyUseCaseTest {
         return fileResource;
     }
 
-    private FileCopy mockSuccessfulFileCopyExists() {
-        FileCopy fileCopy = TestFileCopy.successful();
+    private FileCopy mockStoredUnverifiedFileCopyExists() {
+        FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
         when(fileCopyRepository.getById(fileCopy.getId()))
                 .thenReturn(fileCopy);
 
