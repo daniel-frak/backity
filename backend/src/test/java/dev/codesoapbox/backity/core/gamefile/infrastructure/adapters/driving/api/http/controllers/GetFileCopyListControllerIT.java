@@ -1,11 +1,10 @@
 package dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers.FileCopiesRestResource;
-import dev.codesoapbox.backity.core.filecopy.application.usecases.GetDiscoveredFileCopiesUseCase;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.GetEnqueuedFileCopiesUseCase;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.GetProcessedFileCopiesUseCase;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
+import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers.FileCopiesRestResource;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
@@ -30,32 +29,29 @@ class GetFileCopyListControllerIT {
     private MockMvc mockMvc;
 
     @Autowired
-    private GetDiscoveredFileCopiesUseCase getDiscoveredFileCopiesUseCase;
-
-    @Autowired
     private GetEnqueuedFileCopiesUseCase getEnqueuedFilesUseCase;
 
     @Autowired
     private GetProcessedFileCopiesUseCase getProcessedFilesUseCase;
 
     @Test
-    void shouldGetDiscoveredFileList() throws Exception {
+    void shouldGetEnqueuedFileList() throws Exception {
         var pagination = new Pagination(0, 1);
-        mockDiscoveredFileExists(pagination);
-        var fileStatus = "DISCOVERED";
+        mockEnqueuedFileExists(pagination);
+        var fileStatus = "ENQUEUED";
         String filePath = "null";
         var expectedJson = getExpectedJson(fileStatus, filePath);
 
         mockMvc.perform(get("/api/" + FileCopiesRestResource.RESOURCE_URL
-                            + "?processing-status=discovered&size=1"))
+                            + "?processing-status=enqueued&size=1"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
 
-    private void mockDiscoveredFileExists(Pagination pagination) {
-        FileCopy fileCopy = TestFileCopy.discovered();
-        when(getDiscoveredFileCopiesUseCase.getDiscoveredFileCopies(pagination))
+    private void mockEnqueuedFileExists(Pagination pagination) {
+        FileCopy fileCopy = TestFileCopy.enqueued();
+        when(getEnqueuedFilesUseCase.getEnqueuedFileCopies(pagination))
                 .thenReturn(pageWith(fileCopy));
     }
 
@@ -87,27 +83,6 @@ class GetFileCopyListControllerIT {
                   "pageSize": 1,
                   "pageNumber": 0
                 }""", status, filePath);
-    }
-
-    @Test
-    void shouldGetEnqueuedFileList() throws Exception {
-        var pagination = new Pagination(0, 1);
-        mockEnqueuedFileExists(pagination);
-        var fileStatus = "ENQUEUED";
-        String filePath = "null";
-        var expectedJson = getExpectedJson(fileStatus, filePath);
-
-        mockMvc.perform(get("/api/" + FileCopiesRestResource.RESOURCE_URL
-                            + "?processing-status=enqueued&size=1"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().json(expectedJson));
-    }
-
-    private void mockEnqueuedFileExists(Pagination pagination) {
-        FileCopy fileCopy = TestFileCopy.enqueued();
-        when(getEnqueuedFilesUseCase.getEnqueuedFileCopies(pagination))
-                .thenReturn(pageWith(fileCopy));
     }
 
     @Test

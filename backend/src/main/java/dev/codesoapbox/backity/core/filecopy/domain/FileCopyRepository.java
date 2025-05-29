@@ -20,8 +20,6 @@ public interface FileCopyRepository {
 
     Optional<FileCopy> findOldestWaitingForDownload();
 
-    Page<FileCopy> findAllDiscovered(Pagination pagination);
-
     Page<FileCopy> findAllWaitingForDownload(Pagination pagination);
 
     Page<FileCopy> findAllProcessed(Pagination pagination);

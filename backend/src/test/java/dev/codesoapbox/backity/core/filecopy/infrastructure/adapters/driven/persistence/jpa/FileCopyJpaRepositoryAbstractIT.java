@@ -242,14 +242,14 @@ abstract class FileCopyJpaRepositoryAbstractIT {
     }
 
     @Test
-    void shouldFindAllDiscoveredInOrderOfDateModifiedAscending() {
+    void shouldFindAllWaitingForDownloadInOrderOfDateModifiedAscending() {
         var pagination = new Pagination(0, 2);
 
-        Page<FileCopy> result = repository.findAllDiscovered(pagination);
+        Page<FileCopy> result = repository.findAllWaitingForDownload(pagination);
 
         List<FileCopy> expectedItems = List.of(
-                EXISTING_FILE_COPIES.DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1.get(),
-                EXISTING_FILE_COPIES.DISCOVERED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_1.get()
+                EXISTING_FILE_COPIES.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2.get(),
+                EXISTING_FILE_COPIES.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_2.get()
         );
         int totalPages = 1;
         int totalElements = 2;
@@ -280,21 +280,6 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                 .ignoringFields("content.dateCreated", "content.dateModified")
                 .isEqualTo(expectedResult);
         assertThat(result.content()).containsExactlyElementsOf(expectedResult.content());
-    }
-
-    @Test
-    void shouldFindAllWaitingForDownloadInOrderOfDateModifiedAscending() {
-        var pagination = new Pagination(0, 2);
-
-        Page<FileCopy> result = repository.findAllWaitingForDownload(pagination);
-
-        List<FileCopy> expectedItems = List.of(
-                EXISTING_FILE_COPIES.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2.get(),
-                EXISTING_FILE_COPIES.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_2.get()
-        );
-        int totalPages = 1;
-        int totalElements = 2;
-        assertContainsInOrder(result, pagination, totalPages, totalElements, expectedItems);
     }
 
     @Test
