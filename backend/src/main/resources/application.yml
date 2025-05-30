@@ -19,6 +19,8 @@ backity:
   h2dump:
     path: dump.sql
   filesystem:
+    local:
+      enabled: true
     s3:
       enabled: false
       buffer-size-in-bytes: 10_000_000

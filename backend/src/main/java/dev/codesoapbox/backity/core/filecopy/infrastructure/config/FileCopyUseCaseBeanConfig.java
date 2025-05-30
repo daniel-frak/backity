@@ -1,10 +1,11 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.config;
 
 import dev.codesoapbox.backity.core.backup.application.FileCopyFactory;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.*;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
-import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,13 +37,17 @@ public class FileCopyUseCaseBeanConfig {
 
     @Bean
     public DeleteFileCopyUseCase deleteFileCopyUseCase(
-            StorageSolution storageSolution, FileCopyRepository fileCopyRepository) {
-        return new DeleteFileCopyUseCase(storageSolution, fileCopyRepository);
+            FileCopyRepository fileCopyRepository,
+            BackupTargetRepository backupTargetRepository,
+            StorageSolutionRepository storageSolutionRepository) {
+        return new DeleteFileCopyUseCase(fileCopyRepository, backupTargetRepository, storageSolutionRepository);
     }
 
     @Bean
     public DownloadFileCopyUseCase downloadFileUseCase(
-            FileCopyRepository fileCopyRepository, StorageSolution storageSolution) {
-        return new DownloadFileCopyUseCase(fileCopyRepository, storageSolution);
+            FileCopyRepository fileCopyRepository,
+            BackupTargetRepository backupTargetRepository,
+            StorageSolutionRepository storageSolutionRepository) {
+        return new DownloadFileCopyUseCase(fileCopyRepository, backupTargetRepository, storageSolutionRepository);
     }
 }

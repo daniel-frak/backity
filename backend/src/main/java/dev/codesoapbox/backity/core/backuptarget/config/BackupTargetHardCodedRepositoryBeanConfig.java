@@ -12,8 +12,9 @@ public class BackupTargetHardCodedRepositoryBeanConfig {
     @Bean
     BackupTargetRepository backupTargetRepository(
             @Value("${backity.filesystem.s3.enabled}") boolean s3Enabled,
+            @Value("${backity.filesystem.local.enabled}") boolean localEnabled,
             @Value("${backity.default-path-template}") String defaultPathTemplate
     ) {
-        return new HardCodedBackupTargetRepository(s3Enabled, defaultPathTemplate);
+        return new HardCodedBackupTargetRepository(s3Enabled, localEnabled, defaultPathTemplate);
     }
 }

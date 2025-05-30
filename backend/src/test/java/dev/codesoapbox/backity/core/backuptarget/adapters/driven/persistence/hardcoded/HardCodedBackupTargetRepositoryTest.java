@@ -21,7 +21,8 @@ class HardCodedBackupTargetRepositoryTest {
         @SuppressWarnings("DataFlowIssue")
         @Test
         void constructorShouldThrowGivenPathTemplateIsNull() {
-            assertThatThrownBy(() -> new HardCodedBackupTargetRepository(true, null))
+            assertThatThrownBy(() -> new HardCodedBackupTargetRepository(
+                    true, true, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessageContaining("pathTemplate");
         }
@@ -33,7 +34,7 @@ class HardCodedBackupTargetRepositoryTest {
         @Test
         void findAllBackupTargetsShouldReturnS3GivenItsEnabled() {
             var pathTemplate = "somePathTemplate";
-            var repository = new HardCodedBackupTargetRepository(true, pathTemplate);
+            var repository = new HardCodedBackupTargetRepository(true, false, pathTemplate);
 
             List<BackupTarget> result = repository.findAllBackupTargets();
 
@@ -48,9 +49,9 @@ class HardCodedBackupTargetRepositoryTest {
         }
 
         @Test
-        void findAllBackupTargetsShouldReturnLocalFolderGivenS3IsDisabled() {
+        void findAllBackupTargetsShouldReturnLocalFolderGivenItsEnabled() {
             var pathTemplate = "somePathTemplate";
-            var repository = new HardCodedBackupTargetRepository(false, pathTemplate);
+            var repository = new HardCodedBackupTargetRepository(false, true, pathTemplate);
 
             List<BackupTarget> result = repository.findAllBackupTargets();
 
@@ -67,7 +68,7 @@ class HardCodedBackupTargetRepositoryTest {
         @Test
         void shouldFindById() {
             var pathTemplate = "somePathTemplate";
-            var repository = new HardCodedBackupTargetRepository(false, pathTemplate);
+            var repository = new HardCodedBackupTargetRepository(true, true, pathTemplate);
 
             BackupTarget result = repository.getById(new BackupTargetId("224440e2-6e5c-4f24-94ac-3222587652f7"));
 
@@ -84,7 +85,7 @@ class HardCodedBackupTargetRepositoryTest {
         @Test
         void findByIdShouldThrowGivenNotFound() {
             var pathTemplate = "somePathTemplate";
-            var repository = new HardCodedBackupTargetRepository(false, pathTemplate);
+            var repository = new HardCodedBackupTargetRepository(false, false, pathTemplate);
             var nonexistentId = new BackupTargetId("dfa75f83-9907-4619-8e74-72d58326b3fb");
 
             assertThatThrownBy(() -> repository.getById(nonexistentId))

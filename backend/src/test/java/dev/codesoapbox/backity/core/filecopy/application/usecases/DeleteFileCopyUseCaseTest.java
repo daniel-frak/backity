@@ -1,12 +1,12 @@
 package dev.codesoapbox.backity.core.filecopy.application.usecases;
 
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
-import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
+import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
+import dev.codesoapbox.backity.core.filecopy.domain.*;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotBackedUpException;
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,21 +22,25 @@ class DeleteFileCopyUseCaseTest {
 
     private DeleteFileCopyUseCase useCase;
 
-    private FakeUnixStorageSolution storageSolution;
-
     @Mock
     private FileCopyRepository fileCopyRepository;
 
+    @Mock
+    private BackupTargetRepository backupTargetRepository;
+
+    @Mock
+    private StorageSolutionRepository storageSolutionRepository;
+
     @BeforeEach
     void setUp() {
-        storageSolution = new FakeUnixStorageSolution();
-        useCase = new DeleteFileCopyUseCase(storageSolution, fileCopyRepository);
+        useCase = new DeleteFileCopyUseCase(fileCopyRepository, backupTargetRepository, storageSolutionRepository);
     }
 
     @Test
     void shouldDeleteFileCopyGivenGameFileStatusIsStoredIntegrityUnknown() {
         FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
         String filePath = fileCopy.getFilePath();
+        FakeUnixStorageSolution storageSolution = mockStorageSolutionExists(fileCopy);
 
         useCase.deleteFileCopy(fileCopy.getId());
 
@@ -50,9 +54,29 @@ class DeleteFileCopyUseCaseTest {
         return fileCopy;
     }
 
+    private FakeUnixStorageSolution mockStorageSolutionExists(FileCopy fileCopy) {
+        BackupTarget backupTarget = mockBackupTargetExists(fileCopy);
+        return mockStorageSolutionExists(backupTarget);
+    }
+
+    private FakeUnixStorageSolution mockStorageSolutionExists(BackupTarget backupTarget) {
+        var storageSolution = new FakeUnixStorageSolution();
+        lenient().when(storageSolutionRepository.getById(backupTarget.getStorageSolutionId()))
+                .thenReturn(storageSolution);
+        return storageSolution;
+    }
+
+    private BackupTarget mockBackupTargetExists(FileCopy fileCopy) {
+        BackupTarget backupTarget = TestBackupTarget.localFolder();
+        lenient().when(backupTargetRepository.getById(fileCopy.getNaturalId().backupTargetId()))
+                .thenReturn(backupTarget);
+        return backupTarget;
+    }
+
     @Test
     void shouldChangeStatusOfFileCopyWhenDeletingFile() {
         FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
+        mockStorageSolutionExists(fileCopy);
 
         useCase.deleteFileCopy(fileCopy.getId());
 
@@ -62,9 +86,10 @@ class DeleteFileCopyUseCaseTest {
 
     @Test
     void shouldNotChangeStatusOfGameFileGivenFileDeletionFailed() {
+        FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
+        FakeUnixStorageSolution storageSolution = mockStorageSolutionExists(fileCopy);
         var exception = new RuntimeException("test");
         storageSolution.setShouldThrowOnFileDeletion(exception);
-        FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
 
         assertThatThrownBy(() -> useCase.deleteFileCopy(fileCopy.getId()))
                 .isSameAs(exception);
@@ -77,6 +102,7 @@ class DeleteFileCopyUseCaseTest {
     void shouldThrowGivenGameFileStatusIsNotStored() {
         FileCopy fileCopy = mockEnqueuedFileCopyExists();
         FileCopyId fileCopyId = fileCopy.getId();
+        FakeUnixStorageSolution storageSolution = mockStorageSolutionExists(fileCopy);
 
         assertThatThrownBy(() -> useCase.deleteFileCopy(fileCopyId))
                 .isInstanceOf(FileCopyNotBackedUpException.class)
