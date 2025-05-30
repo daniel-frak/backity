@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotBackedUpException;
-import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FilePathMustNotBeNullForStoredFileCopy;
+import dev.codesoapbox.backity.core.filecopy.domain.exceptions.InvalidFileCopyStatusTransitionException;
 import dev.codesoapbox.backity.shared.domain.DomainEvent;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -19,13 +19,6 @@ import static java.util.Collections.unmodifiableList;
 
 /**
  * Represents a backup copy of a Game File in a Backup Target.
- * <p>
- * The file path must be updated to a temporary file after the status changes to 'in progress',
- * but before being marked as successful.
- * The file path should not be removed during status transitions,
- * as this could lead to accidentally losing track of the physical file.
- * The physical file resource must be deleted before its path is removed.
- * Use the `withFilePath` method to manage both updates and removals.
  */
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -63,7 +56,7 @@ public class FileCopy {
         if (this.status == FileCopyStatus.FAILED && this.failedReason == null) {
             throw new IllegalArgumentException("failedReason is required");
         }
-        if (statusIsStored() && this.filePath == null) {
+        if ((this.status == FileCopyStatus.IN_PROGRESS || statusIsStored()) && this.filePath == null) {
             throw new IllegalArgumentException("filePath is required");
         }
         if (this.status != FileCopyStatus.FAILED && this.failedReason != null) {
@@ -86,35 +79,37 @@ public class FileCopy {
         this.failedReason = null;
     }
 
-    public void toInProgress() {
+    public void toInProgress(@NonNull String filePath) {
+        if (this.status != FileCopyStatus.ENQUEUED) {
+            throw new InvalidFileCopyStatusTransitionException(id, this.status, FileCopyStatus.IN_PROGRESS);
+        }
         this.status = FileCopyStatus.IN_PROGRESS;
+        this.filePath = filePath;
         this.failedReason = null;
-        var fileBackupStartedEvent = new FileBackupStartedEvent(id, naturalId, filePath);
+        var fileBackupStartedEvent = new FileBackupStartedEvent(id, naturalId, this.filePath);
         domainEvents.add(fileBackupStartedEvent);
     }
 
-    public void toStoredIntegrityUnknown(@NonNull String filePath) {
+    public void toStoredIntegrityUnknown() {
+        if (this.status != FileCopyStatus.IN_PROGRESS) {
+            throw new InvalidFileCopyStatusTransitionException(
+                    id, this.status, FileCopyStatus.STORED_INTEGRITY_UNKNOWN);
+        }
+
         this.status = FileCopyStatus.STORED_INTEGRITY_UNKNOWN;
         this.failedReason = null;
-        this.filePath = filePath;
 
         var event = new FileBackupFinishedEvent(id, naturalId);
         domainEvents.add(event);
     }
 
-    public void toFailed(@NonNull String failedReason) {
+    public void toFailed(@NonNull String failedReason, String filePath) {
         this.status = FileCopyStatus.FAILED;
         this.failedReason = failedReason;
+        this.filePath = filePath;
 
         var event = new FileBackupFailedEvent(id, naturalId, failedReason);
         domainEvents.add(event);
-    }
-
-    public void setFilePath(String filePath) {
-        if (filePath == null && statusIsStored()) {
-            throw new FilePathMustNotBeNullForStoredFileCopy(id);
-        }
-        this.filePath = filePath;
     }
 
     public void validateIsBackedUp() {

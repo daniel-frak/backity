@@ -12,8 +12,8 @@ public interface GameProviderFileBackupService {
 
     GameProviderId getGameProviderId();
 
-    void backUpFile(StorageSolution storageSolution, GameFile gameFile, FileCopy fileCopy,
-                    DownloadProgress downloadProgress) throws IOException;
+    void replicateFile(StorageSolution storageSolution, GameFile gameFile, FileCopy fileCopy,
+                       DownloadProgress downloadProgress) throws IOException;
 
-    boolean isReady();
+    boolean isConnected();
 }

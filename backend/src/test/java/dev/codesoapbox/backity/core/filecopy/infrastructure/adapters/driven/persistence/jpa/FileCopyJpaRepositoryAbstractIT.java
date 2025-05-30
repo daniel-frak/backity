@@ -127,8 +127,8 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void saveShouldModifyExisting() {
-        FileCopy fileCopy = EXISTING_FILE_COPIES.DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1.get();
-        fileCopy.toInProgress();
+        FileCopy fileCopy = EXISTING_FILE_COPIES.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_2.get();
+        fileCopy.toInProgress("someFilePath");
 
         FileCopy result = repository.save(fileCopy);
         entityManager.flush();
@@ -139,8 +139,8 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void saveShouldPublishEventsAfterCommitting() {
-        FileCopy fileCopy = TestFileCopy.tracked();
-        fileCopy.toInProgress();
+        FileCopy fileCopy = TestFileCopy.enqueued();
+        fileCopy.toInProgress("someFilePath");
         repository.save(fileCopy);
 
         TransactionSynchronizationManager.getSynchronizations().forEach(TransactionSynchronization::afterCommit);
@@ -150,8 +150,8 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void saveShouldClearEvents() {
-        FileCopy fileCopy = TestFileCopy.tracked();
-        fileCopy.toInProgress();
+        FileCopy fileCopy = TestFileCopy.enqueued();
+        fileCopy.toInProgress("someFilePath");
         repository.save(fileCopy);
 
         TransactionSynchronizationManager.getSynchronizations().forEach(TransactionSynchronization::afterCommit);
@@ -383,7 +383,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                         .build();
 
         public static final Supplier<FileCopy> IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2 =
-                () -> TestFileCopy.inProgressWithoutFilePathBuilder()
+                () -> TestFileCopy.inProgressBuilder()
                         .id(new FileCopyId("279baabb-f301-441b-a312-edf9babc84b2"))
                         .naturalId(new FileCopyNaturalId(
                                 EXISTING_GAME_FILES.GOG_GAME_FILE_2_FOR_GAME_1.get().getId(),
@@ -433,7 +433,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                         .build();
 
         public static final Supplier<FileCopy> FAILED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_2 =
-                () -> TestFileCopy.failedBuilder()
+                () -> TestFileCopy.failedWithoutFilePathBuilder()
                         .id(new FileCopyId("5bac0242-14bc-435f-a187-387026cc8245"))
                         .naturalId(new FileCopyNaturalId(
                                 EXISTING_GAME_FILES.GOG_GAME_FILE_2_FOR_GAME_1.get().getId(),

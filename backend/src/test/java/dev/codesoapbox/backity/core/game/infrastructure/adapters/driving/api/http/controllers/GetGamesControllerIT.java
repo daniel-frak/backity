@@ -39,7 +39,7 @@ class GetGamesControllerIT {
                 new GameWithFileCopies(
                         new Game(gameId, null, null, "Test Game"),
                         List.of(new GameFileWithCopies(TestGameFile.gog(),
-                                List.of(TestFileCopy.tracked(), TestFileCopy.storedIntegrityUnknown(), TestFileCopy.failed()))
+                                List.of(TestFileCopy.tracked(), TestFileCopy.storedIntegrityUnknown(), TestFileCopy.failedWithoutFilePath()))
                         ))), pagination);
         when(getGamesWithFilesUseCase.getGamesWithFiles(pagination))
                 .thenReturn(gameWithFileCopiesPage);

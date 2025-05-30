@@ -102,7 +102,7 @@ class FileCopyJpaEntityMapperTest {
     }
 
     private FileCopy domainFailed() {
-        return TestFileCopy.failed();
+        return TestFileCopy.failedWithoutFilePath();
     }
 
     private FileCopyJpaEntity jpaFailed() {

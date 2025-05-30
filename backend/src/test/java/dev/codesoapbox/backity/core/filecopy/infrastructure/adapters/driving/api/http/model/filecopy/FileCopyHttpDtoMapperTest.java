@@ -60,7 +60,7 @@ class FileCopyHttpDtoMapperTest {
 
     @Test
     void shouldMapFailedToDto() {
-        FileCopy domain = TestFileCopy.failed();
+        FileCopy domain = TestFileCopy.failedWithoutFilePath();
 
         FileCopyHttpDto result = MAPPER.toDto(domain);
 

@@ -48,7 +48,7 @@ class GameWithFileCopiesHttpDtoMapperTest {
                                 List.of(
                                         TestFileCopy.tracked(),
                                         TestFileCopy.storedIntegrityUnknown(),
-                                        TestFileCopy.failed()
+                                        TestFileCopy.failedWithoutFilePath()
                                 )
                         )
                 )

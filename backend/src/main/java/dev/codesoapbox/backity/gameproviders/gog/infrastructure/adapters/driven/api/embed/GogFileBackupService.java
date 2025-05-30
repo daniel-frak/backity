@@ -26,8 +26,8 @@ public class GogFileBackupService implements GameProviderFileBackupService {
     }
 
     @Override
-    public void backUpFile(StorageSolution storageSolution, GameFile gameFile, FileCopy fileCopy,
-                           DownloadProgress downloadProgress) throws IOException {
+    public void replicateFile(StorageSolution storageSolution, GameFile gameFile, FileCopy fileCopy,
+                              DownloadProgress downloadProgress) throws IOException {
         FileSource fileSource = gameFile.getFileSource();
         TrackableFileStream fileStream =
                 gogEmbedWebClient.initializeProgressAndStreamFile(fileSource, downloadProgress);
@@ -36,7 +36,7 @@ public class GogFileBackupService implements GameProviderFileBackupService {
     }
 
     @Override
-    public boolean isReady() {
+    public boolean isConnected() {
         return authService.isAuthenticated();
     }
 }

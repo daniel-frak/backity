@@ -36,7 +36,7 @@ class GetCurrentlyDownloadingFileControllerIT {
 
     @Test
     void shouldGetCurrentlyDownloadingFile() throws Exception {
-        FileCopy fileCopy = TestFileCopy.inProgressWithFilePath();
+        FileCopy fileCopy = TestFileCopy.inProgress();
         GameFile gameFile = TestGameFile.gog();
         Game game = TestGame.any();
         FileCopyWithContext fileCopyWithContext = new FileCopyWithContext(fileCopy, gameFile, game);

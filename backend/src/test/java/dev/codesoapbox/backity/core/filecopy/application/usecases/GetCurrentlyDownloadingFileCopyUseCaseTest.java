@@ -6,7 +6,9 @@ import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
-import dev.codesoapbox.backity.core.gamefile.domain.*;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +52,7 @@ class GetCurrentlyDownloadingFileCopyUseCaseTest {
     }
 
     private FileCopy mockFileCopyExists() {
-        FileCopy fileCopy = TestFileCopy.inProgressWithoutFilePath();
+        FileCopy fileCopy = TestFileCopy.inProgress();
         when(fileCopyRepository.findOneInProgress())
                 .thenReturn(Optional.of(fileCopy));
         return fileCopy;
