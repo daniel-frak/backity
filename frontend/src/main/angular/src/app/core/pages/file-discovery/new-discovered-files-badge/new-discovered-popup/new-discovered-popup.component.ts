@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FileDiscoveredEvent} from "@backend";
+import {GameFileDiscoveredEvent} from "@backend";
 import {CommonModule} from '@angular/common';
 
 @Component({
@@ -12,7 +12,7 @@ import {CommonModule} from '@angular/common';
 export class NewDiscoveredPopupComponent implements OnInit {
 
   @Input()
-  newestDiscovered?: FileDiscoveredEvent;
+  newestDiscovered?: GameFileDiscoveredEvent;
 
   constructor() {
   }

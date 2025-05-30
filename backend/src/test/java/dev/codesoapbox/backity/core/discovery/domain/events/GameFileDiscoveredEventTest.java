@@ -7,15 +7,15 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class FileDiscoveredEventTest {
+class GameFileDiscoveredEventTest {
 
     @Test
     void shouldCreateFrom() {
         GameFile gameFile = TestGameFile.gog();
 
-        FileDiscoveredEvent result = FileDiscoveredEvent.from(gameFile);
+        GameFileDiscoveredEvent result = GameFileDiscoveredEvent.from(gameFile);
 
-        var expectedResult = new FileDiscoveredEvent(
+        var expectedResult = new GameFileDiscoveredEvent(
                 "Game 1",
                 "game_1_installer.exe",
                 "Game 1 (Installer)",

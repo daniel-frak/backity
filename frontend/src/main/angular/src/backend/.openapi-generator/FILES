@@ -31,7 +31,6 @@ model/fileCopyStatusWsDto.ts
 model/fileCopyWithContext.ts
 model/fileCopyWithContextWs.ts
 model/fileCopyWs.ts
-model/fileDiscoveredEvent.ts
 model/fileDownloadProgressUpdatedEvent.ts
 model/fileSource.ts
 model/fileSourceWs.ts
@@ -40,6 +39,7 @@ model/gameContentDiscoveryStatus.ts
 model/gameContentDiscoveryStatusChangedEvent.ts
 model/gameContentDiscoveryWebSocketTopics.ts
 model/gameFile.ts
+model/gameFileDiscoveredEvent.ts
 model/gameFileInFileCopyContext.ts
 model/gameFileInFileCopyContextWsDto.ts
 model/gameFileWithCopies.ts

@@ -7,8 +7,8 @@ public final class TestGameContentDiscoveryEvent {
 
     private static final GameProviderId GAME_PROVIDER_ID = new GameProviderId("TestGameProviderId");
 
-    public static FileDiscoveredEvent fileDiscovered() {
-        return new FileDiscoveredEvent(
+    public static GameFileDiscoveredEvent fileDiscovered() {
+        return new GameFileDiscoveredEvent(
                 "Original game title",
                 "originalFileName",
                 "fileTitle",

@@ -9,7 +9,7 @@
  */
 
 
-export interface FileDiscoveredEvent { 
+export interface GameFileDiscoveredEvent { 
     originalGameTitle?: string;
     originalFileName?: string;
     fileTitle?: string;

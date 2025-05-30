@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.discovery.application;
 import dev.codesoapbox.backity.DoNotMutate;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
-import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
+import dev.codesoapbox.backity.core.discovery.domain.events.GameFileDiscoveredEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStatusChangedEvent;
 import dev.codesoapbox.backity.core.game.domain.Game;
@@ -102,7 +102,7 @@ public class GameContentDiscoveryService {
         if (!gameFileRepository.existsByUrlAndVersion(gameFile.getFileSource().url(),
                 gameFile.getFileSource().version())) {
             gameFileRepository.save(gameFile);
-            domainEventPublisher.publish(FileDiscoveredEvent.from(gameFile));
+            domainEventPublisher.publish(GameFileDiscoveredEvent.from(gameFile));
             log.info("Discovered new file: {} (gameId: {})", gameFile.getFileSource().url(),
                     gameFile.getGameId().value());
         }

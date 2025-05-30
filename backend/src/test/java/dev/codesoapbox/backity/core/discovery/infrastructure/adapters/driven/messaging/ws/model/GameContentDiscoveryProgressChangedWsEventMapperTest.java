@@ -13,10 +13,10 @@ class GameContentDiscoveryProgressChangedWsEventMapperTest {
             Mappers.getMapper(GameContentDiscoveryProgressChangedWsEventMapper.class);
 
     @Test
-    void shouldMapToMessage() {
-        GameContentDiscoveryProgressChangedEvent event = TestGameContentDiscoveryEvent.progressChanged();
+    void shouldMapToDomainToWs() {
+        GameContentDiscoveryProgressChangedEvent domain = TestGameContentDiscoveryEvent.progressChanged();
 
-        GameContentDiscoveryProgressChangedWsEvent result = MAPPER.toWsEvent(event);
+        GameContentDiscoveryProgressChangedWsEvent result = MAPPER.toWsEvent(domain);
 
         GameContentDiscoveryProgressChangedWsEvent expectedResult = TestGameContentDiscoveryWsEvent.progressChanged();
         assertThat(result).isEqualTo(expectedResult);

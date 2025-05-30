@@ -4,15 +4,15 @@ import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.shared.domain.DomainEvent;
 
-public record FileDiscoveredEvent(
+public record GameFileDiscoveredEvent(
         String originalGameTitle,
         String originalFileName,
         String fileTitle,
         FileSize size
 ) implements DomainEvent {
 
-    public static FileDiscoveredEvent from(GameFile gameFile) {
-        return new FileDiscoveredEvent(
+    public static GameFileDiscoveredEvent from(GameFile gameFile) {
+        return new GameFileDiscoveredEvent(
                 gameFile.getFileSource().originalGameTitle(),
                 gameFile.getFileSource().originalFileName(),
                 gameFile.getFileSource().fileTitle(),
