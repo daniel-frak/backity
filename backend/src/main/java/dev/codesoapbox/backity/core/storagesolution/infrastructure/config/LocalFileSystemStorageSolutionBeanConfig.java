@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@ConditionalOnProperty(value = "backity.filesystem.s3.enabled", havingValue = "false")
+@ConditionalOnProperty(value = "backity.filesystem.local.enabled", havingValue = "true")
 @Configuration
 public class LocalFileSystemStorageSolutionBeanConfig {
 

@@ -8,7 +8,10 @@ import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Collections.unmodifiableList;
 
 /**
  * A temporary solution until BackupTarget CRUD is implemented.
@@ -16,36 +19,37 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HardCodedBackupTargetRepository implements BackupTargetRepository {
 
-    private final BackupTarget availableBackupTarget;
+    private final List<BackupTarget> availableBackupTargets = new ArrayList<>();
 
-    public HardCodedBackupTargetRepository(boolean s3Enabled, @NonNull String pathTemplate) {
+    public HardCodedBackupTargetRepository(boolean s3Enabled, boolean localEnabled, @NonNull String pathTemplate) {
         if (s3Enabled) {
-            availableBackupTarget = new BackupTarget(
+            availableBackupTargets.add(new BackupTarget(
                     new BackupTargetId("d46dde81-e519-4300-9a54-6f9e7d637926"),
                     "S3 bucket",
                     new StorageSolutionId("S3"),
                     pathTemplate
-            );
-        } else {
-            availableBackupTarget = new BackupTarget(
+            ));
+        }
+        if (localEnabled) {
+            availableBackupTargets.add(new BackupTarget(
                     new BackupTargetId("224440e2-6e5c-4f24-94ac-3222587652f7"),
                     "Local folder",
                     new StorageSolutionId("LOCAL_FILE_SYSTEM"),
                     pathTemplate
-            );
+            ));
         }
     }
 
     @Override
     public List<BackupTarget> findAllBackupTargets() {
-        return List.of(availableBackupTarget);
+        return unmodifiableList(availableBackupTargets);
     }
 
     @Override
     public BackupTarget getById(BackupTargetId backupTargetId) {
-        if (availableBackupTarget.getId().equals(backupTargetId)) {
-            return availableBackupTarget;
-        }
-        throw new BackupTargetNotFoundException(backupTargetId);
+        return availableBackupTargets.stream()
+                .filter(availableBackupTarget -> availableBackupTarget.getId().equals(backupTargetId))
+                .findFirst()
+                .orElseThrow(() -> new BackupTargetNotFoundException(backupTargetId));
     }
 }
