@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
         builderMethodName = "trackedBuilder")
 public class TestFileCopy {
 
+    private static final String DEFAULT_FILE_PATH = "someFilePath";
+
     @lombok.Builder.Default
     private FileCopyId id = new FileCopyId("6df888e8-90b9-4df5-a237-0cba422c0310");
 
@@ -55,7 +57,7 @@ public class TestFileCopy {
     public static Builder storedIntegrityUnknownBuilder() {
         return trackedBuilder()
                 .status(FileCopyStatus.STORED_INTEGRITY_UNKNOWN)
-                .filePath("someFilePath");
+                .filePath(DEFAULT_FILE_PATH);
     }
 
     public static FileCopy enqueued() {
@@ -68,35 +70,36 @@ public class TestFileCopy {
                 .status(FileCopyStatus.ENQUEUED);
     }
 
-    public static FileCopy failed() {
-        return failedBuilder()
+    public static FileCopy failedWithFilePath() {
+        return failedWithFilePathBuilder()
                 .build();
     }
 
-    public static Builder failedBuilder() {
+    public static Builder failedWithFilePathBuilder() {
+        return failedWithoutFilePathBuilder()
+                .filePath(DEFAULT_FILE_PATH);
+    }
+
+    public static FileCopy failedWithoutFilePath() {
+        return failedWithoutFilePathBuilder()
+                .build();
+    }
+
+    public static Builder failedWithoutFilePathBuilder() {
         return trackedBuilder()
                 .status(FileCopyStatus.FAILED)
-                .failedReason("someFailedReason");
+                .failedReason("someFailedReason")
+                .filePath(null);
     }
 
-    public static FileCopy inProgressWithoutFilePath() {
-        return inProgressWithoutFilePathBuilder()
-                .build();
+    public static FileCopy inProgress() {
+        return inProgressBuilder().build();
     }
 
-    public static Builder inProgressWithoutFilePathBuilder() {
+    public static Builder inProgressBuilder() {
         return trackedBuilder()
-                .status(FileCopyStatus.IN_PROGRESS);
-    }
-
-    public static FileCopy inProgressWithFilePath() {
-        return inProgressWithFilePathBuilder();
-    }
-
-    private static FileCopy inProgressWithFilePathBuilder() {
-        return inProgressWithoutFilePathBuilder()
-                .filePath("someFilePath")
-                .build();
+                .status(FileCopyStatus.IN_PROGRESS)
+                .filePath(DEFAULT_FILE_PATH);
     }
 
     public static class Builder {

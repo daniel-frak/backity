@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.config;
 
 import dev.codesoapbox.backity.core.backup.application.FileBackupService;
+import dev.codesoapbox.backity.core.backup.application.FileCopyReplicator;
 import dev.codesoapbox.backity.core.backup.application.GameProviderFileBackupService;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgressFactory;
 import dev.codesoapbox.backity.core.backup.application.usecases.BackUpOldestFileCopyUseCase;
@@ -22,11 +23,9 @@ public class FileBackupUseCaseBeanConfig {
     FileBackupService fileBackupService(UniqueFilePathResolver uniqueFilePathResolver,
                                         FileCopyRepository fileCopyRepository,
                                         List<GameProviderFileBackupService> fileBackupServices,
-                                        BackupTargetRepository backupTargetRepository,
-                                        StorageSolutionRepository storageSolutionRepository,
                                         DownloadProgressFactory downloadProgressFactory) {
-        return new FileBackupService(uniqueFilePathResolver, fileCopyRepository, backupTargetRepository,
-                storageSolutionRepository, fileBackupServices, downloadProgressFactory);
+        var fileCopyReplicator = new FileCopyReplicator(fileBackupServices, downloadProgressFactory);
+        return new FileBackupService(uniqueFilePathResolver, fileCopyRepository, fileCopyReplicator);
     }
 
     @Bean
@@ -37,7 +36,10 @@ public class FileBackupUseCaseBeanConfig {
     @Bean
     BackUpOldestFileCopyUseCase backUpOldestFileCopyUseCase(GameFileRepository gameFileRepository,
                                                             FileCopyRepository fileCopyRepository,
+                                                            BackupTargetRepository backupTargetRepository,
+                                                            StorageSolutionRepository storageSolutionRepository,
                                                             FileBackupService fileBackupService) {
-        return new BackUpOldestFileCopyUseCase(fileCopyRepository, gameFileRepository, fileBackupService);
+        return new BackUpOldestFileCopyUseCase(fileCopyRepository, gameFileRepository, backupTargetRepository,
+                storageSolutionRepository, fileBackupService);
     }
 }

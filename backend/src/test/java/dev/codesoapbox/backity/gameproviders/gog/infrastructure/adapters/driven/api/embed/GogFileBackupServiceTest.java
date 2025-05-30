@@ -35,7 +35,7 @@ class GogFileBackupServiceTest {
     private UrlFileDownloader urlFileDownloader;
 
     @Test
-    void backUpFileShouldDownloadFile() throws IOException {
+    void replicateFileShouldDownloadFile() throws IOException {
         GameFile gameFile = TestGameFile.gog();
         FileCopy fileCopy = TestFileCopy.tracked();
         DownloadProgress downloadProgress = mock(DownloadProgress.class);
@@ -43,7 +43,7 @@ class GogFileBackupServiceTest {
                 mockProgressAwareFileStreamCreation(gameFile, downloadProgress);
         StorageSolution storageSolution = mock(StorageSolution.class);
 
-        gogFileBackupService.backUpFile(storageSolution, gameFile, fileCopy, downloadProgress);
+        gogFileBackupService.replicateFile(storageSolution, gameFile, fileCopy, downloadProgress);
 
         String filePath = fileCopy.getFilePath();
         verify(urlFileDownloader).downloadFile(storageSolution, trackableFileStream, gameFile, filePath);
@@ -58,13 +58,13 @@ class GogFileBackupServiceTest {
     }
 
     @Test
-    void isReadyShouldReturnTrueIfReady() {
+    void isConnectedShouldReturnTrueIfConnected() {
         when(authService.isAuthenticated())
                 .thenReturn(false)
                 .thenReturn(true);
 
-        assertThat(gogFileBackupService.isReady()).isFalse();
-        assertThat(gogFileBackupService.isReady()).isTrue();
+        assertThat(gogFileBackupService.isConnected()).isFalse();
+        assertThat(gogFileBackupService.isConnected()).isTrue();
     }
 
     @Test

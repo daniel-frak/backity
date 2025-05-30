@@ -20,7 +20,7 @@ class FileFileBackupStartedWsEventMapperTest {
     void shouldMapBackupStartedToWsEvent() {
         FileBackupStartedEvent domain = TestFileBackupEvent.started();
         FileCopyWithContext fileCopyWithContext = new FileCopyWithContext(
-                TestFileCopy.inProgressWithFilePath(),
+                TestFileCopy.inProgress(),
                 TestGameFile.gog(),
                 TestGame.any()
         );

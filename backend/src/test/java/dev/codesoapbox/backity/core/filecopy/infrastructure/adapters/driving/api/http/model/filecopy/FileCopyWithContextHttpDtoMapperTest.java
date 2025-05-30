@@ -21,7 +21,7 @@ class FileCopyWithContextHttpDtoMapperTest {
     @Test
     void shouldDomainToDto() {
         var domain = new FileCopyWithContext(
-                TestFileCopy.inProgressWithFilePath(),
+                TestFileCopy.inProgress(),
                 TestGameFile.gog(),
                 TestGame.any()
         );

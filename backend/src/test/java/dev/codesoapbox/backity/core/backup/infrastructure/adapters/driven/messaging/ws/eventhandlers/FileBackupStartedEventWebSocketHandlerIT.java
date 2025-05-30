@@ -41,7 +41,7 @@ class FileBackupStartedEventWebSocketHandlerIT {
         FileBackupStartedEvent event = TestFileBackupEvent.started();
         GameFile gameFile = TestGameFile.gog();
         when(fileCopyRepository.getById(event.fileCopyId()))
-                .thenReturn(TestFileCopy.inProgressWithFilePath());
+                .thenReturn(TestFileCopy.inProgress());
         when(gameFileRepository.getById(event.fileCopyNaturalId().gameFileId()))
                 .thenReturn(gameFile);
         when(gameRepository.getById(gameFile.getGameId()))
