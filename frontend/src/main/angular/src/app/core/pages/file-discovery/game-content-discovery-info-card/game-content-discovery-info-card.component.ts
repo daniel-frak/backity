@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   FileCopyStatus,
-  FileDiscoveredEvent,
+  GameFileDiscoveredEvent,
   GameContentDiscoveryClient,
   GameContentDiscoveryProgressUpdateEvent,
   GameContentDiscoveryStatus,
@@ -44,8 +44,8 @@ export class GameContentDiscoveryInfoCardComponent implements OnInit, OnDestroy 
 
   FileCopyStatus = FileCopyStatus;
 
-  newestFileDiscoveredEvent?: FileDiscoveredEvent;
-  newDiscoveredFilesCount: number = 0;
+  newestGameFileDiscoveredEvent?: GameFileDiscoveredEvent;
+  newDiscoveredGameFilesCount: number = 0;
   infoIsLoading: boolean = false;
   discoveryStatusByGameProviderId: Map<string, boolean> = new Map<string, boolean>();
   discoveryProgressByGameProviderId: Map<string, GameContentDiscoveryProgressUpdateEvent>
@@ -73,8 +73,8 @@ export class GameContentDiscoveryInfoCardComponent implements OnInit, OnDestroy 
   }
 
   private onFileDiscovered(payload: IMessage) {
-    this.newestFileDiscoveredEvent = JSON.parse(payload.body);
-    this.newDiscoveredFilesCount++;
+    this.newestGameFileDiscoveredEvent = JSON.parse(payload.body);
+    this.newDiscoveredGameFilesCount++;
   }
 
   private onDiscoveryStatusChanged(payload: IMessage) {

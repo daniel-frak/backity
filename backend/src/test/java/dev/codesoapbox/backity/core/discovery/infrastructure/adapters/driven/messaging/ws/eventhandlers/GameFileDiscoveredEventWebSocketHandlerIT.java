@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.eventhandlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
+import dev.codesoapbox.backity.core.discovery.domain.events.GameFileDiscoveredEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.TestGameContentDiscoveryEvent;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.GameContentDiscoveryWebSocketTopics;
 import dev.codesoapbox.backity.testing.messaging.TestMessageChannel;
@@ -12,20 +12,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 
 @WebSocketEventHandlerTest
-class FileDiscoveredEventWebSocketHandlerIT {
+class GameFileDiscoveredEventWebSocketHandlerIT {
 
     @Autowired
     private TestMessageChannel messageChannel;
 
     @Autowired
-    private FileDiscoveredEventWebSocketHandler eventHandler;
+    private GameFileDiscoveredEventWebSocketHandler eventHandler;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
     void shouldPublishWebSocketEvent() throws IOException {
-        FileDiscoveredEvent event = TestGameContentDiscoveryEvent.fileDiscovered();
+        GameFileDiscoveredEvent event = TestGameContentDiscoveryEvent.fileDiscovered();
 
         eventHandler.handle(event);
 

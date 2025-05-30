@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.discovery.application;
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
-import dev.codesoapbox.backity.core.discovery.domain.events.FileDiscoveredEvent;
+import dev.codesoapbox.backity.core.discovery.domain.events.GameFileDiscoveredEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStatusChangedEvent;
 import dev.codesoapbox.backity.core.game.domain.Game;
@@ -168,7 +168,7 @@ class GameContentDiscoveryServiceTest {
         GameFile savedGameFile = gameFileArgumentCaptor.getValue();
         GameFile expectedGameFile = GameFile.createFor(game, discoveredFile);
         expectedGameFile.setId(savedGameFile.getId());
-        verify(eventPublisher).publish(FileDiscoveredEvent.from(expectedGameFile));
+        verify(eventPublisher).publish(GameFileDiscoveredEvent.from(expectedGameFile));
         assertThat(progressUpdates.size()).isOne();
         finishFileDiscovery();
         verify(eventPublisher, times(2)).publish(any(GameContentDiscoveryStatusChangedEvent.class));
@@ -199,7 +199,7 @@ class GameContentDiscoveryServiceTest {
         gameProviderFileDiscoveryService.simulateFileDiscovery(fileSource);
 
         verify(fileRepository, never()).save(any());
-        verify(eventPublisher, never()).publish(any(FileDiscoveredEvent.class));
+        verify(eventPublisher, never()).publish(any(GameFileDiscoveredEvent.class));
     }
 
     private void mockExistsLocally(FileSource fileSource) {

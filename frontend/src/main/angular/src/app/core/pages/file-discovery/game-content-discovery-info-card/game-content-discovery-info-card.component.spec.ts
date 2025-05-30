@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {GameContentDiscoveryInfoCardComponent} from './game-content-discovery-info-card.component';
 import {
-  FileDiscoveredEvent,
+  GameFileDiscoveredEvent,
   GameContentDiscoveryClient,
   GameContentDiscoveryProgressUpdateEvent,
   GameContentDiscoveryStatus,
@@ -95,7 +95,7 @@ describe('GameContentDiscoveryInfoCardComponent', () => {
     fixture.detectChanges();
 
     expect(component.discoveryStatusByGameProviderId.get('someGameProviderId')).toBeTrue();
-    expect(component.newDiscoveredFilesCount).toBe(0);
+    expect(component.newDiscoveredGameFilesCount).toBe(0);
   });
 
   it('should subscribe to new discoveries', () => {
@@ -111,12 +111,12 @@ describe('GameContentDiscoveryInfoCardComponent', () => {
   });
 
   it('should set newest discovered and increment discovered count on new discovery', () => {
-    const expectedFileDiscoveredEvent: FileDiscoveredEvent = {
+    const expectedGameFileDiscoveredEvent: GameFileDiscoveredEvent = {
       fileTitle: 'currentGame.exe'
     };
-    discoveredSubscriptions[0]({body: JSON.stringify(expectedFileDiscoveredEvent)})
-    expect(component.newestFileDiscoveredEvent).toEqual(expectedFileDiscoveredEvent);
-    expect(component.newDiscoveredFilesCount).toEqual(1);
+    discoveredSubscriptions[0]({body: JSON.stringify(expectedGameFileDiscoveredEvent)})
+    expect(component.newestGameFileDiscoveredEvent).toEqual(expectedGameFileDiscoveredEvent);
+    expect(component.newDiscoveredGameFilesCount).toEqual(1);
   });
 
   it('should unset current download on finish', () => {

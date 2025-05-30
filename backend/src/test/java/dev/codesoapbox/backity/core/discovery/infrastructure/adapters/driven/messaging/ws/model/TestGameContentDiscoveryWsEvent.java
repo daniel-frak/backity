@@ -4,8 +4,8 @@ public final class TestGameContentDiscoveryWsEvent {
 
     private static final String GAME_PROVIDER_ID = "TestGameProviderId";
 
-    public static FileDiscoveredWsEvent fileDiscovered() {
-        return new FileDiscoveredWsEvent(
+    public static GameFileDiscoveredWsEvent fileDiscovered() {
+        return new GameFileDiscoveredWsEvent(
                 "Original game title",
                 "originalFileName",
                 "fileTitle",

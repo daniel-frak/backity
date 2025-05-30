@@ -13,7 +13,7 @@ class GameContentDiscoveryStatusChangedWsEventMapperTest {
             Mappers.getMapper(GameContentDiscoveryStatusChangedWsEventMapper.class);
 
     @Test
-    void shouldMapToMessage() {
+    void shouldMapToDomainToWs() {
         GameContentDiscoveryStatusChangedEvent event = TestGameContentDiscoveryEvent.statusChanged();
 
         GameContentDiscoveryStatusChangedWsEvent result = MAPPER.toWsEvent(event);
