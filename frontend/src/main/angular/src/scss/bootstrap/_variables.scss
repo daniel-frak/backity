@@ -2,22 +2,89 @@
 
 $enable-important-utilities: true;
 
+// Custom variables
+$text-secondary: #CCBD8F;
+
 // Redefined variables (unchanged)
 $black: #000;
 $border-color-translucent: rgba($black, .175);
+$font-weight-lighter:         lighter !default;
+$font-weight-light:           300 !default;
+$font-weight-normal:          400 !default;
+$font-weight-medium:          500 !default;
+$font-weight-semibold:        600 !default;
+$font-weight-bold:            700 !default;
+$font-weight-bolder:          bolder !default;
 
 //Overrides
 
+$border-radius: 1rem;
+$border-radius-sm: 1rem;
+$border-radius-lg: 1rem;
+$toast-border-radius: 0;
 $primary: #FFC107FF;
+$secondary: #4A4021;
 $info: #2770be;
 $warning: #FD7E14FF;
-$light: lighten(#f4eed9, 5%);
-$dark: desaturate(darken($light, 80%), 50%);
-$body-secondary-bg: desaturate(darken($light, 10%), 30%);
-$body-tertiary-bg: desaturate(darken($light, 5%), 15%);
+$danger: #931F1F;
+$success: #175e0d;
+$red-300: saturate(lighten($danger, 30%), 75%);
+$component-active-bg: $primary;
+$white: #fff;
+$min-contrast-ratio: 4.5;
+$color-contrast-dark: $black;
+$color-contrast-light: $white;
 
-$body-bg: $light;
+$border-color-translucent: #4A3F21;
+$dark: #241F0F;
+$light: lighten($dark, 75%);
+$body-color: $white;
+$body-bg: $dark;
+$body-secondary-color: rgba($body-color, .75);
+$body-tertiary-color: rgba($body-color, .5);
+$body-secondary-bg: $border-color-translucent;
+$body-tertiary-bg: lighten($body-bg, 10%);
+$card-bg: $body-bg;
+$table-color: $white;
 $border-color: $border-color-translucent;
+$form-select-indicator-color: $light;
+$input-bg: #161309;
+
+$form-invalid-color: $red-300;
+$form-invalid-border-color: $red-300;
+$form-feedback-icon-invalid-color: $red-300;
+$component-active-color: color-contrast($component-active-bg) if($enable-important-utilities, !important, null);
+
+$btn-close-color: $white;
+
+$navbar-dark-color: $white;
+$navbar-dark-active-color: $primary;
+
+label {
+  color: $text-secondary;
+}
+.form-floating {
+  .form-control:focus,
+  .form-control:not(:placeholder-shown),
+  .form-control-plaintext,
+  .form-select {
+    & ~ label {
+      color: $text-secondary;
+    }
+  }
+}
+
+.navbar {
+  border-bottom-width: 0;
+}
+
+h1 {
+  font-weight: $font-weight-bold;
+}
+
+$input-btn-border-width: 0;
+$pagination-border-width: 0;
+$modal-content-border-width: 0;
 
 $spinner-width: 3rem;
 $spinner-border-width: .35em;
@@ -28,33 +95,9 @@ $toast-spacing: .75rem;
 
 $enable-rounded: true;
 
-// Dark mode alternative
+$btn-font-weight: $font-weight-medium;
+$nav-link-font-weight: $font-weight-medium;
 
-$red: #dc3545;
-$red-300: tint-color($red, 40%);
-$component-active-bg: $primary;
-$white: #fff;
-$min-contrast-ratio: 4.5;
-$color-contrast-dark: $black;
-$color-contrast-light: $white;
-
-$border-color-translucent: rgba($white, .175);
-$dark: #2a2f32; // Or something brown, e.g.: #322d2a;
-$light: lighten($dark, 75%);
-$body-color: $light;
-$body-secondary-color: rgba($body-color, .75);
-$body-tertiary-color: rgba($body-color, .5);
-$body-secondary-bg: desaturate(darken($dark, 5%), 15%);
-$body-tertiary-bg: desaturate(darken($dark, 7.5%), 30%);
-$body-bg: $body-tertiary-bg;
-$card-bg: $dark;
-$table-bg: $dark;
-$table-color: $light;
-$border-color: $border-color-translucent;
-$form-select-indicator-color: $light;
-
-$form-invalid-color: $red-300;
-$form-invalid-border-color: $red-300;
-$form-feedback-icon-invalid-color: $red-300;
-$component-active-color: color-contrast($component-active-bg) if($enable-important-utilities, !important, null);
-// END of Dark mode alternative
+$input-btn-padding-x: 1rem;
+$input-btn-padding-y: .375rem;
+$input-btn-padding-x-sm: .75rem;
