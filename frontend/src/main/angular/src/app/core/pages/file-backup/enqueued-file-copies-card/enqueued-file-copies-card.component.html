@@ -1,4 +1,4 @@
-<app-card cardTitle="Enqueued files">
+<app-section sectionTitle="Enqueued files">
   <app-loaded-content [isLoading]="fileCopiesAreLoading">
     <div class="button-container">
       <app-button [actionAsync]="onClickRefreshEnqueuedFileCopies()"
@@ -39,4 +39,4 @@
                     [(pageSize)]="pageSize"
                     (onPageChange)="refreshEnqueuedFileCopies()"/>
   </app-loaded-content>
-</app-card>
+</app-section>

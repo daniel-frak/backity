@@ -1,4 +1,4 @@
-<app-card>
+<app-section>
   <app-loaded-content [isLoading]="gamesAreLoading">
     <div class="button-container mb-3">
       <app-button [actionAsync]="onClickRefresh()"
@@ -83,4 +83,4 @@
                     [(pageSize)]="pageSize"
                     (onPageChange)="refresh()"/>
   </app-loaded-content>
-</app-card>
+</app-section>

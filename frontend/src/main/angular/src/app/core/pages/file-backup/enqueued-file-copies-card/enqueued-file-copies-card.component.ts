@@ -2,14 +2,13 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   FileBackupMessageTopics,
   FileBackupStartedEvent,
-  FileCopyStatus,
   FileCopiesClient,
   FileCopy,
   FileCopyProcessingStatus,
+  FileCopyStatus,
   PageFileCopy
 } from "@backend";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
-import {CardComponent} from "@app/shared/components/card/card.component";
 import {NgForOf, NgIf} from "@angular/common";
 import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
@@ -19,19 +18,20 @@ import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {Message} from "@stomp/stompjs";
 import {LoadedContentComponent} from "@app/shared/components/loaded-content/loaded-content.component";
+import {SectionComponent} from "@app/shared/components/section/section.component";
 
 @Component({
   selector: 'app-enqueued-file-copies-card',
   standalone: true,
   imports: [
     ButtonComponent,
-    CardComponent,
     NgForOf,
     NgIf,
     PaginationComponent,
     TableColumnDirective,
     TableComponent,
-    LoadedContentComponent
+    LoadedContentComponent,
+    SectionComponent
   ],
   templateUrl: './enqueued-file-copies-card.component.html',
   styleUrl: './enqueued-file-copies-card.component.scss'

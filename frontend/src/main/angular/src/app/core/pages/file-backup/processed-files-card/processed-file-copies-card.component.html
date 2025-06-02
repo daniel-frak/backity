@@ -1,4 +1,4 @@
-<app-card cardTitle="Processed files">
+<app-section sectionTitle="Processed files">
   <app-loaded-content [isLoading]="fileCopiesAreLoading">
     <div class="button-container">
       <app-button [actionAsync]="onClickRefreshProcessedFiles()"
@@ -46,4 +46,4 @@
                     [(pageSize)]="pageSize"
                     (onPageChange)="refreshProcessedFileCopies()"/>
   </app-loaded-content>
-</app-card>
+</app-section>

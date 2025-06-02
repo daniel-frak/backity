@@ -1,12 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   FileCopyStatus,
-  GameFileDiscoveredEvent,
   GameContentDiscoveryClient,
   GameContentDiscoveryProgressUpdateEvent,
   GameContentDiscoveryStatus,
   GameContentDiscoveryStatusChangedEvent,
-  GameContentDiscoveryWebSocketTopics
+  GameContentDiscoveryWebSocketTopics,
+  GameFileDiscoveredEvent
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {IMessage} from "@stomp/stompjs";
@@ -15,27 +15,27 @@ import {NotificationService} from "@app/shared/services/notification/notificatio
 import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
 import {DatePipe, NgForOf, NgIf, NgStyle} from '@angular/common';
 import {ButtonComponent} from '@app/shared/components/button/button.component';
-import {CardComponent} from "@app/shared/components/card/card.component";
 import {
   GameContentDiscoveryStatusBadgeComponent
 } from "@app/core/pages/file-discovery/game-content-discovery-status-badge/game-content-discovery-status-badge.component";
 import {
   NewDiscoveredFilesBadgeComponent
 } from "@app/core/pages/file-discovery/new-discovered-files-badge/new-discovered-files-badge.component";
+import {SectionComponent} from "@app/shared/components/section/section.component";
 
 @Component({
   selector: 'app-game-content-discovery-info-card',
   standalone: true,
   imports: [
     ButtonComponent,
-    CardComponent,
     DatePipe,
     GameContentDiscoveryStatusBadgeComponent,
     LoadedContentComponent,
     NewDiscoveredFilesBadgeComponent,
     NgForOf,
     NgIf,
-    NgStyle
+    NgStyle,
+    SectionComponent
   ],
   templateUrl: './game-content-discovery-info-card.component.html',
   styleUrl: './game-content-discovery-info-card.component.scss'

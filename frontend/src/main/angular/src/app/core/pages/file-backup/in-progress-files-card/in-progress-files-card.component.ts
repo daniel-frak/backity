@@ -1,5 +1,4 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {CardComponent} from "@app/shared/components/card/card.component";
 import {DatePipe, NgIf, NgStyle} from "@angular/common";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
 import {TableComponent} from "@app/shared/components/table/table.component";
@@ -16,17 +15,18 @@ import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {Message} from "@stomp/stompjs";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {firstValueFrom, Subscription} from "rxjs";
+import {SectionComponent} from "@app/shared/components/section/section.component";
 
 @Component({
   selector: 'app-in-progress-files-card',
   standalone: true,
   imports: [
-    CardComponent,
     DatePipe,
     NgIf,
     TableColumnDirective,
     TableComponent,
-    NgStyle
+    NgStyle,
+    SectionComponent
   ],
   templateUrl: './in-progress-files-card.component.html',
   styleUrl: './in-progress-files-card.component.scss'
