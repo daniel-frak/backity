@@ -1,4 +1,5 @@
 <button [type]="buttonType"
+        [attr.ngbAutofocus]="ngbAutofocus"
         [disabled]="isLoading || disabled"
         [ngClass]="'btn btn-' + buttonStyle + ' ' + getSizeClass() + ' ' + buttonClass"
         [attr.data-testid]="testId"

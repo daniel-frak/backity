@@ -12,7 +12,7 @@
         <li>
           Press the button below and log in to GOG:
           <div class="button-container mb-3">
-            <app-button [action]="showGogAuthPopup"
+            <app-button [action]="showGogAuthPopup" [ngbAutofocus]="true"
                         buttonType="button" testId="log-in-to-gog-btn" buttonStyle="primary">
               Show GOG login page
             </app-button>
