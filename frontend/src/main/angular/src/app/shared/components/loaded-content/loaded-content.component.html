@@ -1,10 +1,11 @@
-<div class="loading-icon" *ngIf="isLoading && !hideIcon" data-testid="loader">
-  <div class="spinner-border text-primary" role="status"><!--/* //NOSONAR */-->
-    <span class="visually-hidden">Loading...</span>
-  </div>
-</div>
-<ng-container *ngIf="isLoading && hideIcon">
-  <ng-content select="[placeholder]" ></ng-content>
+<ng-container *ngIf="isLoading">
+  <ng-content select="[placeholder]" >
+    <div class="loading-icon" data-testid="loader">
+      <div class="spinner-border text-primary" role="status"><!--/* //NOSONAR */-->
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  </ng-content>
 </ng-container>
 <ng-container *ngIf="!isLoading">
   <ng-content></ng-content>
