@@ -9,6 +9,7 @@
       </ng-container>
 
       <div data-testid="gog-auth-status"
+           aria-live="polite"
            [ngClass]="{'text-primary': gogAuthenticated, 'text-danger-emphasis': !gogAuthenticated}">
         <i class="me-1"
            [ngClass]="{'bi bi-check-circle': gogAuthenticated, 'bi bi-x-circle': !gogAuthenticated}"
@@ -26,7 +27,7 @@
       </ng-container>
 
       <ng-container *ngIf="!gogAuthenticated">
-        <app-button [action]="showGogAuthModal.bind(this)"
+        <app-button [action]="openGogModal"
                     buttonType="button" testId="show-gog-auth-modal-btn" buttonStyle="primary">
           Authenticate
         </app-button>

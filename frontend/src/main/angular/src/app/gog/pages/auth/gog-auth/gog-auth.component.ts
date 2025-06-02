@@ -35,6 +35,8 @@ export class GogAuthComponent implements OnInit {
   public gogAuthenticated: boolean = false;
   public gogIsLoading: boolean = true;
 
+  public openGogModal = () => this.showGogAuthModal();
+
   constructor(private readonly gogConfigClient: GOGConfigurationClient,
               private readonly gogAuthClient: GOGAuthenticationClient,
               private readonly notificationService: NotificationService,
