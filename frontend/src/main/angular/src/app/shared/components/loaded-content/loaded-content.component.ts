@@ -13,9 +13,6 @@ export class LoadedContentComponent implements OnInit {
   @Input()
   isLoading: boolean = true;
 
-  @Input()
-  hideIcon: boolean = false;
-
   constructor() {
   }
 
