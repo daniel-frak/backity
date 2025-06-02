@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { SectionComponent } from './section.component';
+import {SectionComponent} from './section.component';
 
 describe('SectionComponent', () => {
   let component: SectionComponent;
@@ -10,7 +10,7 @@ describe('SectionComponent', () => {
     await TestBed.configureTestingModule({
       imports: [SectionComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(SectionComponent);
     component = fixture.componentInstance;
@@ -27,7 +27,9 @@ describe('SectionComponent', () => {
     fixture.detectChanges();
 
     const nativeElement = fixture.nativeElement;
-    expect(nativeElement.querySelector('h2').textContent).toContain('Test Title');
+    const h2Element = nativeElement.querySelector('h2');
+    expect(h2Element).toBeTruthy();
+    expect(h2Element.textContent).toContain('Test Title');
   });
 
   it('should not render title when not provided', () => {

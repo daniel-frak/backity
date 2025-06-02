@@ -1,0 +1,54 @@
+@import "src/scss/bootstrap/basics";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: map_get($spacers, 3);
+}
+
+.icon-text-and-buttons {
+
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: map_get($spacers, 3);
+
+  .icon-and-text {
+
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    gap: map_get($spacers, 3);
+
+    .icon-holder {
+      position: relative;
+      width: 3rem;
+      height: 3rem;
+      background-color: $secondary;
+      border-radius: 0.5rem;
+    }
+
+    .icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 125%;
+    }
+
+    .title {
+      font-weight: $font-weight-medium;
+    }
+  }
+
+  &:hover {
+    .icon {
+      color: $primary;
+    }
+  }
+}
+
+.details {
+  padding-left: map_get($spacers, 3);
+}
