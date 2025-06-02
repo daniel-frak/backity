@@ -8,6 +8,7 @@ import {CommonModule} from '@angular/common';
 import {ButtonComponent} from '@app/shared/components/button/button.component';
 import {InputComponent} from "@app/shared/components/form/input/input.component";
 import {SectionComponent} from "@app/shared/components/section/section.component";
+import {IconItemComponent} from "@app/shared/components/icon-item/icon-item.component";
 
 @Component({
   selector: 'app-gog-auth',
@@ -21,7 +22,8 @@ import {SectionComponent} from "@app/shared/components/section/section.component
     ReactiveFormsModule,
     ButtonComponent,
     InputComponent,
-    SectionComponent
+    SectionComponent,
+    IconItemComponent
   ]
 })
 export class GogAuthComponent implements OnInit {
