@@ -1,69 +1,57 @@
-<app-section sectionTitle="GOG">
-  <app-loaded-content [isLoading]="gogIsLoading">
-    <div class="badge-container">
-      <p data-testid="gog-auth-status">
-          <span class="badge"
-                [ngClass]="{'bg-success': gogAuthenticated, 'bg-danger': !gogAuthenticated}">
-            <i class="me-1"
-               [ngClass]="{'bi bi-check-circle': gogAuthenticated, 'bi bi-x-circle': !gogAuthenticated}"
-               aria-hidden="true">
-            </i>
-
-            <ng-container *ngIf="gogAuthenticated">Authenticated</ng-container>
-            <ng-container *ngIf="!gogAuthenticated">Not authenticated</ng-container>
-          </span>
-      </p>
-    </div>
-
-    <ol *ngIf="!gogAuthenticated">
-      <form [formGroup]="gogAuthForm" (ngSubmit)="authenticateGog()">
-        <li>
-          Press the button below to log in to GOG:
-          <div class="button-container mb-3">
-            <app-button [action]="showGogAuthPopup"
-                        buttonType="button" testId="log-in-to-gog-btn" buttonStyle="primary">
-              Log in to GOG
-            </app-button>
-          </div>
-        </li>
-        <li>
-          Copy the URL you're redirected to and paste it below:
-          <app-input formControlName="gogCodeUrl"
-                     testId="gog-code-url-input"
-                     type="text">
-            URL
-          </app-input>
-        </li>
-        <li>
-          Press the button below:
-          <div class="button-container">
-            <app-button buttonType="submit" testId="gog-authenticate-btn" buttonStyle="primary">
-              Authenticate
-            </app-button>
-          </div>
-        </li>
-      </form>
-    </ol>
-
-    <div *ngIf="gogAuthenticated">
-      <app-button [actionAsync]="onClickSignOutGog()" buttonStyle="danger" testId="log-out-gog-btn">
-        Log out
-      </app-button>
-    </div>
-  </app-loaded-content>
-</app-section>
-
 <app-icon-item iconClass="bi bi-puzzle">
   <ng-container title>
     GOG
   </ng-container>
   <ng-container descriptor>
-    Connected
+    <app-loaded-content [isLoading]="gogIsLoading" [hideIcon]="true">
+      <ng-container placeholder>
+        <div class="placeholder-glow">
+          <span class="placeholder" style="width: 6rem;"></span>
+        </div>
+      </ng-container>
+
+      <div data-testid="gog-auth-status"
+           [ngClass]="{'text-primary': gogAuthenticated, 'text-danger-emphasis': !gogAuthenticated}">
+        <i class="me-1"
+           [ngClass]="{'bi bi-check-circle': gogAuthenticated, 'bi bi-x-circle': !gogAuthenticated}"
+           aria-hidden="true">
+        </i>
+        <ng-container *ngIf="gogAuthenticated">Authenticated</ng-container>
+        <ng-container *ngIf="!gogAuthenticated">Not authenticated</ng-container>
+      </div>
+    </app-loaded-content>
   </ng-container>
   <ng-container buttons>
-    some buttons
+    <app-loaded-content [isLoading]="gogIsLoading" [hideIcon]="true">
+      <ng-container placeholder>
+        <div class="placeholder-glow">
+          <span class="placeholder" style="width: 6rem;"></span>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="!gogAuthenticated">
+        <app-button [action]="showGogAuthModal.bind(this)"
+                    buttonType="button" testId="show-gog-auth-modal-btn" buttonStyle="primary">
+          Authenticate
+        </app-button>
+      </ng-container>
+
+      <ng-container *ngIf="gogAuthenticated">
+        <app-button [actionAsync]="onClickSignOutGog()" buttonStyle="danger" testId="log-out-gog-btn">
+          Log out
+        </app-button>
+      </ng-container>
+    </app-loaded-content>
   </ng-container>
   <ng-container details>
-    some details
+    <app-loaded-content [isLoading]="gogIsLoading" [hideIcon]="true">
+      <ng-container placeholder>
+        <div class="placeholder-glow">
+          <span class="placeholder" style="width: 16rem;"></span><br>
+          <span class="placeholder" style="width: 16rem;"></span>
+        </div>
+      </ng-container>
+      some details
+    </app-loaded-content>
   </ng-container>
 </app-icon-item>
