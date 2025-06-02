@@ -64,12 +64,6 @@ describe('GogAuthComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should throw error when gogCodeUrlInput is not found', () => {
-    component.gogAuthForm = new FormGroup({});
-    expect(() => component.gogCodeUrlInput)
-      .toThrow(new Error('The control "gogCodeUrl" does not exist in the form.'));
-  });
-
   it('should check authentication status on init', () => {
     gogAuthClientMock.checkAuthentication.and.returnValue(defer(() => {
       expect(component.gogIsLoading).toBeTrue();
@@ -105,7 +99,7 @@ describe('GogAuthComponent', () => {
   });
 
   it('should open authentication modal when user clicks on "Authenticate with GOG"', async () => {
-    const mockModalRef = mockAuthModalReturnsTrue();
+    const mockModalRef = mockAuthModalImmediatelyReturnsTrue();
 
     modalService.open.and.returnValue(mockModalRef as any);
 
@@ -113,17 +107,65 @@ describe('GogAuthComponent', () => {
     await authenticateButton.nativeElement.click();
 
     expect(modalService.open).toHaveBeenCalledWith(GogAuthModalComponent);
-  })
+  });
 
-  function mockAuthModalReturnsTrue(): NgbModalRef {
-    return {
+  function mockAuthModalImmediatelyReturnsTrue(): NgbModalRef {
+    const mockModalRef = {
       componentInstance: {},
       result: Promise.resolve(true) // Simulates modal closing behavior
     } as NgbModalRef;
+    modalService.open.and.returnValue(mockModalRef as any);
+    return mockModalRef;
   }
 
   function getAuthenticateButton(): DebugElement {
     return fixture.debugElement.query(By.css('[data-testid="show-gog-auth-modal-btn"]'));
+  }
+
+  it('should not open second authentication modal when one is already open', async () => {
+    mockAuthModalNeverCloses();
+
+    const authenticateButton: DebugElement = getAuthenticateButton();
+    await authenticateButton.nativeElement.click(); // First modal opens
+    await authenticateButton.nativeElement.click(); // Second modal opens
+
+    expect(modalService.open).toHaveBeenCalledTimes(1);
+  });
+
+  function mockAuthModalNeverCloses() {
+    const mockModalRef = {
+      componentInstance: {},
+      result: new Promise(() => {}) // Never closes
+    } as NgbModalRef;
+    modalService.open.and.returnValue(mockModalRef as any);
+  }
+
+  it('should open authentication modal after authentication succeeded', async () => {
+    mockAuthModalImmediatelyReturnsTrue();
+
+    const authenticateButton: DebugElement = getAuthenticateButton();
+    await authenticateButton.nativeElement.click(); // First modal opens and succeeds
+    await authenticateButton.nativeElement.click(); // Second modal opens and succeeds
+
+    expect(modalService.open).toHaveBeenCalledTimes(2);
+  });
+
+  it('should open authentication modal after authentication failed', async () => {
+    mockAuthModalImmediatelyRejects();
+
+    const authenticateButton: DebugElement = getAuthenticateButton();
+    await authenticateButton.nativeElement.click(); // First modal opens and fails
+    await authenticateButton.nativeElement.click(); // Second modal opens and fails
+
+    expect(modalService.open).toHaveBeenCalledTimes(2);
+  });
+
+  function mockAuthModalImmediatelyRejects(){
+    const mockModalRef = {
+      componentInstance: {},
+      result: Promise.reject("some rejection reason") // Simulates modal closing behavior
+    } as NgbModalRef;
+    modalService.open.and.returnValue(mockModalRef as any);
   }
 
   it('should log out given logged in', async () => {
@@ -136,7 +178,7 @@ describe('GogAuthComponent', () => {
     expect(component.gogIsLoading).toBeFalsy();
     expect(component.gogAuthenticated).toBeFalsy();
     expect(notificationService.showSuccess).toHaveBeenCalledWith("Logged out of GOG");
-  })
+  });
 
   function makeAuthenticated() {
     component.gogAuthenticated = true;

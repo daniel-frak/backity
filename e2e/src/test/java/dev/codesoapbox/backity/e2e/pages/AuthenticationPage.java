@@ -2,22 +2,26 @@ package dev.codesoapbox.backity.e2e.pages;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import lombok.Getter;
 
 public class AuthenticationPage {
 
     private final Page page;
     private final Locator logInToGogBtn;
     private final Locator gogCodeUrlInput;
-    private final Locator gogAuthenticateButton;
-    private final Locator gogAuthBadge;
+    private final Locator gogShowAuthModalButton;
+    private final Locator gogModalAuthenticateButton;
+    @Getter
+    private final Locator gogAuthStatus;
     private final Locator gogLogOutButton;
 
     public AuthenticationPage(Page page) {
         this.page = page;
         logInToGogBtn = page.getByTestId("log-in-to-gog-btn");
         gogCodeUrlInput = page.getByTestId("gog-code-url-input");
-        gogAuthenticateButton = page.getByTestId("gog-authenticate-btn");
-        gogAuthBadge = page.getByTestId("gog-auth-status");
+        gogShowAuthModalButton = page.getByTestId("show-gog-auth-modal-btn");
+        gogModalAuthenticateButton = page.getByTestId("gog-authenticate-btn");
+        gogAuthStatus = page.getByTestId("gog-auth-status");
         gogLogOutButton = page.getByTestId("log-out-gog-btn");
     }
 
@@ -26,16 +30,17 @@ public class AuthenticationPage {
     }
 
     public void authenticateGog() {
-        GogLoginPopup gogLoginPopup = summonGogLoginPopup();
+        gogShowAuthModalButton.click();
+        GogLoginPopup gogLoginPopup = summonGogLoginForm();
 
         gogLoginPopup.signIn();
         gogCodeUrlInput.fill(gogLoginPopup.getUrl());
         gogLoginPopup.close();
 
-        gogAuthenticateButton.click();
+        gogModalAuthenticateButton.click();
     }
 
-    private GogLoginPopup summonGogLoginPopup() {
+    private GogLoginPopup summonGogLoginForm() {
         Page loginPopup = page.context().waitForPage(logInToGogBtn::click);
         loginPopup.waitForLoadState();
 
@@ -43,7 +48,7 @@ public class AuthenticationPage {
     }
 
     public boolean isAuthenticated() {
-        return gogAuthBadge.textContent().contains("Authenticated");
+        return gogAuthStatus.textContent().contains("Authenticated");
     }
 
     public void logOut() {
