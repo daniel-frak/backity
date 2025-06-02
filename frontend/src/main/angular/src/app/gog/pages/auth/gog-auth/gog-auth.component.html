@@ -5,9 +5,7 @@
   <ng-container descriptor>
     <app-loaded-content [isLoading]="gogIsLoading" [hideIcon]="true">
       <ng-container placeholder>
-        <div class="placeholder-glow">
-          <span class="placeholder" style="width: 6rem;"></span>
-        </div>
+        <app-loading-placeholder [widths]="['6rem']"/>
       </ng-container>
 
       <div data-testid="gog-auth-status"
@@ -24,9 +22,7 @@
   <ng-container buttons>
     <app-loaded-content [isLoading]="gogIsLoading" [hideIcon]="true">
       <ng-container placeholder>
-        <div class="placeholder-glow">
-          <span class="placeholder" style="width: 6rem;"></span>
-        </div>
+        <app-loading-placeholder [widths]="['6rem']"/>
       </ng-container>
 
       <ng-container *ngIf="!gogAuthenticated">
@@ -44,12 +40,9 @@
     </app-loaded-content>
   </ng-container>
   <ng-container details>
-    <app-loaded-content [isLoading]="gogIsLoading" [hideIcon]="true">
+    <app-loaded-content [isLoading]="gogIsLoading " [hideIcon]="true">
       <ng-container placeholder>
-        <div class="placeholder-glow">
-          <span class="placeholder" style="width: 16rem;"></span><br>
-          <span class="placeholder" style="width: 16rem;"></span>
-        </div>
+        <app-loading-placeholder [widths]="['16rem', '16rem']"/>
       </ng-container>
       some details
     </app-loaded-content>

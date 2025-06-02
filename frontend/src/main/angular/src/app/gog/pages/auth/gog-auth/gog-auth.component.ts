@@ -10,6 +10,7 @@ import {IconItemComponent} from "@app/shared/components/icon-item/icon-item.comp
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {GogAuthModalComponent} from "@app/gog/components/modals/gog-auth-modal/gog-auth-modal.component";
 import {NgbModalRef} from "@ng-bootstrap/ng-bootstrap/modal/modal-ref";
+import {LoadingPlaceholderComponent} from "@app/shared/components/loading-placeholder/loading-placeholder.component";
 
 @Component({
   selector: 'app-gog-auth',
@@ -22,7 +23,8 @@ import {NgbModalRef} from "@ng-bootstrap/ng-bootstrap/modal/modal-ref";
     FormsModule,
     ReactiveFormsModule,
     ButtonComponent,
-    IconItemComponent
+    IconItemComponent,
+    LoadingPlaceholderComponent
   ]
 })
 export class GogAuthComponent implements OnInit {
