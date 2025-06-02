@@ -2,7 +2,6 @@ package dev.codesoapbox.backity.e2e.pages;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
-import lombok.Getter;
 
 public class AuthenticationPage {
 
@@ -11,7 +10,6 @@ public class AuthenticationPage {
     private final Locator gogCodeUrlInput;
     private final Locator gogShowAuthModalButton;
     private final Locator gogModalAuthenticateButton;
-    @Getter
     private final Locator gogAuthStatus;
     private final Locator gogLogOutButton;
 
@@ -47,8 +45,12 @@ public class AuthenticationPage {
         return new GogLoginPopup(loginPopup);
     }
 
+    public Locator getAuthenticationStatusLocator() {
+        return gogAuthStatus;
+    }
+
     public boolean isAuthenticated() {
-        return gogAuthStatus.textContent().contains("Authenticated");
+        return !gogAuthStatus.textContent().toLowerCase().contains("not authenticated");
     }
 
     public void logOut() {

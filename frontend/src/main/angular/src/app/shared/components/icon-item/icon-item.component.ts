@@ -1,11 +1,10 @@
 import {Component, Input} from '@angular/core';
-import {NgClass, NgIf} from "@angular/common";
+import {NgClass} from "@angular/common";
 
 @Component({
   selector: 'app-icon-item',
   standalone: true,
   imports: [
-    NgIf,
     NgClass
   ],
   templateUrl: './icon-item.component.html',
@@ -13,5 +12,5 @@ import {NgClass, NgIf} from "@angular/common";
 })
 export class IconItemComponent {
 
-  @Input() iconClass?: string;
+  @Input() iconClass: string = '';
 }

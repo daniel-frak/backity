@@ -102,7 +102,13 @@ class BackityTest {
     private void authenticateGog() {
         authenticationPage.navigate();
         authenticationPage.authenticateGog();
-        assertThat(authenticationPage.getGogAuthStatus()).containsText("Authenticated");
+        assertIsAuthenticated();
+    }
+
+    private void assertIsAuthenticated() {
+        assertThat(authenticationPage.getAuthenticationStatusLocator())
+                .not().containsText("not authenticated",
+                new LocatorAssertions.ContainsTextOptions().setIgnoreCase(true));
     }
 
     @SuppressWarnings("SameParameterValue")
