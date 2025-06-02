@@ -22,7 +22,6 @@ import {LoadedContentComponent} from '@app/shared/components/loaded-content/load
 import {NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
 import {TableComponent} from '@app/shared/components/table/table.component';
 import {TableColumnDirective} from '@app/shared/components/table/column-directive/table-column.directive';
-import {CardComponent} from "@app/shared/components/card/card.component";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {Message} from "@stomp/stompjs";
 import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
@@ -35,13 +34,13 @@ import {
   PotentialFileCopy,
   PotentialFileCopyFactory
 } from "@app/core/pages/games/games-with-files-card/potential-file-copy";
+import {SectionComponent} from "@app/shared/components/section/section.component";
 
 @Component({
   selector: 'app-games-with-file-copies-card',
   standalone: true,
   imports: [
     ButtonComponent,
-    CardComponent,
     FileStatusBadgeComponent,
     LoadedContentComponent,
     NgSwitchCase,
@@ -49,7 +48,8 @@ import {
     TableColumnDirective,
     TableComponent,
     NgSwitch,
-    NgIf
+    NgIf,
+    SectionComponent
   ],
   templateUrl: './games-with-file-copies-card.component.html',
   styleUrl: './games-with-file-copies-card.component.scss'
