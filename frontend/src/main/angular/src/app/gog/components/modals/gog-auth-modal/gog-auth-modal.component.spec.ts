@@ -4,9 +4,11 @@ import {GogAuthModalComponent} from './gog-auth-modal.component';
 import {GOGAuthenticationClient} from "@backend";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {of, tap} from "rxjs";
+import {of, tap, throwError} from "rxjs";
 import SpyObj = jasmine.SpyObj;
 import createSpyObj = jasmine.createSpyObj;
+import {FormGroup} from "@angular/forms";
+import any = jasmine.any;
 
 const USER_AUTH_URL = "someGogAuthUrl";
 
@@ -53,6 +55,12 @@ describe('GogAuthModalComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should throw error when gogCodeUrlInput is not found', () => {
+    component.gogAuthForm = new FormGroup({});
+    expect(() => component.gogCodeUrlInput)
+      .toThrow(new Error('The control "gogCodeUrl" does not exist in the form.'));
   });
 
   it('should open a new window for authenticating', () => {
@@ -106,11 +114,35 @@ describe('GogAuthModalComponent', () => {
 
     component.authenticateGog();
 
+    expect(ngbActiveModalSpy.close).not.toHaveBeenCalled();
     expect(gogAuthClientMock.authenticate).not.toHaveBeenCalled();
     const expectedErrors = {
       gogCodeUrl: {required: true}
     };
     expect(notificationService.showFailure)
-      .toHaveBeenCalledWith("Please check the form for errors and try again.", expectedErrors)
+      .toHaveBeenCalledWith("Please check the form for errors and try again.", expectedErrors);
+  });
+
+  it('should not authenticate given response returns error', () => {
+    component.gogCodeUrlInput.setValue('https://www.example.com?code=1234');
+    gogAuthClientMock.authenticate.and.returnValue(throwError(() => new Error('Authentication failed')));
+
+    component.authenticateGog();
+
+    expect(ngbActiveModalSpy.close).not.toHaveBeenCalled();
+    expect(component.isLoading).toBeFalse();
+    expect(notificationService.showFailure)
+      .toHaveBeenCalledWith("Something went wrong during GOG authentication")
+  });
+
+  it('should not authenticate given authentication throws', () => {
+    component.gogCodeUrlInput.setValue('invalidUrl'); // Will throw during new URL construction
+
+    component.authenticateGog();
+
+    expect(ngbActiveModalSpy.close).not.toHaveBeenCalled();
+    expect(component.isLoading).toBeFalse();
+    expect(notificationService.showFailure)
+      .toHaveBeenCalledWith("Something went wrong during GOG authentication", any(Error))
   });
 });

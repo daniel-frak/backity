@@ -102,7 +102,7 @@ class BackityTest {
     private void authenticateGog() {
         authenticationPage.navigate();
         authenticationPage.authenticateGog();
-        assertTrue(authenticationPage.isAuthenticated());
+        assertThat(authenticationPage.getGogAuthStatus()).containsText("Authenticated");
     }
 
     @SuppressWarnings("SameParameterValue")

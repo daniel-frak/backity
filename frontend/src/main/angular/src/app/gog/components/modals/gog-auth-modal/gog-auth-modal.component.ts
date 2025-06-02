@@ -61,15 +61,17 @@ export class GogAuthModalComponent {
         return;
       }
       const code: string = this.extractCodeFromUrl();
-      this.gogAuthClient.authenticate(code).pipe(
-        finalize(() => this.isLoading = false) // Ensures reset regardless of success or failure
-      ).subscribe({
-        next: response => this.handleAuthenticationResponse(response),
-        error: () => this.notificationService.showFailure("Something went wrong during GOG authentication")
-      });
-    } catch (e) {
+      this.gogAuthClient.authenticate(code)
+        .pipe(finalize(() => this.isLoading = false))
+        .subscribe({
+          next: response => this.handleAuthenticationResponse(response),
+          error: () => this.notificationService.showFailure(
+            "Something went wrong during GOG authentication")
+        });
+    } catch (error) {
       this.isLoading = false;
-      throw e;
+      this.notificationService.showFailure(
+        "Something went wrong during GOG authentication", error)
     }
   }
 
@@ -98,9 +100,9 @@ export class GogAuthModalComponent {
   getFormErrors(form: FormGroup): Record<string, any> {
     return Object.entries(form.controls)
       .filter(([_, control]) => control.errors)
-      .reduce((errorMap, [controlName, control]) => ({
-        ...errorMap,
-        [controlName]: control.errors,
-      }), {});
+      .reduce((errorMap, [controlName, control]) => {
+        errorMap[controlName] = control.errors;
+        return errorMap;
+      }, {} as Record<string, any>);
   }
 }

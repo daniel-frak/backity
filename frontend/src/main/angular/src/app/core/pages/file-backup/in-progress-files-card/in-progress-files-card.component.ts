@@ -71,8 +71,6 @@ export class InProgressFilesCardComponent implements OnInit, OnDestroy {
 
   private onStatusChanged(payload: Message) {
     const event: FileCopyStatusChangedEvent = JSON.parse(payload.body);
-    console.warn(event);
-    console.warn(this.currentDownload);
     if (event.fileCopyNaturalId.gameFileId != this.currentDownload?.fileCopy.naturalId.gameFileId) {
       return;
     }

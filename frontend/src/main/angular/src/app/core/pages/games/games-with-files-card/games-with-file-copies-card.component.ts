@@ -203,7 +203,6 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
     The file interaction here is hardcoded because there seems to be no easy way to use the auto-generated HttpClient
     code to show the download dialog before first downloading the entire file into memory.
      */
-    console.warn(fileCopyId);
     const configuration = this.fileCopiesClient.configuration;
     this.window.location.href = `${configuration.basePath}/api/file-copies/${configuration.encodeParam({
       name: "fileCopyId", value: fileCopyId, in: "path", style: "simple", explode: false, dataType: "string",

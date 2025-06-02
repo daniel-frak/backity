@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {GOGAuthenticationClient, GogConfig, GOGConfigurationClient} from "@backend";
-import {AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {finalize, firstValueFrom, forkJoin, Observable} from "rxjs";
 import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
@@ -34,22 +34,6 @@ export class GogAuthComponent implements OnInit {
 
   public gogAuthenticated: boolean = false;
   public gogIsLoading: boolean = true;
-  public gogAuthForm: FormGroup = new FormGroup(
-    {
-      gogCodeUrl: new FormControl('', Validators.required)
-    },
-    {
-      updateOn: 'submit'
-    }
-  );
-
-  get gogCodeUrlInput(): AbstractControl<any, any> {
-    const control = this.gogAuthForm.get('gogCodeUrl');
-    if (!control) {
-      throw new Error('The control "gogCodeUrl" does not exist in the form.');
-    }
-    return control;
-  }
 
   constructor(private readonly gogConfigClient: GOGConfigurationClient,
               private readonly gogAuthClient: GOGAuthenticationClient,
