@@ -1,0 +1,40 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-title">
+    Authenticate with GOG
+  </h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+</div>
+
+<form [formGroup]="gogAuthForm" (ngSubmit)="authenticateGog()">
+  <div class="modal-body">
+    <app-loaded-content [isLoading]="isLoading">
+      <ol>
+        <li>
+          Press the button below and log in to GOG:
+          <div class="button-container mb-3">
+            <app-button [action]="showGogAuthPopup"
+                        buttonType="button" testId="log-in-to-gog-btn" buttonStyle="primary">
+              Show GOG login page
+            </app-button>
+          </div>
+        </li>
+        <li>
+          Once you're redirected to a blank page, copy the URL you were redirected to and paste it below:
+          <app-input formControlName="gogCodeUrl"
+                     testId="gog-code-url-input"
+                     type="text">
+            URL
+          </app-input>
+        </li>
+        <li>
+          Press the button below.
+        </li>
+      </ol>
+    </app-loaded-content>
+  </div>
+  <div class="modal-footer">
+    <app-button buttonType="submit" testId="gog-authenticate-btn" buttonStyle="primary" [disabled]="isLoading">
+      Authenticate
+    </app-button>
+  </div>
+</form>

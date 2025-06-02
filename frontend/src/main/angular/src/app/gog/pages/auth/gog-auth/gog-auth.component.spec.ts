@@ -1,11 +1,14 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {GogAuthComponent} from './gog-auth.component';
-import {GOGAuthenticationClient, GOGConfigurationClient, RefreshTokenResponse} from "@backend";
+import {GOGAuthenticationClient, GOGConfigurationClient} from "@backend";
 import {defer, of, throwError} from "rxjs";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {By} from '@angular/platform-browser';
 import {DebugElement} from "@angular/core";
 import {FormGroup} from "@angular/forms";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {GogAuthModalComponent} from "@app/gog/components/modals/gog-auth-modal/gog-auth-modal.component";
+import {NgbModalRef} from "@ng-bootstrap/ng-bootstrap/modal/modal-ref";
 import createSpyObj = jasmine.createSpyObj;
 import SpyObj = jasmine.SpyObj;
 
@@ -21,6 +24,7 @@ describe('GogAuthComponent', () => {
   let gogConfigClientMock: SpyObj<GOGConfigurationClient>;
   let gogAuthClientMock: SpyObj<GOGAuthenticationClient>;
   let notificationService: NotificationService;
+  let modalService: SpyObj<NgbModal>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -32,12 +36,13 @@ describe('GogAuthComponent', () => {
         },
         {
           provide: GOGAuthenticationClient,
-          useValue: createSpyObj(GOGAuthenticationClient, ['checkAuthentication', 'authenticate', 'logOutOfGog'])
+          useValue: createSpyObj(GOGAuthenticationClient, ['checkAuthentication', 'logOutOfGog'])
         },
         {
           provide: NotificationService,
           useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])
-        }
+        },
+        {provide: NgbModal, useValue: createSpyObj('NgbModal', ['open'])}
       ]
     }).compileComponents();
 
@@ -46,9 +51,10 @@ describe('GogAuthComponent', () => {
 
     gogConfigClientMock = TestBed.inject(GOGConfigurationClient) as SpyObj<GOGConfigurationClient>;
     gogAuthClientMock = TestBed.inject(GOGAuthenticationClient) as SpyObj<GOGAuthenticationClient>;
-    gogAuthClientMock.checkAuthentication.and.returnValue(of(false) as any);
     notificationService = TestBed.inject(NotificationService);
+    modalService = TestBed.inject(NgbModal) as SpyObj<NgbModal>;
 
+    gogAuthClientMock.checkAuthentication.and.returnValue(of(false) as any);
     gogConfigClientMock.getGogConfig.and.returnValue(of(GOG_CONFIG_RESPONSE) as any);
 
     fixture.detectChanges();
@@ -98,64 +104,27 @@ describe('GogAuthComponent', () => {
       'Failed to configure GOG', error);
   });
 
-  it('should open a new window for authenticating', () => {
-    spyOn(window, 'open');
-    component.ngOnInit();
+  it('should open authentication modal when user clicks on "Authenticate with GOG"', async () => {
+    const mockModalRef = mockAuthModalReturnsTrue();
 
-    component.showGogAuthPopup();
+    modalService.open.and.returnValue(mockModalRef as any);
 
-    expect(window.open).toHaveBeenCalledWith(GOG_CONFIG_RESPONSE.userAuthUrl,
-      '_blank', 'toolbar=0,location=0,menubar=0');
-  });
+    const authenticateButton: DebugElement = getAuthenticateButton();
+    await authenticateButton.nativeElement.click();
 
-  it('should authenticate with a valid URL', () => {
-    component.gogCodeUrlInput.setValue('https://www.example.com?code=1234');
-    gogAuthClientMock.authenticate.and.returnValue({
-      subscribe: (callback: (response: RefreshTokenResponse) => any) => {
-        expect(component.gogIsLoading).toBeTrue();
-        callback({refresh_token: 'someRefreshToken'});
-      }
-    } as any);
+    expect(modalService.open).toHaveBeenCalledWith(GogAuthModalComponent);
+  })
 
-    component.authenticateGog();
+  function mockAuthModalReturnsTrue(): NgbModalRef {
+    return {
+      componentInstance: {},
+      result: Promise.resolve(true) // Simulates modal closing behavior
+    } as NgbModalRef;
+  }
 
-    expect(component.gogAuthenticated).toBeTrue();
-    expect(component.gogIsLoading).toBeFalse();
-    expect(notificationService.showSuccess).toHaveBeenCalledWith('GOG authentication successful');
-    expect(notificationService.showFailure).toHaveBeenCalledTimes(0);
-    expect(component.gogCodeUrlInput.value).toBeNull();
-  });
-
-  it('should not authenticate if refresh token is missing', () => {
-    component.gogCodeUrlInput.setValue('https://www.example.com?code=1234');
-    gogAuthClientMock.authenticate.and.returnValue({
-      subscribe: (callback: (response: RefreshTokenResponse) => any) => {
-        expect(component.gogIsLoading).toBeTrue();
-        callback({
-          refresh_token: undefined
-        });
-      }
-    } as any);
-
-    component.authenticateGog();
-
-    expect(component.gogAuthenticated).toBeFalse();
-    expect(component.gogIsLoading).toBeFalse();
-    expect(notificationService.showFailure).toHaveBeenCalledWith('Something went wrong during GOG authentication');
-  });
-
-  it('should not authenticate given GOG code URL is empty', () => {
-    component.gogCodeUrlInput.setValue('');
-
-    component.authenticateGog();
-
-    expect(gogAuthClientMock.authenticate).not.toHaveBeenCalled();
-    const expectedErrors = {
-      gogCodeUrl: {required: true}
-    };
-    expect(notificationService.showFailure)
-      .toHaveBeenCalledWith("Please check the form for errors and try again.", expectedErrors)
-  });
+  function getAuthenticateButton(): DebugElement {
+    return fixture.debugElement.query(By.css('[data-testid="show-gog-auth-modal-btn"]'));
+  }
 
   it('should log out given logged in', async () => {
     makeAuthenticated();

@@ -6,17 +6,27 @@ $enable-important-utilities: true;
 $text-secondary: #CCBD8F;
 
 // Redefined variables (unchanged)
-$black: #000;
+$white:    #fff;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #6c757d;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+$black:    #000;
 $border-color-translucent: rgba($black, .175);
-$font-weight-lighter:         lighter !default;
-$font-weight-light:           300 !default;
-$font-weight-normal:          400 !default;
-$font-weight-medium:          500 !default;
-$font-weight-semibold:        600 !default;
-$font-weight-bold:            700 !default;
-$font-weight-bolder:          bolder !default;
+$font-weight-lighter:         lighter;
+$font-weight-light:           300;
+$font-weight-normal:          400;
+$font-weight-medium:          500;
+$font-weight-semibold:        600;
+$font-weight-bold:            700;
+$font-weight-bolder:          bolder;
 
-$spacer: 1rem !default;
+$spacer: 1rem;
 
 //Overrides
 
@@ -31,7 +41,7 @@ $spacers: (
   3: $spacer,
   4: $spacer * 1.5,
   5: $spacer * 2,
-) !default;
+);
 
 $border-radius: 1rem;
 $border-radius-sm: 1rem;
@@ -74,6 +84,25 @@ $btn-close-color: $white;
 
 $navbar-dark-color: $white;
 $navbar-dark-active-color: $primary;
+
+$primary-text-emphasis:   shade-color($primary, 60%);
+$secondary-text-emphasis: shade-color($secondary, 60%);
+$success-text-emphasis:   shade-color($success, 60%);
+$info-text-emphasis:      shade-color($info, 60%);
+$warning-text-emphasis:   shade-color($warning, 60%);
+$danger-text-emphasis:    tint-color(red, 50%);
+$light-text-emphasis:     $gray-700;
+$dark-text-emphasis:      $gray-700;
+$theme-colors-text: (
+  "primary": $primary-text-emphasis,
+  "secondary": $secondary-text-emphasis,
+  "success": $success-text-emphasis,
+  "info": $info-text-emphasis,
+  "warning": $warning-text-emphasis,
+  "danger": $danger-text-emphasis,
+  "light": $light-text-emphasis,
+  "dark": $dark-text-emphasis,
+);
 
 label {
   color: $text-secondary;

@@ -6,9 +6,10 @@ import {finalize, firstValueFrom, forkJoin, Observable} from "rxjs";
 import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from '@app/shared/components/button/button.component';
-import {InputComponent} from "@app/shared/components/form/input/input.component";
-import {SectionComponent} from "@app/shared/components/section/section.component";
 import {IconItemComponent} from "@app/shared/components/icon-item/icon-item.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {GogAuthModalComponent} from "@app/gog/components/modals/gog-auth-modal/gog-auth-modal.component";
+import {NgbModalRef} from "@ng-bootstrap/ng-bootstrap/modal/modal-ref";
 
 @Component({
   selector: 'app-gog-auth',
@@ -21,14 +22,13 @@ import {IconItemComponent} from "@app/shared/components/icon-item/icon-item.comp
     FormsModule,
     ReactiveFormsModule,
     ButtonComponent,
-    InputComponent,
-    SectionComponent,
     IconItemComponent
   ]
 })
 export class GogAuthComponent implements OnInit {
 
   private gogAuthUrl?: string;
+  private activeModalRef?: NgbModalRef;
 
   public gogAuthenticated: boolean = false;
   public gogIsLoading: boolean = true;
@@ -51,7 +51,8 @@ export class GogAuthComponent implements OnInit {
 
   constructor(private readonly gogConfigClient: GOGConfigurationClient,
               private readonly gogAuthClient: GOGAuthenticationClient,
-              private readonly notificationService: NotificationService) {
+              private readonly notificationService: NotificationService,
+              private readonly modalService: NgbModal) {
   }
 
   ngOnInit() {
@@ -70,40 +71,22 @@ export class GogAuthComponent implements OnInit {
       });
   }
 
-  showGogAuthPopup = () => {
-    window.open(this.gogAuthUrl, '_blank', 'toolbar=0,location=0,menubar=0');
-  }
-
-  authenticateGog() {
-    if (!this.gogAuthForm.valid) {
-      this.gogAuthForm.markAllAsTouched();
-      this.notificationService.showFailure("Please check the form for errors and try again.",
-        this.getFormErrors(this.gogAuthForm));
-      return;
+  showGogAuthModal(): Promise<void> {
+    if (this.activeModalRef) {
+      console.log("A modal is already open, not opening another one.");
+      return this.activeModalRef.result;
     }
-    this.gogIsLoading = true;
-    const gogCodeUrl = this.gogCodeUrlInput.value;
-    const params: URLSearchParams = new URL(gogCodeUrl).searchParams;
-    const code = params.get("code") as string;
-    this.gogAuthClient.authenticate(code).subscribe(r => {
-      if (r.refresh_token) {
-        this.gogAuthenticated = true;
-        this.notificationService.showSuccess("GOG authentication successful");
-        this.gogCodeUrlInput.reset();
-      } else {
-        this.notificationService.showFailure("Something went wrong during GOG authentication");
-      }
-      this.gogIsLoading = false;
-    });
-  }
 
-  getFormErrors(form: FormGroup): Record<string, any> {
-    return Object.entries(form.controls)
-      .filter(([_, control]) => control.errors)
-      .reduce((errorMap, [controlName, control]) => ({
-        ...errorMap,
-        [controlName]: control.errors,
-      }), {});
+    this.activeModalRef = this.modalService.open(GogAuthModalComponent);
+    (this.activeModalRef.componentInstance as GogAuthModalComponent).gogAuthUrl = this.gogAuthUrl;
+    return this.activeModalRef.result.then(async (result) => {
+      if (result) {
+        this.gogAuthenticated = true;
+      }
+      this.activeModalRef = undefined;
+    }, () => {
+      this.activeModalRef = undefined;
+    });
   }
 
   onClickSignOutGog(): () => Promise<void> {
