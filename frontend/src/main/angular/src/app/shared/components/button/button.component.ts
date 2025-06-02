@@ -22,9 +22,7 @@ export class ButtonComponent {
   @Input() actionAsync?: () => Promise<void>;
   @Input() action?: VoidFunction;
   @Input() testId?: string;
-
-  constructor() {
-  }
+  @Input() ngbAutofocus?: boolean;
 
   getSizeClass() {
     if (this.buttonSize == 'small') {
