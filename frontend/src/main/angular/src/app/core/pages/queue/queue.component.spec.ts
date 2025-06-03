@@ -78,7 +78,7 @@ describe('QueueComponent', () => {
     expect(topicsSubscribed).toEqual([
       FileBackupMessageTopics.StatusChanged
     ]);
-    expect(component['subscriptions'].length).toBe(1);
+    expect(component['subscriptions'].length).toBe(2);
   });
 
   it('should unsubscribe from message topics on destruction', () => {
