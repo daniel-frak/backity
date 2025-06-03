@@ -43,9 +43,17 @@
   <ng-container details>
     <app-loaded-content [isLoading]="gogIsLoading">
       <ng-container placeholder>
-        <app-loading-placeholder [widths]="['16rem', '16rem']"/>
+        <app-loading-placeholder [widths]="['20rem', '20rem']"/>
       </ng-container>
-      some details
+
+      <app-named-value>
+        <ng-container name>Last attempted discovery</ng-container>
+        <ng-container value>Unknown</ng-container>
+      </app-named-value>
+      <app-named-value>
+        <ng-container name>Last successful discovery</ng-container>
+        <ng-container value>Unknown</ng-container>
+      </app-named-value>
     </app-loaded-content>
   </ng-container>
 </app-icon-item>
