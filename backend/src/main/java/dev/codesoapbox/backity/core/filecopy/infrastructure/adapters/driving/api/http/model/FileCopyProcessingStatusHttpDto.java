@@ -7,5 +7,5 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(name = "FileCopyProcessingStatus")
 public enum FileCopyProcessingStatusHttpDto {
 
-    ENQUEUED, PROCESSED
+    ENQUEUED
 }

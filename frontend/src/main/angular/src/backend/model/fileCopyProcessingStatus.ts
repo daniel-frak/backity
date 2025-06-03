@@ -9,10 +9,9 @@
  */
 
 
-export type FileCopyProcessingStatus = 'enqueued' | 'processed';
+export type FileCopyProcessingStatus = 'enqueued';
 
 export const FileCopyProcessingStatus = {
-    Enqueued: 'enqueued' as FileCopyProcessingStatus,
-    Processed: 'processed' as FileCopyProcessingStatus
+    Enqueued: 'enqueued' as FileCopyProcessingStatus
 };
 

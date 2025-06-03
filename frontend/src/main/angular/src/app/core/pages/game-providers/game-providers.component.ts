@@ -18,7 +18,7 @@ import {ButtonComponent} from "@app/shared/components/button/button.component";
 import {LoadedContentComponent} from "@app/shared/components/loaded-content/loaded-content.component";
 import {
   NewDiscoveredFilesBadgeComponent
-} from "@app/core/pages/file-discovery/new-discovered-files-badge/new-discovered-files-badge.component";
+} from "@app/core/pages/game-providers/new-discovered-files-badge/new-discovered-files-badge.component";
 
 @Component({
   selector: 'app-game-providers',

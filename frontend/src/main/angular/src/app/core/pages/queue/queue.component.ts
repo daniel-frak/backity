@@ -1,42 +1,44 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   FileBackupMessageTopics,
-  FileBackupStartedEvent,
   FileCopiesClient,
   FileCopy,
   FileCopyProcessingStatus,
   FileCopyStatus,
+  FileCopyStatusChangedEvent,
   PageFileCopy
 } from "@backend";
-import {ButtonComponent} from "@app/shared/components/button/button.component";
-import {NgForOf, NgIf} from "@angular/common";
-import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
-import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
-import {TableComponent} from "@app/shared/components/table/table.component";
 import {firstValueFrom, Subscription} from "rxjs";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {Message} from "@stomp/stompjs";
-import {LoadedContentComponent} from "@app/shared/components/loaded-content/loaded-content.component";
+import {PageHeaderComponent} from "@app/shared/components/page-header/page-header.component";
 import {SectionComponent} from "@app/shared/components/section/section.component";
+import {LoadedContentComponent} from "@app/shared/components/loaded-content/loaded-content.component";
+import {ButtonComponent} from "@app/shared/components/button/button.component";
+import {TableComponent} from "@app/shared/components/table/table.component";
+import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
+import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
+import {NgForOf, NgIf} from "@angular/common";
 
 @Component({
-  selector: 'app-enqueued-file-copies-card',
+  selector: 'app-queue',
   standalone: true,
   imports: [
+    PageHeaderComponent,
+    SectionComponent,
+    LoadedContentComponent,
     ButtonComponent,
-    NgForOf,
-    NgIf,
+    TableComponent,
     PaginationComponent,
     TableColumnDirective,
-    TableComponent,
-    LoadedContentComponent,
-    SectionComponent
+    NgForOf,
+    NgIf
   ],
-  templateUrl: './enqueued-file-copies-card.component.html',
-  styleUrl: './enqueued-file-copies-card.component.scss'
+  templateUrl: './queue.component.html',
+  styleUrl: './queue.component.scss'
 })
-export class EnqueuedFileCopiesCardComponent implements OnInit, OnDestroy {
+export class QueueComponent implements OnInit, OnDestroy {
 
   asFileCopy = (fileCopy: FileCopy) => fileCopy;
 
@@ -54,20 +56,21 @@ export class EnqueuedFileCopiesCardComponent implements OnInit, OnDestroy {
               private readonly notificationService: NotificationService) {
   }
 
-
   ngOnInit(): void {
     this.subscriptions.push(
-      this.messageService.watch(FileBackupMessageTopics.Started)
+      this.messageService.watch(FileBackupMessageTopics.StatusChanged)
         .subscribe(p => this.onBackupStarted(p))
     )
   }
 
   private onBackupStarted(payload: Message) {
-    const event: FileBackupStartedEvent = JSON.parse(payload.body);
-    this.tryToRemoveFileCopyFromEnqueuedDownloads(event);
+    const event: FileCopyStatusChangedEvent = JSON.parse(payload.body);
+    if (event.newStatus !== FileCopyStatus.Enqueued) {
+      this.tryToRemoveFileCopyFromEnqueuedDownloads(event);
+    }
   }
 
-  private tryToRemoveFileCopyFromEnqueuedDownloads(event: FileBackupStartedEvent) {
+  private tryToRemoveFileCopyFromEnqueuedDownloads(event: FileCopyStatusChangedEvent) {
     const foundFileCopy: FileCopy | undefined = this.findFileCopyInEnqueuedDownloads(event);
     if (foundFileCopy) {
       const index: number | undefined = this.fileCopyPage?.content?.indexOf(foundFileCopy);
@@ -77,9 +80,9 @@ export class EnqueuedFileCopiesCardComponent implements OnInit, OnDestroy {
     }
   }
 
-  private findFileCopyInEnqueuedDownloads(event: FileBackupStartedEvent) {
+  private findFileCopyInEnqueuedDownloads(event: FileCopyStatusChangedEvent) {
     return this.fileCopyPage?.content
-      ?.find(fileCopy => fileCopy?.id == event.fileCopyWithContext.fileCopy.id);
+      ?.find(fileCopy => fileCopy?.id == event.fileCopyId);
   }
 
   onClickRefreshEnqueuedFileCopies(): () => Promise<void> {

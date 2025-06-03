@@ -13,7 +13,6 @@ import lombok.experimental.Accessors;
 @Getter
 public enum FileBackupWebSocketTopics {
 
-    BACKUP_STARTED("/topic/backups/started"),
     BACKUP_PROGRESS_CHANGED("/topic/backups/progress-update"),
     BACKUP_STATUS_CHANGED("/topic/backups/status-changed");
 

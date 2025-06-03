@@ -1,43 +1,34 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {EnqueuedFileCopiesCardComponent} from './enqueued-file-copies-card.component';
-import {
-  FileBackupMessageTopics,
-  FileBackupStartedEvent,
-  GameFile,
-  FileCopyProcessingStatus,
-  FileCopiesClient,
-  PageFileCopy, FileCopy
-} from "@backend";
+import {QueueComponent} from './queue.component';
+import {FileBackupMessageTopics, FileCopiesClient, FileCopy, FileCopyProcessingStatus, PageFileCopy} from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {of, throwError} from "rxjs";
 import {provideRouter} from "@angular/router";
 import {MessageTesting} from "@app/shared/testing/message-testing";
 import {By} from "@angular/platform-browser";
-import {TestGameFile} from "@app/shared/testing/objects/test-game-file";
-import {TestFileBackupStartedEvent} from "@app/shared/testing/objects/test-file-backup-started-event";
 import {TestPage} from "@app/shared/testing/objects/test-page";
+import {TestFileCopy} from "@app/shared/testing/objects/test-file-copy";
 import createSpyObj = jasmine.createSpyObj;
 import anything = jasmine.anything;
 import SpyObj = jasmine.SpyObj;
 import createSpy = jasmine.createSpy;
-import {TestFileCopy} from "@app/shared/testing/objects/test-file-copy";
 
-describe('EnqueuedFileCopiesCardComponent', () => {
-  let component: EnqueuedFileCopiesCardComponent;
-  let fixture: ComponentFixture<EnqueuedFileCopiesCardComponent>;
+describe('QueueComponent', () => {
+  let component: QueueComponent;
+  let fixture: ComponentFixture<QueueComponent>;
+
   let fileCopiesClient: SpyObj<FileCopiesClient>;
   let messagesService: SpyObj<MessagesService>;
   let notificationService: NotificationService;
 
-  const aGameFile: GameFile = TestGameFile.any();
   const enqueuedFileCopy: FileCopy = TestFileCopy.enqueued();
   const initialEnqueuedDownloads: PageFileCopy = TestPage.of([enqueuedFileCopy]);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EnqueuedFileCopiesCardComponent],
+      imports: [QueueComponent],
       providers: [
         {
           provide: FileCopiesClient,
@@ -56,8 +47,9 @@ describe('EnqueuedFileCopiesCardComponent', () => {
     })
       .compileComponents();
 
-    fixture = TestBed.createComponent(EnqueuedFileCopiesCardComponent);
+    fixture = TestBed.createComponent(QueueComponent);
     component = fixture.componentInstance;
+
     fileCopiesClient = TestBed.inject(FileCopiesClient) as SpyObj<FileCopiesClient>;
     messagesService = TestBed.inject(MessagesService) as SpyObj<MessagesService>;
     notificationService = TestBed.inject(NotificationService);
@@ -68,6 +60,8 @@ describe('EnqueuedFileCopiesCardComponent', () => {
     MessageTesting.mockWatch(messagesService, (destination, callback) => {
       // Do nothing
     });
+
+    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -82,7 +76,7 @@ describe('EnqueuedFileCopiesCardComponent', () => {
     component.ngOnInit();
 
     expect(topicsSubscribed).toEqual([
-      FileBackupMessageTopics.Started
+      FileBackupMessageTopics.StatusChanged
     ]);
     expect(component['subscriptions'].length).toBe(1);
   });
@@ -139,18 +133,4 @@ describe('EnqueuedFileCopiesCardComponent', () => {
     await component.removeFromQueue();
     expect(notificationService.showFailure).toHaveBeenCalledWith('Removing from queue not yet implemented');
   });
-
-  it('should update currently downloaded game', async () => {
-    const fileBackupStartedEvent: FileBackupStartedEvent = TestFileBackupStartedEvent.for(aGameFile, enqueuedFileCopy);
-
-    await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
-      FileBackupMessageTopics.Started, fileBackupStartedEvent);
-
-    expectDownloadQueueToBeEmpty();
-  });
-
-  function expectDownloadQueueToBeEmpty() {
-    const table = fixture.debugElement.query(By.css('#download-queue'));
-    expect(table.nativeElement.textContent).toContain('No data');
-  }
 });

@@ -1,7 +1,6 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.filecopy.application.usecases.GetEnqueuedFileCopiesUseCase;
-import dev.codesoapbox.backity.core.filecopy.application.usecases.GetProcessedFileCopiesUseCase;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.FileCopyProcessingStatusHttpDto;
 import dev.codesoapbox.backity.shared.domain.Page;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class GetFileCopyListController {
 
     private final GetEnqueuedFileCopiesUseCase getEnqueuedFilesUseCase;
-    private final GetProcessedFileCopiesUseCase getProcessedFilesUseCase;
     private final FileCopyHttpDtoMapper fileCopyMapper;
     private final PaginationHttpDtoMapper paginationMapper;
     private final PageHttpDtoMapper pageMapper;
@@ -47,7 +45,6 @@ public class GetFileCopyListController {
     private Page<FileCopy> getFileCopyPage(FileCopyProcessingStatusHttpDto status, Pagination pagination) {
         return switch (status) {
             case ENQUEUED -> getEnqueuedFilesUseCase.getEnqueuedFileCopies(pagination);
-            case PROCESSED -> getProcessedFilesUseCase.getProcessedFileCopies(pagination);
         };
     }
 }

@@ -99,12 +99,6 @@ public class FileCopyJpaRepository implements FileCopyRepository {
     }
 
     @Override
-    public Optional<FileCopy> findOneInProgress() {
-        return springRepository.findByStatus(FileCopyStatus.IN_PROGRESS)
-                .map(entityMapper::toDomain);
-    }
-
-    @Override
     public Optional<FileCopy> findOldestEnqueued() {
         PageRequest pageable = PageRequest.of(0, 1, SORT_BY_DATE_MODIFIED_ASC);
 
@@ -113,27 +107,17 @@ public class FileCopyJpaRepository implements FileCopyRepository {
                 .map(entityMapper::toDomain);
     }
 
+    @Override
+    public Page<FileCopy> findAllEnqueued(Pagination pagination) {
+        return findAllByStatusOrderedByDateModified(pagination, List.of(FileCopyStatus.ENQUEUED));
+    }
+
     private Page<FileCopy> findAllByStatusOrderedByDateModified(Pagination pagination, List<FileCopyStatus> statuses) {
         Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_DATE_MODIFIED_ASC);
         org.springframework.data.domain.Page<FileCopyJpaEntity> foundPage =
                 springRepository.findAllByStatusIn(pageable, statuses);
 
         return pageMapper.toDomain(foundPage, entityMapper::toDomain);
-    }
-
-    @Override
-    public Page<FileCopy> findAllEnqueued(Pagination pagination) {
-        return findAllByStatusOrderedByDateModified(pagination, List.of(FileCopyStatus.ENQUEUED));
-    }
-
-    @Override
-    public Page<FileCopy> findAllProcessed(Pagination pagination) {
-        return findAllByStatusOrderedByDateModified(pagination,
-                List.of(
-                        FileCopyStatus.STORED_INTEGRITY_UNKNOWN,
-                        FileCopyStatus.STORED_INTEGRITY_VERIFIED,
-                        FileCopyStatus.FAILED
-                ));
     }
 
     @Override

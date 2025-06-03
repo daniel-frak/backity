@@ -7,7 +7,10 @@ import dev.codesoapbox.backity.core.discovery.application.usecases.GetGameConten
 import dev.codesoapbox.backity.core.discovery.application.usecases.StartGameContentDiscoveryUseCase;
 import dev.codesoapbox.backity.core.discovery.application.usecases.StopGameContentDiscoveryUseCase;
 import dev.codesoapbox.backity.core.discovery.infrastructure.config.GameContentDiscoveryControllerBeanConfig;
-import dev.codesoapbox.backity.core.filecopy.application.usecases.*;
+import dev.codesoapbox.backity.core.filecopy.application.usecases.DeleteFileCopyUseCase;
+import dev.codesoapbox.backity.core.filecopy.application.usecases.DownloadFileCopyUseCase;
+import dev.codesoapbox.backity.core.filecopy.application.usecases.EnqueueFileCopyUseCase;
+import dev.codesoapbox.backity.core.filecopy.application.usecases.GetEnqueuedFileCopiesUseCase;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.config.FileCopyControllerBeanConfig;
 import dev.codesoapbox.backity.core.game.application.usecases.GetGamesWithFilesUseCase;
 import dev.codesoapbox.backity.core.game.infrastructure.config.GameControllerBeanConfig;
@@ -64,9 +67,7 @@ import java.lang.annotation.Target;
         EnqueueFileCopyUseCase.class,
         DeleteFileCopyUseCase.class,
         DownloadFileCopyUseCase.class,
-        GetCurrentlyDownloadingFileCopyUseCase.class,
         GetEnqueuedFileCopiesUseCase.class,
-        GetProcessedFileCopiesUseCase.class,
         GetGogConfigUseCase.class,
         AuthenticateGogUseCase.class,
         CheckGogAuthenticationUseCase.class,

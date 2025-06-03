@@ -20,7 +20,7 @@ import {NamedValueComponent} from "@app/shared/components/named-value/named-valu
 import {ProgressBarComponent} from "@app/shared/components/progres-bar/progress-bar.component";
 import {
   GameContentDiscoveryStatusBadgeComponent
-} from "@app/core/pages/file-discovery/game-content-discovery-status-badge/game-content-discovery-status-badge.component";
+} from "@app/core/pages/game-providers/game-content-discovery-status-badge/game-content-discovery-status-badge.component";
 
 @Component({
   selector: 'app-gog-auth',

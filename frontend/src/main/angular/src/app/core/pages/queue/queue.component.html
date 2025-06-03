@@ -1,4 +1,8 @@
-<app-section sectionTitle="Enqueued files">
+<app-page-header title="Queue">
+  Here you can manage the download queue
+</app-page-header>
+
+<app-section>
   <app-loaded-content [isLoading]="fileCopiesAreLoading">
     <div class="button-container">
       <app-button [actionAsync]="onClickRefreshEnqueuedFileCopies()"

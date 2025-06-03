@@ -238,14 +238,6 @@ abstract class FileCopyJpaRepositoryAbstractIT {
     }
 
     @Test
-    void shouldFindOneInProgress() {
-        Optional<FileCopy> result = repository.findOneInProgress();
-
-        assertThat(result).isPresent();
-        assertSame(result.get(), EXISTING_FILE_COPIES.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2.get());
-    }
-
-    @Test
     void shouldFindOldestEnqueued() {
         Optional<FileCopy> result = repository.findOldestEnqueued();
 
@@ -293,22 +285,6 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                 .ignoringFields("content.dateCreated", "content.dateModified")
                 .isEqualTo(expectedResult);
         assertThat(result.content()).containsExactlyElementsOf(expectedResult.content());
-    }
-
-    @Test
-    void shouldFindAllProcessedInOrderOfDateModifiedAscending() {
-        var pagination = new Pagination(0, 3);
-
-        Page<FileCopy> result = repository.findAllProcessed(pagination);
-
-        List<FileCopy> expectedItems = List.of(
-                EXISTING_FILE_COPIES.STORED_VERIFIED_FILE_COPY_FROM_BEFORE_YESTERDAY_FOR_GAME_FILE_2.get(),
-                EXISTING_FILE_COPIES.STORED_UNVERIFIED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2.get(),
-                EXISTING_FILE_COPIES.FAILED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_2.get()
-        );
-        int totalPages = 1;
-        int totalElements = 3;
-        assertContainsInOrder(result, pagination, totalPages, totalElements, expectedItems);
     }
 
     @Test

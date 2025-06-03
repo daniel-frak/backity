@@ -16,8 +16,6 @@ public interface FileCopySpringRepository extends JpaRepository<FileCopyJpaEntit
     Optional<FileCopyJpaEntity> findByNaturalIdGameFileIdAndNaturalIdBackupTargetId(
             UUID gameFileId, UUID backupTargetId);
 
-    Optional<FileCopyJpaEntity> findByStatus(FileCopyStatus status);
-
     Page<FileCopyJpaEntity> findAllByStatusIn(Pageable pageable, List<FileCopyStatus> status);
 
     List<FileCopyJpaEntity> findAllByNaturalIdGameFileId(UUID gameFileId);
