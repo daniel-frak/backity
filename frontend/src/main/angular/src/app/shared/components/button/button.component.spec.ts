@@ -107,4 +107,11 @@ describe('ButtonComponent', () => {
     await expectAsync(component.onClick()).toBeRejected();
     expect(component.isLoading).toBeFalse();
   });
+
+  it('should set correct size class', () => {
+    component.buttonSize = 'small';
+    fixture.detectChanges();
+    const buttonElement = fixture.debugElement.query(By.css('button'));
+    expect(buttonElement.classes['btn-sm']).toBeTrue();
+  })
 });
