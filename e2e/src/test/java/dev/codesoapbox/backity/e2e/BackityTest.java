@@ -5,7 +5,7 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.assertions.LocatorAssertions;
 import com.microsoft.playwright.junit.UsePlaywright;
-import dev.codesoapbox.backity.e2e.pages.AuthenticationPage;
+import dev.codesoapbox.backity.e2e.pages.GameProvidersPage;
 import dev.codesoapbox.backity.e2e.pages.GameContentDiscoveryPage;
 import dev.codesoapbox.backity.e2e.pages.GamesPage;
 import lombok.SneakyThrows;
@@ -34,13 +34,13 @@ class BackityTest {
     // The file backup scheduler runs once every N seconds
     private static final long EXPECTED_FILE_BACKUP_SCHEDULER_DELAY = 60_000L;
 
-    private AuthenticationPage authenticationPage;
+    private GameProvidersPage gameProvidersPage;
     private GameContentDiscoveryPage gameContentDiscoveryPage;
     private GamesPage gamesPage;
 
     @BeforeEach
     void setUp(Page page) {
-        this.authenticationPage = new AuthenticationPage(page);
+        this.gameProvidersPage = new GameProvidersPage(page);
         this.gameContentDiscoveryPage = new GameContentDiscoveryPage(page);
         this.gamesPage = new GamesPage(page);
         resetState();
@@ -52,11 +52,11 @@ class BackityTest {
     }
 
     private void tryToLogOutOfGog() {
-        authenticationPage.navigate();
-        if (authenticationPage.isAuthenticated()) {
-            authenticationPage.logOut();
+        gameProvidersPage.navigate();
+        if (gameProvidersPage.isGogAuthenticated()) {
+            gameProvidersPage.logOutFromGog();
         }
-        assertFalse(authenticationPage.isAuthenticated());
+        assertFalse(gameProvidersPage.isGogAuthenticated());
     }
 
     private void deleteAllFileBackups() {
@@ -100,14 +100,14 @@ class BackityTest {
     }
 
     private void authenticateGog() {
-        authenticationPage.navigate();
-        authenticationPage.authenticateGog();
+        gameProvidersPage.navigate();
+        gameProvidersPage.authenticateGog();
         assertIsAuthenticated();
     }
 
     private void assertIsAuthenticated() {
-        assertThat(authenticationPage.getAuthenticationStatusLocator())
-                .not().containsText("not authenticated",
+        assertThat(gameProvidersPage.getAuthenticationStatusLocator())
+                .not().containsText(GameProvidersPage.NOT_AUTHENTICATED_LOWERCASE,
                 new LocatorAssertions.ContainsTextOptions().setIgnoreCase(true));
     }
 

@@ -1,18 +1,18 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {AuthComponent} from './auth.component';
+import {GameProvidersComponent} from './game-providers.component';
 import {GogAuthComponentStub} from "@app/gog/pages/auth/gog-auth/gog-auth.component.stub";
 import {GogAuthComponent} from "@app/gog/pages/auth/gog-auth/gog-auth.component";
 
-describe('AuthComponent', () => {
-  let component: AuthComponent;
-  let fixture: ComponentFixture<AuthComponent>;
+describe('GameProvidersComponent', () => {
+  let component: GameProvidersComponent;
+  let fixture: ComponentFixture<GameProvidersComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AuthComponent]
+      imports: [GameProvidersComponent]
     })
-      .overrideComponent(AuthComponent, {
+      .overrideComponent(GameProvidersComponent, {
         remove: {imports: [GogAuthComponent]},
         add: {imports: [GogAuthComponentStub]}
       })
@@ -20,7 +20,7 @@ describe('AuthComponent', () => {
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AuthComponent);
+    fixture = TestBed.createComponent(GameProvidersComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

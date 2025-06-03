@@ -1,7 +1,7 @@
 import {Routes} from '@angular/router';
 import {DefaultLayoutComponent} from "@app/shared/layout/default-layout/default-layout.component";
 import {ContainedLayoutComponent} from "@app/shared/layout/contained-layout/contained-layout.component";
-import {AuthComponent} from "@app/core/pages/auth/auth.component";
+import {GameProvidersComponent} from "@app/core/pages/auth/game-providers.component";
 import {GameContentDiscoveryComponent} from "@app/core/pages/file-discovery/game-content-discovery.component";
 import {FileBackupComponent} from "@app/core/pages/file-backup/file-backup.component";
 import {GamesComponent} from "@app/core/pages/games/games.component";
@@ -19,8 +19,8 @@ export const routes: Routes = [
         path: '',
         component: ContainedLayoutComponent,
         children: [
-          {path: '', component: AuthComponent, pathMatch: 'full'},
-          {path: 'auth', component: AuthComponent},
+          {path: '', component: GameProvidersComponent, pathMatch: 'full'},
+          {path: 'game-providers', component: GameProvidersComponent},
           {path: 'game-content-discovery', component: GameContentDiscoveryComponent},
           {path: 'file-backup', component: FileBackupComponent},
           {path: 'games', component: GamesComponent},

@@ -3,7 +3,9 @@ package dev.codesoapbox.backity.e2e.pages;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 
-public class AuthenticationPage {
+public class GameProvidersPage {
+
+    public static final String NOT_AUTHENTICATED_LOWERCASE = "not authenticated";
 
     private final Page page;
     private final Locator logInToGogBtn;
@@ -13,7 +15,7 @@ public class AuthenticationPage {
     private final Locator gogAuthStatus;
     private final Locator gogLogOutButton;
 
-    public AuthenticationPage(Page page) {
+    public GameProvidersPage(Page page) {
         this.page = page;
         logInToGogBtn = page.getByTestId("log-in-to-gog-btn");
         gogCodeUrlInput = page.getByTestId("gog-code-url-input");
@@ -49,11 +51,11 @@ public class AuthenticationPage {
         return gogAuthStatus;
     }
 
-    public boolean isAuthenticated() {
-        return !gogAuthStatus.textContent().toLowerCase().contains("not authenticated");
+    public boolean isGogAuthenticated() {
+        return !gogAuthStatus.textContent().toLowerCase().contains(NOT_AUTHENTICATED_LOWERCASE);
     }
 
-    public void logOut() {
+    public void logOutFromGog() {
         gogLogOutButton.click();
     }
 }
