@@ -17,6 +17,19 @@ export class TestGame {
     };
   }
 
+  public static withInProgressFileCopy(): GameWithFileCopies {
+    return {
+      id: "someGameId",
+      title: "someGameTitle",
+      gameFilesWithCopies: [
+        {
+          gameFile: TestGameFile.any(),
+          fileCopies: [TestFileCopy.inProgress()]
+        }
+      ]
+    };
+  }
+
   public static withStoredUnverifiedFileCopy(): GameWithFileCopies {
     return {
       id: "someGameId",

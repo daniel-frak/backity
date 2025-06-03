@@ -8,42 +8,46 @@
     </div>
     <app-table [groupedContent]="group(potentialFileCopiesWithContextByGameTitle)" testId="game-list">
       <ng-template app-table-column="File title" let-item>
-        {{ asFileCopyTableItem(item).gameFile.fileSource.fileTitle }}
+        {{ asPotentialFileCopyWithContext(item).gameFile.fileSource.fileTitle }}
       </ng-template>
       <ng-template app-table-column="Provider" let-item>
-        {{ asFileCopyTableItem(item).gameFile.fileSource.gameProviderId }}
+        {{ asPotentialFileCopyWithContext(item).gameFile.fileSource.gameProviderId }}
       </ng-template>
       <ng-template app-table-column="Backup target" let-item>
-        {{ getBackupTargetName(asFileCopyTableItem(item).potentialFileCopy.naturalId.backupTargetId) }}
+        {{ getBackupTargetName(asPotentialFileCopyWithContext(item).potentialFileCopy.naturalId.backupTargetId) }}
       </ng-template>
       <ng-template app-table-column="Version" let-item>
-        {{ asFileCopyTableItem(item).gameFile.fileSource.version }}
+        {{ asPotentialFileCopyWithContext(item).gameFile.fileSource.version }}
       </ng-template>
       <ng-template app-table-column="Size" let-item>
-        {{ asFileCopyTableItem(item).gameFile.fileSource.size }}
+        {{ asPotentialFileCopyWithContext(item).gameFile.fileSource.size }}
       </ng-template>
       <ng-template app-table-column="Status" let-item>
-        <app-file-status-badge [status]="asFileCopyTableItem(item).potentialFileCopy.status"></app-file-status-badge>
+        <app-file-status-badge [status]="asPotentialFileCopyWithContext(item).potentialFileCopy.status"></app-file-status-badge>
       </ng-template>
       <ng-template app-table-column="Actions"
                    hide-title-on-mobile
                    let-item>
-        <div class="button-container justify-content-end">
-          <app-button [actionAsync]="onClickEnqueueFileCopy(asFileCopyTableItem(item).potentialFileCopy)"
-                      *ngIf="!asFileCopyTableItem(item).potentialFileCopy.status
-                    || asFileCopyTableItem(item).potentialFileCopy.status === FileCopyStatus.Tracked"
+        <div class="button-container justify-content-end d-flex align-items-center">
+          <ng-container *ngIf="asPotentialFileCopyWithContext(item).progress">
+            <app-progress-bar [percentage]="asPotentialFileCopyWithContext(item).progress?.percentage ?? 0"/>
+          </ng-container>
+
+          <app-button [actionAsync]="onClickEnqueueFileCopy(asPotentialFileCopyWithContext(item).potentialFileCopy)"
+                      *ngIf="!asPotentialFileCopyWithContext(item).potentialFileCopy.status
+                    || asPotentialFileCopyWithContext(item).potentialFileCopy.status === FileCopyStatus.Tracked"
                       testId="backup-file-btn">
             <i class="bi bi-cloud-download" aria-hidden="true"></i>
             Back up
           </app-button>
-          <ng-container [ngSwitch]="asFileCopyTableItem(item).potentialFileCopy.status">
-            <app-button [actionAsync]="onClickCancelBackup(asFileCopyTableItem(item).potentialFileCopy.id!)"
+          <ng-container [ngSwitch]="asPotentialFileCopyWithContext(item).potentialFileCopy.status">
+            <app-button [actionAsync]="onClickCancelBackup(asPotentialFileCopyWithContext(item).potentialFileCopy.id!)"
                         *ngSwitchCase="FileCopyStatus.Enqueued"
                         testId="cancel-file-backup-btn"
                         buttonStyle="secondary">
               Cancel backup
             </app-button>
-            <app-button [actionAsync]="onClickViewError(asFileCopyTableItem(item).potentialFileCopy.id!)"
+            <app-button [actionAsync]="onClickViewError(asPotentialFileCopyWithContext(item).potentialFileCopy.id!)"
                         *ngSwitchCase="FileCopyStatus.Failed"
                         testId="view-error-btn"
                         buttonStyle="secondary">
@@ -53,20 +57,20 @@
 
 
             <ng-container
-              *ngIf="asFileCopyTableItem(item).potentialFileCopy.status == FileCopyStatus.StoredIntegrityUnknown
-                    || asFileCopyTableItem(item).potentialFileCopy.status === FileCopyStatus.StoredIntegrityVerified">
-              <app-button [actionAsync]="onClickDownload(asFileCopyTableItem(item).potentialFileCopy.id!)"
+              *ngIf="asPotentialFileCopyWithContext(item).potentialFileCopy.status == FileCopyStatus.StoredIntegrityUnknown
+                    || asPotentialFileCopyWithContext(item).potentialFileCopy.status === FileCopyStatus.StoredIntegrityVerified">
+              <app-button [actionAsync]="onClickDownload(asPotentialFileCopyWithContext(item).potentialFileCopy.id!)"
                           testId="download-file-copy-btn">
                 <i class="bi bi-download" aria-hidden="true"></i>
                 Download
               </app-button>
-              <app-button [actionAsync]="onClickViewFilePath(asFileCopyTableItem(item).potentialFileCopy.id!)"
+              <app-button [actionAsync]="onClickViewFilePath(asPotentialFileCopyWithContext(item).potentialFileCopy.id!)"
                           testId="view-file-path-btn"
                           buttonStyle="secondary">
                 <i class="bi bi-device-hdd" aria-hidden="true"></i>
                 View file path
               </app-button>
-              <app-button [actionAsync]="onClickDeleteFileCopy(asFileCopyTableItem(item).potentialFileCopy.id!)"
+              <app-button [actionAsync]="onClickDeleteFileCopy(asPotentialFileCopyWithContext(item).potentialFileCopy.id!)"
                           testId="delete-file-copy-btn"
                           buttonStyle="danger">
                 <i class="bi bi-trash" aria-hidden="true"></i>

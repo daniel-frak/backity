@@ -1,16 +1,18 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
+  BackupTargetsClient,
   Configuration,
   EnqueueFileCopyRequest,
   FileBackupMessageTopics,
   FileCopiesClient,
-  BackupTargetsClient,
   FileCopy,
+  FileCopyNaturalId,
   FileCopyStatus,
   FileCopyStatusChangedEvent,
+  FileDownloadProgressUpdatedEvent,
   GamesClient,
   GameWithFileCopies,
-  PageGameWithFileCopies, FileCopyNaturalId
+  PageGameWithFileCopies
 } from "@backend";
 import {of, throwError} from "rxjs";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
@@ -26,9 +28,10 @@ import {TestGame} from '@app/shared/testing/objects/test-game';
 import {TestPage} from "@app/shared/testing/objects/test-page";
 import {TestFileCopyStatusChangedEvent} from "@app/shared/testing/objects/test-file-copy-status-changed-event";
 import {TestFileCopy} from "@app/shared/testing/objects/test-file-copy";
+import {TestBackupTarget} from '@app/shared/testing/objects/test-backup-target';
+import {TestProgressUpdatedEvent} from "@app/shared/testing/objects/test-progress-updated-event";
 import createSpyObj = jasmine.createSpyObj;
 import SpyObj = jasmine.SpyObj;
-import { TestBackupTarget } from '@app/shared/testing/objects/test-backup-target';
 
 describe('GamesWithFileCopiesCardComponent', () => {
   let component: GamesWithFileCopiesCardComponent;
@@ -130,7 +133,7 @@ describe('GamesWithFileCopiesCardComponent', () => {
     expect(notificationService.showFailure).toHaveBeenCalledWith('Error fetching games', mockError);
   });
 
-  it('should back up file copy and set its status to Enqueued', async () => {
+  it('should enqueue file copy and set its status to Enqueued', async () => {
     const fileCopy = TestFileCopy.enqueued();
     fileCopiesClient.enqueueFileCopy.and.returnValue(of(null) as any);
 
@@ -149,7 +152,7 @@ describe('GamesWithFileCopiesCardComponent', () => {
     return enqueueRequest;
   }
 
-  it('should set file status to Discovered and log error when backup fails', async () => {
+  it('should set file status to Tracked and log error when backup fails', async () => {
     const fileCopy = TestFileCopy.enqueued();
     fileCopy.naturalId.backupTargetId = localFolderBackupTarget.id;
     const mockError = new Error('Backup error');
@@ -213,7 +216,7 @@ describe('GamesWithFileCopiesCardComponent', () => {
       `An error occurred while trying to delete a file copy`, gameFileId, mockError);
   });
 
-  it('should update file status when status changed event is received', async () => {
+  it('should update file copy status when status changed event is received', async () => {
     const gameWithFileCopies: GameWithFileCopies = TestGame.withTrackedFileCopy();
     gameWithFileCopies.gameFilesWithCopies[0].fileCopies[0].naturalId.backupTargetId = localFolderBackupTarget.id;
     const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
@@ -241,6 +244,20 @@ describe('GamesWithFileCopiesCardComponent', () => {
     return fixture.debugElement.query(By.css('[data-testid="game-list"]'));
   }
 
+  it('should remove file update progress when status changed event is received', async () => {
+    const gameWithFileCopies: GameWithFileCopies = TestGame.withTrackedFileCopy();
+    gameWithFileCopies.gameFilesWithCopies[0].fileCopies[0].naturalId.backupTargetId = localFolderBackupTarget.id;
+    const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
+    gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
+
+    const fileCopy = (gameWithFileCopies.gameFilesWithCopies[0].fileCopies)[0];
+    await simulateFileCopyStatusChangedEventReceived(
+      fileCopy.id, fileCopy.naturalId, FileCopyStatus.InProgress);
+
+    expect(component.potentialFileCopiesWithContextByGameTitle!.get(gameWithFileCopies.title)?.[0]?.progress)
+      .toBe(undefined);
+  });
+
   it('should handle StatusChanged event when no matching fileCopy exists', async () => {
     const gameWithFileCopies: GameWithFileCopies = TestGame.withTrackedFileCopy();
     gameWithFileCopies.gameFilesWithCopies[0].fileCopies[0].naturalId.backupTargetId = localFolderBackupTarget.id;
@@ -254,6 +271,40 @@ describe('GamesWithFileCopiesCardComponent', () => {
     const gameListTable: DebugElement = getGameListTable();
     expect(gameListTable.nativeElement.textContent).not.toContain(FileCopyStatus.InProgress);
   });
+
+  it('should update in progress file copy progress when progress changed event is received',
+    async () => {
+      const gameWithFileCopies: GameWithFileCopies = TestGame.withInProgressFileCopy();
+      gameWithFileCopies.gameFilesWithCopies[0].fileCopies[0].naturalId.backupTargetId = localFolderBackupTarget.id;
+      const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
+      gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
+
+      const progressChangedMessage: FileDownloadProgressUpdatedEvent =
+        TestProgressUpdatedEvent.twentyFivePercent();
+      await simulateFileCopyProgressChangedEventReceived(progressChangedMessage);
+
+      expect(component.potentialFileCopiesWithContextByGameTitle!.get(gameWithFileCopies.title)?.[0]?.progress)
+        .toEqual(progressChangedMessage);
+    });
+
+  it('should not update file copy progress when progress changed event is received' +
+    ' but no file copy in progress', async () => {
+    const gameWithFileCopies: GameWithFileCopies = TestGame.withTrackedFileCopy();
+    gameWithFileCopies.gameFilesWithCopies[0].fileCopies[0].naturalId.backupTargetId = localFolderBackupTarget.id;
+    const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
+    gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
+
+    await simulateFileCopyProgressChangedEventReceived(TestProgressUpdatedEvent.twentyFivePercent());
+
+    expect(component.potentialFileCopiesWithContextByGameTitle!.get(gameWithFileCopies.title)?.[0]?.progress)
+      .toBe(undefined);
+  });
+
+  async function simulateFileCopyProgressChangedEventReceived(progressChangedMessage: FileDownloadProgressUpdatedEvent):
+    Promise<void> {
+    await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
+      FileBackupMessageTopics.ProgressUpdate, progressChangedMessage);
+  }
 
   it('should download file', async () => {
     const gameWithFileCopies: GameWithFileCopies = TestGame.withStoredUnverifiedFileCopy();
