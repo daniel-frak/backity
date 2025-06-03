@@ -66,7 +66,8 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
 
   gamesAreLoading: boolean = true;
   gameWithFileCopiesPage?: PageGameWithFileCopies; // Kept for pagination only
-  potentialFileCopiesWithContextByGameTitle?: Map<string, PotentialFileCopyWithContext[]>;
+  potentialFileCopiesWithContextByGameTitle: Map<string, PotentialFileCopyWithContext[]> =
+    new Map<string, PotentialFileCopyWithContext[]>();
   backupTargets: Array<BackupTarget> = [];
   pageNumber: number = 1;
   pageSize: number = 3;
@@ -133,7 +134,7 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
   }
 
   private findInProgressPotentialFileCopy() {
-    return Array.from(this.potentialFileCopiesWithContextByGameTitle?.values() ?? [])
+    return Array.from(this.potentialFileCopiesWithContextByGameTitle.values())
       .flatMap(potentialFileCopiesWithContext => potentialFileCopiesWithContext)
       .find((potentialFileCopy) => {
         return potentialFileCopy.potentialFileCopy.status === FileCopyStatus.InProgress;

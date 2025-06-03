@@ -1,7 +1,16 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {QueueComponent} from './queue.component';
-import {FileBackupMessageTopics, FileCopiesClient, FileCopy, FileCopyProcessingStatus, PageFileCopy} from "@backend";
+import {
+  FileBackupMessageTopics,
+  FileCopiesClient,
+  FileCopy,
+  FileCopyNaturalId,
+  FileCopyProcessingStatus,
+  FileCopyStatus,
+  FileCopyStatusChangedEvent,
+  PageFileCopy
+} from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {of, throwError} from "rxjs";
@@ -10,6 +19,7 @@ import {MessageTesting} from "@app/shared/testing/message-testing";
 import {By} from "@angular/platform-browser";
 import {TestPage} from "@app/shared/testing/objects/test-page";
 import {TestFileCopy} from "@app/shared/testing/objects/test-file-copy";
+import {TestFileCopyStatusChangedEvent} from "@app/shared/testing/objects/test-file-copy-status-changed-event";
 import createSpyObj = jasmine.createSpyObj;
 import anything = jasmine.anything;
 import SpyObj = jasmine.SpyObj;
@@ -36,7 +46,7 @@ describe('QueueComponent', () => {
         },
         {
           provide: MessagesService,
-          useValue: createSpyObj('MessagesService', ["watch"])
+          useValue: createSpyObj('MessagesService', ['watch'])
         },
         {
           provide: NotificationService,
@@ -60,8 +70,6 @@ describe('QueueComponent', () => {
     MessageTesting.mockWatch(messagesService, (destination, callback) => {
       // Do nothing
     });
-
-    fixture.detectChanges();
   });
 
   it('should create', () => {
@@ -78,7 +86,7 @@ describe('QueueComponent', () => {
     expect(topicsSubscribed).toEqual([
       FileBackupMessageTopics.StatusChanged
     ]);
-    expect(component['subscriptions'].length).toBe(2);
+    expect(component['subscriptions'].length).toBe(1);
   });
 
   it('should unsubscribe from message topics on destruction', () => {
@@ -117,20 +125,50 @@ describe('QueueComponent', () => {
       size: component.pageSize
     });
     expect(component.fileCopiesAreLoading).toBe(false);
-    expectEnqueuedGameTitleToContain(enqueuedFileCopy.naturalId.gameFileId);
+    assertQueueContains(enqueuedFileCopy.naturalId.gameFileId);
   });
 
-  function expectEnqueuedGameTitleToContain(expectedGameTitle: string) {
-    expectGameTitleIn('#download-queue', expectedGameTitle);
-  }
-
-  function expectGameTitleIn(selector: string, title: string) {
-    const table = fixture.debugElement.query(By.css(selector));
-    expect(table.nativeElement.textContent).toContain(title);
+  function assertQueueContains(expectedValue: string) {
+    const queue = fixture.debugElement.query(By.css('#download-queue'));
+    expect(queue.nativeElement.textContent).toContain(expectedValue);
   }
 
   it('should log an error when removeFromQueue is called', async () => {
     await component.removeFromQueue();
     expect(notificationService.showFailure).toHaveBeenCalledWith('Removing from queue not yet implemented');
   });
+
+  it('should remove file copy from queue when status changed event is received', async () => {
+    component.fileCopyPage = TestPage.of([enqueuedFileCopy]);
+    await simulateFileCopyStatusChangedEventReceived(
+      enqueuedFileCopy.id, enqueuedFileCopy.naturalId, FileCopyStatus.InProgress);
+
+    assertQueueDoesNotContain(enqueuedFileCopy.naturalId.gameFileId);
+  });
+
+  async function simulateFileCopyStatusChangedEventReceived(
+    fileCopyId: string, fileCopyNaturalId: FileCopyNaturalId, newStatus: FileCopyStatus): Promise<void> {
+    const statusChangedMessage: FileCopyStatusChangedEvent =
+      TestFileCopyStatusChangedEvent.with(fileCopyId, fileCopyNaturalId, newStatus);
+    await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
+      FileBackupMessageTopics.StatusChanged, statusChangedMessage);
+  }
+
+  function assertQueueDoesNotContain(expectedValue: string) {
+    const queue = fixture.debugElement.query(By.css('#download-queue'));
+    expect(queue.nativeElement.textContent).not.toContain(expectedValue);
+  }
+
+  it('should not remove file copy from queue when status changed event is received but file copy not found',
+    async () => {
+      const notFoundFileCopy = TestFileCopy.inProgress();
+      notFoundFileCopy.id = 'notFoundFileCopyId';
+      notFoundFileCopy.naturalId.gameFileId = 'notFoundFileCopyId';
+      component.fileCopyPage = TestPage.of([notFoundFileCopy]);
+
+      await simulateFileCopyStatusChangedEventReceived(
+        notFoundFileCopy.id, notFoundFileCopy.naturalId, FileCopyStatus.InProgress);
+
+      assertQueueContains(enqueuedFileCopy.naturalId.gameFileId);
+    });
 });

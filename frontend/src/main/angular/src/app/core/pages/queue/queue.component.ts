@@ -59,18 +59,18 @@ export class QueueComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions.push(
       this.messageService.watch(FileBackupMessageTopics.StatusChanged)
-        .subscribe(p => this.onBackupStarted(p))
-    )
+        .subscribe(p => this.onStatusChanged(p))
+    );
   }
 
-  private onBackupStarted(payload: Message) {
+  private onStatusChanged(payload: Message) {
     const event: FileCopyStatusChangedEvent = JSON.parse(payload.body);
     if (event.newStatus !== FileCopyStatus.Enqueued) {
-      this.tryToRemoveFileCopyFromEnqueuedDownloads(event);
+      this.tryToRemoveFileCopyFromQueue(event);
     }
   }
 
-  private tryToRemoveFileCopyFromEnqueuedDownloads(event: FileCopyStatusChangedEvent) {
+  private tryToRemoveFileCopyFromQueue(event: FileCopyStatusChangedEvent) {
     const foundFileCopy: FileCopy | undefined = this.findFileCopyInEnqueuedDownloads(event);
     if (foundFileCopy) {
       const index: number | undefined = this.fileCopyPage?.content?.indexOf(foundFileCopy);
