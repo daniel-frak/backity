@@ -16,13 +16,9 @@ public interface FileCopyRepository {
 
     FileCopy findByNaturalIdOrCreate(FileCopyNaturalId naturalId, Supplier<FileCopy> fileCopyFactory);
 
-    Optional<FileCopy> findOneInProgress();
-
     Optional<FileCopy> findOldestEnqueued();
 
     Page<FileCopy> findAllEnqueued(Pagination pagination);
-
-    Page<FileCopy> findAllProcessed(Pagination pagination);
 
     List<FileCopy> findAllByGameFileId(GameFileId id);
 }

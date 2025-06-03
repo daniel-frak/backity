@@ -2,7 +2,10 @@ package dev.codesoapbox.backity.core.filecopy.infrastructure.config;
 
 import dev.codesoapbox.backity.core.backup.application.FileCopyFactory;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
-import dev.codesoapbox.backity.core.filecopy.application.usecases.*;
+import dev.codesoapbox.backity.core.filecopy.application.usecases.DeleteFileCopyUseCase;
+import dev.codesoapbox.backity.core.filecopy.application.usecases.DownloadFileCopyUseCase;
+import dev.codesoapbox.backity.core.filecopy.application.usecases.EnqueueFileCopyUseCase;
+import dev.codesoapbox.backity.core.filecopy.application.usecases.GetEnqueuedFileCopiesUseCase;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
@@ -27,12 +30,6 @@ public class FileCopyUseCaseBeanConfig {
     public GetEnqueuedFileCopiesUseCase getEnqueuedFileListUseCase(
             FileCopyRepository fileCopyRepository) {
         return new GetEnqueuedFileCopiesUseCase(fileCopyRepository);
-    }
-
-    @Bean
-    public GetProcessedFileCopiesUseCase getProcessedFileListUseCase(
-            FileCopyRepository fileCopyRepository) {
-        return new GetProcessedFileCopiesUseCase(fileCopyRepository);
     }
 
     @Bean

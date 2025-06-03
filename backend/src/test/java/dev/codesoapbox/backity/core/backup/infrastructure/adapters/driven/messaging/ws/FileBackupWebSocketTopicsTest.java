@@ -8,14 +8,14 @@ class FileBackupWebSocketTopicsTest {
 
     @Test
     void wsDestinationShouldReturnValue() {
-        String result = FileBackupWebSocketTopics.BACKUP_STARTED.wsDestination();
+        String result = FileBackupWebSocketTopics.BACKUP_STATUS_CHANGED.wsDestination();
 
-        assertThat(result).isEqualTo("/topic/backups/started");
+        assertThat(result).isEqualTo("/topic/backups/status-changed");
     }
 
     @Test
     void toStringShouldReturnWsDestination() {
-        assertThat(FileBackupWebSocketTopics.BACKUP_STARTED)
-                .hasToString("/topic/backups/started");
+        assertThat(FileBackupWebSocketTopics.BACKUP_STATUS_CHANGED)
+                .hasToString("/topic/backups/status-changed");
     }
 }

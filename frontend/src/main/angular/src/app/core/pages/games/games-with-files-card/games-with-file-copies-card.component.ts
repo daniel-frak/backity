@@ -7,7 +7,7 @@ import {
   FileCopiesClient,
   FileCopyNaturalId,
   FileCopyStatus,
-  FileCopyStatusChangedEvent,
+  FileCopyStatusChangedEvent, FileDownloadProgressUpdatedEvent,
   GameFile,
   GameFileWithCopies,
   GamesClient,
@@ -81,7 +81,9 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions.push(
       this.messageService.watch(FileBackupMessageTopics.StatusChanged)
-        .subscribe(p => this.onStatusChanged(p))
+        .subscribe(p => this.onStatusChanged(p)),
+      this.messageService.watch(FileBackupMessageTopics.ProgressUpdate)
+        .subscribe(p => this.onProgressChanged(p))
     );
   }
 
@@ -112,6 +114,11 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
       .every(([key, value]) => b[key as keyof FileCopyNaturalId] === value);
   }
 
+  private onProgressChanged(payload: Message) {
+    const downloadProgress: FileDownloadProgressUpdatedEvent = JSON.parse(payload.body);
+    // @TODO Implement and test
+    console.log("Progress update", downloadProgress);
+  }
 
   onClickRefresh(): () => Promise<void> {
     return async () => this.refresh();

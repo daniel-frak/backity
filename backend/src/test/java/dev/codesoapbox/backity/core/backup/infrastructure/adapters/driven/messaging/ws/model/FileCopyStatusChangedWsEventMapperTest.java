@@ -40,7 +40,7 @@ class FileCopyStatusChangedWsEventMapperTest {
 
         FileCopyStatusChangedWsEvent result = MAPPER.toWsEvent(domain);
 
-        FileCopyStatusChangedWsEvent expectedResult = TestFileBackupWsEvent.startedAsStatusChange();
+        FileCopyStatusChangedWsEvent expectedResult = TestFileBackupWsEvent.started();
         assertThat(result).isEqualTo(expectedResult);
     }
 }

@@ -1,7 +1,6 @@
 package dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.filecopy.application.usecases.GetEnqueuedFileCopiesUseCase;
-import dev.codesoapbox.backity.core.filecopy.application.usecases.GetProcessedFileCopiesUseCase;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers.FileCopiesRestResource;
@@ -30,9 +29,6 @@ class GetFileCopyListControllerIT {
 
     @Autowired
     private GetEnqueuedFileCopiesUseCase getEnqueuedFilesUseCase;
-
-    @Autowired
-    private GetProcessedFileCopiesUseCase getProcessedFilesUseCase;
 
     @Test
     void shouldGetEnqueuedFileList() throws Exception {
@@ -83,26 +79,5 @@ class GetFileCopyListControllerIT {
                   "pageSize": 1,
                   "pageNumber": 0
                 }""", status, filePath);
-    }
-
-    @Test
-    void shouldGetProcessedFileList() throws Exception {
-        var pagination = new Pagination(0, 1);
-        mockProcessedFileExists(pagination);
-        var fileStatus = "STORED_INTEGRITY_UNKNOWN";
-        String filePath = "someFilePath";
-        var expectedJson = getExpectedJson(fileStatus, filePath);
-
-        mockMvc.perform(get("/api/" + FileCopiesRestResource.RESOURCE_URL
-                            + "?processing-status=processed&size=1"))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().json(expectedJson));
-    }
-
-    private void mockProcessedFileExists(Pagination pagination) {
-        FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
-        when(getProcessedFilesUseCase.getProcessedFileCopies(pagination))
-                .thenReturn(pageWith(fileCopy));
     }
 }
