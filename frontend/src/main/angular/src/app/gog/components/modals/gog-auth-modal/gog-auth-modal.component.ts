@@ -8,6 +8,8 @@ import {NotificationService} from "@app/shared/services/notification/notificatio
 import {LoadedContentComponent} from "@app/shared/components/loaded-content/loaded-content.component";
 import {finalize} from "rxjs";
 
+const SOMETHING_WENT_WRONG_TEXT = "Something went wrong during GOG authentication";
+
 @Component({
   selector: 'app-gog-auth-modal',
   standalone: true,
@@ -65,13 +67,11 @@ export class GogAuthModalComponent {
         .pipe(finalize(() => this.isLoading = false))
         .subscribe({
           next: response => this.handleAuthenticationResponse(response),
-          error: () => this.notificationService.showFailure(
-            "Something went wrong during GOG authentication")
+          error: () => this.notificationService.showFailure(SOMETHING_WENT_WRONG_TEXT)
         });
     } catch (error) {
       this.isLoading = false;
-      this.notificationService.showFailure(
-        "Something went wrong during GOG authentication", error)
+      this.notificationService.showFailure(SOMETHING_WENT_WRONG_TEXT, error)
     }
   }
 
@@ -81,7 +81,7 @@ export class GogAuthModalComponent {
       this.modal.close(true);
       this.gogCodeUrlInput.reset();
     } else {
-      this.notificationService.showFailure("Something went wrong during GOG authentication");
+      this.notificationService.showFailure(SOMETHING_WENT_WRONG_TEXT);
     }
   }
 
