@@ -3,13 +3,13 @@ import {PageHeaderComponent} from '@app/shared/components/page-header/page-heade
 import {GogAuthComponent} from '@app/gog/pages/auth/gog-auth/gog-auth.component';
 
 @Component({
-  selector: 'app-auth',
-  templateUrl: './auth.component.html',
-  styleUrls: ['./auth.component.scss'],
+  selector: 'app-game-providers',
+  templateUrl: './game-providers.component.html',
+  styleUrls: ['./game-providers.component.scss'],
   standalone: true,
   imports: [PageHeaderComponent, GogAuthComponent]
 })
-export class AuthComponent implements OnInit {
+export class GameProvidersComponent implements OnInit {
 
   constructor() {
   }
