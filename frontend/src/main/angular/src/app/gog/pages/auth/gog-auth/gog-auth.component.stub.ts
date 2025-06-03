@@ -1,4 +1,5 @@
-import {Component} from '@angular/core';
+import {Component, Input} from '@angular/core';
+import {GameContentDiscoveryProgressUpdateEvent} from "@backend";
 
 @Component({
   selector: 'app-gog-auth',
@@ -6,4 +7,10 @@ import {Component} from '@angular/core';
   template: ''
 })
 export class GogAuthComponentStub {
+
+  @Input()
+  externalDataIsLoading: boolean = false;
+
+  @Input()
+  progress?: GameContentDiscoveryProgressUpdateEvent;
 }

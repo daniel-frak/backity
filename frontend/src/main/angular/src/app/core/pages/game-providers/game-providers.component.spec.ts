@@ -1,29 +1,31 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {GameContentDiscoveryInfoCardComponent} from './game-content-discovery-info-card.component';
+import {GameProvidersComponent} from './game-providers.component';
+import {GogAuthComponentStub} from "@app/gog/pages/auth/gog-auth/gog-auth.component.stub";
+import {GogAuthComponent} from "@app/gog/pages/auth/gog-auth/gog-auth.component";
 import {
-  GameFileDiscoveredEvent,
   GameContentDiscoveryClient,
   GameContentDiscoveryProgressUpdateEvent,
   GameContentDiscoveryStatus,
-  GameContentDiscoveryWebSocketTopics
+  GameContentDiscoveryWebSocketTopics,
+  GameFileDiscoveredEvent
 } from "@backend";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
-import {provideRouter} from "@angular/router";
-import {HttpResponse} from "@angular/common/http";
 import {MessageTesting} from "@app/shared/testing/message-testing";
 import {of, throwError} from "rxjs";
 import {TestGameContentDiscoveryStatus} from "@app/shared/testing/objects/test-game-content-discovery-status";
+import {HttpResponse} from "@angular/common/http";
 import {
   TestGameContentDiscoveryProgressUpdateEvent
 } from "@app/shared/testing/objects/test-game-content-discovery-progress-update-event";
 import SpyObj = jasmine.SpyObj;
 import createSpyObj = jasmine.createSpyObj;
 
-describe('GameContentDiscoveryInfoCardComponent', () => {
-  let component: GameContentDiscoveryInfoCardComponent;
-  let fixture: ComponentFixture<GameContentDiscoveryInfoCardComponent>;
+describe('GameProvidersComponent', () => {
+  let component: GameProvidersComponent;
+  let fixture: ComponentFixture<GameProvidersComponent>;
+
   let discoveredSubscriptions: Function[];
   let discoveryChangedSubscriptions: Function[];
   let discoveryProgressSubscriptions: Function[];
@@ -37,7 +39,7 @@ describe('GameContentDiscoveryInfoCardComponent', () => {
     discoveryProgressSubscriptions = [];
 
     await TestBed.configureTestingModule({
-      imports: [GameContentDiscoveryInfoCardComponent],
+      imports: [GameProvidersComponent],
       providers: [
         {
           provide: MessagesService,
@@ -51,14 +53,20 @@ describe('GameContentDiscoveryInfoCardComponent', () => {
         {
           provide: NotificationService,
           useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])
-        },
-        provideRouter([])
+        }
       ]
     })
+      .overrideComponent(GameProvidersComponent, {
+        remove: {imports: [GogAuthComponent]},
+        add: {imports: [GogAuthComponentStub]}
+      })
       .compileComponents();
+  });
 
-    fixture = TestBed.createComponent(GameContentDiscoveryInfoCardComponent);
+  beforeEach(() => {
+    fixture = TestBed.createComponent(GameProvidersComponent);
     component = fixture.componentInstance;
+
     component.discoveryStatusByGameProviderId.clear();
     component.discoveryProgressByGameProviderId.clear();
 
@@ -177,19 +185,32 @@ describe('GameContentDiscoveryInfoCardComponent', () => {
     expect(component.discoveryProgressByGameProviderId.get(progressUpdate.gameProviderId!)).toEqual(progressUpdate);
   });
 
-  it('should get progress list', () => {
-    expect(component.getProgressList()).toEqual([]);
-    const expectedProgress: GameContentDiscoveryProgressUpdateEvent = TestGameContentDiscoveryProgressUpdateEvent.twentyFivePercent();
-
-    component.discoveryProgressByGameProviderId.set(expectedProgress.gameProviderId!, expectedProgress);
-    expect(component.getProgressList()).toEqual([expectedProgress]);
+  it('should return undefined from getProgress when game provider not found', () => {
+    const gameProviderId = 'someGameProvider';
+    expect(component.getProgress(gameProviderId)).toEqual(undefined);
   });
 
-  it('should correctly check if is in progress', () => {
-    expect(component.isInProgress('someGameProviderId')).toBeFalse();
+  it('should return undefined from getProgress when discovery not in progress', () => {
+    const expectedProgress: GameContentDiscoveryProgressUpdateEvent =
+      TestGameContentDiscoveryProgressUpdateEvent.twentyFivePercent();
+    component.discoveryProgressByGameProviderId.set(expectedProgress.gameProviderId, expectedProgress);
+    expect(component.getProgress(expectedProgress.gameProviderId)).toEqual(undefined);
+  });
 
-    component.discoveryStatusByGameProviderId.set('someGameProviderId', true);
-    expect(component.isInProgress('someGameProviderId')).toBeTrue();
+  it('should return undefined from getProgress when discovery progress is 100%', () => {
+    const expectedProgress: GameContentDiscoveryProgressUpdateEvent =
+      TestGameContentDiscoveryProgressUpdateEvent.oneHundredPercent();
+    component.discoveryProgressByGameProviderId.set(expectedProgress.gameProviderId, expectedProgress);
+    component.discoveryStatusByGameProviderId.set(expectedProgress.gameProviderId, true);
+    expect(component.getProgress(expectedProgress.gameProviderId)).toEqual(undefined);
+  });
+
+  it('should get progress for specific game provider', () => {
+    const expectedProgress: GameContentDiscoveryProgressUpdateEvent =
+      TestGameContentDiscoveryProgressUpdateEvent.twentyFivePercent();
+    component.discoveryProgressByGameProviderId.set(expectedProgress.gameProviderId, expectedProgress);
+    component.discoveryStatusByGameProviderId.set(expectedProgress.gameProviderId, true);
+    expect(component.getProgress(expectedProgress.gameProviderId)).toEqual(expectedProgress);
   });
 
   it('should return all statuses', () => {
@@ -208,12 +229,5 @@ describe('GameContentDiscoveryInfoCardComponent', () => {
 
     component.discoveryStatusByGameProviderId.set('someGameProviderId', true);
     expect(component.discoveryOngoing()).toBeTrue();
-  })
-
-  it('should log an error when discoverFilesFor is called', async () => {
-    await component.discoverFilesFor('someGameProviderId');
-
-    expect(notificationService.showFailure).toHaveBeenCalledWith(
-      `Per-provider game content discovery start not yet implemented`);
   });
 });

@@ -1,5 +1,10 @@
-import {Component, OnInit} from '@angular/core';
-import {GOGAuthenticationClient, GogConfig, GOGConfigurationClient} from "@backend";
+import {Component, Input, OnInit} from '@angular/core';
+import {
+  GameContentDiscoveryProgressUpdateEvent,
+  GOGAuthenticationClient,
+  GogConfig,
+  GOGConfigurationClient
+} from "@backend";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {finalize, firstValueFrom, forkJoin, Observable} from "rxjs";
@@ -12,6 +17,10 @@ import {GogAuthModalComponent} from "@app/gog/components/modals/gog-auth-modal/g
 import {NgbModalRef} from "@ng-bootstrap/ng-bootstrap/modal/modal-ref";
 import {LoadingPlaceholderComponent} from "@app/shared/components/loading-placeholder/loading-placeholder.component";
 import {NamedValueComponent} from "@app/shared/components/named-value/named-value.component";
+import {ProgressBarComponent} from "@app/shared/components/progres-bar/progress-bar.component";
+import {
+  GameContentDiscoveryStatusBadgeComponent
+} from "@app/core/pages/file-discovery/game-content-discovery-status-badge/game-content-discovery-status-badge.component";
 
 @Component({
   selector: 'app-gog-auth',
@@ -26,7 +35,9 @@ import {NamedValueComponent} from "@app/shared/components/named-value/named-valu
     ButtonComponent,
     IconItemComponent,
     LoadingPlaceholderComponent,
-    NamedValueComponent
+    NamedValueComponent,
+    ProgressBarComponent,
+    GameContentDiscoveryStatusBadgeComponent
   ]
 })
 export class GogAuthComponent implements OnInit {
@@ -36,6 +47,12 @@ export class GogAuthComponent implements OnInit {
 
   public gogAuthenticated: boolean = false;
   public gogIsLoading: boolean = true;
+
+  @Input()
+  externalDataIsLoading: boolean = false;
+
+  @Input()
+  progress?: GameContentDiscoveryProgressUpdateEvent;
 
   public openGogModal = () => this.showGogAuthModal();
 
@@ -59,6 +76,10 @@ export class GogAuthComponent implements OnInit {
         },
         error: error => this.notificationService.showFailure('Failed to configure GOG', error)
       });
+  }
+
+  isLoading(): boolean {
+    return this.gogIsLoading || this.externalDataIsLoading;
   }
 
   showGogAuthModal(): Promise<void> {

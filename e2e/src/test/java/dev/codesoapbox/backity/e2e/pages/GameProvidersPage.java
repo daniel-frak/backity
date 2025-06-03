@@ -2,6 +2,9 @@ package dev.codesoapbox.backity.e2e.pages;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import lombok.Getter;
+
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 public class GameProvidersPage {
 
@@ -14,6 +17,10 @@ public class GameProvidersPage {
     private final Locator gogModalAuthenticateButton;
     private final Locator gogAuthStatus;
     private final Locator gogLogOutButton;
+    private final Locator startDiscoveryBtn;
+
+    @Getter
+    private final Locator discoveredFilesTable;
 
     public GameProvidersPage(Page page) {
         this.page = page;
@@ -23,6 +30,8 @@ public class GameProvidersPage {
         gogModalAuthenticateButton = page.getByTestId("gog-authenticate-btn");
         gogAuthStatus = page.getByTestId("gog-auth-status");
         gogLogOutButton = page.getByTestId("log-out-gog-btn");
+        startDiscoveryBtn = page.getByTestId("start-game-content-discovery-btn");
+        discoveredFilesTable = page.getByTestId("discovered-file-copies-table");
     }
 
     public void navigate() {
@@ -57,5 +66,15 @@ public class GameProvidersPage {
 
     public void logOutFromGog() {
         gogLogOutButton.click();
+    }
+
+    public void discoverAllFiles() {
+        startDiscoveryBtn.click();
+        waitUntilDiscoveryIsFinished();
+    }
+
+    private void waitUntilDiscoveryIsFinished() {
+        assertThat(startDiscoveryBtn).isDisabled();
+        assertThat(startDiscoveryBtn).isEnabled();
     }
 }

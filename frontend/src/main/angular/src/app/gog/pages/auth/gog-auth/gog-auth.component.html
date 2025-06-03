@@ -3,7 +3,7 @@
     GOG
   </ng-container>
   <ng-container descriptor>
-    <app-loaded-content [isLoading]="gogIsLoading">
+    <app-loaded-content [isLoading]="isLoading()">
       <ng-container placeholder>
         <app-loading-placeholder [widths]="['6rem']"/>
       </ng-container>
@@ -12,28 +12,47 @@
            aria-live="polite"
            [ngClass]="{'text-primary': gogAuthenticated, 'text-danger-emphasis': !gogAuthenticated}">
         <i class="me-1"
-           [ngClass]="{'bi bi-check-circle': gogAuthenticated, 'bi bi-x-circle': !gogAuthenticated}"
+           [ngClass]="{
+           'bi bi-check-circle': gogAuthenticated && !progress,
+           'bi bi-x-circle': !gogAuthenticated && !progress,
+           'bi bi-hourglass': progress
+           }"
            aria-hidden="true">
         </i>
-        <ng-container *ngIf="gogAuthenticated">Authenticated</ng-container>
-        <ng-container *ngIf="!gogAuthenticated">Not authenticated</ng-container>
+        <ng-container *ngIf="progress">
+          Discovering...
+        </ng-container>
+        <ng-container *ngIf="!progress">
+          <ng-container *ngIf="gogAuthenticated">Authenticated</ng-container>
+          <ng-container *ngIf="!gogAuthenticated">Not authenticated</ng-container>
+        </ng-container>
       </div>
     </app-loaded-content>
   </ng-container>
   <ng-container buttons>
-    <app-loaded-content [isLoading]="gogIsLoading">
+    <app-loaded-content [isLoading]="isLoading()">
       <ng-container placeholder>
         <app-loading-placeholder [widths]="['6rem']"/>
       </ng-container>
 
-      <ng-container *ngIf="!gogAuthenticated">
+      <ng-container *ngIf="progress">
+        <app-progress-bar [percentage]="progress.percentage ?? 0"/>
+      </ng-container>
+
+      <ng-container *ngIf="progress">
+        <app-button [disabled]="true" buttonStyle="secondary" testId="stop-discovery-btn">
+          Stop discovery
+        </app-button>
+      </ng-container>
+
+      <ng-container *ngIf="!gogAuthenticated && !progress">
         <app-button [action]="openGogModal"
                     buttonType="button" testId="show-gog-auth-modal-btn" buttonStyle="primary">
           Authenticate
         </app-button>
       </ng-container>
 
-      <ng-container *ngIf="gogAuthenticated">
+      <ng-container *ngIf="gogAuthenticated && !progress">
         <app-button [actionAsync]="onClickSignOutGog()" buttonStyle="danger" testId="log-out-gog-btn">
           Log out
         </app-button>
@@ -41,11 +60,17 @@
     </app-loaded-content>
   </ng-container>
   <ng-container details>
-    <app-loaded-content [isLoading]="gogIsLoading">
+    <app-loaded-content [isLoading]="isLoading()">
       <ng-container placeholder>
-        <app-loading-placeholder [widths]="['20rem', '20rem']"/>
+        <app-loading-placeholder [widths]="['20rem', '20rem', '20rem', '20rem', '20rem', '8rem']"/>
       </ng-container>
 
+      <app-named-value>
+        <ng-container name>Last discovery status</ng-container>
+        <ng-container value>
+          <app-game-content-discovery-status-badge status="UNKNOWN"></app-game-content-discovery-status-badge>
+        </ng-container>
+      </app-named-value>
       <app-named-value>
         <ng-container name>Last attempted discovery</ng-container>
         <ng-container value>Unknown</ng-container>
@@ -53,6 +78,23 @@
       <app-named-value>
         <ng-container name>Last successful discovery</ng-container>
         <ng-container value>Unknown</ng-container>
+      </app-named-value>
+      <app-named-value>
+        <ng-container name>New games discovered</ng-container>
+        <ng-container value>Unknown</ng-container>
+      </app-named-value>
+      <app-named-value>
+        <ng-container name>New game files discovered</ng-container>
+        <ng-container value>Unknown</ng-container>
+      </app-named-value>
+      <app-named-value>
+        <ng-container name>Time left</ng-container>
+        <ng-container value>
+          <ng-container *ngIf="progress">
+          {{ (progress.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }}
+          </ng-container>
+          <ng-container *ngIf="!progress">N/A</ng-container>
+        </ng-container>
       </app-named-value>
     </app-loaded-content>
   </ng-container>

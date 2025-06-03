@@ -9,4 +9,12 @@ export class TestGameContentDiscoveryProgressUpdateEvent {
       timeLeftSeconds: 1234
     };
   }
+
+  public static oneHundredPercent(): GameContentDiscoveryProgressUpdateEvent {
+    return {
+      gameProviderId: 'someGameProviderId',
+      percentage: 100,
+      timeLeftSeconds: 0
+    };
+  }
 }

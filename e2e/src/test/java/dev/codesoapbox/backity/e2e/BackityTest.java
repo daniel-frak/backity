@@ -6,7 +6,6 @@ import com.microsoft.playwright.Page;
 import com.microsoft.playwright.assertions.LocatorAssertions;
 import com.microsoft.playwright.junit.UsePlaywright;
 import dev.codesoapbox.backity.e2e.pages.GameProvidersPage;
-import dev.codesoapbox.backity.e2e.pages.GameContentDiscoveryPage;
 import dev.codesoapbox.backity.e2e.pages.GamesPage;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
@@ -22,7 +21,8 @@ import java.net.URL;
 import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @UsePlaywright(CustomOptions.class)
 class BackityTest {
@@ -31,17 +31,15 @@ class BackityTest {
     private static final String FILE_TO_DOWNLOAD_NAME = "test_game_1_installer_1.exe";
     private static final String FILE_TO_DOWNLOAD_EXPECTED_CONTENTS = "Game file contents";
 
-    // The file backup scheduler runs once every N seconds
+    // The file backup scheduler runs once every N seconds; We must make sure to not fail the test before then.
     private static final long EXPECTED_FILE_BACKUP_SCHEDULER_DELAY = 60_000L;
 
     private GameProvidersPage gameProvidersPage;
-    private GameContentDiscoveryPage gameContentDiscoveryPage;
     private GamesPage gamesPage;
 
     @BeforeEach
     void setUp(Page page) {
         this.gameProvidersPage = new GameProvidersPage(page);
-        this.gameContentDiscoveryPage = new GameContentDiscoveryPage(page);
         this.gamesPage = new GamesPage(page);
         resetState();
     }
@@ -71,10 +69,12 @@ class BackityTest {
 
     @Test
     void shouldBackupGogFiles() {
-        authenticateGog();
+        gameProvidersPage.navigate();
 
-        gameContentDiscoveryPage.navigate();
-        gameContentDiscoveryPage.discoverAllFiles();
+        gameProvidersPage.authenticateGog();
+        assertIsAuthenticated();
+
+        gameProvidersPage.discoverAllFiles();
 
         gamesPage.visit();
         gamesPage.backUpFile(FILE_TO_DOWNLOAD_TITLE);
@@ -99,16 +99,10 @@ class BackityTest {
         }
     }
 
-    private void authenticateGog() {
-        gameProvidersPage.navigate();
-        gameProvidersPage.authenticateGog();
-        assertIsAuthenticated();
-    }
-
     private void assertIsAuthenticated() {
         assertThat(gameProvidersPage.getAuthenticationStatusLocator())
                 .not().containsText(GameProvidersPage.NOT_AUTHENTICATED_LOWERCASE,
-                new LocatorAssertions.ContainsTextOptions().setIgnoreCase(true));
+                        new LocatorAssertions.ContainsTextOptions().setIgnoreCase(true));
     }
 
     @SuppressWarnings("SameParameterValue")
