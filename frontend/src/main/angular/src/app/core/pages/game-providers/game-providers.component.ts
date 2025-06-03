@@ -74,7 +74,7 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
   }
 
   private updateDiscoveryStatus(status: GameContentDiscoveryStatusChangedEvent) {
-    this.discoveryStatusByGameProviderId.set(status.gameProviderId, status.isInProgress as boolean);
+    this.discoveryStatusByGameProviderId.set(status.gameProviderId, status.isInProgress);
     this.discoveryStateUnknown = false;
   }
 
@@ -115,8 +115,7 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
     if (progress?.percentage == 100) {
       return undefined;
     }
-    this.discoveryStatusByGameProviderId.get(gameProviderId);
-    if (!this.discoveryStatusByGameProviderId.get(gameProviderId)) {
+    if (!this.discoveryStatusByGameProviderId.has(gameProviderId)) {
       return undefined;
     }
     return progress;
@@ -150,10 +149,6 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
   }
 
   discoveryOngoing(): boolean {
-    if (this.discoveryStatusByGameProviderId.size === 0) {
-      return false;
-    }
-
     return Array.from(this.discoveryStatusByGameProviderId)
       .some(([gameProviderId, inProgress]) => inProgress);
   }
