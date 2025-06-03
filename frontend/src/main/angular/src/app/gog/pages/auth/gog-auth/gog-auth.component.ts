@@ -17,7 +17,7 @@ import {GogAuthModalComponent} from "@app/gog/components/modals/gog-auth-modal/g
 import {NgbModalRef} from "@ng-bootstrap/ng-bootstrap/modal/modal-ref";
 import {LoadingPlaceholderComponent} from "@app/shared/components/loading-placeholder/loading-placeholder.component";
 import {NamedValueComponent} from "@app/shared/components/named-value/named-value.component";
-import {ProgressBarComponent} from "@app/shared/components/progres-bar/progress-bar.component";
+import {ProgressBarComponent} from "@app/shared/components/progress-bar/progress-bar.component";
 import {
   GameContentDiscoveryStatusBadgeComponent
 } from "@app/core/pages/game-providers/game-content-discovery-status-badge/game-content-discovery-status-badge.component";
