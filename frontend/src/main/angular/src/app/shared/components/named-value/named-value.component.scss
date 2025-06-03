@@ -1,0 +1,9 @@
+@import "src/scss/bootstrap/basics";
+
+:host {
+  display: flex;
+}
+
+.value {
+  color: $text-secondary;
+}
