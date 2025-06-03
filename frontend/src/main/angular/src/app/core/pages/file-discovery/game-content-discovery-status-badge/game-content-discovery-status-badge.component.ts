@@ -12,7 +12,7 @@ import {CommonModule} from '@angular/common';
 export class GameContentDiscoveryStatusBadgeComponent implements OnInit {
 
   @Input()
-  public status: string = 'UNKNOWN';
+  public status: 'SUCCESS' | 'UNKNOWN' | 'FAILED' = 'UNKNOWN';
 
   constructor() {
   }

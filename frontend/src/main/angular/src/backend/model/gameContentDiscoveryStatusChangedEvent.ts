@@ -11,6 +11,6 @@
 
 export interface GameContentDiscoveryStatusChangedEvent { 
     gameProviderId: string;
-    isInProgress?: boolean;
+    isInProgress: boolean;
 }
 

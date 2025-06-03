@@ -9,6 +9,6 @@ import lombok.NonNull;
 @Schema(name = "GameContentDiscoveryStatusChangedEvent")
 public record GameContentDiscoveryStatusChangedWsEvent(
         @NonNull @NotNull String gameProviderId,
-        boolean isInProgress
+        @NotNull boolean isInProgress
 ) {
 }

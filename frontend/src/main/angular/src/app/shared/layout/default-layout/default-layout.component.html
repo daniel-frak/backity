@@ -15,26 +15,26 @@
            #collapse="ngbCollapse" [(ngbCollapse)]="isCollapsed">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="'/'" routerLinkActive="active"
+            <a class="nav-link" [routerLink]="'/'" routerLinkActive="active" ariaCurrentWhenActive="page"
                [routerLinkActiveOptions]="{ exact: true }">
               <i class="bi bi-puzzle" aria-hidden="true"></i>
               Game providers
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="'file-backup'" routerLinkActive="active">
+            <a class="nav-link" [routerLink]="'file-backup'" routerLinkActive="active" ariaCurrentWhenActive="page">
               <i class="bi bi-cloud-download" aria-hidden="true"></i>
               Files
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="'games'" routerLinkActive="active">
+            <a class="nav-link" [routerLink]="'games'" routerLinkActive="active" ariaCurrentWhenActive="page">
               <i class="bi bi-controller" aria-hidden="true"></i>
               Games
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="'settings'" routerLinkActive="active">
+            <a class="nav-link" [routerLink]="'settings'" routerLinkActive="active" ariaCurrentWhenActive="page">
               <i class="bi bi-gear" aria-hidden="true"></i>
               Settings
             </a>
