@@ -1,5 +1,4 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {GameContentDiscoveryStatus} from "@backend";
 import {CommonModule} from '@angular/common';
 
 @Component({
@@ -13,7 +12,7 @@ import {CommonModule} from '@angular/common';
 export class GameContentDiscoveryStatusBadgeComponent implements OnInit {
 
   @Input()
-  public status: GameContentDiscoveryStatus = {} as any;
+  public status: string = 'UNKNOWN';
 
   constructor() {
   }

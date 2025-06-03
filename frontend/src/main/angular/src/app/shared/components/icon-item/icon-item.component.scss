@@ -43,6 +43,12 @@
     }
   }
 
+  .buttons {
+    display: flex;
+    gap: map_get($spacers, 3);
+    align-items: center;
+  }
+
   &:hover {
     .icon {
       color: $primary;

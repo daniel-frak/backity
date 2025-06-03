@@ -1,6 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
+import {PageHeaderComponent} from '@app/shared/components/page-header/page-header.component';
+import {GogAuthComponent} from '@app/gog/pages/auth/gog-auth/gog-auth.component';
+import {SectionComponent} from "@app/shared/components/section/section.component";
 import {
-  FileCopyStatus,
   GameContentDiscoveryClient,
   GameContentDiscoveryProgressUpdateEvent,
   GameContentDiscoveryStatus,
@@ -8,41 +10,25 @@ import {
   GameContentDiscoveryWebSocketTopics,
   GameFileDiscoveredEvent
 } from "@backend";
-import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {IMessage} from "@stomp/stompjs";
-import {firstValueFrom, Subscription} from "rxjs";
+import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
-import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
-import {DatePipe, NgForOf, NgIf, NgStyle} from '@angular/common';
-import {ButtonComponent} from '@app/shared/components/button/button.component';
-import {
-  GameContentDiscoveryStatusBadgeComponent
-} from "@app/core/pages/file-discovery/game-content-discovery-status-badge/game-content-discovery-status-badge.component";
+import {firstValueFrom, Subscription} from "rxjs";
+import {ButtonComponent} from "@app/shared/components/button/button.component";
+import {LoadedContentComponent} from "@app/shared/components/loaded-content/loaded-content.component";
 import {
   NewDiscoveredFilesBadgeComponent
 } from "@app/core/pages/file-discovery/new-discovered-files-badge/new-discovered-files-badge.component";
-import {SectionComponent} from "@app/shared/components/section/section.component";
 
 @Component({
-  selector: 'app-game-content-discovery-info-card',
+  selector: 'app-game-providers',
+  templateUrl: './game-providers.component.html',
+  styleUrls: ['./game-providers.component.scss'],
   standalone: true,
-  imports: [
-    ButtonComponent,
-    DatePipe,
-    GameContentDiscoveryStatusBadgeComponent,
-    LoadedContentComponent,
-    NewDiscoveredFilesBadgeComponent,
-    NgForOf,
-    NgIf,
-    NgStyle,
-    SectionComponent
-  ],
-  templateUrl: './game-content-discovery-info-card.component.html',
-  styleUrl: './game-content-discovery-info-card.component.scss'
+  imports: [PageHeaderComponent, GogAuthComponent, SectionComponent, ButtonComponent, LoadedContentComponent,
+    NewDiscoveredFilesBadgeComponent]
 })
-export class GameContentDiscoveryInfoCardComponent implements OnInit, OnDestroy {
-
-  FileCopyStatus = FileCopyStatus;
+export class GameProvidersComponent implements OnInit, OnDestroy {
 
   newestGameFileDiscoveredEvent?: GameFileDiscoveredEvent;
   newDiscoveredGameFilesCount: number = 0;
@@ -95,10 +81,45 @@ export class GameContentDiscoveryInfoCardComponent implements OnInit, OnDestroy 
   private refreshInfo() {
     this.infoIsLoading = true;
     this.gameContentDiscoveryClient.getStatuses()
-      .subscribe(ss => {
-        ss.forEach((s) => this.updateDiscoveryStatus(s))
+      .subscribe(gameContentDiscoveryStatuses => {
+        gameContentDiscoveryStatuses
+          .forEach((status) => this.updateDiscoveryStatus(status))
         this.infoIsLoading = false;
       });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
+  }
+
+  getStatuses(): GameContentDiscoveryStatus[] {
+    if (this.discoveryStatusByGameProviderId.size === 0) {
+      return [];
+    }
+
+    return Array.from(this.discoveryStatusByGameProviderId)
+      .map(([gameProviderId, isInProgress]) => {
+        return {
+          gameProviderId: gameProviderId,
+          isInProgress: isInProgress
+        };
+      });
+  }
+
+  getGogProgress(): GameContentDiscoveryProgressUpdateEvent | undefined {
+    return this.getProgress('GOG');
+  }
+
+  getProgress(gameProviderId: string): GameContentDiscoveryProgressUpdateEvent | undefined {
+    const progress = this.discoveryProgressByGameProviderId.get(gameProviderId);
+    if (progress?.percentage == 100) {
+      return undefined;
+    }
+    this.discoveryStatusByGameProviderId.get(gameProviderId);
+    if (!this.discoveryStatusByGameProviderId.get(gameProviderId)) {
+      return undefined;
+    }
+    return progress;
   }
 
   onClickStartDiscovery(): () => Promise<void> {
@@ -122,37 +143,10 @@ export class GameContentDiscoveryInfoCardComponent implements OnInit, OnDestroy 
     this.discoveryStateUnknown = true;
     try {
       await firstValueFrom(this.gameContentDiscoveryClient.stopDiscovery());
+      this.refreshInfo();
     } catch (error) {
       this.notificationService.showFailure('Error stopping discovery', error);
     }
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
-  }
-
-  getStatuses(): GameContentDiscoveryStatus[] {
-    if (this.discoveryStatusByGameProviderId.size === 0) {
-      return [];
-    }
-
-    return Array.from(this.discoveryStatusByGameProviderId)
-      .map(([gameProviderId, isInProgress]) => {
-        return {
-          gameProviderId: gameProviderId,
-          isInProgress: isInProgress
-        };
-      });
-  }
-
-  getProgressList(): GameContentDiscoveryProgressUpdateEvent[] {
-    if (this.discoveryProgressByGameProviderId.size === 0) {
-      return [];
-    }
-    return Array.from(this.discoveryProgressByGameProviderId)
-      .map(([gameProviderId, progress]) => {
-        return progress;
-      });
   }
 
   discoveryOngoing(): boolean {
@@ -162,17 +156,5 @@ export class GameContentDiscoveryInfoCardComponent implements OnInit, OnDestroy 
 
     return Array.from(this.discoveryStatusByGameProviderId)
       .some(([gameProviderId, inProgress]) => inProgress);
-  }
-
-  onClickDiscoverFilesFor(gameProviderId?: string): () => Promise<void> {
-    return async () => this.discoverFilesFor(gameProviderId);
-  }
-
-  async discoverFilesFor(gameProviderId?: string): Promise<void> {
-    this.notificationService.showFailure('Per-provider game content discovery start not yet implemented');
-  }
-
-  isInProgress(gameProviderId: string): boolean {
-    return !!this.discoveryStatusByGameProviderId.get(gameProviderId);
   }
 }

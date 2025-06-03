@@ -1,12 +1,15 @@
 <span class="badge"
-      [ngClass]="{'bg-success': status.isInProgress, 'bg-secondary': !status.isInProgress}">
-<i class="me-1"
-   [ngClass]="{'bi bi-play-circle': status.isInProgress, 'bi bi-slash-circle': !status.isInProgress}"
-   aria-hidden="true">
-</i>
-
-{{ status.gameProviderId }} -
-
-<ng-container *ngIf="status.isInProgress">Discovery in progress...</ng-container>
-<ng-container *ngIf="!status.isInProgress">Last run: xx.xx.xxxx</ng-container>
+      [ngClass]="{
+      'bg-success': status == 'SUCCESS',
+      'bg-secondary': status == 'UNKNOWN',
+      'bg-danger': status == 'FAILED'
+      }">
+  <i class="me-1"
+     [ngClass]="{'bi bi-check-circle': status == 'SUCCESS',
+     'bi bi-question-circle': status == 'UNKNOWN',
+     'bi bi-x-circle': status == 'FAILED'
+     }"
+     aria-hidden="true">
+  </i>
+  {{ status }}
 </span>
