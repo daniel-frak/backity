@@ -36,7 +36,7 @@ import {
   PotentialFileCopyFactory
 } from "@app/core/pages/games/games-with-files-card/potential-file-copy";
 import {SectionComponent} from "@app/shared/components/section/section.component";
-import {ProgressBarComponent} from "@app/shared/components/progres-bar/progress-bar.component";
+import {ProgressBarComponent} from "@app/shared/components/progress-bar/progress-bar.component";
 
 @Component({
   selector: 'app-games-with-file-copies-card',
@@ -110,7 +110,7 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
   private findPotentialFileCopyWithContext(fileCopyNaturalId: FileCopyNaturalId):
     PotentialFileCopyWithContext | undefined {
     return Array.from(this.potentialFileCopiesWithContextByGameTitle?.values())
-      .flatMap(potentialFileCopiesWithContext => potentialFileCopiesWithContext)
+      .flat()
       .find((potentialFileCopyWithContext) => {
         return this.fileCopyNaturalIdsAreEqual(potentialFileCopyWithContext.potentialFileCopy.naturalId, fileCopyNaturalId);
       });
@@ -135,7 +135,7 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
 
   private findInProgressPotentialFileCopy() {
     return Array.from(this.potentialFileCopiesWithContextByGameTitle.values())
-      .flatMap(potentialFileCopiesWithContext => potentialFileCopiesWithContext)
+      .flat()
       .find((potentialFileCopy) => {
         return potentialFileCopy.potentialFileCopy.status === FileCopyStatus.InProgress;
       });

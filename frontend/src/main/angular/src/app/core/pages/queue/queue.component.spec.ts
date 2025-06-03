@@ -161,10 +161,10 @@ describe('QueueComponent', () => {
 
   it('should not remove file copy from queue when status changed event is received but file copy not found',
     async () => {
+      component.fileCopyPage = TestPage.of([enqueuedFileCopy]);
       const notFoundFileCopy = TestFileCopy.inProgress();
       notFoundFileCopy.id = 'notFoundFileCopyId';
       notFoundFileCopy.naturalId.gameFileId = 'notFoundFileCopyId';
-      component.fileCopyPage = TestPage.of([notFoundFileCopy]);
 
       await simulateFileCopyStatusChangedEventReceived(
         notFoundFileCopy.id, notFoundFileCopy.naturalId, FileCopyStatus.InProgress);
