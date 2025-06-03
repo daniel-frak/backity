@@ -109,7 +109,7 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
 
   private findPotentialFileCopyWithContext(fileCopyNaturalId: FileCopyNaturalId):
     PotentialFileCopyWithContext | undefined {
-    return Array.from(this.potentialFileCopiesWithContextByGameTitle?.values() ?? [])
+    return Array.from(this.potentialFileCopiesWithContextByGameTitle?.values())
       .flatMap(potentialFileCopiesWithContext => potentialFileCopiesWithContext)
       .find((potentialFileCopyWithContext) => {
         return this.fileCopyNaturalIdsAreEqual(potentialFileCopyWithContext.potentialFileCopy.naturalId, fileCopyNaturalId);
@@ -250,13 +250,11 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
-  group(content?: Map<string, PotentialFileCopyWithContext[]>): TableContentGroup[] {
-    return content
-      ? Array.from(content.entries()).map(([title, gameFilesWithCopies]) => ({
+  group(content: Map<string, PotentialFileCopyWithContext[]>): TableContentGroup[] {
+    return Array.from(content.entries()).map(([title, gameFilesWithCopies]) => ({
         caption: title,
         items: gameFilesWithCopies,
-      }))
-      : [];
+      }));
   }
 
   private mapToPotentialFileCopiesWithContext(gameFilesWithCopies: GameFileWithCopies[]): PotentialFileCopyWithContext[] {
