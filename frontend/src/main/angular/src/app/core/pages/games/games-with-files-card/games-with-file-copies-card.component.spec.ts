@@ -230,7 +230,7 @@ describe('GamesWithFileCopiesCardComponent', () => {
   async function simulateFileCopyStatusChangedEventReceived(
     fileCopyId: string, fileCopyNaturalId: FileCopyNaturalId, newStatus: FileCopyStatus): Promise<void> {
     const statusChangedMessage: FileCopyStatusChangedEvent =
-      TestFileCopyStatusChangedEvent.with(fileCopyId, fileCopyNaturalId, newStatus);
+      TestFileCopyStatusChangedEvent.withContent(fileCopyId, fileCopyNaturalId, newStatus);
     await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
       FileBackupMessageTopics.StatusChanged, statusChangedMessage);
   }

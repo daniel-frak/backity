@@ -1,8 +1,8 @@
 import {FileCopyNaturalId, FileCopyStatus, FileCopyStatusChangedEvent} from "@backend";
 
-export class TestFileCopyStatusChangedEvent {
+export namespace TestFileCopyStatusChangedEvent {
 
-  public static with(fileCopyId: string, fileCopyNaturalId: FileCopyNaturalId, newStatus: FileCopyStatus
+  export function withContent(fileCopyId: string, fileCopyNaturalId: FileCopyNaturalId, newStatus: FileCopyStatus
   ): FileCopyStatusChangedEvent {
     return {
       fileCopyId: fileCopyId,

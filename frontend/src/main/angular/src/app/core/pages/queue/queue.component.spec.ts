@@ -15,7 +15,6 @@ import {NotificationService} from "@app/shared/services/notification/notificatio
 import {of, throwError} from "rxjs";
 import {provideRouter} from "@angular/router";
 import {MessageTesting} from "@app/shared/testing/message-testing";
-import {By} from "@angular/platform-browser";
 import {TestPage} from "@app/shared/testing/objects/test-page";
 import {TestFileCopy} from "@app/shared/testing/objects/test-file-copy";
 import {TestFileCopyStatusChangedEvent} from "@app/shared/testing/objects/test-file-copy-status-changed-event";
@@ -180,7 +179,7 @@ describe('QueueComponent', () => {
   async function simulateFileCopyStatusChangedEventReceived(
     fileCopyId: string, fileCopyNaturalId: FileCopyNaturalId, newStatus: FileCopyStatus): Promise<void> {
     const statusChangedMessage: FileCopyStatusChangedEvent =
-      TestFileCopyStatusChangedEvent.with(fileCopyId, fileCopyNaturalId, newStatus);
+      TestFileCopyStatusChangedEvent.withContent(fileCopyId, fileCopyNaturalId, newStatus);
     await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
       FileBackupMessageTopics.StatusChanged, statusChangedMessage);
   }

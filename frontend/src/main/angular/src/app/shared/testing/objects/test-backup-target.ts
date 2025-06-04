@@ -1,8 +1,8 @@
 import {BackupTarget} from "@backend";
 
-export class TestBackupTarget {
+export namespace TestBackupTarget {
 
-  public static localFolder(): BackupTarget {
+  export function localFolder(): BackupTarget {
     return {
       id: "localFolderBackupTargetId",
       storageSolutionId: "someStorageSolutionId",
@@ -11,7 +11,7 @@ export class TestBackupTarget {
     };
   }
 
-  public static s3(): BackupTarget {
+  export function s3(): BackupTarget {
     return {
       id: "s3BackupTargetId",
       storageSolutionId: "someStorageSolutionId",

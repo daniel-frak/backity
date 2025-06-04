@@ -1,8 +1,8 @@
-import {FileCopyStatus, FileCopy} from "@backend";
+import {FileCopy, FileCopyStatus} from "@backend";
 
-export class TestFileCopy {
+export namespace TestFileCopy {
 
-  public static tracked(): FileCopy {
+  export function tracked(): FileCopy {
     return {
       id: "someFileCopyId",
       naturalId: {
@@ -17,21 +17,21 @@ export class TestFileCopy {
     };
   }
 
-  public static enqueued(): FileCopy {
+  export function enqueued(): FileCopy {
     return {
       ...TestFileCopy.tracked(),
       status: FileCopyStatus.Enqueued
     };
   }
 
-  public static inProgress(): FileCopy {
+  export function inProgress(): FileCopy {
     return {
       ...TestFileCopy.tracked(),
       status: FileCopyStatus.InProgress
     };
   }
 
-  public static storedIntegrityUnknown(): FileCopy {
+  export function storedIntegrityUnknown(): FileCopy {
     return {
       ...TestFileCopy.tracked(),
       status: FileCopyStatus.StoredIntegrityUnknown

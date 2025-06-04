@@ -1,8 +1,8 @@
 import {FileDownloadProgressUpdatedEvent} from "@backend";
 
-export class TestProgressUpdatedEvent {
+export namespace TestProgressUpdatedEvent {
 
-  public static twentyFivePercent(): FileDownloadProgressUpdatedEvent {
+  export function twentyFivePercent(): FileDownloadProgressUpdatedEvent {
     return {
       percentage: 25,
       timeLeftSeconds: 999

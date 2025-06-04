@@ -1,8 +1,8 @@
 import {GameFile} from "@backend";
 
-export class TestGameFile {
+export namespace TestGameFile {
 
-  public static any(): GameFile {
+  export function any(): GameFile {
     return {
       id: "someGameFileId",
       gameId: "someGameId",

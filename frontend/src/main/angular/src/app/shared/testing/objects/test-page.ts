@@ -1,6 +1,6 @@
-export class TestPage {
+export namespace TestPage {
 
-  public static of<T>(content: any[]): T {
+  export function of<T>(content: any[]): T {
     return {content: content} as T;
   }
 }
