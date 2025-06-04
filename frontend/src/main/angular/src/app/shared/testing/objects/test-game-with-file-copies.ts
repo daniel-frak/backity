@@ -2,9 +2,9 @@ import {GameWithFileCopies} from "@backend";
 import {TestGameFile} from "@app/shared/testing/objects/test-game-file";
 import {TestFileCopy} from "@app/shared/testing/objects/test-file-copy";
 
-export class TestGameWithFileCopies {
+export namespace TestGameWithFileCopies {
 
-  public static withTrackedFileCopy(): GameWithFileCopies {
+  export function withTrackedFileCopy(): GameWithFileCopies {
     return {
       id: "someGameId",
       title: "someGameTitle",
@@ -17,7 +17,7 @@ export class TestGameWithFileCopies {
     };
   }
 
-  public static withInProgressFileCopy(): GameWithFileCopies {
+  export function withInProgressFileCopy(): GameWithFileCopies {
     return {
       id: "someGameId",
       title: "someGameTitle",
@@ -30,7 +30,7 @@ export class TestGameWithFileCopies {
     };
   }
 
-  public static withStoredUnverifiedFileCopy(): GameWithFileCopies {
+  export function withStoredUnverifiedFileCopy(): GameWithFileCopies {
     return {
       id: "someGameId",
       title: "someGameTitle",

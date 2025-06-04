@@ -1,15 +1,15 @@
 import {GameContentDiscoveryStatus} from "@backend";
 
-export class TestGameContentDiscoveryStatus {
+export namespace TestGameContentDiscoveryStatus {
 
-  public static inProgress(): GameContentDiscoveryStatus {
+  export function inProgress(): GameContentDiscoveryStatus {
     return {
       gameProviderId: 'someGameProviderId',
       isInProgress: true
     };
   }
 
-  public static notInProgress(): GameContentDiscoveryStatus {
+  export function notInProgress(): GameContentDiscoveryStatus {
     return {
       gameProviderId: 'someGameProviderId',
       isInProgress: false

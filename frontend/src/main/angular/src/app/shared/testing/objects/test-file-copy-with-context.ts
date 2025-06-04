@@ -1,9 +1,9 @@
 import {FileCopy, FileCopyWithContext} from "@backend";
 import {TestGameFile} from "@app/shared/testing/objects/test-game-file";
 
-export class TestFileCopyWithContext {
+export namespace TestFileCopyWithContext {
 
-  public static withFileCopy(fileCopy: FileCopy): FileCopyWithContext {
+  export function withFileCopy(fileCopy: FileCopy): FileCopyWithContext {
     return {
       fileCopy: fileCopy,
       gameFile: {

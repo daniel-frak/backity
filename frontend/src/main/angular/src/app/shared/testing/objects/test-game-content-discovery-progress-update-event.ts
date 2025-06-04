@@ -1,8 +1,8 @@
 import {GameContentDiscoveryProgressUpdateEvent} from "@backend";
 
-export class TestGameContentDiscoveryProgressUpdateEvent {
+export namespace TestGameContentDiscoveryProgressUpdateEvent {
 
-  public static twentyFivePercent(): GameContentDiscoveryProgressUpdateEvent {
+  export function twentyFivePercent(): GameContentDiscoveryProgressUpdateEvent {
     return {
       gameProviderId: 'someGameProviderId',
       percentage: 25,
@@ -10,7 +10,7 @@ export class TestGameContentDiscoveryProgressUpdateEvent {
     };
   }
 
-  public static oneHundredPercent(): GameContentDiscoveryProgressUpdateEvent {
+  export function oneHundredPercent(): GameContentDiscoveryProgressUpdateEvent {
     return {
       gameProviderId: 'someGameProviderId',
       percentage: 100,
