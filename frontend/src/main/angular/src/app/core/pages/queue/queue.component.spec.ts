@@ -8,6 +8,7 @@ import {
   FileCopyNaturalId,
   FileCopyStatus,
   FileCopyStatusChangedEvent,
+  FileCopyWithContext,
   PageFileCopyWithContext
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
@@ -33,10 +34,8 @@ describe('QueueComponent', () => {
   let notificationService: NotificationService;
 
   const initialEnqueuedFileCopy: FileCopy = TestFileCopy.enqueued();
-  const initialFileCopyWithContext = TestFileCopyWithContext.withFileCopy(initialEnqueuedFileCopy);
-  const initialQueue: PageFileCopyWithContext = TestPage.of([
-    initialFileCopyWithContext
-  ]);
+  const initialFileCopyWithContext: FileCopyWithContext = TestFileCopyWithContext.withFileCopy(initialEnqueuedFileCopy);
+  const initialQueue: PageFileCopyWithContext = TestPage.of([initialFileCopyWithContext]);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -127,11 +126,11 @@ describe('QueueComponent', () => {
       size: component.pageSize
     });
     expect(component.fileCopiesAreLoading).toBe(false);
-    assertQueueContains(initialFileCopyWithContext.gameFile.fileSource.fileTitle);
+    assertQueueContains(initialFileCopyWithContext);
   });
 
-  function assertQueueContains(expectedValue: string) {
-    expect(fixture.nativeElement.textContent).toContain(expectedValue);
+  function assertQueueContains(fileCopyWithContext: FileCopyWithContext) {
+    expect(fixture.nativeElement.textContent).toContain(fileCopyWithContext.gameFile.fileSource.fileTitle);
   }
 
   it('should log an error when removeFromQueue is called', async () => {
@@ -145,16 +144,16 @@ describe('QueueComponent', () => {
     await simulateFileCopyStatusChangedEventReceived(
       initialEnqueuedFileCopy.id, initialEnqueuedFileCopy.naturalId, FileCopyStatus.StoredIntegrityVerified);
 
-    assertQueueDoesNotContain(initialFileCopyWithContext.gameFile.fileSource.fileTitle);
+    assertQueueDoesNotContain(initialFileCopyWithContext);
   });
 
   it('should not remove file copy from queue when status changed event is received' +
-    ' and new status is', async () => {
+    ' and new status is enqueued', async () => {
     component.fileCopyWithContextPage = TestPage.of([initialFileCopyWithContext]);
     await simulateFileCopyStatusChangedEventReceived(
       initialEnqueuedFileCopy.id, initialEnqueuedFileCopy.naturalId, FileCopyStatus.Enqueued);
 
-    assertQueueContains(initialFileCopyWithContext.gameFile.fileSource.fileTitle);
+    assertQueueContains(initialFileCopyWithContext);
   });
 
   it('should not remove file copy from queue when status changed event is received' +
@@ -163,7 +162,7 @@ describe('QueueComponent', () => {
     await simulateFileCopyStatusChangedEventReceived(
       initialEnqueuedFileCopy.id, initialEnqueuedFileCopy.naturalId, FileCopyStatus.InProgress);
 
-    assertQueueContains(initialFileCopyWithContext.gameFile.fileSource.fileTitle);
+    assertQueueContains(initialFileCopyWithContext);
   });
 
   it('should update file copy status in queue when status changed event is received' +
@@ -172,9 +171,13 @@ describe('QueueComponent', () => {
     await simulateFileCopyStatusChangedEventReceived(
       initialEnqueuedFileCopy.id, initialEnqueuedFileCopy.naturalId, FileCopyStatus.InProgress);
 
-    assertQueueContains(initialFileCopyWithContext.gameFile.fileSource.fileTitle);
-    expect(component.fileCopyWithContextPage?.content?.[0].fileCopy.status).toEqual(FileCopyStatus.InProgress);
+    assertQueueContains(initialFileCopyWithContext);
+    expect(firstFileCopyInQueue()?.status).toEqual(FileCopyStatus.InProgress);
   });
+
+  function firstFileCopyInQueue(): FileCopy | undefined {
+    return component.fileCopyWithContextPage?.content?.[0].fileCopy;
+  }
 
   async function simulateFileCopyStatusChangedEventReceived(
     fileCopyId: string, fileCopyNaturalId: FileCopyNaturalId, newStatus: FileCopyStatus): Promise<void> {
@@ -184,8 +187,8 @@ describe('QueueComponent', () => {
       FileBackupMessageTopics.StatusChanged, statusChangedMessage);
   }
 
-  function assertQueueDoesNotContain(expectedValue: string) {
-    expect(fixture.nativeElement.textContent).not.toContain(expectedValue);
+  function assertQueueDoesNotContain(fileCopyWithContext: FileCopyWithContext) {
+    expect(fixture.nativeElement.textContent).not.toContain(fileCopyWithContext.gameFile.fileSource.fileTitle);
   }
 
   it('should not remove file copy from queue when status changed event is received but file copy not found',
@@ -198,6 +201,6 @@ describe('QueueComponent', () => {
       await simulateFileCopyStatusChangedEventReceived(
         notFoundFileCopy.id, notFoundFileCopy.naturalId, FileCopyStatus.InProgress);
 
-      assertQueueContains(initialFileCopyWithContext.gameFile.fileSource.fileTitle);
+      assertQueueContains(initialFileCopyWithContext);
     });
 });
