@@ -1,21 +1,21 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {FileStatusBadgeComponent} from './file-status-badge.component';
+import {FileCopyStatusBadgeComponent} from './file-copy-status-badge.component';
 import {FileCopyStatus} from "@backend";
 
-describe('FileStatusBadgeComponent', () => {
-  let component: FileStatusBadgeComponent;
-  let fixture: ComponentFixture<FileStatusBadgeComponent>;
+describe('FileCopyStatusBadgeComponent', () => {
+  let component: FileCopyStatusBadgeComponent;
+  let fixture: ComponentFixture<FileCopyStatusBadgeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FileStatusBadgeComponent]
+      imports: [FileCopyStatusBadgeComponent]
     })
       .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FileStatusBadgeComponent);
+    fixture = TestBed.createComponent(FileCopyStatusBadgeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
@@ -61,7 +61,7 @@ describe('FileStatusBadgeComponent', () => {
   it('should return the correct badge class for "Enqueued"', () => {
     component.status = FileCopyStatus.Enqueued;
     fixture.detectChanges();
-    expect(component.getBadgeClass()).toBe('bg-info');
+    expect(component.getBadgeClass()).toBe('bg-secondary');
   });
 
   it('should return the default badge class for undefined status', () => {

@@ -18,7 +18,7 @@ public interface FileCopyRepository {
 
     Optional<FileCopy> findOldestEnqueued();
 
-    Page<FileCopy> findAllEnqueued(Pagination pagination);
+    Page<FileCopy> findAllInProgressOrEnqueued(Pagination pagination);
 
     List<FileCopy> findAllByGameFileId(GameFileId id);
 }

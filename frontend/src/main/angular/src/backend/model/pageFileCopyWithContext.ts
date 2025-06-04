@@ -7,11 +7,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { FileCopy } from './fileCopy';
+import { FileCopyWithContext } from './fileCopyWithContext';
 
 
-export interface PageFileCopy { 
-    content?: Array<FileCopy>;
+export interface PageFileCopyWithContext { 
+    content?: Array<FileCopyWithContext>;
     size?: number;
     totalPages?: number;
     totalElements?: number;

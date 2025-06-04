@@ -2,7 +2,7 @@ import {GameWithFileCopies} from "@backend";
 import {TestGameFile} from "@app/shared/testing/objects/test-game-file";
 import {TestFileCopy} from "@app/shared/testing/objects/test-file-copy";
 
-export class TestGame {
+export class TestGameWithFileCopies {
 
   public static withTrackedFileCopy(): GameWithFileCopies {
     return {

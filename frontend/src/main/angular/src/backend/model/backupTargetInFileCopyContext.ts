@@ -9,8 +9,7 @@
  */
 
 
-export interface Pagination { 
-    page?: number;
-    size: number;
+export interface BackupTargetInFileCopyContext { 
+    title: string;
 }
 

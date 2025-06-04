@@ -26,7 +26,7 @@ import {TableColumnDirective} from '@app/shared/components/table/column-directiv
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {Message} from "@stomp/stompjs";
 import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
-import {FileStatusBadgeComponent} from "@app/core/pages/games/file-status-badge/file-status-badge.component";
+import {FileCopyStatusBadgeComponent} from "@app/core/components/file-copy-status-badge/file-copy-status-badge.component";
 import {TableContentGroup} from "@app/shared/components/table/table-content-group";
 import {
   PotentialFileCopyWithContext
@@ -43,7 +43,7 @@ import {ProgressBarComponent} from "@app/shared/components/progress-bar/progress
   standalone: true,
   imports: [
     ButtonComponent,
-    FileStatusBadgeComponent,
+    FileCopyStatusBadgeComponent,
     LoadedContentComponent,
     NgSwitchCase,
     PaginationComponent,

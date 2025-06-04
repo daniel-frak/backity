@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.game.domain;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 
-import java.util.Optional;
+import java.util.*;
 
 public interface GameRepository {
 
@@ -16,4 +16,6 @@ public interface GameRepository {
     Game getById(GameId gameId);
 
     Page<Game> findAll(Pagination pagination);
+
+    List<Game> findAllByIdIn(Collection<GameId> ids);
 }

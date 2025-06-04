@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
@@ -8,6 +9,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 public record PaginationHttpDto(
         @PositiveOrZero
         Integer page,
+        @NotNull
         @Positive
         @Schema(example = "20")
         Integer size

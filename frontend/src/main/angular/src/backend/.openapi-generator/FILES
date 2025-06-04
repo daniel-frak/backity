@@ -17,15 +17,16 @@ encoder.ts
 git_push.sh
 index.ts
 model/backupTarget.ts
+model/backupTargetInFileCopyContext.ts
 model/enqueueFileCopyRequest.ts
 model/errorMessage.ts
 model/fileBackupMessageTopics.ts
 model/fileCopy.ts
 model/fileCopyNaturalId.ts
 model/fileCopyNaturalIdWsDto.ts
-model/fileCopyProcessingStatus.ts
 model/fileCopyStatus.ts
 model/fileCopyStatusChangedEvent.ts
+model/fileCopyWithContext.ts
 model/fileDownloadProgressUpdatedEvent.ts
 model/fileSource.ts
 model/gameContentDiscoveryProgressUpdateEvent.ts
@@ -34,7 +35,9 @@ model/gameContentDiscoveryStatusChangedEvent.ts
 model/gameContentDiscoveryWebSocketTopics.ts
 model/gameFile.ts
 model/gameFileDiscoveredEvent.ts
+model/gameFileInFileCopyContext.ts
 model/gameFileWithCopies.ts
+model/gameInFileCopyContext.ts
 model/gameWithFileCopies.ts
 model/gogConfig.ts
 model/gogGameFile.ts
@@ -42,7 +45,7 @@ model/gogGameWithFiles.ts
 model/logCreatedEvent.ts
 model/logsMessageTopics.ts
 model/models.ts
-model/pageFileCopy.ts
+model/pageFileCopyWithContext.ts
 model/pageGameWithFileCopies.ts
 model/pagination.ts
 model/refreshTokenResponse.ts

@@ -38,7 +38,7 @@ class GetBackupTargetsUseCaseTest {
 
     private List<BackupTarget> mockBackupTargetsExist() {
         List<BackupTarget> backupTargets = List.of(TestBackupTarget.localFolder());
-        when(backupTargetRepository.findAllBackupTargets())
+        when(backupTargetRepository.findAll())
                 .thenReturn(backupTargets);
         return backupTargets;
     }

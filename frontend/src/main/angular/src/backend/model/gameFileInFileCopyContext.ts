@@ -7,11 +7,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { FileSource } from './fileSource';
 
 
-export type FileCopyProcessingStatus = 'enqueued';
-
-export const FileCopyProcessingStatus = {
-    Enqueued: 'enqueued' as FileCopyProcessingStatus
-};
+export interface GameFileInFileCopyContext { 
+    fileSource: FileSource;
+}
 

@@ -4,41 +4,56 @@
 
 <app-section>
   <app-loaded-content [isLoading]="fileCopiesAreLoading">
-    <div class="button-container">
+    <div class="button-container mb-3">
       <app-button [actionAsync]="onClickRefreshEnqueuedFileCopies()"
                   [disabled]="fileCopiesAreLoading"
                   testId="refresh-queue-btn" buttonStyle="secondary">Refresh
       </app-button>
     </div>
 
-    <app-table [content]="fileCopyPage?.content" [isLoading]="fileCopiesAreLoading"
-               id="download-queue">
-      <ng-template app-table-column="File path" let-item>
-        {{ asFileCopy(item).filePath }}
-      </ng-template>
-      <ng-template app-table-column="Game file id" let-item>
-        {{ asFileCopy(item).naturalId.gameFileId }}
-      </ng-template>
-      <ng-template app-table-column="Backup target id" let-item>
-        {{ asFileCopy(item).naturalId.backupTargetId }}
-      </ng-template>
-      <ng-template app-table-column="Actions"
-                   hide-title-on-mobile
-                   let-item>
-        <ng-container *ngFor="let fileCopy of [asFileCopy(item)]">
-          <div class="button-container justify-content-end">
-            <app-button [actionAsync]="onClickRemoveFromQueue(fileCopy.id!)" buttonStyle="primary"
-                        *ngIf="fileCopy.status == FileCopyStatus.Enqueued">
-              Cancel
-            </app-button>
-          </div>
+    <ng-container *ngFor="let fileCopyWithContext of fileCopyWithContextPage?.content">
+      <app-icon-item iconClass="bi bi-copy">
+        <ng-container title>
+          {{ fileCopyWithContext.backupTarget.title }}
+          <app-storage-solution-status-badge/>
         </ng-container>
-      </ng-template>
-    </app-table>
+        <ng-container descriptor>
+          <app-file-copy-status-badge [status]="fileCopyWithContext.fileCopy.status"/>
+        </ng-container>
+        <ng-container buttons>
+          <app-button [actionAsync]="onClickRemoveFromQueue(fileCopyWithContext.fileCopy.id!)" buttonStyle="primary"
+                      *ngIf="fileCopyWithContext.fileCopy.status == FileCopyStatus.Enqueued">
+            Cancel
+          </app-button>
+        </ng-container>
+        <ng-container details>
+          <app-named-value>
+            <ng-container name>Game</ng-container>
+            <ng-container value>
+              {{ fileCopyWithContext.game.title }}
+            </ng-container>
+          </app-named-value>
+          <app-named-value>
+            <ng-container name>File title</ng-container>
+            <ng-container value>
+              {{ fileCopyWithContext.gameFile.fileSource.fileTitle }}
+              <app-game-file-version-badge [version]="fileCopyWithContext.gameFile.fileSource.version"/>
+            </ng-container>
+          </app-named-value>
+          <app-named-value>
+            <ng-container name>Size</ng-container>
+            <ng-container value>
+              {{ fileCopyWithContext.gameFile.fileSource.size }}
+            </ng-container>
+          </app-named-value>
+        </ng-container>
+      </app-icon-item>
+    </ng-container>
+
     <app-pagination pageSizeQueryParamName="enqueued-file-copies-page-size"
                     pageNumberQueryParamName="enqueued-file-copies-page"
                     [disabled]="fileCopiesAreLoading"
-                    [currentPage]="fileCopyPage"
+                    [currentPage]="fileCopyWithContextPage"
                     [(pageNumber)]="pageNumber"
                     [(pageSize)]="pageSize"
                     (onPageChange)="refreshEnqueuedFileCopies()"/>

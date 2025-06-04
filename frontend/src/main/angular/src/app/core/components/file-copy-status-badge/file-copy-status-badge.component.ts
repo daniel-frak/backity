@@ -3,13 +3,13 @@ import {FileCopyStatus} from "@backend";
 import {CommonModule} from '@angular/common';
 
 @Component({
-  selector: 'app-file-status-badge',
-  templateUrl: './file-status-badge.component.html',
-  styleUrls: ['./file-status-badge.component.scss'],
+  selector: 'app-file-copy-status-badge',
+  templateUrl: './file-copy-status-badge.component.html',
+  styleUrls: ['./file-copy-status-badge.component.scss'],
   standalone: true,
   imports: [CommonModule]
 })
-export class FileStatusBadgeComponent implements OnInit {
+export class FileCopyStatusBadgeComponent implements OnInit {
 
   @Input()
   public status: FileCopyStatus | undefined = undefined;
@@ -32,7 +32,7 @@ export class FileStatusBadgeComponent implements OnInit {
       case FileCopyStatus.Failed:
         return 'bg-danger';
       case FileCopyStatus.Enqueued:
-        return 'bg-info';
+        return 'bg-secondary';
       default:
         return 'bg-secondary'
     }

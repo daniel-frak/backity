@@ -1,0 +1,18 @@
+<span [ngClass]="{
+  'text-secondary-emphasis': status == FileCopyStatus.Tracked || status == undefined
+    || status == FileCopyStatus.Enqueued || status == FileCopyStatus.InProgress,
+  'text-primary': status == FileCopyStatus.StoredIntegrityUnknown || status == FileCopyStatus.StoredIntegrityVerified,
+  'text-danger': status == FileCopyStatus.Failed
+}">
+<i class="me-1"
+   [ngClass]="{
+     'bi bi-hourglass': status == FileCopyStatus.InProgress,
+     'bi bi-clock': status == FileCopyStatus.Enqueued,
+     'bi bi-x-circle': status == FileCopyStatus.Failed || status == FileCopyStatus.Tracked || status == undefined,
+     'bi bi-check-circle':
+      status == FileCopyStatus.StoredIntegrityUnknown || status == FileCopyStatus.StoredIntegrityVerified
+     }"
+   aria-hidden="true"></i>
+
+  {{ status || "Untracked" }}
+</span>

@@ -108,14 +108,10 @@ public class FileCopyJpaRepository implements FileCopyRepository {
     }
 
     @Override
-    public Page<FileCopy> findAllEnqueued(Pagination pagination) {
-        return findAllByStatusOrderedByDateModified(pagination, List.of(FileCopyStatus.ENQUEUED));
-    }
-
-    private Page<FileCopy> findAllByStatusOrderedByDateModified(Pagination pagination, List<FileCopyStatus> statuses) {
-        Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_DATE_MODIFIED_ASC);
+    public Page<FileCopy> findAllInProgressOrEnqueued(Pagination pagination) {
+        Pageable pageable = paginationMapper.toEntity(pagination);
         org.springframework.data.domain.Page<FileCopyJpaEntity> foundPage =
-                springRepository.findAllByStatusIn(pageable, statuses);
+                springRepository.findAllInProgressOrEnqueuedOrderByStatusThenDateModified(pageable);
 
         return pageMapper.toDomain(foundPage, entityMapper::toDomain);
     }

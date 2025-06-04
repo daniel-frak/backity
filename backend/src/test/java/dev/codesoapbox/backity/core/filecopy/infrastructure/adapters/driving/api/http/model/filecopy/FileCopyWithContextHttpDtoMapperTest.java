@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy;
 
+import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.FileCopyWithContext;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
@@ -23,7 +24,8 @@ class FileCopyWithContextHttpDtoMapperTest {
         var domain = new FileCopyWithContext(
                 TestFileCopy.inProgress(),
                 TestGameFile.gog(),
-                TestGame.any()
+                TestGame.any(),
+                TestBackupTarget.localFolder()
         );
 
         var result = MAPPER.toDto(domain);
@@ -61,6 +63,9 @@ class FileCopyWithContextHttpDtoMapperTest {
                 ),
                 new GameInFileCopyContextHttpDto(
                         "Test Game"
+                ),
+                new BackupTargetInFileCopyContextHttpDto(
+                        "Local folder"
                 )
         );
     }

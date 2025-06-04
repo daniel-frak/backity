@@ -145,6 +145,18 @@ abstract class GameFileJpaRepositoryAbstractIT {
     }
 
     @Test
+    void shouldFindAllById() {
+        populateDatabase(GAME_FILES.getAll());
+        GameFile expectedGameFile = GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1.get();
+
+        List<GameFile> result = gameFileJpaRepository.findAllByIdIn(List.of(expectedGameFile.getId()));
+
+        assertThat(result).usingRecursiveComparison()
+                .ignoringFields("dateCreated", "dateModified")
+                .isEqualTo(List.of(expectedGameFile));
+    }
+
+    @Test
     void shouldDeleteById() {
         GameFile gameFile = GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1.get();
         populateDatabase(List.of(gameFile));
