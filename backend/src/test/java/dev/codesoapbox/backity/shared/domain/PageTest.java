@@ -19,4 +19,16 @@ class PageTest {
         assertThat(result).usingRecursiveComparison()
                 .isEqualTo(expectedPage);
     }
+
+    @Test
+    void asEmptyShouldReturnEmptyPage() {
+        Page<Integer> page = new Page<>(List.of(123), 4, 3, 2, 1, 0);
+
+        Page<String> result = page.asEmpty();
+
+        assertThat(result).usingRecursiveComparison()
+                .ignoringFields("content")
+                .isEqualTo(page);
+        assertThat(result.content()).isEmpty();
+    }
 }

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 public record FileCopyWithContextHttpDto(
         @NotNull @Valid FileCopyHttpDto fileCopy,
         @NotNull @Valid GameFileInFileCopyContextHttpDto gameFile,
-        @NotNull @Valid GameInFileCopyContextHttpDto game
+        @NotNull @Valid GameInFileCopyContextHttpDto game,
+        @NotNull @Valid BackupTargetInFileCopyContextHttpDto backupTarget
 ) {
 }

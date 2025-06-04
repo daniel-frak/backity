@@ -21,9 +21,7 @@ import { EnqueueFileCopyRequest } from '../model/enqueueFileCopyRequest';
 // @ts-ignore
 import { ErrorMessage } from '../model/errorMessage';
 // @ts-ignore
-import { FileCopyProcessingStatus } from '../model/fileCopyProcessingStatus';
-// @ts-ignore
-import { PageFileCopy } from '../model/pageFileCopy';
+import { PageFileCopyWithContext } from '../model/pageFileCopyWithContext';
 // @ts-ignore
 import { Pagination } from '../model/pagination';
 // @ts-ignore
@@ -297,27 +295,19 @@ export class FileCopiesClient {
     /**
      * List processed file copies with a given status
      * Returns a paginated list of all file copies with a given status
-     * @param processingStatus 
      * @param pagination 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getFileCopiesWithStatus(processingStatus: FileCopyProcessingStatus, pagination: Pagination, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageFileCopy>;
-    public getFileCopiesWithStatus(processingStatus: FileCopyProcessingStatus, pagination: Pagination, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageFileCopy>>;
-    public getFileCopiesWithStatus(processingStatus: FileCopyProcessingStatus, pagination: Pagination, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageFileCopy>>;
-    public getFileCopiesWithStatus(processingStatus: FileCopyProcessingStatus, pagination: Pagination, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (processingStatus === null || processingStatus === undefined) {
-            throw new Error('Required parameter processingStatus was null or undefined when calling getFileCopiesWithStatus.');
-        }
+    public getFileCopyQueue(pagination: Pagination, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageFileCopyWithContext>;
+    public getFileCopyQueue(pagination: Pagination, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageFileCopyWithContext>>;
+    public getFileCopyQueue(pagination: Pagination, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageFileCopyWithContext>>;
+    public getFileCopyQueue(pagination: Pagination, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (pagination === null || pagination === undefined) {
-            throw new Error('Required parameter pagination was null or undefined when calling getFileCopiesWithStatus.');
+            throw new Error('Required parameter pagination was null or undefined when calling getFileCopyQueue.');
         }
 
         let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        if (processingStatus !== undefined && processingStatus !== null) {
-          localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-            <any>processingStatus, 'processing-status');
-        }
         if (pagination !== undefined && pagination !== null) {
           localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
             <any>pagination, 'pagination');
@@ -359,8 +349,8 @@ export class FileCopiesClient {
             }
         }
 
-        let localVarPath = `/api/file-copies`;
-        return this.httpClient.request<PageFileCopy>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/api/file-copy-queue`;
+        return this.httpClient.request<PageFileCopyWithContext>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 params: localVarQueryParameters,

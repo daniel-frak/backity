@@ -247,17 +247,18 @@ abstract class FileCopyJpaRepositoryAbstractIT {
     }
 
     @Test
-    void shouldFindAllEnqueuedInOrderOfDateModifiedAscending() {
-        var pagination = new Pagination(0, 2);
+    void shouldFindAllInProgressOrEnqueuedInOrderOfStatusThenDateModifiedAscending() {
+        var pagination = new Pagination(0, 3);
 
-        Page<FileCopy> result = repository.findAllEnqueued(pagination);
+        Page<FileCopy> result = repository.findAllInProgressOrEnqueued(pagination);
 
         List<FileCopy> expectedItems = List.of(
+                EXISTING_FILE_COPIES.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2.get(),
                 EXISTING_FILE_COPIES.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2.get(),
                 EXISTING_FILE_COPIES.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_2.get()
         );
         int totalPages = 1;
-        int totalElements = 2;
+        int totalElements = 3;
         assertContainsInOrder(result, pagination, totalPages, totalElements, expectedItems);
     }
 

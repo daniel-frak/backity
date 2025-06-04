@@ -154,6 +154,19 @@ abstract class GameJpaRepositoryAbstractIT {
                 .containsExactlyInAnyOrderElementsOf(expectedResult.content());
     }
 
+    @Test
+    void shouldFindAllById() {
+        populateDatabase(GAMES.getAll());
+        Game game = GAMES.GAME_1.get();
+
+        List<Game> result = repository.findAllByIdIn(List.of(game.getId()));
+
+        List<Game> expectedResult = List.of(game);
+        assertThat(result).usingRecursiveComparison()
+                .ignoringFields("dateCreated", "dateModified")
+                .isEqualTo(expectedResult);
+    }
+
     private static class GAMES {
 
         public static final Supplier<Game> GAME_1 = () -> TestGame.anyBuilder()

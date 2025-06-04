@@ -9,6 +9,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static java.util.Collections.unmodifiableList;
@@ -41,7 +42,7 @@ public class HardCodedBackupTargetRepository implements BackupTargetRepository {
     }
 
     @Override
-    public List<BackupTarget> findAllBackupTargets() {
+    public List<BackupTarget> findAll() {
         return unmodifiableList(availableBackupTargets);
     }
 
@@ -51,5 +52,12 @@ public class HardCodedBackupTargetRepository implements BackupTargetRepository {
                 .filter(availableBackupTarget -> availableBackupTarget.getId().equals(backupTargetId))
                 .findFirst()
                 .orElseThrow(() -> new BackupTargetNotFoundException(backupTargetId));
+    }
+
+    @Override
+    public List<BackupTarget> findAllByIdIn(Collection<BackupTargetId> ids) {
+        return availableBackupTargets.stream()
+                .filter(backupTarget -> ids.contains(backupTarget.getId()))
+                .toList();
     }
 }

@@ -89,7 +89,7 @@ $btn-close-white-filter: null!important;
 $progress-bar-color: $black;
 
 $primary-text-emphasis:   shade-color($primary, 60%);
-$secondary-text-emphasis: shade-color($secondary, 60%);
+$secondary-text-emphasis: $text-secondary;
 $success-text-emphasis:   shade-color($success, 60%);
 $info-text-emphasis:      shade-color($info, 60%);
 $warning-text-emphasis:   shade-color($warning, 60%);

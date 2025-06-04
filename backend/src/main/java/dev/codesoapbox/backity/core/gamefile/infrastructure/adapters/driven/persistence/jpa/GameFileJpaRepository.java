@@ -8,8 +8,10 @@ import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileNotFoundE
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -55,5 +57,15 @@ public class GameFileJpaRepository implements GameFileRepository {
     @Override
     public void deleteById(GameFileId gameFileId) {
         springRepository.deleteById(gameFileId.value());
+    }
+
+    @Override
+    public List<GameFile> findAllByIdIn(Collection<GameFileId> ids) {
+        List<UUID> gameFileUuids = ids.stream()
+                .map(GameFileId::value)
+                .toList();
+        return springRepository.findAllByIdIn(gameFileUuids).stream()
+                .map(entityMapper::toDomain)
+                .toList();
     }
 }

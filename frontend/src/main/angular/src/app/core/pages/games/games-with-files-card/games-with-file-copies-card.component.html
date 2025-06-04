@@ -23,7 +23,7 @@
         {{ asPotentialFileCopyWithContext(item).gameFile.fileSource.size }}
       </ng-template>
       <ng-template app-table-column="Status" let-item>
-        <app-file-status-badge [status]="asPotentialFileCopyWithContext(item).potentialFileCopy.status"></app-file-status-badge>
+        <app-file-copy-status-badge [status]="asPotentialFileCopyWithContext(item).potentialFileCopy.status"/>
       </ng-template>
       <ng-template app-table-column="Actions"
                    hide-title-on-mobile
@@ -64,15 +64,17 @@
                 <i class="bi bi-download" aria-hidden="true"></i>
                 Download
               </app-button>
-              <app-button [actionAsync]="onClickViewFilePath(asPotentialFileCopyWithContext(item).potentialFileCopy.id!)"
-                          testId="view-file-path-btn"
-                          buttonStyle="secondary">
+              <app-button
+                [actionAsync]="onClickViewFilePath(asPotentialFileCopyWithContext(item).potentialFileCopy.id!)"
+                testId="view-file-path-btn"
+                buttonStyle="secondary">
                 <i class="bi bi-device-hdd" aria-hidden="true"></i>
                 View file path
               </app-button>
-              <app-button [actionAsync]="onClickDeleteFileCopy(asPotentialFileCopyWithContext(item).potentialFileCopy.id!)"
-                          testId="delete-file-copy-btn"
-                          buttonStyle="danger">
+              <app-button
+                [actionAsync]="onClickDeleteFileCopy(asPotentialFileCopyWithContext(item).potentialFileCopy.id!)"
+                testId="delete-file-copy-btn"
+                buttonStyle="danger">
                 <i class="bi bi-trash" aria-hidden="true"></i>
                 Delete copy
               </app-button>
