@@ -7,5 +7,13 @@ import lombok.NonNull;
 public record FileCopyNaturalId(
         @NonNull GameFileId gameFileId,
         @NonNull BackupTargetId backupTargetId
-) {
+) implements Comparable<FileCopyNaturalId> {
+
+    @Override
+    public int compareTo(FileCopyNaturalId other) {
+        int gameFileComparison = this.gameFileId.compareTo(other.gameFileId);
+        return gameFileComparison != 0
+                ? gameFileComparison
+                : this.backupTargetId.compareTo(other.backupTargetId);
+    }
 }

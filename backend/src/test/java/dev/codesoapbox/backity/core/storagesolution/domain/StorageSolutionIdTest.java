@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.storagesolution.domain;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,4 +26,22 @@ class StorageSolutionIdTest {
                 .isEqualTo(idString);
     }
 
+    @Nested
+    class Comparable {
+
+        @Test
+        void shouldReturnZeroWhenComparingSameInstance() {
+            var id1 = new StorageSolutionId("S3");
+
+            assertThat(id1).isEqualByComparingTo(id1);
+        }
+
+        @Test
+        void shouldMaintainComparableAsymmetry() {
+            var id1 = new StorageSolutionId("S3");
+            var id2 = new StorageSolutionId("LOCAL_FILE_SYSTEM");
+
+            assertThat(id1.compareTo(id2)).isNotEqualTo(id2.compareTo(id1));
+        }
+    }
 }
