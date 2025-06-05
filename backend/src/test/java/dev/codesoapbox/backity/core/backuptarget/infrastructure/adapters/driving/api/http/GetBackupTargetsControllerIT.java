@@ -36,7 +36,7 @@ class GetBackupTargetsControllerIT {
                 [
                     {
                       "id": "eda52c13-ddf7-406f-97d9-d3ce2cab5a76",
-                      "title": "Local folder",
+                      "name": "Local folder",
                       "storageSolutionId": "storageSolution1",
                       "pathTemplate": "games/{GAME_PROVIDER_ID}/{TITLE}/{FILENAME}"
                     }
