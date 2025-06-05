@@ -21,9 +21,6 @@ import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
-@SuppressWarnings(
-        // These maps will be small, so lack of Comparable is not a big concern
-        "java:S6411")
 @RequiredArgsConstructor
 public class FileCopyWithContextFactory {
 

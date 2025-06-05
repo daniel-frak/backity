@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public record FileCopyId(
         @NonNull UUID value
-) {
+) implements Comparable<FileCopyId> {
 
     public FileCopyId(String value) {
         this(UUID.fromString(value));
@@ -19,5 +19,10 @@ public record FileCopyId(
     @Override
     public String toString() {
         return value.toString();
+    }
+
+    @Override
+    public int compareTo(FileCopyId other) {
+        return this.value.compareTo(other.value);
     }
 }

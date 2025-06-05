@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public record GameFileId(
         @NonNull UUID value
-) {
+) implements Comparable<GameFileId> {
 
     public GameFileId(String value) {
         this(UUID.fromString(value));
@@ -19,5 +19,10 @@ public record GameFileId(
     @Override
     public String toString() {
         return value.toString();
+    }
+
+    @Override
+    public int compareTo(GameFileId other) {
+        return this.value.compareTo(other.value);
     }
 }

@@ -11,9 +11,6 @@ import java.util.stream.Collectors;
 
 public class HardCodedStorageSolutionRepository implements StorageSolutionRepository {
 
-    @SuppressWarnings(
-            // This map will be small, so lack of Comparable on StorageSolution is not a big concern
-            "java:S6411")
     private final Map<StorageSolutionId, StorageSolution> storageSolutions;
 
     public HardCodedStorageSolutionRepository(List<StorageSolution> storageSolutions) {
