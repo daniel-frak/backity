@@ -278,6 +278,6 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
   }
 
   getBackupTargetName(backupTargetId: string): string {
-    return this.backupTargets?.find(backupTarget => backupTarget.id == backupTargetId)?.name ?? "";
+    return this.backupTargets.find(backupTarget => backupTarget.id == backupTargetId)?.name ?? "";
   }
 }
