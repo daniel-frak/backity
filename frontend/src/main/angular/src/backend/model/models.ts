@@ -30,4 +30,6 @@ export * from './pageFileCopyWithContext';
 export * from './pageGameWithFileCopies';
 export * from './pagination';
 export * from './refreshTokenResponse';
+export * from './storageSolutionStatus';
+export * from './storageSolutionStatusesResponse';
 export * from './validationError';

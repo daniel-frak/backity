@@ -65,7 +65,8 @@ class FileCopyWithContextHttpDtoMapperTest {
                         "Test Game"
                 ),
                 new BackupTargetInFileCopyContextHttpDto(
-                        "Local folder"
+                        "Local folder",
+                        "storageSolution1"
                 )
         );
     }

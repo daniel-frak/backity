@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.dri
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionStatus;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.FileCouldNotBeDeletedException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,5 +64,10 @@ public class LocalFileSystemStorageSolution implements StorageSolution {
     @Override
     public boolean fileExists(String filePath) {
         return Files.exists(Paths.get(filePath));
+    }
+
+    @Override
+    public StorageSolutionStatus getStatus() {
+        return StorageSolutionStatus.CONNECTED;
     }
 }

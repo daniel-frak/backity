@@ -1,9 +1,11 @@
 package dev.codesoapbox.backity.core.backuptarget.domain;
 
+import lombok.NonNull;
+
 import java.util.UUID;
 
 public record BackupTargetId(
-        UUID value
+        @NonNull UUID value
 ) implements Comparable<BackupTargetId> {
 
     public BackupTargetId(String value) {

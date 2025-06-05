@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.dri
 
 import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionStatus;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.FileCouldNotBeDeletedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -181,5 +182,12 @@ class LocalFileSystemStorageSolutionIT {
         boolean result = localFileSystem.fileExists(nonExistentFilePath);
 
         assertThat(result).isFalse();
+    }
+
+    @Test
+    void getStatusShouldReturnConnected() {
+        StorageSolutionStatus result = localFileSystem.getStatus();
+
+        assertThat(result).isEqualTo(StorageSolutionStatus.CONNECTED);
     }
 }

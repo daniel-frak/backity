@@ -15,7 +15,8 @@
       <app-icon-item iconClass="bi bi-copy">
         <ng-container title>
           {{ fileCopyWithContext.backupTarget.name }}
-          <app-storage-solution-status-badge/>
+          <app-storage-solution-status-badge
+            [status]="getStorageSolutionStatus(fileCopyWithContext.backupTarget.storageSolutionId)"/>
         </ng-container>
         <ng-container descriptor>
           <app-file-copy-status-badge [status]="fileCopyWithContext.fileCopy.status"/>

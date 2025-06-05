@@ -16,4 +16,6 @@ export * from './h2Database.service';
 import { H2DatabaseClient } from './h2Database.service';
 export * from './logs.service';
 import { LogsClient } from './logs.service';
-export const APIS = [BackupTargetsClient, FileCopiesClient, GOGClient, GOGAuthenticationClient, GOGConfigurationClient, GameContentDiscoveryClient, GamesClient, H2DatabaseClient, LogsClient];
+export * from './storageSolutions.service';
+import { StorageSolutionsClient } from './storageSolutions.service';
+export const APIS = [BackupTargetsClient, FileCopiesClient, GOGClient, GOGAuthenticationClient, GOGConfigurationClient, GameContentDiscoveryClient, GamesClient, H2DatabaseClient, LogsClient, StorageSolutionsClient];

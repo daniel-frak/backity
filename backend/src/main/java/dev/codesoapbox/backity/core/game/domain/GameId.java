@@ -1,9 +1,11 @@
 package dev.codesoapbox.backity.core.game.domain;
 
+import lombok.NonNull;
+
 import java.util.UUID;
 
 public record GameId(
-        UUID value
+        @NonNull UUID value
 ) implements Comparable<GameId> {
 
     public GameId(String value) {

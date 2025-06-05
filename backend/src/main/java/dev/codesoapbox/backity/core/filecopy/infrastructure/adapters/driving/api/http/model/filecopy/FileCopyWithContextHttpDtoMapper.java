@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.filecopy.application.usecases.FileCopyWithCo
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
@@ -32,5 +33,9 @@ public abstract class FileCopyWithContextHttpDtoMapper {
 
     protected String getValue(FileSize fileSize) {
         return fileSize.toString();
+    }
+
+    protected String getValue(StorageSolutionId id) {
+        return id.value();
     }
 }

@@ -7,10 +7,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { StorageSolutionStatus } from './storageSolutionStatus';
 
 
-export interface BackupTargetInFileCopyContext {
-    name: string;
-    storageSolutionId: string;
+export interface StorageSolutionStatusesResponse {
+    statuses: { [key: string]: StorageSolutionStatus; };
 }
 

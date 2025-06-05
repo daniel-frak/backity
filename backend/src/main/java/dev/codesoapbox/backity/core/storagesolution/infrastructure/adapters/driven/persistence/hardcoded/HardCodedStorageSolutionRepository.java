@@ -27,4 +27,9 @@ public class HardCodedStorageSolutionRepository implements StorageSolutionReposi
 
         return storageSolution;
     }
+
+    @Override
+    public List<StorageSolution> findAll() {
+        return storageSolutions.values().stream().toList();
+    }
 }

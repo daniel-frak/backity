@@ -37,4 +37,11 @@ class HardCodedStorageSolutionRepositoryTest {
                 .isInstanceOf(StorageSolutionNotFoundException.class)
                 .hasMessageContaining(nonExistentId.toString());
     }
+
+    @Test
+    void shouldFindAll() {
+        List<StorageSolution> result = repository.findAll();
+
+        assertThat(result).containsExactly(fakeUnixStorageSolution);
+    }
 }
