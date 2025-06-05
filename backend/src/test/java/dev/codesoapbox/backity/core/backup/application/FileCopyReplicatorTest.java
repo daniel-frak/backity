@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.backup.application;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgressFactory;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
@@ -34,7 +35,7 @@ class FileCopyReplicatorTest {
         GameFile gameFile = TestGameFile.gog();
         FileCopy fileCopy = TestFileCopy.inProgress();
         mockGameProviderExistsFor(gameFile);
-        DownloadProgress downloadProgress = mockDownloadProgressCreation();
+        DownloadProgress downloadProgress = mockDownloadProgressCreation(fileCopy.getId());
         var fileCopyReplicator = new FileCopyReplicator(
                 List.of(gameProviderFileBackupService), downloadProgressFactory);
 
@@ -48,9 +49,9 @@ class FileCopyReplicatorTest {
                 .thenReturn(gameFile.getFileSource().gameProviderId());
     }
 
-    private DownloadProgress mockDownloadProgressCreation() {
+    private DownloadProgress mockDownloadProgressCreation(FileCopyId fileCopyId) {
         DownloadProgress downloadProgress = mock(DownloadProgress.class);
-        when(downloadProgressFactory.create())
+        when(downloadProgressFactory.create(fileCopyId))
                 .thenReturn(downloadProgress);
         return downloadProgress;
     }

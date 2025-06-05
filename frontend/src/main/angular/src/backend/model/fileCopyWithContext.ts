@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Progress } from './progress';
 import { BackupTargetInFileCopyContext } from './backupTargetInFileCopyContext';
 import { GameFileInFileCopyContext } from './gameFileInFileCopyContext';
 import { FileCopy } from './fileCopy';
@@ -18,5 +19,6 @@ export interface FileCopyWithContext {
     gameFile: GameFileInFileCopyContext;
     game: GameInFileCopyContext;
     backupTarget: BackupTargetInFileCopyContext;
+    progress?: Progress;
 }
 

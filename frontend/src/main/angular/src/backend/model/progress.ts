@@ -7,10 +7,10 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { StorageSolutionStatus } from './storageSolutionStatus';
 
 
-export interface StorageSolutionStatusesResponse { 
-    statuses: { [key: string]: StorageSolutionStatus; };
+export interface Progress { 
+    percentage: number;
+    timeLeftSeconds: number;
 }
 

@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy;
 
+import dev.codesoapbox.backity.core.backup.domain.TestFileCopyReplicationProgress;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.FileCopyWithContext;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
@@ -7,6 +8,7 @@ import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.FileCopyStatusHttpDto;
 import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.FileSourceHttpDto;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.ProgressHttpDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -25,7 +27,8 @@ class FileCopyWithContextHttpDtoMapperTest {
                 TestFileCopy.inProgress(),
                 TestGameFile.gog(),
                 TestGame.any(),
-                TestBackupTarget.localFolder()
+                TestBackupTarget.localFolder(),
+                TestFileCopyReplicationProgress.twentyFivePercent()
         );
 
         var result = MAPPER.toDto(domain);
@@ -67,6 +70,10 @@ class FileCopyWithContextHttpDtoMapperTest {
                 new BackupTargetInFileCopyContextHttpDto(
                         "Local folder",
                         "storageSolution1"
+                ),
+                new ProgressHttpDto(
+                        25,
+                        10
                 )
         );
     }

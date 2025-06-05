@@ -5,6 +5,8 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyNaturalId;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 
+import java.time.Duration;
+
 public final class TestFileBackupEvent {
 
     private static final GameFileId GAME_FILE_ID = new GameFileId("acde26d7-33c7-42ee-be16-bca91a604b48");
@@ -38,8 +40,9 @@ public final class TestFileBackupEvent {
 
     public static FileDownloadProgressChangedEvent progressChanged() {
         return new FileDownloadProgressChangedEvent(
+                FILE_COPY_ID,
                 50,
-                999
+                Duration.ofSeconds(999)
         );
     }
 }

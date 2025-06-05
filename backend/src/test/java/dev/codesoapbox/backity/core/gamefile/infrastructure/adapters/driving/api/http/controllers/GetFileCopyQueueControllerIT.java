@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.controllers;
 
+import dev.codesoapbox.backity.core.backup.domain.TestFileCopyReplicationProgress;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.FileCopyWithContext;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.GetFileCopyQueueUseCase;
@@ -68,6 +69,10 @@ class GetFileCopyQueueControllerIT {
                       backupTarget: {
                         name: "Local folder",
                         "storageSolutionId": "storageSolution1"
+                      },
+                      progress: {
+                        percentage: 25,
+                        timeLeftSeconds: 10
                       }
                     }
                   ],
@@ -90,7 +95,8 @@ class GetFileCopyQueueControllerIT {
                 TestFileCopy.enqueued(),
                 TestGameFile.gog(),
                 TestGame.any(),
-                TestBackupTarget.localFolder()
+                TestBackupTarget.localFolder(),
+                TestFileCopyReplicationProgress.twentyFivePercent()
         );
         when(getEnqueuedFilesUseCase.getFileCopyQueue(expectedPagination))
                 .thenReturn(pageWith(fileCopyWithContext));

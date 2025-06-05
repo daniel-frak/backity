@@ -1,5 +1,8 @@
 package dev.codesoapbox.backity.core.filecopy.application;
 
+import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgress;
+import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
+import dev.codesoapbox.backity.core.backup.domain.TestFileCopyReplicationProgress;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
@@ -41,10 +44,13 @@ class FileCopyWithContextFactoryTest {
     @Mock
     private BackupTargetRepository backupTargetRepository;
 
+    @Mock
+    private FileCopyReplicationProgressRepository replicationProgressRepository;
+
     @BeforeEach
     void setUp() {
         fileCopyWithContextFactory = new FileCopyWithContextFactory(
-                gameFileRepository, gameRepository, backupTargetRepository);
+                gameFileRepository, gameRepository, backupTargetRepository, replicationProgressRepository);
     }
 
     @Test
@@ -55,11 +61,13 @@ class FileCopyWithContextFactoryTest {
         GameFile gameFile = mockGameFileExists(fileCopy);
         Game game = mockGameExists(gameFile);
         BackupTarget backupTarget = mockBackupTargetExists(fileCopy);
+        FileCopyReplicationProgress replicationProgress = mockReplicationProgressExists(fileCopy);
 
         Page<FileCopyWithContext> result = fileCopyWithContextFactory.createPageFrom(fileCopyPage);
 
         Page<FileCopyWithContext> expectedResult = TestPage.of(
-                List.of(new FileCopyWithContext(fileCopy, gameFile, game, backupTarget)), pagination);
+                List.of(new FileCopyWithContext(fileCopy, gameFile, game, backupTarget, replicationProgress)),
+                pagination);
         assertThat(result).usingRecursiveComparison()
                 .isEqualTo(expectedResult);
     }
@@ -92,5 +100,13 @@ class FileCopyWithContextFactoryTest {
                 .thenReturn(List.of(backupTarget));
 
         return backupTarget;
+    }
+
+    private FileCopyReplicationProgress mockReplicationProgressExists(FileCopy fileCopy) {
+        FileCopyReplicationProgress replicationProgress = TestFileCopyReplicationProgress.twentyFivePercent();
+        when(replicationProgressRepository.findAllByFileCopyIdIn(Set.of(fileCopy.getId())))
+                .thenReturn(List.of(replicationProgress));
+
+        return replicationProgress;
     }
 }

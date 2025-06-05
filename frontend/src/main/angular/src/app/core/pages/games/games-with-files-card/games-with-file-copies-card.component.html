@@ -29,9 +29,8 @@
                    hide-title-on-mobile
                    let-item>
         <div class="button-container justify-content-end d-flex align-items-center">
-          <ng-container *ngIf="asPotentialFileCopyWithContext(item).progress">
-            <app-progress-bar [percentage]="asPotentialFileCopyWithContext(item).progress?.percentage ?? 0"/>
-          </ng-container>
+          <app-progress-bar *ngIf="asPotentialFileCopyWithContext(item).progress"
+                            [percentage]="asPotentialFileCopyWithContext(item).progress?.percentage ?? 0"/>
 
           <app-button [actionAsync]="onClickEnqueueFileCopy(asPotentialFileCopyWithContext(item).potentialFileCopy)"
                       *ngIf="!asPotentialFileCopyWithContext(item).potentialFileCopy.status

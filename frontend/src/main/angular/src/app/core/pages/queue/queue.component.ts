@@ -28,6 +28,7 @@ import {
 import {
   GameFileVersionBadgeComponent
 } from "@app/core/components/game-file-version-badge/game-file-version-badge.component";
+import {ProgressBarComponent} from "@app/shared/components/progress-bar/progress-bar.component";
 
 @Component({
   selector: 'app-queue',
@@ -44,7 +45,8 @@ import {
     NamedValueComponent,
     StorageSolutionStatusBadgeComponent,
     FileCopyStatusBadgeComponent,
-    GameFileVersionBadgeComponent
+    GameFileVersionBadgeComponent,
+    ProgressBarComponent
   ],
   templateUrl: './queue.component.html',
   styleUrl: './queue.component.scss'
@@ -106,6 +108,10 @@ export class QueueComponent implements OnInit, OnDestroy {
       this.findFileCopyWithContextInQueue(event.fileCopyId);
     if (foundFileCopyWithContext) {
       foundFileCopyWithContext.fileCopy.status = FileCopyStatus.InProgress;
+      foundFileCopyWithContext.progress = {
+        percentage: 0,
+        timeLeftSeconds: 0
+      }
     }
   }
 
