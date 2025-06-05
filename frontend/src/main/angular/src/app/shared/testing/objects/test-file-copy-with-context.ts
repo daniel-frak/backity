@@ -13,7 +13,7 @@ export namespace TestFileCopyWithContext {
         title: "Test Game"
       },
       backupTarget: {
-        title: "Test backup target"
+        name: "Test backup target"
       }
     };
   }

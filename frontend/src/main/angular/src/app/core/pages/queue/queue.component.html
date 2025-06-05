@@ -14,7 +14,7 @@
     <ng-container *ngFor="let fileCopyWithContext of fileCopyWithContextPage?.content">
       <app-icon-item iconClass="bi bi-copy">
         <ng-container title>
-          {{ fileCopyWithContext.backupTarget.title }}
+          {{ fileCopyWithContext.backupTarget.name }}
           <app-storage-solution-status-badge/>
         </ng-container>
         <ng-container descriptor>

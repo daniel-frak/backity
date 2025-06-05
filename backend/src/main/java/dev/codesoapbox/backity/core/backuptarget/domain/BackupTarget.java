@@ -14,7 +14,7 @@ public class BackupTarget {
 
     @NonNull
     @Setter
-    private String title;
+    private String name;
 
     @NonNull
     private StorageSolutionId storageSolutionId;

@@ -6,7 +6,7 @@ export namespace TestBackupTarget {
     return {
       id: "localFolderBackupTargetId",
       storageSolutionId: "someStorageSolutionId",
-      title: "Local folder backup target",
+      name: "Local folder backup target",
       pathTemplate: "somePathTemplate"
     };
   }
@@ -15,7 +15,7 @@ export namespace TestBackupTarget {
     return {
       id: "s3BackupTargetId",
       storageSolutionId: "someStorageSolutionId",
-      title: "Local folder backup target",
+      name: "Local folder backup target",
       pathTemplate: "somePathTemplate"
     };
   }
