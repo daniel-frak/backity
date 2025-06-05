@@ -13,7 +13,8 @@ export namespace TestFileCopyWithContext {
         title: "Test Game"
       },
       backupTarget: {
-        name: "Test backup target"
+        name: "Test backup target",
+        storageSolutionId: "someStorageSolutionId"
       }
     };
   }

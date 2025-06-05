@@ -5,7 +5,7 @@ import {
   FileCopyStatus,
   FileCopyStatusChangedEvent,
   FileCopyWithContext,
-  PageFileCopyWithContext
+  PageFileCopyWithContext, StorageSolutionsClient, StorageSolutionStatus, StorageSolutionStatusesResponse
 } from "@backend";
 import {firstValueFrom, Subscription} from "rxjs";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
@@ -56,12 +56,14 @@ export class QueueComponent implements OnInit, OnDestroy {
   fileCopyWithContextPage?: PageFileCopyWithContext;
   pageNumber: number = 1;
   pageSize: number = 3;
+  storageSolutionStatusesById: Map<string, StorageSolutionStatus> = new Map();
 
   protected readonly FileCopyStatus = FileCopyStatus;
 
   private readonly subscriptions: Subscription[] = [];
 
   constructor(private readonly fileCopiesClient: FileCopiesClient,
+              private readonly storageSolutionsClient: StorageSolutionsClient,
               private readonly messageService: MessagesService,
               private readonly notificationService: NotificationService) {
   }
@@ -120,6 +122,12 @@ export class QueueComponent implements OnInit, OnDestroy {
           page: this.pageNumber - 1,
           size: this.pageSize
         }));
+
+      const storageSolutionStatusesResponse: StorageSolutionStatusesResponse = await firstValueFrom(
+        this.storageSolutionsClient.getStorageSolutionStatuses());
+        this.storageSolutionStatusesById = new Map<string, StorageSolutionStatus>(
+          Object.entries(storageSolutionStatusesResponse.statuses)
+        );
     } catch (error) {
       this.notificationService.showFailure('Error fetching enqueued files', error);
     } finally {
@@ -137,5 +145,9 @@ export class QueueComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
+  }
+
+  getStorageSolutionStatus(storageSolutionId: string) {
+    return this.storageSolutionStatusesById.get(storageSolutionId);
   }
 }

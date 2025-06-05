@@ -41,6 +41,9 @@
 
     .title {
       font-weight: $font-weight-medium;
+      display: flex;
+      align-items: center;
+      gap: map_get($spacers, 2);
     }
   }
 

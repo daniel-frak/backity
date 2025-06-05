@@ -9,7 +9,7 @@ import {
   FileCopyStatus,
   FileCopyStatusChangedEvent,
   FileCopyWithContext,
-  PageFileCopyWithContext
+  PageFileCopyWithContext, StorageSolutionsClient, StorageSolutionStatus, StorageSolutionStatusesResponse
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
@@ -30,12 +30,18 @@ describe('QueueComponent', () => {
   let fixture: ComponentFixture<QueueComponent>;
 
   let fileCopiesClient: SpyObj<FileCopiesClient>;
+  let storageSolutionsClient: SpyObj<StorageSolutionsClient>;
   let messagesService: SpyObj<MessagesService>;
   let notificationService: NotificationService;
 
   const initialEnqueuedFileCopy: FileCopy = TestFileCopy.enqueued();
   const initialFileCopyWithContext: FileCopyWithContext = TestFileCopyWithContext.withFileCopy(initialEnqueuedFileCopy);
   const initialQueue: PageFileCopyWithContext = TestPage.of([initialFileCopyWithContext]);
+  const initialStorageSolutionStatusResponse: StorageSolutionStatusesResponse = {
+    statuses: {
+      "someStorageSolutionId": "CONNECTED"
+    }
+  };
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -44,6 +50,10 @@ describe('QueueComponent', () => {
         {
           provide: FileCopiesClient,
           useValue: createSpyObj('FileCopiesClient', ['getFileCopyQueue'])
+        },
+        {
+          provide: StorageSolutionsClient,
+          useValue: createSpyObj('StorageSolutionsClient', ['getStorageSolutionStatuses'])
         },
         {
           provide: MessagesService,
@@ -62,11 +72,14 @@ describe('QueueComponent', () => {
     component = fixture.componentInstance;
 
     fileCopiesClient = TestBed.inject(FileCopiesClient) as SpyObj<FileCopiesClient>;
+    storageSolutionsClient = TestBed.inject(StorageSolutionsClient) as SpyObj<StorageSolutionsClient>;
     messagesService = TestBed.inject(MessagesService) as SpyObj<MessagesService>;
     notificationService = TestBed.inject(NotificationService);
 
     fileCopiesClient.getFileCopyQueue.withArgs(anything())
       .and.returnValue(of(JSON.parse(JSON.stringify(initialQueue))) as any);
+    storageSolutionsClient.getStorageSolutionStatuses
+      .and.returnValue(of(JSON.parse(JSON.stringify(initialStorageSolutionStatusResponse))));
 
     MessageTesting.mockWatch(messagesService, (destination, callback) => {
       // Do nothing
@@ -132,6 +145,26 @@ describe('QueueComponent', () => {
   function assertQueueContains(fileCopyWithContext: FileCopyWithContext) {
     expect(fixture.nativeElement.textContent).toContain(fileCopyWithContext.gameFile.fileSource.fileTitle);
   }
+
+  it('should retrieve storage solution statuses on init', async () => {
+    fixture.detectChanges();
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    expect(storageSolutionsClient.getStorageSolutionStatuses).toHaveBeenCalled();
+    expect(component.fileCopiesAreLoading).toBe(false);
+    expect(fixture.nativeElement.textContent).toContain("CONNECTED");
+  });
+
+  it('should get storage solution status', async () => {
+    component.storageSolutionStatusesById = new Map<string, StorageSolutionStatus>();
+    component.storageSolutionStatusesById.set("someStorageSolutionId", "CONNECTED");
+
+    const result: StorageSolutionStatus | undefined =
+      component.getStorageSolutionStatus("someStorageSolutionId");
+
+    expect(result).toEqual("CONNECTED");
+  });
 
   it('should log an error when removeFromQueue is called', async () => {
     await component.removeFromQueue();

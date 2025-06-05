@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.dri
 
 import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionStatus;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.FileCouldNotBeDeletedException;
 import dev.codesoapbox.backity.testing.s3.annotations.S3RepositoryTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -202,5 +203,30 @@ class S3StorageSolutionIT {
         boolean result = s3StorageSolution.fileExists(nonExistentFilePath);
 
         assertThat(result).isFalse();
+    }
+
+    @Test
+    void getStatusShouldReturnConnectedGivenBucketCanBeAccessed() {
+        StorageSolutionStatus result = s3StorageSolution.getStatus();
+
+        assertThat(result).isEqualTo(StorageSolutionStatus.CONNECTED);
+    }
+
+    @Test
+    void getStatusShouldReturnNotConnectedGivenBucketCannotBeAccessed() {
+        S3StorageSolution failingStorageSolution = createNotConnectedStorageSolution();
+
+        StorageSolutionStatus result = failingStorageSolution.getStatus();
+
+        assertThat(result).isEqualTo(StorageSolutionStatus.NOT_CONNECTED);
+    }
+
+    @SuppressWarnings("unchecked")
+    private S3StorageSolution createNotConnectedStorageSolution() {
+        S3Client failingClient = mock(S3Client.class);
+        when(failingClient.headBucket(any(Consumer.class)))
+                .thenThrow(new RuntimeException("Simulated connectivity failure"));
+
+        return new S3StorageSolution(failingClient, BUCKET_NAME, BUFFER_SIZE_IN_BYTES);
     }
 }

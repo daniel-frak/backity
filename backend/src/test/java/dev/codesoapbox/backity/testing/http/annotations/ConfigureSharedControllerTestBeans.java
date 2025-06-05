@@ -18,6 +18,8 @@ import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.gamefile.infrastructure.config.GameFileControllerBeanConfig;
 import dev.codesoapbox.backity.core.logs.application.GetLogsUseCase;
 import dev.codesoapbox.backity.core.logs.domain.services.LogService;
+import dev.codesoapbox.backity.core.storagesolution.application.GetStorageSolutionStatusesUseCase;
+import dev.codesoapbox.backity.core.storagesolution.infrastructure.config.StorageSolutionControllerBeanConfig;
 import dev.codesoapbox.backity.gameproviders.gog.application.usecases.*;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
@@ -46,7 +48,8 @@ import java.lang.annotation.Target;
         GameControllerBeanConfig.class,
         GameFileControllerBeanConfig.class,
         FileCopyControllerBeanConfig.class,
-        BackupTargetControllerBeanConfig.class
+        BackupTargetControllerBeanConfig.class,
+        StorageSolutionControllerBeanConfig.class
 })
 @MockitoBean(types = {
         // Common
@@ -76,7 +79,8 @@ import java.lang.annotation.Target;
         GetGogLibrarySizeUseCase.class,
         GetGogGameDetailsUseCase.class,
         GetLogsUseCase.class,
-        GetBackupTargetsUseCase.class
+        GetBackupTargetsUseCase.class,
+        GetStorageSolutionStatusesUseCase.class
 })
 public @interface ConfigureSharedControllerTestBeans {
 }

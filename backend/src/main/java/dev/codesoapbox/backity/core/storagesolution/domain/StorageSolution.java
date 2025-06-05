@@ -19,4 +19,6 @@ public interface StorageSolution {
     FileResource getFileResource(String filePath) throws FileNotFoundException;
 
     boolean fileExists(String filePath);
+
+    StorageSolutionStatus getStatus();
 }

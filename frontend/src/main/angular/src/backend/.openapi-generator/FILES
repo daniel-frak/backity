@@ -12,6 +12,7 @@ api/gameContentDiscovery.service.ts
 api/games.service.ts
 api/h2Database.service.ts
 api/logs.service.ts
+api/storageSolutions.service.ts
 configuration.ts
 encoder.ts
 git_push.sh
@@ -49,6 +50,8 @@ model/pageFileCopyWithContext.ts
 model/pageGameWithFileCopies.ts
 model/pagination.ts
 model/refreshTokenResponse.ts
+model/storageSolutionStatus.ts
+model/storageSolutionStatusesResponse.ts
 model/validationError.ts
 param.ts
 variables.ts

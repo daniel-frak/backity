@@ -129,6 +129,11 @@ public class FakeUnixStorageSolution implements StorageSolution {
         return bytesWrittenPerFilePath.getOrDefault(filePath, 0L) > 0;
     }
 
+    @Override
+    public StorageSolutionStatus getStatus() {
+        return StorageSolutionStatus.CONNECTED;
+    }
+
     public void createFile(String filePath) {
         bytesWrittenPerFilePath.put(filePath, 1L);
     }

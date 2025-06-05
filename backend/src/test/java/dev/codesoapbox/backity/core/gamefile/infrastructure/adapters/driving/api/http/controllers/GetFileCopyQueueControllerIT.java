@@ -66,7 +66,8 @@ class GetFileCopyQueueControllerIT {
                         title: "Test Game"
                       },
                       backupTarget: {
-                        name: "Local folder"
+                        name: "Local folder",
+                        "storageSolutionId": "storageSolution1"
                       }
                     }
                   ],

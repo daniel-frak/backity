@@ -6,5 +6,8 @@
 }
 
 .value {
+  display: flex;
+  align-items: center;
+  gap: map_get($spacers, 2);
   color: $text-secondary;
 }

@@ -1,8 +1,9 @@
 package dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.driven.filesystem;
 
-import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionStatus;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.FileCouldNotBeDeletedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,13 +27,13 @@ public class S3StorageSolution implements StorageSolution {
     private final int bufferSizeInBytes;
 
     @Override
-    @SuppressWarnings("java:S1166")
-    public boolean fileExists(String key) {
+    public StorageSolutionStatus getStatus() {
         try {
-            s3Client.headObject(request -> request.bucket(bucketName).key(key));
-            return true;
-        } catch (NoSuchKeyException e) {
-            return false;
+            s3Client.headBucket(request -> request.bucket(bucketName));
+            return StorageSolutionStatus.CONNECTED;
+        } catch (RuntimeException e) {
+            log.debug("S3 storage solution connectivity check failed", e);
+            return StorageSolutionStatus.NOT_CONNECTED;
         }
     }
 
@@ -43,10 +44,21 @@ public class S3StorageSolution implements StorageSolution {
 
     @Override
     public OutputStream getOutputStream(String stringPath) throws FileAlreadyExistsException {
-        if(fileExists(stringPath)) {
+        if (fileExists(stringPath)) {
             throw new FileAlreadyExistsException(stringPath);
         }
         return new S3OutputStream(s3Client, bucketName, stringPath, bufferSizeInBytes);
+    }
+
+    @Override
+    @SuppressWarnings("java:S1166")
+    public boolean fileExists(String key) {
+        try {
+            s3Client.headObject(request -> request.bucket(bucketName).key(key));
+            return true;
+        } catch (NoSuchKeyException e) {
+            return false;
+        }
     }
 
     @Override
