@@ -198,18 +198,19 @@ describe('QueueComponent', () => {
     assertQueueContains(initialFileCopyWithContext);
   });
 
-  it('should update file copy status in queue when status changed event is received' +
+  it('should update file copy status and progress in queue when status changed event is received' +
     ' and new status is in progress', async () => {
     component.fileCopyWithContextPage = TestPage.of([initialFileCopyWithContext]);
     await simulateFileCopyStatusChangedEventReceived(
       initialEnqueuedFileCopy.id, initialEnqueuedFileCopy.naturalId, FileCopyStatus.InProgress);
 
     assertQueueContains(initialFileCopyWithContext);
-    expect(firstFileCopyInQueue()?.status).toEqual(FileCopyStatus.InProgress);
+    expect(firstFileCopyWithContextInQueue()?.fileCopy.status).toEqual(FileCopyStatus.InProgress);
+    expect(firstFileCopyWithContextInQueue()?.progress?.percentage).toEqual(0);
   });
 
-  function firstFileCopyInQueue(): FileCopy | undefined {
-    return component.fileCopyWithContextPage?.content?.[0].fileCopy;
+  function firstFileCopyWithContextInQueue(): FileCopyWithContext | undefined {
+    return component.fileCopyWithContextPage?.content?.[0];
   }
 
   async function simulateFileCopyStatusChangedEventReceived(

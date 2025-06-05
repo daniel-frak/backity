@@ -22,6 +22,8 @@
           <app-file-copy-status-badge [status]="fileCopyWithContext.fileCopy.status"/>
         </ng-container>
         <ng-container buttons>
+          <app-progress-bar *ngIf="fileCopyWithContext.progress"
+            [percentage]="fileCopyWithContext.progress?.percentage ?? 0"/>
           <app-button [actionAsync]="onClickRemoveFromQueue(fileCopyWithContext.fileCopy.id!)" buttonStyle="primary"
                       *ngIf="fileCopyWithContext.fileCopy.status == FileCopyStatus.Enqueued">
             Cancel

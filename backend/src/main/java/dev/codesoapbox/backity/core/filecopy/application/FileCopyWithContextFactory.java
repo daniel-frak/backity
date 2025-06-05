@@ -1,10 +1,13 @@
 package dev.codesoapbox.backity.core.filecopy.application;
 
+import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgress;
+import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.FileCopyWithContext;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
@@ -27,14 +30,17 @@ public class FileCopyWithContextFactory {
     private final GameFileRepository gameFileRepository;
     private final GameRepository gameRepository;
     private final BackupTargetRepository backupTargetRepository;
+    private final FileCopyReplicationProgressRepository fileCopyReplicationProgressRepository;
 
     public Page<FileCopyWithContext> createPageFrom(Page<FileCopy> fileCopyPage) {
         Map<GameFileId, GameFile> gameFilesById = getGameFilesById(fileCopyPage);
         Map<GameId, Game> gamesById = getGamesById(gameFilesById);
         Map<BackupTargetId, BackupTarget> backupTargetsById = getBackupTargetsById(fileCopyPage);
+        Map<FileCopyId, FileCopyReplicationProgress> replicationProgressesByFileCopyId =
+                getReplicationProgressesByFileCopyId(fileCopyPage);
 
-        return fileCopyPage
-                .map(fileCopy -> toFileCopyWithContext(fileCopy, gameFilesById, gamesById, backupTargetsById));
+        return fileCopyPage.map(fileCopy -> toFileCopyWithContext(
+                fileCopy, gameFilesById, gamesById, backupTargetsById, replicationProgressesByFileCopyId));
     }
 
     private Map<GameFileId, GameFile> getGameFilesById(Page<FileCopy> fileCopyPage) {
@@ -55,14 +61,27 @@ public class FileCopyWithContextFactory {
                 .collect(toMap(Game::getId, identity()));
     }
 
-    private FileCopyWithContext toFileCopyWithContext(FileCopy fileCopy, Map<GameFileId, GameFile> gameFilesById,
-                                                      Map<GameId, Game> gamesById,
-                                                      Map<BackupTargetId, BackupTarget> backupTargetsById) {
+    private Map<FileCopyId, FileCopyReplicationProgress> getReplicationProgressesByFileCopyId(
+            Page<FileCopy> fileCopyPage) {
+        Set<FileCopyId> fileCopyIds = fileCopyPage.content().stream()
+                .map(FileCopy::getId)
+                .collect(toSet());
+
+        return fileCopyReplicationProgressRepository.findAllByFileCopyIdIn(fileCopyIds).stream()
+                .collect(toMap(FileCopyReplicationProgress::fileCopyId, identity()));
+    }
+
+    private FileCopyWithContext toFileCopyWithContext(
+            FileCopy fileCopy, Map<GameFileId, GameFile> gameFilesById,
+            Map<GameId, Game> gamesById,
+            Map<BackupTargetId, BackupTarget> backupTargetsById,
+            Map<FileCopyId, FileCopyReplicationProgress> replicationProgressesByFileCopyId) {
         GameFile gameFile = gameFilesById.get(fileCopy.getNaturalId().gameFileId());
         Game game = gamesById.get(gameFile.getGameId());
         BackupTarget backupTarget = backupTargetsById.get(fileCopy.getNaturalId().backupTargetId());
+        FileCopyReplicationProgress replicationProgress = replicationProgressesByFileCopyId.get(fileCopy.getId());
 
-        return new FileCopyWithContext(fileCopy, gameFile, game, backupTarget);
+        return new FileCopyWithContext(fileCopy, gameFile, game, backupTarget, replicationProgress);
     }
 
     private Map<BackupTargetId, BackupTarget> getBackupTargetsById(Page<FileCopy> fileCopyPage) {

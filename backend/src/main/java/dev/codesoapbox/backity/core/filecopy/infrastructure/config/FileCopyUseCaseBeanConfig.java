@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.config;
 
 import dev.codesoapbox.backity.core.backup.application.FileCopyFactory;
+import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
 import dev.codesoapbox.backity.core.filecopy.application.FileCopyWithContextFactory;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.DeleteFileCopyUseCase;
@@ -32,8 +33,10 @@ public class FileCopyUseCaseBeanConfig {
     @Bean
     public FileCopyWithContextFactory fileCopyWithContextFactory(
             GameFileRepository gameFileRepository, GameRepository gameRepository,
-            BackupTargetRepository backupTargetRepository) {
-        return new FileCopyWithContextFactory(gameFileRepository, gameRepository, backupTargetRepository);
+            BackupTargetRepository backupTargetRepository,
+            FileCopyReplicationProgressRepository replicationProgressRepository) {
+        return new FileCopyWithContextFactory(gameFileRepository, gameRepository, backupTargetRepository,
+                replicationProgressRepository);
     }
 
     @Bean

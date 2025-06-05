@@ -29,6 +29,7 @@ export * from './logsMessageTopics';
 export * from './pageFileCopyWithContext';
 export * from './pageGameWithFileCopies';
 export * from './pagination';
+export * from './progress';
 export * from './refreshTokenResponse';
 export * from './storageSolutionStatus';
 export * from './storageSolutionStatusesResponse';

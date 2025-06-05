@@ -49,6 +49,7 @@ model/models.ts
 model/pageFileCopyWithContext.ts
 model/pageGameWithFileCopies.ts
 model/pagination.ts
+model/progress.ts
 model/refreshTokenResponse.ts
 model/storageSolutionStatus.ts
 model/storageSolutionStatusesResponse.ts

@@ -64,7 +64,8 @@ class GetFileCopyQueueUseCaseTest {
                         TestFileCopy.enqueued(),
                         TestGameFile.gog(),
                         TestGame.any(),
-                        TestBackupTarget.localFolder()
+                        TestBackupTarget.localFolder(),
+                        null
                 )
         ), pagination);
         when(fileCopyWithContextFactory.createPageFrom(fileCopyPage))
