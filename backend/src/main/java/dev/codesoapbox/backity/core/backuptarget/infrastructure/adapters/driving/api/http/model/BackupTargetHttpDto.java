@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 @Schema(name = "BackupTarget")
 public record BackupTargetHttpDto(
         @NotNull String id,
-        @NotNull String title,
+        @NotNull String name,
         @NotNull String storageSolutionId,
         @NotNull String pathTemplate
 ) {

@@ -11,7 +11,7 @@
 
 export interface BackupTarget { 
     id: string;
-    title: string;
+    name: string;
     storageSolutionId: string;
     pathTemplate: string;
 }

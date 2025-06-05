@@ -117,8 +117,8 @@ describe('GamesWithFileCopiesCardComponent', () => {
     const pageText = fixture.debugElement.nativeElement.textContent;
     expect(pageText).toContain(gameWithFileCopies.title);
     expect(pageText).toContain(gameWithFileCopies.gameFilesWithCopies[0].gameFile.fileSource.fileTitle);
-    expect(pageText).toContain(localFolderBackupTarget.title);
-    expect(pageText).toContain(s3BackupTarget.title);
+    expect(pageText).toContain(localFolderBackupTarget.name);
+    expect(pageText).toContain(s3BackupTarget.name);
   });
 
   it('should log an error when games cannot be retrieved', async () => {

@@ -10,6 +10,6 @@
 
 
 export interface BackupTargetInFileCopyContext { 
-    title: string;
+    name: string;
 }
 

@@ -5,6 +5,6 @@ import jakarta.validation.constraints.NotNull;
 
 @Schema(name = "BackupTargetInFileCopyContext")
 public record BackupTargetInFileCopyContextHttpDto(
-        @NotNull String title
+        @NotNull String name
 ) {
 }

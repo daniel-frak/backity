@@ -293,8 +293,8 @@ export class FileCopiesClient {
     }
 
     /**
-     * List processed file copies with a given status
-     * Returns a paginated list of all file copies with a given status
+     * Get the file copy queue
+     * Returns a paginated list of file copies that are either enqueued or in progress
      * @param pagination 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
