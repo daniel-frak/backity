@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backup.infrastructure.adapters.adapters.driven.persistence.inmemory;
+package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.persistence.inmemory;
 
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgress;
 import dev.codesoapbox.backity.core.backup.domain.TestFileCopyReplicationProgress;

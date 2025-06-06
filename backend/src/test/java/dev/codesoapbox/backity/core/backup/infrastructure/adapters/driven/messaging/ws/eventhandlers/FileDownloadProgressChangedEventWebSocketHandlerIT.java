@@ -30,6 +30,7 @@ class FileDownloadProgressChangedEventWebSocketHandlerIT {
 
         var expectedJson = """
                 {
+                  "fileCopyId": "6df888e8-90b9-4df5-a237-0cba422c0310",
                   "percentage": 50,
                   "timeLeftSeconds": 999
                 }

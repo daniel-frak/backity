@@ -6,10 +6,10 @@ import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -17,11 +17,13 @@ public class DomainEventWebSocketPublisher implements DomainEventPublisher {
 
     @SuppressWarnings("java:S6411") // Cannot implement Comparable for Class type
     private final Map<Class<? extends DomainEvent>, List<DomainEventHandler<? extends DomainEvent>>> handlers =
-            new HashMap<>();
+            new ConcurrentHashMap<>(); // Ensures thread-safe access and modification to event handlers
 
     public void addHandlers(List<DomainEventHandler<?>> domainEventHandlers) {
         for (DomainEventHandler<?> handler : domainEventHandlers) {
-            handlers.computeIfAbsent(handler.getEventClass(), k -> new ArrayList<>())
+            handlers.computeIfAbsent(handler.getEventClass(),
+                            // Ensures thread-safe modification of handler lists using CopyOnWriteArrayList:
+                            k -> new CopyOnWriteArrayList<>())
                     .add(handler);
         }
     }
