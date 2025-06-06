@@ -1,8 +1,12 @@
 package dev.codesoapbox.backity.core.game.application.usecases;
 
+import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgress;
+import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
+import dev.codesoapbox.backity.core.backup.domain.TestFileCopyReplicationProgress;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
+import dev.codesoapbox.backity.core.game.application.FileCopyWithProgress;
 import dev.codesoapbox.backity.core.game.application.GameFileWithCopies;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopies;
 import dev.codesoapbox.backity.core.game.domain.Game;
@@ -20,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -36,26 +41,32 @@ class GetGamesWithFilesUseCaseTest {
     @Mock
     private FileCopyRepository fileCopyRepository;
 
+    @Mock
+    private FileCopyReplicationProgressRepository replicationProgressRepository;
+
     private GetGamesWithFilesUseCase useCase;
 
     @BeforeEach
     void setUp() {
-        useCase = new GetGamesWithFilesUseCase(gameRepository, gameFileRepository, fileCopyRepository);
+        useCase = new GetGamesWithFilesUseCase(gameRepository, gameFileRepository, fileCopyRepository,
+                replicationProgressRepository);
     }
 
     @Test
-    void shouldGetGamesWithFiles() {
+    void shouldGetGamesWithFilesWithProgress() {
         var pagination = new Pagination(0, 2);
         GameFile gameFile = TestGameFile.gog();
         FileCopy localCopy = TestFileCopy.storedIntegrityUnknown();
         Game game = mockGameExists(pagination);
         mockGameFilesExistFor(game, List.of(gameFile));
         mockFileCopiesExist(gameFile, List.of(localCopy));
+        FileCopyReplicationProgress replicationProgress = mockReplicationProgressExists(localCopy);
 
         Page<GameWithFileCopies> result = useCase.getGamesWithFiles(pagination);
 
         var gameWithFiles = new GameWithFileCopies(game,
-                List.of(new GameFileWithCopies(gameFile, List.of(localCopy))));
+                List.of(new GameFileWithCopies(gameFile,
+                        List.of(new FileCopyWithProgress(localCopy, replicationProgress)))));
         Page<GameWithFileCopies> expectedResult = TestPage.of(List.of(gameWithFiles), pagination);
         assertThat(result)
                 .usingRecursiveComparison().isEqualTo(expectedResult);
@@ -77,5 +88,31 @@ class GetGamesWithFilesUseCaseTest {
     private void mockGameFilesExistFor(Game game, List<GameFile> gameFiles) {
         when(gameFileRepository.findAllByGameId(game.getId()))
                 .thenReturn(gameFiles);
+    }
+
+    private FileCopyReplicationProgress mockReplicationProgressExists(FileCopy localCopy) {
+        FileCopyReplicationProgress replicationProgress = TestFileCopyReplicationProgress.twentyFivePercent();
+        when(replicationProgressRepository.findAllByFileCopyIdIn(Set.of(localCopy.getId())))
+                .thenReturn(List.of(replicationProgress));
+        return replicationProgress;
+    }
+
+    @Test
+    void shouldGetGamesWithFilesWithoutProgress() {
+        var pagination = new Pagination(0, 2);
+        GameFile gameFile = TestGameFile.gog();
+        FileCopy localCopy = TestFileCopy.storedIntegrityUnknown();
+        Game game = mockGameExists(pagination);
+        mockGameFilesExistFor(game, List.of(gameFile));
+        mockFileCopiesExist(gameFile, List.of(localCopy));
+
+        Page<GameWithFileCopies> result = useCase.getGamesWithFiles(pagination);
+
+        var gameWithFiles = new GameWithFileCopies(game,
+                List.of(new GameFileWithCopies(gameFile,
+                        List.of(new FileCopyWithProgress(localCopy, null)))));
+        Page<GameWithFileCopies> expectedResult = TestPage.of(List.of(gameWithFiles), pagination);
+        assertThat(result)
+                .usingRecursiveComparison().isEqualTo(expectedResult);
     }
 }

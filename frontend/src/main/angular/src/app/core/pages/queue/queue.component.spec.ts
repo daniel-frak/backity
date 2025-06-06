@@ -175,12 +175,12 @@ describe('QueueComponent', () => {
 
   it('should get storage solution status', async () => {
     component.storageSolutionStatusesById = new Map<string, StorageSolutionStatus>();
-    component.storageSolutionStatusesById.set("someStorageSolutionId", "CONNECTED");
+    component.storageSolutionStatusesById.set("someStorageSolutionId", StorageSolutionStatus.Connected);
 
     const result: StorageSolutionStatus | undefined =
       component.getStorageSolutionStatus("someStorageSolutionId");
 
-    expect(result).toEqual("CONNECTED");
+    expect(result).toEqual(StorageSolutionStatus.Connected);
   });
 
   it('should log an error when removeFromQueue is called', async () => {

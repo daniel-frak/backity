@@ -154,6 +154,7 @@ export class QueueComponent implements OnInit, OnDestroy {
         this.storageSolutionsClient.getStorageSolutionStatuses());
       this.storageSolutionStatusesById = new Map<string, StorageSolutionStatus>(
         Object.entries(storageSolutionStatusesResponse.statuses)
+          .map(([key, value]) => [key, value as StorageSolutionStatus])
       );
     } catch (error) {
       this.notificationService.showFailure('Error fetching enqueued files', error);

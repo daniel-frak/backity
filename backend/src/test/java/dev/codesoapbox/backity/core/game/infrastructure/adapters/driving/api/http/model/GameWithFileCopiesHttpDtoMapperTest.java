@@ -1,16 +1,19 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.http.model;
 
+import dev.codesoapbox.backity.core.backup.domain.TestFileCopyReplicationProgress;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
+import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyHttpDto;
+import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyNaturalIdHttpDto;
+import dev.codesoapbox.backity.core.game.application.FileCopyWithProgress;
 import dev.codesoapbox.backity.core.game.application.GameFileWithCopies;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopies;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
-import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyHttpDto;
-import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyNaturalIdHttpDto;
 import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.FileCopyStatusHttpDto;
 import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.FileSourceHttpDto;
 import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.GameFileHttpDto;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.ProgressHttpDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -46,9 +49,18 @@ class GameWithFileCopiesHttpDtoMapperTest {
                                         .gameId(game.getId())
                                         .build(),
                                 List.of(
-                                        TestFileCopy.tracked(),
-                                        TestFileCopy.storedIntegrityUnknown(),
-                                        TestFileCopy.failedWithoutFilePath()
+                                        new FileCopyWithProgress(
+                                                TestFileCopy.tracked(),
+                                                null
+                                        ),
+                                        new FileCopyWithProgress(
+                                                TestFileCopy.inProgress(),
+                                                TestFileCopyReplicationProgress.twentyFivePercent()
+                                        ),
+                                        new FileCopyWithProgress(
+                                                TestFileCopy.failedWithoutFilePath(),
+                                                null
+                                        )
                                 )
                         )
                 )
@@ -77,12 +89,21 @@ class GameWithFileCopiesHttpDtoMapperTest {
                                         LocalDateTime.parse("2023-04-29T14:15:53")
                                 ),
                                 List.of(
-                                        fileCopyDto(FileCopyStatusHttpDto.TRACKED,
-                                                null, null),
-                                        fileCopyDto(FileCopyStatusHttpDto.STORED_INTEGRITY_UNKNOWN,
-                                                "someFilePath", null),
-                                        fileCopyDto(FileCopyStatusHttpDto.FAILED,
-                                                null, "someFailedReason")
+                                        new FileCopyWithProgressHttpDto(
+                                                fileCopyDto(FileCopyStatusHttpDto.TRACKED,
+                                                        null, null),
+                                                null
+                                        ),
+                                        new FileCopyWithProgressHttpDto(
+                                                fileCopyDto(FileCopyStatusHttpDto.IN_PROGRESS,
+                                                        "someFilePath", null),
+                                                new ProgressHttpDto(25, 10)
+                                        ),
+                                        new FileCopyWithProgressHttpDto(
+                                                fileCopyDto(FileCopyStatusHttpDto.FAILED,
+                                                        null, "someFailedReason"),
+                                                null
+                                        )
                                 )
                         )
                 )
@@ -106,7 +127,7 @@ class GameWithFileCopiesHttpDtoMapperTest {
 
     @Test
     void toDtoShouldReturnNullGivenNull() {
-        assertThat(MAPPER.toDto(null))
+        assertThat(MAPPER.toDto((GameWithFileCopies) null))
                 .isNull();
     }
 }

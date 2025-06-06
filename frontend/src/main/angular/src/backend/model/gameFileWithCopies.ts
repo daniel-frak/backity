@@ -7,12 +7,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { FileCopy } from './fileCopy';
+import { FileCopyWithProgress } from './fileCopyWithProgress';
 import { GameFile } from './gameFile';
 
 
 export interface GameFileWithCopies { 
     gameFile: GameFile;
-    fileCopies: Array<FileCopy>;
+    fileCopiesWithProgress: Array<FileCopyWithProgress>;
 }
 

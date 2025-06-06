@@ -28,6 +28,7 @@ model/fileCopyNaturalIdWsDto.ts
 model/fileCopyStatus.ts
 model/fileCopyStatusChangedEvent.ts
 model/fileCopyWithContext.ts
+model/fileCopyWithProgress.ts
 model/fileDownloadProgressUpdatedEvent.ts
 model/fileSource.ts
 model/gameContentDiscoveryProgressUpdateEvent.ts

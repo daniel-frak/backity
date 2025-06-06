@@ -1,6 +1,7 @@
 import {GameWithFileCopies} from "@backend";
 import {TestGameFile} from "@app/shared/testing/objects/test-game-file";
 import {TestFileCopy} from "@app/shared/testing/objects/test-file-copy";
+import {TestProgress} from "@app/shared/testing/objects/test-progress";
 
 export namespace TestGameWithFileCopies {
 
@@ -11,7 +12,12 @@ export namespace TestGameWithFileCopies {
       gameFilesWithCopies: [
         {
           gameFile: TestGameFile.any(),
-          fileCopies: [TestFileCopy.tracked()]
+          fileCopiesWithProgress: [
+            {
+              fileCopy: TestFileCopy.tracked(),
+              progress: undefined
+            }
+          ]
         }
       ]
     };
@@ -24,7 +30,12 @@ export namespace TestGameWithFileCopies {
       gameFilesWithCopies: [
         {
           gameFile: TestGameFile.any(),
-          fileCopies: [TestFileCopy.inProgress()]
+          fileCopiesWithProgress: [
+            {
+              fileCopy: TestFileCopy.inProgress(),
+              progress: TestProgress.twentyFivePercent()
+            }
+          ]
         }
       ]
     };
@@ -37,7 +48,12 @@ export namespace TestGameWithFileCopies {
       gameFilesWithCopies: [
         {
           gameFile: TestGameFile.any(),
-          fileCopies: [TestFileCopy.storedIntegrityUnknown()]
+          fileCopiesWithProgress: [
+            {
+              fileCopy: TestFileCopy.storedIntegrityUnknown(),
+              progress: undefined
+            }
+          ]
         }
       ]
     };

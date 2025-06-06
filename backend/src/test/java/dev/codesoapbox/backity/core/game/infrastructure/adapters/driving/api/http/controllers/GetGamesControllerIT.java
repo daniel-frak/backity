@@ -1,6 +1,8 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.http.controllers;
 
+import dev.codesoapbox.backity.core.backup.domain.TestFileCopyReplicationProgress;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
+import dev.codesoapbox.backity.core.game.application.FileCopyWithProgress;
 import dev.codesoapbox.backity.core.game.application.GameFileWithCopies;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopies;
 import dev.codesoapbox.backity.core.game.application.usecases.GetGamesWithFilesUseCase;
@@ -39,7 +41,20 @@ class GetGamesControllerIT {
                 new GameWithFileCopies(
                         new Game(gameId, null, null, "Test Game"),
                         List.of(new GameFileWithCopies(TestGameFile.gog(),
-                                List.of(TestFileCopy.tracked(), TestFileCopy.storedIntegrityUnknown(), TestFileCopy.failedWithoutFilePath()))
+                                List.of(
+                                        new FileCopyWithProgress(
+                                                TestFileCopy.tracked(),
+                                                null
+                                        ),
+                                        new FileCopyWithProgress(
+                                                TestFileCopy.inProgress(),
+                                                TestFileCopyReplicationProgress.twentyFivePercent()
+                                        ),
+                                        new FileCopyWithProgress(
+                                                TestFileCopy.failedWithoutFilePath(),
+                                                null
+                                        )
+                                ))
                         ))), pagination);
         when(getGamesWithFilesUseCase.getGamesWithFiles(pagination))
                 .thenReturn(gameWithFileCopiesPage);
@@ -69,42 +84,54 @@ class GetGamesControllerIT {
                                               "dateCreated": "2022-04-29T14:15:53",
                                               "dateModified": "2023-04-29T14:15:53"
                                             },
-                                            "fileCopies": [
+                                            "fileCopiesWithProgress": [
                                               {
-                                                "id": "6df888e8-90b9-4df5-a237-0cba422c0310",
-                                                "naturalId": {
-                                                    "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
-                                                    "backupTargetId": "eda52c13-ddf7-406f-97d9-d3ce2cab5a76"
-                                                },
-                                                "status": "TRACKED",
-                                                "failedReason": null,
-                                                "filePath": null,
-                                                "dateCreated": "2022-04-29T14:15:53",
-                                                "dateModified": "2023-04-29T14:15:53"
+                                                  fileCopy: {
+                                                    "id": "6df888e8-90b9-4df5-a237-0cba422c0310",
+                                                    "naturalId": {
+                                                        "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
+                                                        "backupTargetId": "eda52c13-ddf7-406f-97d9-d3ce2cab5a76"
+                                                    },
+                                                    "status": "TRACKED",
+                                                    "failedReason": null,
+                                                    "filePath": null,
+                                                    "dateCreated": "2022-04-29T14:15:53",
+                                                    "dateModified": "2023-04-29T14:15:53"
+                                                  },
+                                                  progress: null
                                               },
                                               {
-                                                "id": "6df888e8-90b9-4df5-a237-0cba422c0310",
-                                                "naturalId": {
-                                                    "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
-                                                    "backupTargetId": "eda52c13-ddf7-406f-97d9-d3ce2cab5a76"
-                                                },
-                                                "status": "STORED_INTEGRITY_UNKNOWN",
-                                                "failedReason": null,
-                                                "filePath": "someFilePath",
-                                                "dateCreated": "2022-04-29T14:15:53",
-                                                "dateModified": "2023-04-29T14:15:53"
+                                                  fileCopy: {
+                                                    "id": "6df888e8-90b9-4df5-a237-0cba422c0310",
+                                                    "naturalId": {
+                                                        "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
+                                                        "backupTargetId": "eda52c13-ddf7-406f-97d9-d3ce2cab5a76"
+                                                    },
+                                                    "status": "IN_PROGRESS",
+                                                    "failedReason": null,
+                                                    "filePath": "someFilePath",
+                                                    "dateCreated": "2022-04-29T14:15:53",
+                                                    "dateModified": "2023-04-29T14:15:53"
+                                                  },
+                                                  progress: {
+                                                    percentage: 25,
+                                                    timeLeftSeconds: 10
+                                                  }
                                               },
                                               {
-                                                "id": "6df888e8-90b9-4df5-a237-0cba422c0310",
-                                                "naturalId": {
-                                                    "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
-                                                    "backupTargetId": "eda52c13-ddf7-406f-97d9-d3ce2cab5a76"
-                                                },
-                                                "status": "FAILED",
-                                                "failedReason": "someFailedReason",
-                                                "filePath": null,
-                                                "dateCreated": "2022-04-29T14:15:53",
-                                                "dateModified": "2023-04-29T14:15:53"
+                                                  fileCopy: {
+                                                    "id": "6df888e8-90b9-4df5-a237-0cba422c0310",
+                                                    "naturalId": {
+                                                        "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
+                                                        "backupTargetId": "eda52c13-ddf7-406f-97d9-d3ce2cab5a76"
+                                                    },
+                                                    "status": "FAILED",
+                                                    "failedReason": "someFailedReason",
+                                                    "filePath": null,
+                                                    "dateCreated": "2022-04-29T14:15:53",
+                                                    "dateModified": "2023-04-29T14:15:53"
+                                                  },
+                                                  progress: null
                                               }
                                             ]
                                         }
