@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driving.a
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryStatus;
 import dev.codesoapbox.backity.core.discovery.application.usecases.GetGameContentDiscoveryStatusListUseCase;
+import dev.codesoapbox.backity.core.discovery.domain.TestGameContentDiscoveryProgress;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +28,23 @@ class GetGameContentDiscoveryStatusListControllerIT {
 
     @Test
     void shouldGetStatuses() throws Exception {
-        var status = new GameContentDiscoveryStatus(new GameProviderId("TestGameProviderId"), true);
-
+        var status = new GameContentDiscoveryStatus(
+                new GameProviderId("TestGameProviderId"),
+                true,
+                TestGameContentDiscoveryProgress.twentyFivePercentGog()
+        );
         when(useCase.getStatusList())
                 .thenReturn(List.of(status));
-
         var expectedJson = """
                 [{
                   "gameProviderId": "TestGameProviderId",
-                  "isInProgress": true
-                }]""";
+                  "isInProgress": true,
+                  "progress": {
+                    "percentage": 25,
+                    "timeLeftSeconds": 10
+                  }
+                }]
+                """;
 
         mockMvc.perform(get("/api/" + GameContentDiscoveryStatusRestResource.RESOURCE_URL))
                 .andDo(print())

@@ -9,7 +9,7 @@ import lombok.NonNull;
 @Schema(name = "GameContentDiscoveryProgressUpdateEvent")
 public record GameContentDiscoveryProgressChangedWsEvent(
         @NonNull @NotNull String gameProviderId,
-        int percentage,
-        long timeLeftSeconds
+        @NotNull int percentage,
+        @NotNull long timeLeftSeconds
 ) {
 }

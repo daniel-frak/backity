@@ -3,6 +3,8 @@ package dev.codesoapbox.backity.core.discovery.domain.events;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
 
+import java.time.Duration;
+
 public final class TestGameContentDiscoveryEvent {
 
     private static final GameProviderId GAME_PROVIDER_ID = new GameProviderId("TestGameProviderId");
@@ -20,14 +22,21 @@ public final class TestGameContentDiscoveryEvent {
         return new GameContentDiscoveryProgressChangedEvent(
                 GAME_PROVIDER_ID,
                 50,
-                999
+                Duration.ofSeconds(999)
         );
     }
 
-    public static GameContentDiscoveryStatusChangedEvent statusChanged() {
+    public static GameContentDiscoveryStatusChangedEvent statusChangedToInProgress() {
         return new GameContentDiscoveryStatusChangedEvent(
                 GAME_PROVIDER_ID,
                 true
+        );
+    }
+
+    public static GameContentDiscoveryStatusChangedEvent statusChangedToStopped() {
+        return new GameContentDiscoveryStatusChangedEvent(
+                GAME_PROVIDER_ID,
+                false
         );
     }
 }

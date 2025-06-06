@@ -7,10 +7,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Progress } from './progress';
 
 
 export interface GameContentDiscoveryStatus { 
     gameProviderId: string;
     isInProgress: boolean;
+    progress?: Progress;
 }
 

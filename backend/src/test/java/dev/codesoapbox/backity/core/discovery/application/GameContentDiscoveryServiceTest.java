@@ -2,6 +2,8 @@ package dev.codesoapbox.backity.core.discovery.application;
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
+import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryProgress;
+import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryProgressRepository;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameFileDiscoveredEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStatusChangedEvent;
@@ -29,6 +31,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -57,11 +60,14 @@ class GameContentDiscoveryServiceTest {
     @Mock
     private DomainEventPublisher eventPublisher;
 
+    @Mock
+    private GameContentDiscoveryProgressRepository discoveryProgressRepository;
+
     @BeforeEach
     void setUp() {
         gameProviderFileDiscoveryService = new FakeGameProviderFileDiscoveryService();
         gameContentDiscoveryService = new GameContentDiscoveryService(singletonList(gameProviderFileDiscoveryService),
-                gameRepository, fileRepository, eventPublisher);
+                gameRepository, fileRepository, eventPublisher, discoveryProgressRepository);
     }
 
     @AfterEach
@@ -105,7 +111,7 @@ class GameContentDiscoveryServiceTest {
         mockGameExists(discoveredFile.originalGameTitle());
 
         gameContentDiscoveryService = new GameContentDiscoveryService(singletonList(gameProviderFileDiscoveryService),
-                gameRepository, fileRepository, eventPublisher);
+                gameRepository, fileRepository, eventPublisher, discoveryProgressRepository);
 
         gameContentDiscoveryService.startContentDiscovery();
 
@@ -156,7 +162,7 @@ class GameContentDiscoveryServiceTest {
 
         List<GameContentDiscoveryProgressChangedEvent> progressUpdates = trackProgressUpdateEvents();
         gameContentDiscoveryService = new GameContentDiscoveryService(List.of(gameProviderFileDiscoveryService),
-                gameRepository, fileRepository, eventPublisher);
+                gameRepository, fileRepository, eventPublisher, discoveryProgressRepository);
 
         gameContentDiscoveryService.startContentDiscovery();
 
@@ -241,6 +247,36 @@ class GameContentDiscoveryServiceTest {
     void shouldNotStopContentDiscoveryIfAlreadyStopped() {
         gameContentDiscoveryService.stopContentDiscovery();
         assertThat(gameProviderFileDiscoveryService.getStoppedTimes()).isZero();
+    }
+
+    @Test
+    void getStatusesShouldReturnStatuses() {
+        GameContentDiscoveryProgress progress = mockDiscoveryProgressExists();
+        gameContentDiscoveryService.startContentDiscovery();
+
+        List<GameContentDiscoveryStatus> result = gameContentDiscoveryService.getStatuses();
+
+        List<GameContentDiscoveryStatus> expectedResult = List.of(
+                new GameContentDiscoveryStatus(
+                        gameProviderFileDiscoveryService.getGameProviderId(),
+                        true,
+                        progress
+                )
+        );
+        assertThat(result).usingRecursiveComparison()
+                .isEqualTo(expectedResult);
+    }
+
+    private GameContentDiscoveryProgress mockDiscoveryProgressExists() {
+        var progress = new GameContentDiscoveryProgress(
+                gameProviderFileDiscoveryService.getGameProviderId(),
+                25,
+                Duration.of(99, ChronoUnit.SECONDS)
+        );
+        when(discoveryProgressRepository.findAllByGameProviderIdIn(
+                Set.of(gameProviderFileDiscoveryService.getGameProviderId())))
+                .thenReturn(List.of(progress));
+        return progress;
     }
 
     private static class FakeGameProviderFileDiscoveryService implements GameProviderFileDiscoveryService {

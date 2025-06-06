@@ -1,7 +1,6 @@
 package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.eventhandlers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStatusChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.TestGameContentDiscoveryEvent;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.GameContentDiscoveryWebSocketTopics;
@@ -11,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @WebSocketEventHandlerTest
-class GameGameGameContentDiscoveryStatusChangedEventWebSocketHandlerIT {
+class GameContentDiscoveryStatusChangedEventWebSocketHandlerIT {
 
     @Autowired
     private TestMessageChannel messageChannel;
@@ -19,12 +18,9 @@ class GameGameGameContentDiscoveryStatusChangedEventWebSocketHandlerIT {
     @Autowired
     private GameContentDiscoveryStatusChangedEventWebSocketHandler eventHandler;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Test
     void shouldPublishWebSocketEvent() throws JsonProcessingException {
-        GameContentDiscoveryStatusChangedEvent event = TestGameContentDiscoveryEvent.statusChanged();
+        GameContentDiscoveryStatusChangedEvent event = TestGameContentDiscoveryEvent.statusChangedToInProgress();
 
         eventHandler.handle(event);
 
@@ -35,6 +31,7 @@ class GameGameGameContentDiscoveryStatusChangedEventWebSocketHandlerIT {
                 }
                 """;
         messageChannel.assertPublishedWebSocketEvent(
-                GameContentDiscoveryWebSocketTopics.GAME_CONTENT_DISCOVERY_STATUS_CHANGED.wsDestination(), expectedJson);
+                GameContentDiscoveryWebSocketTopics.GAME_CONTENT_DISCOVERY_STATUS_CHANGED.wsDestination(),
+                expectedJson);
     }
 }

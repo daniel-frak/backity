@@ -11,7 +11,7 @@
 
 export interface GameContentDiscoveryProgressUpdateEvent { 
     gameProviderId: string;
-    percentage?: number;
-    timeLeftSeconds?: number;
+    percentage: number;
+    timeLeftSeconds: number;
 }
 
