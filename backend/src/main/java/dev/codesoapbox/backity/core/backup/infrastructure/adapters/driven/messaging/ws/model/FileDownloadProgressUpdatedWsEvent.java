@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 @Schema(name = "FileDownloadProgressUpdatedEvent")
 public record FileDownloadProgressUpdatedWsEvent(
         @NotNull String fileCopyId,
+        @NotNull FileCopyNaturalIdWsDto fileCopyNaturalId,
         @NotNull int percentage,
         @NotNull long timeLeftSeconds
 ) {

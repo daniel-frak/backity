@@ -275,15 +275,16 @@ describe('QueueComponent', () => {
     ' given file copy found',
     async () => {
       component.fileCopyWithContextPage = TestPage.of([initialFileCopyWithContext]);
-      await simulateReplicationProgressUpdateEventReceived(initialEnqueuedFileCopy.id);
+      await simulateReplicationProgressUpdateEventReceived(
+        initialEnqueuedFileCopy.id, initialEnqueuedFileCopy.naturalId);
 
       expect(fixture.nativeElement.textContent).toContain('25%');
     });
 
   async function simulateReplicationProgressUpdateEventReceived(
-    fileCopyId: string): Promise<void> {
+    fileCopyId: string, fileCopyNaturalId: FileCopyNaturalId): Promise<void> {
     const event: FileDownloadProgressUpdatedEvent =
-      TestProgressUpdatedEvent.twentyFivePercent(fileCopyId);
+      TestProgressUpdatedEvent.twentyFivePercent(fileCopyId, fileCopyNaturalId);
     await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
       FileBackupMessageTopics.ProgressUpdate, event);
   }
@@ -292,7 +293,8 @@ describe('QueueComponent', () => {
     ' given file copy not found',
     async () => {
       component.fileCopyWithContextPage = TestPage.of([initialFileCopyWithContext]);
-      await simulateReplicationProgressUpdateEventReceived('unknownFileCopyId');
+      await simulateReplicationProgressUpdateEventReceived('unknownFileCopyId',
+        { gameFileId: 'unknownGameFileId', backupTargetId: 'unknownBackupTargetId' });
 
       expect(fixture.nativeElement.textContent).not.toContain('25%');
     });

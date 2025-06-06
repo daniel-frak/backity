@@ -11,6 +11,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
+@SuppressWarnings("java:S1694") // False positive
 @Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE,
         uses = {GameFileHttpDtoMapper.class, GameIdHttpDtoMapper.class, FileCopyHttpDtoMapper.class})
 public abstract class GameWithFileCopiesHttpDtoMapper {
