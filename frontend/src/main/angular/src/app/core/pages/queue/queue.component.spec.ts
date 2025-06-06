@@ -9,7 +9,11 @@ import {
   FileCopyStatus,
   FileCopyStatusChangedEvent,
   FileCopyWithContext,
-  PageFileCopyWithContext, StorageSolutionsClient, StorageSolutionStatus, StorageSolutionStatusesResponse
+  FileDownloadProgressUpdatedEvent,
+  PageFileCopyWithContext,
+  StorageSolutionsClient,
+  StorageSolutionStatus,
+  StorageSolutionStatusesResponse
 } from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
@@ -20,6 +24,8 @@ import {TestPage} from "@app/shared/testing/objects/test-page";
 import {TestFileCopy} from "@app/shared/testing/objects/test-file-copy";
 import {TestFileCopyStatusChangedEvent} from "@app/shared/testing/objects/test-file-copy-status-changed-event";
 import {TestFileCopyWithContext} from '@app/shared/testing/objects/test-file-copy-with-context';
+import {TestProgressUpdatedEvent} from "@app/shared/testing/objects/test-progress-updated-event";
+import {deepClone} from "@app/shared/testing/deep-clone";
 import createSpyObj = jasmine.createSpyObj;
 import anything = jasmine.anything;
 import SpyObj = jasmine.SpyObj;
@@ -34,10 +40,10 @@ describe('QueueComponent', () => {
   let messagesService: SpyObj<MessagesService>;
   let notificationService: NotificationService;
 
-  const initialEnqueuedFileCopy: FileCopy = TestFileCopy.enqueued();
-  const initialFileCopyWithContext: FileCopyWithContext = TestFileCopyWithContext.withFileCopy(initialEnqueuedFileCopy);
-  const initialQueue: PageFileCopyWithContext = TestPage.of([initialFileCopyWithContext]);
-  const initialStorageSolutionStatusResponse: StorageSolutionStatusesResponse = {
+  let initialEnqueuedFileCopy: FileCopy = TestFileCopy.enqueued();
+  let initialFileCopyWithContext: FileCopyWithContext = TestFileCopyWithContext.withFileCopy(initialEnqueuedFileCopy);
+  let initialQueue: PageFileCopyWithContext = TestPage.of([initialFileCopyWithContext]);
+  let initialStorageSolutionStatusResponse: StorageSolutionStatusesResponse = {
     statuses: {
       "someStorageSolutionId": "CONNECTED"
     }
@@ -76,10 +82,14 @@ describe('QueueComponent', () => {
     messagesService = TestBed.inject(MessagesService) as SpyObj<MessagesService>;
     notificationService = TestBed.inject(NotificationService);
 
-    fileCopiesClient.getFileCopyQueue.withArgs(anything())
-      .and.returnValue(of(JSON.parse(JSON.stringify(initialQueue))) as any);
-    storageSolutionsClient.getStorageSolutionStatuses
-      .and.returnValue(of(JSON.parse(JSON.stringify(initialStorageSolutionStatusResponse))));
+    initialEnqueuedFileCopy = TestFileCopy.enqueued();
+    initialFileCopyWithContext = TestFileCopyWithContext.withFileCopy(initialEnqueuedFileCopy);
+    initialQueue = TestPage.of([initialFileCopyWithContext]);
+    initialStorageSolutionStatusResponse = {
+      statuses: {
+        "someStorageSolutionId": "CONNECTED"
+      }
+    };
 
     MessageTesting.mockWatch(messagesService, (destination, callback) => {
       // Do nothing
@@ -98,9 +108,10 @@ describe('QueueComponent', () => {
     component.ngOnInit();
 
     expect(topicsSubscribed).toEqual([
-      FileBackupMessageTopics.StatusChanged
+      FileBackupMessageTopics.StatusChanged,
+      FileBackupMessageTopics.ProgressUpdate
     ]);
-    expect(component['subscriptions'].length).toBe(1);
+    expect(component['subscriptions'].length).toBe(2);
   });
 
   it('should unsubscribe from message topics on destruction', () => {
@@ -130,6 +141,8 @@ describe('QueueComponent', () => {
     });
 
   it('should retrieve files on init', async () => {
+    fileCopiesClient.getFileCopyQueue.withArgs(anything())
+      .and.returnValue(of(deepClone(initialQueue)) as any);
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
@@ -147,6 +160,10 @@ describe('QueueComponent', () => {
   }
 
   it('should retrieve storage solution statuses on init', async () => {
+    fileCopiesClient.getFileCopyQueue.withArgs(anything())
+      .and.returnValue(of(deepClone(initialQueue) as any));
+    storageSolutionsClient.getStorageSolutionStatuses
+      .and.returnValue(of(deepClone(initialStorageSolutionStatusResponse) as any));
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
@@ -199,14 +216,30 @@ describe('QueueComponent', () => {
   });
 
   it('should update file copy status and progress in queue when status changed event is received' +
-    ' and new status is in progress', async () => {
+    ' and new status is in progress and current progress is undefined', async () => {
     component.fileCopyWithContextPage = TestPage.of([initialFileCopyWithContext]);
+    initialFileCopyWithContext.progress = undefined;
     await simulateFileCopyStatusChangedEventReceived(
       initialEnqueuedFileCopy.id, initialEnqueuedFileCopy.naturalId, FileCopyStatus.InProgress);
 
     assertQueueContains(initialFileCopyWithContext);
     expect(firstFileCopyWithContextInQueue()?.fileCopy.status).toEqual(FileCopyStatus.InProgress);
     expect(firstFileCopyWithContextInQueue()?.progress?.percentage).toEqual(0);
+  });
+
+  it('should not update file copy progress in queue when status changed event is received' +
+    ' and new status is in progress and current progress exists', async () => {
+    initialFileCopyWithContext.progress = {
+      percentage: 50,
+      timeLeftSeconds: 99
+    }
+    component.fileCopyWithContextPage = TestPage.of([initialFileCopyWithContext]);
+    await simulateFileCopyStatusChangedEventReceived(
+      initialEnqueuedFileCopy.id, initialEnqueuedFileCopy.naturalId, FileCopyStatus.InProgress);
+
+    assertQueueContains(initialFileCopyWithContext);
+    expect(firstFileCopyWithContextInQueue()?.fileCopy.status).toEqual(FileCopyStatus.InProgress);
+    expect(firstFileCopyWithContextInQueue()?.progress?.percentage).toEqual(50);
   });
 
   function firstFileCopyWithContextInQueue(): FileCopyWithContext | undefined {
@@ -236,5 +269,31 @@ describe('QueueComponent', () => {
         notFoundFileCopy.id, notFoundFileCopy.naturalId, FileCopyStatus.InProgress);
 
       assertQueueContains(initialFileCopyWithContext);
+    });
+
+  it('should update file copy progress in queue when progress update event is received' +
+    ' given file copy found',
+    async () => {
+      component.fileCopyWithContextPage = TestPage.of([initialFileCopyWithContext]);
+      await simulateReplicationProgressUpdateEventReceived(initialEnqueuedFileCopy.id);
+
+      expect(fixture.nativeElement.textContent).toContain('25%');
+    });
+
+  async function simulateReplicationProgressUpdateEventReceived(
+    fileCopyId: string): Promise<void> {
+    const event: FileDownloadProgressUpdatedEvent =
+      TestProgressUpdatedEvent.twentyFivePercent(fileCopyId);
+    await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
+      FileBackupMessageTopics.ProgressUpdate, event);
+  }
+
+  it('should not update file copy progress in queue when progress update event is received' +
+    ' given file copy not found',
+    async () => {
+      component.fileCopyWithContextPage = TestPage.of([initialFileCopyWithContext]);
+      await simulateReplicationProgressUpdateEventReceived('unknownFileCopyId');
+
+      expect(fixture.nativeElement.textContent).not.toContain('25%');
     });
 });

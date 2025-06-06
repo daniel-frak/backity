@@ -23,7 +23,7 @@
         </ng-container>
         <ng-container buttons>
           <app-progress-bar *ngIf="fileCopyWithContext.progress"
-            [percentage]="fileCopyWithContext.progress?.percentage ?? 0"/>
+                            [percentage]="fileCopyWithContext.progress.percentage"/>
           <app-button [actionAsync]="onClickRemoveFromQueue(fileCopyWithContext.fileCopy.id!)" buttonStyle="primary"
                       *ngIf="fileCopyWithContext.fileCopy.status == FileCopyStatus.Enqueued">
             Cancel
@@ -47,6 +47,12 @@
             <ng-container name>Size</ng-container>
             <ng-container value>
               {{ fileCopyWithContext.gameFile.fileSource.size }}
+            </ng-container>
+          </app-named-value>
+          <app-named-value *ngIf="fileCopyWithContext.progress">
+            <ng-container name>Time left</ng-container>
+            <ng-container value>
+              {{ (fileCopyWithContext.progress.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }}
             </ng-container>
           </app-named-value>
         </ng-container>

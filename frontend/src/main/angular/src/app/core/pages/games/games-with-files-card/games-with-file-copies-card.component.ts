@@ -88,7 +88,7 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
       this.messageService.watch(FileBackupMessageTopics.StatusChanged)
         .subscribe(p => this.onStatusChanged(p)),
       this.messageService.watch(FileBackupMessageTopics.ProgressUpdate)
-        .subscribe(p => this.onProgressChanged(p))
+        .subscribe(p => this.onReplicationProgressChanged(p))
     );
   }
 
@@ -121,7 +121,7 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
       .every(([key, value]) => b[key as keyof FileCopyNaturalId] === value);
   }
 
-  private onProgressChanged(payload: Message) {
+  private onReplicationProgressChanged(payload: Message) {
     const event: FileDownloadProgressUpdatedEvent = JSON.parse(payload.body);
     const inProgressFileCopyWithContext: PotentialFileCopyWithContext | undefined =
       this.findInProgressPotentialFileCopy();

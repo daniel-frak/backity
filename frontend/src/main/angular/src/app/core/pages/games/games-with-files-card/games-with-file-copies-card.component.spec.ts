@@ -278,7 +278,7 @@ describe('GamesWithFileCopiesCardComponent', () => {
       gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
 
       const progressChangedMessage: FileDownloadProgressUpdatedEvent =
-        TestProgressUpdatedEvent.twentyFivePercent();
+        TestProgressUpdatedEvent.twentyFivePercent(gameWithFileCopies.gameFilesWithCopies[0].fileCopies[0].id);
       await simulateFileCopyProgressChangedEventReceived(progressChangedMessage);
 
       expect(component.potentialFileCopiesWithContextByGameTitle!.get(gameWithFileCopies.title)?.[0]?.progress)
@@ -292,7 +292,8 @@ describe('GamesWithFileCopiesCardComponent', () => {
     const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
     gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
 
-    await simulateFileCopyProgressChangedEventReceived(TestProgressUpdatedEvent.twentyFivePercent());
+    await simulateFileCopyProgressChangedEventReceived(TestProgressUpdatedEvent.twentyFivePercent(
+      gameWithFileCopies.gameFilesWithCopies[0].fileCopies[0].id));
 
     expect(component.potentialFileCopiesWithContextByGameTitle!.get(gameWithFileCopies.title)?.[0]?.progress)
       .toBe(undefined);
