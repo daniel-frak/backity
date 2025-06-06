@@ -11,8 +11,10 @@ public record FileCopyReplicationProgress(
         Duration timeLeft
 ) {
 
+    private static final int PERCENTAGE_MAX = 100;
+
     public FileCopyReplicationProgress {
-        if (percentage < 0 || percentage > 100) {
+        if (percentage < 0 || percentage > PERCENTAGE_MAX) {
             throw new InvalidReplicationProgressPercentageException(percentage);
         }
     }
