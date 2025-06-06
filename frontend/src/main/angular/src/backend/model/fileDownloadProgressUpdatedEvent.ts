@@ -7,10 +7,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { FileCopyNaturalIdWsDto } from './fileCopyNaturalIdWsDto';
 
 
 export interface FileDownloadProgressUpdatedEvent { 
     fileCopyId: string;
+    fileCopyNaturalId: FileCopyNaturalIdWsDto;
     percentage: number;
     timeLeftSeconds: number;
 }

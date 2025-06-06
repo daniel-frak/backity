@@ -35,7 +35,7 @@ public class FileCopyReplicator {
 
         GameProviderId gameProviderId = gameFile.getFileSource().gameProviderId();
         GameProviderFileBackupService gameProviderFileBackupService = getGameProviderFileBackupService(gameProviderId);
-        DownloadProgress downloadProgress = downloadProgressFactory.create(fileCopy.getId());
+        DownloadProgress downloadProgress = downloadProgressFactory.create(fileCopy);
 
         gameProviderFileBackupService.replicateFile(storageSolution, gameFile, fileCopy, downloadProgress);
     }

@@ -31,6 +31,10 @@ class FileDownloadProgressChangedEventWebSocketHandlerIT {
         var expectedJson = """
                 {
                   "fileCopyId": "6df888e8-90b9-4df5-a237-0cba422c0310",
+                  "fileCopyNaturalId": {
+                    "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
+                    "backupTargetId": "d46dde81-e519-4300-9a54-6f9e7d637926"
+                  },
                   "percentage": 50,
                   "timeLeftSeconds": 999
                 }

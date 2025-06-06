@@ -41,6 +41,7 @@ public final class TestFileBackupEvent {
     public static FileDownloadProgressChangedEvent progressChanged() {
         return new FileDownloadProgressChangedEvent(
                 FILE_COPY_ID,
+                FILE_COPY_NATURAL_ID,
                 50,
                 Duration.ofSeconds(999)
         );

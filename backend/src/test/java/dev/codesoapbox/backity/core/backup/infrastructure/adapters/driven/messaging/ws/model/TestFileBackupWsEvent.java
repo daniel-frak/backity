@@ -40,6 +40,7 @@ public final class TestFileBackupWsEvent {
     public static FileDownloadProgressUpdatedWsEvent progressChanged() {
         return new FileDownloadProgressUpdatedWsEvent(
                 FILE_COPY_ID,
+                FILE_COPY_NATURAL_ID,
                 50,
                 999
         );

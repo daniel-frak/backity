@@ -127,7 +127,7 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
   private onReplicationProgressChanged(payload: Message) {
     const event: FileDownloadProgressUpdatedEvent = JSON.parse(payload.body);
     const inProgressFileCopyWithContext: PotentialFileCopyWithContext | undefined =
-      this.findInProgressPotentialFileCopy();
+      this.findPotentialFileCopyWithContext(event.fileCopyNaturalId);
 
     if (inProgressFileCopyWithContext) {
       inProgressFileCopyWithContext.progress = {
@@ -137,14 +137,6 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
     } else {
       console.warn("Could not find potential file copy", event, this.potentialFileCopiesWithContextByGameTitle);
     }
-  }
-
-  private findInProgressPotentialFileCopy() {
-    return Array.from(this.potentialFileCopiesWithContextByGameTitle.values())
-      .flat()
-      .find((potentialFileCopy) => {
-        return potentialFileCopy.potentialFileCopy.status === FileCopyStatus.InProgress;
-      });
   }
 
   onClickRefresh(): () => Promise<void> {
@@ -278,7 +270,7 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
     const match = fileCopiesWithProgress.find(
       (fcwp) => fcwp.fileCopy.naturalId.backupTargetId === backupTarget.id);
 
-    let potentialFileCopy = (match?.fileCopy as PotentialFileCopy) ??
+    const potentialFileCopy: PotentialFileCopy = (match?.fileCopy as PotentialFileCopy) ??
       PotentialFileCopyFactory.missing(gameFile.id, backupTarget.id);
     return {
       gameFile,
