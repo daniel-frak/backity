@@ -8,6 +8,7 @@ import {
   FileCopyNaturalId,
   FileCopyStatus,
   FileCopyStatusChangedEvent,
+  FileCopyWithProgress,
   FileDownloadProgressUpdatedEvent,
   GameFile,
   GameFileWithCopies,
@@ -26,7 +27,9 @@ import {TableColumnDirective} from '@app/shared/components/table/column-directiv
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {Message} from "@stomp/stompjs";
 import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
-import {FileCopyStatusBadgeComponent} from "@app/core/components/file-copy-status-badge/file-copy-status-badge.component";
+import {
+  FileCopyStatusBadgeComponent
+} from "@app/core/components/file-copy-status-badge/file-copy-status-badge.component";
 import {TableContentGroup} from "@app/shared/components/table/table-content-group";
 import {
   PotentialFileCopyWithContext
@@ -127,7 +130,10 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
       this.findInProgressPotentialFileCopy();
 
     if (inProgressFileCopyWithContext) {
-      inProgressFileCopyWithContext.progress = event;
+      inProgressFileCopyWithContext.progress = {
+        percentage: event.percentage,
+        timeLeftSeconds: event.timeLeftSeconds,
+      };
     } else {
       console.warn("Could not find potential file copy", event, this.potentialFileCopiesWithContextByGameTitle);
     }
@@ -252,28 +258,32 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
 
   group(content: Map<string, PotentialFileCopyWithContext[]>): TableContentGroup[] {
     return Array.from(content.entries()).map(([title, gameFilesWithCopies]) => ({
-        caption: title,
-        items: gameFilesWithCopies,
-      }));
+      caption: title,
+      items: gameFilesWithCopies,
+    }));
   }
 
   private mapToPotentialFileCopiesWithContext(gameFilesWithCopies: GameFileWithCopies[]): PotentialFileCopyWithContext[] {
-    return gameFilesWithCopies.flatMap(({gameFile, fileCopies}) =>
+    return gameFilesWithCopies.flatMap(({gameFile, fileCopiesWithProgress}) =>
       this.backupTargets
-        .map(backupTarget => this.createPotentialFileCopyWithContext(gameFile, fileCopies, backupTarget))
+        .map(backupTarget => this.createPotentialFileCopyWithContext(
+          gameFile, fileCopiesWithProgress, backupTarget))
     );
   }
 
   private createPotentialFileCopyWithContext(
-    gameFile: GameFile, fileCopies: PotentialFileCopy[], backupTarget: BackupTarget): PotentialFileCopyWithContext {
-    const fileCopy = fileCopies
-        .find(fc => fc.naturalId.backupTargetId === backupTarget.id)
-      ?? PotentialFileCopyFactory.missing(gameFile.id, backupTarget.id);
+    gameFile: GameFile, fileCopiesWithProgress: FileCopyWithProgress[], backupTarget: BackupTarget
+  ): PotentialFileCopyWithContext {
 
+    const match = fileCopiesWithProgress.find(
+      (fcwp) => fcwp.fileCopy.naturalId.backupTargetId === backupTarget.id);
+
+    let potentialFileCopy = (match?.fileCopy as PotentialFileCopy) ??
+      PotentialFileCopyFactory.missing(gameFile.id, backupTarget.id);
     return {
       gameFile,
-      potentialFileCopy: fileCopy,
-      progress: undefined // Temporarily undefined until we get progress from the initial response
+      potentialFileCopy: potentialFileCopy,
+      progress: match?.progress,
     };
   }
 

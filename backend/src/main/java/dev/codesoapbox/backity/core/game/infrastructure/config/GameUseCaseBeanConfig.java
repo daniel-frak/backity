@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.game.infrastructure.config;
 
+import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.game.application.usecases.GetGamesWithFilesUseCase;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
@@ -13,8 +14,9 @@ public class GameUseCaseBeanConfig {
     @Bean
     GetGamesWithFilesUseCase getGamesWithFilesUseCase(
             GameRepository gameRepository, GameFileRepository gameFileRepository,
-            FileCopyRepository fileCopyRepository) {
+            FileCopyRepository fileCopyRepository,
+            FileCopyReplicationProgressRepository replicationProgressRepository) {
         return new GetGamesWithFilesUseCase(gameRepository, gameFileRepository,
-                fileCopyRepository);
+                fileCopyRepository, replicationProgressRepository);
     }
 }

@@ -9,6 +9,7 @@ export * from './fileCopyNaturalIdWsDto';
 export * from './fileCopyStatus';
 export * from './fileCopyStatusChangedEvent';
 export * from './fileCopyWithContext';
+export * from './fileCopyWithProgress';
 export * from './fileDownloadProgressUpdatedEvent';
 export * from './fileSource';
 export * from './gameContentDiscoveryProgressUpdateEvent';
