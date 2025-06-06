@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backup.infrastructure.adapters.adapters.driven.messaging.inmemory;
+package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.inmemory;
 
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgress;
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;

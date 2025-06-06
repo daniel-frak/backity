@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backup.infrastructure.adapters.adapters.driven.messaging.inmemory;
+package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.inmemory;
 
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgress;
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
@@ -9,8 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -41,8 +39,8 @@ class FileDownloadProgressChangedRepositoryHandlerTest {
 
         handler.handle(event);
 
-        var expectedReplicationProgress = new FileCopyReplicationProgress(event.fileCopyId(),
-                50, Duration.ofSeconds(999));
+        var expectedReplicationProgress = new FileCopyReplicationProgress(
+                event.fileCopyId(), event.percentage(), event.timeLeft());
         verify(replicationProgressRepository).save(expectedReplicationProgress);
     }
 }

@@ -10,6 +10,9 @@
                   testId="refresh-queue-btn" buttonStyle="secondary">Refresh
       </app-button>
     </div>
+    <ng-container *ngIf="(fileCopyWithContextPage?.content?.length ?? 0) < 1">
+      Queue is empty.
+    </ng-container>
 
     <ng-container *ngFor="let fileCopyWithContext of fileCopyWithContextPage?.content">
       <app-icon-item iconClass="bi bi-copy">

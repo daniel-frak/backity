@@ -1,9 +1,9 @@
-<ng-container *ngIf="currentPage">
+<ng-container *ngIf="currentPage && (currentPage?.totalElements ?? 0) > 0">
   <div class="pagination-container">
     <div class="pagination-options">
       <div class="elements-per-page">
         <div class="form-floating">
-          <select type="number" class="form-select" aria-label="Rows per page" [(ngModel)]="pageSize"
+          <select class="form-select" aria-label="Rows per page" [(ngModel)]="pageSize"
                   (ngModelChange)="onPageSizeChange($event)">
             <option *ngFor="let value of availablePageSizes" [ngValue]="value">{{ value }}</option>
           </select>
