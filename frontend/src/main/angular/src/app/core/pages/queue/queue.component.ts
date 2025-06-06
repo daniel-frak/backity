@@ -5,7 +5,11 @@ import {
   FileCopyStatus,
   FileCopyStatusChangedEvent,
   FileCopyWithContext,
-  PageFileCopyWithContext, StorageSolutionsClient, StorageSolutionStatus, StorageSolutionStatusesResponse
+  FileDownloadProgressUpdatedEvent,
+  PageFileCopyWithContext,
+  StorageSolutionsClient,
+  StorageSolutionStatus,
+  StorageSolutionStatusesResponse
 } from "@backend";
 import {firstValueFrom, Subscription} from "rxjs";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
@@ -16,7 +20,7 @@ import {SectionComponent} from "@app/shared/components/section/section.component
 import {LoadedContentComponent} from "@app/shared/components/loaded-content/loaded-content.component";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
 import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
-import {NgForOf, NgIf} from "@angular/common";
+import {DatePipe, NgForOf, NgIf} from "@angular/common";
 import {IconItemComponent} from "@app/shared/components/icon-item/icon-item.component";
 import {NamedValueComponent} from "@app/shared/components/named-value/named-value.component";
 import {
@@ -46,7 +50,8 @@ import {ProgressBarComponent} from "@app/shared/components/progress-bar/progress
     StorageSolutionStatusBadgeComponent,
     FileCopyStatusBadgeComponent,
     GameFileVersionBadgeComponent,
-    ProgressBarComponent
+    ProgressBarComponent,
+    DatePipe
   ],
   templateUrl: './queue.component.html',
   styleUrl: './queue.component.scss'
@@ -73,28 +78,24 @@ export class QueueComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions.push(
       this.messageService.watch(FileBackupMessageTopics.StatusChanged)
-        .subscribe(p => this.onStatusChanged(p))
+        .subscribe(p => this.onStatusChanged(p)),
+      this.messageService.watch(FileBackupMessageTopics.ProgressUpdate)
+        .subscribe(p => this.onReplicationProgressChanged(p))
     );
   }
 
   private onStatusChanged(payload: Message) {
     const event: FileCopyStatusChangedEvent = JSON.parse(payload.body);
-    if (event.newStatus != FileCopyStatus.Enqueued && event.newStatus != FileCopyStatus.InProgress) {
-      this.tryToRemoveFileCopyFromQueue(event);
-    }
-    if (event.newStatus == FileCopyStatus.InProgress) {
-      this.tryToUpdateFileCopyStatusInQueue(event);
-    }
-  }
-
-  private tryToRemoveFileCopyFromQueue(event: FileCopyStatusChangedEvent) {
     const foundFileCopyWithContext: FileCopyWithContext | undefined =
       this.findFileCopyWithContextInQueue(event.fileCopyId);
-    if (foundFileCopyWithContext) {
-      const index: number | undefined = this.fileCopyWithContextPage?.content?.indexOf(foundFileCopyWithContext);
-      if (index !== -1 && index !== undefined && index !== null) {
-        this.fileCopyWithContextPage?.content?.splice(index, 1);
-      }
+    if (!foundFileCopyWithContext) {
+      return;
+    }
+    if (event.newStatus != FileCopyStatus.Enqueued && event.newStatus != FileCopyStatus.InProgress) {
+      this.removeFileCopyFromQueue(foundFileCopyWithContext);
+    }
+    if (event.newStatus == FileCopyStatus.InProgress) {
+      this.updateFileCopyStatusInQueue(foundFileCopyWithContext);
     }
   }
 
@@ -103,16 +104,36 @@ export class QueueComponent implements OnInit, OnDestroy {
       ?.find(fileCopyWithContext => fileCopyWithContext?.fileCopy.id == fileCopyId);
   }
 
-  private tryToUpdateFileCopyStatusInQueue(event: FileCopyStatusChangedEvent) {
+  private removeFileCopyFromQueue(foundFileCopyWithContext: FileCopyWithContext) {
+    const index: number | undefined = this.fileCopyWithContextPage?.content?.indexOf(foundFileCopyWithContext);
+    if (index !== -1 && index !== undefined && index !== null) {
+      this.fileCopyWithContextPage?.content?.splice(index, 1);
+    }
+  }
+
+  private updateFileCopyStatusInQueue(foundFileCopyWithContext: FileCopyWithContext) {
+    foundFileCopyWithContext.fileCopy.status = FileCopyStatus.InProgress;
+
+    // We might have gotten the status change and progress update events out of order, in which case we don't want
+    // to reset the progress on status change:
+    foundFileCopyWithContext.progress ??= {
+      percentage: 0,
+      timeLeftSeconds: 0
+    };
+  }
+
+  private onReplicationProgressChanged(payload: Message) {
+    const event: FileDownloadProgressUpdatedEvent = JSON.parse(payload.body);
     const foundFileCopyWithContext: FileCopyWithContext | undefined =
       this.findFileCopyWithContextInQueue(event.fileCopyId);
-    if (foundFileCopyWithContext) {
-      foundFileCopyWithContext.fileCopy.status = FileCopyStatus.InProgress;
-      foundFileCopyWithContext.progress = {
-        percentage: 0,
-        timeLeftSeconds: 0
-      }
+    if (!foundFileCopyWithContext) {
+      return;
     }
+
+    foundFileCopyWithContext.progress = {
+      percentage: event.percentage,
+      timeLeftSeconds: event.timeLeftSeconds
+    };
   }
 
   onClickRefreshEnqueuedFileCopies(): () => Promise<void> {
@@ -131,9 +152,9 @@ export class QueueComponent implements OnInit, OnDestroy {
 
       const storageSolutionStatusesResponse: StorageSolutionStatusesResponse = await firstValueFrom(
         this.storageSolutionsClient.getStorageSolutionStatuses());
-        this.storageSolutionStatusesById = new Map<string, StorageSolutionStatus>(
-          Object.entries(storageSolutionStatusesResponse.statuses)
-        );
+      this.storageSolutionStatusesById = new Map<string, StorageSolutionStatus>(
+        Object.entries(storageSolutionStatusesResponse.statuses)
+      );
     } catch (error) {
       this.notificationService.showFailure('Error fetching enqueued files', error);
     } finally {

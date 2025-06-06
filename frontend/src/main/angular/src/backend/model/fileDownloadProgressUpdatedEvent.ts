@@ -10,6 +10,7 @@
 
 
 export interface FileDownloadProgressUpdatedEvent { 
+    fileCopyId: string;
     percentage: number;
     timeLeftSeconds: number;
 }
