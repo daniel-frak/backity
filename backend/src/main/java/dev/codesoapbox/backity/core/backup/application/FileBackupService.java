@@ -28,7 +28,7 @@ public class FileBackupService {
     public void backUpFile(FileCopy fileCopy, GameFile gameFile, BackupTarget backupTarget,
                            StorageSolution storageSolution) {
         if (!fileCopyReplicator.gameProviderIsConnected(gameFile)) {
-            log.info("Game provider for game file (id={}) is not connected, skipping...", gameFile.getId());
+            log.debug("Game provider for game file (id={}) is not connected, skipping...", gameFile.getId());
             return;
         }
         log.info("Backing up game file (id={}, fileCopyId={}, url={})...", gameFile.getId(),

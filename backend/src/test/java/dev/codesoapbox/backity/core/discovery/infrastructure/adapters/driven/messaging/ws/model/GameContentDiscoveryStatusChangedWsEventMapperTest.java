@@ -14,7 +14,7 @@ class GameContentDiscoveryStatusChangedWsEventMapperTest {
 
     @Test
     void shouldMapToDomainToWs() {
-        GameContentDiscoveryStatusChangedEvent event = TestGameContentDiscoveryEvent.statusChanged();
+        GameContentDiscoveryStatusChangedEvent event = TestGameContentDiscoveryEvent.statusChangedToInProgress();
 
         GameContentDiscoveryStatusChangedWsEvent result = MAPPER.toWsEvent(event);
 

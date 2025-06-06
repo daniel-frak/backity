@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.eventhandlers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameFileDiscoveredEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.TestGameContentDiscoveryEvent;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.GameContentDiscoveryWebSocketTopics;
@@ -19,9 +18,6 @@ class GameFileDiscoveredEventWebSocketHandlerIT {
 
     @Autowired
     private GameFileDiscoveredEventWebSocketHandler eventHandler;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Test
     void shouldPublishWebSocketEvent() throws IOException {

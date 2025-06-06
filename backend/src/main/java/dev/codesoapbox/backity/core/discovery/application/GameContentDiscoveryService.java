@@ -3,6 +3,8 @@ package dev.codesoapbox.backity.core.discovery.application;
 import dev.codesoapbox.backity.DoNotMutate;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
+import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryProgress;
+import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryProgressRepository;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameFileDiscoveredEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStatusChangedEvent;
@@ -14,11 +16,15 @@ import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+
+import static java.util.function.Function.identity;
 
 @Slf4j
 public class GameContentDiscoveryService {
@@ -27,16 +33,19 @@ public class GameContentDiscoveryService {
     private final GameFileRepository gameFileRepository;
     private final GameRepository gameRepository;
     private final DomainEventPublisher domainEventPublisher;
+    private final GameContentDiscoveryProgressRepository discoveryProgressRepository;
     private final Map<GameProviderId, Boolean> discoveryStatuses = new ConcurrentHashMap<>();
 
     public GameContentDiscoveryService(List<GameProviderFileDiscoveryService> gameProviderFileDiscoveryServices,
                                        GameRepository gameRepository,
                                        GameFileRepository gameFileRepository,
-                                       DomainEventPublisher domainEventPublisher) {
+                                       DomainEventPublisher domainEventPublisher,
+                                       GameContentDiscoveryProgressRepository discoveryProgressRepository) {
         this.gameProviderFileDiscoveryServices = gameProviderFileDiscoveryServices.stream().toList();
         this.gameRepository = gameRepository;
         this.gameFileRepository = gameFileRepository;
         this.domainEventPublisher = domainEventPublisher;
+        this.discoveryProgressRepository = discoveryProgressRepository;
 
         gameProviderFileDiscoveryServices.forEach(discoveryService -> {
             discoveryStatuses.put(discoveryService.getGameProviderId(), false);
@@ -48,8 +57,8 @@ public class GameContentDiscoveryService {
     private void publishProgressChangedEvent(DomainEventPublisher eventPublisher, GameProviderId gameProviderId,
                                              ProgressInfo progress) {
         int percentage = progress.percentage();
-        long seconds = progress.timeLeft().getSeconds();
-        var event = new GameContentDiscoveryProgressChangedEvent(gameProviderId, percentage, seconds);
+        Duration timeLeft = progress.timeLeft();
+        var event = new GameContentDiscoveryProgressChangedEvent(gameProviderId, percentage, timeLeft);
         eventPublisher.publish(event);
         log.debug("Discovery progress: {}", progress);
     }
@@ -139,9 +148,24 @@ public class GameContentDiscoveryService {
     }
 
     public List<GameContentDiscoveryStatus> getStatuses() {
+        Map<GameProviderId, GameContentDiscoveryProgress> discoveryProgressesByGameProviderId =
+                getDiscoveryProgressesByGameProviderId();
+
         return discoveryStatuses.entrySet().stream()
-                .map(s -> new GameContentDiscoveryStatus(s.getKey(), s.getValue()))
+                .map(s -> new GameContentDiscoveryStatus(
+                        s.getKey(),
+                        s.getValue(),
+                        discoveryProgressesByGameProviderId.get(s.getKey())
+                ))
                 .toList();
+    }
+
+    private Map<GameProviderId, GameContentDiscoveryProgress> getDiscoveryProgressesByGameProviderId() {
+        List<GameContentDiscoveryProgress> discoveryProgresses =
+                discoveryProgressRepository.findAllByGameProviderIdIn(discoveryStatuses.keySet());
+
+        return discoveryProgresses.stream()
+                .collect(Collectors.toMap(GameContentDiscoveryProgress::gameProviderId, identity()));
     }
 
     class CompletedGameContentDiscoveryHandler {

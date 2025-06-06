@@ -6,7 +6,7 @@ export namespace TestGameContentDiscoveryProgressUpdateEvent {
     return {
       gameProviderId: 'someGameProviderId',
       percentage: 25,
-      timeLeftSeconds: 1234
+      timeLeftSeconds: 999
     };
   }
 

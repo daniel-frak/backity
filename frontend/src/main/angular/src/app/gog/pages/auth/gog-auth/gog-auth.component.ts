@@ -1,10 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {
-  GameContentDiscoveryProgressUpdateEvent,
-  GOGAuthenticationClient,
-  GogConfig,
-  GOGConfigurationClient
-} from "@backend";
+import {GOGAuthenticationClient, GogConfig, GOGConfigurationClient, Progress} from "@backend";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {finalize, firstValueFrom, forkJoin, Observable} from "rxjs";
@@ -52,7 +47,7 @@ export class GogAuthComponent implements OnInit {
   externalDataIsLoading: boolean = false;
 
   @Input()
-  progress?: GameContentDiscoveryProgressUpdateEvent;
+  progress?: Progress;
 
   public openGogModal = () => this.showGogAuthModal();
 

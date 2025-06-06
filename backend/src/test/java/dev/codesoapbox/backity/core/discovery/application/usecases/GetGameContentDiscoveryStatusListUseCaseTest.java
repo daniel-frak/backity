@@ -40,7 +40,7 @@ class GetGameContentDiscoveryStatusListUseCaseTest {
     private List<GameContentDiscoveryStatus> mockGameContentDiscoveryStatuses() {
         var gameProviderId = new GameProviderId("TestGameProviderId");
         List<GameContentDiscoveryStatus> statuses =
-                List.of(new GameContentDiscoveryStatus(gameProviderId, true));
+                List.of(new GameContentDiscoveryStatus(gameProviderId, true, null));
         when(gameContentDiscoveryService.getStatuses())
                 .thenReturn(statuses);
 

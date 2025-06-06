@@ -3,10 +3,12 @@ package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.me
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 @Mapper
 public abstract class GameContentDiscoveryProgressChangedWsEventMapper {
 
+    @Mapping(target = "timeLeftSeconds", source = "timeLeft.seconds")
     public abstract GameContentDiscoveryProgressChangedWsEvent toWsEvent(
             GameContentDiscoveryProgressChangedEvent domain);
 

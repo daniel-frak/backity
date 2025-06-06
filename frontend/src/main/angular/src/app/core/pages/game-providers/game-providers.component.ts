@@ -8,7 +8,7 @@ import {
   GameContentDiscoveryStatus,
   GameContentDiscoveryStatusChangedEvent,
   GameContentDiscoveryWebSocketTopics,
-  GameFileDiscoveredEvent
+  GameFileDiscoveredEvent, Progress
 } from "@backend";
 import {IMessage} from "@stomp/stompjs";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
@@ -33,9 +33,8 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
   newestGameFileDiscoveredEvent?: GameFileDiscoveredEvent;
   newDiscoveredGameFilesCount: number = 0;
   infoIsLoading: boolean = false;
-  discoveryStatusByGameProviderId: Map<string, boolean> = new Map<string, boolean>();
-  discoveryProgressByGameProviderId: Map<string, GameContentDiscoveryProgressUpdateEvent>
-    = new Map<string, GameContentDiscoveryProgressUpdateEvent>();
+  discoveryStatusByGameProviderId: Map<string, boolean> = new Map();
+  discoveryProgressByGameProviderId: Map<string, Progress | undefined> = new Map();
   discoveryStateUnknown: boolean = true;
 
   private readonly subscriptions: Subscription[] = [];
@@ -70,7 +69,10 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
 
   private onDiscoveryProgressChanged(payload: IMessage) {
     const progress: GameContentDiscoveryProgressUpdateEvent = JSON.parse(payload.body);
-    this.discoveryProgressByGameProviderId.set(progress.gameProviderId, progress);
+    this.discoveryProgressByGameProviderId.set(progress.gameProviderId, {
+      percentage: progress.percentage,
+      timeLeftSeconds: progress.timeLeftSeconds
+    });
   }
 
   private updateDiscoveryStatus(status: GameContentDiscoveryStatusChangedEvent) {
@@ -82,8 +84,11 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
     this.infoIsLoading = true;
     this.gameContentDiscoveryClient.getStatuses()
       .subscribe(gameContentDiscoveryStatuses => {
-        gameContentDiscoveryStatuses
-          .forEach((status) => this.updateDiscoveryStatus(status))
+        for (const status of gameContentDiscoveryStatuses) {
+          this.discoveryStatusByGameProviderId.set(status.gameProviderId, status.isInProgress);
+          this.discoveryProgressByGameProviderId.set(status.gameProviderId, status.progress);
+          this.discoveryStateUnknown = false;
+        }
         this.infoIsLoading = false;
       });
   }
@@ -106,11 +111,11 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
       });
   }
 
-  getGogProgress(): GameContentDiscoveryProgressUpdateEvent | undefined {
+  getGogProgress(): Progress | undefined {
     return this.getProgress('GOG');
   }
 
-  getProgress(gameProviderId: string): GameContentDiscoveryProgressUpdateEvent | undefined {
+  getProgress(gameProviderId: string): Progress | undefined {
     const progress = this.discoveryProgressByGameProviderId.get(gameProviderId);
     if (progress?.percentage == 100) {
       return undefined;

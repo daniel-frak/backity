@@ -35,9 +35,7 @@
         <app-loading-placeholder [widths]="['6rem']"/>
       </ng-container>
 
-      <ng-container *ngIf="progress">
-        <app-progress-bar [percentage]="progress.percentage ?? 0"/>
-      </ng-container>
+      <app-progress-bar *ngIf="progress" [percentage]="progress.percentage"/>
 
       <ng-container *ngIf="progress">
         <app-button [disabled]="true" buttonStyle="secondary" testId="stop-discovery-btn">
@@ -91,7 +89,7 @@
         <ng-container name>Time left</ng-container>
         <ng-container value>
           <ng-container *ngIf="progress">
-          {{ (progress.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }}
+            {{ (progress.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }}
           </ng-container>
           <ng-container *ngIf="!progress">N/A</ng-container>
         </ng-container>

@@ -1,7 +1,6 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.TestFileBackupEvent;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.FileBackupWebSocketTopics;
@@ -18,9 +17,6 @@ class FileBackupFinishedEventWebSocketHandlerIT {
 
     @Autowired
     private FileBackupFinishedEventWebSocketHandler eventHandler;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Test
     void shouldPublishWebSocketEvent() throws JsonProcessingException {

@@ -21,6 +21,7 @@ import {
 } from "@app/shared/testing/objects/test-game-content-discovery-progress-update-event";
 import SpyObj = jasmine.SpyObj;
 import createSpyObj = jasmine.createSpyObj;
+import {TestProgress} from "@app/shared/testing/objects/test-progress";
 
 describe('GameProvidersComponent', () => {
   let component: GameProvidersComponent;
@@ -95,7 +96,14 @@ describe('GameProvidersComponent', () => {
   });
 
   it('should refresh info on init', async () => {
-    const newStatus: GameContentDiscoveryStatus = {gameProviderId: 'someGameProviderId', isInProgress: true};
+    const newStatus: GameContentDiscoveryStatus = {
+      gameProviderId: 'someGameProviderId',
+      isInProgress: true,
+      progress: {
+        percentage: 25,
+        timeLeftSeconds: 99
+      }
+    };
     gameContentDiscoveryClient.getStatuses.and.returnValue(of([newStatus]) as any);
 
     component.ngOnInit();
@@ -103,6 +111,7 @@ describe('GameProvidersComponent', () => {
     fixture.detectChanges();
 
     expect(component.discoveryStatusByGameProviderId.get('someGameProviderId')).toBeTrue();
+    expect(component.discoveryProgressByGameProviderId.get('someGameProviderId')).toEqual(newStatus.progress);
     expect(component.newDiscoveredGameFilesCount).toBe(0);
   });
 
@@ -179,10 +188,13 @@ describe('GameProvidersComponent', () => {
   });
 
   it('should update discovery progress', () => {
-    const progressUpdate: GameContentDiscoveryProgressUpdateEvent = TestGameContentDiscoveryProgressUpdateEvent.twentyFivePercent();
+    const progressUpdate: GameContentDiscoveryProgressUpdateEvent =
+      TestGameContentDiscoveryProgressUpdateEvent.twentyFivePercent();
+
     discoveryProgressSubscriptions[0]({body: JSON.stringify(progressUpdate)});
 
-    expect(component.discoveryProgressByGameProviderId.get(progressUpdate.gameProviderId!)).toEqual(progressUpdate);
+    expect(component.discoveryProgressByGameProviderId.get(progressUpdate.gameProviderId!))
+      .toEqual(TestProgress.twentyFivePercent());
   });
 
   it('should return undefined from getProgress when game provider not found', () => {

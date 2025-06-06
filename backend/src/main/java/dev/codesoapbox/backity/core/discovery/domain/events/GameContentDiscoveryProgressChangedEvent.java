@@ -4,9 +4,11 @@ import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.shared.domain.DomainEvent;
 import lombok.NonNull;
 
+import java.time.Duration;
+
 public record GameContentDiscoveryProgressChangedEvent(
         @NonNull GameProviderId gameProviderId,
         int percentage,
-        long timeLeftSeconds
+        @NonNull Duration timeLeft
 ) implements DomainEvent {
 }
