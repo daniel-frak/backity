@@ -117,6 +117,16 @@ public class FileCopyJpaRepository implements FileCopyRepository {
     }
 
     @Override
+    public List<FileCopy> findAllInProgress() {
+        org.springframework.data.domain.Page<FileCopyJpaEntity> foundPage =
+                springRepository.findAllByStatusIn(Pageable.unpaged(), List.of(FileCopyStatus.IN_PROGRESS));
+
+        return foundPage.getContent().stream()
+                .map(entityMapper::toDomain)
+                .toList();
+    }
+
+    @Override
     public List<FileCopy> findAllByGameFileId(GameFileId id) {
         return springRepository.findAllByNaturalIdGameFileId(id.value()).stream()
                 .map(entityMapper::toDomain)

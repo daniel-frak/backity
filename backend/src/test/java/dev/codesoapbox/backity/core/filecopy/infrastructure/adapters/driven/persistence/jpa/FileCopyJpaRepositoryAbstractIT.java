@@ -289,6 +289,24 @@ abstract class FileCopyJpaRepositoryAbstractIT {
     }
 
     @Test
+    void shouldFindAllInProgress() {
+        List<FileCopy> result = repository.findAllInProgress();
+
+        List<FileCopy> expectedResult = List.of(
+                EXISTING_FILE_COPIES.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2.get()
+        );
+        assertSame(result, expectedResult);
+    }
+
+    private void assertSame(List<FileCopy> result, List<FileCopy> expectedResult) {
+        assertThat(result)
+                .usingRecursiveComparison()
+                .ignoringFields("dateCreated", "dateModified")
+                .isEqualTo(expectedResult);
+        assertThat(result).containsExactlyElementsOf(expectedResult);
+    }
+
+    @Test
     void shouldFindAllByGameFileId() {
         List<FileCopy> result =
                 repository.findAllByGameFileId(EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1.get().getId());

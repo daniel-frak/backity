@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.backup.application.usecases;
 
 import dev.codesoapbox.backity.core.backup.application.FileBackupService;
+import dev.codesoapbox.backity.core.backup.domain.events.BackupRecoveryCompletedEvent;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
@@ -56,6 +57,7 @@ class BackUpOldestFileCopyUseCaseTest {
 
     @Test
     void shouldBackUpEnqueuedGameFileIfNotCurrentlyDownloading() {
+        backUpOldestFileCopyUseCase.handle(new BackupRecoveryCompletedEvent());
         FileCopy fileCopy = TestFileCopy.tracked();
         GameFile gameFile = TestGameFile.gog();
         mockIsNextInQueue(gameFile, fileCopy);
@@ -104,6 +106,7 @@ class BackUpOldestFileCopyUseCaseTest {
 
     @Test
     void shouldMarkAsFailedGracefully() {
+        backUpOldestFileCopyUseCase.handle(new BackupRecoveryCompletedEvent());
         FileCopy fileCopy = TestFileCopy.tracked();
         GameFile gameFile = TestGameFile.gog();
         mockIsNextInQueue(gameFile, fileCopy);
@@ -124,11 +127,21 @@ class BackUpOldestFileCopyUseCaseTest {
 
     @Test
     void shouldDoNothingIfCurrentlyDownloading() {
+        backUpOldestFileCopyUseCase.handle(new BackupRecoveryCompletedEvent());
         FileCopy fileCopy = TestFileCopy.tracked();
 
         backUpOldestFileCopyUseCase.enqueuedFileCopyReference.set(fileCopy);
         backUpOldestFileCopyUseCase.backUpOldestFileCopy();
 
-        verifyNoInteractions(gameFileRepository, fileBackupService);
+        verifyNoInteractions(fileCopyRepository, gameFileRepository, backupTargetRepository, storageSolutionRepository,
+                fileBackupService);
+    }
+
+    @Test
+    void shouldDoNothingIfBackupRecoveryNotComplete() {
+        backUpOldestFileCopyUseCase.backUpOldestFileCopy();
+
+        verifyNoInteractions(fileCopyRepository, gameFileRepository, backupTargetRepository, storageSolutionRepository,
+                fileBackupService);
     }
 }

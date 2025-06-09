@@ -21,4 +21,6 @@ public interface FileCopyRepository {
     Page<FileCopy> findAllInProgressOrEnqueued(Pagination pagination);
 
     List<FileCopy> findAllByGameFileId(GameFileId id);
+
+    List<FileCopy> findAllInProgress();
 }

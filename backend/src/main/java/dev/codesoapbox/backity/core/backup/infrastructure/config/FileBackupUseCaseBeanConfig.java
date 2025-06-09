@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.backup.application.FileCopyReplicator;
 import dev.codesoapbox.backity.core.backup.application.GameProviderFileBackupService;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgressFactory;
 import dev.codesoapbox.backity.core.backup.application.usecases.BackUpOldestFileCopyUseCase;
+import dev.codesoapbox.backity.core.backup.application.usecases.RecoverInterruptedFileBackupUseCase;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
@@ -41,5 +42,13 @@ public class FileBackupUseCaseBeanConfig {
                                                             FileBackupService fileBackupService) {
         return new BackUpOldestFileCopyUseCase(fileCopyRepository, gameFileRepository, backupTargetRepository,
                 storageSolutionRepository, fileBackupService);
+    }
+
+    @Bean
+    RecoverInterruptedFileBackupUseCase recoverInterruptedFileBackupUseCase(
+            FileCopyRepository fileCopyRepository, BackupTargetRepository backupTargetRepository,
+            StorageSolutionRepository storageSolutionRepository, DomainEventPublisher domainEventPublisher) {
+        return new RecoverInterruptedFileBackupUseCase(fileCopyRepository, backupTargetRepository,
+                storageSolutionRepository, domainEventPublisher);
     }
 }
