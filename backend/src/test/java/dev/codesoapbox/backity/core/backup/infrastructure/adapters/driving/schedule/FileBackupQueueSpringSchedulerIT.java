@@ -11,7 +11,8 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import java.time.Duration;
 
 import static org.awaitility.Awaitility.await;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.verify;
 
 @EnableScheduling
 @SpringJUnitConfig(FileBackupQueueSchedulerBeanConfig.class)
