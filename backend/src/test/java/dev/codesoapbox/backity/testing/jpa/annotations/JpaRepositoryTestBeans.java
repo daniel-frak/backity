@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.testing.jpa.annotations;
 
+import dev.codesoapbox.backity.core.discovery.infrastructure.config.GameContentDiscoveryResultJpaRepositoryConfig;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.config.FileCopyJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.game.infrastructure.config.GameJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.gamefile.infrastructure.config.GameFileJpaRepositoryBeanConfig;
@@ -24,7 +25,8 @@ import java.lang.annotation.Target;
         // Specific
         GameJpaRepositoryBeanConfig.class,
         GameFileJpaRepositoryBeanConfig.class,
-        FileCopyJpaRepositoryBeanConfig.class
+        FileCopyJpaRepositoryBeanConfig.class,
+        GameContentDiscoveryResultJpaRepositoryConfig.class
 })
 @MockitoBean(types = DomainEventPublisher.class)
 public @interface JpaRepositoryTestBeans {

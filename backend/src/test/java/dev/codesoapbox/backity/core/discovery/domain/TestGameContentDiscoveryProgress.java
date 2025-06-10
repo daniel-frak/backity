@@ -6,8 +6,8 @@ import lombok.Builder;
 import java.time.Duration;
 
 
-@Builder(builderClassName = "Builder", builderMethodName = "gogBuilder", buildMethodName = "internalBuilder",
-        setterPrefix = "with")
+@Builder(builderClassName = "Builder", builderMethodName = "twentyFivePercentGogBuilder",
+        buildMethodName = "internalBuilder", setterPrefix = "with")
 public class TestGameContentDiscoveryProgress {
 
     @lombok.Builder.Default
@@ -19,11 +19,17 @@ public class TestGameContentDiscoveryProgress {
     @lombok.Builder.Default
     private Duration timeLeft = Duration.ofSeconds(10);
 
+    @lombok.Builder.Default
+    private int gamesDiscovered = 44;
+
+    @lombok.Builder.Default
+    private int gameFilesDiscovered = 55;
+
     public static GameContentDiscoveryProgress twentyFivePercentGog() {
-        return gogBuilder().build();
+        return twentyFivePercentGogBuilder().build();
     }
 
-    public static TestGameContentDiscoveryProgress.Builder gogBuilder() {
+    public static TestGameContentDiscoveryProgress.Builder twentyFivePercentGogBuilder() {
         return new TestGameContentDiscoveryProgress.Builder();
     }
 
@@ -31,7 +37,8 @@ public class TestGameContentDiscoveryProgress {
 
         public GameContentDiscoveryProgress build() {
             TestGameContentDiscoveryProgress temp = internalBuilder();
-            return new GameContentDiscoveryProgress(temp.gameProviderId, temp.percentage, temp.timeLeft);
+            return new GameContentDiscoveryProgress(temp.gameProviderId, temp.percentage, temp.timeLeft,
+                    temp.gamesDiscovered, temp.gameFilesDiscovered);
         }
     }
 }

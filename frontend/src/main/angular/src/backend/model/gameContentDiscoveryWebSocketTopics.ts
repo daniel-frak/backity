@@ -9,11 +9,11 @@
  */
 
 
-export type GameContentDiscoveryWebSocketTopics = '/topic/game-content-discovery/file-discovered' | '/topic/game-content-discovery/status-changed' | '/topic/game-content-discovery/progress-update';
+export type GameContentDiscoveryWebSocketTopics = '/topic/game-content-discovery/discovery-started' | '/topic/game-content-discovery/discovery-stopped' | '/topic/game-content-discovery/progress-update';
 
 export const GameContentDiscoveryWebSocketTopics = {
-    FileDiscovered: '/topic/game-content-discovery/file-discovered' as GameContentDiscoveryWebSocketTopics,
-    StatusChanged: '/topic/game-content-discovery/status-changed' as GameContentDiscoveryWebSocketTopics,
+    DiscoveryStarted: '/topic/game-content-discovery/discovery-started' as GameContentDiscoveryWebSocketTopics,
+    DiscoveryStopped: '/topic/game-content-discovery/discovery-stopped' as GameContentDiscoveryWebSocketTopics,
     ProgressUpdate: '/topic/game-content-discovery/progress-update' as GameContentDiscoveryWebSocketTopics
 };
 

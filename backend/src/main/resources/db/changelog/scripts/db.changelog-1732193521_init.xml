@@ -103,4 +103,29 @@
             <column name="backup_target_id"/>
         </createIndex>
     </changeSet>
+    <changeSet id="create_game_content_discovery_result" author="daniel_frak">
+        <createTable tableName="game_content_discovery_result">
+            <column name="game_provider_id" type="VARCHAR">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="started_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stopped_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="discovery_outcome" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_successful_discovery_completed_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="games_discovered" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="game_files_discovered" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

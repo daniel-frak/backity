@@ -17,11 +17,14 @@ class GameContentDiscoveryProgressTest {
 
         @ParameterizedTest
         @ValueSource(ints = {-1, 101})
-        void shouldThrowGivenInvalidPercentage(int invalidPercentage) {
+        void constructorShouldThrowGivenInvalidPercentage(int invalidPercentage) {
             var gameProviderId = new GameProviderId("GOG");
             Duration duration = Duration.ofSeconds(1);
+            int gamesDiscovered = 5;
+            int gameFilesDiscovered = 70;
 
-            assertThatThrownBy(() -> new GameContentDiscoveryProgress(gameProviderId, invalidPercentage, duration))
+            assertThatThrownBy(() -> new GameContentDiscoveryProgress(
+                    gameProviderId, invalidPercentage, duration, gamesDiscovered, gameFilesDiscovered))
                     .isInstanceOf(InvalidGameContentDiscoveryProgressPercentageException.class)
                     .hasMessageContaining(String.valueOf(invalidPercentage));
         }

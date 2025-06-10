@@ -16,5 +16,5 @@ public interface GameProviderFileDiscoveryService {
 
     void subscribeToProgress(Consumer<ProgressInfo> progressConsumer);
 
-    ProgressInfo getProgress();
+    ProgressInfo getProgressInfo();
 }

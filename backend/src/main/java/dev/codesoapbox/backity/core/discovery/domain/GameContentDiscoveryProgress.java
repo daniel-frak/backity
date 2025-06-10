@@ -8,7 +8,9 @@ import java.time.Duration;
 public record GameContentDiscoveryProgress(
         GameProviderId gameProviderId,
         int percentage,
-        Duration timeLeft
+        Duration timeLeft,
+        int gamesDiscovered,
+        int gameFilesDiscovered
 ) {
 
     private static final int PERCENTAGE_MAX = 100;

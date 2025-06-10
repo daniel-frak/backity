@@ -28,7 +28,9 @@ class GameContentDiscoveryProgressChangedEventWebSocketHandlerIT {
                 {
                     "gameProviderId": "TestGameProviderId",
                     "percentage": 50,
-                    "timeLeftSeconds": 999
+                    "timeLeftSeconds": 999,
+                    "gamesDiscovered": 5,
+                    "gameFilesDiscovered": 70
                 }
                 """;
         messageChannel.assertPublishedWebSocketEvent(

@@ -19,7 +19,7 @@ import { Observable }                                        from 'rxjs';
 // @ts-ignore
 import { ErrorMessage } from '../model/errorMessage';
 // @ts-ignore
-import { GameContentDiscoveryStatus } from '../model/gameContentDiscoveryStatus';
+import { GameContentDiscoveryOverview } from '../model/gameContentDiscoveryOverview';
 // @ts-ignore
 import { ValidationError } from '../model/validationError';
 
@@ -95,15 +95,15 @@ export class GameContentDiscoveryClient {
     }
 
     /**
-     * List game provider content discovery statuses
-     * Returns a list of content discovery statuses for every game provider
+     * List game provider content discovery overviews
+     * Returns a list of content discovery overviews for every game provider
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getStatuses(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<GameContentDiscoveryStatus>>;
-    public getStatuses(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<GameContentDiscoveryStatus>>>;
-    public getStatuses(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<GameContentDiscoveryStatus>>>;
-    public getStatuses(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getDiscoveryOverviews(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Array<GameContentDiscoveryOverview>>;
+    public getDiscoveryOverviews(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Array<GameContentDiscoveryOverview>>>;
+    public getDiscoveryOverviews(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<Array<GameContentDiscoveryOverview>>>;
+    public getDiscoveryOverviews(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -141,8 +141,8 @@ export class GameContentDiscoveryClient {
             }
         }
 
-        let localVarPath = `/api/game-content-discovery-statuses`;
-        return this.httpClient.request<Array<GameContentDiscoveryStatus>>('get', `${this.configuration.basePath}${localVarPath}`,
+        let localVarPath = `/api/game-content-discovery-overviews`;
+        return this.httpClient.request<Array<GameContentDiscoveryOverview>>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
                 responseType: <any>responseType_,

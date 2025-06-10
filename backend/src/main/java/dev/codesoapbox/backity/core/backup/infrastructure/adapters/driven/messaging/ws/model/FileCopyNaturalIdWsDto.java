@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 public record FileCopyNaturalIdWsDto(
-        @NotNull String gameFileId,
-        @NotNull String backupTargetId
+        @NotBlank String gameFileId,
+        @NotBlank String backupTargetId
 ) {
 }

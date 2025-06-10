@@ -11,8 +11,8 @@ import lombok.experimental.Accessors;
 @Getter
 public enum GameContentDiscoveryWebSocketTopics {
 
-    FILE_DISCOVERED("/topic/game-content-discovery/file-discovered"),
-    GAME_CONTENT_DISCOVERY_STATUS_CHANGED("/topic/game-content-discovery/status-changed"),
+    GAME_CONTENT_DISCOVERY_STARTED("/topic/game-content-discovery/discovery-started"),
+    GAME_CONTENT_DISCOVERY_STOPPED("/topic/game-content-discovery/discovery-stopped"),
     GAME_CONTENT_DISCOVERY_PROGRESS_CHANGED("/topic/game-content-discovery/progress-update");
 
     private final String wsDestination;

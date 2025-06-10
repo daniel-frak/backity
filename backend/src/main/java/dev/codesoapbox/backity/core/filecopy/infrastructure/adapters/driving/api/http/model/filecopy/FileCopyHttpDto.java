@@ -2,13 +2,14 @@ package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.ap
 
 import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.FileCopyStatusHttpDto;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
 @Schema(name = "FileCopy")
 public record FileCopyHttpDto(
-        @NotNull String id,
+        @NotBlank String id,
         @NotNull FileCopyNaturalIdHttpDto naturalId,
         @NotNull FileCopyStatusHttpDto status,
         String failedReason,

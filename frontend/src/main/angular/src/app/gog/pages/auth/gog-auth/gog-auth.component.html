@@ -13,16 +13,16 @@
            [ngClass]="{'text-primary': gogAuthenticated, 'text-danger-emphasis': !gogAuthenticated}">
         <i class="me-1"
            [ngClass]="{
-           'bi bi-check-circle': gogAuthenticated && !progress,
-           'bi bi-x-circle': !gogAuthenticated && !progress,
-           'bi bi-hourglass': progress
+           'bi bi-check-circle': gogAuthenticated && !overview?.progress,
+           'bi bi-x-circle': !gogAuthenticated && !overview?.progress,
+           'bi bi-hourglass': overview?.progress
            }"
            aria-hidden="true">
         </i>
-        <ng-container *ngIf="progress">
+        <ng-container *ngIf="overview?.progress">
           Discovering...
         </ng-container>
-        <ng-container *ngIf="!progress">
+        <ng-container *ngIf="!overview?.progress">
           <ng-container *ngIf="gogAuthenticated">Authenticated</ng-container>
           <ng-container *ngIf="!gogAuthenticated">Not authenticated</ng-container>
         </ng-container>
@@ -35,22 +35,22 @@
         <app-loading-placeholder [widths]="['6rem']"/>
       </ng-container>
 
-      <app-progress-bar *ngIf="progress" [percentage]="progress.percentage"/>
+      <app-progress-bar *ngIf="overview?.progress" [percentage]="overview?.progress?.percentage ?? 0"/>
 
-      <ng-container *ngIf="progress">
+      <ng-container *ngIf="overview?.progress">
         <app-button [disabled]="true" buttonStyle="secondary" testId="stop-discovery-btn">
           Stop discovery
         </app-button>
       </ng-container>
 
-      <ng-container *ngIf="!gogAuthenticated && !progress">
+      <ng-container *ngIf="!gogAuthenticated && !overview?.progress">
         <app-button [action]="openGogModal"
                     buttonType="button" testId="show-gog-auth-modal-btn" buttonStyle="primary">
           Authenticate
         </app-button>
       </ng-container>
 
-      <ng-container *ngIf="gogAuthenticated && !progress">
+      <ng-container *ngIf="gogAuthenticated && !overview?.progress">
         <app-button [actionAsync]="onClickSignOutGog()" buttonStyle="danger" testId="log-out-gog-btn">
           Log out
         </app-button>
@@ -63,37 +63,70 @@
         <app-loading-placeholder [widths]="['20rem', '20rem', '20rem', '20rem', '20rem', '8rem']"/>
       </ng-container>
 
-      <app-named-value>
-        <ng-container name>Last discovery status</ng-container>
-        <ng-container value>
-          <app-game-content-discovery-status-badge status="UNKNOWN"></app-game-content-discovery-status-badge>
-        </ng-container>
-      </app-named-value>
-      <app-named-value>
-        <ng-container name>Last attempted discovery</ng-container>
-        <ng-container value>Unknown</ng-container>
-      </app-named-value>
-      <app-named-value>
-        <ng-container name>Last successful discovery</ng-container>
-        <ng-container value>Unknown</ng-container>
-      </app-named-value>
-      <app-named-value>
-        <ng-container name>New games discovered</ng-container>
-        <ng-container value>Unknown</ng-container>
-      </app-named-value>
-      <app-named-value>
-        <ng-container name>New game files discovered</ng-container>
-        <ng-container value>Unknown</ng-container>
-      </app-named-value>
-      <app-named-value>
-        <ng-container name>Time left</ng-container>
-        <ng-container value>
-          <ng-container *ngIf="progress">
-            {{ (progress.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }}
+      <ng-container *ngIf="!overview?.progress">
+        <app-named-value>
+          <ng-container name>Last successful discovery stopped at</ng-container>
+          <ng-container *ngIf="overview?.lastDiscoveryResult" value>
+            {{ overview?.lastDiscoveryResult?.lastSuccessfulDiscoveryCompletedAt | date:'dd.MM.yyyy HH:mm:ss' }}
           </ng-container>
-          <ng-container *ngIf="!progress">N/A</ng-container>
-        </ng-container>
-      </app-named-value>
+          <ng-container *ngIf="!overview?.lastDiscoveryResult" value>
+            N/A
+          </ng-container>
+        </app-named-value>
+        <app-named-value>
+          <ng-container name>Last attempted discovery stopped at</ng-container>
+          <ng-container *ngIf="overview?.lastDiscoveryResult" value>
+            {{ overview?.lastDiscoveryResult?.stoppedAt | date:'dd.MM.yyyy HH:mm:ss' }}
+          </ng-container>
+          <ng-container *ngIf="!overview?.lastDiscoveryResult" value>N/A</ng-container>
+        </app-named-value>
+        <app-named-value>
+          <ng-container name>Last discovery outcome</ng-container>
+          <ng-container value>
+            <app-game-content-discovery-outcome-badge [status]="overview?.lastDiscoveryResult?.discoveryOutcome"/>
+          </ng-container>
+        </app-named-value>
+        <app-named-value>
+          <ng-container name>Last games discovered</ng-container>
+          <ng-container *ngIf="overview?.lastDiscoveryResult" value>
+            {{ overview?.lastDiscoveryResult?.gamesDiscovered }}
+          </ng-container>
+          <ng-container *ngIf="!overview?.lastDiscoveryResult" value>
+            N/A
+          </ng-container>
+        </app-named-value>
+        <app-named-value>
+          <ng-container name>Last game files discovered</ng-container>
+          <ng-container *ngIf="overview?.lastDiscoveryResult" value>
+            {{ overview?.lastDiscoveryResult?.gameFilesDiscovered }}
+          </ng-container>
+          <ng-container *ngIf="!overview?.lastDiscoveryResult" value>
+            N/A
+          </ng-container>
+        </app-named-value>
+      </ng-container>
+      <ng-container *ngIf="overview?.progress">
+        <app-named-value>
+          <ng-container name>Games discovered</ng-container>
+          <ng-container value>
+            {{ overview?.progress?.gamesDiscovered }}
+          </ng-container>
+        </app-named-value>
+        <app-named-value>
+          <ng-container name>Game files discovered</ng-container>
+          <ng-container value>
+            {{ overview?.progress?.gameFilesDiscovered }}
+          </ng-container>
+        </app-named-value>
+        <app-named-value>
+          <ng-container name>Time left</ng-container>
+          <ng-container value>
+            <ng-container>
+              {{ (overview?.progress?.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }}
+            </ng-container>
+          </ng-container>
+        </app-named-value>
+      </ng-container>
     </app-loaded-content>
   </ng-container>
 </app-icon-item>

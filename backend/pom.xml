@@ -395,6 +395,7 @@
                         <!-- The classes below are tested using integration tests -->
                         <excludedClass>**.adapters.driving.**.http.**.*Controller</excludedClass>
                         <excludedClass>**jpa.**.*Repository</excludedClass>
+                        <excludedClass>*StartupListener</excludedClass>
                         <excludedClass>*SpringScheduler</excludedClass>
                         <excludedClass>*WebSocketHandler</excludedClass>
                         <excludedClass>*WebSocketPublisher</excludedClass>

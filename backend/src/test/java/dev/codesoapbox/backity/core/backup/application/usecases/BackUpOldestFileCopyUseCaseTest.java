@@ -144,4 +144,11 @@ class BackUpOldestFileCopyUseCaseTest {
         verifyNoInteractions(fileCopyRepository, gameFileRepository, backupTargetRepository, storageSolutionRepository,
                 fileBackupService);
     }
+
+    @Test
+    void shouldGetEventClass() {
+        Class<BackupRecoveryCompletedEvent> result = backUpOldestFileCopyUseCase.getEventClass();
+
+        assertThat(result).isEqualTo(BackupRecoveryCompletedEvent.class);
+    }
 }

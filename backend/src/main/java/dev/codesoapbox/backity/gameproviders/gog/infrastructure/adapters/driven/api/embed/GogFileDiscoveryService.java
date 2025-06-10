@@ -79,7 +79,7 @@ public class GogFileDiscoveryService implements GameProviderFileDiscoveryService
     }
 
     @Override
-    public ProgressInfo getProgress() {
+    public ProgressInfo getProgressInfo() {
         if (progressTracker == null) {
             return ProgressInfo.none();
         }
