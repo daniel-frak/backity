@@ -1,30 +1,17 @@
 package dev.codesoapbox.backity.core.discovery.application;
 
 import dev.codesoapbox.backity.DoNotMutate;
-import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
-import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryProgress;
-import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryProgressRepository;
-import dev.codesoapbox.backity.core.discovery.domain.events.GameFileDiscoveredEvent;
-import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
-import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStatusChangedEvent;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
-import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.Duration;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
-
-import static java.util.function.Function.identity;
+import java.util.concurrent.ExecutorService;
 
 @Slf4j
 public class GameContentDiscoveryService {
@@ -32,35 +19,19 @@ public class GameContentDiscoveryService {
     private final List<GameProviderFileDiscoveryService> gameProviderFileDiscoveryServices;
     private final GameFileRepository gameFileRepository;
     private final GameRepository gameRepository;
-    private final DomainEventPublisher domainEventPublisher;
-    private final GameContentDiscoveryProgressRepository discoveryProgressRepository;
-    private final Map<GameProviderId, Boolean> discoveryStatuses = new ConcurrentHashMap<>();
+    private final GameContentDiscoveryProgressTracker discoveryProgressTracker;
+    private final ExecutorService discoveryExecutor;
 
     public GameContentDiscoveryService(List<GameProviderFileDiscoveryService> gameProviderFileDiscoveryServices,
                                        GameRepository gameRepository,
                                        GameFileRepository gameFileRepository,
-                                       DomainEventPublisher domainEventPublisher,
-                                       GameContentDiscoveryProgressRepository discoveryProgressRepository) {
+                                       GameContentDiscoveryProgressTracker discoveryProgressTracker,
+                                       ExecutorService discoveryExecutor) {
         this.gameProviderFileDiscoveryServices = gameProviderFileDiscoveryServices.stream().toList();
         this.gameRepository = gameRepository;
         this.gameFileRepository = gameFileRepository;
-        this.domainEventPublisher = domainEventPublisher;
-        this.discoveryProgressRepository = discoveryProgressRepository;
-
-        gameProviderFileDiscoveryServices.forEach(discoveryService -> {
-            discoveryStatuses.put(discoveryService.getGameProviderId(), false);
-            discoveryService.subscribeToProgress(progressInfo -> publishProgressChangedEvent(
-                    domainEventPublisher, discoveryService.getGameProviderId(), progressInfo));
-        });
-    }
-
-    private void publishProgressChangedEvent(DomainEventPublisher eventPublisher, GameProviderId gameProviderId,
-                                             ProgressInfo progress) {
-        int percentage = progress.percentage();
-        Duration timeLeft = progress.timeLeft();
-        var event = new GameContentDiscoveryProgressChangedEvent(gameProviderId, percentage, timeLeft);
-        eventPublisher.publish(event);
-        log.debug("Discovery progress: {}", progress);
+        this.discoveryProgressTracker = discoveryProgressTracker;
+        this.discoveryExecutor = discoveryExecutor;
     }
 
     public void startContentDiscovery() {
@@ -70,7 +41,7 @@ public class GameContentDiscoveryService {
     }
 
     private void startContentDiscovery(GameProviderFileDiscoveryService gameProviderDiscoveryService) {
-        if (alreadyInProgress(gameProviderDiscoveryService)) {
+        if (discoveryProgressTracker.isInProgress(gameProviderDiscoveryService)) {
             log.info("Discovery for {} is already in progress. Aborting additional discovery.",
                     gameProviderDiscoveryService.getGameProviderId());
             return;
@@ -78,53 +49,48 @@ public class GameContentDiscoveryService {
 
         log.info("Discovering content for gameProviderId: {}", gameProviderDiscoveryService.getGameProviderId());
 
-        changeDiscoveryStatus(gameProviderDiscoveryService, true);
+        discoveryProgressTracker.initializeTracking(gameProviderDiscoveryService.getGameProviderId());
 
-        CompletableFuture.runAsync(() -> gameProviderDiscoveryService.discoverAllFiles(this::saveDiscoveredFileInfo))
-                .whenComplete(getCompletedGameContentDiscoveryHandler().handle(gameProviderDiscoveryService));
+        CompletableFuture.runAsync(() -> gameProviderDiscoveryService.discoverAllFiles(
+                        fileSource -> saveDiscoveredFileInfo(
+                                gameProviderDiscoveryService.getGameProviderId(), fileSource)), discoveryExecutor)
+                .whenComplete((v, e) ->
+                        handleGameProviderDiscoveryFinished(gameProviderDiscoveryService, e));
     }
 
-    CompletedGameContentDiscoveryHandler getCompletedGameContentDiscoveryHandler() {
-        return new CompletedGameContentDiscoveryHandler();
+    @DoNotMutate // Due to logging logic (difficult to test)
+    private void handleGameProviderDiscoveryFinished(
+            GameProviderFileDiscoveryService discoveryService, Throwable exception) {
+        if (exception == null) {
+            discoveryProgressTracker.markSuccessful(discoveryService.getGameProviderId());
+        } else {
+            log.error("An exception occurred while running file discovery", exception);
+        }
+        discoveryProgressTracker.finalizeTracking(discoveryService.getGameProviderId());
     }
 
-    private boolean alreadyInProgress(GameProviderFileDiscoveryService discoveryService) {
-        return discoveryStatuses.get(discoveryService.getGameProviderId());
-    }
-
-    private void changeDiscoveryStatus(GameProviderFileDiscoveryService discoveryService, boolean isInProgress) {
-        log.info("Changing discovery status of {} to {}", discoveryService.getGameProviderId(), isInProgress);
-        discoveryStatuses.put(discoveryService.getGameProviderId(), isInProgress);
-        sendDiscoveryStatusChangedEvent(discoveryService, isInProgress);
-    }
-
-    private void sendDiscoveryStatusChangedEvent(GameProviderFileDiscoveryService discoveryService,
-                                                 boolean isInProgress) {
-        var event = new GameContentDiscoveryStatusChangedEvent(discoveryService.getGameProviderId(), isInProgress);
-        domainEventPublisher.publish(event);
-    }
-
-    private void saveDiscoveredFileInfo(FileSource fileSource) {
-        Game game = getGameOrAddNew(fileSource);
+    private void saveDiscoveredFileInfo(GameProviderId gameProviderId, FileSource fileSource) {
+        Game game = getGameOrAddNew(gameProviderId, fileSource);
         GameFile gameFile = GameFile.createFor(game, fileSource);
 
         if (!gameFileRepository.existsByUrlAndVersion(gameFile.getFileSource().url(),
                 gameFile.getFileSource().version())) {
             gameFileRepository.save(gameFile);
-            domainEventPublisher.publish(GameFileDiscoveredEvent.from(gameFile));
+            discoveryProgressTracker.incrementGameFilesDiscovered(gameProviderId, 1);
             log.info("Discovered new file: {} (gameId: {})", gameFile.getFileSource().url(),
                     gameFile.getGameId().value());
         }
     }
 
-    private Game getGameOrAddNew(FileSource fileSource) {
+    private Game getGameOrAddNew(GameProviderId gameProviderId, FileSource fileSource) {
         return gameRepository.findByTitle(fileSource.originalGameTitle())
-                .orElseGet(() -> addNewGame(fileSource));
+                .orElseGet(() -> addNewGame(gameProviderId, fileSource));
     }
 
-    private Game addNewGame(FileSource fileSource) {
-        var newGame = Game.createNew(fileSource.originalGameTitle());
+    private Game addNewGame(GameProviderId gameProviderId, FileSource fileSource) {
+        Game newGame = Game.createNew(fileSource.originalGameTitle());
         gameRepository.save(newGame);
+        discoveryProgressTracker.incrementGamesDiscovered(gameProviderId, 1);
         log.info("Discovered new game: {} (id: {})", newGame.getTitle(), newGame.getId().value());
 
         return newGame;
@@ -137,7 +103,7 @@ public class GameContentDiscoveryService {
     }
 
     private void stopContentDiscovery(GameProviderFileDiscoveryService discoveryService) {
-        if (!alreadyInProgress(discoveryService)) {
+        if (!discoveryProgressTracker.isInProgress(discoveryService)) {
             log.info("Discovery for {} is not in progress. No need to stop.", discoveryService.getGameProviderId());
             return;
         }
@@ -145,41 +111,5 @@ public class GameContentDiscoveryService {
         log.info("Stopping discovery for gameProviderId: {}", discoveryService.getGameProviderId());
 
         discoveryService.stopFileDiscovery();
-    }
-
-    public List<GameContentDiscoveryStatus> getStatuses() {
-        Map<GameProviderId, GameContentDiscoveryProgress> discoveryProgressesByGameProviderId =
-                getDiscoveryProgressesByGameProviderId();
-
-        return discoveryStatuses.entrySet().stream()
-                .map(s -> new GameContentDiscoveryStatus(
-                        s.getKey(),
-                        s.getValue(),
-                        discoveryProgressesByGameProviderId.get(s.getKey())
-                ))
-                .toList();
-    }
-
-    private Map<GameProviderId, GameContentDiscoveryProgress> getDiscoveryProgressesByGameProviderId() {
-        List<GameContentDiscoveryProgress> discoveryProgresses =
-                discoveryProgressRepository.findAllByGameProviderIdIn(discoveryStatuses.keySet());
-
-        return discoveryProgresses.stream()
-                .collect(Collectors.toMap(GameContentDiscoveryProgress::gameProviderId, identity()));
-    }
-
-    class CompletedGameContentDiscoveryHandler {
-
-        BiConsumer<Void, Throwable> handle(GameProviderFileDiscoveryService discoveryService) {
-            return (v, e) -> handle(discoveryService, e);
-        }
-
-        @DoNotMutate // Due to logging logic (difficult to test)
-        private void handle(GameProviderFileDiscoveryService discoveryService, Throwable e) {
-            if (e != null) {
-                log.error("An exception occurred while running file discovery", e);
-            }
-            changeDiscoveryStatus(discoveryService, false);
-        }
     }
 }

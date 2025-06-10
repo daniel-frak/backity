@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {GOGAuthenticationClient, GogConfig, GOGConfigurationClient, Progress} from "@backend";
+import {GameContentDiscoveryOverview, GOGAuthenticationClient, GogConfig, GOGConfigurationClient} from "@backend";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {finalize, firstValueFrom, forkJoin, Observable} from "rxjs";
@@ -14,8 +14,8 @@ import {LoadingPlaceholderComponent} from "@app/shared/components/loading-placeh
 import {NamedValueComponent} from "@app/shared/components/named-value/named-value.component";
 import {ProgressBarComponent} from "@app/shared/components/progress-bar/progress-bar.component";
 import {
-  GameContentDiscoveryStatusBadgeComponent
-} from "@app/core/pages/game-providers/game-content-discovery-status-badge/game-content-discovery-status-badge.component";
+  GameContentDiscoveryOutcomeBadgeComponent
+} from "@app/core/pages/game-providers/game-content-discovery-status-badge/game-content-discovery-outcome-badge.component";
 
 @Component({
   selector: 'app-gog-auth',
@@ -32,7 +32,7 @@ import {
     LoadingPlaceholderComponent,
     NamedValueComponent,
     ProgressBarComponent,
-    GameContentDiscoveryStatusBadgeComponent
+    GameContentDiscoveryOutcomeBadgeComponent
   ]
 })
 export class GogAuthComponent implements OnInit {
@@ -47,7 +47,7 @@ export class GogAuthComponent implements OnInit {
   externalDataIsLoading: boolean = false;
 
   @Input()
-  progress?: Progress;
+  overview?: GameContentDiscoveryOverview;
 
   public openGogModal = () => this.showGogAuthModal();
 

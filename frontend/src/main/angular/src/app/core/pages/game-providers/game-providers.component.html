@@ -3,30 +3,30 @@
 </app-page-header>
 
 <app-section>
-  <app-gog-auth [progress]="getGogProgress()" [externalDataIsLoading]="infoIsLoading" />
+  <app-gog-auth [overview]="getGogOverview()" [externalDataIsLoading]="infoIsLoading"/>
 </app-section>
 
 <app-section>
   <app-loaded-content [isLoading]="infoIsLoading">
     <div class="button-container">
-      <app-button [actionAsync]="onClickStartDiscovery()"
-                  testId="start-game-content-discovery-btn"
-                  [disabled]="discoveryStateUnknown || discoveryOngoing()"
-                  buttonClass="mt-2 me-1">
-        Start discovery
-      </app-button>
+      <ng-container *ngIf="{
+        unknown: anyDiscoveryStatusIsUnknown(),
+        ongoing: discoveryOngoing()
+      } as state">
+        <app-button [actionAsync]="onClickStartDiscovery()"
+                    testId="start-game-content-discovery-btn"
+                    [disabled]="state.unknown || state.ongoing"
+                    buttonClass="mt-2 me-1">
+          Start discovery
+        </app-button>
 
-      <app-button [actionAsync]="onClickStopDiscovery()"
-                  testId="stop-game-content-discovery-btn"
-                  [disabled]="discoveryStateUnknown || !discoveryOngoing()"
-                  buttonClass="mt-2 me-1">
-        Stop discovery
-      </app-button>
-    </div>
-    <div class="badge-container">
-      <app-new-discovered-game-files-badge [newDiscoveredCount]="newDiscoveredGameFilesCount"
-                                           [newestDiscovered]="newestGameFileDiscoveredEvent!">
-      </app-new-discovered-game-files-badge>
+        <app-button [actionAsync]="onClickStopDiscovery()"
+                    testId="stop-game-content-discovery-btn"
+                    [disabled]="state.unknown || !state.ongoing"
+                    buttonClass="mt-2 me-1">
+          Stop discovery
+        </app-button>
+      </ng-container>
     </div>
   </app-loaded-content>
 </app-section>

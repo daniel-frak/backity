@@ -9,6 +9,8 @@ import java.time.Duration;
 public record GameContentDiscoveryProgressChangedEvent(
         @NonNull GameProviderId gameProviderId,
         int percentage,
-        @NonNull Duration timeLeft
+        @NonNull Duration timeLeft,
+        int gamesDiscovered,
+        int gameFilesDiscovered
 ) implements DomainEvent {
 }

@@ -11,10 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Clock;
 import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +29,7 @@ class DownloadProgressFactoryTest {
 
     @BeforeEach
     void setUp() {
-        clock = new FakeClock(Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")));
+        clock = FakeClock.atEpochUtc();
         downloadProgressFactory = new DownloadProgressFactory(domainEventPublisher);
     }
 

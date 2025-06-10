@@ -8,14 +8,14 @@ class GameContentDiscoveryWebSocketTopicsTest {
 
     @Test
     void wsDestinationShouldReturnValue() {
-        String result = GameContentDiscoveryWebSocketTopics.FILE_DISCOVERED.wsDestination();
+        String result = GameContentDiscoveryWebSocketTopics.GAME_CONTENT_DISCOVERY_STARTED.wsDestination();
 
-        assertThat(result).isEqualTo("/topic/game-content-discovery/file-discovered");
+        assertThat(result).isEqualTo("/topic/game-content-discovery/discovery-started");
     }
 
     @Test
     void toStringShouldReturnWsDestination() {
-        assertThat(GameContentDiscoveryWebSocketTopics.FILE_DISCOVERED)
-                .hasToString("/topic/game-content-discovery/file-discovered");
+        assertThat(GameContentDiscoveryWebSocketTopics.GAME_CONTENT_DISCOVERY_STARTED)
+                .hasToString("/topic/game-content-discovery/discovery-started");
     }
 }

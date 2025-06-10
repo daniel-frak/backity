@@ -19,6 +19,10 @@ public class FakeClock extends Clock {
         return new FakeClock(Clock.fixed(localDateTime.toInstant(ZoneOffset.UTC), zoneId));
     }
 
+    public static FakeClock atEpochUtc() {
+        return new FakeClock(Clock.fixed(Instant.EPOCH, ZoneId.of("UTC")));
+    }
+
     public void moveForward(Duration offsetDuration) {
         currentClock = Clock.offset(currentClock, offsetDuration);
     }

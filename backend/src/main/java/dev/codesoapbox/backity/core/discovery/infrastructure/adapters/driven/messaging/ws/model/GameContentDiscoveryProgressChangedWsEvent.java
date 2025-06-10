@@ -2,14 +2,17 @@ package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.me
 
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.IncludeInDocumentation;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.NonNull;
 
 @IncludeInDocumentation
-@Schema(name = "GameContentDiscoveryProgressUpdateEvent")
+@Schema(name = "GameContentDiscoveryProgressChangedEvent")
 public record GameContentDiscoveryProgressChangedWsEvent(
-        @NonNull @NotNull String gameProviderId,
+        @NonNull @NotBlank String gameProviderId,
         @NotNull int percentage,
-        @NotNull long timeLeftSeconds
+        @NotNull long timeLeftSeconds,
+        @NotNull int gamesDiscovered,
+        @NotNull int gameFilesDiscovered
 ) {
 }

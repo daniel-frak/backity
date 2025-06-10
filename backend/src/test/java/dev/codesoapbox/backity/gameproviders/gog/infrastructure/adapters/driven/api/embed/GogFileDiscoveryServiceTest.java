@@ -200,7 +200,7 @@ class GogFileDiscoveryServiceTest {
 
         @Test
         void shouldReturnNoneWhenNoDiscoveryHasStarted() {
-            assertThat(gogFileDiscoveryService.getProgress())
+            assertThat(gogFileDiscoveryService.getProgressInfo())
                     .isEqualTo(ProgressInfo.none());
         }
 
@@ -212,7 +212,7 @@ class GogFileDiscoveryServiceTest {
                 // We don't care about the FileSources for this
             });
 
-            ProgressInfo progressInfo = gogFileDiscoveryService.getProgress();
+            ProgressInfo progressInfo = gogFileDiscoveryService.getProgressInfo();
 
             assertThat(progressInfo.percentage()).isEqualTo(100);
         }

@@ -2,12 +2,13 @@ package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messa
 
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.IncludeInDocumentation;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 @IncludeInDocumentation
 @Schema(name = "FileDownloadProgressUpdatedEvent")
 public record FileDownloadProgressUpdatedWsEvent(
-        @NotNull String fileCopyId,
+        @NotBlank String fileCopyId,
         @NotNull FileCopyNaturalIdWsDto fileCopyNaturalId,
         @NotNull int percentage,
         @NotNull long timeLeftSeconds

@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.discovery.infrastructure.config;
 
-import dev.codesoapbox.backity.core.discovery.application.usecases.GetGameContentDiscoveryStatusListUseCase;
+import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryProgressTracker;
+import dev.codesoapbox.backity.core.discovery.application.usecases.GetGameContentDiscoveryOverviewsUseCase;
 import dev.codesoapbox.backity.core.discovery.application.usecases.StartGameContentDiscoveryUseCase;
 import dev.codesoapbox.backity.core.discovery.application.usecases.StopGameContentDiscoveryUseCase;
 import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryService;
@@ -11,9 +12,9 @@ import org.springframework.context.annotation.Configuration;
 public class GameContentDiscoveryUseCaseBeanConfig {
 
     @Bean
-    public GetGameContentDiscoveryStatusListUseCase getGameContentDiscoveryStatusListUseCase(
-            GameContentDiscoveryService gameContentDiscoveryService) {
-        return new GetGameContentDiscoveryStatusListUseCase(gameContentDiscoveryService);
+    public GetGameContentDiscoveryOverviewsUseCase getGameContentDiscoveryOverviewsUseCase(
+            GameContentDiscoveryProgressTracker discoveryProgressTracker) {
+        return new GetGameContentDiscoveryOverviewsUseCase(discoveryProgressTracker);
     }
 
     @Bean

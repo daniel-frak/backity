@@ -4,11 +4,11 @@ import {GogAuthComponent} from '@app/gog/pages/auth/gog-auth/gog-auth.component'
 import {SectionComponent} from "@app/shared/components/section/section.component";
 import {
   GameContentDiscoveryClient,
-  GameContentDiscoveryProgressUpdateEvent,
-  GameContentDiscoveryStatus,
-  GameContentDiscoveryStatusChangedEvent,
-  GameContentDiscoveryWebSocketTopics,
-  GameFileDiscoveredEvent, Progress
+  GameContentDiscoveryOverview,
+  GameContentDiscoveryProgressChangedEvent,
+  GameContentDiscoveryStartedEvent,
+  GameContentDiscoveryStoppedEvent,
+  GameContentDiscoveryWebSocketTopics
 } from "@backend";
 import {IMessage} from "@stomp/stompjs";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
@@ -16,26 +16,21 @@ import {NotificationService} from "@app/shared/services/notification/notificatio
 import {firstValueFrom, Subscription} from "rxjs";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
 import {LoadedContentComponent} from "@app/shared/components/loaded-content/loaded-content.component";
-import {
-  NewDiscoveredFilesBadgeComponent
-} from "@app/core/pages/game-providers/new-discovered-files-badge/new-discovered-files-badge.component";
+import {NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-game-providers',
   templateUrl: './game-providers.component.html',
   styleUrls: ['./game-providers.component.scss'],
   standalone: true,
-  imports: [PageHeaderComponent, GogAuthComponent, SectionComponent, ButtonComponent, LoadedContentComponent,
-    NewDiscoveredFilesBadgeComponent]
+  imports: [PageHeaderComponent, GogAuthComponent, SectionComponent, ButtonComponent, LoadedContentComponent, NgIf]
 })
 export class GameProvidersComponent implements OnInit, OnDestroy {
 
-  newestGameFileDiscoveredEvent?: GameFileDiscoveredEvent;
-  newDiscoveredGameFilesCount: number = 0;
   infoIsLoading: boolean = false;
-  discoveryStatusByGameProviderId: Map<string, boolean> = new Map();
-  discoveryProgressByGameProviderId: Map<string, Progress | undefined> = new Map();
-  discoveryStateUnknown: boolean = true;
+  discoveryIsInProgressByGameProviderId: Map<string, boolean> = new Map();
+  discoveryOverviewsByGameProviderId: Map<string, GameContentDiscoveryOverview | undefined> = new Map();
+  discoveryStatusUnknownByGameProviderId: Map<string, boolean> = new Map();
 
   private readonly subscriptions: Subscription[] = [];
 
@@ -46,10 +41,10 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.push(
-      this.messageService.watch(GameContentDiscoveryWebSocketTopics.FileDiscovered)
-        .subscribe(p => this.onFileDiscovered(p)),
-      this.messageService.watch(GameContentDiscoveryWebSocketTopics.StatusChanged)
-        .subscribe(p => this.onDiscoveryStatusChanged(p)),
+      this.messageService.watch(GameContentDiscoveryWebSocketTopics.DiscoveryStarted)
+        .subscribe(p => this.onDiscoveryStarted(p)),
+      this.messageService.watch(GameContentDiscoveryWebSocketTopics.DiscoveryStopped)
+        .subscribe(p => this.onDiscoveryStopped(p)),
       this.messageService.watch(GameContentDiscoveryWebSocketTopics.ProgressUpdate)
         .subscribe(p => this.onDiscoveryProgressChanged(p))
     )
@@ -57,37 +52,62 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
     this.refreshInfo();
   }
 
-  private onFileDiscovered(payload: IMessage) {
-    this.newestGameFileDiscoveredEvent = JSON.parse(payload.body);
-    this.newDiscoveredGameFilesCount++;
+  private onDiscoveryStarted(payload: IMessage) {
+    const event: GameContentDiscoveryStartedEvent = JSON.parse(payload.body);
+
+    this.discoveryIsInProgressByGameProviderId.set(event.gameProviderId, true);
+    this.discoveryStatusUnknownByGameProviderId.set(event.gameProviderId, false);
+
+    const overview: GameContentDiscoveryOverview | undefined =
+      this.discoveryOverviewsByGameProviderId.get(event.gameProviderId);
+    if (overview) {
+      overview.isInProgress = true;
+    }
   }
 
-  private onDiscoveryStatusChanged(payload: IMessage) {
-    const status: GameContentDiscoveryStatusChangedEvent = JSON.parse(payload.body);
-    this.updateDiscoveryStatus(status);
+  private onDiscoveryStopped(payload: IMessage) {
+    const event: GameContentDiscoveryStoppedEvent = JSON.parse(payload.body);
+
+    this.discoveryIsInProgressByGameProviderId.set(event.gameProviderId, false);
+    let overview: GameContentDiscoveryOverview | undefined =
+      this.discoveryOverviewsByGameProviderId.get(event.gameProviderId);
+    if (!overview) {
+      overview = {
+        gameProviderId: event.gameProviderId,
+        isInProgress: false
+      };
+      this.discoveryOverviewsByGameProviderId.set(event.gameProviderId, overview);
+    }
+    overview.isInProgress = false;
+    overview.progress = undefined;
+    overview.lastDiscoveryResult = event.discoveryResult;
+    this.discoveryStatusUnknownByGameProviderId.set(event.gameProviderId, false);
   }
 
   private onDiscoveryProgressChanged(payload: IMessage) {
-    const progress: GameContentDiscoveryProgressUpdateEvent = JSON.parse(payload.body);
-    this.discoveryProgressByGameProviderId.set(progress.gameProviderId, {
-      percentage: progress.percentage,
-      timeLeftSeconds: progress.timeLeftSeconds
-    });
-  }
-
-  private updateDiscoveryStatus(status: GameContentDiscoveryStatusChangedEvent) {
-    this.discoveryStatusByGameProviderId.set(status.gameProviderId, status.isInProgress);
-    this.discoveryStateUnknown = false;
+    const event: GameContentDiscoveryProgressChangedEvent = JSON.parse(payload.body);
+    const overview: GameContentDiscoveryOverview | undefined =
+      this.discoveryOverviewsByGameProviderId.get(event.gameProviderId);
+    this.discoveryStatusUnknownByGameProviderId.set(event.gameProviderId, false);
+    if (overview == undefined) {
+      return;
+    }
+    overview.progress = {
+      percentage: event.percentage,
+      timeLeftSeconds: event.timeLeftSeconds,
+      gamesDiscovered: event.gamesDiscovered,
+      gameFilesDiscovered: event.gameFilesDiscovered
+    }
   }
 
   private refreshInfo() {
     this.infoIsLoading = true;
-    this.gameContentDiscoveryClient.getStatuses()
-      .subscribe(gameContentDiscoveryStatuses => {
-        for (const status of gameContentDiscoveryStatuses) {
-          this.discoveryStatusByGameProviderId.set(status.gameProviderId, status.isInProgress);
-          this.discoveryProgressByGameProviderId.set(status.gameProviderId, status.progress);
-          this.discoveryStateUnknown = false;
+    this.gameContentDiscoveryClient.getDiscoveryOverviews()
+      .subscribe(discoveryOverviews => {
+        for (const discoveryOverview of discoveryOverviews) {
+          this.discoveryIsInProgressByGameProviderId.set(discoveryOverview.gameProviderId, discoveryOverview.isInProgress);
+          this.discoveryOverviewsByGameProviderId.set(discoveryOverview.gameProviderId, discoveryOverview);
+          this.discoveryStatusUnknownByGameProviderId.set(discoveryOverview.gameProviderId, false);
         }
         this.infoIsLoading = false;
       });
@@ -97,33 +117,16 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
-  getStatuses(): GameContentDiscoveryStatus[] {
-    if (this.discoveryStatusByGameProviderId.size === 0) {
-      return [];
-    }
-
-    return Array.from(this.discoveryStatusByGameProviderId)
-      .map(([gameProviderId, isInProgress]) => {
-        return {
-          gameProviderId: gameProviderId,
-          isInProgress: isInProgress
-        };
-      });
+  getGogOverview(): GameContentDiscoveryOverview | undefined {
+    return this.getOverview('GOG');
   }
 
-  getGogProgress(): Progress | undefined {
-    return this.getProgress('GOG');
-  }
-
-  getProgress(gameProviderId: string): Progress | undefined {
-    const progress = this.discoveryProgressByGameProviderId.get(gameProviderId);
-    if (progress?.percentage == 100) {
+  getOverview(gameProviderId: string): GameContentDiscoveryOverview | undefined {
+    const overview = this.discoveryOverviewsByGameProviderId.get(gameProviderId);
+    if (!this.discoveryIsInProgressByGameProviderId.has(gameProviderId)) {
       return undefined;
     }
-    if (!this.discoveryStatusByGameProviderId.has(gameProviderId)) {
-      return undefined;
-    }
-    return progress;
+    return overview;
   }
 
   onClickStartDiscovery(): () => Promise<void> {
@@ -131,7 +134,7 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
   }
 
   async startDiscovery(): Promise<void> {
-    this.discoveryStateUnknown = true;
+    this.setAllDiscoveryStatusesUnknown();
     try {
       await firstValueFrom(this.gameContentDiscoveryClient.startDiscovery());
     } catch (error) {
@@ -144,7 +147,7 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
   }
 
   async stopDiscovery(): Promise<void> {
-    this.discoveryStateUnknown = true;
+    this.setAllDiscoveryStatusesUnknown();
     try {
       await firstValueFrom(this.gameContentDiscoveryClient.stopDiscovery());
       this.refreshInfo();
@@ -153,8 +156,19 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
     }
   }
 
+  private setAllDiscoveryStatusesUnknown() {
+    for (const gameProviderId of this.discoveryStatusUnknownByGameProviderId.keys()) {
+      this.discoveryStatusUnknownByGameProviderId.set(gameProviderId, true);
+    }
+  }
+
+  anyDiscoveryStatusIsUnknown(): boolean {
+    return Array.from(this.discoveryStatusUnknownByGameProviderId)
+      .some(([_, isUnknown]) => isUnknown);
+  }
+
   discoveryOngoing(): boolean {
-    return Array.from(this.discoveryStatusByGameProviderId)
-      .some(([gameProviderId, inProgress]) => inProgress);
+    return Array.from(this.discoveryIsInProgressByGameProviderId)
+      .some(([_, inProgress]) => inProgress);
   }
 }

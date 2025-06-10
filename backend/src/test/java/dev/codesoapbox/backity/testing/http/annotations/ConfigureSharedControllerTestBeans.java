@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.testing.http.annotations;
 import dev.codesoapbox.backity.core.backuptarget.application.GetBackupTargetsUseCase;
 import dev.codesoapbox.backity.core.backuptarget.config.BackupTargetControllerBeanConfig;
 import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryService;
-import dev.codesoapbox.backity.core.discovery.application.usecases.GetGameContentDiscoveryStatusListUseCase;
+import dev.codesoapbox.backity.core.discovery.application.usecases.GetGameContentDiscoveryOverviewsUseCase;
 import dev.codesoapbox.backity.core.discovery.application.usecases.StartGameContentDiscoveryUseCase;
 import dev.codesoapbox.backity.core.discovery.application.usecases.StopGameContentDiscoveryUseCase;
 import dev.codesoapbox.backity.core.discovery.infrastructure.config.GameContentDiscoveryControllerBeanConfig;
@@ -66,7 +66,7 @@ import java.lang.annotation.Target;
         GetGamesWithFilesUseCase.class,
         StartGameContentDiscoveryUseCase.class,
         StopGameContentDiscoveryUseCase.class,
-        GetGameContentDiscoveryStatusListUseCase.class,
+        GetGameContentDiscoveryOverviewsUseCase.class,
         EnqueueFileCopyUseCase.class,
         DeleteFileCopyUseCase.class,
         DownloadFileCopyUseCase.class,
