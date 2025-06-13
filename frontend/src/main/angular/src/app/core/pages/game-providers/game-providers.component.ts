@@ -17,13 +17,14 @@ import {firstValueFrom, Subscription} from "rxjs";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
 import {LoadedContentComponent} from "@app/shared/components/loaded-content/loaded-content.component";
 import {NgIf} from "@angular/common";
+import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
 
 @Component({
   selector: 'app-game-providers',
   templateUrl: './game-providers.component.html',
   styleUrls: ['./game-providers.component.scss'],
   standalone: true,
-  imports: [PageHeaderComponent, GogAuthComponent, SectionComponent, ButtonComponent, LoadedContentComponent, NgIf]
+  imports: [PageHeaderComponent, GogAuthComponent, SectionComponent, ButtonComponent, LoadedContentComponent, NgIf, AutoLayoutComponent]
 })
 export class GameProvidersComponent implements OnInit, OnDestroy {
 

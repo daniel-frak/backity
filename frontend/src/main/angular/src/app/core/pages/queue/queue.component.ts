@@ -33,6 +33,10 @@ import {
   GameFileVersionBadgeComponent
 } from "@app/core/components/game-file-version-badge/game-file-version-badge.component";
 import {ProgressBarComponent} from "@app/shared/components/progress-bar/progress-bar.component";
+import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
+import {
+  NamedValueContainerComponent
+} from "@app/shared/components/named-value-container/named-value-container.component";
 
 @Component({
   selector: 'app-queue',
@@ -51,7 +55,9 @@ import {ProgressBarComponent} from "@app/shared/components/progress-bar/progress
     FileCopyStatusBadgeComponent,
     GameFileVersionBadgeComponent,
     ProgressBarComponent,
-    DatePipe
+    DatePipe,
+    AutoLayoutComponent,
+    NamedValueContainerComponent
   ],
   templateUrl: './queue.component.html',
   styleUrl: './queue.component.scss'

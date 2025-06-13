@@ -1,22 +1,22 @@
 <div class="icon-text-and-buttons">
   <div class="icon-and-text">
-    <div class="icon-holder">
+    <div [ngClass]="['icon-holder', getIconSizeClass()]">
       <i [ngClass]="[iconClass, 'icon']" aria-hidden="true"></i>
     </div>
     <div class="text-holder">
       <div class="title">
         <ng-content select="[title]"/>
       </div>
-      <div class="descriptor">
+      <div class="descriptor" #descriptorWrapper>
         <ng-content select="[descriptor]"/>
       </div>
     </div>
   </div>
-  <div class="buttons">
+  <div class="buttons" #buttonsWrapper>
     <ng-content select="[buttons]"/>
   </div>
 </div>
-<div class="details">
+<div class="details" *ngIf="showDetails" #detailsWrapper>
   <ng-content select="[details]"/>
 </div>
 

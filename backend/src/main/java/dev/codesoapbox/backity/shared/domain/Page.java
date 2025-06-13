@@ -1,12 +1,14 @@
 package dev.codesoapbox.backity.shared.domain;
 
+import lombok.NonNull;
+
 import java.util.List;
 import java.util.function.Function;
 
 import static java.util.Collections.emptyList;
 
 public record Page<T>(
-        List<T> content,
+        @NonNull List<T> content,
         int size,
         int totalPages,
         long totalElements,

@@ -3,7 +3,9 @@
 </app-page-header>
 
 <app-section>
-  <app-gog-auth [overview]="getGogOverview()" [externalDataIsLoading]="infoIsLoading"/>
+  <app-auto-layout>
+    <app-gog-auth [overview]="getGogOverview()" [externalDataIsLoading]="infoIsLoading"/>
+  </app-auto-layout>
 </app-section>
 
 <app-section>

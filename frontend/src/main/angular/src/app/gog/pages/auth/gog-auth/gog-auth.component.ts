@@ -16,6 +16,9 @@ import {ProgressBarComponent} from "@app/shared/components/progress-bar/progress
 import {
   GameContentDiscoveryOutcomeBadgeComponent
 } from "@app/core/pages/game-providers/game-content-discovery-status-badge/game-content-discovery-outcome-badge.component";
+import {
+  NamedValueContainerComponent
+} from "@app/shared/components/named-value-container/named-value-container.component";
 
 @Component({
   selector: 'app-gog-auth',
@@ -32,7 +35,8 @@ import {
     LoadingPlaceholderComponent,
     NamedValueComponent,
     ProgressBarComponent,
-    GameContentDiscoveryOutcomeBadgeComponent
+    GameContentDiscoveryOutcomeBadgeComponent,
+    NamedValueContainerComponent
   ]
 })
 export class GogAuthComponent implements OnInit {

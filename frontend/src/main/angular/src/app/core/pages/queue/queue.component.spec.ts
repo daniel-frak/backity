@@ -26,6 +26,8 @@ import {TestFileCopyStatusChangedEvent} from "@app/shared/testing/objects/test-f
 import {TestFileCopyWithContext} from '@app/shared/testing/objects/test-file-copy-with-context';
 import {TestProgressUpdatedEvent} from "@app/shared/testing/objects/test-progress-updated-event";
 import {deepClone} from "@app/shared/testing/deep-clone";
+import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
+import {AutoLayoutStubComponent} from "@app/shared/components/auto-layout/auto-layout.stub.component";
 import createSpyObj = jasmine.createSpyObj;
 import anything = jasmine.anything;
 import SpyObj = jasmine.SpyObj;
@@ -43,11 +45,7 @@ describe('QueueComponent', () => {
   let initialEnqueuedFileCopy: FileCopy = TestFileCopy.enqueued();
   let initialFileCopyWithContext: FileCopyWithContext = TestFileCopyWithContext.withFileCopy(initialEnqueuedFileCopy);
   let initialQueue: PageFileCopyWithContext = TestPage.of([initialFileCopyWithContext]);
-  let initialStorageSolutionStatusResponse: StorageSolutionStatusesResponse = {
-    statuses: {
-      "someStorageSolutionId": "CONNECTED"
-    }
-  };
+  let initialStorageSolutionStatusResponse: StorageSolutionStatusesResponse;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -72,6 +70,10 @@ describe('QueueComponent', () => {
         provideRouter([])
       ]
     })
+      .overrideComponent(QueueComponent, {
+        remove: {imports: [AutoLayoutComponent]},
+        add: {imports: [AutoLayoutStubComponent]}
+      })
       .compileComponents();
 
     fixture = TestBed.createComponent(QueueComponent);
@@ -294,7 +296,7 @@ describe('QueueComponent', () => {
     async () => {
       component.fileCopyWithContextPage = TestPage.of([initialFileCopyWithContext]);
       await simulateReplicationProgressUpdateEventReceived('unknownFileCopyId',
-        { gameFileId: 'unknownGameFileId', backupTargetId: 'unknownBackupTargetId' });
+        {gameFileId: 'unknownGameFileId', backupTargetId: 'unknownBackupTargetId'});
 
       expect(fixture.nativeElement.textContent).not.toContain('25%');
     });
