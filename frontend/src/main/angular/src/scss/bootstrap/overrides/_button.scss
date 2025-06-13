@@ -1,3 +1,5 @@
+@import "../basics";
+
 .btn-help-icon {
   padding: 0;
   vertical-align: top;
@@ -8,4 +10,24 @@
   &:focus {
     box-shadow: none;
   }
+}
+
+.btn-icon-only {
+  padding: 0;
+  border-radius: 50%;
+  width: 2.25rem;
+  height: 2.25rem;
+
+  &.btn-sm {
+    width: 1.8125rem;
+    height: 1.8125rem;
+  }
+  &.btn-lg {
+    width: 2.875rem;
+    height: 2.875rem;
+  }
+}
+
+.btn-outline-secondary {
+  color: $white;
 }

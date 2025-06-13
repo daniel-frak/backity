@@ -2,9 +2,12 @@
   <app-loaded-content [isLoading]="gamesAreLoading">
     <app-auto-layout>
       <div class="button-container">
-        <app-button [actionAsync]="onClickRefresh()"
+        <app-button [actionAsync]="refreshAction"
                     [disabled]="gamesAreLoading"
-                    testId="refresh-games-btn" buttonStyle="secondary">Refresh
+                    title="Refresh"
+                    buttonClass="btn-icon-only"
+                    testId="refresh-games-btn" buttonStyle="secondary">
+          <i class="bi bi-arrow-clockwise"></i>
         </app-button>
       </div>
 
@@ -16,7 +19,8 @@
             <ng-container details>
               <ng-container *ngFor="let gameFileWithCopies of gameWithFileCopies.gameFilesWithCopies;
                                     trackBy: trackByGameFileId">
-                <app-icon-item iconClass="bi bi-file-earmark" size="md" data-testid="game-file-item">
+                <app-icon-item iconClass="bi bi-file-earmark" size="md" data-testid="game-file-item"
+                               [showHideableDetailsOnInit]="false">
                   <ng-container title>
                     {{ gameFileWithCopies.gameFile.fileSource.fileTitle }}
                     <app-game-file-version-badge [version]="gameFileWithCopies.gameFile.fileSource.version"/>
@@ -24,7 +28,7 @@
                   <ng-container descriptor>
                     {{ gameFileWithCopies.gameFile.fileSource.gameProviderId }}
                   </ng-container>
-                  <ng-container details>
+                  <ng-container hideableDetails>
                     <app-named-value-container>
                       <app-named-value>
                         <ng-container name>Original file name</ng-container>

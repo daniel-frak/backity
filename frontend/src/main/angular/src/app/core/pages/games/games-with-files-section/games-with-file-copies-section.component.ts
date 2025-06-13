@@ -95,6 +95,8 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
 
   private readonly subscriptions: Subscription[] = [];
 
+  readonly refreshAction = () => this.refresh();
+
   constructor(private readonly gamesClient: GamesClient,
               private readonly fileCopiesClient: FileCopiesClient,
               private readonly backupTargetsClient: BackupTargetsClient,
@@ -158,10 +160,6 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
       console.warn("Could not find potential file copy", event,
         this.potentialFileCopiesWithContextByGameFileId);
     }
-  }
-
-  onClickRefresh(): () => Promise<void> {
-    return async () => this.refresh();
   }
 
   async refresh(): Promise<void> {

@@ -1,8 +1,10 @@
 <button [type]="buttonType"
         [attr.ngbAutofocus]="ngbAutofocus"
         [disabled]="isLoading || disabled"
-        [ngClass]="'btn btn-' + buttonStyle + ' ' + getSizeClass() + ' ' + buttonClass"
+        [ngClass]="['btn', getButtonStyle(), getSizeClass(), buttonClass]"
         [attr.data-testid]="testId"
+        [attr.title]="title"
+        [attr.aria-label]="title"
         (click)="onClick()">
   <span [ngClass]="isLoading ? 'btn-text-hidden' : ''">
     <ng-content></ng-content>
