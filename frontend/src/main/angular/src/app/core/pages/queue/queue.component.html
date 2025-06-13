@@ -6,9 +6,12 @@
   <app-loaded-content [isLoading]="fileCopiesAreLoading">
     <app-auto-layout>
       <div class="button-container">
-        <app-button [actionAsync]="onClickRefreshEnqueuedFileCopies()"
+        <app-button [actionAsync]="refreshAction"
                     [disabled]="fileCopiesAreLoading"
-                    testId="refresh-queue-btn" buttonStyle="secondary">Refresh
+                    title="Refresh"
+                    buttonClass="btn-icon-only"
+                    testId="refresh-queue-btn" buttonStyle="secondary">
+          <i class="bi bi-arrow-clockwise"></i>
         </app-button>
       </div>
       <ng-container *ngIf="(fileCopyWithContextPage?.content?.length ?? 0) < 1">
@@ -71,7 +74,7 @@
                       [currentPage]="fileCopyWithContextPage"
                       [(pageNumber)]="pageNumber"
                       [(pageSize)]="pageSize"
-                      (onPageChange)="refreshEnqueuedFileCopies()"/>
+                      (onPageChange)="refresh()"/>
     </app-auto-layout>
   </app-loaded-content>
 </app-section>

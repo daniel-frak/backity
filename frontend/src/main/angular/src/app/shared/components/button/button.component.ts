@@ -1,5 +1,7 @@
 import {Component, Input} from '@angular/core';
 import {NgClass, NgIf} from "@angular/common";
+import {ButtonStyle} from "@app/shared/components/button/button-style";
+import {ButtonSize} from "@app/shared/components/button/button-size";
 
 @Component({
   selector: 'app-button',
@@ -14,21 +16,33 @@ import {NgClass, NgIf} from "@angular/common";
 export class ButtonComponent {
 
   @Input() isLoading = false;
-  @Input() buttonStyle = "primary";
+  @Input() buttonStyle: ButtonStyle = "primary";
+  @Input() outline = false;
   @Input() buttonType = "button";
-  @Input() buttonSize = "";
+  @Input() buttonSize: ButtonSize = undefined;
   @Input() buttonClass = "";
   @Input() disabled = false;
   @Input() actionAsync?: () => Promise<void>;
   @Input() action?: VoidFunction;
+  @Input() title?: string;
   @Input() testId?: string;
   @Input() ngbAutofocus?: boolean;
 
-  getSizeClass() {
-    if (this.buttonSize == 'small') {
-      return "btn-sm";
+  private static readonly sizeClassMap = new Map<ButtonSize, string>([
+    ['small',  'btn-sm'],
+    ['medium', 'btn-md'],
+    ['large',  'btn-lg'],
+  ]);
+
+  getButtonStyle() {
+    if (this.outline) {
+      return "btn-outline-" + this.buttonStyle;
     }
-    return "";
+    return "btn-" + this.buttonStyle;
+  }
+
+  getSizeClass() {
+    return ButtonComponent.sizeClassMap.get(this.buttonSize) ?? '';
   }
 
   async onClick() {

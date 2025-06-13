@@ -6,7 +6,7 @@ $enable-important-utilities: true;
 $text-secondary: #CCBD8F;
 
 // Redefined variables (unchanged)
-$white:    #fff;
+$white: #fff;
 $gray-100: #f8f9fa;
 $gray-200: #e9ecef;
 $gray-300: #dee2e6;
@@ -16,15 +16,14 @@ $gray-600: #6c757d;
 $gray-700: #495057;
 $gray-800: #343a40;
 $gray-900: #212529;
-$black:    #000;
-$border-color-translucent: rgba($black, .175);
-$font-weight-lighter:         lighter;
-$font-weight-light:           300;
-$font-weight-normal:          400;
-$font-weight-medium:          500;
-$font-weight-semibold:        600;
-$font-weight-bold:            700;
-$font-weight-bolder:          bolder;
+$black: #000;
+$font-weight-lighter: lighter;
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$font-weight-bolder: bolder;
 
 $spacer: 1rem;
 
@@ -45,7 +44,10 @@ $spacers: (
 
 $border-radius: 1rem;
 $border-radius-sm: 1rem;
-$border-radius-lg: 1rem;
+$border-radius-lg: 3rem;
+$border-radius-xl: 4rem;
+$border-radius-xxl: 5rem;
+$border-radius-pill: 50rem;
 $toast-border-radius: 0;
 $primary: #FFC107FF;
 $secondary: #4A4021;
@@ -55,7 +57,6 @@ $danger: #931F1F;
 $success: #175e0d;
 $red-300: saturate(lighten($danger, 30%), 75%);
 $component-active-bg: $primary;
-$white: #fff;
 $min-contrast-ratio: 4.5;
 $color-contrast-dark: $black;
 $color-contrast-light: $white;
@@ -85,17 +86,17 @@ $btn-close-color: $white;
 $navbar-dark-color: $white;
 $navbar-dark-active-color: $primary;
 
-$btn-close-white-filter: null!important;
+$btn-close-white-filter: null !important;
 $progress-bar-color: $black;
 
-$primary-text-emphasis:   shade-color($primary, 60%);
+$primary-text-emphasis: shade-color($primary, 60%);
 $secondary-text-emphasis: $text-secondary;
-$success-text-emphasis:   shade-color($success, 60%);
-$info-text-emphasis:      shade-color($info, 60%);
-$warning-text-emphasis:   shade-color($warning, 60%);
-$danger-text-emphasis:    tint-color(red, 50%);
-$light-text-emphasis:     $gray-700;
-$dark-text-emphasis:      $gray-700;
+$success-text-emphasis: shade-color($success, 60%);
+$info-text-emphasis: shade-color($info, 60%);
+$warning-text-emphasis: shade-color($warning, 60%);
+$danger-text-emphasis: tint-color(red, 50%);
+$light-text-emphasis: $gray-700;
+$dark-text-emphasis: $gray-700;
 $theme-colors-text: (
   "primary": $primary-text-emphasis,
   "secondary": $secondary-text-emphasis,
@@ -110,6 +111,7 @@ $theme-colors-text: (
 label {
   color: $text-secondary;
 }
+
 .form-floating {
   .form-control:focus,
   .form-control:not(:placeholder-shown),

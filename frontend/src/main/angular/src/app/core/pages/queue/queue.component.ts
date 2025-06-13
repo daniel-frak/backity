@@ -75,6 +75,8 @@ export class QueueComponent implements OnInit, OnDestroy {
 
   private readonly subscriptions: Subscription[] = [];
 
+  readonly refreshAction = async () => this.refresh();
+
   constructor(private readonly fileCopiesClient: FileCopiesClient,
               private readonly storageSolutionsClient: StorageSolutionsClient,
               private readonly messageService: MessagesService,
@@ -142,11 +144,7 @@ export class QueueComponent implements OnInit, OnDestroy {
     };
   }
 
-  onClickRefreshEnqueuedFileCopies(): () => Promise<void> {
-    return async () => this.refreshEnqueuedFileCopies();
-  }
-
-  async refreshEnqueuedFileCopies(): Promise<void> {
+  async refresh(): Promise<void> {
     this.fileCopiesAreLoading = true;
 
     try {

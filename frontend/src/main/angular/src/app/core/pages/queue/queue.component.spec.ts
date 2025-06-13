@@ -129,13 +129,13 @@ describe('QueueComponent', () => {
     return ({unsubscribe: createSpy()}) as any;
   }
 
-  it('should show failure notification given error when refreshEnqueuedFiles is called',
+  it('should show failure notification given error when refresh is called',
     async () => {
       const mockError = new Error('test error');
       fileCopiesClient.getFileCopyQueue.withArgs(anything())
         .and.returnValue(throwError(() => mockError));
 
-      await component.refreshEnqueuedFileCopies();
+      await component.refresh();
 
       expect(notificationService.showFailure).toHaveBeenCalledWith(
         'Error fetching enqueued files', mockError);
