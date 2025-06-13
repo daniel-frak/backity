@@ -11,11 +11,11 @@ import { GameWithFileCopies } from './gameWithFileCopies';
 
 
 export interface PageGameWithFileCopies { 
-    content?: Array<GameWithFileCopies>;
-    size?: number;
-    totalPages?: number;
-    totalElements?: number;
-    pageSize?: number;
-    pageNumber?: number;
+    content: Array<GameWithFileCopies>;
+    size: number;
+    totalPages: number;
+    totalElements: number;
+    pageSize: number;
+    pageNumber: number;
 }
 

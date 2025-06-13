@@ -11,11 +11,11 @@ import { FileCopyWithContext } from './fileCopyWithContext';
 
 
 export interface PageFileCopyWithContext { 
-    content?: Array<FileCopyWithContext>;
-    size?: number;
-    totalPages?: number;
-    totalElements?: number;
-    pageSize?: number;
-    pageNumber?: number;
+    content: Array<FileCopyWithContext>;
+    size: number;
+    totalPages: number;
+    totalElements: number;
+    pageSize: number;
+    pageNumber: number;
 }
 

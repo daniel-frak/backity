@@ -1,5 +1,6 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
+  BackupTarget,
   BackupTargetsClient,
   Configuration,
   EnqueueFileCopyRequest,
@@ -12,7 +13,10 @@ import {
   FileDownloadProgressUpdatedEvent,
   GamesClient,
   GameWithFileCopies,
-  PageGameWithFileCopies
+  PageGameWithFileCopies,
+  StorageSolutionsClient,
+  StorageSolutionStatus,
+  StorageSolutionStatusesResponse
 } from "@backend";
 import {of, throwError} from "rxjs";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
@@ -23,35 +27,40 @@ import {MessageTesting} from "@app/shared/testing/message-testing";
 import {DebugElement} from "@angular/core";
 import {provideRouter} from "@angular/router";
 
-import {GamesWithFileCopiesCardComponent} from './games-with-file-copies-card.component';
+import {GamesWithFileCopiesSectionComponent} from './games-with-file-copies-section.component';
 import {TestGameWithFileCopies} from '@app/shared/testing/objects/test-game-with-file-copies';
 import {TestPage} from "@app/shared/testing/objects/test-page";
 import {TestFileCopyStatusChangedEvent} from "@app/shared/testing/objects/test-file-copy-status-changed-event";
 import {TestFileCopy} from "@app/shared/testing/objects/test-file-copy";
 import {TestBackupTarget} from '@app/shared/testing/objects/test-backup-target';
 import {TestProgressUpdatedEvent} from "@app/shared/testing/objects/test-progress-updated-event";
+import {TestProgress} from "@app/shared/testing/objects/test-progress";
+import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
+import {AutoLayoutStubComponent} from "@app/shared/components/auto-layout/auto-layout.stub.component";
+import {deepClone} from "@app/shared/testing/deep-clone";
 import createSpyObj = jasmine.createSpyObj;
 import SpyObj = jasmine.SpyObj;
-import {TestProgress} from "@app/shared/testing/objects/test-progress";
 
-describe('GamesWithFileCopiesCardComponent', () => {
-  let component: GamesWithFileCopiesCardComponent;
-  let fixture: ComponentFixture<GamesWithFileCopiesCardComponent>;
+describe('GamesWithFileCopiesSectionComponent', () => {
+  let component: GamesWithFileCopiesSectionComponent;
+  let fixture: ComponentFixture<GamesWithFileCopiesSectionComponent>;
 
   let gamesClient: SpyObj<GamesClient>;
   let fileCopiesClient: SpyObj<FileCopiesClient>;
   let backupTargetsClient: SpyObj<BackupTargetsClient>;
+  let storageSolutionsClient: SpyObj<StorageSolutionsClient>;
   let messagesService: SpyObj<MessagesService>;
   let notificationService: SpyObj<NotificationService>;
   let modalService: SpyObj<ModalService>;
   let mockWindow = {location: {href: ''}};
 
-  const localFolderBackupTarget = TestBackupTarget.localFolder();
-  const s3BackupTarget = TestBackupTarget.s3();
+  let localFolderBackupTarget: BackupTarget;
+  let s3BackupTarget: BackupTarget;
+  let initialStorageSolutionStatusResponse: StorageSolutionStatusesResponse;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GamesWithFileCopiesCardComponent],
+      imports: [GamesWithFileCopiesSectionComponent],
       providers: [
         provideRouter([]),
         {provide: GamesClient, useValue: createSpyObj('GamesClient', ['getGames'])},
@@ -63,21 +72,39 @@ describe('GamesWithFileCopiesCardComponent', () => {
           provide: BackupTargetsClient,
           useValue: createSpyObj('BackupTargetsClient', ['getBackupTargets'])
         },
+        {
+          provide: StorageSolutionsClient,
+          useValue: createSpyObj('StorageSolutionsClient', ['getStorageSolutionStatuses'])
+        },
         {provide: MessagesService, useValue: createSpyObj('MessagesService', ['watch'])},
         {provide: NotificationService, useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])},
         {provide: ModalService, useValue: createSpyObj('ModalService', ['withConfirmationModal'])},
         {provide: 'Window', useValue: mockWindow}
       ]
-    }).compileComponents();
+    })
+      .overrideComponent(GamesWithFileCopiesSectionComponent, {
+        remove: {imports: [AutoLayoutComponent]},
+        add: {imports: [AutoLayoutStubComponent]}
+      })
+      .compileComponents();
 
-    fixture = TestBed.createComponent(GamesWithFileCopiesCardComponent);
+    fixture = TestBed.createComponent(GamesWithFileCopiesSectionComponent);
     component = fixture.componentInstance;
     gamesClient = TestBed.inject(GamesClient) as SpyObj<GamesClient>;
     fileCopiesClient = TestBed.inject(FileCopiesClient) as SpyObj<FileCopiesClient>;
     backupTargetsClient = TestBed.inject(BackupTargetsClient) as SpyObj<BackupTargetsClient>;
+    storageSolutionsClient = TestBed.inject(StorageSolutionsClient) as SpyObj<StorageSolutionsClient>;
     messagesService = TestBed.inject(MessagesService) as SpyObj<MessagesService>;
     notificationService = TestBed.inject(NotificationService) as SpyObj<NotificationService>;
     modalService = TestBed.inject(ModalService) as SpyObj<ModalService>;
+
+    localFolderBackupTarget = TestBackupTarget.localFolder();
+    s3BackupTarget = TestBackupTarget.s3();
+    initialStorageSolutionStatusResponse = {
+      statuses: {
+        "someStorageSolutionId": StorageSolutionStatus.Connected
+      }
+    };
 
     autoConfirmModals();
 
@@ -86,6 +113,7 @@ describe('GamesWithFileCopiesCardComponent', () => {
     });
 
     backupTargetsClient.getBackupTargets.and.returnValue(of([localFolderBackupTarget, s3BackupTarget]) as any);
+    mockStorageSolutionStatuses(initialStorageSolutionStatusResponse);
   });
 
   function autoConfirmModals() {
@@ -101,7 +129,7 @@ describe('GamesWithFileCopiesCardComponent', () => {
     expect(component.gamesAreLoading).toBeTrue();
   });
 
-  it('should get games on init', async () => {
+  it('should refresh on init', async () => {
     const gameWithFileCopies: GameWithFileCopies = TestGameWithFileCopies.withInProgressFileCopy();
     const fileCopyWithProgress = gameWithFileCopies.gameFilesWithCopies[0].fileCopiesWithProgress[0];
     fileCopyWithProgress.fileCopy.naturalId.backupTargetId = localFolderBackupTarget.id;
@@ -114,6 +142,8 @@ describe('GamesWithFileCopiesCardComponent', () => {
 
     expect(gamesClient.getGames).toHaveBeenCalledWith({page: 0, size: component.pageSize});
     expect(component.gameWithFileCopiesPage).toEqual(gameWithFileCopiesPage);
+    expect(component.storageSolutionStatusesById.get("someStorageSolutionId"))
+      .toEqual(StorageSolutionStatus.Connected);
     expect(component.gamesAreLoading).toBeFalse();
 
     const pageText = fixture.debugElement.nativeElement.textContent;
@@ -228,8 +258,8 @@ describe('GamesWithFileCopiesCardComponent', () => {
     expect(component.gameWithFileCopiesPage?.content?.[0]?.gameFilesWithCopies[0]
       ?.fileCopiesWithProgress[0].fileCopy?.status)
       .toBe(FileCopyStatus.InProgress);
-    const gameListTable: DebugElement = getGameListTable();
-    expect(gameListTable.nativeElement.textContent).toContain(FileCopyStatus.InProgress);
+    const gameList: DebugElement = getGameList();
+    expect(gameList.nativeElement.textContent).toContain(FileCopyStatus.InProgress);
   });
 
   async function simulateFileCopyStatusChangedEventReceived(
@@ -240,7 +270,7 @@ describe('GamesWithFileCopiesCardComponent', () => {
       FileBackupMessageTopics.StatusChanged, statusChangedMessage);
   }
 
-  function getGameListTable() {
+  function getGameList() {
     return fixture.debugElement.query(By.css('[data-testid="game-list"]'));
   }
 
@@ -262,7 +292,8 @@ describe('GamesWithFileCopiesCardComponent', () => {
     const gameWithFileCopies: GameWithFileCopies = TestGameWithFileCopies.withTrackedFileCopy();
     mockGameWithFileCopiesExists(gameWithFileCopies);
 
-    expect(component.potentialFileCopiesWithContextByGameTitle!.get(gameWithFileCopies.title)?.[0]?.progress)
+    expect(component.potentialFileCopiesWithContextByGameFileId!.get(
+      gameWithFileCopies.gameFilesWithCopies[0].gameFile.id)?.[0]?.progress)
       .toBe(undefined);
   });
 
@@ -273,7 +304,7 @@ describe('GamesWithFileCopiesCardComponent', () => {
       .fileCopy.naturalId.backupTargetId = 'anotherBackupTargetId';
     mockGameWithFileCopiesExists(gameWithFileCopies);
     await simulateStatusChangedEventReceivedToInProgressForFirstFileCopy(anotherGameWithFileCopies);
-    const gameListTable: DebugElement = getGameListTable();
+    const gameListTable: DebugElement = getGameList();
     expect(gameListTable.nativeElement.textContent).not.toContain(FileCopyStatus.InProgress);
   });
 
@@ -290,7 +321,8 @@ describe('GamesWithFileCopiesCardComponent', () => {
         TestProgressUpdatedEvent.twentyFivePercent(fileCopy.id, fileCopy.naturalId);
       await simulateFileCopyProgressChangedEventReceived(progressChangedMessage);
 
-      expect(component.potentialFileCopiesWithContextByGameTitle!.get(gameWithFileCopies.title)?.[0]?.progress)
+      expect(component.potentialFileCopiesWithContextByGameFileId!.get(
+        gameWithFileCopies.gameFilesWithCopies[0].gameFile.id)?.[0]?.progress)
         .toEqual(TestProgress.twentyFivePercent());
     });
 
@@ -303,10 +335,11 @@ describe('GamesWithFileCopiesCardComponent', () => {
 
       const progressChangedMessage: FileDownloadProgressUpdatedEvent =
         TestProgressUpdatedEvent.twentyFivePercent(
-          'unknownFileCopyId', { gameFileId: 'unknownGameFileId', backupTargetId: 'unknownBackupTargetId' });
+          'unknownFileCopyId', {gameFileId: 'unknownGameFileId', backupTargetId: 'unknownBackupTargetId'});
       await simulateFileCopyProgressChangedEventReceived(progressChangedMessage);
 
-      expect(component.potentialFileCopiesWithContextByGameTitle!.get(gameWithFileCopies.title)?.[0]?.progress)
+      expect(component.potentialFileCopiesWithContextByGameFileId!.get(
+        gameWithFileCopies.gameFilesWithCopies[0].gameFile.id)?.[0]?.progress)
         .toBeUndefined();
     });
 
@@ -314,6 +347,11 @@ describe('GamesWithFileCopiesCardComponent', () => {
     Promise<void> {
     await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
       FileBackupMessageTopics.ProgressUpdate, progressChangedMessage);
+  }
+
+  function mockStorageSolutionStatuses(response: StorageSolutionStatusesResponse) {
+    storageSolutionsClient.getStorageSolutionStatuses
+      .and.returnValue(of(deepClone(response)) as any);
   }
 
   it('should download file', async () => {
@@ -336,30 +374,14 @@ describe('GamesWithFileCopiesCardComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    const gameListTable: DebugElement = getGameListTable();
+    const gameListTable: DebugElement = getGameList();
+    console.log(gameListTable.nativeElement,
+      component.gameWithFileCopiesPage,
+      component.potentialFileCopiesWithContextByGameFileId); // @TODO REMOVE
     const downloadBtn: DebugElement = gameListTable.query(By.css('[data-testid="download-file-copy-btn"]'));
 
     downloadBtn.nativeElement.click();
 
     expect(mockWindow.location.href).toBe(`someBasePath/api/file-copies/${fileCopy.id}`);
-  });
-
-  it('should return an empty string when backup target name is unavailable', async () => {
-    const gameWithFileCopies: GameWithFileCopies = TestGameWithFileCopies.withTrackedFileCopy();
-    // Make sure backupTargetId doesn't match any existing backup target
-    gameWithFileCopies.gameFilesWithCopies[0].fileCopiesWithProgress[0].fileCopy.naturalId.backupTargetId =
-      'nonExistentBackupTargetId';
-    const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
-
-    gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
-
-    fixture.detectChanges();
-    await fixture.whenStable();
-    fixture.detectChanges();
-
-    // Simulate the `getBackupTargetName` call
-    const backupTargetName = component.getBackupTargetName('nonExistentBackupTargetId');
-
-    expect(backupTargetName).toBe('');
   });
 });

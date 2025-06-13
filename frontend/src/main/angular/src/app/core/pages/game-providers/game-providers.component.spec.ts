@@ -26,6 +26,8 @@ import {
 import {
   TestGameContentDiscoveryStoppedEvent
 } from "@app/shared/testing/objects/test-game-content-discovery-stopped-event";
+import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
+import {AutoLayoutStubComponent} from "@app/shared/components/auto-layout/auto-layout.stub.component";
 import SpyObj = jasmine.SpyObj;
 import createSpyObj = jasmine.createSpyObj;
 
@@ -64,8 +66,8 @@ describe('GameProvidersComponent', () => {
       ]
     })
       .overrideComponent(GameProvidersComponent, {
-        remove: {imports: [GogAuthComponent]},
-        add: {imports: [GogAuthComponentStub]}
+        remove: {imports: [GogAuthComponent, AutoLayoutComponent]},
+        add: {imports: [GogAuthComponentStub, AutoLayoutStubComponent]}
       })
       .compileComponents();
   });
@@ -141,24 +143,24 @@ describe('GameProvidersComponent', () => {
 
   it('should not update overview given discovery started event received but overview is undefined',
     () => {
-    const event: GameContentDiscoveryStartedEvent = TestGameContentDiscoveryStartedEvent.any();
-    component.discoveryOverviewsByGameProviderId.delete(event.gameProviderId);
+      const event: GameContentDiscoveryStartedEvent = TestGameContentDiscoveryStartedEvent.any();
+      component.discoveryOverviewsByGameProviderId.delete(event.gameProviderId);
 
-    simulateDiscoveryStartedEventReceived(event);
+      simulateDiscoveryStartedEventReceived(event);
 
-    expect(component.discoveryOverviewsByGameProviderId.get(event.gameProviderId)).toBeUndefined();
-  });
+      expect(component.discoveryOverviewsByGameProviderId.get(event.gameProviderId)).toBeUndefined();
+    });
 
   it('should update overview given discovery started event received and overview exists',
     () => {
-    const event: GameContentDiscoveryStartedEvent = TestGameContentDiscoveryStartedEvent.any();
+      const event: GameContentDiscoveryStartedEvent = TestGameContentDiscoveryStartedEvent.any();
       component.discoveryOverviewsByGameProviderId.set(event.gameProviderId,
         TestGameContentDiscoveryOverview.notInProgress());
 
-    simulateDiscoveryStartedEventReceived(event);
+      simulateDiscoveryStartedEventReceived(event);
 
-    expect(component.discoveryOverviewsByGameProviderId.get(event.gameProviderId)?.isInProgress).toBeTrue();
-  });
+      expect(component.discoveryOverviewsByGameProviderId.get(event.gameProviderId)?.isInProgress).toBeTrue();
+    });
 
   it('should update discovery status given discovery stopped event received', () => {
     const event: GameContentDiscoveryStoppedEvent = TestGameContentDiscoveryStoppedEvent.successfulSubsequent();

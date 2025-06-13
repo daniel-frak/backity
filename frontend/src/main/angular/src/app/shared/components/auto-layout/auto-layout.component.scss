@@ -1,0 +1,7 @@
+@import "src/scss/bootstrap/basics";
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: map_get($spacers, 3);
+}

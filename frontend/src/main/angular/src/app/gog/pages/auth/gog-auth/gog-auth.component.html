@@ -64,46 +64,48 @@
       </ng-container>
 
       <ng-container *ngIf="!overview?.progress">
-        <app-named-value>
-          <ng-container name>Last successful discovery stopped at</ng-container>
-          <ng-container *ngIf="overview?.lastDiscoveryResult" value>
-            {{ overview?.lastDiscoveryResult?.lastSuccessfulDiscoveryCompletedAt | date:'dd.MM.yyyy HH:mm:ss' }}
-          </ng-container>
-          <ng-container *ngIf="!overview?.lastDiscoveryResult" value>
-            N/A
-          </ng-container>
-        </app-named-value>
-        <app-named-value>
-          <ng-container name>Last attempted discovery stopped at</ng-container>
-          <ng-container *ngIf="overview?.lastDiscoveryResult" value>
-            {{ overview?.lastDiscoveryResult?.stoppedAt | date:'dd.MM.yyyy HH:mm:ss' }}
-          </ng-container>
-          <ng-container *ngIf="!overview?.lastDiscoveryResult" value>N/A</ng-container>
-        </app-named-value>
-        <app-named-value>
-          <ng-container name>Last discovery outcome</ng-container>
-          <ng-container value>
-            <app-game-content-discovery-outcome-badge [status]="overview?.lastDiscoveryResult?.discoveryOutcome"/>
-          </ng-container>
-        </app-named-value>
-        <app-named-value>
-          <ng-container name>Last games discovered</ng-container>
-          <ng-container *ngIf="overview?.lastDiscoveryResult" value>
-            {{ overview?.lastDiscoveryResult?.gamesDiscovered }}
-          </ng-container>
-          <ng-container *ngIf="!overview?.lastDiscoveryResult" value>
-            N/A
-          </ng-container>
-        </app-named-value>
-        <app-named-value>
-          <ng-container name>Last game files discovered</ng-container>
-          <ng-container *ngIf="overview?.lastDiscoveryResult" value>
-            {{ overview?.lastDiscoveryResult?.gameFilesDiscovered }}
-          </ng-container>
-          <ng-container *ngIf="!overview?.lastDiscoveryResult" value>
-            N/A
-          </ng-container>
-        </app-named-value>
+        <app-named-value-container>
+          <app-named-value>
+            <ng-container name>Last successful discovery stopped at</ng-container>
+            <ng-container *ngIf="overview?.lastDiscoveryResult" value>
+              {{ overview?.lastDiscoveryResult?.lastSuccessfulDiscoveryCompletedAt | date:'dd.MM.yyyy HH:mm:ss' }}
+            </ng-container>
+            <ng-container *ngIf="!overview?.lastDiscoveryResult" value>
+              N/A
+            </ng-container>
+          </app-named-value>
+          <app-named-value>
+            <ng-container name>Last attempted discovery stopped at</ng-container>
+            <ng-container *ngIf="overview?.lastDiscoveryResult" value>
+              {{ overview?.lastDiscoveryResult?.stoppedAt | date:'dd.MM.yyyy HH:mm:ss' }}
+            </ng-container>
+            <ng-container *ngIf="!overview?.lastDiscoveryResult" value>N/A</ng-container>
+          </app-named-value>
+          <app-named-value>
+            <ng-container name>Last discovery outcome</ng-container>
+            <ng-container value>
+              <app-game-content-discovery-outcome-badge [status]="overview?.lastDiscoveryResult?.discoveryOutcome"/>
+            </ng-container>
+          </app-named-value>
+          <app-named-value>
+            <ng-container name>Last games discovered</ng-container>
+            <ng-container *ngIf="overview?.lastDiscoveryResult" value>
+              {{ overview?.lastDiscoveryResult?.gamesDiscovered }}
+            </ng-container>
+            <ng-container *ngIf="!overview?.lastDiscoveryResult" value>
+              N/A
+            </ng-container>
+          </app-named-value>
+          <app-named-value>
+            <ng-container name>Last game files discovered</ng-container>
+            <ng-container *ngIf="overview?.lastDiscoveryResult" value>
+              {{ overview?.lastDiscoveryResult?.gameFilesDiscovered }}
+            </ng-container>
+            <ng-container *ngIf="!overview?.lastDiscoveryResult" value>
+              N/A
+            </ng-container>
+          </app-named-value>
+        </app-named-value-container>
       </ng-container>
       <ng-container *ngIf="overview?.progress">
         <app-named-value>

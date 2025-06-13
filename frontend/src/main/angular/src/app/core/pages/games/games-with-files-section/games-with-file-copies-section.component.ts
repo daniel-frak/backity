@@ -13,7 +13,11 @@ import {
   GameFile,
   GameFileWithCopies,
   GamesClient,
-  PageGameWithFileCopies
+  GameWithFileCopies,
+  PageGameWithFileCopies,
+  StorageSolutionsClient,
+  StorageSolutionStatus,
+  StorageSolutionStatusesResponse
 } from "@backend";
 import {catchError} from "rxjs/operators";
 import {firstValueFrom, Subscription} from "rxjs";
@@ -21,28 +25,37 @@ import {NotificationService} from "@app/shared/services/notification/notificatio
 import {ModalService} from "@app/shared/services/modal-service/modal.service";
 import {ButtonComponent} from '@app/shared/components/button/button.component';
 import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
-import {NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
-import {TableComponent} from '@app/shared/components/table/table.component';
-import {TableColumnDirective} from '@app/shared/components/table/column-directive/table-column.directive';
+import {DatePipe, NgForOf, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {Message} from "@stomp/stompjs";
 import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
 import {
   FileCopyStatusBadgeComponent
 } from "@app/core/components/file-copy-status-badge/file-copy-status-badge.component";
-import {TableContentGroup} from "@app/shared/components/table/table-content-group";
 import {
   PotentialFileCopyWithContext
-} from "@app/core/pages/games/games-with-files-card/potential-file-copy-with-context";
+} from "@app/core/pages/games/games-with-files-section/potential-file-copy-with-context";
 import {
   PotentialFileCopy,
   PotentialFileCopyFactory
-} from "@app/core/pages/games/games-with-files-card/potential-file-copy";
+} from "@app/core/pages/games/games-with-files-section/potential-file-copy";
 import {SectionComponent} from "@app/shared/components/section/section.component";
 import {ProgressBarComponent} from "@app/shared/components/progress-bar/progress-bar.component";
+import {IconItemComponent} from "@app/shared/components/icon-item/icon-item.component";
+import {
+  GameFileVersionBadgeComponent
+} from "@app/core/components/game-file-version-badge/game-file-version-badge.component";
+import {NamedValueComponent} from "@app/shared/components/named-value/named-value.component";
+import {
+  StorageSolutionStatusBadgeComponent
+} from "@app/core/components/storage-solution-status-badge/storage-solution-status-badge.component";
+import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
+import {
+  NamedValueContainerComponent
+} from "@app/shared/components/named-value-container/named-value-container.component";
 
 @Component({
-  selector: 'app-games-with-file-copies-card',
+  selector: 'app-games-with-file-copies-section',
   standalone: true,
   imports: [
     ButtonComponent,
@@ -50,27 +63,32 @@ import {ProgressBarComponent} from "@app/shared/components/progress-bar/progress
     LoadedContentComponent,
     NgSwitchCase,
     PaginationComponent,
-    TableColumnDirective,
-    TableComponent,
     NgSwitch,
     NgIf,
     SectionComponent,
-    ProgressBarComponent
+    ProgressBarComponent,
+    IconItemComponent,
+    NgForOf,
+    GameFileVersionBadgeComponent,
+    NamedValueComponent,
+    DatePipe,
+    StorageSolutionStatusBadgeComponent,
+    AutoLayoutComponent,
+    NamedValueContainerComponent
   ],
-  templateUrl: './games-with-file-copies-card.component.html',
-  styleUrl: './games-with-file-copies-card.component.scss'
+  templateUrl: './games-with-file-copies-section.component.html',
+  styleUrl: './games-with-file-copies-section.component.scss'
 })
-export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
+export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
 
-  asPotentialFileCopyWithContext =
-    (potentialFileCopyWithContext: PotentialFileCopyWithContext) =>
-      potentialFileCopyWithContext;
   FileCopyStatus = FileCopyStatus;
 
   gamesAreLoading: boolean = true;
-  gameWithFileCopiesPage?: PageGameWithFileCopies; // Kept for pagination only
-  potentialFileCopiesWithContextByGameTitle: Map<string, PotentialFileCopyWithContext[]> =
+  storageSolutionStatusesById: Map<string, StorageSolutionStatus> = new Map();
+  gameWithFileCopiesPage?: PageGameWithFileCopies;
+  potentialFileCopiesWithContextByGameFileId: Map<string, PotentialFileCopyWithContext[]> =
     new Map<string, PotentialFileCopyWithContext[]>();
+
   backupTargets: Array<BackupTarget> = [];
   pageNumber: number = 1;
   pageSize: number = 3;
@@ -80,6 +98,7 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
   constructor(private readonly gamesClient: GamesClient,
               private readonly fileCopiesClient: FileCopiesClient,
               private readonly backupTargetsClient: BackupTargetsClient,
+              private readonly storageSolutionsClient: StorageSolutionsClient,
               private readonly messageService: MessagesService,
               private readonly notificationService: NotificationService,
               private readonly modalService: ModalService,
@@ -106,16 +125,17 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
       potentialFileCopyWithContext.progress = undefined;
       console.debug("Updated potential file copy", event, potentialFileCopyWithContext);
     } else {
-      console.warn("Could not find potential file copy", event, this.potentialFileCopiesWithContextByGameTitle);
+      console.warn("Could not find potential file copy", event, this.potentialFileCopiesWithContextByGameFileId);
     }
   }
 
   private findPotentialFileCopyWithContext(fileCopyNaturalId: FileCopyNaturalId):
     PotentialFileCopyWithContext | undefined {
-    return Array.from(this.potentialFileCopiesWithContextByGameTitle?.values())
+    return Array.from(this.potentialFileCopiesWithContextByGameFileId?.values())
       .flat()
       .find((potentialFileCopyWithContext) => {
-        return this.fileCopyNaturalIdsAreEqual(potentialFileCopyWithContext.potentialFileCopy.naturalId, fileCopyNaturalId);
+        return this.fileCopyNaturalIdsAreEqual(
+          potentialFileCopyWithContext.potentialFileCopy.naturalId, fileCopyNaturalId);
       });
   }
 
@@ -135,7 +155,8 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
         timeLeftSeconds: event.timeLeftSeconds,
       };
     } else {
-      console.warn("Could not find potential file copy", event, this.potentialFileCopiesWithContextByGameTitle);
+      console.warn("Could not find potential file copy", event,
+        this.potentialFileCopiesWithContextByGameFileId);
     }
   }
 
@@ -146,22 +167,57 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
   async refresh(): Promise<void> {
     try {
       this.gamesAreLoading = true;
-      this.backupTargets = await firstValueFrom(this.backupTargetsClient.getBackupTargets());
-      this.gameWithFileCopiesPage = await firstValueFrom(this.gamesClient.getGames({
-        page: this.pageNumber - 1,
-        size: this.pageSize
-      }));
-      this.potentialFileCopiesWithContextByGameTitle = new Map(
-        this.gameWithFileCopiesPage.content?.map(({title, gameFilesWithCopies}) =>
-          [title, this.mapToPotentialFileCopiesWithContext(gameFilesWithCopies)]
-        )
-      );
-      this.gamesAreLoading = false;
+      await this.getBackupTargets();
+      await this.getStorageSolutionStatuses();
+      await this.getGamesWithFileCopies();
     } catch (error) {
       this.notificationService.showFailure('Error fetching games', error);
     } finally {
       this.gamesAreLoading = false;
     }
+  }
+
+  private async getBackupTargets() {
+    this.backupTargets = await firstValueFrom(this.backupTargetsClient.getBackupTargets());
+  }
+
+  private async getStorageSolutionStatuses() {
+    const storageSolutionStatusesResponse: StorageSolutionStatusesResponse = await firstValueFrom(
+      this.storageSolutionsClient.getStorageSolutionStatuses());
+    this.storageSolutionStatusesById = new Map<string, StorageSolutionStatus>(
+      Object.entries(storageSolutionStatusesResponse.statuses));
+  }
+
+  private async getGamesWithFileCopies() {
+    this.gameWithFileCopiesPage = await firstValueFrom(this.gamesClient.getGames({
+      page: this.pageNumber - 1,
+      size: this.pageSize
+    }));
+    this.potentialFileCopiesWithContextByGameFileId =
+      this.mapToPotentialFileCopiesWithContext(this.gameWithFileCopiesPage.content);
+  }
+
+  private mapToPotentialFileCopiesWithContext(gamesWithFileCopies: GameWithFileCopies[])
+    : Map<string, PotentialFileCopyWithContext[]> {
+    const resultMap = new Map<string, PotentialFileCopyWithContext[]>();
+
+    for (const {gameFilesWithCopies} of gamesWithFileCopies) {
+      for (const {gameFile, fileCopiesWithProgress} of gameFilesWithCopies) {
+        const potentialFileCopiesWithContext = resultMap.get(gameFile.id) ?? [];
+        resultMap.set(gameFile.id, potentialFileCopiesWithContext);
+
+        for (const backupTarget of this.backupTargets) {
+          const potentialCopy = this.createPotentialFileCopyWithContext(
+            gameFile,
+            fileCopiesWithProgress,
+            backupTarget
+          );
+          potentialFileCopiesWithContext.push(potentialCopy);
+        }
+      }
+    }
+
+    return resultMap;
   }
 
   onClickEnqueueFileCopy(potentialFileCopy: PotentialFileCopy): () => Promise<void> {
@@ -248,25 +304,9 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(s => s.unsubscribe());
   }
 
-  group(content: Map<string, PotentialFileCopyWithContext[]>): TableContentGroup[] {
-    return Array.from(content.entries()).map(([title, gameFilesWithCopies]) => ({
-      caption: title,
-      items: gameFilesWithCopies,
-    }));
-  }
-
-  private mapToPotentialFileCopiesWithContext(gameFilesWithCopies: GameFileWithCopies[]): PotentialFileCopyWithContext[] {
-    return gameFilesWithCopies.flatMap(({gameFile, fileCopiesWithProgress}) =>
-      this.backupTargets
-        .map(backupTarget => this.createPotentialFileCopyWithContext(
-          gameFile, fileCopiesWithProgress, backupTarget))
-    );
-  }
-
   private createPotentialFileCopyWithContext(
     gameFile: GameFile, fileCopiesWithProgress: FileCopyWithProgress[], backupTarget: BackupTarget
   ): PotentialFileCopyWithContext {
-
     const match = fileCopiesWithProgress.find(
       (fcwp) => fcwp.fileCopy.naturalId.backupTargetId === backupTarget.id);
 
@@ -276,10 +316,21 @@ export class GamesWithFileCopiesCardComponent implements OnInit, OnDestroy {
       gameFile,
       potentialFileCopy: potentialFileCopy,
       progress: match?.progress,
+      backupTarget: backupTarget,
+      storageSolutionStatus: this.storageSolutionStatusesById.get(backupTarget.storageSolutionId)
     };
   }
 
-  getBackupTargetName(backupTargetId: string): string {
-    return this.backupTargets.find(backupTarget => backupTarget.id == backupTargetId)?.name ?? "";
+  trackByGameId(index: number, gameWithFileCopies: GameWithFileCopies): string {
+    return gameWithFileCopies.id;
+  }
+
+  trackByGameFileId(index: number, gameFileWithCopies: GameFileWithCopies): string {
+    return gameFileWithCopies.gameFile.id;
+  }
+
+  trackByFileCopyNaturalId(index: number, potentialFileCopyWithContext: PotentialFileCopyWithContext)
+    : FileCopyNaturalId {
+    return potentialFileCopyWithContext.potentialFileCopy.naturalId;
   }
 }
