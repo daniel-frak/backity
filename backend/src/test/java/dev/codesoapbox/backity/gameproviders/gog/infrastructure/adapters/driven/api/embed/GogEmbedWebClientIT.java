@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import dev.codesoapbox.backity.core.backup.application.TrackableFileStream;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
@@ -10,7 +11,7 @@ import dev.codesoapbox.backity.core.gamefile.domain.TestFileSource;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.exceptions.FileDiscoveryException;
+import dev.codesoapbox.backity.core.discovery.domain.exceptions.FileDiscoveryException;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.exceptions.GameBackupRequestFailedException;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.exceptions.GameListRequestFailedException;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.config.GogProperties;

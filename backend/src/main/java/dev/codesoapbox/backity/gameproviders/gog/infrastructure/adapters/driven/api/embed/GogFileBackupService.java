@@ -1,5 +1,7 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed;
 
+import dev.codesoapbox.backity.core.backup.application.TrackableFileStream;
+import dev.codesoapbox.backity.core.backup.application.DownloadService;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backup.application.GameProviderFileBackupService;
@@ -19,7 +21,7 @@ public class GogFileBackupService implements GameProviderFileBackupService {
 
     private final GogEmbedWebClient gogEmbedWebClient;
     private final GogAuthService authService;
-    private final UrlFileDownloader urlFileDownloader;
+    private final DownloadService downloadService;
 
     public GameProviderId getGameProviderId() {
         return new GameProviderId("GOG");
@@ -32,7 +34,7 @@ public class GogFileBackupService implements GameProviderFileBackupService {
         TrackableFileStream fileStream =
                 gogEmbedWebClient.initializeProgressAndStreamFile(fileSource, downloadProgress);
         String filePath = fileCopy.getFilePath();
-        urlFileDownloader.downloadFile(storageSolution, fileStream, gameFile, filePath);
+        downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath);
     }
 
     @Override

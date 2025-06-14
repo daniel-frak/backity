@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.config;
 
+import dev.codesoapbox.backity.core.backup.application.DownloadService;
 import dev.codesoapbox.backity.core.backup.application.FileCopyFactory;
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
@@ -23,13 +24,15 @@ public class FileCopyUseCaseBeanConfig {
 
     @Bean
     EnqueueFileCopyUseCase enqueueFileUseCase(FileCopyRepository fileCopyRepositoryRepository,
-                                                     FileCopyFactory fileCopyFactory) {
+                                              FileCopyFactory fileCopyFactory) {
         return new EnqueueFileCopyUseCase(fileCopyRepositoryRepository, fileCopyFactory);
     }
 
     @Bean
-    CancelFileCopyUseCase cancelFileCopyUseCase(FileCopyRepository fileCopyRepository) {
-        return new CancelFileCopyUseCase(fileCopyRepository);
+    CancelFileCopyUseCase cancelFileCopyUseCase(
+            FileCopyRepository fileCopyRepository,
+            DownloadService downloadService) {
+        return new CancelFileCopyUseCase(fileCopyRepository, downloadService);
     }
 
     @Bean

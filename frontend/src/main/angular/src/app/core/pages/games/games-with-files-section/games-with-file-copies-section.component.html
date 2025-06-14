@@ -68,35 +68,33 @@
                           <app-progress-bar *ngIf="potentialFileCopyWithContext.progress"
                                             [percentage]="potentialFileCopyWithContext.progress.percentage"/>
 
-                          <app-button
-                            [actionAsync]="onClickEnqueueFileCopy(potentialFileCopyWithContext.potentialFileCopy)"
-                            *ngIf="!potentialFileCopyWithContext.potentialFileCopy.status
-                    || potentialFileCopyWithContext.potentialFileCopy.status === FileCopyStatus.Tracked"
-                            testId="backup-file-btn">
-                            <i class="bi bi-cloud-download" aria-hidden="true"></i>
-                            Back up
-                          </app-button>
-                          <ng-container [ngSwitch]="potentialFileCopyWithContext.potentialFileCopy.status">
+                          <ng-container
+                            *ngIf="potentialFileCopyWithContext.potentialFileCopy.status as status">
+                            <app-button
+                              [actionAsync]="onClickEnqueueFileCopy(potentialFileCopyWithContext.potentialFileCopy)"
+                              *ngIf="!status || status === FileCopyStatus.Tracked || status === FileCopyStatus.Failed"
+                              testId="backup-file-btn">
+                              <i class="bi bi-cloud-download" aria-hidden="true"></i>
+                              Back up
+                            </app-button>
                             <app-button
                               [actionAsync]="onClickCancelBackup(potentialFileCopyWithContext.potentialFileCopy)"
-                              *ngSwitchCase="FileCopyStatus.Enqueued"
+                              *ngIf="status == FileCopyStatus.Enqueued || status === FileCopyStatus.InProgress"
                               testId="cancel-file-backup-btn"
                               buttonStyle="secondary">
                               Cancel backup
                             </app-button>
                             <app-button
                               [actionAsync]="onClickViewError(potentialFileCopyWithContext.potentialFileCopy.id!)"
-                              *ngSwitchCase="FileCopyStatus.Failed"
+                              *ngIf="status === FileCopyStatus.Failed"
                               testId="view-error-btn"
                               buttonStyle="secondary">
                               <i class="bi bi-bug" aria-hidden="true"></i>
                               View error
                             </app-button>
 
-                            <ng-container *ngIf="potentialFileCopyWithContext.potentialFileCopy.status
-                              === FileCopyStatus.StoredIntegrityUnknown
-                              || potentialFileCopyWithContext.potentialFileCopy.status
-                              === FileCopyStatus.StoredIntegrityVerified">
+                            <ng-container *ngIf="status === FileCopyStatus.StoredIntegrityUnknown
+                              || status === FileCopyStatus.StoredIntegrityVerified">
                               <app-button
                                 [actionAsync]="onClickDownload(potentialFileCopyWithContext.potentialFileCopy.id!)"
                                 testId="download-file-copy-btn">

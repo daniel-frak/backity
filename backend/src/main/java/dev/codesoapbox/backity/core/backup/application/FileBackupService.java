@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.backup.application;
 
+import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCancelledException;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
@@ -51,7 +52,14 @@ public class FileBackupService {
         String filePath = uniqueFilePathResolver.resolve(
                 backupTarget.getPathTemplate(), gameFile.getFileSource(), storageSolution);
         markInProgress(fileCopy, filePath);
-        fileCopyReplicator.replicateFile(storageSolution, gameFile, fileCopy);
+
+        try {
+            fileCopyReplicator.replicateFile(storageSolution, gameFile, fileCopy);
+        } catch (FileDownloadWasCancelledException e) {
+            storageSolution.deleteIfExists(fileCopy.getFilePath());
+            markCancelled(fileCopy);
+            return;
+        }
         markStored(fileCopy);
     }
 
@@ -62,6 +70,11 @@ public class FileBackupService {
 
     public void markStored(FileCopy fileCopy) {
         fileCopy.toStoredIntegrityUnknown();
+        fileCopyRepository.save(fileCopy);
+    }
+
+    public void markCancelled(FileCopy fileCopy) {
+        fileCopy.toCancelled();
         fileCopyRepository.save(fileCopy);
     }
 

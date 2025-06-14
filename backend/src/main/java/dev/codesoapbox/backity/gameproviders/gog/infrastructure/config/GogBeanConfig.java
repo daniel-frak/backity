@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.config;
 
-import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
+import dev.codesoapbox.backity.core.backup.application.DownloadService;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.*;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.auth.GogAuthClient;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.auth.GogAuthSpringService;
@@ -55,14 +55,14 @@ public class GogBeanConfig {
     }
 
     @Bean
-    UrlFileDownloader urlFileDownloader() {
-        return new UrlFileDownloader();
+    DownloadService urlFileDownloader() {
+        return new DownloadService();
     }
 
     @Bean
     GogFileBackupService gogFileBackupService(GogEmbedWebClient gogEmbedClient, GogAuthService authService,
-                                              UrlFileDownloader urlFileDownloader) {
-        return new GogFileBackupService(gogEmbedClient, authService, urlFileDownloader);
+                                              DownloadService downloadService) {
+        return new GogFileBackupService(gogEmbedClient, authService, downloadService);
     }
 
     @Bean

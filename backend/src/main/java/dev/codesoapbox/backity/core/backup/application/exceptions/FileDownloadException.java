@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.exceptions;
+package dev.codesoapbox.backity.core.backup.application.exceptions;
 
 public class FileDownloadException extends RuntimeException {
 

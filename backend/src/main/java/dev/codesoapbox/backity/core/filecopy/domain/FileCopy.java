@@ -78,6 +78,17 @@ public class FileCopy {
         this.failedReason = null;
     }
 
+    public void toCancelled() {
+        if (this.status != FileCopyStatus.IN_PROGRESS) {
+            throw new InvalidFileCopyStatusTransitionException(id, this.status, FileCopyStatus.TRACKED);
+        }
+        this.status = FileCopyStatus.TRACKED;
+        this.filePath = null;
+
+        var event = new FileBackupFinishedEvent(id, naturalId, status);
+        domainEvents.add(event);
+    }
+
     public void toEnqueued() {
         this.status = FileCopyStatus.ENQUEUED;
         this.failedReason = null;
@@ -103,7 +114,7 @@ public class FileCopy {
         this.status = FileCopyStatus.STORED_INTEGRITY_UNKNOWN;
         this.failedReason = null;
 
-        var event = new FileBackupFinishedEvent(id, naturalId);
+        var event = new FileBackupFinishedEvent(id, naturalId, status);
         domainEvents.add(event);
     }
 

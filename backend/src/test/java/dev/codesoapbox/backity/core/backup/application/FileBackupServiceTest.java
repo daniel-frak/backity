@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.backup.application;
 
+import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCancelledException;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
@@ -77,14 +78,16 @@ class FileBackupServiceTest {
 
         fileBackupService.backUpFile(fileCopy, gameFile, backupTarget, storageSolution);
 
-        assertStatusChangesWerePersisted(persistedChangesToFileCopy);
+        assertOnlyPersistedStatusChangesWere(persistedChangesToFileCopy,
+                List.of(FileCopyStatus.IN_PROGRESS, FileCopyStatus.STORED_INTEGRITY_UNKNOWN));
         assertFilePathWasPersisted(persistedChangesToFileCopy, expectedFilePath);
         verify(fileCopyReplicator).replicateFile(storageSolution, gameFile, fileCopy);
     }
 
-    private void assertStatusChangesWerePersisted(PersistedChangesToFileCopy persistedChangesToFileCopy) {
+    private void assertOnlyPersistedStatusChangesWere(PersistedChangesToFileCopy persistedChangesToFileCopy,
+                                                      List<FileCopyStatus> statusChanges) {
         assertThat(persistedChangesToFileCopy.savedFileCopyStatuses())
-                .isEqualTo(List.of(FileCopyStatus.IN_PROGRESS, FileCopyStatus.STORED_INTEGRITY_UNKNOWN));
+                .isEqualTo(statusChanges);
     }
 
     private void assertFilePathWasPersisted(
@@ -224,6 +227,25 @@ class FileBackupServiceTest {
                 .isInstanceOf(FileBackupFailedException.class)
                 .hasCause(coreException);
         assertThat(fileCopy.getFailedReason()).isEqualTo("Unknown error");
+    }
+
+    @Test
+    void shouldMarkTrackedGivenFileDownloadWasCancelled() throws IOException {
+        GameFile gameFile = TestGameFile.gog();
+        FileCopy fileCopy = TestFileCopy.enqueued();
+        BackupTarget backupTarget = TestBackupTarget.localFolder();
+        StorageSolution storageSolution = mock(StorageSolution.class);
+        mockGameProviderIsConnected(gameFile);
+        PersistedChangesToFileCopy persistedChangesToFileCopy = trackPersistedChangesToFileCopy();
+        mockFilePathCreation(backupTarget.getPathTemplate(), gameFile, storageSolution);
+        doThrow(new FileDownloadWasCancelledException("someFilePath"))
+                .when(fileCopyReplicator).replicateFile(storageSolution, gameFile, fileCopy);
+
+        fileBackupService.backUpFile(fileCopy, gameFile, backupTarget, storageSolution);
+
+        verify(storageSolution).deleteIfExists(any());
+        assertOnlyPersistedStatusChangesWere(persistedChangesToFileCopy,
+                List.of(FileCopyStatus.IN_PROGRESS, FileCopyStatus.TRACKED));
     }
 
     private RuntimeException mockPathResolverThrowsWithNullMessage() {

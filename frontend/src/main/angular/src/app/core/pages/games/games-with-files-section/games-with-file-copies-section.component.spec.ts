@@ -194,6 +194,8 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     expect(fileCopy.status).toBe(FileCopyStatus.Tracked);
     expect(fileCopiesClient.cancelFileCopy).toHaveBeenCalledWith(fileCopy.id);
     expect(notificationService.showSuccess).toHaveBeenCalledWith(`Backup cancelled`);
+    expect(component.potentialFileCopiesWithContextByGameFileId!.get(fileCopy.naturalId.gameFileId)?.[0]?.progress)
+      .toBeUndefined();
   });
 
   it('should log error when cancelling file copy backup fails', async () => {
