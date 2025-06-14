@@ -124,6 +124,8 @@ class DownloadServiceTest {
         Thread thread = new Thread(() -> {
             try {
                 downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath);
+            } catch (FileDownloadWasCancelledException e) {
+                // Do nothing
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

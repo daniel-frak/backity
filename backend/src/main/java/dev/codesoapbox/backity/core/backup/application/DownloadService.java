@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.backup.application;
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
-import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCancelledException;
-import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadException;
+import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCancelledException;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,19 +27,12 @@ public class DownloadService {
                              GameFile gameFile, String filePath)
             throws IOException {
         initializeCancelFlag(filePath);
-        AtomicBoolean cancelFlag = cancelFlags.get(filePath);
         try {
             DownloadProgress progress = trackableFileStream.progress();
             writeToDisk(storageSolution, trackableFileStream.dataStream(), filePath, progress);
 
             log.info("Downloaded file {} to {}", gameFile, filePath);
-
-            if(!cancelFlag.get()) {
-                // Only validate size if download wasn't canceled
-                validateDownloadedFileSize(storageSolution, filePath, progress.getContentLengthBytes());
-            } else {
-                throw new FileDownloadWasCancelledException(filePath);
-            }
+            validateDownloadedFileSize(storageSolution, filePath, progress.getContentLengthBytes());
         } finally {
             cancelFlags.remove(filePath);
         }
@@ -58,7 +51,12 @@ public class DownloadService {
         try (OutputStream outputStream = storageSolution.getOutputStream(filePath)) {
             DataBufferUtils
                     .write(dataBufferFlux, progress.track(outputStream))
-                    .takeUntil(dataBuffer -> shouldCancelDownload(filePath))
+                    .takeUntil(dataBuffer -> {
+                        if (shouldCancelDownload(filePath)) {
+                            throw new FileDownloadWasCancelledException(filePath);
+                        }
+                        return false;
+                    })
                     .map(DataBufferUtils::release)
                     .blockLast();
         }
