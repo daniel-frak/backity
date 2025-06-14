@@ -73,7 +73,7 @@ public class FileBackupService {
         fileCopyRepository.save(fileCopy);
     }
 
-    public void markCancelled(FileCopy fileCopy) {
+    private void markCancelled(FileCopy fileCopy) {
         fileCopy.toCancelled();
         fileCopyRepository.save(fileCopy);
     }

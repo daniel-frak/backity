@@ -55,11 +55,6 @@ public class GogBeanConfig {
     }
 
     @Bean
-    DownloadService urlFileDownloader() {
-        return new DownloadService();
-    }
-
-    @Bean
     GogFileBackupService gogFileBackupService(GogEmbedWebClient gogEmbedClient, GogAuthService authService,
                                               DownloadService downloadService) {
         return new GogFileBackupService(gogEmbedClient, authService, downloadService);

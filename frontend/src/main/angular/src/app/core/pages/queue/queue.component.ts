@@ -37,7 +37,6 @@ import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layou
 import {
   NamedValueContainerComponent
 } from "@app/shared/components/named-value-container/named-value-container.component";
-import {catchError} from "rxjs/operators";
 
 @Component({
   selector: 'app-queue',
@@ -172,10 +171,7 @@ export class QueueComponent implements OnInit, OnDestroy {
 
   async cancelBackup(fileCopyWithContext: FileCopyWithContext): Promise<void> {
     try {
-      await firstValueFrom(this.fileCopiesClient.cancelFileCopy(fileCopyWithContext.fileCopy.id)
-        .pipe(catchError(e => {
-          throw e;
-        })));
+      await firstValueFrom(this.fileCopiesClient.cancelFileCopy(fileCopyWithContext.fileCopy.id));
       this.notificationService.showSuccess("Backup cancelled");
       fileCopyWithContext.progress = undefined;
     } catch (error) {

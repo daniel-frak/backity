@@ -246,6 +246,7 @@ class FileBackupServiceTest {
         verify(storageSolution).deleteIfExists(any());
         assertOnlyPersistedStatusChangesWere(persistedChangesToFileCopy,
                 List.of(FileCopyStatus.IN_PROGRESS, FileCopyStatus.TRACKED));
+        assertThat(fileCopy.getFilePath()).isNull();
     }
 
     private RuntimeException mockPathResolverThrowsWithNullMessage() {

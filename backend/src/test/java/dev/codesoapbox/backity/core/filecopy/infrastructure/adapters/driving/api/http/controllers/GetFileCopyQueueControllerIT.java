@@ -31,7 +31,7 @@ class GetFileCopyQueueControllerIT {
     private MockMvc mockMvc;
 
     @Autowired
-    private GetFileCopyQueueUseCase getEnqueuedFilesUseCase;
+    private GetFileCopyQueueUseCase getFileCopyQueueUseCase;
 
     @Test
     void shouldGetQueue() throws Exception {
@@ -97,7 +97,7 @@ class GetFileCopyQueueControllerIT {
                 TestBackupTarget.localFolder(),
                 TestFileCopyReplicationProgress.twentyFivePercent()
         );
-        when(getEnqueuedFilesUseCase.getFileCopyQueue(expectedPagination))
+        when(getFileCopyQueueUseCase.getFileCopyQueue(expectedPagination))
                 .thenReturn(pageWith(fileCopyWithContext));
     }
 
