@@ -23,7 +23,7 @@
   </div>
 </div>
 <div class="details" *ngIf="detailsExist" #detailsWrapper>
-  <div *ngIf="showHideableDetails" #hideableDetailsWrapper>
+  <div #hideableDetailsWrapper class="collapsible" [class.open]="showHideableDetails">
     <ng-content select="[hideableDetails]"/>
   </div>
   <ng-content select="[details]"/>
