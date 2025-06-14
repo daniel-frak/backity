@@ -297,24 +297,25 @@ describe('QueueComponent', () => {
     });
 
   it('should cancel backup and refresh when cancel button is clicked', async () => {
-    const fileCopy = TestFileCopy.enqueued();
+    const fileCopyWithContext = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
     fileCopiesClient.cancelFileCopy.and.returnValue(of(null) as any);
 
-    await component.cancelBackup(fileCopy.id);
+    await component.cancelBackup(fileCopyWithContext);
 
-    expect(fileCopiesClient.cancelFileCopy).toHaveBeenCalledWith(fileCopy.id);
+    expect(fileCopiesClient.cancelFileCopy).toHaveBeenCalledWith(fileCopyWithContext.fileCopy.id);
     expect(notificationService.showSuccess).toHaveBeenCalledWith(`Backup cancelled`);
     expect(fileCopiesClient.getFileCopyQueue).toHaveBeenCalled();
   });
 
   it('should log error when cancelling file copy backup fails', async () => {
-    const fileCopy = TestFileCopy.enqueued();
+    const fileCopyWithContext = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
     const mockError = new Error('Backup error');
     fileCopiesClient.cancelFileCopy.and.returnValue(throwError(() => mockError));
 
-    await component.cancelBackup(fileCopy.id);
+    await component.cancelBackup(fileCopyWithContext);
 
     expect(notificationService.showFailure).toHaveBeenCalledWith(
-      `An error occurred while trying to cancel the backup`, fileCopy.id, mockError);
+      `An error occurred while trying to cancel the backup`, fileCopyWithContext, mockError);
+    expect(fileCopyWithContext.progress).toBeUndefined();
   });
 });

@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.backup.domain.events;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyNaturalId;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 
 import java.time.Duration;
@@ -31,10 +32,11 @@ public final class TestFileBackupEvent {
         );
     }
 
-    public static FileBackupFinishedEvent finished() {
+    public static FileBackupFinishedEvent finishedUnverified() {
         return new FileBackupFinishedEvent(
                 FILE_COPY_ID,
-                FILE_COPY_NATURAL_ID
+                FILE_COPY_NATURAL_ID,
+                FileCopyStatus.STORED_INTEGRITY_UNKNOWN
         );
     }
 

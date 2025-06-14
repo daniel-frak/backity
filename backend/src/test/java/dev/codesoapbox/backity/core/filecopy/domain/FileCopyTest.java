@@ -172,6 +172,37 @@ class FileCopyTest {
     class Transitions {
 
         @Test
+        void toCancelledShouldThrowGivenTransitionNotFromInProgress() {
+            FileCopy fileCopy = TestFileCopy.enqueued();
+
+            assertThatThrownBy(fileCopy::toCancelled)
+                    .isInstanceOf(InvalidFileCopyStatusTransitionException.class)
+                    .hasMessageContaining(fileCopy.getId().toString())
+                    .hasMessageContaining(FileCopyStatus.ENQUEUED.toString())
+                    .hasMessageContaining(FileCopyStatus.TRACKED.toString());
+        }
+
+        @Test
+        void toCancelledShouldTransitionFromInProgressAndLoseFilePath() {
+            FileCopy fileCopy = TestFileCopy.inProgress();
+
+            fileCopy.toCancelled();
+
+            assertThat(fileCopy.getStatus()).isEqualTo(FileCopyStatus.TRACKED);
+            assertThat(fileCopy.getFilePath()).isNull();
+        }
+
+        @Test
+        void toCancelledShouldAddEvent() {
+            FileCopy fileCopy = TestFileCopy.inProgress();
+            FileBackupFinishedEvent expectedEvent = fileBackupFinishedEvent(fileCopy, FileCopyStatus.TRACKED);
+
+            fileCopy.toCancelled();
+
+            assertThat(fileCopy.getDomainEvents()).containsExactly(expectedEvent);
+        }
+
+        @Test
         void toTrackedShouldThrowGivenTransitionFromInProgress() {
             FileCopy fileCopy = TestFileCopy.inProgress();
 
@@ -310,15 +341,16 @@ class FileCopyTest {
         @Test
         void toStoredIntegrityUnknownShouldAddEvent() {
             FileCopy fileCopy = TestFileCopy.inProgress();
-            FileBackupFinishedEvent expectedEvent = fileBackupFinishedEvent(fileCopy);
+            FileBackupFinishedEvent expectedEvent = fileBackupFinishedEvent(
+                    fileCopy, FileCopyStatus.STORED_INTEGRITY_UNKNOWN);
 
             fileCopy.toStoredIntegrityUnknown();
 
             assertThat(fileCopy.getDomainEvents()).containsExactly(expectedEvent);
         }
 
-        private FileBackupFinishedEvent fileBackupFinishedEvent(FileCopy fileCopy) {
-            return new FileBackupFinishedEvent(fileCopy.getId(), fileCopy.getNaturalId());
+        private FileBackupFinishedEvent fileBackupFinishedEvent(FileCopy fileCopy, FileCopyStatus newStatus) {
+            return new FileBackupFinishedEvent(fileCopy.getId(), fileCopy.getNaturalId(), newStatus);
         }
 
         @SuppressWarnings("DataFlowIssue")

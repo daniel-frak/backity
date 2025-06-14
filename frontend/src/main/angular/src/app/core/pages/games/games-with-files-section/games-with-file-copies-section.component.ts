@@ -25,7 +25,7 @@ import {NotificationService} from "@app/shared/services/notification/notificatio
 import {ModalService} from "@app/shared/services/modal-service/modal.service";
 import {ButtonComponent} from '@app/shared/components/button/button.component';
 import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
-import {DatePipe, NgForOf, NgIf, NgSwitch, NgSwitchCase} from '@angular/common';
+import {DatePipe, NgForOf, NgIf} from '@angular/common';
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {Message} from "@stomp/stompjs";
 import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
@@ -61,9 +61,7 @@ import {
     ButtonComponent,
     FileCopyStatusBadgeComponent,
     LoadedContentComponent,
-    NgSwitchCase,
     PaginationComponent,
-    NgSwitch,
     NgIf,
     SectionComponent,
     ProgressBarComponent,
@@ -250,6 +248,13 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
           throw e;
         })));
       potentialFileCopy.status = FileCopyStatus.Tracked;
+
+      const potentialFileCopyWithContext: PotentialFileCopyWithContext | undefined =
+        this.findPotentialFileCopyWithContext(potentialFileCopy.naturalId);
+
+      if (potentialFileCopyWithContext) {
+        potentialFileCopyWithContext.progress = undefined;
+      }
       this.notificationService.showSuccess("Backup cancelled");
     } catch (error) {
       this.notificationService.showFailure(

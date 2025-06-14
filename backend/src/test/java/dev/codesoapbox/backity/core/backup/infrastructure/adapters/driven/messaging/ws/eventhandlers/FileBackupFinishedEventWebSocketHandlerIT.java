@@ -20,7 +20,7 @@ class FileBackupFinishedEventWebSocketHandlerIT {
 
     @Test
     void shouldPublishWebSocketEvent() throws JsonProcessingException {
-        FileBackupFinishedEvent event = TestFileBackupEvent.finished();
+        FileBackupFinishedEvent event = TestFileBackupEvent.finishedUnverified();
 
         eventHandler.handle(event);
 

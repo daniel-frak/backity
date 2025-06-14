@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.filecopy.application.usecases;
 
+import dev.codesoapbox.backity.core.backup.application.DownloadService;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
@@ -12,8 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class CancelFileCopyUseCaseTest {
@@ -23,23 +23,31 @@ class CancelFileCopyUseCaseTest {
     @Mock
     private FileCopyRepository fileCopyRepository;
 
+    @Mock
+    private DownloadService downloadService;
+
     @BeforeEach
     void setUp() {
-        useCase = new CancelFileCopyUseCase(fileCopyRepository);
+        useCase = new CancelFileCopyUseCase(fileCopyRepository, downloadService);
     }
 
     @Test
-    void shouldCancelFileCopy() {
+    void shouldCancelEnqueuedFileCopy() {
         FileCopy fileCopy = mockEnqueuedFileCopyExists();
 
         useCase.cancelFileCopy(fileCopy.getId());
 
         FileCopy savedFileCopy = getSavedFileCopy();
         assertThat(savedFileCopy.getStatus()).isEqualTo(FileCopyStatus.TRACKED);
+        verifyNoInteractions(downloadService);
     }
 
     private FileCopy mockEnqueuedFileCopyExists() {
         FileCopy fileCopy = TestFileCopy.enqueued();
+        return mockFileCopyExists(fileCopy);
+    }
+
+    private FileCopy mockFileCopyExists(FileCopy fileCopy) {
         when(fileCopyRepository.getById(fileCopy.getId()))
                 .thenReturn(fileCopy);
         return fileCopy;
@@ -49,5 +57,21 @@ class CancelFileCopyUseCaseTest {
         ArgumentCaptor<FileCopy> fileCopyCaptor = ArgumentCaptor.forClass(FileCopy.class);
         verify(fileCopyRepository).save(fileCopyCaptor.capture());
         return fileCopyCaptor.getValue();
+    }
+
+    @Test
+    void shouldCancelInProgressFileCopy() {
+        FileCopy fileCopy = mockInProgressFileCopyExists();
+        String filePath = fileCopy.getFilePath();
+
+        useCase.cancelFileCopy(fileCopy.getId());
+
+        verify(downloadService).cancelDownload(filePath);
+        verifyNoMoreInteractions(fileCopyRepository);
+    }
+
+    private FileCopy mockInProgressFileCopyExists() {
+        FileCopy fileCopy = TestFileCopy.inProgress();
+        return mockFileCopyExists(fileCopy);
     }
 }
