@@ -1,10 +1,9 @@
-package dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.controllers;
+package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.EnqueueFileCopyUseCase;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyNaturalId;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotFoundException;
-import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers.FileCopyActionsRestResource;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
@@ -38,7 +37,7 @@ class EnqueueFileCopyControllerIT {
         var backupTargetId = new BackupTargetId("224440e2-6e5c-4f24-94ac-3222587652f7");
         var fileCopyNaturalId = new FileCopyNaturalId(gameFileId, backupTargetId);
 
-        mockMvc.perform(post("/api/" + FileCopyActionsRestResource.RESOURCE_URL + "/enqueue")
+        mockMvc.perform(post("/api/" + FileCopyQueueRestResource.RESOURCE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -64,7 +63,7 @@ class EnqueueFileCopyControllerIT {
         doThrow(new FileCopyNotFoundException(gameFileId, backupTargetId))
                 .when(useCase).enqueue(fileCopyNaturalId);
 
-        mockMvc.perform(post("/api/" + FileCopyActionsRestResource.RESOURCE_URL + "/enqueue")
+        mockMvc.perform(post("/api/" + FileCopyQueueRestResource.RESOURCE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {

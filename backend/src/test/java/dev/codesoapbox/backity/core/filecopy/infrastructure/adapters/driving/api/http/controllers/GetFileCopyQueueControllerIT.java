@@ -1,11 +1,10 @@
-package dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.controllers;
+package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.backup.domain.TestFileCopyReplicationProgress;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.FileCopyWithContext;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.GetFileCopyQueueUseCase;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
-import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers.FileCopyQueueRestResource;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.shared.domain.Page;

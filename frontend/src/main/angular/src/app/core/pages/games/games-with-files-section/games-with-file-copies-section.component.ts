@@ -236,16 +236,25 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
     } catch (error) {
       this.notificationService.showFailure(
         'An error occurred while trying to enqueue a file', potentialFileCopy, error);
-      potentialFileCopy.status = FileCopyStatus.Tracked;
     }
   }
 
-  onClickCancelBackup(fileCopyId: string): () => Promise<void> {
-    return async () => this.cancelBackup(fileCopyId);
+  onClickCancelBackup(potentialFileCopy: PotentialFileCopy): () => Promise<void> {
+    return async () => this.cancelBackup(potentialFileCopy);
   }
 
-  async cancelBackup(fileCopyId: string): Promise<void> {
-    this.notificationService.showFailure('Removing from queue not yet implemented');
+  async cancelBackup(potentialFileCopy: PotentialFileCopy): Promise<void> {
+    try {
+      await firstValueFrom(this.fileCopiesClient.cancelFileCopy(potentialFileCopy.id!)
+        .pipe(catchError(e => {
+          throw e;
+        })));
+      potentialFileCopy.status = FileCopyStatus.Tracked;
+      this.notificationService.showSuccess("Backup cancelled");
+    } catch (error) {
+      this.notificationService.showFailure(
+        'An error occurred while trying to cancel the backup', potentialFileCopy, error);
+    }
   }
 
   onClickDeleteFileCopy(fileCopyId: string): () => Promise<void> {

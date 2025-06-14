@@ -31,7 +31,7 @@
           <ng-container buttons>
             <app-progress-bar *ngIf="fileCopyWithContext.progress"
                               [percentage]="fileCopyWithContext.progress.percentage"/>
-            <app-button [actionAsync]="onClickRemoveFromQueue(fileCopyWithContext.fileCopy.id!)" buttonStyle="primary"
+            <app-button [actionAsync]="onClickCancelBackup(fileCopyWithContext.fileCopy.id!)" buttonStyle="primary"
                         *ngIf="fileCopyWithContext.fileCopy.status == FileCopyStatus.Enqueued">
               Cancel
             </app-button>

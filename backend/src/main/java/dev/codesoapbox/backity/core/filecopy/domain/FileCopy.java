@@ -70,6 +70,10 @@ public class FileCopy {
     }
 
     public void toTracked() {
+        if (this.status == FileCopyStatus.IN_PROGRESS) {
+            throw new InvalidFileCopyStatusTransitionException(id, this.status, FileCopyStatus.TRACKED);
+        }
+
         this.status = FileCopyStatus.TRACKED;
         this.failedReason = null;
     }

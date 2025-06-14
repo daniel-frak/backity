@@ -53,7 +53,7 @@ describe('QueueComponent', () => {
       providers: [
         {
           provide: FileCopiesClient,
-          useValue: createSpyObj('FileCopiesClient', ['getFileCopyQueue'])
+          useValue: createSpyObj('FileCopiesClient', ['getFileCopyQueue', 'cancelFileCopy'])
         },
         {
           provide: StorageSolutionsClient,
@@ -185,11 +185,6 @@ describe('QueueComponent', () => {
     expect(result).toEqual(StorageSolutionStatus.Connected);
   });
 
-  it('should log an error when removeFromQueue is called', async () => {
-    await component.removeFromQueue();
-    expect(notificationService.showFailure).toHaveBeenCalledWith('Removing from queue not yet implemented');
-  });
-
   it('should remove file copy from queue when status changed event is received' +
     ' and new status not enqueued or in progress', async () => {
     component.fileCopyWithContextPage = TestPage.of([initialFileCopyWithContext]);
@@ -300,4 +295,26 @@ describe('QueueComponent', () => {
 
       expect(fixture.nativeElement.textContent).not.toContain('25%');
     });
+
+  it('should cancel backup and refresh when cancel button is clicked', async () => {
+    const fileCopy = TestFileCopy.enqueued();
+    fileCopiesClient.cancelFileCopy.and.returnValue(of(null) as any);
+
+    await component.cancelBackup(fileCopy.id);
+
+    expect(fileCopiesClient.cancelFileCopy).toHaveBeenCalledWith(fileCopy.id);
+    expect(notificationService.showSuccess).toHaveBeenCalledWith(`Backup cancelled`);
+    expect(fileCopiesClient.getFileCopyQueue).toHaveBeenCalled();
+  });
+
+  it('should log error when cancelling file copy backup fails', async () => {
+    const fileCopy = TestFileCopy.enqueued();
+    const mockError = new Error('Backup error');
+    fileCopiesClient.cancelFileCopy.and.returnValue(throwError(() => mockError));
+
+    await component.cancelBackup(fileCopy.id);
+
+    expect(notificationService.showFailure).toHaveBeenCalledWith(
+      `An error occurred while trying to cancel the backup`, fileCopy.id, mockError);
+  });
 });

@@ -27,11 +27,11 @@ public class DownloadFileCopyController {
     public ResponseEntity<InputStreamResource> downloadFileCopy(
             @SuppressWarnings("java:S6856")
             @PathVariable("id") String idValue) throws IOException {
-        var gameFileId = new FileCopyId(idValue);
+        var fileCopyId = new FileCopyId(idValue);
 
         FileResource fileResource = null;
         try {
-            fileResource = useCase.downloadFileCopy(gameFileId);
+            fileResource = useCase.downloadFileCopy(fileCopyId);
             var inputStreamResource = new InputStreamResource(fileResource.inputStream());
             return ResponseEntity.ok()
                     .contentLength(fileResource.sizeInBytes())
