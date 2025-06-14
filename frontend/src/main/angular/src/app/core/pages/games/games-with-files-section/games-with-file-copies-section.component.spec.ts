@@ -66,7 +66,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
         {provide: GamesClient, useValue: createSpyObj('GamesClient', ['getGames'])},
         {
           provide: FileCopiesClient,
-          useValue: createSpyObj('FileCopiesClient', ['deleteFileCopy', 'enqueueFileCopy'])
+          useValue: createSpyObj('FileCopiesClient', ['deleteFileCopy', 'enqueueFileCopy', 'cancelFileCopy'])
         },
         {
           provide: BackupTargetsClient,
@@ -185,17 +185,36 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     return enqueueRequest;
   }
 
-  it('should set file status to Tracked and log error when backup fails', async () => {
+  it('should cancel file copy backup and set its status to Tracked', async () => {
     const fileCopy = TestFileCopy.enqueued();
+    fileCopiesClient.cancelFileCopy.and.returnValue(of(null) as any);
+
+    await component.cancelBackup(fileCopy);
+
+    expect(fileCopy.status).toBe(FileCopyStatus.Tracked);
+    expect(fileCopiesClient.cancelFileCopy).toHaveBeenCalledWith(fileCopy.id);
+    expect(notificationService.showSuccess).toHaveBeenCalledWith(`Backup cancelled`);
+  });
+
+  it('should log error when cancelling file copy backup fails', async () => {
+    const fileCopy = TestFileCopy.enqueued();
+    const mockError = new Error('Backup error');
+    fileCopiesClient.cancelFileCopy.and.returnValue(throwError(() => mockError));
+
+    await component.cancelBackup(fileCopy);
+
+    expect(notificationService.showFailure).toHaveBeenCalledWith(
+      `An error occurred while trying to cancel the backup`, fileCopy, mockError);
+  });
+
+  it('should log error when enqueuing file copy fails', async () => {
+    const fileCopy = TestFileCopy.tracked();
     fileCopy.naturalId.backupTargetId = localFolderBackupTarget.id;
     const mockError = new Error('Backup error');
     fileCopiesClient.enqueueFileCopy.and.returnValue(throwError(() => mockError));
 
     await component.enqueueFileCopy(fileCopy);
 
-    expect(fileCopy.status).toBe(FileCopyStatus.Tracked);
-    const enqueueRequest = enqueueFileCopyRequestFrom(fileCopy);
-    expect(fileCopiesClient.enqueueFileCopy).toHaveBeenCalledWith(enqueueRequest);
     expect(notificationService.showFailure).toHaveBeenCalledWith(
       `An error occurred while trying to enqueue a file`,
       fileCopy, mockError);
@@ -203,10 +222,6 @@ describe('GamesWithFileCopiesSectionComponent', () => {
 
   it('should log an error for unimplemented operations', async () => {
     const operations = [
-      {
-        method: () => component.onClickCancelBackup('someFileCopyId')(),
-        message: 'Removing from queue not yet implemented'
-      },
       {
         method: () => component.onClickViewFilePath('someFileCopyId')(),
         message: 'Viewing file paths not yet implemented'

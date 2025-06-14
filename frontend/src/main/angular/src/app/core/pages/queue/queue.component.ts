@@ -37,6 +37,7 @@ import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layou
 import {
   NamedValueContainerComponent
 } from "@app/shared/components/named-value-container/named-value-container.component";
+import {catchError} from "rxjs/operators";
 
 @Component({
   selector: 'app-queue',
@@ -165,12 +166,22 @@ export class QueueComponent implements OnInit, OnDestroy {
     }
   }
 
-  onClickRemoveFromQueue(fileId?: string): () => Promise<void> {
-    return async () => this.removeFromQueue(fileId);
+  onClickCancelBackup(fileId: string): () => Promise<void> {
+    return async () => this.cancelBackup(fileId);
   }
 
-  async removeFromQueue(fileId?: string): Promise<void> {
-    this.notificationService.showFailure('Removing from queue not yet implemented');
+  async cancelBackup(fileCopyId: string): Promise<void> {
+    try {
+      await firstValueFrom(this.fileCopiesClient.cancelFileCopy(fileCopyId)
+        .pipe(catchError(e => {
+          throw e;
+        })));
+      this.notificationService.showSuccess("Backup cancelled");
+    } catch (error) {
+      this.notificationService.showFailure(
+        'An error occurred while trying to cancel the backup', fileCopyId, error);
+    }
+    await this.refresh();
   }
 
   ngOnDestroy(): void {

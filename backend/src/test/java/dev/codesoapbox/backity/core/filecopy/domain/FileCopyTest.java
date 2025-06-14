@@ -172,6 +172,17 @@ class FileCopyTest {
     class Transitions {
 
         @Test
+        void toTrackedShouldThrowGivenTransitionFromInProgress() {
+            FileCopy fileCopy = TestFileCopy.inProgress();
+
+            assertThatThrownBy(fileCopy::toTracked)
+                    .isInstanceOf(InvalidFileCopyStatusTransitionException.class)
+                    .hasMessageContaining(fileCopy.getId().toString())
+                    .hasMessageContaining(FileCopyStatus.IN_PROGRESS.toString())
+                    .hasMessageContaining(FileCopyStatus.TRACKED.toString());
+        }
+
+        @Test
         void toTrackedShouldTransitionFromFailedAndLoseFailedReason() {
             FileCopy fileCopy = TestFileCopy.failedWithoutFilePath();
 

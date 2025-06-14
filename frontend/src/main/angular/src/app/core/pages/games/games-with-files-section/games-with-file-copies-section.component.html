@@ -78,7 +78,7 @@
                           </app-button>
                           <ng-container [ngSwitch]="potentialFileCopyWithContext.potentialFileCopy.status">
                             <app-button
-                              [actionAsync]="onClickCancelBackup(potentialFileCopyWithContext.potentialFileCopy.id!)"
+                              [actionAsync]="onClickCancelBackup(potentialFileCopyWithContext.potentialFileCopy)"
                               *ngSwitchCase="FileCopyStatus.Enqueued"
                               testId="cancel-file-backup-btn"
                               buttonStyle="secondary">
