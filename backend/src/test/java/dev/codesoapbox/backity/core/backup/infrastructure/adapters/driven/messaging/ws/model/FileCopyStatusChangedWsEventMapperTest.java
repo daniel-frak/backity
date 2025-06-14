@@ -15,12 +15,12 @@ class FileCopyStatusChangedWsEventMapperTest {
             Mappers.getMapper(FileCopyStatusChangedWsEventMapper.class);
 
     @Test
-    void shouldMapBackupFinishedToWsEvent() {
-        FileBackupFinishedEvent domain = TestFileBackupEvent.finished();
+    void shouldMapBackupFinishedIntegrityUnknownToWsEvent() {
+        FileBackupFinishedEvent domain = TestFileBackupEvent.finishedIntegrityUnknown();
 
         FileCopyStatusChangedWsEvent result = MAPPER.toWsEvent(domain);
 
-        FileCopyStatusChangedWsEvent expectedResult = TestFileBackupWsEvent.finished();
+        FileCopyStatusChangedWsEvent expectedResult = TestFileBackupWsEvent.finishedIntegrityUnknown();
         assertThat(result).isEqualTo(expectedResult);
     }
 

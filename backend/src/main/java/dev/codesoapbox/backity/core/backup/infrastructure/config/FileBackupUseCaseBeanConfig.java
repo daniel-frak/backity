@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.config;
 
+import dev.codesoapbox.backity.core.backup.application.DownloadService;
 import dev.codesoapbox.backity.core.backup.application.FileBackupService;
 import dev.codesoapbox.backity.core.backup.application.FileCopyReplicator;
 import dev.codesoapbox.backity.core.backup.application.GameProviderFileBackupService;
@@ -50,5 +51,10 @@ public class FileBackupUseCaseBeanConfig {
             StorageSolutionRepository storageSolutionRepository, DomainEventPublisher domainEventPublisher) {
         return new RecoverInterruptedFileBackupUseCase(fileCopyRepository, backupTargetRepository,
                 storageSolutionRepository, domainEventPublisher);
+    }
+
+    @Bean
+    DownloadService fileDownloadService() {
+        return new DownloadService();
     }
 }

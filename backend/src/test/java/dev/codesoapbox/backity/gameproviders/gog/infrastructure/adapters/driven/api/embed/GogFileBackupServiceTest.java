@@ -1,5 +1,7 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed;
 
+import dev.codesoapbox.backity.core.backup.application.TrackableFileStream;
+import dev.codesoapbox.backity.core.backup.application.DownloadService;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
@@ -32,7 +34,7 @@ class GogFileBackupServiceTest {
     private GogAuthService authService;
 
     @Mock
-    private UrlFileDownloader urlFileDownloader;
+    private DownloadService downloadService;
 
     @Test
     void replicateFileShouldDownloadFile() throws IOException {
@@ -46,7 +48,7 @@ class GogFileBackupServiceTest {
         gogFileBackupService.replicateFile(storageSolution, gameFile, fileCopy, downloadProgress);
 
         String filePath = fileCopy.getFilePath();
-        verify(urlFileDownloader).downloadFile(storageSolution, trackableFileStream, gameFile, filePath);
+        verify(downloadService).downloadFile(storageSolution, trackableFileStream, gameFile, filePath);
     }
 
     private TrackableFileStream mockProgressAwareFileStreamCreation(

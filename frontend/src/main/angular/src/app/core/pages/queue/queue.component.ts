@@ -165,12 +165,20 @@ export class QueueComponent implements OnInit, OnDestroy {
     }
   }
 
-  onClickRemoveFromQueue(fileId?: string): () => Promise<void> {
-    return async () => this.removeFromQueue(fileId);
+  onClickCancelBackup(fileCopyWithContext: FileCopyWithContext): () => Promise<void> {
+    return async () => this.cancelBackup(fileCopyWithContext);
   }
 
-  async removeFromQueue(fileId?: string): Promise<void> {
-    this.notificationService.showFailure('Removing from queue not yet implemented');
+  async cancelBackup(fileCopyWithContext: FileCopyWithContext): Promise<void> {
+    try {
+      await firstValueFrom(this.fileCopiesClient.cancelFileCopy(fileCopyWithContext.fileCopy.id));
+      this.notificationService.showSuccess("Backup cancelled");
+      fileCopyWithContext.progress = undefined;
+    } catch (error) {
+      this.notificationService.showFailure(
+        'An error occurred while trying to cancel the backup', fileCopyWithContext, error);
+    }
+    await this.refresh();
   }
 
   ngOnDestroy(): void {

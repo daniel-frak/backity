@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FileCopyActionsRestResource
+@FileCopyQueueRestResource
 @RequiredArgsConstructor
 @Slf4j
 public class EnqueueFileCopyController {
@@ -22,7 +22,7 @@ public class EnqueueFileCopyController {
     private final EnqueueFileCopyUseCase useCase;
 
     @Operation(summary = "Enqueue file copy", description = "Adds a file copy to the backup queue")
-    @PostMapping("enqueue")
+    @PostMapping
     public ResponseEntity<Void> enqueueFileCopy(@Valid @RequestBody EnqueueFileCopyRequestHttpDto request) {
         var gameFileId = new GameFileId(request.fileCopyNaturalId().gameFileId());
         var backupTargetId = new BackupTargetId(request.fileCopyNaturalId().backupTargetId());

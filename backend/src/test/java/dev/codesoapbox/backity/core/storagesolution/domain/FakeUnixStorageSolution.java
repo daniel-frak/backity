@@ -24,6 +24,9 @@ public class FakeUnixStorageSolution implements StorageSolution {
     private final Map<String, Long> bytesWrittenPerFilePath = new HashMap<>();
     private final Map<String, Long> fakeBytesWrittenPerFilePath = new HashMap<>();
 
+    @Setter
+    private Long customWrittenSizeInBytes = null;
+
     @Getter
     @Setter
     private long availableSizeInBytes = 0;
@@ -78,6 +81,9 @@ public class FakeUnixStorageSolution implements StorageSolution {
 
     @Override
     public long getSizeInBytes(String filePath) {
+        if(customWrittenSizeInBytes != null) {
+            return customWrittenSizeInBytes;
+        }
         if (fakeBytesWrittenPerFilePath.containsKey(filePath)) {
             return fakeBytesWrittenPerFilePath.get(filePath);
         }

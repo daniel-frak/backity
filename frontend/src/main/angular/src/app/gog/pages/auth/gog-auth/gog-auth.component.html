@@ -108,26 +108,28 @@
         </app-named-value-container>
       </ng-container>
       <ng-container *ngIf="overview?.progress">
-        <app-named-value>
-          <ng-container name>Games discovered</ng-container>
-          <ng-container value>
-            {{ overview?.progress?.gamesDiscovered }}
-          </ng-container>
-        </app-named-value>
-        <app-named-value>
-          <ng-container name>Game files discovered</ng-container>
-          <ng-container value>
-            {{ overview?.progress?.gameFilesDiscovered }}
-          </ng-container>
-        </app-named-value>
-        <app-named-value>
-          <ng-container name>Time left</ng-container>
-          <ng-container value>
-            <ng-container>
-              {{ (overview?.progress?.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }}
+        <app-named-value-container>
+          <app-named-value>
+            <ng-container name>Games discovered</ng-container>
+            <ng-container value>
+              {{ overview?.progress?.gamesDiscovered }}
             </ng-container>
-          </ng-container>
-        </app-named-value>
+          </app-named-value>
+          <app-named-value>
+            <ng-container name>Game files discovered</ng-container>
+            <ng-container value>
+              {{ overview?.progress?.gameFilesDiscovered }}
+            </ng-container>
+          </app-named-value>
+          <app-named-value>
+            <ng-container name>Time left</ng-container>
+            <ng-container value>
+              <ng-container>
+                {{ (overview?.progress?.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }}
+              </ng-container>
+            </ng-container>
+          </app-named-value>
+        </app-named-value-container>
       </ng-container>
     </app-loaded-content>
   </ng-container>

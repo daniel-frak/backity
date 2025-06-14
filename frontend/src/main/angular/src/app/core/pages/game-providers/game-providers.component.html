@@ -19,14 +19,14 @@
                     testId="start-game-content-discovery-btn"
                     [disabled]="state.unknown || state.ongoing"
                     buttonClass="mt-2 me-1">
-          Start discovery
+          Start every discovery
         </app-button>
 
         <app-button [actionAsync]="onClickStopDiscovery()"
                     testId="stop-game-content-discovery-btn"
                     [disabled]="state.unknown || !state.ongoing"
                     buttonClass="mt-2 me-1">
-          Stop discovery
+          Stop every discovery
         </app-button>
       </ng-container>
     </div>

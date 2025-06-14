@@ -1,7 +1,6 @@
-package dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.controllers;
+package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
-import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers.FileCopiesRestResource;
 import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.DownloadFileCopyUseCase;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;

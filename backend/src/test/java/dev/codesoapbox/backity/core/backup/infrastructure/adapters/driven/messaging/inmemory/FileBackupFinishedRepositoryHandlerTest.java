@@ -34,7 +34,7 @@ class FileBackupFinishedRepositoryHandlerTest {
 
     @Test
     void shouldHandleEvent() {
-        FileBackupFinishedEvent event = TestFileBackupEvent.finished();
+        FileBackupFinishedEvent event = TestFileBackupEvent.finishedIntegrityUnknown();
 
         handler.handle(event);
 
