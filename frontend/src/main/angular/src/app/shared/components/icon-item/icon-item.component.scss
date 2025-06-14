@@ -84,3 +84,24 @@
   flex-direction: column;
   gap: map_get($spacers, 3);
 }
+
+.collapsible {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    opacity 0.2s ease,
+    padding 0.2s ease,
+    height 0.2s ease;
+
+  // https://developer.chrome.com/blog/new-in-chrome-129#animate
+  interpolate-size: allow-keywords;
+
+  margin-bottom: -(map_get($spacers, 3));
+}
+
+.collapsible.open {
+  height: auto;
+  opacity: 1;
+  padding-bottom: map_get($spacers, 3);
+}

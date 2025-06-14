@@ -40,18 +40,18 @@ describe('IconItemComponent', () => {
   });
 
   it('should initially render the hideableDetails in the DOM', () => {
-    expect(fixture.nativeElement.textContent).toContain(fixture.componentInstance.hideableText);
+    expect(fixture.debugElement.query(By.css('.collapsible')).classes['open']).toBeTrue();
   });
 
-  it('should toggle hideable details when toggleHideableDetailsAction is called', () => {
+  it('should toggle hideable details when toggleHideableDetails is called', () => {
     component.showHideableDetails = true;
 
-    component.toggleHideableDetailsAction();
+    component.toggleHideableDetails();
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).not.toContain(fixture.componentInstance.hideableText);
+    expect(fixture.debugElement.query(By.css('.collapsible')).classes['open']).toBeUndefined();
 
-    component.toggleHideableDetailsAction();
+    component.toggleHideableDetails();
     fixture.detectChanges();
-    expect(fixture.nativeElement.textContent).toContain(fixture.componentInstance.hideableText);
+    expect(fixture.debugElement.query(By.css('.collapsible')).classes['open']).toBeTrue();
   });
 });
