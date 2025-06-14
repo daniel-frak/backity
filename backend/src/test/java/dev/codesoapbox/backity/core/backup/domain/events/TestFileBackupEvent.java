@@ -32,7 +32,7 @@ public final class TestFileBackupEvent {
         );
     }
 
-    public static FileBackupFinishedEvent finishedUnverified() {
+    public static FileBackupFinishedEvent finishedIntegrityUnknown() {
         return new FileBackupFinishedEvent(
                 FILE_COPY_ID,
                 FILE_COPY_NATURAL_ID,

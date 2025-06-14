@@ -28,7 +28,7 @@ public final class TestFileBackupWsEvent {
         );
     }
 
-    public static FileCopyStatusChangedWsEvent finishedUnverified() {
+    public static FileCopyStatusChangedWsEvent finishedIntegrityUnknown() {
         return new FileCopyStatusChangedWsEvent(
                 FILE_COPY_ID,
                 FILE_COPY_NATURAL_ID,

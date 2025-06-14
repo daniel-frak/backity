@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWa
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadException;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -25,17 +26,15 @@ public class DownloadService {
     public void downloadFile(StorageSolution storageSolution, TrackableFileStream trackableFileStream,
                              GameFile gameFile, String filePath)
             throws IOException {
-        if (cancelFlags.containsKey(filePath) && !cancelFlags.get(filePath).get()) {
-            throw new FileDownloadException("File '" + filePath + "' is currently being downloaded by another thread");
-        }
-        cancelFlags.put(filePath, new AtomicBoolean(false));
+        initializeCancelFlag(filePath);
+        AtomicBoolean cancelFlag = cancelFlags.get(filePath);
         try {
             DownloadProgress progress = trackableFileStream.progress();
             writeToDisk(storageSolution, trackableFileStream.dataStream(), filePath, progress);
 
             log.info("Downloaded file {} to {}", gameFile, filePath);
 
-            if(!cancelFlags.get(filePath).get()) {
+            if(!cancelFlag.get()) {
                 // Only validate size if download wasn't canceled
                 validateDownloadedFileSize(storageSolution, filePath, progress.getContentLengthBytes());
             } else {
@@ -43,6 +42,13 @@ public class DownloadService {
             }
         } finally {
             cancelFlags.remove(filePath);
+        }
+    }
+
+    private void initializeCancelFlag(String filePath) {
+        AtomicBoolean existingCancelFlag = cancelFlags.putIfAbsent(filePath, new AtomicBoolean(false));
+        if (existingCancelFlag != null) {
+            throw new FileDownloadException("File '" + filePath + "' is currently being downloaded by another thread");
         }
     }
 
@@ -59,8 +65,8 @@ public class DownloadService {
     }
 
     private boolean shouldCancelDownload(String filePath) {
-        AtomicBoolean flag = cancelFlags.get(filePath);
-        return flag == null || flag.get();
+        AtomicBoolean cancelFlag = cancelFlags.get(filePath);
+        return cancelFlag.get();
     }
 
     private void validateDownloadedFileSize(
@@ -74,10 +80,10 @@ public class DownloadService {
         }
     }
 
-    public void cancelDownload(String filePath) {
-        AtomicBoolean flag = cancelFlags.get(filePath);
-        if (flag != null) {
-            flag.set(true);
+    public void cancelDownload(@NonNull String filePath) {
+        AtomicBoolean cancelFlag = cancelFlags.get(filePath);
+        if (cancelFlag != null) {
+            cancelFlag.set(true);
         }
     }
 }

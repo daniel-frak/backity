@@ -1,10 +1,11 @@
 package dev.codesoapbox.backity.core.backup.application;
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
-import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
+import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadException;
+import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCancelledException;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
-import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadException;
+import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.testing.FakeProgressAwareFileStreamFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,11 +47,13 @@ class DownloadServiceTest {
         GameFile gameFile = TestGameFile.gog();
         String filePath = "testFilePath";
         DownloadProgress downloadProgress = mockDownloadProgress();
-        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, "Test data");
+        String testData = "Test data";
+        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
 
         downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath);
 
         assertThat(storageSolution.fileExists(filePath)).isTrue();
+        assertThat(storageSolution.getSizeInBytes(filePath)).isEqualTo(testData.length());
     }
 
     private DownloadProgress mockDownloadProgress() {
@@ -106,8 +109,7 @@ class DownloadServiceTest {
         AtomicBoolean shouldStop = new AtomicBoolean(false);
         try {
             TrackableFileStream fileStream = fileStreamFactory.createInfiniteStream(downloadProgress, shouldStop);
-
-            startDownloadingInSeparateThread(fileStream, gameFile, filePath).start();
+            startDownloadingInSeparateThread(fileStream, gameFile, filePath, downloadProgress);
 
             assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
                     .isInstanceOf(FileDownloadException.class)
@@ -117,14 +119,18 @@ class DownloadServiceTest {
         }
     }
 
-    private Thread startDownloadingInSeparateThread(TrackableFileStream fileStream, GameFile gameFile, String filePath) {
-        return new Thread(() -> {
+    private Thread startDownloadingInSeparateThread(TrackableFileStream fileStream, GameFile gameFile, String filePath,
+                                                    DownloadProgress downloadProgress) {
+        Thread thread = new Thread(() -> {
             try {
                 downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
+        thread.start();
+        await().untilAsserted(() -> verify(downloadProgress).track(any()));
+        return thread;
     }
 
     @Test
@@ -136,21 +142,62 @@ class DownloadServiceTest {
         var shouldStop = new AtomicBoolean(false);
         try {
             TrackableFileStream fileStream = fileStreamFactory.createInfiniteStream(downloadProgress, shouldStop);
-
-            Thread downloadThread = startDownloadingInSeparateThread(fileStream, gameFile, filePath);
-            downloadThread.start();
+            Thread downloadThread = startDownloadingInSeparateThread(fileStream, gameFile, filePath, downloadProgress);
 
             await().untilAsserted(() -> verify(downloadProgress).track(any()));
             downloadService.cancelDownload(filePath);
-            downloadThread.join();
+            downloadThread.join(2000);
+            assertThat(downloadThread.isAlive()).isFalse();
         } finally {
             shouldStop.set(true);
         }
     }
 
     @Test
+    void shouldThrowGivenDownloadWasCancelled() {
+        GameFile gameFile = TestGameFile.gog();
+        String filePath = "testFilePath";
+        DownloadProgress downloadProgress = mockDownloadProgress();
+        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, "Test data");
+
+        when(downloadProgress.track(any()))
+                .thenAnswer(inv -> {
+                    downloadService.cancelDownload(filePath);
+                    return inv.getArgument(0);
+                });
+        assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
+                .isInstanceOf(FileDownloadWasCancelledException.class);
+    }
+
+    @Test
+    void shouldNotValidateSizeGivenDownloadWasCancelled() {
+        GameFile gameFile = TestGameFile.gog();
+        String filePath = "testFilePath";
+        DownloadProgress downloadProgress = mockDownloadProgress();
+        String testData = "Test data";
+        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
+        storageSolution.setCustomWrittenSizeInBytes(testData.length() + 1L); // Bigger downloaded than expected size
+
+        when(downloadProgress.track(any()))
+                .thenAnswer(inv -> {
+                    downloadService.cancelDownload(filePath);
+                    return inv.getArgument(0);
+                });
+        assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
+                .isInstanceOf(FileDownloadWasCancelledException.class);
+    }
+
+    @Test
     void cancelDownloadShouldNotThrowGivenFileIsNotCurrentlyBeingDownloaded() {
         assertThatCode(() -> downloadService.cancelDownload("nonExistentFilePath"))
                 .doesNotThrowAnyException();
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    @Test
+    void cancelDownloadShouldThrowGivenNullFilePath() {
+        assertThatThrownBy(() -> downloadService.cancelDownload(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("filePath is marked non-null but is null");
     }
 }

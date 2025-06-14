@@ -27,9 +27,9 @@ public class FakeProgressAwareFileStreamFactory {
     public TrackableFileStream createInfiniteStream(DownloadProgress progress, AtomicBoolean shouldStop) {
         progress.initializeTracking(Long.MAX_VALUE, clock);
 
+        byte[] bytes = "Test data".getBytes();
+        DefaultDataBuffer buffer = new DefaultDataBufferFactory().wrap(bytes);
         Flux<DataBuffer> infiniteFlux = Flux.generate(sink -> {
-            byte[] bytes = "Test data".getBytes();
-            DefaultDataBuffer buffer = new DefaultDataBufferFactory().wrap(bytes);
             sink.next(buffer);
             if (shouldStop.get()) {
                 sink.complete();

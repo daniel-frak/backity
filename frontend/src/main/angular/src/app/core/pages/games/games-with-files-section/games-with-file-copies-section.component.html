@@ -79,7 +79,7 @@
                             </app-button>
                             <app-button
                               [actionAsync]="onClickCancelBackup(potentialFileCopyWithContext.potentialFileCopy)"
-                              *ngIf="status == FileCopyStatus.Enqueued || status === FileCopyStatus.InProgress"
+                              *ngIf="status === FileCopyStatus.Enqueued || status === FileCopyStatus.InProgress"
                               testId="cancel-file-backup-btn"
                               buttonStyle="secondary">
                               Cancel backup

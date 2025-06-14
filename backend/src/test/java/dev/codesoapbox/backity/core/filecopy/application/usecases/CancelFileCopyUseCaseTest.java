@@ -32,6 +32,19 @@ class CancelFileCopyUseCaseTest {
     }
 
     @Test
+    void shouldDoNothingGivenFileCopyNotEnqueuedAndNotInProgress() {
+        FileCopy fileCopy = mockTrackedFileCopyExists();
+
+        useCase.cancelFileCopy(fileCopy.getId());
+        verifyNoMoreInteractions(fileCopyRepository, downloadService);
+    }
+
+    private FileCopy mockTrackedFileCopyExists() {
+        FileCopy fileCopy = TestFileCopy.tracked();
+        return mockFileCopyExists(fileCopy);
+    }
+
+    @Test
     void shouldCancelEnqueuedFileCopy() {
         FileCopy fileCopy = mockEnqueuedFileCopyExists();
 

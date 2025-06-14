@@ -186,7 +186,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
   }
 
   it('should cancel file copy backup and set its status to Tracked', async () => {
-    const fileCopy = TestFileCopy.enqueued();
+    const fileCopy = TestFileCopy.inProgress();
     fileCopiesClient.cancelFileCopy.and.returnValue(of(null) as any);
 
     await component.cancelBackup(fileCopy);

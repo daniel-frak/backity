@@ -19,7 +19,7 @@ public class CancelFileCopyUseCase {
         if (fileCopy.getStatus() == FileCopyStatus.IN_PROGRESS) {
             downloadService.cancelDownload(fileCopy.getFilePath());
             // Status change will happen in FileBackupService
-        } else {
+        } else if (fileCopy.getStatus() == FileCopyStatus.ENQUEUED) {
             fileCopy.toTracked();
             fileCopyRepository.save(fileCopy);
         }

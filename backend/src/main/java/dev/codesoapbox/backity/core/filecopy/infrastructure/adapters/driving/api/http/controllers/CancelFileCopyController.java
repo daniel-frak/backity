@@ -27,7 +27,7 @@ public class CancelFileCopyController {
             useCase.cancelFileCopy(fileCopyId);
             return ResponseEntity.noContent().build();
         } catch (FileCopyNotFoundException e) {
-            log.warn("Could not enqueue file copy.", e);
+            log.warn("Could not cancel file copy.", e);
             return ResponseEntity.badRequest().build();
         }
     }
