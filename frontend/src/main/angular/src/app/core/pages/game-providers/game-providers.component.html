@@ -11,24 +11,23 @@
 <app-section>
   <app-loaded-content [isLoading]="infoIsLoading">
     <div class="button-container">
-      <ng-container *ngIf="{
+      @let state = {
         unknown: anyDiscoveryStatusIsUnknown(),
         ongoing: discoveryOngoing()
-      } as state">
-        <app-button [actionAsync]="onClickStartDiscovery()"
-                    testId="start-game-content-discovery-btn"
-                    [disabled]="state.unknown || state.ongoing"
-                    buttonClass="mt-2 me-1">
-          Start every discovery
-        </app-button>
+      };
+      <app-button [actionAsync]="onClickStartDiscovery()"
+                  testId="start-game-content-discovery-btn"
+                  [disabled]="state.unknown || state.ongoing"
+                  buttonClass="mt-2 me-1">
+        Start every discovery
+      </app-button>
 
-        <app-button [actionAsync]="onClickStopDiscovery()"
-                    testId="stop-game-content-discovery-btn"
-                    [disabled]="state.unknown || !state.ongoing"
-                    buttonClass="mt-2 me-1">
-          Stop every discovery
-        </app-button>
-      </ng-container>
+      <app-button [actionAsync]="onClickStopDiscovery()"
+                  testId="stop-game-content-discovery-btn"
+                  [disabled]="state.unknown || !state.ongoing"
+                  buttonClass="mt-2 me-1">
+        Stop every discovery
+      </app-button>
     </div>
   </app-loaded-content>
 </app-section>
