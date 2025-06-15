@@ -47,6 +47,7 @@ public class FileBackupService {
         }
     }
 
+    @SuppressWarnings("java:S1166") // Intentionally suppressing FileDownloadWasCancelledException
     private void tryToBackUp(FileCopy fileCopy, GameFile gameFile, BackupTarget backupTarget,
                              StorageSolution storageSolution) throws IOException {
         String filePath = uniqueFilePathResolver.resolve(

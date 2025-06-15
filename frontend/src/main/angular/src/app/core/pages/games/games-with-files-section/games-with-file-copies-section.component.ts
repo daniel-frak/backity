@@ -242,8 +242,11 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
   }
 
   async cancelBackup(potentialFileCopy: PotentialFileCopy): Promise<void> {
+    if(!potentialFileCopy.id) {
+      return;
+    }
     try {
-      await firstValueFrom(this.fileCopiesClient.cancelFileCopy(potentialFileCopy.id!)
+      await firstValueFrom(this.fileCopiesClient.cancelFileCopy(potentialFileCopy.id)
         .pipe(catchError(e => {
           throw e;
         })));

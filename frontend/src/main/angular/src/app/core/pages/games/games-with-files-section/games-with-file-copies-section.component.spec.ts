@@ -44,6 +44,7 @@ import {
 import {TestGameFile} from "@app/shared/testing/objects/test-game-file";
 import createSpyObj = jasmine.createSpyObj;
 import SpyObj = jasmine.SpyObj;
+import {PotentialFileCopyFactory} from "@app/core/pages/games/games-with-files-section/potential-file-copy";
 
 describe('GamesWithFileCopiesSectionComponent', () => {
   let component: GamesWithFileCopiesSectionComponent;
@@ -208,6 +209,27 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     expect(fileCopiesClient.cancelFileCopy).toHaveBeenCalledWith(fileCopy.id);
     expect(notificationService.showSuccess).toHaveBeenCalledWith(`Backup cancelled`);
     expect(potentialFileCopyWithContext.progress).toBeUndefined();
+  });
+
+  it('cancelBackup should do nothing if potentialFileCopy doesn\'t have id', async () => {
+    const fileCopy =
+      PotentialFileCopyFactory.missing('someGameFileId', 'someBackupTargetId');
+    const potentialFileCopyWithContext: PotentialFileCopyWithContext = {
+      gameFile: TestGameFile.any(),
+      potentialFileCopy: fileCopy,
+      progress: TestProgress.twentyFivePercent(),
+      backupTarget: TestBackupTarget.localFolder(),
+      storageSolutionStatus: StorageSolutionStatus.Connected
+    };
+    component.potentialFileCopiesWithContextByGameFileId.set(fileCopy.naturalId.gameFileId,
+      [potentialFileCopyWithContext]);
+
+    await component.cancelBackup(fileCopy);
+
+    expect(fileCopy.status).toBeUndefined();
+    expect(fileCopiesClient.cancelFileCopy).not.toHaveBeenCalled();
+    expect(notificationService.showSuccess).not.toHaveBeenCalled();
+    expect(potentialFileCopyWithContext.progress).not.toBeUndefined();
   });
 
   it('should log error when cancelling file copy backup fails', async () => {
