@@ -27,7 +27,7 @@ public class CancelFileCopyController {
             useCase.cancelFileCopy(fileCopyId);
             return ResponseEntity.noContent().build();
         } catch (FileCopyNotFoundException e) {
-            log.warn("Could not cancel file copy with id={}", fileCopyId, e);
+            log.warn("Could not cancel file copy.", e);
             return ResponseEntity.notFound().build();
         }
     }
