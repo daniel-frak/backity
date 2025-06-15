@@ -9,7 +9,7 @@ public class GamesPage {
 
     private static final String GAMES_URL = "/games";
     private static final String FILE_COPY_URL = "/file-copies";
-    private static final String FILE_COPY_ENQUEUE_URL = "/file-copy-actions/enqueue";
+    private static final String FILE_COPY_QUEUE_URL = "/file-copy-queue";
     private static final String DOWNLOAD_FILE_BACKUP_BTN_TEST_ID = "download-file-copy-btn";
     private static final String BACKUP_FILE_COPY_BTN_TEST_ID = "backup-file-btn";
     private static final String GAME_FILE_TEST_ID = "game-file-item";
@@ -66,8 +66,8 @@ public class GamesPage {
 
     private boolean deleteApiResponseIsSuccessful(Response response) {
         return response.url().contains(FILE_COPY_URL)
-               && response.request().method().equals("DELETE")
-               && response.status() == 204;
+                && response.request().method().equals("DELETE")
+                && response.status() == 204;
     }
 
     public void backUpFile(String fileTitle, String backupTargetName) {
@@ -77,8 +77,9 @@ public class GamesPage {
     }
 
     private boolean isSuccessfulFileCopyEnqueueResponse(Response response) {
-        return response.url().contains(FILE_COPY_ENQUEUE_URL)
-               && isSuccessful(response);
+        return response.url().contains(FILE_COPY_QUEUE_URL)
+                && response.request().method().equals("POST")
+                && isSuccessful(response);
     }
 
     private boolean isSuccessful(Response response) {
