@@ -32,7 +32,7 @@ public class EnqueueFileCopyController {
             useCase.enqueue(fileCopyNaturalId);
             return ResponseEntity.ok().build();
         } catch (FileCopyNotFoundException e) {
-            log.warn("Could not enqueue file copy.", e);
+            log.warn("Could not enqueue file copy with naturalId={}", fileCopyNaturalId, e);
             return ResponseEntity.badRequest().build();
         }
     }
