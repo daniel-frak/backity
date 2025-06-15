@@ -28,7 +28,7 @@ class DownloadServiceTest {
     private DownloadService downloadService;
     private FakeUnixStorageSolution storageSolution;
     private FakeTrackableFileStreamFactory fileStreamFactory;
-    private ThrowingRunnable onFileDownloadStarted = null;
+    private ThrowingRunnable onFileDownloadStarted;
 
     @Mock
     private Clock clock;
@@ -38,6 +38,7 @@ class DownloadServiceTest {
         storageSolution = new FakeUnixStorageSolution();
         fileStreamFactory = new FakeTrackableFileStreamFactory(clock);
         downloadService = new DownloadService();
+        onFileDownloadStarted = null;
     }
 
     @Test
