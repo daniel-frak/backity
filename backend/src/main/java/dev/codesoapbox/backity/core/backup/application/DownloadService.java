@@ -5,12 +5,14 @@ import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadEx
 import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCancelledException;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Sinks;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,12 +23,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class DownloadService {
 
-    private final ConcurrentHashMap<String, AtomicBoolean> cancelFlags = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ActiveDownload> activeDownloadsByFilePath =
+            new ConcurrentHashMap<>();
 
     public void downloadFile(StorageSolution storageSolution, TrackableFileStream trackableFileStream,
                              GameFile gameFile, String filePath)
             throws IOException {
-        initializeCancelFlag(filePath);
+        initializeCancellationTracker(filePath);
         try {
             DownloadProgress progress = trackableFileStream.progress();
             writeToDisk(storageSolution, trackableFileStream.dataStream(), filePath, progress);
@@ -34,13 +37,14 @@ public class DownloadService {
             log.info("Downloaded file {} to {}", gameFile, filePath);
             validateDownloadedFileSize(storageSolution, filePath, progress.getContentLengthBytes());
         } finally {
-            cancelFlags.remove(filePath);
+            activeDownloadsByFilePath.remove(filePath);
         }
     }
 
-    private void initializeCancelFlag(String filePath) {
-        AtomicBoolean existingCancelFlag = cancelFlags.putIfAbsent(filePath, new AtomicBoolean(false));
-        if (existingCancelFlag != null) {
+    private void initializeCancellationTracker(String filePath) {
+        ActiveDownload existingActiveDownload =
+                activeDownloadsByFilePath.putIfAbsent(filePath, new ActiveDownload());
+        if (existingActiveDownload != null) {
             throw new FileDownloadException("File '" + filePath + "' is currently being downloaded by another thread");
         }
     }
@@ -51,20 +55,18 @@ public class DownloadService {
         try (OutputStream outputStream = storageSolution.getOutputStream(filePath)) {
             DataBufferUtils
                     .write(dataBufferFlux, progress.track(outputStream))
-                    .takeUntil(dataBuffer -> {
-                        if (shouldCancelDownload(filePath)) {
-                            throw new FileDownloadWasCancelledException(filePath);
-                        }
-                        return false;
-                    })
-                    .map(DataBufferUtils::release)
+                    .takeUntilOther(activeDownloadsByFilePath.get(filePath).getCancelSignal().asFlux())
+                    .doOnNext(DataBufferUtils::release)
                     .blockLast();
+            if (shouldCancelDownload(filePath)) {
+                throw new FileDownloadWasCancelledException(filePath);
+            }
         }
     }
 
     private boolean shouldCancelDownload(String filePath) {
-        AtomicBoolean cancelFlag = cancelFlags.get(filePath);
-        return cancelFlag.get();
+        ActiveDownload activeDownload = activeDownloadsByFilePath.get(filePath);
+        return activeDownload.shouldCancel.get();
     }
 
     private void validateDownloadedFileSize(
@@ -72,16 +74,28 @@ public class DownloadService {
         long sizeInBytesOnDisk = storageSolution.getSizeInBytes(filePath);
         if (sizeInBytesOnDisk != expectedSizeInBytes) {
             throw new FileDownloadException("The downloaded size of " + filePath + " is not what was expected (was "
-                                            + sizeInBytesOnDisk + ", expected " + expectedSizeInBytes + ")");
+                    + sizeInBytesOnDisk + ", expected " + expectedSizeInBytes + ")");
         } else {
             log.info("Filesize check for {} passed successfully", filePath);
         }
     }
 
     public void cancelDownload(@NonNull String filePath) {
-        AtomicBoolean cancelFlag = cancelFlags.get(filePath);
-        if (cancelFlag != null) {
-            cancelFlag.set(true);
+        ActiveDownload activeDownload = activeDownloadsByFilePath.get(filePath);
+        if (activeDownload != null) {
+            activeDownload.triggerCancellation();
+        }
+    }
+
+    @Getter
+    private static class ActiveDownload {
+
+        private final AtomicBoolean shouldCancel = new AtomicBoolean(false);
+        private final Sinks.Many<Boolean> cancelSignal = Sinks.many().replay().latest();
+
+        public void triggerCancellation() {
+            shouldCancel.set(true);
+            cancelSignal.tryEmitNext(true);
         }
     }
 }

@@ -40,7 +40,7 @@ public class FakeUnixStorageSolution implements StorageSolution {
 
     private String fixSeparatorChar(String filePath) {
         return filePath
-                .replace("/", "\\");
+                .replace("\\", "/");
     }
 
     @Override
@@ -50,17 +50,20 @@ public class FakeUnixStorageSolution implements StorageSolution {
 
     @Override
     public ByteArrayOutputStream getOutputStream(String path) {
+        String unixPath = fixSeparatorChar(path); // In case we're not on a Unix system
         return new ByteArrayOutputStream() {
             @Override
             public synchronized void write(byte[] b, int off, int len) {
                 super.write(b, off, len);
-                bytesWrittenPerFilePath.put(path, bytesWrittenPerFilePath.getOrDefault(path, 0L) + len);
+                bytesWrittenPerFilePath.put(
+                        unixPath, bytesWrittenPerFilePath.getOrDefault(unixPath, 0L) + len);
             }
 
             @Override
             public synchronized void write(int b) {
                 super.write(b);
-                bytesWrittenPerFilePath.put(path, bytesWrittenPerFilePath.getOrDefault(path, 0L) + 1);
+                bytesWrittenPerFilePath.put(
+                        unixPath, bytesWrittenPerFilePath.getOrDefault(unixPath, 0L) + 1);
             }
         };
 
@@ -68,6 +71,7 @@ public class FakeUnixStorageSolution implements StorageSolution {
 
     @Override
     public void deleteIfExists(String path) {
+        path = fixSeparatorChar(path); // In case we're not on a Unix system
         if (shouldThrowOnFileDeletion != null) {
             throw shouldThrowOnFileDeletion;
         }
@@ -81,6 +85,7 @@ public class FakeUnixStorageSolution implements StorageSolution {
 
     @Override
     public long getSizeInBytes(String filePath) {
+        filePath = fixSeparatorChar(filePath); // In case we're not on a Unix system
         if(customWrittenSizeInBytes != null) {
             return customWrittenSizeInBytes;
         }
@@ -101,13 +106,15 @@ public class FakeUnixStorageSolution implements StorageSolution {
     }
 
     public boolean freeSpaceWasCheckedFor(String path) {
+        String unixPath = fixSeparatorChar(path); // In case we're not on a Unix system
         return pathsCheckedForSize.stream()
-                .anyMatch(p -> p.contains(fixSeparatorChar(path)));
+                .anyMatch(p -> p.contains(unixPath));
     }
 
     public boolean directoryWasCreated(String path) {
+        String unixPath = fixSeparatorChar(path); // In case we're not on a Unix system
         return directoriesCreated.stream()
-                .anyMatch(p -> p.contains(fixSeparatorChar(path)));
+                .anyMatch(p -> p.contains(unixPath));
     }
 
     public boolean anyDirectoriesWereCreated() {
@@ -115,6 +122,7 @@ public class FakeUnixStorageSolution implements StorageSolution {
     }
 
     public boolean fileDeleteWasAttempted(String path) {
+        path = fixSeparatorChar(path); // In case we're not on a Unix system
         return fileDeletesAttempted.contains(path);
     }
 
@@ -123,6 +131,7 @@ public class FakeUnixStorageSolution implements StorageSolution {
     }
 
     public boolean fileWasRenamed(String filePath, String fileName) {
+        filePath = fixSeparatorChar(filePath); // In case we're not on a Unix system
         return filesRenamed.getOrDefault(filePath, "").equals(fileName);
     }
 
@@ -132,6 +141,7 @@ public class FakeUnixStorageSolution implements StorageSolution {
 
     @Override
     public boolean fileExists(String filePath) {
+        filePath = fixSeparatorChar(filePath); // In case we're not on a Unix system
         return bytesWrittenPerFilePath.getOrDefault(filePath, 0L) > 0;
     }
 
@@ -141,6 +151,7 @@ public class FakeUnixStorageSolution implements StorageSolution {
     }
 
     public void createFile(String filePath) {
+        filePath = fixSeparatorChar(filePath); // In case we're not on a Unix system
         bytesWrittenPerFilePath.put(filePath, 1L);
     }
 }

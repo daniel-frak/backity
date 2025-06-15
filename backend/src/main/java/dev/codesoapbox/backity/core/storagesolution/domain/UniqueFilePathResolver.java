@@ -3,7 +3,6 @@ package dev.codesoapbox.backity.core.storagesolution.domain;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.CouldNotResolveUniqueFilePathException;
-import org.apache.commons.io.FilenameUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -81,7 +80,7 @@ public class UniqueFilePathResolver {
 
         public static RawPathData from(FileSource fileSource) {
             String fileName = fileSource.originalFileName();
-            String baseName = FilenameUtils.getBaseName(fileName);
+            String baseName = getBaseName(fileName);
             String extensionWithDot = fileName.substring(baseName.length());
 
             return new RawPathData(
@@ -90,6 +89,14 @@ public class UniqueFilePathResolver {
                     baseName,
                     extensionWithDot
             );
+        }
+
+        private static String getBaseName(String fileName) {
+            int dotIndex = fileName.lastIndexOf(".");
+            if (dotIndex != -1) {
+                return fileName.substring(0, dotIndex);
+            }
+            return fileName;
         }
     }
 }
