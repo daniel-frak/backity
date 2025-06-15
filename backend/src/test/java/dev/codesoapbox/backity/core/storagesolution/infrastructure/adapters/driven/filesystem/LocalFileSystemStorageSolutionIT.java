@@ -53,6 +53,7 @@ class LocalFileSystemStorageSolutionIT {
         var existingFile = new File(filePath);
         existingFile.createNewFile();
         tempDir.toFile().setWritable(false); // This will cause an IOException
+        Files.setAttribute(existingFile.toPath(), "dos:readonly", true); // Workaround for Windows
 
         try {
             assertThatThrownBy(() -> localFileSystem.deleteIfExists(filePath))
