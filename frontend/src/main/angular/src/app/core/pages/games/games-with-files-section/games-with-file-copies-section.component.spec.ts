@@ -38,6 +38,10 @@ import {TestProgress} from "@app/shared/testing/objects/test-progress";
 import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
 import {AutoLayoutStubComponent} from "@app/shared/components/auto-layout/auto-layout.stub.component";
 import {deepClone} from "@app/shared/testing/deep-clone";
+import {
+  PotentialFileCopyWithContext
+} from "@app/core/pages/games/games-with-files-section/potential-file-copy-with-context";
+import {TestGameFile} from "@app/shared/testing/objects/test-game-file";
 import createSpyObj = jasmine.createSpyObj;
 import SpyObj = jasmine.SpyObj;
 
@@ -188,14 +192,22 @@ describe('GamesWithFileCopiesSectionComponent', () => {
   it('should cancel file copy backup and set its status to Tracked', async () => {
     const fileCopy = TestFileCopy.inProgress();
     fileCopiesClient.cancelFileCopy.and.returnValue(of(null) as any);
+    const potentialFileCopyWithContext: PotentialFileCopyWithContext = {
+      gameFile: TestGameFile.any(),
+      potentialFileCopy: fileCopy,
+      progress: TestProgress.twentyFivePercent(),
+      backupTarget: TestBackupTarget.localFolder(),
+      storageSolutionStatus: StorageSolutionStatus.Connected
+    };
+    component.potentialFileCopiesWithContextByGameFileId.set(fileCopy.naturalId.gameFileId,
+      [potentialFileCopyWithContext]);
 
     await component.cancelBackup(fileCopy);
 
     expect(fileCopy.status).toBe(FileCopyStatus.Tracked);
     expect(fileCopiesClient.cancelFileCopy).toHaveBeenCalledWith(fileCopy.id);
     expect(notificationService.showSuccess).toHaveBeenCalledWith(`Backup cancelled`);
-    expect(component.potentialFileCopiesWithContextByGameFileId!.get(fileCopy.naturalId.gameFileId)?.[0]?.progress)
-      .toBeUndefined();
+    expect(potentialFileCopyWithContext.progress).toBeUndefined();
   });
 
   it('should log error when cancelling file copy backup fails', async () => {
@@ -392,9 +404,6 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     fixture.detectChanges();
 
     const gameListTable: DebugElement = getGameList();
-    console.log(gameListTable.nativeElement,
-      component.gameWithFileCopiesPage,
-      component.potentialFileCopiesWithContextByGameFileId); // @TODO REMOVE
     const downloadBtn: DebugElement = gameListTable.query(By.css('[data-testid="download-file-copy-btn"]'));
 
     downloadBtn.nativeElement.click();

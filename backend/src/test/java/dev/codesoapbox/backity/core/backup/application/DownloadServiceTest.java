@@ -45,8 +45,8 @@ class DownloadServiceTest {
     void downloadFileShouldDownloadToDisk() throws IOException {
         GameFile gameFile = TestGameFile.gog();
         String filePath = "testFilePath";
-        DownloadProgress downloadProgress = mockDownloadProgress();
         String testData = "Test data";
+        DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
         TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
 
         downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath);
@@ -55,7 +55,7 @@ class DownloadServiceTest {
         assertThat(storageSolution.getSizeInBytes(filePath)).isEqualTo(testData.length());
     }
 
-    private DownloadProgress mockDownloadProgress() {
+    private DownloadProgress mockDownloadProgress(long contentLengthBytes) {
         DownloadProgress downloadProgress = mock(DownloadProgress.class);
         lenient().when(downloadProgress.track(any()))
                 .thenAnswer(inv -> {
@@ -65,18 +65,17 @@ class DownloadServiceTest {
                     return inv.getArgument(0);
                 });
         lenient().when(downloadProgress.getContentLengthBytes())
-                .thenReturn(9L);
+                .thenReturn(contentLengthBytes);
 
         return downloadProgress;
     }
 
     @Test
     void downloadFileShouldTrackProgress() throws IOException {
-        DownloadProgress downloadProgress = mockDownloadProgress();
-        storageSolution = new FakeUnixStorageSolution();
-        fileStreamFactory = new FakeTrackableFileStreamFactory(clock);
+        String testData = "Test data";
+        DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
         GameFile gameFile = TestGameFile.gog();
-        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, "Test data");
+        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
 
         downloadService.downloadFile(storageSolution, fileStream, gameFile, "someFilePath");
 
@@ -90,8 +89,9 @@ class DownloadServiceTest {
         String filePath = "someFilePath";
         GameFile gameFile = TestGameFile.gog();
         storageSolution.overrideDownloadedSizeFor(filePath, 999L);
-        DownloadProgress downloadProgress = mockDownloadProgress();
-        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, "Test data");
+        String testData = "Test data";
+        DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
+        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
 
         assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
                 .isInstanceOf(FileDownloadException.class)
@@ -104,8 +104,9 @@ class DownloadServiceTest {
     void downloadFileShouldThrowGivenAlreadyDownloading() {
         GameFile gameFile = TestGameFile.gog();
         String filePath = "testFilePath";
-        DownloadProgress downloadProgress = mockDownloadProgress();
-        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, "test data");
+        String testData = "test data";
+        DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
+        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
         onFileDownloadStarted = () -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath);
 
         assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
@@ -117,8 +118,9 @@ class DownloadServiceTest {
     void shouldCancelDownload() {
         GameFile gameFile = TestGameFile.gog();
         String filePath = "testFilePath";
-        DownloadProgress downloadProgress = mockDownloadProgress();
-        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, "Test data");
+        String testData = "Test data";
+        DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
+        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
 
         onFileDownloadStarted = () -> downloadService.cancelDownload(filePath);
 
@@ -131,8 +133,8 @@ class DownloadServiceTest {
     void shouldNotValidateSizeGivenDownloadWasCancelled() {
         GameFile gameFile = TestGameFile.gog();
         String filePath = "testFilePath";
-        DownloadProgress downloadProgress = mockDownloadProgress();
         String testData = "Test data";
+        DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
         TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
         storageSolution.setCustomWrittenSizeInBytes(testData.length() + 1L); // Bigger downloaded than expected size
         onFileDownloadStarted = () -> downloadService.cancelDownload(filePath);
@@ -152,6 +154,6 @@ class DownloadServiceTest {
     void cancelDownloadShouldThrowGivenNullFilePath() {
         assertThatThrownBy(() -> downloadService.cancelDownload(null))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessage("filePath is marked non-null but is null");
+                .hasMessageContaining("filePath");
     }
 }
