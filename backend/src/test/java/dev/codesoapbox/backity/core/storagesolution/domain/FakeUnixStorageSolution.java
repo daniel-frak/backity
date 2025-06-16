@@ -75,6 +75,7 @@ public class FakeUnixStorageSolution implements StorageSolution {
         if (shouldThrowOnFileDeletion != null) {
             throw shouldThrowOnFileDeletion;
         }
+        bytesWrittenPerFilePath.remove(path);
         fileDeletesAttempted.add(path);
     }
 

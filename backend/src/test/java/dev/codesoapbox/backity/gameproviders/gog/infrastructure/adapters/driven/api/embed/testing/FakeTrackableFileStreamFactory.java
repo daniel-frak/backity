@@ -10,8 +10,10 @@ import reactor.core.publisher.Flux;
 
 import java.time.Clock;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RequiredArgsConstructor
@@ -53,4 +55,31 @@ public class FakeTrackableFileStreamFactory {
 
         return new TrackableFileStream(flakyFlux, progress);
     }
+
+    public TrackableFileStream createFailingHalfwayThrough(DownloadProgress progress, String data,
+                                                           Throwable exception) {
+        progress.initializeTracking(data.getBytes().length, clock);
+        byte[] bytes = data.getBytes();
+
+        int midPoint = bytes.length / 2;
+        byte[] firstChunk = Arrays.copyOfRange(bytes, 0, midPoint);
+        byte[] secondChunk = Arrays.copyOfRange(bytes, midPoint, bytes.length);
+
+        DefaultDataBufferFactory bufferFactory = new DefaultDataBufferFactory();
+        DefaultDataBuffer firstBuffer = bufferFactory.wrap(firstChunk);
+        DefaultDataBuffer secondBuffer = bufferFactory.wrap(secondChunk);
+
+        var hasThrownError = new AtomicBoolean(false);
+
+        return new TrackableFileStream(
+                Flux.concat(
+                        Flux.just(firstBuffer),
+                        Flux.defer(() -> hasThrownError.compareAndSet(false, true)
+                                ? Flux.error(exception)
+                                : Flux.just(secondBuffer))
+                ),
+                progress
+        );
+    }
+
 }

@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.backup.application;
 
+import dev.codesoapbox.backity.DoNotMutate;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.backup.application.exceptions.ConcurrentFileDownloadException;
 import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadFailedException;
@@ -11,6 +12,7 @@ import io.netty.resolver.dns.DnsNameResolverTimeoutException;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -20,10 +22,14 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 import reactor.util.retry.Retry;
 
+import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ConnectException;
+import java.net.HttpRetryException;
+import java.net.UnknownHostException;
 import java.time.Duration;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -31,14 +37,24 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RequiredArgsConstructor
 public class DownloadService {
 
+    private static final Set<Class<? extends Throwable>> ALWAYS_RECOVERABLE_EXCEPTIONS = Set.of(
+            DnsNameResolverTimeoutException.class,
+            WebClientRequestException.class,
+            reactor.netty.http.client.PrematureCloseException.class,
+            ConnectException.class,
+            TimeoutException.class,
+            UnknownHostException.class,
+            SSLException.class,
+            HttpRetryException.class
+    );
+
     private final ConcurrentHashMap<String, ActiveDownload> activeDownloadsByFilePath =
             new ConcurrentHashMap<>();
     private final int maxRetryAttempts;
     private final Duration retryBackoff;
 
     public void downloadFile(StorageSolution storageSolution, TrackableFileStream trackableFileStream,
-                             GameFile gameFile, String filePath)
-            throws IOException {
+                             GameFile gameFile, String filePath) {
         initializeCancellationTracker(filePath);
         try {
             DownloadProgress progress = trackableFileStream.progress();
@@ -60,19 +76,9 @@ public class DownloadService {
     }
 
     private void writeToDisk(StorageSolution storageSolution, Flux<DataBuffer> dataBufferFlux, String filePath,
-                             DownloadProgress progress)
-            throws IOException {
-        try (OutputStream outputStream = storageSolution.getOutputStream(filePath)) {
-            DataBufferUtils
-                    .write(dataBufferFlux, progress.track(outputStream))
-                    .retryWhen(Retry.backoff(maxRetryAttempts, retryBackoff)
-                            .filter(this::isRecoverable))
-                    .takeUntilOther(activeDownloadsByFilePath.get(filePath).getCancelSignal().asFlux())
-                    .doOnNext(DataBufferUtils::release)
-                    .blockLast();
-            if (shouldCancelDownload(filePath)) {
-                throw new FileDownloadWasCanceledException(filePath);
-            }
+                             DownloadProgress progress) {
+        try {
+            tryToWriteToDisk(storageSolution, dataBufferFlux, filePath, progress);
         } catch (FileDownloadWasCanceledException | ConcurrentFileDownloadException e) {
             throw e;
         } catch (RuntimeException e) {
@@ -80,12 +86,46 @@ public class DownloadService {
         }
     }
 
+    @DoNotMutate // Logging is not tested so `.doBeforeRetry` fails mutation
+    private void tryToWriteToDisk(StorageSolution storageSolution, Flux<DataBuffer> dataBufferFlux, String filePath,
+                           DownloadProgress progress) {
+        Flux.using(() -> deleteExistingThenGetOutputStream(storageSolution, filePath),
+                        os -> DataBufferUtils.write(dataBufferFlux, progress.track(os)),
+                        this::closeQuietly)
+                .retryWhen(Retry.backoff(maxRetryAttempts, retryBackoff)
+                        .filter(this::isRecoverable)
+                        .doBeforeRetry(retrySignal -> logRetryAttempt(filePath, retrySignal)))
+                .takeUntilOther(activeDownloadsByFilePath.get(filePath).getCancelSignal().asFlux())
+                .doOnNext(DataBufferUtils::release)
+                .blockLast();
+        if (shouldCancelDownload(filePath)) {
+            throw new FileDownloadWasCanceledException(filePath);
+        }
+    }
+
+    @DoNotMutate // Logging is not tested so `.doBeforeRetry` fails mutation
+    private void logRetryAttempt(String filePath, Retry.RetrySignal retrySignal) {
+        log.warn("Retrying download of {} [attempt {}/{}] after error: {}",
+                filePath,
+                retrySignal.totalRetries() + 1,
+                maxRetryAttempts,
+                retrySignal.failure().getClass() + "(" + retrySignal.failure().getMessage() + ")"
+        );
+    }
+
+    private OutputStream deleteExistingThenGetOutputStream(StorageSolution storageSolution, String filePath)
+            throws IOException {
+        storageSolution.deleteIfExists(filePath);
+        return storageSolution.getOutputStream(filePath);
+    }
+
+    @SneakyThrows
+    private void closeQuietly(OutputStream os) {
+        os.close();
+    }
+
     private boolean isRecoverable(Throwable throwable) {
-        return throwable instanceof DnsNameResolverTimeoutException
-               || throwable instanceof WebClientRequestException
-               || throwable instanceof reactor.netty.http.client.PrematureCloseException
-               || throwable instanceof ConnectException
-               || throwable instanceof TimeoutException
+        return ALWAYS_RECOVERABLE_EXCEPTIONS.stream().anyMatch(type -> type.isInstance(throwable))
                || (throwable instanceof WebClientResponseException resp
                    && resp.getStatusCode().is5xxServerError());
     }
