@@ -13,9 +13,11 @@ import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
 import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolver;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Duration;
 import java.util.List;
 
 @Configuration
@@ -54,7 +56,10 @@ public class FileBackupUseCaseBeanConfig {
     }
 
     @Bean
-    DownloadService fileDownloadService() {
-        return new DownloadService();
+    DownloadService fileDownloadService(
+            @Value("${backity.replication.max-retry-attempts}") int maxRetryAttempts,
+            @Value("${backity.replication.retry-backoff-in-seconds}") int retryBackoffInSeconds
+    ) {
+        return new DownloadService(maxRetryAttempts, Duration.ofSeconds(retryBackoffInSeconds));
     }
 }

@@ -1,29 +1,51 @@
 package dev.codesoapbox.backity.core.backup.application;
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
-import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadException;
+import dev.codesoapbox.backity.core.backup.application.exceptions.ConcurrentFileDownloadException;
+import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadFailedException;
 import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCanceledException;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.testing.FakeTrackableFileStreamFactory;
+import io.netty.handler.codec.dns.DefaultDnsQuestion;
+import io.netty.handler.codec.dns.DnsRecordType;
+import io.netty.handler.timeout.ReadTimeoutException;
+import io.netty.handler.timeout.TimeoutException;
+import io.netty.resolver.dns.DnsNameResolverTimeoutException;
 import org.junit.function.ThrowingRunnable;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.netty.http.client.PrematureCloseException;
 
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.InetSocketAddress;
+import java.net.URI;
 import java.time.Clock;
+import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DownloadServiceTest {
+
+    private static final List<Throwable> RECOVERABLE_EXCEPTIONS =
+            List.of(aWebClientRequestException(), aDnsResolverTimeoutException(), aPrematureCloseException(),
+                    a500WebClientResponseException(), aConnectException(), aTimeoutException());
 
     private DownloadService downloadService;
     private FakeUnixStorageSolution storageSolution;
@@ -33,26 +55,50 @@ class DownloadServiceTest {
     @Mock
     private Clock clock;
 
+    private static WebClientRequestException aWebClientRequestException() {
+        return new WebClientRequestException(
+                new IOException("simulated glitch"),
+                HttpMethod.GET,
+                URI.create("http://test.com/file"),
+                HttpHeaders.EMPTY
+        );
+    }
+
+    private static DnsNameResolverTimeoutException aDnsResolverTimeoutException() {
+        return new DnsNameResolverTimeoutException(
+                InetSocketAddress.createUnresolved("test.com", 80),
+                new DefaultDnsQuestion("test.com", DnsRecordType.A),
+                null
+        );
+    }
+
+    private static PrematureCloseException aPrematureCloseException() {
+        return PrematureCloseException.TEST_EXCEPTION;
+    }
+
+    private static WebClientResponseException a500WebClientResponseException() {
+        return WebClientResponseException.create(
+                500, "Server error", HttpHeaders.EMPTY, null, null);
+    }
+
+    private static ConnectException aConnectException() {
+        return new ConnectException("Connection refused");
+    }
+
+    private static TimeoutException aTimeoutException() {
+        return ReadTimeoutException.INSTANCE;
+    }
+
     @BeforeEach
     void setUp() {
         storageSolution = new FakeUnixStorageSolution();
         fileStreamFactory = new FakeTrackableFileStreamFactory(clock);
-        downloadService = new DownloadService();
+        downloadService = new DownloadService(oneMoreThanRecoverableExceptions(), Duration.ofMillis(1));
         onFileDownloadStarted = null;
     }
 
-    @Test
-    void downloadFileShouldDownloadToDisk() throws IOException {
-        GameFile gameFile = TestGameFile.gog();
-        String filePath = "testFilePath";
-        String testData = "Test data";
-        DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
-        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
-
-        downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath);
-
-        assertThat(storageSolution.fileExists(filePath)).isTrue();
-        assertThat(storageSolution.getSizeInBytes(filePath)).isEqualTo(testData.length());
+    private int oneMoreThanRecoverableExceptions() {
+        return RECOVERABLE_EXCEPTIONS.size() + 1;
     }
 
     private DownloadProgress mockDownloadProgress(long contentLengthBytes) {
@@ -70,90 +116,183 @@ class DownloadServiceTest {
         return downloadProgress;
     }
 
-    @Test
-    void downloadFileShouldTrackProgress() throws IOException {
-        String testData = "Test data";
-        DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
-        GameFile gameFile = TestGameFile.gog();
-        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
+    @Nested
+    class Downloading {
 
-        downloadService.downloadFile(storageSolution, fileStream, gameFile, "someFilePath");
+        @Test
+        void downloadFileShouldDownloadToDisk() throws IOException {
+            GameFile gameFile = TestGameFile.gog();
+            String filePath = "testFilePath";
+            String testData = "Test data";
+            DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
+            TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
 
-        InOrder inOrder = Mockito.inOrder(downloadProgress);
-        inOrder.verify(downloadProgress).initializeTracking(9, clock);
-        inOrder.verify(downloadProgress).track(any());
+            downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath);
+
+            assertThat(storageSolution.fileExists(filePath)).isTrue();
+            assertThat(storageSolution.getSizeInBytes(filePath)).isEqualTo(testData.length());
+        }
+
+        @Test
+        void downloadFileShouldTrackProgress() throws IOException {
+            String testData = "Test data";
+            DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
+            GameFile gameFile = TestGameFile.gog();
+            TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
+
+            downloadService.downloadFile(storageSolution, fileStream, gameFile, "someFilePath");
+
+            InOrder inOrder = Mockito.inOrder(downloadProgress);
+            inOrder.verify(downloadProgress).initializeTracking(9, clock);
+            inOrder.verify(downloadProgress).track(any());
+        }
+
+        @Test
+        void downloadFileShouldThrowGivenFileSizeDoesNotMatch() {
+            String filePath = "someFilePath";
+            GameFile gameFile = TestGameFile.gog();
+            storageSolution.overrideDownloadedSizeFor(filePath, 999L);
+            String testData = "Test data";
+            DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
+            TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
+
+            assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
+                    .isInstanceOf(FileDownloadFailedException.class)
+                    .message()
+                    .isEqualTo(
+                            "The downloaded size of someFilePath is not what was expected (was 999, expected 9)");
+        }
+
+        @Test
+        void downloadFileShouldThrowGivenAlreadyDownloading() {
+            GameFile gameFile = TestGameFile.gog();
+            String filePath = "testFilePath";
+            String testData = "test data";
+            DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
+            TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
+            onFileDownloadStarted = () -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath);
+
+            assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
+                    .isInstanceOf(ConcurrentFileDownloadException.class);
+        }
+
+        @Test
+        void downloadFileShouldThrowFileDownloadFailedExceptionForRecoverableExceptionGivenRetriesExceeded() {
+            GameFile gameFile = TestGameFile.gog();
+            var filePath = "errorPath";
+            var testData = "Test data";
+            DownloadProgress downloadProgress = mockDownloadProgress(0L);
+            TrackableFileStream fileStream =
+                    fileStreamFactory.createFailing(downloadProgress, testData, aWebClientRequestException());
+
+            assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
+                    .isInstanceOf(FileDownloadFailedException.class)
+                    .hasMessage("Failed to download file 'errorPath'");
+        }
+
+        @Test
+        void downloadFileShouldRetryOnTransientErrorAndThenSucceed() throws IOException {
+            GameFile gameFile = TestGameFile.gog();
+            String filePath = "retryPath";
+            String testData = "Test data";
+            DownloadProgress progress = mockDownloadProgress(testData.length());
+            AtomicInteger numOfTries = new AtomicInteger(0);
+            TrackableFileStream fileStream =
+                    fileStreamFactory.createInitiallyFailing(progress, testData, RECOVERABLE_EXCEPTIONS, numOfTries);
+
+            downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath);
+
+            assertThat(numOfTries.get()).isEqualTo(oneMoreThanRecoverableExceptions());
+            assertThat(storageSolution.fileExists(filePath)).isTrue();
+            assertThat(storageSolution.getSizeInBytes(filePath)).isEqualTo(testData.length());
+        }
+
+        @Test
+        void downloadFileShouldNotRetryMostErrors() {
+            GameFile gameFile = TestGameFile.gog();
+            String filePath = "retryPath";
+            String testData = "Test data";
+            DownloadProgress progress = mockDownloadProgress(testData.length());
+            AtomicInteger numOfTries = new AtomicInteger(0);
+            var unrecoverableException = new RuntimeException("Unrecoverable exception");
+            TrackableFileStream fileStream = fileStreamFactory.createInitiallyFailing(
+                    progress, testData, List.of(unrecoverableException), numOfTries);
+
+            assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
+                    .isInstanceOf(FileDownloadFailedException.class)
+                    .hasCause(unrecoverableException);
+            assertThat(numOfTries.get()).isEqualTo(1);
+            assertThat(storageSolution.fileExists(filePath)).isFalse();
+        }
+
+        @Test
+        void downloadFileShouldNotRetryWebClientResponseExceptionGivenNot500() {
+            GameFile gameFile = TestGameFile.gog();
+            String filePath = "retryPath";
+            String testData = "Test data";
+            DownloadProgress progress = mockDownloadProgress(testData.length());
+            AtomicInteger numOfTries = new AtomicInteger(0);
+            var unrecoverableException = a404WebClientResponseException();
+            TrackableFileStream fileStream = fileStreamFactory.createInitiallyFailing(
+                    progress, testData, List.of(unrecoverableException), numOfTries);
+
+            assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
+                    .isInstanceOf(FileDownloadFailedException.class)
+                    .hasCause(unrecoverableException);
+            assertThat(numOfTries.get()).isEqualTo(1);
+            assertThat(storageSolution.fileExists(filePath)).isFalse();
+        }
+
+        private static WebClientResponseException a404WebClientResponseException() {
+            return WebClientResponseException.create(
+                    404, "Not found", HttpHeaders.EMPTY, null, null);
+        }
     }
 
-    @Test
-    void downloadFileShouldThrowGivenFileSizeDoesNotMatch() {
-        String filePath = "someFilePath";
-        GameFile gameFile = TestGameFile.gog();
-        storageSolution.overrideDownloadedSizeFor(filePath, 999L);
-        String testData = "Test data";
-        DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
-        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
+    @Nested
+    class Canceling {
 
-        assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
-                .isInstanceOf(FileDownloadException.class)
-                .message()
-                .isEqualTo(
-                        "The downloaded size of someFilePath is not what was expected (was 999, expected 9)");
-    }
+        @Test
+        void shouldCancelDownload() {
+            GameFile gameFile = TestGameFile.gog();
+            String filePath = "testFilePath";
+            String testData = "Test data";
+            DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
+            TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
 
-    @Test
-    void downloadFileShouldThrowGivenAlreadyDownloading() {
-        GameFile gameFile = TestGameFile.gog();
-        String filePath = "testFilePath";
-        String testData = "test data";
-        DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
-        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
-        onFileDownloadStarted = () -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath);
+            onFileDownloadStarted = () -> downloadService.cancelDownload(filePath);
 
-        assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
-                .isInstanceOf(FileDownloadException.class)
-                .hasMessage("File 'testFilePath' is currently being downloaded by another thread");
-    }
+            assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
+                    .isInstanceOf(FileDownloadWasCanceledException.class);
+            assertThat(storageSolution.fileExists(filePath)).isFalse();
+        }
 
-    @Test
-    void shouldCancelDownload() {
-        GameFile gameFile = TestGameFile.gog();
-        String filePath = "testFilePath";
-        String testData = "Test data";
-        DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
-        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
+        @Test
+        void shouldNotValidateSizeGivenDownloadWasCanceled() {
+            GameFile gameFile = TestGameFile.gog();
+            String filePath = "testFilePath";
+            String testData = "Test data";
+            DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
+            TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
+            storageSolution.setCustomWrittenSizeInBytes(testData.length() + 1L); // Bigger downloaded than expected size
+            onFileDownloadStarted = () -> downloadService.cancelDownload(filePath);
 
-        onFileDownloadStarted = () -> downloadService.cancelDownload(filePath);
+            assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
+                    .isInstanceOf(FileDownloadWasCanceledException.class);
+        }
 
-        assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
-                .isInstanceOf(FileDownloadWasCanceledException.class);
-        assertThat(storageSolution.fileExists(filePath)).isFalse();
-    }
+        @Test
+        void cancelDownloadShouldNotThrowGivenFileIsNotCurrentlyBeingDownloaded() {
+            assertThatCode(() -> downloadService.cancelDownload("nonExistentFilePath"))
+                    .doesNotThrowAnyException();
+        }
 
-    @Test
-    void shouldNotValidateSizeGivenDownloadWasCanceled() {
-        GameFile gameFile = TestGameFile.gog();
-        String filePath = "testFilePath";
-        String testData = "Test data";
-        DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
-        TrackableFileStream fileStream = fileStreamFactory.create(downloadProgress, testData);
-        storageSolution.setCustomWrittenSizeInBytes(testData.length() + 1L); // Bigger downloaded than expected size
-        onFileDownloadStarted = () -> downloadService.cancelDownload(filePath);
-
-        assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
-                .isInstanceOf(FileDownloadWasCanceledException.class);
-    }
-
-    @Test
-    void cancelDownloadShouldNotThrowGivenFileIsNotCurrentlyBeingDownloaded() {
-        assertThatCode(() -> downloadService.cancelDownload("nonExistentFilePath"))
-                .doesNotThrowAnyException();
-    }
-
-    @SuppressWarnings("DataFlowIssue")
-    @Test
-    void cancelDownloadShouldThrowGivenNullFilePath() {
-        assertThatThrownBy(() -> downloadService.cancelDownload(null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("filePath");
+        @SuppressWarnings("DataFlowIssue")
+        @Test
+        void cancelDownloadShouldThrowGivenNullFilePath() {
+            assertThatThrownBy(() -> downloadService.cancelDownload(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("filePath");
+        }
     }
 }

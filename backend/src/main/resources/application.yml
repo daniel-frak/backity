@@ -24,6 +24,9 @@ backity:
     s3:
       enabled: false
       buffer-size-in-bytes: 10_000_000
+  replication:
+    max-retry-attempts: 3
+    retry-backoff-in-seconds: 2
 
 spring:
   datasource:
