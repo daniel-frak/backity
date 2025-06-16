@@ -12,6 +12,9 @@
       </div>
 
       <app-auto-layout data-testid="game-list">
+        <ng-container *ngIf="(gameWithFileCopiesPage?.content?.length ?? 0) < 1">
+          No games.
+        </ng-container>
         <ng-container *ngFor="let gameWithFileCopies of gameWithFileCopiesPage?.content;
                               trackBy: trackByGameId">
           <app-icon-item iconClass="bi bi-joystick">
