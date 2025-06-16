@@ -5,11 +5,10 @@ import { NgClass, NgFor, NgIf, NgTemplateOutlet } from '@angular/common';
 import {TableContentGroup} from "@app/shared/components/table/table-content-group";
 
 @Component({
-  selector: 'app-table',
-  templateUrl: './table.component.html',
-  styleUrls: ['./table.component.scss'],
-  standalone: true,
-  imports: [LoadedContentComponent, NgIf, NgFor, NgClass, NgTemplateOutlet]
+    selector: 'app-table',
+    templateUrl: './table.component.html',
+    styleUrls: ['./table.component.scss'],
+    imports: [LoadedContentComponent, NgIf, NgFor, NgClass, NgTemplateOutlet]
 })
 export class TableComponent implements OnInit {
 

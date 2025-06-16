@@ -4,15 +4,14 @@ import {NgClass} from '@angular/common';
 import {RouterLink, RouterLinkActive} from '@angular/router';
 
 @Component({
-  selector: 'app-settings-side-nav',
-  templateUrl: './settings-side-nav.component.html',
-  styleUrls: ['./settings-side-nav.component.scss'],
-  standalone: true,
-  imports: [
-    NgClass,
-    RouterLinkActive,
-    RouterLink,
-  ],
+    selector: 'app-settings-side-nav',
+    templateUrl: './settings-side-nav.component.html',
+    styleUrls: ['./settings-side-nav.component.scss'],
+    imports: [
+        NgClass,
+        RouterLinkActive,
+        RouterLink,
+    ]
 })
 export class SettingsSideNavComponent implements OnInit {
 

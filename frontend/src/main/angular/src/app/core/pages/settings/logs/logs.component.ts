@@ -9,11 +9,10 @@ import {Subscription} from "rxjs";
 import {SectionComponent} from "@app/shared/components/section/section.component";
 
 @Component({
-  selector: 'app-logs',
-  templateUrl: './logs.component.html',
-  styleUrls: ['./logs.component.scss'],
-  standalone: true,
-  imports: [PageHeaderComponent, NgIf, LoadedContentComponent, NgFor, SectionComponent]
+    selector: 'app-logs',
+    templateUrl: './logs.component.html',
+    styleUrls: ['./logs.component.scss'],
+    imports: [PageHeaderComponent, NgIf, LoadedContentComponent, NgFor, SectionComponent]
 })
 export class LogsComponent implements OnInit, OnDestroy {
 

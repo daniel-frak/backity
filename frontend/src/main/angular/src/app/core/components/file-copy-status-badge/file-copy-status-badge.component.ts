@@ -3,11 +3,10 @@ import {FileCopyStatus} from "@backend";
 import {CommonModule} from '@angular/common';
 
 @Component({
-  selector: 'app-file-copy-status-badge',
-  templateUrl: './file-copy-status-badge.component.html',
-  styleUrls: ['./file-copy-status-badge.component.scss'],
-  standalone: true,
-  imports: [CommonModule]
+    selector: 'app-file-copy-status-badge',
+    templateUrl: './file-copy-status-badge.component.html',
+    styleUrls: ['./file-copy-status-badge.component.scss'],
+    imports: [CommonModule]
 })
 export class FileCopyStatusBadgeComponent implements OnInit {
 

@@ -4,14 +4,13 @@ import {ButtonStyle} from "@app/shared/components/button/button-style";
 import {ButtonSize} from "@app/shared/components/button/button-size";
 
 @Component({
-  selector: 'app-button',
-  standalone: true,
-  imports: [
-    NgClass,
-    NgIf
-  ],
-  templateUrl: './button.component.html',
-  styleUrl: './button.component.scss'
+    selector: 'app-button',
+    imports: [
+        NgClass,
+        NgIf
+    ],
+    templateUrl: './button.component.html',
+    styleUrl: './button.component.scss'
 })
 export class ButtonComponent {
 

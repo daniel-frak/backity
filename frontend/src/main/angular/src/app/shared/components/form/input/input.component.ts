@@ -3,15 +3,14 @@ import {NgClass, NgIf} from "@angular/common";
 import {ControlValueAccessor, NgControl, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
-  selector: 'app-input',
-  standalone: true,
-  imports: [
-    NgIf,
-    NgClass,
-    ReactiveFormsModule
-  ],
-  templateUrl: './input.component.html',
-  styleUrls: ['./input.component.scss']
+    selector: 'app-input',
+    imports: [
+        NgIf,
+        NgClass,
+        ReactiveFormsModule
+    ],
+    templateUrl: './input.component.html',
+    styleUrls: ['./input.component.scss']
 })
 export class InputComponent implements ControlValueAccessor {
 

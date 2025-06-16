@@ -20,11 +20,10 @@ import {NgIf} from "@angular/common";
 import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
 
 @Component({
-  selector: 'app-game-providers',
-  templateUrl: './game-providers.component.html',
-  styleUrls: ['./game-providers.component.scss'],
-  standalone: true,
-  imports: [PageHeaderComponent, GogAuthComponent, SectionComponent, ButtonComponent, LoadedContentComponent, NgIf, AutoLayoutComponent]
+    selector: 'app-game-providers',
+    templateUrl: './game-providers.component.html',
+    styleUrls: ['./game-providers.component.scss'],
+    imports: [PageHeaderComponent, GogAuthComponent, SectionComponent, ButtonComponent, LoadedContentComponent, NgIf, AutoLayoutComponent]
 })
 export class GameProvidersComponent implements OnInit, OnDestroy {
 

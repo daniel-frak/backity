@@ -9,17 +9,16 @@ const NOT_NUMBERS_REGEX = /\D/g;
 const LEADING_ZEROES_REGEX = /^0+/;
 
 @Component({
-  selector: 'app-pagination',
-  standalone: true,
-  imports: [
-    NgbPagination,
-    NgIf,
-    FormsModule,
-    NgForOf,
-    NgbPaginationPages
-  ],
-  templateUrl: './pagination.component.html',
-  styleUrl: './pagination.component.scss',
+    selector: 'app-pagination',
+    imports: [
+        NgbPagination,
+        NgIf,
+        FormsModule,
+        NgForOf,
+        NgbPaginationPages
+    ],
+    templateUrl: './pagination.component.html',
+    styleUrl: './pagination.component.scss'
 })
 export class PaginationComponent implements OnInit {
 

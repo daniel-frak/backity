@@ -4,15 +4,14 @@ import {NgbToast} from "@ng-bootstrap/ng-bootstrap";
 import {NgClass, NgIf} from "@angular/common";
 
 @Component({
-  selector: 'app-notification-container',
-  standalone: true,
-  imports: [
-    NgbToast,
-    NgIf,
-    NgClass
-  ],
-  templateUrl: './notification-container.component.html',
-  styleUrl: './notification-container.component.scss'
+    selector: 'app-notification-container',
+    imports: [
+        NgbToast,
+        NgIf,
+        NgClass
+    ],
+    templateUrl: './notification-container.component.html',
+    styleUrl: './notification-container.component.scss'
 })
 export class NotificationContainerComponent {
 

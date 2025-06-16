@@ -11,17 +11,16 @@ import {finalize} from "rxjs";
 const SOMETHING_WENT_WRONG_TEXT = "Something went wrong during GOG authentication";
 
 @Component({
-  selector: 'app-gog-auth-modal',
-  standalone: true,
-  imports: [
-    FormsModule,
-    ButtonComponent,
-    InputComponent,
-    ReactiveFormsModule,
-    LoadedContentComponent,
-  ],
-  templateUrl: './gog-auth-modal.component.html',
-  styleUrl: './gog-auth-modal.component.scss'
+    selector: 'app-gog-auth-modal',
+    imports: [
+        FormsModule,
+        ButtonComponent,
+        InputComponent,
+        ReactiveFormsModule,
+        LoadedContentComponent,
+    ],
+    templateUrl: './gog-auth-modal.component.html',
+    styleUrl: './gog-auth-modal.component.scss'
 })
 export class GogAuthModalComponent {
 
