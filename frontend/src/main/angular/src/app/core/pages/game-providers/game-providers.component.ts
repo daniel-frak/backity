@@ -16,14 +16,13 @@ import {NotificationService} from "@app/shared/services/notification/notificatio
 import {firstValueFrom, Subscription} from "rxjs";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
 import {LoadedContentComponent} from "@app/shared/components/loaded-content/loaded-content.component";
-import {NgIf} from "@angular/common";
 import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
 
 @Component({
-    selector: 'app-game-providers',
-    templateUrl: './game-providers.component.html',
-    styleUrls: ['./game-providers.component.scss'],
-    imports: [PageHeaderComponent, GogAuthComponent, SectionComponent, ButtonComponent, LoadedContentComponent, NgIf, AutoLayoutComponent]
+  selector: 'app-game-providers',
+  templateUrl: './game-providers.component.html',
+  styleUrls: ['./game-providers.component.scss'],
+  imports: [PageHeaderComponent, GogAuthComponent, SectionComponent, ButtonComponent, LoadedContentComponent, AutoLayoutComponent]
 })
 export class GameProvidersComponent implements OnInit, OnDestroy {
 
