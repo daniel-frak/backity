@@ -303,7 +303,7 @@ describe('QueueComponent', () => {
     await component.cancelBackup(fileCopyWithContext);
 
     expect(fileCopiesClient.cancelFileCopy).toHaveBeenCalledWith(fileCopyWithContext.fileCopy.id);
-    expect(notificationService.showSuccess).toHaveBeenCalledWith(`Backup cancelled`);
+    expect(notificationService.showSuccess).toHaveBeenCalledWith(`Backup canceled`);
     expect(fileCopiesClient.getFileCopyQueue).toHaveBeenCalled();
   });
 

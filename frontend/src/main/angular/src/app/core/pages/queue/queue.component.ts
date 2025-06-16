@@ -172,7 +172,7 @@ export class QueueComponent implements OnInit, OnDestroy {
   async cancelBackup(fileCopyWithContext: FileCopyWithContext): Promise<void> {
     try {
       await firstValueFrom(this.fileCopiesClient.cancelFileCopy(fileCopyWithContext.fileCopy.id));
-      this.notificationService.showSuccess("Backup cancelled");
+      this.notificationService.showSuccess("Backup canceled");
       fileCopyWithContext.progress = undefined;
     } catch (error) {
       this.notificationService.showFailure(

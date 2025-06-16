@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.backup.application;
 
-import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCancelledException;
+import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCanceledException;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
@@ -47,7 +47,7 @@ public class FileBackupService {
         }
     }
 
-    @SuppressWarnings("java:S1166") // Intentionally suppressing FileDownloadWasCancelledException
+    @SuppressWarnings("java:S1166") // Intentionally suppressing FileDownloadWasCanceledException
     private void tryToBackUp(FileCopy fileCopy, GameFile gameFile, BackupTarget backupTarget,
                              StorageSolution storageSolution) throws IOException {
         String filePath = uniqueFilePathResolver.resolve(
@@ -56,9 +56,9 @@ public class FileBackupService {
 
         try {
             fileCopyReplicator.replicateFile(storageSolution, gameFile, fileCopy);
-        } catch (FileDownloadWasCancelledException e) {
+        } catch (FileDownloadWasCanceledException e) {
             storageSolution.deleteIfExists(fileCopy.getFilePath());
-            markCancelled(fileCopy);
+            markCanceled(fileCopy);
             return;
         }
         markStored(fileCopy);
@@ -74,8 +74,8 @@ public class FileBackupService {
         fileCopyRepository.save(fileCopy);
     }
 
-    private void markCancelled(FileCopy fileCopy) {
-        fileCopy.toCancelled();
+    private void markCanceled(FileCopy fileCopy) {
+        fileCopy.toCanceled();
         fileCopyRepository.save(fileCopy);
     }
 

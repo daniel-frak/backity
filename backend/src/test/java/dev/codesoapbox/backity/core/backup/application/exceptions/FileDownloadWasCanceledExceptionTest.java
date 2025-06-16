@@ -4,14 +4,14 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class FileDownloadWasCancelledExceptionTest {
+class FileDownloadWasCanceledExceptionTest {
 
     @Test
     void shouldGetMessage() {
-        var exception = new FileDownloadWasCancelledException("test");
+        var exception = new FileDownloadWasCanceledException("test");
 
         String result = exception.getMessage();
 
-        assertThat(result).isEqualTo("File download was cancelled for 'test'");
+        assertThat(result).isEqualTo("File download was canceled for 'test'");
     }
 }

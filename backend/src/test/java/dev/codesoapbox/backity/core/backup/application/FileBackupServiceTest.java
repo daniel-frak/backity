@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.backup.application;
 
-import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCancelledException;
+import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCanceledException;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
@@ -230,7 +230,7 @@ class FileBackupServiceTest {
     }
 
     @Test
-    void shouldMarkTrackedGivenFileDownloadWasCancelled() throws IOException {
+    void shouldMarkTrackedGivenFileDownloadWasCanceled() throws IOException {
         GameFile gameFile = TestGameFile.gog();
         FileCopy fileCopy = TestFileCopy.enqueued();
         BackupTarget backupTarget = TestBackupTarget.localFolder();
@@ -238,7 +238,7 @@ class FileBackupServiceTest {
         mockGameProviderIsConnected(gameFile);
         PersistedChangesToFileCopy persistedChangesToFileCopy = trackPersistedChangesToFileCopy();
         mockFilePathCreation(backupTarget.getPathTemplate(), gameFile, storageSolution);
-        doThrow(new FileDownloadWasCancelledException("someFilePath"))
+        doThrow(new FileDownloadWasCanceledException("someFilePath"))
                 .when(fileCopyReplicator).replicateFile(storageSolution, gameFile, fileCopy);
 
         fileBackupService.backUpFile(fileCopy, gameFile, backupTarget, storageSolution);

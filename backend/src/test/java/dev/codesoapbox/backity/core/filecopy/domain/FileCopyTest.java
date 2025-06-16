@@ -172,10 +172,10 @@ class FileCopyTest {
     class Transitions {
 
         @Test
-        void toCancelledShouldThrowGivenTransitionNotFromInProgress() {
+        void toCanceledShouldThrowGivenTransitionNotFromInProgress() {
             FileCopy fileCopy = TestFileCopy.enqueued();
 
-            assertThatThrownBy(fileCopy::toCancelled)
+            assertThatThrownBy(fileCopy::toCanceled)
                     .isInstanceOf(InvalidFileCopyStatusTransitionException.class)
                     .hasMessageContaining(fileCopy.getId().toString())
                     .hasMessageContaining(FileCopyStatus.ENQUEUED.toString())
@@ -183,21 +183,21 @@ class FileCopyTest {
         }
 
         @Test
-        void toCancelledShouldTransitionFromInProgressAndLoseFilePath() {
+        void toCanceledShouldTransitionFromInProgressAndLoseFilePath() {
             FileCopy fileCopy = TestFileCopy.inProgress();
 
-            fileCopy.toCancelled();
+            fileCopy.toCanceled();
 
             assertThat(fileCopy.getStatus()).isEqualTo(FileCopyStatus.TRACKED);
             assertThat(fileCopy.getFilePath()).isNull();
         }
 
         @Test
-        void toCancelledShouldAddEvent() {
+        void toCanceledShouldAddEvent() {
             FileCopy fileCopy = TestFileCopy.inProgress();
             FileBackupFinishedEvent expectedEvent = fileBackupFinishedEvent(fileCopy, FileCopyStatus.TRACKED);
 
-            fileCopy.toCancelled();
+            fileCopy.toCanceled();
 
             assertThat(fileCopy.getDomainEvents()).containsExactly(expectedEvent);
         }

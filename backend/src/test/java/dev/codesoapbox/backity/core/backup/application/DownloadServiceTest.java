@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.backup.application;
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadException;
-import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCancelledException;
+import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCanceledException;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
@@ -125,12 +125,12 @@ class DownloadServiceTest {
         onFileDownloadStarted = () -> downloadService.cancelDownload(filePath);
 
         assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
-                .isInstanceOf(FileDownloadWasCancelledException.class);
+                .isInstanceOf(FileDownloadWasCanceledException.class);
         assertThat(storageSolution.fileExists(filePath)).isFalse();
     }
 
     @Test
-    void shouldNotValidateSizeGivenDownloadWasCancelled() {
+    void shouldNotValidateSizeGivenDownloadWasCanceled() {
         GameFile gameFile = TestGameFile.gog();
         String filePath = "testFilePath";
         String testData = "Test data";
@@ -140,7 +140,7 @@ class DownloadServiceTest {
         onFileDownloadStarted = () -> downloadService.cancelDownload(filePath);
 
         assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
-                .isInstanceOf(FileDownloadWasCancelledException.class);
+                .isInstanceOf(FileDownloadWasCanceledException.class);
     }
 
     @Test
