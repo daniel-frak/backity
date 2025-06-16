@@ -138,6 +138,7 @@ class DownloadServiceTest {
 
             assertThat(storageSolution.fileExists(filePath)).isTrue();
             assertThat(storageSolution.getSizeInBytes(filePath)).isEqualTo(testData.length());
+            assertThat(storageSolution.allOutputStreamsWereClosed()).isTrue();
         }
 
         @Test
@@ -166,8 +167,9 @@ class DownloadServiceTest {
             assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
                     .isInstanceOf(FileDownloadFailedException.class)
                     .message()
-                    .isEqualTo(
-                            "The downloaded size of someFilePath is not what was expected (was 999, expected 9)");
+                    .isEqualTo("The downloaded size of someFilePath" +
+                               " is not what was expected (was 999, expected 9)");
+            assertThat(storageSolution.allOutputStreamsWereClosed()).isTrue();
         }
 
         @Test
@@ -181,6 +183,7 @@ class DownloadServiceTest {
 
             assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
                     .isInstanceOf(ConcurrentFileDownloadException.class);
+            assertThat(storageSolution.allOutputStreamsWereClosed()).isTrue();
         }
 
         @Test
@@ -195,6 +198,7 @@ class DownloadServiceTest {
             assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
                     .isInstanceOf(FileDownloadFailedException.class)
                     .hasMessage("Failed to download file 'errorPath'");
+            assertThat(storageSolution.allOutputStreamsWereClosed()).isTrue();
         }
 
         @Test
@@ -212,6 +216,7 @@ class DownloadServiceTest {
             assertThat(numOfTries.get()).isEqualTo(oneMoreThanRecoverableExceptions());
             assertThat(storageSolution.fileExists(filePath)).isTrue();
             assertThat(storageSolution.getSizeInBytes(filePath)).isEqualTo(testData.length());
+            assertThat(storageSolution.allOutputStreamsWereClosed()).isTrue();
         }
 
         private int oneMoreThanRecoverableExceptions() {
@@ -234,6 +239,7 @@ class DownloadServiceTest {
                     .hasCause(unrecoverableException);
             assertThat(numOfTries.get()).isEqualTo(1);
             assertThat(storageSolution.fileExists(filePath)).isFalse();
+            assertThat(storageSolution.allOutputStreamsWereClosed()).isTrue();
         }
 
         @Test
@@ -252,6 +258,7 @@ class DownloadServiceTest {
                     .hasCause(unrecoverableException);
             assertThat(numOfTries.get()).isEqualTo(1);
             assertThat(storageSolution.fileExists(filePath)).isFalse();
+            assertThat(storageSolution.allOutputStreamsWereClosed()).isTrue();
         }
 
         private static WebClientResponseException a404WebClientResponseException() {
@@ -272,6 +279,7 @@ class DownloadServiceTest {
 
             assertThat(storageSolution.fileExists(filePath)).isTrue();
             assertThat(storageSolution.getSizeInBytes(filePath)).isEqualTo(testData.length());
+            assertThat(storageSolution.allOutputStreamsWereClosed()).isTrue();
         }
     }
 
@@ -291,6 +299,7 @@ class DownloadServiceTest {
             assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
                     .isInstanceOf(FileDownloadWasCanceledException.class);
             assertThat(storageSolution.fileExists(filePath)).isFalse();
+            assertThat(storageSolution.allOutputStreamsWereClosed()).isTrue();
         }
 
         @Test
@@ -305,12 +314,14 @@ class DownloadServiceTest {
 
             assertThatThrownBy(() -> downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath))
                     .isInstanceOf(FileDownloadWasCanceledException.class);
+            assertThat(storageSolution.allOutputStreamsWereClosed()).isTrue();
         }
 
         @Test
         void cancelDownloadShouldNotThrowGivenFileIsNotCurrentlyBeingDownloaded() {
             assertThatCode(() -> downloadService.cancelDownload("nonExistentFilePath"))
                     .doesNotThrowAnyException();
+            assertThat(storageSolution.allOutputStreamsWereClosed()).isTrue();
         }
 
         @SuppressWarnings("DataFlowIssue")
@@ -319,6 +330,7 @@ class DownloadServiceTest {
             assertThatThrownBy(() -> downloadService.cancelDownload(null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessageContaining("filePath");
+            assertThat(storageSolution.allOutputStreamsWereClosed()).isTrue();
         }
     }
 }

@@ -7,6 +7,7 @@ import lombok.Setter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -34,8 +35,15 @@ public class FakeUnixStorageSolution implements StorageSolution {
     @Setter
     private RuntimeException shouldThrowOnFileDeletion;
 
+    private int outputStreamsCreated = 0;
+    private int outputStreamsClosed = 0;
+
     public FakeUnixStorageSolution(long availableSizeInBytes) {
         this.availableSizeInBytes = availableSizeInBytes;
+    }
+
+    public boolean allOutputStreamsWereClosed() {
+        return outputStreamsClosed == outputStreamsCreated;
     }
 
     private String fixSeparatorChar(String filePath) {
@@ -50,6 +58,7 @@ public class FakeUnixStorageSolution implements StorageSolution {
 
     @Override
     public ByteArrayOutputStream getOutputStream(String path) {
+        outputStreamsCreated++;
         String unixPath = fixSeparatorChar(path); // In case we're not on a Unix system
         return new ByteArrayOutputStream() {
             @Override
@@ -64,6 +73,12 @@ public class FakeUnixStorageSolution implements StorageSolution {
                 super.write(b);
                 bytesWrittenPerFilePath.put(
                         unixPath, bytesWrittenPerFilePath.getOrDefault(unixPath, 0L) + 1);
+            }
+
+            @Override
+            public void close() throws IOException {
+                super.close();
+                outputStreamsClosed++;
             }
         };
 
