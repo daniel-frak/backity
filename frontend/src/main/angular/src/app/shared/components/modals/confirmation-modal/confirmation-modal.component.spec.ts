@@ -51,7 +51,7 @@ describe('ConfirmationModalComponent', () => {
     expect(ngbActiveModalSpy.close).toHaveBeenCalled();
   });
 
-  it('should call dismiss on the modal when cancelled', () => {
+  it('should call dismiss on the modal when canceled', () => {
     component.modal.dismiss();
     expect(ngbActiveModalSpy.dismiss).toHaveBeenCalled();
   });

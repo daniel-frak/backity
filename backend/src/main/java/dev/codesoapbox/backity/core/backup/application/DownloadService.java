@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.backup.application;
 
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
 import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadException;
-import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCancelledException;
+import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCanceledException;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import lombok.Getter;
@@ -59,7 +59,7 @@ public class DownloadService {
                     .doOnNext(DataBufferUtils::release)
                     .blockLast();
             if (shouldCancelDownload(filePath)) {
-                throw new FileDownloadWasCancelledException(filePath);
+                throw new FileDownloadWasCanceledException(filePath);
             }
         }
     }

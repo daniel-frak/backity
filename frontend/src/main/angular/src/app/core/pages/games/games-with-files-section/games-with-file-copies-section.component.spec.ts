@@ -207,7 +207,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
 
     expect(fileCopy.status).toBe(FileCopyStatus.Tracked);
     expect(fileCopiesClient.cancelFileCopy).toHaveBeenCalledWith(fileCopy.id);
-    expect(notificationService.showSuccess).toHaveBeenCalledWith(`Backup cancelled`);
+    expect(notificationService.showSuccess).toHaveBeenCalledWith(`Backup canceled`);
     expect(potentialFileCopyWithContext.progress).toBeUndefined();
   });
 

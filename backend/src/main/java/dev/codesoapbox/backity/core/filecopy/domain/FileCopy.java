@@ -78,7 +78,7 @@ public class FileCopy {
         this.failedReason = null;
     }
 
-    public void toCancelled() {
+    public void toCanceled() {
         if (this.status != FileCopyStatus.IN_PROGRESS) {
             throw new InvalidFileCopyStatusTransitionException(id, this.status, FileCopyStatus.TRACKED);
         }

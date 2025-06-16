@@ -258,7 +258,7 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
       if (potentialFileCopyWithContext) {
         potentialFileCopyWithContext.progress = undefined;
       }
-      this.notificationService.showSuccess("Backup cancelled");
+      this.notificationService.showSuccess("Backup canceled");
     } catch (error) {
       this.notificationService.showFailure(
         'An error occurred while trying to cancel the backup', potentialFileCopy, error);
