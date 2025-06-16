@@ -28,8 +28,10 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.netty.http.client.PrematureCloseException;
 
+import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.HttpRetryException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.time.Clock;
@@ -45,7 +47,8 @@ class DownloadServiceTest {
 
     private static final List<Throwable> RECOVERABLE_EXCEPTIONS =
             List.of(aWebClientRequestException(), aDnsResolverTimeoutException(), aPrematureCloseException(),
-                    a500WebClientResponseException(), aConnectException(), aTimeoutException());
+                    a500WebClientResponseException(), aConnectException(), aTimeoutException(),
+                    anSSLException(), anHttpRetryException());
 
     private DownloadService downloadService;
     private FakeUnixStorageSolution storageSolution;
@@ -89,16 +92,20 @@ class DownloadServiceTest {
         return ReadTimeoutException.INSTANCE;
     }
 
+    private static SSLException anSSLException() {
+        return new SSLException("SSL error");
+    }
+
+    private static HttpRetryException anHttpRetryException() {
+        return new HttpRetryException("Retry", 1);
+    }
+
     @BeforeEach
     void setUp() {
         storageSolution = new FakeUnixStorageSolution();
         fileStreamFactory = new FakeTrackableFileStreamFactory(clock);
-        downloadService = new DownloadService(oneMoreThanRecoverableExceptions(), Duration.ofMillis(1));
+        downloadService = new DownloadService(RECOVERABLE_EXCEPTIONS.size(), Duration.ofMillis(1));
         onFileDownloadStarted = null;
-    }
-
-    private int oneMoreThanRecoverableExceptions() {
-        return RECOVERABLE_EXCEPTIONS.size() + 1;
     }
 
     private DownloadProgress mockDownloadProgress(long contentLengthBytes) {
@@ -120,7 +127,7 @@ class DownloadServiceTest {
     class Downloading {
 
         @Test
-        void downloadFileShouldDownloadToDisk() throws IOException {
+        void downloadFileShouldDownloadToDisk() {
             GameFile gameFile = TestGameFile.gog();
             String filePath = "testFilePath";
             String testData = "Test data";
@@ -134,7 +141,7 @@ class DownloadServiceTest {
         }
 
         @Test
-        void downloadFileShouldTrackProgress() throws IOException {
+        void downloadFileShouldTrackProgress() {
             String testData = "Test data";
             DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
             GameFile gameFile = TestGameFile.gog();
@@ -191,7 +198,7 @@ class DownloadServiceTest {
         }
 
         @Test
-        void downloadFileShouldRetryOnTransientErrorAndThenSucceed() throws IOException {
+        void downloadFileShouldRetryOnTransientErrorAndThenSucceed() {
             GameFile gameFile = TestGameFile.gog();
             String filePath = "retryPath";
             String testData = "Test data";
@@ -205,6 +212,10 @@ class DownloadServiceTest {
             assertThat(numOfTries.get()).isEqualTo(oneMoreThanRecoverableExceptions());
             assertThat(storageSolution.fileExists(filePath)).isTrue();
             assertThat(storageSolution.getSizeInBytes(filePath)).isEqualTo(testData.length());
+        }
+
+        private int oneMoreThanRecoverableExceptions() {
+            return RECOVERABLE_EXCEPTIONS.size() + 1;
         }
 
         @Test
@@ -246,6 +257,21 @@ class DownloadServiceTest {
         private static WebClientResponseException a404WebClientResponseException() {
             return WebClientResponseException.create(
                     404, "Not found", HttpHeaders.EMPTY, null, null);
+        }
+
+        @Test
+        void downloadFileShouldNotCorruptFileGivenTransientErrorInTheMiddleOfDownload() {
+            GameFile gameFile = TestGameFile.gog();
+            String filePath = "testFilePath";
+            String testData = "Test data";
+            DownloadProgress downloadProgress = mockDownloadProgress(testData.length());
+            TrackableFileStream fileStream = fileStreamFactory.createFailingHalfwayThrough(downloadProgress, testData,
+                    RECOVERABLE_EXCEPTIONS.getFirst());
+
+            downloadService.downloadFile(storageSolution, fileStream, gameFile, filePath);
+
+            assertThat(storageSolution.fileExists(filePath)).isTrue();
+            assertThat(storageSolution.getSizeInBytes(filePath)).isEqualTo(testData.length());
         }
     }
 
