@@ -5,7 +5,6 @@ import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
     selector: 'app-page-header',
     templateUrl: './page-header.component.html',
     styleUrls: ['./page-header.component.scss'],
-    standalone: true,
     imports: [NgbPopover]
 })
 export class PageHeaderComponent implements OnInit {

@@ -5,11 +5,12 @@ import { By } from '@angular/platform-browser';
 import {Component, DebugElement} from '@angular/core';
 
 @Component({
-  template: `
+    template: `
     <form [formGroup]="form">
       <app-input formControlName="testInput"></app-input>
     </form>
-  `
+  `,
+    standalone: false
 })
 export class TestHostComponent {
   form: FormGroup;

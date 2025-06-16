@@ -3,13 +3,12 @@ import {StorageSolutionStatus} from "@backend";
 import {NgClass} from "@angular/common";
 
 @Component({
-  selector: 'app-storage-solution-status-badge',
-  standalone: true,
-  imports: [
-    NgClass
-  ],
-  templateUrl: './storage-solution-status-badge.component.html',
-  styleUrl: './storage-solution-status-badge.component.scss'
+    selector: 'app-storage-solution-status-badge',
+    imports: [
+        NgClass
+    ],
+    templateUrl: './storage-solution-status-badge.component.html',
+    styleUrl: './storage-solution-status-badge.component.scss'
 })
 export class StorageSolutionStatusBadgeComponent {
 

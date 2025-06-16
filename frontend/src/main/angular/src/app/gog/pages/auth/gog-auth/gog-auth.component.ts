@@ -21,23 +21,22 @@ import {
 } from "@app/shared/components/named-value-container/named-value-container.component";
 
 @Component({
-  selector: 'app-gog-auth',
-  templateUrl: './gog-auth.component.html',
-  styleUrls: ['./gog-auth.component.scss'],
-  standalone: true,
-  imports: [
-    LoadedContentComponent,
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    ButtonComponent,
-    IconItemComponent,
-    LoadingPlaceholderComponent,
-    NamedValueComponent,
-    ProgressBarComponent,
-    GameContentDiscoveryOutcomeBadgeComponent,
-    NamedValueContainerComponent
-  ]
+    selector: 'app-gog-auth',
+    templateUrl: './gog-auth.component.html',
+    styleUrls: ['./gog-auth.component.scss'],
+    imports: [
+        LoadedContentComponent,
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        ButtonComponent,
+        IconItemComponent,
+        LoadingPlaceholderComponent,
+        NamedValueComponent,
+        ProgressBarComponent,
+        GameContentDiscoveryOutcomeBadgeComponent,
+        NamedValueContainerComponent
+    ]
 })
 export class GogAuthComponent implements OnInit {
 

@@ -7,7 +7,7 @@ import {By} from "@angular/platform-browser";
 import {TableContentGroup} from "@app/shared/components/table/table-content-group";
 
 @Component({
-  template: `
+    template: `
     <app-table id="standard-table" [testId]="'someTestId1'" [isLoading]="isLoading || false"
                [content]="standardContent" caption="Test table 1">
       <ng-template app-table-column="Test column 1-1" let-item>Col1-1: {{ item }}</ng-template>
@@ -23,11 +23,10 @@ import {TableContentGroup} from "@app/shared/components/table/table-content-grou
       </ng-template>
     </app-table>
   `,
-  imports: [
-    TableComponent,
-    TableColumnDirective
-  ],
-  standalone: true
+    imports: [
+        TableComponent,
+        TableColumnDirective
+    ]
 })
 class TableComponentWrapper {
   @ViewChild(TableComponent)

@@ -39,28 +39,27 @@ import {
 } from "@app/shared/components/named-value-container/named-value-container.component";
 
 @Component({
-  selector: 'app-queue',
-  standalone: true,
-  imports: [
-    PageHeaderComponent,
-    SectionComponent,
-    LoadedContentComponent,
-    ButtonComponent,
-    PaginationComponent,
-    NgForOf,
-    NgIf,
-    IconItemComponent,
-    NamedValueComponent,
-    StorageSolutionStatusBadgeComponent,
-    FileCopyStatusBadgeComponent,
-    GameFileVersionBadgeComponent,
-    ProgressBarComponent,
-    DatePipe,
-    AutoLayoutComponent,
-    NamedValueContainerComponent
-  ],
-  templateUrl: './queue.component.html',
-  styleUrl: './queue.component.scss'
+    selector: 'app-queue',
+    imports: [
+        PageHeaderComponent,
+        SectionComponent,
+        LoadedContentComponent,
+        ButtonComponent,
+        PaginationComponent,
+        NgForOf,
+        NgIf,
+        IconItemComponent,
+        NamedValueComponent,
+        StorageSolutionStatusBadgeComponent,
+        FileCopyStatusBadgeComponent,
+        GameFileVersionBadgeComponent,
+        ProgressBarComponent,
+        DatePipe,
+        AutoLayoutComponent,
+        NamedValueContainerComponent
+    ],
+    templateUrl: './queue.component.html',
+    styleUrl: './queue.component.scss'
 })
 export class QueueComponent implements OnInit, OnDestroy {
 

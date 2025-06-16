@@ -55,27 +55,26 @@ import {
 } from "@app/shared/components/named-value-container/named-value-container.component";
 
 @Component({
-  selector: 'app-games-with-file-copies-section',
-  standalone: true,
-  imports: [
-    ButtonComponent,
-    FileCopyStatusBadgeComponent,
-    LoadedContentComponent,
-    PaginationComponent,
-    NgIf,
-    SectionComponent,
-    ProgressBarComponent,
-    IconItemComponent,
-    NgForOf,
-    GameFileVersionBadgeComponent,
-    NamedValueComponent,
-    DatePipe,
-    StorageSolutionStatusBadgeComponent,
-    AutoLayoutComponent,
-    NamedValueContainerComponent
-  ],
-  templateUrl: './games-with-file-copies-section.component.html',
-  styleUrl: './games-with-file-copies-section.component.scss'
+    selector: 'app-games-with-file-copies-section',
+    imports: [
+        ButtonComponent,
+        FileCopyStatusBadgeComponent,
+        LoadedContentComponent,
+        PaginationComponent,
+        NgIf,
+        SectionComponent,
+        ProgressBarComponent,
+        IconItemComponent,
+        NgForOf,
+        GameFileVersionBadgeComponent,
+        NamedValueComponent,
+        DatePipe,
+        StorageSolutionStatusBadgeComponent,
+        AutoLayoutComponent,
+        NamedValueContainerComponent
+    ],
+    templateUrl: './games-with-file-copies-section.component.html',
+    styleUrl: './games-with-file-copies-section.component.scss'
 })
 export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
 

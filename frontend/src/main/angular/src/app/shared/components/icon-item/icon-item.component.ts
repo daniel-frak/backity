@@ -3,15 +3,14 @@ import {NgClass, NgIf} from "@angular/common";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
 
 @Component({
-  selector: 'app-icon-item',
-  standalone: true,
-  imports: [
-    NgClass,
-    NgIf,
-    ButtonComponent
-  ],
-  templateUrl: './icon-item.component.html',
-  styleUrl: './icon-item.component.scss'
+    selector: 'app-icon-item',
+    imports: [
+        NgClass,
+        NgIf,
+        ButtonComponent
+    ],
+    templateUrl: './icon-item.component.html',
+    styleUrl: './icon-item.component.scss'
 })
 export class IconItemComponent implements AfterViewInit {
 

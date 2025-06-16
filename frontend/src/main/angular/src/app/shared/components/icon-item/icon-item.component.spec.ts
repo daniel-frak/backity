@@ -5,14 +5,15 @@ import {Component} from "@angular/core";
 import {By} from "@angular/platform-browser";
 
 @Component({
-  template: `
+    template: `
     <app-icon-item>
       <div title>My Title</div>
       <div descriptor>Some descriptor</div>
       <div hideableDetails>{{ hideableText }}</div>
       <div details>Always visible details</div>
     </app-icon-item>
-  `
+  `,
+    standalone: false
 })
 class TestHostComponent {
 
