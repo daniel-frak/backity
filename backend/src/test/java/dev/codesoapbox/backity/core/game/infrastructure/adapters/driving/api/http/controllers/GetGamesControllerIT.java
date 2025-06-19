@@ -1,12 +1,14 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.backup.domain.TestFileCopyReplicationProgress;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
-import dev.codesoapbox.backity.core.game.application.FileCopyWithProgress;
-import dev.codesoapbox.backity.core.game.application.GameFileWithCopies;
-import dev.codesoapbox.backity.core.game.application.GameWithFileCopies;
+import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesAndReplicationProgresses;
+import dev.codesoapbox.backity.core.game.application.readmodel.GameFileWithCopiesReadModel;
+import dev.codesoapbox.backity.core.game.application.readmodel.TestFileCopyReadModel;
+import dev.codesoapbox.backity.core.game.application.readmodel.TestGameFileReadModel;
+import dev.codesoapbox.backity.core.game.application.readmodel.TestGameWithFileCopiesReadModel;
 import dev.codesoapbox.backity.core.game.application.usecases.GetGamesWithFilesUseCase;
-import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.shared.domain.Page;
@@ -27,6 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ControllerTest
 class GetGamesControllerIT {
 
+    private static final FileCopyId IN_PROGRESS_FILE_COPY_ID =
+            new FileCopyId("d6c81f47-e2b6-424b-b997-0dad6aa372c7");
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -37,25 +42,29 @@ class GetGamesControllerIT {
     void shouldGetGames() throws Exception {
         var gameId = new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5");
         var pagination = new Pagination(0, 2);
-        Page<GameWithFileCopies> gameWithFileCopiesPage = TestPage.of(List.of(
-                new GameWithFileCopies(
-                        new Game(gameId, null, null, "Test Game"),
-                        List.of(new GameFileWithCopies(TestGameFile.gog(),
-                                List.of(
-                                        new FileCopyWithProgress(
-                                                TestFileCopy.tracked(),
-                                                null
-                                        ),
-                                        new FileCopyWithProgress(
-                                                TestFileCopy.inProgress(),
-                                                TestFileCopyReplicationProgress.twentyFivePercent()
-                                        ),
-                                        new FileCopyWithProgress(
-                                                TestFileCopy.failedWithoutFilePath(),
-                                                null
+        Page<GameWithFileCopiesAndReplicationProgresses> gameWithFileCopiesPage = TestPage.of(List.of(
+                new GameWithFileCopiesAndReplicationProgresses(
+                        TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
+                                .withId(gameId.toString())
+                                .withTitle("Test Game")
+                                .withGameFilesWithCopies(List.of(
+                                        new GameFileWithCopiesReadModel(
+                                                TestGameFileReadModel.from(TestGameFile.gog()),
+                                                List.of(
+                                                        TestFileCopyReadModel.from(TestFileCopy.tracked()),
+                                                        TestFileCopyReadModel.from(TestFileCopy.inProgressBuilder()
+                                                                .id(IN_PROGRESS_FILE_COPY_ID)
+                                                                .build()),
+                                                        TestFileCopyReadModel.from(TestFileCopy.failedWithoutFilePath())
+                                                )
                                         )
                                 ))
-                        ))), pagination);
+                                .build(),
+                        List.of(TestFileCopyReplicationProgress.twentyFivePercentBuilder()
+                                .withFileCopyId(IN_PROGRESS_FILE_COPY_ID)
+                                .build())
+                )
+        ), pagination);
         when(getGamesWithFilesUseCase.getGamesWithFiles(pagination))
                 .thenReturn(gameWithFileCopiesPage);
 
@@ -102,7 +111,7 @@ class GetGamesControllerIT {
                                               },
                                               {
                                                   fileCopy: {
-                                                    "id": "6df888e8-90b9-4df5-a237-0cba422c0310",
+                                                    "id": "d6c81f47-e2b6-424b-b997-0dad6aa372c7",
                                                     "naturalId": {
                                                         "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
                                                         "backupTargetId": "eda52c13-ddf7-406f-97d9-d3ce2cab5a76"

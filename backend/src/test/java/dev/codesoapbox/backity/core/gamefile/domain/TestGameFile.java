@@ -4,8 +4,7 @@ import dev.codesoapbox.backity.core.game.domain.GameId;
 
 import java.time.LocalDateTime;
 
-@lombok.Builder(builderClassName = "Builder", buildMethodName = "internalBuild",
-        builderMethodName = "gogBuilder")
+@lombok.Builder(builderClassName = "Builder", buildMethodName = "internalBuild", builderMethodName = "gogBuilder")
 public final class TestGameFile {
 
     @lombok.Builder.Default
