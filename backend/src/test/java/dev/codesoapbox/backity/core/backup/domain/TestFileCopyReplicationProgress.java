@@ -5,8 +5,8 @@ import lombok.Builder;
 
 import java.time.Duration;
 
-@Builder(builderClassName = "Builder", builderMethodName = "anyBuilder", buildMethodName = "internalBuilder",
-        setterPrefix = "with")
+@Builder(builderClassName = "Builder", builderMethodName = "twentyFivePercentBuilder",
+        buildMethodName = "internalBuilder", setterPrefix = "with")
 public class TestFileCopyReplicationProgress {
 
     @lombok.Builder.Default
@@ -19,10 +19,10 @@ public class TestFileCopyReplicationProgress {
     private Duration timeLeft = Duration.ofSeconds(10);
 
     public static FileCopyReplicationProgress twentyFivePercent() {
-        return anyBuilder().build();
+        return twentyFivePercentBuilder().build();
     }
 
-    public static TestFileCopyReplicationProgress.Builder anyBuilder() {
+    public static TestFileCopyReplicationProgress.Builder twentyFivePercentBuilder() {
         return new TestFileCopyReplicationProgress.Builder();
     }
 
