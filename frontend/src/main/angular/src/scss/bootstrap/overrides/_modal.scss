@@ -1,0 +1,16 @@
+@import "../basics";
+
+.modal-body {
+  padding-left: $spacer*2;
+  padding-right: $spacer*2;
+}
+
+.modal-header {
+  padding-left: $spacer*2;
+  padding-right: $spacer*2;
+  padding-top: $spacer*1.5;
+}
+
+.modal-footer {
+  padding: 0 $spacer*2 $spacer*1.5;
+}
