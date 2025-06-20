@@ -1,9 +1,10 @@
-@import "src/scss/bootstrap/basics";
+@use "sass:map";
+@import "bootstrap/basics";
 
 $sidebar-width: 200px;
 $sidebar-width-minimized: 47px;
 $animation-time: 0.3s;
-$link-padding: map_get($spacers, 3);
+$link-padding: map.get($spacers, 3);
 $hover-background: tint-color($dark, $btn-hover-bg-tint-amount);
 
 :host {
@@ -37,7 +38,7 @@ $hover-background: tint-color($dark, $btn-hover-bg-tint-amount);
       }
 
       .bi {
-        margin-right: map_get($spacers, 2);
+        margin-right: map.get($spacers, 2);
       }
     }
   }

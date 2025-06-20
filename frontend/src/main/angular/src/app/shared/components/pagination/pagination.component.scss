@@ -1,4 +1,5 @@
-@import "src/scss/bootstrap/basics";
+@use "sass:map";
+@import "bootstrap/basics";
 
 :host {
   display: block;
@@ -10,7 +11,7 @@
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: map_get($spacers, 3);
+  gap: map.get($spacers, 3);
 
   > * {
     flex-grow: 1;
@@ -18,7 +19,7 @@
     justify-content: center;
     align-items: center;
     flex-wrap: wrap;
-    gap: map_get($spacers, 3);
+    gap: map.get($spacers, 3);
 
     > * {
       display: flex;
@@ -37,7 +38,7 @@
   }
 
   .page-container {
-    margin: 0 map_get($spacers, 3);
+    margin: 0 map.get($spacers, 3);
     display: flex;
     align-items: center;
   }
@@ -49,7 +50,7 @@
     display: inline-block;
   }
 
-  @media (min-width: map-get($grid-breakpoints, lg)) {
+  @media (min-width: map.get($grid-breakpoints, lg)) {
     > * {
       flex-grow: 0;
       justify-content: flex-start;
@@ -59,11 +60,11 @@
     }
   }
 
-  @media (min-width: map-get($grid-breakpoints, sm)) {
+  @media (min-width: map.get($grid-breakpoints, sm)) {
     .page-editable, .page-editable label {
       display: flex;
       align-items: center;
-      gap: map_get($spacers, 2);
+      gap: map.get($spacers, 2);
 
       input {
         width: 4rem;

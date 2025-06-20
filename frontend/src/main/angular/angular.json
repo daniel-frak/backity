@@ -41,7 +41,7 @@
             "browser": "src/main.ts",
             "stylePreprocessorOptions": {
               "includePaths": [
-                "."
+                "src/scss"
               ]
             }
           },
@@ -106,7 +106,7 @@
             "karmaConfig": "karma.conf.js",
             "stylePreprocessorOptions": {
               "includePaths": [
-                "."
+                "src/scss"
               ]
             },
             "inlineStyleLanguage": "scss",

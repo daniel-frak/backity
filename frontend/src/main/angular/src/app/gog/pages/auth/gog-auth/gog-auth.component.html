@@ -9,15 +9,15 @@
       </ng-container>
 
       <div data-testid="gog-auth-status"
-        aria-live="polite"
-        [ngClass]="{'text-primary': gogAuthenticated, 'text-danger-emphasis': !gogAuthenticated}">
+           aria-live="polite"
+           [ngClass]="{'text-primary': gogAuthenticated, 'text-danger-emphasis': !gogAuthenticated}">
         <i class="me-1"
            [ngClass]="{
            'bi bi-check-circle': gogAuthenticated && !overview?.progress,
            'bi bi-x-circle': !gogAuthenticated && !overview?.progress,
            'bi bi-hourglass': overview?.progress
            }"
-          aria-hidden="true">
+           aria-hidden="true">
         </i>
         @if (overview?.progress) {
           Discovering...
@@ -51,7 +51,7 @@
 
       @if (!gogAuthenticated && !overview?.progress) {
         <app-button [action]="openGogModal"
-          buttonType="button" testId="show-gog-auth-modal-btn" buttonStyle="primary">
+                    buttonType="button" testId="show-gog-auth-modal-btn" buttonStyle="primary">
           Authenticate
         </app-button>
       }
@@ -73,27 +73,23 @@
         <app-named-value-container>
           <app-named-value>
             <ng-container name>Last successful discovery stopped at</ng-container>
-            @if (overview?.lastDiscoveryResult) {
-              <ng-container value>
+            <ng-container value>
+              @if (overview?.lastDiscoveryResult) {
                 {{ overview?.lastDiscoveryResult?.lastSuccessfulDiscoveryCompletedAt | date:'dd.MM.yyyy HH:mm:ss' }}
-              </ng-container>
-            }
-            @if (!overview?.lastDiscoveryResult) {
-              <ng-container value>
+              } @else {
                 N/A
-              </ng-container>
-            }
+              }
+            </ng-container>
           </app-named-value>
           <app-named-value>
             <ng-container name>Last attempted discovery stopped at</ng-container>
-            @if (overview?.lastDiscoveryResult) {
-              <ng-container value>
+            <ng-container value>
+              @if (overview?.lastDiscoveryResult) {
                 {{ overview?.lastDiscoveryResult?.stoppedAt | date:'dd.MM.yyyy HH:mm:ss' }}
-              </ng-container>
-            }
-            @if (!overview?.lastDiscoveryResult) {
-              <ng-container value>N/A</ng-container>
-            }
+              } @else {
+                N/A
+              }
+            </ng-container>
           </app-named-value>
           <app-named-value>
             <ng-container name>Last discovery outcome</ng-container>
@@ -103,29 +99,23 @@
           </app-named-value>
           <app-named-value>
             <ng-container name>Last games discovered</ng-container>
-            @if (overview?.lastDiscoveryResult) {
-              <ng-container value>
+            <ng-container value>
+              @if (overview?.lastDiscoveryResult) {
                 {{ overview?.lastDiscoveryResult?.gamesDiscovered }}
-              </ng-container>
-            }
-            @if (!overview?.lastDiscoveryResult) {
-              <ng-container value>
+              } @else {
                 N/A
-              </ng-container>
-            }
+              }
+            </ng-container>
           </app-named-value>
           <app-named-value>
             <ng-container name>Last game files discovered</ng-container>
-            @if (overview?.lastDiscoveryResult) {
-              <ng-container value>
+            <ng-container value>
+              @if (overview?.lastDiscoveryResult) {
                 {{ overview?.lastDiscoveryResult?.gameFilesDiscovered }}
-              </ng-container>
-            }
-            @if (!overview?.lastDiscoveryResult) {
-              <ng-container value>
+              } @else {
                 N/A
-              </ng-container>
-            }
+              }
+            </ng-container>
           </app-named-value>
         </app-named-value-container>
       }

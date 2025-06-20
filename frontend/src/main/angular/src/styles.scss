@@ -1,3 +1,4 @@
+@use "sass:map";
 @import "scss/bootstrap/bootstrap";
 @import "scss/custom/gutters";
 @import "scss/custom/layout";
@@ -8,5 +9,5 @@ html, body {
 }
 
 h1 {
-  margin-bottom: map_get($spacers, 5);
+  margin-bottom: map.get($spacers, 5);
 }

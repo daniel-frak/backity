@@ -1,8 +1,9 @@
-@import "src/scss/bootstrap/basics";
+@use "sass:map";
+@import "bootstrap/basics";
 
 @mixin responsive-container($child-element) {
   @extend .gutters-1;
-  @media (max-width: map-get($grid-breakpoints, sm) - 1) {
+  @media (max-width: map.get($grid-breakpoints, sm) - 1) {
     flex-direction: column;
     > * {
       flex-grow: 1;

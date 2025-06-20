@@ -1,9 +1,13 @@
-@import "src/scss/bootstrap/basics";
+@use "sass:map";
+@import "bootstrap/basics";
+
+$spacer-sm: map.get($spacers, 2);
+$spacer-md: map.get($spacers, 3);
 
 :host {
   display: flex;
   flex-direction: column;
-  gap: map_get($spacers, 3);
+  gap: $spacer-md;
 }
 
 .icon-text-and-buttons {
@@ -12,14 +16,14 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: map_get($spacers, 3);
+  gap: $spacer-md;
 
   .icon-and-text {
 
     display: flex;
     flex-grow: 1;
     align-items: center;
-    gap: map_get($spacers, 3);
+    gap: $spacer-md;
 
     .icon-holder {
       position: relative;
@@ -55,13 +59,13 @@
       font-weight: $font-weight-medium;
       display: flex;
       align-items: center;
-      gap: map_get($spacers, 2);
+      gap: $spacer-sm;
     }
   }
 
   .buttons {
     display: flex;
-    gap: map_get($spacers, 3);
+    gap: $spacer-md;
     align-items: center;
   }
 
@@ -79,10 +83,10 @@
 }
 
 .details {
-  padding-left: map_get($spacers, 3);
+  padding-left: $spacer-md;
   display: flex;
   flex-direction: column;
-  gap: map_get($spacers, 3);
+  gap: $spacer-md;
 }
 
 .collapsible {
@@ -97,11 +101,11 @@
   // https://developer.chrome.com/blog/new-in-chrome-129#animate
   interpolate-size: allow-keywords;
 
-  margin-bottom: -(map_get($spacers, 3));
+  margin-bottom: -($spacer-md);
 }
 
 .collapsible.open {
   height: auto;
   opacity: 1;
-  padding-bottom: map_get($spacers, 3);
+  padding-bottom: $spacer-md;
 }
