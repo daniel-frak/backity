@@ -1,5 +1,7 @@
 <div class="placeholder-glow">
-  <div *ngFor="let width of widths">
-    <span class="placeholder" [ngStyle]="{'width': width}" aria-hidden="true"></span>
-  </div>
+  @for (width of widths; track width) {
+    <div>
+      <span class="placeholder" [ngStyle]="{'width': width}" aria-hidden="true"></span>
+    </div>
+  }
 </div>

@@ -1,14 +1,13 @@
 import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, ViewChild} from '@angular/core';
-import {NgClass, NgIf} from "@angular/common";
+import { NgClass } from "@angular/common";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
 
 @Component({
     selector: 'app-icon-item',
     imports: [
-        NgClass,
-        NgIf,
-        ButtonComponent
-    ],
+    NgClass,
+    ButtonComponent
+],
     templateUrl: './icon-item.component.html',
     styleUrl: './icon-item.component.scss'
 })

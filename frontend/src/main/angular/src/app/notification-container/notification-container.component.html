@@ -9,11 +9,13 @@
 
       <div class="d-flex justify-content-between align-items-start">
         <div> {{ notification.content }}</div>
-        <button type="button"
-                aria-label="Close"
-                [ngClass]="'btn-close' + (notification.shouldShowLightText ? ' btn-close-white' : '')"
-                (click)="notificationService.remove(notification)"
-                *ngIf="!notification.title"></button>
+        @if (!notification.title) {
+          <button type="button"
+            aria-label="Close"
+            [ngClass]="'btn-close' + (notification.shouldShowLightText ? ' btn-close-white' : '')"
+            (click)="notificationService.remove(notification)"
+          ></button>
+        }
       </div>
     </ngb-toast>
   }

@@ -3,7 +3,7 @@ import {LogCreatedEvent, LogsClient, LogsMessageTopics} from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {Message} from "@stomp/stompjs";
 import {PageHeaderComponent} from '@app/shared/components/page-header/page-header.component';
-import {NgFor, NgIf} from '@angular/common';
+
 import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
 import {Subscription} from "rxjs";
 import {SectionComponent} from "@app/shared/components/section/section.component";
@@ -12,7 +12,7 @@ import {SectionComponent} from "@app/shared/components/section/section.component
     selector: 'app-logs',
     templateUrl: './logs.component.html',
     styleUrls: ['./logs.component.scss'],
-    imports: [PageHeaderComponent, NgIf, LoadedContentComponent, NgFor, SectionComponent]
+    imports: [PageHeaderComponent, LoadedContentComponent, SectionComponent]
 })
 export class LogsComponent implements OnInit, OnDestroy {
 

@@ -1,11 +1,13 @@
-<ng-container *ngIf="currentPage && (currentPage?.totalElements ?? 0) > 0">
+@if (currentPage && (currentPage?.totalElements ?? 0) > 0) {
   <div class="pagination-container">
     <div class="pagination-options">
       <div class="elements-per-page">
         <div class="form-floating">
           <select class="form-select" aria-label="Rows per page" [(ngModel)]="pageSize"
-                  (ngModelChange)="onPageSizeChange($event)">
-            <option *ngFor="let value of availablePageSizes" [ngValue]="value">{{ value }}</option>
+            (ngModelChange)="onPageSizeChange($event)">
+            @for (value of availablePageSizes; track value) {
+              <option [ngValue]="value">{{ value }}</option>
+            }
           </select>
           <label>Rows per page</label><!--/* //NOSONAR */-->
         </div>
@@ -22,7 +24,6 @@
         [(page)]="pageNumber"
         [pageSize]="pageSize"
         [boundaryLinks]="true">
-
         <ng-template ngbPaginationPages let-page let-pages="pages">
           @if (pages.length > 0) {
             <li class="page-container"> <!--/* //NOSONAR */-->
@@ -40,14 +41,14 @@
                     (keyup.enter)="onPageNumberChange(Number(pageNumberInput.value))"
                     (blur)="onPageNumberChange(Number(pageNumberInput.value))"
                     (input)="restrictToNumbers($any($event).target)"
-                  />
-                  <span> of {{ pages.length }}</span>
-                </label>
-              </div>
-            </li>
-          }
-        </ng-template>
-      </ngb-pagination>
+                    />
+                    <span> of {{ pages.length }}</span>
+                  </label>
+                </div>
+              </li>
+            }
+          </ng-template>
+        </ngb-pagination>
+      </div>
     </div>
-  </div>
-</ng-container>
+  }

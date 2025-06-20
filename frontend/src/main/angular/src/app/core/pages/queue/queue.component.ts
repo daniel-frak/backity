@@ -20,7 +20,7 @@ import {SectionComponent} from "@app/shared/components/section/section.component
 import {LoadedContentComponent} from "@app/shared/components/loaded-content/loaded-content.component";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
 import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
-import {DatePipe, NgForOf, NgIf} from "@angular/common";
+import { DatePipe } from "@angular/common";
 import {IconItemComponent} from "@app/shared/components/icon-item/icon-item.component";
 import {NamedValueComponent} from "@app/shared/components/named-value/named-value.component";
 import {
@@ -41,23 +41,21 @@ import {
 @Component({
     selector: 'app-queue',
     imports: [
-        PageHeaderComponent,
-        SectionComponent,
-        LoadedContentComponent,
-        ButtonComponent,
-        PaginationComponent,
-        NgForOf,
-        NgIf,
-        IconItemComponent,
-        NamedValueComponent,
-        StorageSolutionStatusBadgeComponent,
-        FileCopyStatusBadgeComponent,
-        GameFileVersionBadgeComponent,
-        ProgressBarComponent,
-        DatePipe,
-        AutoLayoutComponent,
-        NamedValueContainerComponent
-    ],
+    PageHeaderComponent,
+    SectionComponent,
+    LoadedContentComponent,
+    ButtonComponent,
+    PaginationComponent,
+    IconItemComponent,
+    NamedValueComponent,
+    StorageSolutionStatusBadgeComponent,
+    FileCopyStatusBadgeComponent,
+    GameFileVersionBadgeComponent,
+    ProgressBarComponent,
+    DatePipe,
+    AutoLayoutComponent,
+    NamedValueContainerComponent
+],
     templateUrl: './queue.component.html',
     styleUrl: './queue.component.scss'
 })

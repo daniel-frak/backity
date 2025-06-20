@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {NgbPagination, NgbPaginationPages} from "@ng-bootstrap/ng-bootstrap";
 import {TableContent} from "@app/shared/components/table/table-content";
-import {NgForOf, NgIf} from "@angular/common";
+
 import {FormsModule} from "@angular/forms";
 import {ActivatedRoute, Params, Router} from '@angular/router';
 
@@ -11,12 +11,10 @@ const LEADING_ZEROES_REGEX = /^0+/;
 @Component({
     selector: 'app-pagination',
     imports: [
-        NgbPagination,
-        NgIf,
-        FormsModule,
-        NgForOf,
-        NgbPaginationPages
-    ],
+    NgbPagination,
+    FormsModule,
+    NgbPaginationPages
+],
     templateUrl: './pagination.component.html',
     styleUrl: './pagination.component.scss'
 })

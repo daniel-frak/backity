@@ -25,7 +25,7 @@ import {NotificationService} from "@app/shared/services/notification/notificatio
 import {ModalService} from "@app/shared/services/modal-service/modal.service";
 import {ButtonComponent} from '@app/shared/components/button/button.component';
 import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
-import {DatePipe, NgForOf, NgIf} from '@angular/common';
+import { DatePipe } from '@angular/common';
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {Message} from "@stomp/stompjs";
 import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
@@ -57,22 +57,20 @@ import {
 @Component({
     selector: 'app-games-with-file-copies-section',
     imports: [
-        ButtonComponent,
-        FileCopyStatusBadgeComponent,
-        LoadedContentComponent,
-        PaginationComponent,
-        NgIf,
-        SectionComponent,
-        ProgressBarComponent,
-        IconItemComponent,
-        NgForOf,
-        GameFileVersionBadgeComponent,
-        NamedValueComponent,
-        DatePipe,
-        StorageSolutionStatusBadgeComponent,
-        AutoLayoutComponent,
-        NamedValueContainerComponent
-    ],
+    ButtonComponent,
+    FileCopyStatusBadgeComponent,
+    LoadedContentComponent,
+    PaginationComponent,
+    SectionComponent,
+    ProgressBarComponent,
+    IconItemComponent,
+    GameFileVersionBadgeComponent,
+    NamedValueComponent,
+    DatePipe,
+    StorageSolutionStatusBadgeComponent,
+    AutoLayoutComponent,
+    NamedValueContainerComponent
+],
     templateUrl: './games-with-file-copies-section.component.html',
     styleUrl: './games-with-file-copies-section.component.scss'
 })

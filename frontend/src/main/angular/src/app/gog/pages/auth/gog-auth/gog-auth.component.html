@@ -9,23 +9,27 @@
       </ng-container>
 
       <div data-testid="gog-auth-status"
-           aria-live="polite"
-           [ngClass]="{'text-primary': gogAuthenticated, 'text-danger-emphasis': !gogAuthenticated}">
+        aria-live="polite"
+        [ngClass]="{'text-primary': gogAuthenticated, 'text-danger-emphasis': !gogAuthenticated}">
         <i class="me-1"
            [ngClass]="{
            'bi bi-check-circle': gogAuthenticated && !overview?.progress,
            'bi bi-x-circle': !gogAuthenticated && !overview?.progress,
            'bi bi-hourglass': overview?.progress
            }"
-           aria-hidden="true">
+          aria-hidden="true">
         </i>
-        <ng-container *ngIf="overview?.progress">
+        @if (overview?.progress) {
           Discovering...
-        </ng-container>
-        <ng-container *ngIf="!overview?.progress">
-          <ng-container *ngIf="gogAuthenticated">Authenticated</ng-container>
-          <ng-container *ngIf="!gogAuthenticated">Not authenticated</ng-container>
-        </ng-container>
+        }
+        @if (!overview?.progress) {
+          @if (gogAuthenticated) {
+            Authenticated
+          }
+          @if (!gogAuthenticated) {
+            Not authenticated
+          }
+        }
       </div>
     </app-loaded-content>
   </ng-container>
@@ -35,26 +39,28 @@
         <app-loading-placeholder [widths]="['6rem']"/>
       </ng-container>
 
-      <app-progress-bar *ngIf="overview?.progress" [percentage]="overview?.progress?.percentage ?? 0"/>
+      @if (overview?.progress) {
+        <app-progress-bar [percentage]="overview?.progress?.percentage ?? 0"/>
+      }
 
-      <ng-container *ngIf="overview?.progress">
+      @if (overview?.progress) {
         <app-button [disabled]="true" buttonStyle="secondary" testId="stop-discovery-btn">
           Stop discovery
         </app-button>
-      </ng-container>
+      }
 
-      <ng-container *ngIf="!gogAuthenticated && !overview?.progress">
+      @if (!gogAuthenticated && !overview?.progress) {
         <app-button [action]="openGogModal"
-                    buttonType="button" testId="show-gog-auth-modal-btn" buttonStyle="primary">
+          buttonType="button" testId="show-gog-auth-modal-btn" buttonStyle="primary">
           Authenticate
         </app-button>
-      </ng-container>
+      }
 
-      <ng-container *ngIf="gogAuthenticated && !overview?.progress">
+      @if (gogAuthenticated && !overview?.progress) {
         <app-button [actionAsync]="onClickSignOutGog()" buttonStyle="danger" testId="log-out-gog-btn">
           Log out
         </app-button>
-      </ng-container>
+      }
     </app-loaded-content>
   </ng-container>
   <ng-container details>
@@ -63,23 +69,31 @@
         <app-loading-placeholder [widths]="['20rem', '20rem', '20rem', '20rem', '20rem', '8rem']"/>
       </ng-container>
 
-      <ng-container *ngIf="!overview?.progress">
+      @if (!overview?.progress) {
         <app-named-value-container>
           <app-named-value>
             <ng-container name>Last successful discovery stopped at</ng-container>
-            <ng-container *ngIf="overview?.lastDiscoveryResult" value>
-              {{ overview?.lastDiscoveryResult?.lastSuccessfulDiscoveryCompletedAt | date:'dd.MM.yyyy HH:mm:ss' }}
-            </ng-container>
-            <ng-container *ngIf="!overview?.lastDiscoveryResult" value>
-              N/A
-            </ng-container>
+            @if (overview?.lastDiscoveryResult) {
+              <ng-container value>
+                {{ overview?.lastDiscoveryResult?.lastSuccessfulDiscoveryCompletedAt | date:'dd.MM.yyyy HH:mm:ss' }}
+              </ng-container>
+            }
+            @if (!overview?.lastDiscoveryResult) {
+              <ng-container value>
+                N/A
+              </ng-container>
+            }
           </app-named-value>
           <app-named-value>
             <ng-container name>Last attempted discovery stopped at</ng-container>
-            <ng-container *ngIf="overview?.lastDiscoveryResult" value>
-              {{ overview?.lastDiscoveryResult?.stoppedAt | date:'dd.MM.yyyy HH:mm:ss' }}
-            </ng-container>
-            <ng-container *ngIf="!overview?.lastDiscoveryResult" value>N/A</ng-container>
+            @if (overview?.lastDiscoveryResult) {
+              <ng-container value>
+                {{ overview?.lastDiscoveryResult?.stoppedAt | date:'dd.MM.yyyy HH:mm:ss' }}
+              </ng-container>
+            }
+            @if (!overview?.lastDiscoveryResult) {
+              <ng-container value>N/A</ng-container>
+            }
           </app-named-value>
           <app-named-value>
             <ng-container name>Last discovery outcome</ng-container>
@@ -89,25 +103,33 @@
           </app-named-value>
           <app-named-value>
             <ng-container name>Last games discovered</ng-container>
-            <ng-container *ngIf="overview?.lastDiscoveryResult" value>
-              {{ overview?.lastDiscoveryResult?.gamesDiscovered }}
-            </ng-container>
-            <ng-container *ngIf="!overview?.lastDiscoveryResult" value>
-              N/A
-            </ng-container>
+            @if (overview?.lastDiscoveryResult) {
+              <ng-container value>
+                {{ overview?.lastDiscoveryResult?.gamesDiscovered }}
+              </ng-container>
+            }
+            @if (!overview?.lastDiscoveryResult) {
+              <ng-container value>
+                N/A
+              </ng-container>
+            }
           </app-named-value>
           <app-named-value>
             <ng-container name>Last game files discovered</ng-container>
-            <ng-container *ngIf="overview?.lastDiscoveryResult" value>
-              {{ overview?.lastDiscoveryResult?.gameFilesDiscovered }}
-            </ng-container>
-            <ng-container *ngIf="!overview?.lastDiscoveryResult" value>
-              N/A
-            </ng-container>
+            @if (overview?.lastDiscoveryResult) {
+              <ng-container value>
+                {{ overview?.lastDiscoveryResult?.gameFilesDiscovered }}
+              </ng-container>
+            }
+            @if (!overview?.lastDiscoveryResult) {
+              <ng-container value>
+                N/A
+              </ng-container>
+            }
           </app-named-value>
         </app-named-value-container>
-      </ng-container>
-      <ng-container *ngIf="overview?.progress">
+      }
+      @if (overview?.progress) {
         <app-named-value-container>
           <app-named-value>
             <ng-container name>Games discovered</ng-container>
@@ -130,7 +152,7 @@
             </ng-container>
           </app-named-value>
         </app-named-value-container>
-      </ng-container>
+      }
     </app-loaded-content>
   </ng-container>
 </app-icon-item>

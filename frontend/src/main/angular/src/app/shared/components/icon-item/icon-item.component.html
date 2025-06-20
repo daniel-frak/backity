@@ -13,19 +13,23 @@
     </div>
   </div>
   <div class="buttons" #buttonsWrapper>
-    <app-button *ngIf="hideableDetailsExist" buttonType="button" [outline]="true" buttonClass="btn-icon-only"
-                buttonStyle="secondary"
-                [title]="showHideableDetails ? 'Hide details' : 'Show details'"
-                [action]="toggleHideableDetailsAction">
-      <i [ngClass]="['bi', showHideableDetails ? 'bi-chevron-up' : 'bi-chevron-down']"></i>
-    </app-button>
+    @if (hideableDetailsExist) {
+      <app-button buttonType="button" [outline]="true" buttonClass="btn-icon-only"
+        buttonStyle="secondary"
+        [title]="showHideableDetails ? 'Hide details' : 'Show details'"
+        [action]="toggleHideableDetailsAction">
+        <i [ngClass]="['bi', showHideableDetails ? 'bi-chevron-up' : 'bi-chevron-down']"></i>
+      </app-button>
+    }
     <ng-content select="[buttons]"/>
   </div>
 </div>
-<div class="details" *ngIf="detailsExist" #detailsWrapper>
-  <div #hideableDetailsWrapper class="collapsible" [class.open]="showHideableDetails">
-    <ng-content select="[hideableDetails]"/>
+@if (detailsExist) {
+  <div class="details" #detailsWrapper>
+    <div #hideableDetailsWrapper class="collapsible" [class.open]="showHideableDetails">
+      <ng-content select="[hideableDetails]"/>
+    </div>
+    <ng-content select="[details]"/>
   </div>
-  <ng-content select="[details]"/>
-</div>
+}
 

@@ -1,11 +1,9 @@
 import {Component, Input} from '@angular/core';
-import {NgIf} from "@angular/common";
+
 
 @Component({
     selector: 'app-section',
-    imports: [
-        NgIf
-    ],
+    imports: [],
     templateUrl: './section.component.html',
     styleUrl: './section.component.scss'
 })
