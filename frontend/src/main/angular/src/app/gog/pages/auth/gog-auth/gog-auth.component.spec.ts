@@ -5,10 +5,8 @@ import {defer, of, throwError} from "rxjs";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {By} from '@angular/platform-browser';
 import {DebugElement} from "@angular/core";
-import {FormGroup} from "@angular/forms";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {GogAuthModalComponent} from "@app/gog/components/modals/gog-auth-modal/gog-auth-modal.component";
-import {NgbModalRef} from "@ng-bootstrap/ng-bootstrap/modal/modal-ref";
 import createSpyObj = jasmine.createSpyObj;
 import SpyObj = jasmine.SpyObj;
 
@@ -135,7 +133,8 @@ describe('GogAuthComponent', () => {
   function mockAuthModalNeverCloses() {
     const mockModalRef = {
       componentInstance: {},
-      result: new Promise(() => {}) // Never closes
+      result: new Promise(() => {
+      }) // Never closes
     } as NgbModalRef;
     modalService.open.and.returnValue(mockModalRef as any);
   }
@@ -160,7 +159,7 @@ describe('GogAuthComponent', () => {
     expect(modalService.open).toHaveBeenCalledTimes(2);
   });
 
-  function mockAuthModalImmediatelyRejects(){
+  function mockAuthModalImmediatelyRejects() {
     const mockModalRef = {
       componentInstance: {},
       result: Promise.reject("some rejection reason") // Simulates modal closing behavior
