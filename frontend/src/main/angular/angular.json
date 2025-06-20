@@ -104,6 +104,11 @@
             ],
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "."
+              ]
+            },
             "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
