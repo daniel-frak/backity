@@ -3,12 +3,11 @@
 .btn:not(.btn-link), .badge-clickable {
   position: relative;
   overflow: hidden;
+  transform: translate3d(0, 0, 0);
 
   &.badge {
     vertical-align: bottom;
   }
-
-  transform: translate3d(0, 0, 0);
 
   &:after {
     content: "";

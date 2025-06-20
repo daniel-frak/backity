@@ -1,10 +1,11 @@
+@use "sass:map";
 @import "../basics";
 
 table {
   caption-side: top;
 }
 
-@each $breakpoint in map-keys($grid-breakpoints) {
+@each $breakpoint in map.keys($grid-breakpoints) {
   $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
   $postfix: if($infix != "", $infix + "-down", "");
 
@@ -37,10 +38,10 @@ table {
           //&:not(:last-of-type) {
           &:not(.caption) {
             border-bottom: $table-border-width solid $table-border-color;
-            padding-bottom: map_get($spacers, 4);
+            padding-bottom: map.get($spacers, 4);
           }
 
-          margin-bottom: map_get($spacers, 4);
+          margin-bottom: map.get($spacers, 4);
           //}
         }
 
@@ -52,7 +53,7 @@ table {
 
           padding-top: 0;
           padding-bottom: 0;
-          margin-bottom: map_get($spacers, 1);
+          margin-bottom: map.get($spacers, 1);
 
           &:not(.hide-title) {
             &:before {

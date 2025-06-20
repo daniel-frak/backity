@@ -1,3 +1,4 @@
+@use "sass:color";
 @import "bootstrap/scss/functions";
 
 $enable-important-utilities: true;
@@ -55,7 +56,7 @@ $info: #2770be;
 $warning: #FD7E14FF;
 $danger: #931F1F;
 $success: #175e0d;
-$red-300: saturate(lighten($danger, 30%), 75%);
+$red-300: color.adjust(color.adjust($danger, $lightness: 30%), $saturation: 75%);
 $component-active-bg: $primary;
 $min-contrast-ratio: 4.5;
 $color-contrast-dark: $black;
@@ -63,13 +64,13 @@ $color-contrast-light: $white;
 
 $border-color-translucent: #4A3F21;
 $dark: #241F0F;
-$light: lighten($dark, 75%);
+$light: color.adjust($dark, $lightness: 75%);
 $body-color: $white;
 $body-bg: $dark;
 $body-secondary-color: rgba($body-color, .75);
 $body-tertiary-color: rgba($body-color, .5);
 $body-secondary-bg: $border-color-translucent;
-$body-tertiary-bg: lighten($body-bg, 10%);
+$body-tertiary-bg: color.adjust($body-bg, $lightness: 10%);
 $card-bg: $body-bg;
 $table-color: $white;
 $border-color: $border-color-translucent;

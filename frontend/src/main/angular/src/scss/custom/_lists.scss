@@ -1,7 +1,8 @@
-@import "src/scss/bootstrap/basics";
+@use "sass:map";
+@import "bootstrap/basics";
 
 ul:not(.pagination) {
   li:not(:last-child):not(.nav-item) {
-    margin-bottom: map_get($spacers, 3);
+    margin-bottom: map.get($spacers, 3);
   }
 }

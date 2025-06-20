@@ -49,8 +49,7 @@
               </td>
             }
           </tr>
-        }
-        @if (!content?.length) {
+        } @empty {
           <tr>
             <td [attr.colspan]="getColumnTitles().length" class="hide-title">No data</td>
           </tr>
