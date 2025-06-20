@@ -7,9 +7,8 @@ import {LoadedContentComponent} from '@app/shared/components/loaded-content/load
 import {CommonModule} from '@angular/common';
 import {ButtonComponent} from '@app/shared/components/button/button.component';
 import {IconItemComponent} from "@app/shared/components/icon-item/icon-item.component";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {GogAuthModalComponent} from "@app/gog/components/modals/gog-auth-modal/gog-auth-modal.component";
-import {NgbModalRef} from "@ng-bootstrap/ng-bootstrap/modal/modal-ref";
 import {LoadingPlaceholderComponent} from "@app/shared/components/loading-placeholder/loading-placeholder.component";
 import {NamedValueComponent} from "@app/shared/components/named-value/named-value.component";
 import {ProgressBarComponent} from "@app/shared/components/progress-bar/progress-bar.component";
