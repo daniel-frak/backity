@@ -1,44 +1,61 @@
 <app-loaded-content [isLoading]="isLoading">
   <table [attr.data-testid]="testId" class="table table-custom-responsive-lg-down">
-    <caption *ngIf="caption">{{ caption }}</caption>
-    <thead *ngIf="templateRefs.length">
-    <tr>
-      <th *ngFor="let columnTitle of getColumnTitles()" scope="col">
-        {{ columnTitle }}
-      </th>
-    </tr>
-    </thead>
-    <ng-container *ngIf="groupedContent; else singleContent">
-      <ng-container *ngFor="let group of groupedContent">
+    @if (caption) {
+      <caption>{{ caption }}</caption>
+    }
+    @if (templateRefs.length) {
+      <thead>
+        <tr>
+          @for (columnTitle of getColumnTitles(); track columnTitle) {
+            <th scope="col">
+              {{ columnTitle }}
+            </th>
+          }
+        </tr>
+      </thead>
+    }
+    @if (groupedContent) {
+      @for (group of groupedContent; track group) {
         <tbody>
-        <tr class="caption">
-          <th scope="rowgroup" [attr.colspan]="getColumnTitles().length" *ngIf="group.caption" class="group-caption">
-            {{ group.caption }}
-          </th>
-        </tr>
-        <tr *ngFor="let row of group.items">
-          <td *ngFor="let columnContent of templateRefs; let i = index" [attr.data-title]="columnContent.columnTitle"
-              [ngClass]="getTdClass(columnContent)">
-            <ng-container
-              *ngTemplateOutlet="columnContent.template; context: { $implicit: row, index: i }"></ng-container>
-          </td>
-        </tr>
+          <tr class="caption">
+            @if (group.caption) {
+              <th scope="rowgroup" [attr.colspan]="getColumnTitles().length" class="group-caption">
+                {{ group.caption }}
+              </th>
+            }
+          </tr>
+          @for (row of group.items; track row) {
+            <tr>
+              @for (columnContent of templateRefs; track columnContent; let i = $index) {
+                <td [attr.data-title]="columnContent.columnTitle"
+                  [ngClass]="getTdClass(columnContent)">
+                  <ng-container
+                  *ngTemplateOutlet="columnContent.template; context: { $implicit: row, index: i }"></ng-container>
+                </td>
+              }
+            </tr>
+          }
         </tbody>
-      </ng-container>
-    </ng-container>
-    <ng-template #singleContent>
+      }
+    } @else {
       <tbody>
-      <tr *ngFor="let row of content">
-        <td *ngFor="let columnContent of templateRefs; let i = index" [attr.data-title]="columnContent.columnTitle"
-            [ngClass]="getTdClass(columnContent)">
-          <ng-container
-            *ngTemplateOutlet="columnContent.template; context: { $implicit: row, index: i }"></ng-container>
-        </td>
-      </tr>
-      <tr *ngIf="!content?.length">
-        <td [attr.colspan]="getColumnTitles().length" class="hide-title">No data</td>
-      </tr>
+        @for (row of content; track row) {
+          <tr>
+            @for (columnContent of templateRefs; track columnContent; let i = $index) {
+              <td [attr.data-title]="columnContent.columnTitle"
+                [ngClass]="getTdClass(columnContent)">
+                <ng-container
+                *ngTemplateOutlet="columnContent.template; context: { $implicit: row, index: i }"></ng-container>
+              </td>
+            }
+          </tr>
+        }
+        @if (!content?.length) {
+          <tr>
+            <td [attr.colspan]="getColumnTitles().length" class="hide-title">No data</td>
+          </tr>
+        }
       </tbody>
-    </ng-template>
+    }
   </table>
 </app-loaded-content>

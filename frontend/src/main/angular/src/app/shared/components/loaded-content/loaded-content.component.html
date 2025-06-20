@@ -1,4 +1,4 @@
-<ng-container *ngIf="isLoading">
+@if (isLoading) {
   <ng-content select="[placeholder]" >
     <div class="loading-icon" data-testid="loader">
       <div class="spinner-border text-primary" role="status"><!--/* //NOSONAR */-->
@@ -6,7 +6,7 @@
     </div>
   </ng-content>
   <span class="visually-hidden">Loading...</span>
-</ng-container>
-<ng-container *ngIf="!isLoading">
+}
+@if (!isLoading) {
   <ng-content></ng-content>
-</ng-container>
+}

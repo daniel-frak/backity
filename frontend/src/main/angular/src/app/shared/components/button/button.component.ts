@@ -1,14 +1,13 @@
 import {Component, Input} from '@angular/core';
-import {NgClass, NgIf} from "@angular/common";
+import { NgClass } from "@angular/common";
 import {ButtonStyle} from "@app/shared/components/button/button-style";
 import {ButtonSize} from "@app/shared/components/button/button-size";
 
 @Component({
     selector: 'app-button',
     imports: [
-        NgClass,
-        NgIf
-    ],
+    NgClass
+],
     templateUrl: './button.component.html',
     styleUrl: './button.component.scss'
 })

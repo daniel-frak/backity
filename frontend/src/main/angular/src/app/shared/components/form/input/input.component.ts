@@ -1,14 +1,13 @@
 import {Component, Input, Optional, Self} from '@angular/core';
-import {NgClass, NgIf} from "@angular/common";
+import { NgClass } from "@angular/common";
 import {ControlValueAccessor, NgControl, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
     selector: 'app-input',
     imports: [
-        NgIf,
-        NgClass,
-        ReactiveFormsModule
-    ],
+    NgClass,
+    ReactiveFormsModule
+],
     templateUrl: './input.component.html',
     styleUrls: ['./input.component.scss']
 })

@@ -5,14 +5,14 @@
 <app-section>
   <div class="gutters-1">
     <div>
-        <span class="badge bg-secondary">
-          <ng-container *ngIf="logs && logs.length > 0">
-            Showing {{ logs.length }} newest logs.
-          </ng-container>
-          <ng-container *ngIf="!logs || logs.length == 0">
-            Showing no logs.
-          </ng-container>
-        </span>
+      <span class="badge bg-secondary">
+        @if (logs && logs.length > 0) {
+          Showing {{ logs.length }} newest logs.
+        }
+        @if (!logs || logs.length == 0) {
+          Showing no logs.
+        }
+      </span>
     </div>
   </div>
 </app-section>
@@ -23,10 +23,10 @@
   <app-loaded-content [isLoading]="logsAreLoading">
     <code>
       <hr>
-      <ng-container *ngFor="let log of logs">
-        {{ log }}
-        <hr>
-      </ng-container>
-    </code>
-  </app-loaded-content>
-</app-section>
+        @for (log of logs; track log) {
+          {{ log }}
+          <hr>
+          }
+        </code>
+      </app-loaded-content>
+    </app-section>

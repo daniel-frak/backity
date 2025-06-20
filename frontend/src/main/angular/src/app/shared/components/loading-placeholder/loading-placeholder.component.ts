@@ -1,12 +1,11 @@
 import { Component, Input } from '@angular/core';
-import {NgForOf, NgStyle} from "@angular/common";
+import { NgStyle } from "@angular/common";
 
 @Component({
     selector: 'app-loading-placeholder',
     imports: [
-        NgStyle,
-        NgForOf
-    ],
+    NgStyle
+],
     templateUrl: './loading-placeholder.component.html',
     styleUrl: './loading-placeholder.component.scss'
 })
