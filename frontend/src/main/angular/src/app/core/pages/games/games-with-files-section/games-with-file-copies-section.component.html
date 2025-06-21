@@ -1,15 +1,24 @@
 <app-section>
   <app-loaded-content [isLoading]="gamesAreLoading">
     <app-auto-layout>
-      <div class="button-container">
+      <form class="search" [formGroup]="searchForm" (ngSubmit)="refresh()">
+        <app-input formControlName="searchBox"
+                   testId="search-input"
+                   type="text"
+                   [floating]="false"
+                   placeholder="Search"
+                   iconClass="bi bi-search"
+                   class="search-box">
+          Search
+        </app-input>
         <app-button [actionAsync]="refreshAction"
                     [disabled]="gamesAreLoading"
-                    title="Refresh"
-                    buttonClass="btn-icon-only"
-                    testId="refresh-games-btn" buttonStyle="secondary">
-          <i class="bi bi-arrow-clockwise"></i>
+                    title="Search"
+                    testId="search-btn"
+                    buttonStyle="secondary">
+          Search
         </app-button>
-      </div>
+      </form>
 
       <app-auto-layout data-testid="game-list">
         @for (gameWithFileCopies of gameWithFileCopiesPage?.content; track trackByGameId($index, gameWithFileCopies)) {

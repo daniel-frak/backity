@@ -44,11 +44,12 @@ class GetGamesWithFilesUseCaseTest {
     @Test
     void shouldGetGamesWithFilesWithProgress() {
         var pagination = new Pagination(0, 2);
+        var searchQuery = "someSearchQuery";
         FileCopy localCopy = TestFileCopy.storedIntegrityUnknown();
-        GameWithFileCopiesReadModel game = mockGameExists(localCopy, pagination);
+        GameWithFileCopiesReadModel game = mockGameIsFound(localCopy, pagination, searchQuery);
         FileCopyReplicationProgress replicationProgress = mockReplicationProgressExists(localCopy);
 
-        Page<GameWithFileCopiesAndReplicationProgresses> result = useCase.getGamesWithFiles(pagination);
+        Page<GameWithFileCopiesAndReplicationProgresses> result = useCase.getGamesWithFiles(pagination, searchQuery);
 
         var gameWithProgresses = new GameWithFileCopiesAndReplicationProgresses(game, List.of(replicationProgress));
         Page<GameWithFileCopiesAndReplicationProgresses> expectedResult =
@@ -57,7 +58,7 @@ class GetGamesWithFilesUseCaseTest {
                 .usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
-    private GameWithFileCopiesReadModel mockGameExists(FileCopy localCopy, Pagination pagination) {
+    private GameWithFileCopiesReadModel mockGameIsFound(FileCopy localCopy, Pagination pagination, String searchQuery) {
         GameWithFileCopiesReadModel game = TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
                 .withGameFilesWithCopies(List.of(
                         new GameFileWithCopiesReadModel(
@@ -66,7 +67,7 @@ class GetGamesWithFilesUseCaseTest {
                                 )
                 ))
                 .build();
-        when(gameReadModelRepository.findAll(pagination))
+        when(gameReadModelRepository.findAllPaginated(pagination, searchQuery))
                 .thenReturn(TestPage.of(List.of(game), pagination));
 
         return game;
@@ -82,10 +83,11 @@ class GetGamesWithFilesUseCaseTest {
     @Test
     void shouldGetGamesWithFilesWithoutProgress() {
         var pagination = new Pagination(0, 2);
+        var searchQuery = "someSearchQuery";
         FileCopy localCopy = TestFileCopy.storedIntegrityUnknown();
-        GameWithFileCopiesReadModel game = mockGameExists(localCopy, pagination);
+        GameWithFileCopiesReadModel game = mockGameIsFound(localCopy, pagination, searchQuery);
 
-        Page<GameWithFileCopiesAndReplicationProgresses> result = useCase.getGamesWithFiles(pagination);
+        Page<GameWithFileCopiesAndReplicationProgresses> result = useCase.getGamesWithFiles(pagination, searchQuery);
 
         var gameWithProgresses = new GameWithFileCopiesAndReplicationProgresses(game, emptyList());
         Page<GameWithFileCopiesAndReplicationProgresses> expectedResult =

@@ -9,13 +9,18 @@ import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
+
+import java.util.List;
+import java.util.UUID;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class GameWithFileCopiesReadModelJpaRepository implements GameWithFileCopiesReadModelRepository {
 
-    private static final Sort SORT_BY_GAME_DATE_CREATED_ASC = Sort.by(Sort.Direction.ASC, "dateCreated");
+    private static final Sort SORT_BY_GAME_DATE_CREATED_DESC = Sort.by(Sort.Direction.DESC, "dateCreated");
 
     private final GameWithFileCopiesReadModelSpringRepository springRepository;
     private final GameWithFilesCopiesReadModelJpaEntityMapper entityMapper;
@@ -23,10 +28,26 @@ public class GameWithFileCopiesReadModelJpaRepository implements GameWithFileCop
     private final PaginationEntityMapper paginationMapper;
 
     @Override
-    public Page<GameWithFileCopiesReadModel> findAll(Pagination pagination) {
-        Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_GAME_DATE_CREATED_ASC);
+    public Page<GameWithFileCopiesReadModel> findAllPaginated(Pagination pagination, String searchQuery) {
+        if (ObjectUtils.isEmpty(searchQuery)) {
+            searchQuery = null;
+        }
+        Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_GAME_DATE_CREATED_DESC);
+
+        Specification<GameWithFileCopiesReadModelJpaEntity> specification =
+                GameWithFileCopiesReadModelSpecifications.fitsSearchCriteria(searchQuery);
         org.springframework.data.domain.Page<GameWithFileCopiesReadModelJpaEntity> foundEntities =
-                springRepository.findAll(pageable);
+                springRepository.findAll(specification, pageable);
+        fetchFileCopies(foundEntities);
         return pageMapper.toDomain(foundEntities, entityMapper::toReadModel);
+    }
+
+    private void fetchFileCopies(
+            org.springframework.data.domain.Page<GameWithFileCopiesReadModelJpaEntity> foundEntities) {
+        List<UUID> gameFileIds = foundEntities.stream()
+                .flatMap(e -> e.getGameFilesWithCopies().stream())
+                .map(GameFileWithCopiesReadModelJpaEntity::getId)
+                .toList();
+        springRepository.fetchFileCopies(gameFileIds);
     }
 }

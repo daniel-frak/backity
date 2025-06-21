@@ -82,9 +82,9 @@ export class QueueComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.push(
-      this.messageService.watch(FileBackupMessageTopics.StatusChanged)
+      this.messageService.watch(FileBackupMessageTopics.TopicBackupsStatusChanged)
         .subscribe(p => this.onStatusChanged(p)),
-      this.messageService.watch(FileBackupMessageTopics.ProgressUpdate)
+      this.messageService.watch(FileBackupMessageTopics.TopicBackupsProgressUpdate)
         .subscribe(p => this.onReplicationProgressChanged(p))
     );
   }

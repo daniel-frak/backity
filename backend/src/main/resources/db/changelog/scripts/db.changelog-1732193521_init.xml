@@ -21,6 +21,9 @@
             </column>
         </createTable>
         <addUniqueConstraint columnNames="title" tableName="game"/>
+        <createIndex tableName="game" indexName="game_title_idx">
+            <column name="title"/>
+        </createIndex>
     </changeSet>
     <changeSet id="create_game_file" author="daniel_frak">
         <createTable tableName="game_file">
@@ -63,6 +66,15 @@
                                  referencedTableName="game"/>
         <createIndex indexName="game_file_game_id_idx" tableName="game_file">
             <column name="game_id"/>
+        </createIndex>
+        <createIndex tableName="game_file" indexName="game_file_original_game_title_idx">
+            <column name="original_game_title"/>
+        </createIndex>
+        <createIndex tableName="game_file" indexName="game_file_original_file_name_idx">
+            <column name="original_file_name"/>
+        </createIndex>
+        <createIndex tableName="game_file" indexName="game_file_file_title_idx">
+            <column name="file_title"/>
         </createIndex>
     </changeSet>
     <changeSet id="create_file_copy" author="daniel_frak">

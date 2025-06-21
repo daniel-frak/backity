@@ -84,13 +84,13 @@ describe('GameProvidersComponent', () => {
     notificationService = TestBed.inject(NotificationService) as SpyObj<NotificationService>;
 
     MessageTesting.mockWatch(messagesService, (destination, callback) => {
-      if (destination === GameContentDiscoveryWebSocketTopics.DiscoveryStarted) {
+      if (destination === GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStarted) {
         discoveryStartedSubscriptions.push(callback);
       }
-      if (destination === GameContentDiscoveryWebSocketTopics.DiscoveryStopped) {
+      if (destination === GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStopped) {
         discoveryStoppedSubscriptions.push(callback);
       }
-      if (destination === GameContentDiscoveryWebSocketTopics.ProgressUpdate) {
+      if (destination === GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryProgressUpdate) {
         discoveryProgressSubscriptions.push(callback);
       }
     });

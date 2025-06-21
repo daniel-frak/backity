@@ -9,14 +9,13 @@
  */
 
 
-export type FileCopyStatus = 'TRACKED' | 'ENQUEUED' | 'IN_PROGRESS' | 'STORED_INTEGRITY_UNKNOWN' | 'STORED_INTEGRITY_VERIFIED' | 'FAILED';
-
 export const FileCopyStatus = {
-    Tracked: 'TRACKED' as FileCopyStatus,
-    Enqueued: 'ENQUEUED' as FileCopyStatus,
-    InProgress: 'IN_PROGRESS' as FileCopyStatus,
-    StoredIntegrityUnknown: 'STORED_INTEGRITY_UNKNOWN' as FileCopyStatus,
-    StoredIntegrityVerified: 'STORED_INTEGRITY_VERIFIED' as FileCopyStatus,
-    Failed: 'FAILED' as FileCopyStatus
-};
+    Tracked: 'TRACKED',
+    Enqueued: 'ENQUEUED',
+    InProgress: 'IN_PROGRESS',
+    StoredIntegrityUnknown: 'STORED_INTEGRITY_UNKNOWN',
+    StoredIntegrityVerified: 'STORED_INTEGRITY_VERIFIED',
+    Failed: 'FAILED'
+} as const;
+export type FileCopyStatus = typeof FileCopyStatus[keyof typeof FileCopyStatus];
 

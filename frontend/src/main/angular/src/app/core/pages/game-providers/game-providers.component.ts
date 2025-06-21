@@ -40,11 +40,11 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.push(
-      this.messageService.watch(GameContentDiscoveryWebSocketTopics.DiscoveryStarted)
+      this.messageService.watch(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStarted)
         .subscribe(p => this.onDiscoveryStarted(p)),
-      this.messageService.watch(GameContentDiscoveryWebSocketTopics.DiscoveryStopped)
+      this.messageService.watch(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStopped)
         .subscribe(p => this.onDiscoveryStopped(p)),
-      this.messageService.watch(GameContentDiscoveryWebSocketTopics.ProgressUpdate)
+      this.messageService.watch(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryProgressUpdate)
         .subscribe(p => this.onDiscoveryProgressChanged(p))
     )
 

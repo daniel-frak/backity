@@ -9,10 +9,9 @@
  */
 
 
-export type GameContentDiscoveryOutcome = 'SUCCESS' | 'FAILED';
-
 export const GameContentDiscoveryOutcome = {
-    Success: 'SUCCESS' as GameContentDiscoveryOutcome,
-    Failed: 'FAILED' as GameContentDiscoveryOutcome
-};
+    Success: 'SUCCESS',
+    Failed: 'FAILED'
+} as const;
+export type GameContentDiscoveryOutcome = typeof GameContentDiscoveryOutcome[keyof typeof GameContentDiscoveryOutcome];
 
