@@ -28,17 +28,23 @@ public class GameWithFileCopiesReadModelSpecifications {
             }
 
             // Don't add distinct for count query
-            if (query.getResultType() != Long.class) {
-                query.distinct(true);
-            }
-
-            Join<?, ?> gameFile = root.join("gameFilesWithCopies", JoinType.LEFT);
-            Path<Object> fileSource = gameFile.get("fileSource");
-
-            List<Predicate> tokenPredicates = buildSearchQueryTokenPredicates(root, builder, searchQuery, fileSource);
-
-            return builder.or(tokenPredicates.toArray(new Predicate[0]));
+            return buildSearchPredicate(searchQuery, root, query, builder);
         };
+    }
+
+    private static Predicate buildSearchPredicate(
+            String searchQuery, Root<GameWithFileCopiesReadModelJpaEntity> root, CriteriaQuery<?> query,
+            CriteriaBuilder builder) {
+        if (query.getResultType() != Long.class) {
+            query.distinct(true);
+        }
+
+        Join<?, ?> gameFile = root.join("gameFilesWithCopies", JoinType.LEFT);
+        Path<Object> fileSource = gameFile.get("fileSource");
+
+        List<Predicate> tokenPredicates = buildSearchQueryTokenPredicates(root, builder, searchQuery, fileSource);
+
+        return builder.or(tokenPredicates.toArray(new Predicate[0]));
     }
 
     private static List<Predicate> buildSearchQueryTokenPredicates(

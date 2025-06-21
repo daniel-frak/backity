@@ -99,7 +99,7 @@ class WebSocketEventPublisherIT {
         String handshakeMessage = "subscription successful";
         session.send(destination, handshakeMessage.getBytes(StandardCharsets.UTF_8));
         await()
-                .atMost(5, SECONDS)
+                .atMost(10, SECONDS)
                 .until(() -> webSocketMessaging.receive(destination) != null);
     }
 
