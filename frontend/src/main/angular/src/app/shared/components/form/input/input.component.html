@@ -1,7 +1,7 @@
-<div [ngClass]="{
-  'form-floating': floating,
-  'input-icon-wrapper': iconClass
-}">
+<div
+  class="form-input-wrapper"
+  [class.form-floating]="floating"
+  [class.input-icon-wrapper]="!!iconClass">
   @if (iconClass) {
     <i class="input-icon" [ngClass]="iconClass" aria-hidden="true"></i>
   }

@@ -21,6 +21,9 @@ import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EmptySource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,11 +82,13 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         entityManager.clear();
     }
 
-    @Test
-    void shouldFindAllPaginatedGivenNullQuery() {
+    @ParameterizedTest
+    @NullSource
+    @EmptySource
+    void shouldFindAllPaginatedGivenEmptyQuery(String searchQuery) {
         var pageable = new Pagination(0, 5);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pageable, null);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pageable, searchQuery);
 
         Page<GameWithFileCopiesReadModel> expectedResult = new Page<>(List.of(
                 TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
