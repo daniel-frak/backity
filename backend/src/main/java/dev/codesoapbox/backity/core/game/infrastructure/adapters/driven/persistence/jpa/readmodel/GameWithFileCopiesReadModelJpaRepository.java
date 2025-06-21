@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,7 +29,7 @@ public class GameWithFileCopiesReadModelJpaRepository implements GameWithFileCop
 
     @Override
     public Page<GameWithFileCopiesReadModel> findAllPaginated(Pagination pagination, String searchQuery) {
-        if (searchQuery != null && searchQuery.isBlank()) {
+        if (ObjectUtils.isEmpty(searchQuery)) {
             searchQuery = null;
         }
         Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_GAME_DATE_CREATED_DESC);

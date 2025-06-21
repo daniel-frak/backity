@@ -35,9 +35,7 @@ public class GameWithFileCopiesReadModelSpecifications {
     private static Predicate buildSearchPredicate(
             String searchQuery, Root<GameWithFileCopiesReadModelJpaEntity> root, CriteriaQuery<?> query,
             CriteriaBuilder builder) {
-        if (query.getResultType() != Long.class) {
-            query.distinct(true);
-        }
+        query.distinct(true);
 
         Join<?, ?> gameFile = root.join("gameFilesWithCopies", JoinType.LEFT);
         Path<Object> fileSource = gameFile.get("fileSource");
