@@ -26,7 +26,7 @@ public class GamesPage {
     public GamesPage(final Page page) {
         this.page = page;
         this.loader = page.getByTestId("loader");
-        this.refreshGamesButton = page.getByTestId("refresh-games-btn");
+        this.refreshGamesButton = page.getByTestId("search-btn");
         this.deleteFileCopyButtons = page.getByTestId("delete-file-copy-btn");
         this.confirmFileCopyDeleteButton = page.getByTestId("confirmation-modal-yes-btn");
         this.gameList = page.getByTestId("game-list");
