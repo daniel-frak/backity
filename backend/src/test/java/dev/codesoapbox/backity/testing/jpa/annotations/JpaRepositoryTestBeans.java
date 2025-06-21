@@ -30,6 +30,8 @@ import java.lang.annotation.Target;
         GameContentDiscoveryResultJpaRepositoryConfig.class,
         GameWithFileCopiesReadModelJpaRepositoryBeanConfig.class
 })
-@MockitoBean(types = DomainEventPublisher.class)
+@MockitoBean(types = {
+        DomainEventPublisher.class
+})
 public @interface JpaRepositoryTestBeans {
 }

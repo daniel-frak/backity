@@ -19,7 +19,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class GameWithFileCopiesReadModelJpaRepository implements GameWithFileCopiesReadModelRepository {
 
-    private static final Sort SORT_BY_GAME_DATE_CREATED_ASC = Sort.by(Sort.Direction.ASC, "dateCreated");
+    private static final Sort SORT_BY_GAME_DATE_CREATED_DESC = Sort.by(Sort.Direction.DESC, "dateCreated");
 
     private final GameWithFileCopiesReadModelSpringRepository springRepository;
     private final GameWithFilesCopiesReadModelJpaEntityMapper entityMapper;
@@ -31,7 +31,7 @@ public class GameWithFileCopiesReadModelJpaRepository implements GameWithFileCop
         if (searchQuery != null && searchQuery.isBlank()) {
             searchQuery = null;
         }
-        Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_GAME_DATE_CREATED_ASC);
+        Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_GAME_DATE_CREATED_DESC);
 
         Specification<GameWithFileCopiesReadModelJpaEntity> specification =
                 GameWithFileCopiesReadModelSpecifications.fitsSearchCriteria(searchQuery);

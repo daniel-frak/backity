@@ -28,6 +28,7 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +40,8 @@ import java.util.List;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 @Transactional
@@ -47,12 +50,6 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     private static final LocalDateTime NOW = FakeTimeBeanConfig.FIXED_DATE_TIME;
     private static final LocalDate TODAY = NOW.toLocalDate();
     private static final LocalDate YESTERDAY = TODAY.minusDays(1);
-    public static final String[] CONTENT_FIELDS_TO_IGNORE = {"dateCreated",
-            "dateModified",
-            "gameFilesWithCopies.gameFile.dateCreated",
-            "gameFilesWithCopies.gameFile.dateModified",
-            "gameFilesWithCopies.fileCopies.dateCreated",
-            "gameFilesWithCopies.fileCopies.dateModified"};
 
     @Autowired
     private GameWithFileCopiesReadModelJpaRepository repository;
@@ -63,12 +60,17 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     @MockitoSpyBean
     private GameWithFilesCopiesReadModelJpaEntityMapper entityMapper;
 
+    @MockitoSpyBean
+    private AuditingHandler auditingHandler;
+
     @BeforeEach
     void setUp() {
         populateDatabase();
     }
 
     private void populateDatabase() {
+        doAnswer(inv -> inv)
+                .when(auditingHandler).markCreated(any());
         for (Game game : EXISTING_GAMES.getAll()) {
             entityManager.persist(EXISTING_GAMES.MAPPER.toEntity(game));
         }
@@ -178,7 +180,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                 .ignoringFields("content")
                 .isEqualTo(expectedResult);
         assertThat(result.content())
-                .usingRecursiveFieldByFieldElementComparatorIgnoringFields(CONTENT_FIELDS_TO_IGNORE)
+                .usingRecursiveFieldByFieldElementComparator()
                 .containsExactlyElementsOf(expectedResult.content());
     }
 
