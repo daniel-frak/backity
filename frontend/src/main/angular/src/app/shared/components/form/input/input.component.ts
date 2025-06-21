@@ -1,15 +1,15 @@
 import {Component, Input, Optional, Self} from '@angular/core';
-import { NgClass } from "@angular/common";
+import {NgClass} from "@angular/common";
 import {ControlValueAccessor, NgControl, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
-    selector: 'app-input',
-    imports: [
+  selector: 'app-input',
+  imports: [
     NgClass,
     ReactiveFormsModule
-],
-    templateUrl: './input.component.html',
-    styleUrls: ['./input.component.scss']
+  ],
+  templateUrl: './input.component.html',
+  styleUrls: ['./input.component.scss']
 })
 export class InputComponent implements ControlValueAccessor {
 
@@ -19,6 +19,8 @@ export class InputComponent implements ControlValueAccessor {
   @Input() disabled: boolean = false;
   @Input() placeholder?: string;
   @Input() testId?: string;
+  @Input() floating?: boolean = true;
+  @Input() iconClass?: string;
 
   value: any;
 

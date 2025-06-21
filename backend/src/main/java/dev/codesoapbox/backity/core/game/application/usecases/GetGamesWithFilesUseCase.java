@@ -21,8 +21,9 @@ public class GetGamesWithFilesUseCase {
     private final GameWithFileCopiesReadModelRepository gameReadModelRepository;
     private final FileCopyReplicationProgressRepository replicationProgressRepository;
 
-    public Page<GameWithFileCopiesAndReplicationProgresses> getGamesWithFiles(Pagination pagination) {
-        Page<GameWithFileCopiesReadModel> games = gameReadModelRepository.findAll(pagination);
+    public Page<GameWithFileCopiesAndReplicationProgresses> getGamesWithFiles(
+            Pagination pagination, String searchQuery) {
+        Page<GameWithFileCopiesReadModel> games = gameReadModelRepository.findAllPaginated(pagination, searchQuery);
 
         Set<FileCopyId> fileCopyIds = games.content().stream()
                 .flatMap(game -> game.gameFilesWithCopies().stream()

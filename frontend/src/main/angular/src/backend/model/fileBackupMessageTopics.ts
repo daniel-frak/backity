@@ -9,10 +9,9 @@
  */
 
 
-export type FileBackupMessageTopics = '/topic/backups/progress-update' | '/topic/backups/status-changed';
-
 export const FileBackupMessageTopics = {
-    ProgressUpdate: '/topic/backups/progress-update' as FileBackupMessageTopics,
-    StatusChanged: '/topic/backups/status-changed' as FileBackupMessageTopics
-};
+    TopicBackupsProgressUpdate: '/topic/backups/progress-update',
+    TopicBackupsStatusChanged: '/topic/backups/status-changed'
+} as const;
+export type FileBackupMessageTopics = typeof FileBackupMessageTopics[keyof typeof FileBackupMessageTopics];
 

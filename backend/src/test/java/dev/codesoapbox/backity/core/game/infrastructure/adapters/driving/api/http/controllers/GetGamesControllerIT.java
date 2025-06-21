@@ -42,6 +42,7 @@ class GetGamesControllerIT {
     void shouldGetGames() throws Exception {
         var gameId = new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5");
         var pagination = new Pagination(0, 2);
+        var searchQuery = "someSearchQuery";
         Page<GameWithFileCopiesAndReplicationProgresses> gameWithFileCopiesPage = TestPage.of(List.of(
                 new GameWithFileCopiesAndReplicationProgresses(
                         TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
@@ -65,10 +66,10 @@ class GetGamesControllerIT {
                                 .build())
                 )
         ), pagination);
-        when(getGamesWithFilesUseCase.getGamesWithFiles(pagination))
+        when(getGamesWithFilesUseCase.getGamesWithFiles(pagination, searchQuery))
                 .thenReturn(gameWithFileCopiesPage);
 
-        mockMvc.perform(get("/api/games?page=0&size=2"))
+        mockMvc.perform(get("/api/games?page=0&size=2&query=someSearchQuery"))
                 .andExpect(status().isOk())
                 .andExpect(content().json("""
                         {

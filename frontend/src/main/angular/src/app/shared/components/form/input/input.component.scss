@@ -1,1 +1,19 @@
-// Nothing to style
+@use "sass:map";
+@import "bootstrap/basics";
+
+.input-icon-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: .875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: $input-placeholder-color;
+  pointer-events: none;
+}
+
+.input-icon-wrapper input {
+  padding-left: 2.5rem;
+}

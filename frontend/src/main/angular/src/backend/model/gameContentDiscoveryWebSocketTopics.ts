@@ -9,11 +9,10 @@
  */
 
 
-export type GameContentDiscoveryWebSocketTopics = '/topic/game-content-discovery/discovery-started' | '/topic/game-content-discovery/discovery-stopped' | '/topic/game-content-discovery/progress-update';
-
 export const GameContentDiscoveryWebSocketTopics = {
-    DiscoveryStarted: '/topic/game-content-discovery/discovery-started' as GameContentDiscoveryWebSocketTopics,
-    DiscoveryStopped: '/topic/game-content-discovery/discovery-stopped' as GameContentDiscoveryWebSocketTopics,
-    ProgressUpdate: '/topic/game-content-discovery/progress-update' as GameContentDiscoveryWebSocketTopics
-};
+    TopicGameContentDiscoveryDiscoveryStarted: '/topic/game-content-discovery/discovery-started',
+    TopicGameContentDiscoveryDiscoveryStopped: '/topic/game-content-discovery/discovery-stopped',
+    TopicGameContentDiscoveryProgressUpdate: '/topic/game-content-discovery/progress-update'
+} as const;
+export type GameContentDiscoveryWebSocketTopics = typeof GameContentDiscoveryWebSocketTopics[keyof typeof GameContentDiscoveryWebSocketTopics];
 
