@@ -7,9 +7,9 @@ import dev.codesoapbox.backity.e2e.actions.Repeat;
 
 public class GamesPage {
 
-    private static final String GAMES_URL = "/games";
-    private static final String FILE_COPY_URL = "/file-copies";
-    private static final String FILE_COPY_QUEUE_URL = "/file-copy-queue";
+    private static final String GAMES_REQUEST_URL = "/games";
+    private static final String FILE_COPY_REQUEST_URL = "/file-copies";
+    private static final String FILE_COPY_QUEUE_REQUEST_URL = "/file-copy-queue";
     private static final String DOWNLOAD_FILE_BACKUP_BTN_TEST_ID = "download-file-copy-btn";
     private static final String BACKUP_FILE_COPY_BTN_TEST_ID = "backup-file-btn";
     private static final String GAME_FILE_TEST_ID = "game-file-item";
@@ -18,7 +18,7 @@ public class GamesPage {
 
     private final Page page;
     private final Locator loader;
-    private final Locator refreshGamesButton;
+    private final Locator searchButton;
     private final Locator deleteFileCopyButtons;
     private final Locator confirmFileCopyDeleteButton;
     private final Locator gameList;
@@ -26,7 +26,7 @@ public class GamesPage {
     public GamesPage(final Page page) {
         this.page = page;
         this.loader = page.getByTestId("loader");
-        this.refreshGamesButton = page.getByTestId("search-btn");
+        this.searchButton = page.getByTestId("search-btn");
         this.deleteFileCopyButtons = page.getByTestId("delete-file-copy-btn");
         this.confirmFileCopyDeleteButton = page.getByTestId("confirmation-modal-yes-btn");
         this.gameList = page.getByTestId("game-list");
@@ -42,13 +42,13 @@ public class GamesPage {
     }
 
     private void refreshGames() {
-        page.waitForResponse(this::isSuccessfulGetGamesResponse, refreshGamesButton::click);
+        page.waitForResponse(this::isSuccessfulGetGamesResponse, searchButton::click);
         loader.first().waitFor(new Locator.WaitForOptions()
                 .setState(WaitForSelectorState.HIDDEN));
     }
 
     private boolean isSuccessfulGetGamesResponse(Response response) {
-        return response.url().contains(GAMES_URL) && isSuccessful(response);
+        return response.url().contains(GAMES_REQUEST_URL) && isSuccessful(response);
     }
 
     private void deleteAllFileCopiesOneByOne() {
@@ -65,7 +65,7 @@ public class GamesPage {
     }
 
     private boolean deleteApiResponseIsSuccessful(Response response) {
-        return response.url().contains(FILE_COPY_URL)
+        return response.url().contains(FILE_COPY_REQUEST_URL)
                 && response.request().method().equals("DELETE")
                 && response.status() == 204;
     }
@@ -77,7 +77,7 @@ public class GamesPage {
     }
 
     private boolean isSuccessfulFileCopyEnqueueResponse(Response response) {
-        return response.url().contains(FILE_COPY_QUEUE_URL)
+        return response.url().contains(FILE_COPY_QUEUE_REQUEST_URL)
                 && response.request().method().equals("POST")
                 && isSuccessful(response);
     }
