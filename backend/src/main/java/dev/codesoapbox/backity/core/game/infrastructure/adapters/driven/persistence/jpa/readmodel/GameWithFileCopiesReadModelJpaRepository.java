@@ -28,9 +28,6 @@ public class GameWithFileCopiesReadModelJpaRepository implements GameWithFileCop
 
     @Override
     public Page<GameWithFileCopiesReadModel> findAllPaginated(Pagination pagination, String searchQuery) {
-        if (searchQuery != null && searchQuery.isBlank()) {
-            searchQuery = null;
-        }
         Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_GAME_DATE_CREATED_DESC);
 
         Specification<GameWithFileCopiesReadModelJpaEntity> specification =

@@ -11,8 +11,6 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.Collections.emptyList;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GameWithFileCopiesReadModelSpecifications {
 
@@ -23,7 +21,7 @@ public class GameWithFileCopiesReadModelSpecifications {
     @SuppressWarnings("DataFlowIssue") // Query is never NULL
     public static Specification<GameWithFileCopiesReadModelJpaEntity> fitsSearchCriteria(String searchQuery) {
         return (root, query, builder) -> {
-            if (searchQuery == null || searchQuery.isEmpty()) {
+            if (searchQuery == null || searchQuery.isBlank()) {
                 return null;
             }
 
@@ -35,9 +33,7 @@ public class GameWithFileCopiesReadModelSpecifications {
     private static Predicate buildSearchPredicate(
             String searchQuery, Root<GameWithFileCopiesReadModelJpaEntity> root, CriteriaQuery<?> query,
             CriteriaBuilder builder) {
-        if (query.getResultType() != Long.class) {
-            query.distinct(true);
-        }
+        query.distinct(true);
 
         Join<?, ?> gameFile = root.join("gameFilesWithCopies", JoinType.LEFT);
         Path<Object> fileSource = gameFile.get("fileSource");
@@ -68,10 +64,6 @@ public class GameWithFileCopiesReadModelSpecifications {
 
 
     private static List<String> tokenize(String searchQuery) {
-        if (searchQuery == null || searchQuery.isBlank()) {
-            return emptyList();
-        }
-
         List<String> tokens = new ArrayList<>();
         Matcher matcher = TOKENIZER_PATTERN.matcher(searchQuery);
 

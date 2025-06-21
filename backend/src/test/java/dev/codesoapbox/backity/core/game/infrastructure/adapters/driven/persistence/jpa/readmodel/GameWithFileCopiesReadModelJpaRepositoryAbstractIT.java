@@ -22,8 +22,8 @@ import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +86,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
     @ParameterizedTest
     @NullSource
-    @EmptySource
+    @ValueSource(strings = {" \n"})
     void shouldFindAllPaginatedGivenEmptyQuery(String searchQuery) {
         var pageable = new Pagination(0, 5);
 
@@ -110,6 +110,15 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                         .build()
         ), 5, 1, 2, 5, 0);
         assertFoundInOrder(result, expectedResult);
+    }
+
+    @Test
+    void shouldNotThrowDuringCountQuery() {
+        var pageable = new Pagination(0, 1);
+        String searchQuery = null;
+
+        assertThatCode(() -> repository.findAllPaginated(pageable, searchQuery))
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -146,33 +155,6 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         GameFileWithCopiesReadModelJpaEntity firstGameFile = firstGame.getGameFilesWithCopies().getFirst();
         assertThatCode(() -> firstGameFile.getFileCopies().getFirst())
                 .doesNotThrowAnyException();
-    }
-
-    @Test
-    void shouldFindAllPaginatedGivenBlankQuery() {
-        var pageable = new Pagination(0, 5);
-        String blankSearchQuery = " \n";
-
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pageable, blankSearchQuery);
-
-        Page<GameWithFileCopiesReadModel> expectedResult = new Page<>(List.of(
-                TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                        .withValuesFrom(EXISTING_GAMES.GAME_1)
-                        .withGameFilesWithCopies(List.of(
-                                new GameFileWithCopiesReadModel(
-                                        TestGameFileReadModel.from(EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1),
-                                        List.of(
-                                                TestFileCopyReadModel.from(EXISTING_FILE_COPIES
-                                                        .DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1)
-                                        )
-                                )
-                        ))
-                        .build(),
-                TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                        .withValuesFrom(EXISTING_GAMES.GAME_2)
-                        .build()
-        ), 5, 1, 2, 5, 0);
-        assertFoundInOrder(result, expectedResult);
     }
 
     private void assertFoundInOrder(Page<GameWithFileCopiesReadModel> result, Page<GameWithFileCopiesReadModel> expectedResult) {
