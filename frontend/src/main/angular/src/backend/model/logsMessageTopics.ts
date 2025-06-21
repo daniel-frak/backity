@@ -9,9 +9,8 @@
  */
 
 
-export type LogsMessageTopics = '/topic/logs';
-
 export const LogsMessageTopics = {
-    TopicLogs: '/topic/logs' as LogsMessageTopics
-};
+    TopicLogs: '/topic/logs'
+} as const;
+export type LogsMessageTopics = typeof LogsMessageTopics[keyof typeof LogsMessageTopics];
 

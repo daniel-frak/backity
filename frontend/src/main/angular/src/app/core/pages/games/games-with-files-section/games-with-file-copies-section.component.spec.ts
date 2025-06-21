@@ -145,7 +145,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(gamesClient.getGames).toHaveBeenCalledWith({page: 0, size: component.pageSize});
+    expect(gamesClient.getGames).toHaveBeenCalledWith({page: 0, size: component.pageSize}, '');
     expect(component.gameWithFileCopiesPage).toEqual(gameWithFileCopiesPage);
     expect(component.storageSolutionStatusesById.get("someStorageSolutionId"))
       .toEqual(StorageSolutionStatus.Connected);
@@ -318,7 +318,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     const statusChangedMessage: FileCopyStatusChangedEvent =
       TestFileCopyStatusChangedEvent.withContent(fileCopyId, fileCopyNaturalId, newStatus);
     await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
-      FileBackupMessageTopics.StatusChanged, statusChangedMessage);
+      FileBackupMessageTopics.TopicBackupsStatusChanged, statusChangedMessage);
   }
 
   function getGameList() {
@@ -397,7 +397,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
   async function simulateFileCopyProgressChangedEventReceived(progressChangedMessage: FileDownloadProgressUpdatedEvent):
     Promise<void> {
     await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
-      FileBackupMessageTopics.ProgressUpdate, progressChangedMessage);
+      FileBackupMessageTopics.TopicBackupsProgressUpdate, progressChangedMessage);
   }
 
   function mockStorageSolutionStatuses(response: StorageSolutionStatusesResponse) {

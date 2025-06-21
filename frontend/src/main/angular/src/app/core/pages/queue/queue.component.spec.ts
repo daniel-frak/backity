@@ -110,8 +110,8 @@ describe('QueueComponent', () => {
     component.ngOnInit();
 
     expect(topicsSubscribed).toEqual([
-      FileBackupMessageTopics.StatusChanged,
-      FileBackupMessageTopics.ProgressUpdate
+      FileBackupMessageTopics.TopicBackupsStatusChanged,
+      FileBackupMessageTopics.TopicBackupsProgressUpdate
     ]);
     expect(component['subscriptions'].length).toBe(2);
   });
@@ -248,7 +248,7 @@ describe('QueueComponent', () => {
     const statusChangedMessage: FileCopyStatusChangedEvent =
       TestFileCopyStatusChangedEvent.withContent(fileCopyId, fileCopyNaturalId, newStatus);
     await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
-      FileBackupMessageTopics.StatusChanged, statusChangedMessage);
+      FileBackupMessageTopics.TopicBackupsStatusChanged, statusChangedMessage);
   }
 
   function assertQueueDoesNotContain(fileCopyWithContext: FileCopyWithContext) {
@@ -283,7 +283,7 @@ describe('QueueComponent', () => {
     const event: FileDownloadProgressUpdatedEvent =
       TestProgressUpdatedEvent.twentyFivePercent(fileCopyId, fileCopyNaturalId);
     await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
-      FileBackupMessageTopics.ProgressUpdate, event);
+      FileBackupMessageTopics.TopicBackupsProgressUpdate, event);
   }
 
   it('should not update file copy progress in queue when progress update event is received' +

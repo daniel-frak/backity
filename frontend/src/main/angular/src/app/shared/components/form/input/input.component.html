@@ -1,42 +1,50 @@
-<div class="form-floating">
+<div [ngClass]="{
+  'form-floating': floating,
+  'input-icon-wrapper': iconClass
+}">
+  @if (iconClass) {
+    <i class="input-icon" [ngClass]="iconClass" aria-hidden="true"></i>
+  }
   <input [attr.data-testid]="testId"
-    [type]="type"
-    [id]="id"
-    [placeholder]="placeholder"
-    [disabled]="disabled"
-    (blur)="onTouched()"
-    [value]="value"
-    (input)="onInput($event)"
+         [type]="type"
+         [id]="id"
+         [placeholder]="placeholder"
+         [disabled]="disabled"
+         (blur)="onTouched()"
+         [value]="value"
+         (input)="onInput($event)"
          [ngClass]="{
          'form-control': true,
          'is-invalid': ngControl.invalid && (ngControl.dirty || !ngControl.untouched)
          }">
+  @if (floating) {
     <label [for]="id"><!--/* //NOSONAR */-->
       <ng-content/>
     </label>
-    @if (ngControl.errors?.['required']) {
-      <div class="invalid-feedback">
-        Must not be empty
-      </div>
-    }
-    @if (ngControl.errors?.['email']) {
-      <div class="invalid-feedback">
-        Please enter a valid email address
-      </div>
-    }
-    @if (ngControl.errors?.['minlength']) {
-      <div class="invalid-feedback">
-        Minimum length is {{ ngControl.errors?.['minlength'].requiredLength }} characters
-      </div>
-    }
-    @if (ngControl.errors?.['maxlength']) {
-      <div class="invalid-feedback">
-        Maximum length is {{ ngControl.errors?.['maxlength'].requiredLength }} characters
-      </div>
-    }
-    @if (ngControl.errors?.['pattern']) {
-      <div class="invalid-feedback">
-        Invalid format
-      </div>
-    }
-  </div>
+  }
+  @if (ngControl.errors?.['required']) {
+    <div class="invalid-feedback">
+      Must not be empty
+    </div>
+  }
+  @if (ngControl.errors?.['email']) {
+    <div class="invalid-feedback">
+      Please enter a valid email address
+    </div>
+  }
+  @if (ngControl.errors?.['minlength']) {
+    <div class="invalid-feedback">
+      Minimum length is {{ ngControl.errors?.['minlength'].requiredLength }} characters
+    </div>
+  }
+  @if (ngControl.errors?.['maxlength']) {
+    <div class="invalid-feedback">
+      Maximum length is {{ ngControl.errors?.['maxlength'].requiredLength }} characters
+    </div>
+  }
+  @if (ngControl.errors?.['pattern']) {
+    <div class="invalid-feedback">
+      Invalid format
+    </div>
+  }
+</div>

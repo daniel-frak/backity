@@ -9,10 +9,9 @@
  */
 
 
-export type StorageSolutionStatus = 'NOT_CONNECTED' | 'CONNECTED';
-
 export const StorageSolutionStatus = {
-    NotConnected: 'NOT_CONNECTED' as StorageSolutionStatus,
-    Connected: 'CONNECTED' as StorageSolutionStatus
-};
+    NotConnected: 'NOT_CONNECTED',
+    Connected: 'CONNECTED'
+} as const;
+export type StorageSolutionStatus = typeof StorageSolutionStatus[keyof typeof StorageSolutionStatus];
 

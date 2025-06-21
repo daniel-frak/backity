@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @GameRestResource
 @RequiredArgsConstructor
@@ -28,10 +29,11 @@ public class GetGamesController {
     @Operation(summary = "Get games", description = "Returns a paginated list of discovered games")
     @GetMapping
     public PageHttpDto<GameWithFileCopiesHttpDto> getGames(
-            @Valid @Parameter(name = "pagination") PaginationHttpDto paginationHttpDto) {
+            @Valid @Parameter(name = "pagination") PaginationHttpDto paginationHttpDto,
+            @RequestParam(name = "query", required = false) String searchQuery) {
         Pagination pagination = paginationMapper.toModel(paginationHttpDto);
         Page<GameWithFileCopiesAndReplicationProgresses> gamesWithFiles =
-                getGamesWithFilesUseCase.getGamesWithFiles(pagination);
+                getGamesWithFilesUseCase.getGamesWithFiles(pagination, searchQuery);
         return pageHttpDtoMapper.toDto(gamesWithFiles, mapper::toDto);
     }
 }

@@ -25,7 +25,7 @@ import {NotificationService} from "@app/shared/services/notification/notificatio
 import {ModalService} from "@app/shared/services/modal-service/modal.service";
 import {ButtonComponent} from '@app/shared/components/button/button.component';
 import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
-import { DatePipe } from '@angular/common';
+import {DatePipe} from '@angular/common';
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {Message} from "@stomp/stompjs";
 import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
@@ -53,10 +53,12 @@ import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layou
 import {
   NamedValueContainerComponent
 } from "@app/shared/components/named-value-container/named-value-container.component";
+import {InputComponent} from "@app/shared/components/form/input/input.component";
+import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
-    selector: 'app-games-with-file-copies-section',
-    imports: [
+  selector: 'app-games-with-file-copies-section',
+  imports: [
     ButtonComponent,
     FileCopyStatusBadgeComponent,
     LoadedContentComponent,
@@ -69,10 +71,12 @@ import {
     DatePipe,
     StorageSolutionStatusBadgeComponent,
     AutoLayoutComponent,
-    NamedValueContainerComponent
-],
-    templateUrl: './games-with-file-copies-section.component.html',
-    styleUrl: './games-with-file-copies-section.component.scss'
+    NamedValueContainerComponent,
+    InputComponent,
+    ReactiveFormsModule
+  ],
+  templateUrl: './games-with-file-copies-section.component.html',
+  styleUrl: './games-with-file-copies-section.component.scss'
 })
 export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
 
@@ -87,6 +91,15 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
   backupTargets: Array<BackupTarget> = [];
   pageNumber: number = 1;
   pageSize: number = 3;
+
+  public searchForm: FormGroup = new FormGroup(
+    {
+      searchBox: new FormControl('')
+    },
+    {
+      updateOn: 'submit'
+    }
+  );
 
   private readonly subscriptions: Subscription[] = [];
 
@@ -104,9 +117,9 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.push(
-      this.messageService.watch(FileBackupMessageTopics.StatusChanged)
+      this.messageService.watch(FileBackupMessageTopics.TopicBackupsStatusChanged)
         .subscribe(p => this.onStatusChanged(p)),
-      this.messageService.watch(FileBackupMessageTopics.ProgressUpdate)
+      this.messageService.watch(FileBackupMessageTopics.TopicBackupsProgressUpdate)
         .subscribe(p => this.onReplicationProgressChanged(p))
     );
   }
@@ -184,8 +197,8 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
   private async getGamesWithFileCopies() {
     this.gameWithFileCopiesPage = await firstValueFrom(this.gamesClient.getGames({
       page: this.pageNumber - 1,
-      size: this.pageSize
-    }));
+      size: this.pageSize,
+    }, this.searchForm.get('searchBox')?.value));
     this.potentialFileCopiesWithContextByGameFileId =
       this.mapToPotentialFileCopiesWithContext(this.gameWithFileCopiesPage.content);
   }
@@ -239,7 +252,7 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
   }
 
   async cancelBackup(potentialFileCopy: PotentialFileCopy): Promise<void> {
-    if(!potentialFileCopy.id) {
+    if (!potentialFileCopy.id) {
       return;
     }
     try {
