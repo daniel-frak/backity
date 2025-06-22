@@ -4,17 +4,19 @@ import {TableContent} from "@app/shared/components/table/table-content";
 
 import {FormsModule} from "@angular/forms";
 import {ActivatedRoute, Params, Router} from '@angular/router';
+import {SelectComponent} from "@app/shared/components/select/select.component";
 
 const NOT_NUMBERS_REGEX = /\D/g;
 const LEADING_ZEROES_REGEX = /^0+/;
 
 @Component({
     selector: 'app-pagination',
-    imports: [
+  imports: [
     NgbPagination,
     FormsModule,
-    NgbPaginationPages
-],
+    NgbPaginationPages,
+    SelectComponent
+  ],
     templateUrl: './pagination.component.html',
     styleUrl: './pagination.component.scss'
 })

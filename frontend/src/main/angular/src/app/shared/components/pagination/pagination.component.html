@@ -2,15 +2,8 @@
   <div class="pagination-container">
     <div class="pagination-options">
       <div class="elements-per-page">
-        <div class="form-floating">
-          <select class="form-select" aria-label="Rows per page" [(ngModel)]="pageSize"
-            (ngModelChange)="onPageSizeChange($event)">
-            @for (value of availablePageSizes; track value) {
-              <option [ngValue]="value">{{ value }}</option>
-            }
-          </select>
-          <label>Rows per page</label><!--/* //NOSONAR */-->
-        </div>
+        <app-select [elements]="availablePageSizes" label="Rows per page" [(ngModel)]="pageSize"
+                    (ngModelChange)="onPageSizeChange($event)"/>
       </div>
       <div>
         Showing {{ getFirstElementNumber() }}-{{ getLastElementNumber() }} of {{ getTotalElements() }}

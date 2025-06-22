@@ -1,0 +1,10 @@
+<div [class.form-floating]="floating">
+  <select class="form-select" [attr.aria-label]="label"
+          [(ngModel)]="value"
+          (ngModelChange)="handleChange($event)">
+    @for (value of elements; track value) {
+      <option [ngValue]="value">{{ value }}</option>
+    }
+  </select>
+  <label>{{ label }}</label><!--/* //NOSONAR */-->
+</div>

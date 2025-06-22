@@ -13,7 +13,6 @@ import {ControlValueAccessor, NgControl, ReactiveFormsModule} from "@angular/for
 })
 export class InputComponent implements ControlValueAccessor {
 
-  @Input() formControlName?: string;
   @Input() id?: string = undefined;
   @Input() type: 'text' | 'email' | 'password' = 'text';
   @Input() disabled: boolean = false;

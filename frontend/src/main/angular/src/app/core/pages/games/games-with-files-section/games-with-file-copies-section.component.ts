@@ -94,7 +94,8 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
 
   public searchForm: FormGroup = new FormGroup(
     {
-      searchBox: new FormControl('')
+      searchBox: new FormControl(''),
+      fileCopyStatus: new FormControl('')
     },
     {
       updateOn: 'submit'

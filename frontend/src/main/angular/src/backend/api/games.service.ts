@@ -19,6 +19,8 @@ import { Observable }                                        from 'rxjs';
 // @ts-ignore
 import { ErrorMessage } from '../model/errorMessage';
 // @ts-ignore
+import { FileCopyStatus } from '../model/fileCopyStatus';
+// @ts-ignore
 import { PageGameWithFileCopies } from '../model/pageGameWithFileCopies';
 // @ts-ignore
 import { Pagination } from '../model/pagination';
@@ -46,13 +48,14 @@ export class GamesClient extends BaseService {
      * Returns a paginated list of discovered games
      * @param pagination 
      * @param query 
+     * @param fileCopyStatus 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getGames(pagination: Pagination, query?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageGameWithFileCopies>;
-    public getGames(pagination: Pagination, query?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageGameWithFileCopies>>;
-    public getGames(pagination: Pagination, query?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageGameWithFileCopies>>;
-    public getGames(pagination: Pagination, query?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getGames(pagination: Pagination, query?: string, fileCopyStatus?: FileCopyStatus, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageGameWithFileCopies>;
+    public getGames(pagination: Pagination, query?: string, fileCopyStatus?: FileCopyStatus, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageGameWithFileCopies>>;
+    public getGames(pagination: Pagination, query?: string, fileCopyStatus?: FileCopyStatus, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageGameWithFileCopies>>;
+    public getGames(pagination: Pagination, query?: string, fileCopyStatus?: FileCopyStatus, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (pagination === null || pagination === undefined) {
             throw new Error('Required parameter pagination was null or undefined when calling getGames.');
         }
@@ -62,6 +65,8 @@ export class GamesClient extends BaseService {
           <any>pagination, 'pagination');
         localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
           <any>query, 'query');
+        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+          <any>fileCopyStatus, 'file-copy-status');
 
         let localVarHeaders = this.defaultHeaders;
 
