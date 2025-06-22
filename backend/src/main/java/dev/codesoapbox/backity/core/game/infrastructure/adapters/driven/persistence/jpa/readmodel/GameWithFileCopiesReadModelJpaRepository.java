@@ -33,7 +33,7 @@ public class GameWithFileCopiesReadModelJpaRepository implements GameWithFileCop
         Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_GAME_DATE_CREATED_DESC);
 
         Specification<GameWithFileCopiesReadModelJpaEntity> specification =
-                GameWithFileCopiesReadModelSpecifications.fitsSearchCriteria(filter);
+                GameWithFileCopiesReadModelJpaSpecifications.fitsSearchCriteria(filter);
         org.springframework.data.domain.Page<GameWithFileCopiesReadModelJpaEntity> foundEntities =
                 springRepository.findAll(specification, pageable);
         fetchFileCopies(foundEntities);

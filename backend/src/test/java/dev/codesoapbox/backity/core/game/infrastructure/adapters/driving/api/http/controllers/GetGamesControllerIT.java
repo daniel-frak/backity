@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesAndReplicationProgresses;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesSearchFilter;
+import dev.codesoapbox.backity.core.game.application.TestGameWithFileCopiesSearchFilter;
 import dev.codesoapbox.backity.core.game.application.readmodel.GameFileWithCopiesReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.TestFileCopyReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.TestGameFileReadModel;
@@ -44,7 +45,7 @@ class GetGamesControllerIT {
     void shouldGetGamesWithNoFilters() throws Exception {
         var gameId = new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5");
         var pagination = new Pagination(0, 2);
-        var expectedFilter = GameWithFileCopiesSearchFilter.onlySearchQuery(null);
+        GameWithFileCopiesSearchFilter expectedFilter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(null);
         Page<GameWithFileCopiesAndReplicationProgresses> gameWithFileCopiesPage = TestPage.of(List.of(
                 new GameWithFileCopiesAndReplicationProgresses(
                         TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
