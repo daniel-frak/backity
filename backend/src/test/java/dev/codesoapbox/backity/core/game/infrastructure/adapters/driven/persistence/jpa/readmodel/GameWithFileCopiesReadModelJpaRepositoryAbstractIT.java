@@ -253,7 +253,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                                 )
                         ))
                         .build()
-        ), 5, 1, 2, 5, 0);
+        ), 5, 1, 1, 5, 0);
         assertFoundInOrder(result, expectedResult);
     }
 
