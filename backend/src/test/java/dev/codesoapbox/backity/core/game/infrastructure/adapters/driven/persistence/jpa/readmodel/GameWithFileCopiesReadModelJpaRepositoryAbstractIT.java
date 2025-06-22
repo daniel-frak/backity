@@ -51,6 +51,25 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     private static final LocalDate TODAY = NOW.toLocalDate();
     private static final LocalDate YESTERDAY = TODAY.minusDays(1);
 
+    private static final GameWithFileCopiesReadModel GAME_1_READ_MODEL =
+            TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
+                    .withValuesFrom(EXISTING_GAMES.GAME_1)
+                    .withGameFilesWithCopies(List.of(
+                            new GameFileWithCopiesReadModel(
+                                    TestGameFileReadModel.from(EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1),
+                                    List.of(
+                                            TestFileCopyReadModel.from(EXISTING_FILE_COPIES
+                                                    .DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1)
+                                    )
+                            )
+                    ))
+                    .build();
+
+    private static final GameWithFileCopiesReadModel GAME_2_READ_MODEL =
+            TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
+                    .withValuesFrom(EXISTING_GAMES.GAME_2)
+                    .build();
+
     @Autowired
     private GameWithFileCopiesReadModelJpaRepository repository;
 
@@ -93,23 +112,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, searchQuery);
 
         Page<GameWithFileCopiesReadModel> expectedResult =
-                toExpectedPage(pagination, List.of(
-                        TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                                .withValuesFrom(EXISTING_GAMES.GAME_1)
-                                .withGameFilesWithCopies(List.of(
-                                        new GameFileWithCopiesReadModel(
-                                                TestGameFileReadModel.from(EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1),
-                                                List.of(
-                                                        TestFileCopyReadModel.from(EXISTING_FILE_COPIES
-                                                                .DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1)
-                                                )
-                                        )
-                                ))
-                                .build(),
-                        TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                                .withValuesFrom(EXISTING_GAMES.GAME_2)
-                                .build()
-                ), 1, 2);
+                toExpectedPage(pagination, List.of(GAME_1_READ_MODEL, GAME_2_READ_MODEL), 1, 2);
         assertFoundInOrder(result, expectedResult);
     }
 
@@ -150,6 +153,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                     entities.add(captor.getValue());
                     return null;
                 });
+
         return entities;
     }
 
@@ -181,23 +185,8 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
         Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, searchQuery);
 
-        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination, List.of(
-                TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                        .withValuesFrom(EXISTING_GAMES.GAME_1)
-                        .withGameFilesWithCopies(List.of(
-                                new GameFileWithCopiesReadModel(
-                                        TestGameFileReadModel.from(EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1),
-                                        List.of(
-                                                TestFileCopyReadModel.from(EXISTING_FILE_COPIES
-                                                        .DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1)
-                                        )
-                                )
-                        ))
-                        .build(),
-                TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                        .withValuesFrom(EXISTING_GAMES.GAME_2)
-                        .build()
-        ), 1, 2);
+        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
+                List.of(GAME_1_READ_MODEL, GAME_2_READ_MODEL), 1, 2);
         assertFoundInOrder(result, expectedResult);
     }
 
@@ -208,11 +197,8 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
         Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, searchQuery);
 
-        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination, List.of(
-                TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                        .withValuesFrom(EXISTING_GAMES.GAME_2)
-                        .build()
-        ), 1, 1);
+        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
+                List.of(GAME_2_READ_MODEL), 1, 1);
         assertFoundInOrder(result, expectedResult);
     }
 
@@ -223,20 +209,8 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
         Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, searchQuery);
 
-        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination, List.of(
-                TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                        .withValuesFrom(EXISTING_GAMES.GAME_1)
-                        .withGameFilesWithCopies(List.of(
-                                new GameFileWithCopiesReadModel(
-                                        TestGameFileReadModel.from(EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1),
-                                        List.of(
-                                                TestFileCopyReadModel.from(EXISTING_FILE_COPIES
-                                                        .DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1)
-                                        )
-                                )
-                        ))
-                        .build()
-        ), 1, 1);
+        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
+                List.of(GAME_1_READ_MODEL), 1, 1);
         assertFoundInOrder(result, expectedResult);
     }
 
@@ -247,20 +221,8 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
         Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, partOfGameTitleQuery);
 
-        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination, List.of(
-                TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                        .withValuesFrom(EXISTING_GAMES.GAME_1)
-                        .withGameFilesWithCopies(List.of(
-                                new GameFileWithCopiesReadModel(
-                                        TestGameFileReadModel.from(EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1),
-                                        List.of(
-                                                TestFileCopyReadModel.from(EXISTING_FILE_COPIES
-                                                        .DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1)
-                                        )
-                                )
-                        ))
-                        .build()
-        ), 1, 1);
+        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
+                List.of(GAME_1_READ_MODEL), 1, 1);
         assertFoundInOrder(result, expectedResult);
     }
 
@@ -272,20 +234,8 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
         Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, searchQuery);
 
-        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination, List.of(
-                TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                        .withValuesFrom(EXISTING_GAMES.GAME_1)
-                        .withGameFilesWithCopies(List.of(
-                                new GameFileWithCopiesReadModel(
-                                        TestGameFileReadModel.from(EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1),
-                                        List.of(
-                                                TestFileCopyReadModel.from(EXISTING_FILE_COPIES
-                                                        .DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1)
-                                        )
-                                )
-                        ))
-                        .build()
-        ), 1, 1);
+        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
+                List.of(GAME_1_READ_MODEL), 1, 1);
         assertFoundInOrder(result, expectedResult);
     }
 
@@ -296,20 +246,8 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
         Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, partOfFileTitleQuery);
 
-        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination, List.of(
-                TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                        .withValuesFrom(EXISTING_GAMES.GAME_1)
-                        .withGameFilesWithCopies(List.of(
-                                new GameFileWithCopiesReadModel(
-                                        TestGameFileReadModel.from(EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1),
-                                        List.of(
-                                                TestFileCopyReadModel.from(EXISTING_FILE_COPIES
-                                                        .DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1)
-                                        )
-                                )
-                        ))
-                        .build()
-        ), 1, 1);
+        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
+                List.of(GAME_1_READ_MODEL), 1, 1);
         assertFoundInOrder(result, expectedResult);
     }
 
@@ -321,20 +259,8 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
         Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, searchQuery);
 
-        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination, List.of(
-                TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                        .withValuesFrom(EXISTING_GAMES.GAME_1)
-                        .withGameFilesWithCopies(List.of(
-                                new GameFileWithCopiesReadModel(
-                                        TestGameFileReadModel.from(EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1),
-                                        List.of(
-                                                TestFileCopyReadModel.from(EXISTING_FILE_COPIES
-                                                        .DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1)
-                                        )
-                                )
-                        ))
-                        .build()
-        ), 1, 1);
+        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
+                List.of(GAME_1_READ_MODEL), 1, 1);
         assertFoundInOrder(result, expectedResult);
     }
 
@@ -345,20 +271,8 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
         Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, partOfOriginalFileNameQuery);
 
-        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination, List.of(
-                TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                        .withValuesFrom(EXISTING_GAMES.GAME_1)
-                        .withGameFilesWithCopies(List.of(
-                                new GameFileWithCopiesReadModel(
-                                        TestGameFileReadModel.from(EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1),
-                                        List.of(
-                                                TestFileCopyReadModel.from(EXISTING_FILE_COPIES
-                                                        .DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1)
-                                        )
-                                )
-                        ))
-                        .build()
-        ), 1, 1);
+        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
+                List.of(GAME_1_READ_MODEL), 1, 1);
         assertFoundInOrder(result, expectedResult);
     }
 
@@ -370,20 +284,8 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
         Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, searchQuery);
 
-        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination, List.of(
-                TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                        .withValuesFrom(EXISTING_GAMES.GAME_1)
-                        .withGameFilesWithCopies(List.of(
-                                new GameFileWithCopiesReadModel(
-                                        TestGameFileReadModel.from(EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1),
-                                        List.of(
-                                                TestFileCopyReadModel.from(EXISTING_FILE_COPIES
-                                                        .DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1)
-                                        )
-                                )
-                        ))
-                        .build()
-        ), 1, 1);
+        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
+                List.of(GAME_1_READ_MODEL), 1, 1);
         assertFoundInOrder(result, expectedResult);
     }
 
@@ -395,20 +297,8 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         Page<GameWithFileCopiesReadModel> result =
                 repository.findAllPaginated(pagination, partOfOriginalGameTitleSearchQuery);
 
-        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination, List.of(
-                TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                        .withValuesFrom(EXISTING_GAMES.GAME_1)
-                        .withGameFilesWithCopies(List.of(
-                                new GameFileWithCopiesReadModel(
-                                        TestGameFileReadModel.from(EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1),
-                                        List.of(
-                                                TestFileCopyReadModel.from(EXISTING_FILE_COPIES
-                                                        .DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1)
-                                        )
-                                )
-                        ))
-                        .build()
-        ), 1, 1);
+        Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
+                List.of(GAME_1_READ_MODEL), 1, 1);
         assertFoundInOrder(result, expectedResult);
     }
 
@@ -430,11 +320,13 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                 .withTitle("Test Game 1001")
                 .withDateCreated(TODAY.atStartOfDay())
                 .build();
+
         public static final Game GAME_2 = TestGame.anyBuilder()
                 .withId(new GameId("1eec1c19-25bf-4094-b926-84b5bb8fa281"))
                 .withTitle("Test_Game 2 - 100% Better\\Edition") // [_%\] included to test escaping characters
                 .withDateCreated(YESTERDAY.atStartOfDay())
                 .build();
+
         private static final GameJpaEntityMapper MAPPER = Mappers.getMapper(GameJpaEntityMapper.class);
 
         public static List<Game> getAll() {
@@ -453,6 +345,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                         .originalFileName("game_1_installer.exe")
                         .build())
                 .build();
+
         private static final GameFileJpaEntityMapper MAPPER = Mappers.getMapper(GameFileJpaEntityMapper.class);
 
         public static List<GameFile> getAll() {
@@ -471,6 +364,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                         ))
                         .dateModified(YESTERDAY.atStartOfDay())
                         .build();
+
         private static final FileCopyJpaEntityMapper MAPPER = Mappers.getMapper(FileCopyJpaEntityMapper.class);
 
         public static List<FileCopy> getAll() {
