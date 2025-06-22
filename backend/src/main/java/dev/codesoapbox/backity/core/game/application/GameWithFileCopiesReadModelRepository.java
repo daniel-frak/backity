@@ -6,5 +6,5 @@ import dev.codesoapbox.backity.shared.domain.Pagination;
 
 public interface GameWithFileCopiesReadModelRepository {
 
-    Page<GameWithFileCopiesReadModel> findAllPaginated(Pagination pagination, String searchQuery);
+    Page<GameWithFileCopiesReadModel> findAllPaginated(Pagination pagination, GameWithFileCopiesSearchFilter filter);
 }

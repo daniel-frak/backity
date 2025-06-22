@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.readmodel;
 
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesReadModelRepository;
+import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesSearchFilter;
 import dev.codesoapbox.backity.core.game.application.readmodel.GameWithFileCopiesReadModel;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
@@ -27,11 +28,12 @@ public class GameWithFileCopiesReadModelJpaRepository implements GameWithFileCop
     private final PaginationEntityMapper paginationMapper;
 
     @Override
-    public Page<GameWithFileCopiesReadModel> findAllPaginated(Pagination pagination, String searchQuery) {
+    public Page<GameWithFileCopiesReadModel> findAllPaginated(Pagination pagination,
+                                                              GameWithFileCopiesSearchFilter filter) {
         Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_GAME_DATE_CREATED_DESC);
 
         Specification<GameWithFileCopiesReadModelJpaEntity> specification =
-                GameWithFileCopiesReadModelSpecifications.fitsSearchCriteria(searchQuery);
+                GameWithFileCopiesReadModelSpecifications.fitsSearchCriteria(filter);
         org.springframework.data.domain.Page<GameWithFileCopiesReadModelJpaEntity> foundEntities =
                 springRepository.findAll(specification, pageable);
         fetchFileCopies(foundEntities);

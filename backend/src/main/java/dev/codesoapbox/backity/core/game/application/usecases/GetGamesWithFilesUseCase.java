@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRep
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesAndReplicationProgresses;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesReadModelRepository;
+import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesSearchFilter;
 import dev.codesoapbox.backity.core.game.application.readmodel.GameWithFileCopiesReadModel;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
@@ -22,8 +23,8 @@ public class GetGamesWithFilesUseCase {
     private final FileCopyReplicationProgressRepository replicationProgressRepository;
 
     public Page<GameWithFileCopiesAndReplicationProgresses> getGamesWithFiles(
-            Pagination pagination, String searchQuery) {
-        Page<GameWithFileCopiesReadModel> games = gameReadModelRepository.findAllPaginated(pagination, searchQuery);
+            Pagination pagination, GameWithFileCopiesSearchFilter filter) {
+        Page<GameWithFileCopiesReadModel> games = gameReadModelRepository.findAllPaginated(pagination, filter);
 
         Set<FileCopyId> fileCopyIds = games.content().stream()
                 .flatMap(game -> game.gameFilesWithCopies().stream()
