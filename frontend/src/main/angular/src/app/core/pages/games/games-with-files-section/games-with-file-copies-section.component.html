@@ -1,23 +1,25 @@
 <app-section>
   <app-loaded-content [isLoading]="gamesAreLoading">
     <app-auto-layout>
-      <form class="search" [formGroup]="searchForm" (ngSubmit)="refresh()">
-        <app-input formControlName="searchBox"
-                   testId="search-input"
-                   type="text"
-                   [floating]="false"
-                   placeholder="Search"
-                   iconClass="bi bi-search"
-                   class="search-box">
-          Search
-        </app-input>
-        <app-button [actionAsync]="refreshAction"
-                    [disabled]="gamesAreLoading"
-                    title="Search"
-                    testId="search-btn"
-                    buttonStyle="secondary">
-          Search
-        </app-button>
+      <form [formGroup]="searchForm" (ngSubmit)="refresh()">
+        <div class="search-bar">
+          <app-input formControlName="searchBox"
+                     testId="search-input"
+                     type="text"
+                     [floating]="false"
+                     placeholder="Search"
+                     iconClass="bi bi-search"
+                     class="search-box">
+            Search
+          </app-input>
+          <app-button [actionAsync]="refreshAction"
+                      [disabled]="gamesAreLoading"
+                      title="Search"
+                      testId="search-btn"
+                      buttonStyle="secondary">
+            Search
+          </app-button>
+        </div>
       </form>
 
       <app-auto-layout data-testid="game-list">

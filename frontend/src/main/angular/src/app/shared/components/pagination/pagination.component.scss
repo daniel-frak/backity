@@ -31,7 +31,7 @@
     flex-grow: 999;
   }
   .elements-per-page {
-    .form-floating {
+    app-select {
       width: 100%;
       min-width: 10rem;
     }
