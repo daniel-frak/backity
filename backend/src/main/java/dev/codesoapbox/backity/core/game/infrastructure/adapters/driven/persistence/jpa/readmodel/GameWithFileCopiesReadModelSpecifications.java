@@ -18,28 +18,44 @@ public class GameWithFileCopiesReadModelSpecifications {
     private static final Locale LOCALE = Locale.ENGLISH;
     private static final Pattern TOKENIZER_PATTERN =
             Pattern.compile("\"(.*?)\"|\\S+", Pattern.UNICODE_CHARACTER_CLASS);
-    public static final char LIKE_ESCAPE_CHAR = '\\';
+    private static final char LIKE_ESCAPE_CHAR = '\\';
 
-    @SuppressWarnings("DataFlowIssue") // searchQuery is never NULL
     public static Specification<GameWithFileCopiesReadModelJpaEntity> fitsSearchCriteria(
             GameWithFileCopiesSearchFilter filter) {
         String searchQuery = filter.searchQuery();
-        return (root, query, builder) -> {
-            if (searchQuery == null || searchQuery.isBlank()) {
-                return null;
-            }
+        return (game, query, builder) -> {
+            Join<GameWithFileCopiesReadModelJpaEntity, GameFileWithCopiesReadModelJpaEntity> gameFile =
+                    game.join(GameWithFileCopiesReadModelJpaEntity_.gameFilesWithCopies, JoinType.LEFT);
+            ListJoin<GameFileWithCopiesReadModelJpaEntity, FileCopyReadModelJpaEntity> fileCopy =
+                    gameFile.join(GameFileWithCopiesReadModelJpaEntity_.fileCopies, JoinType.LEFT);
 
-            // Don't add distinct for count query
-            return buildSearchPredicate(searchQuery, root, query, builder);
+            return builder.and(
+                    buildFileCopyStatusPredicate(filter, builder, fileCopy),
+                    buildSearchQueryPredicate(searchQuery, game, gameFile, query, builder)
+            );
         };
     }
 
-    private static Predicate buildSearchPredicate(
-            String searchQuery, Root<GameWithFileCopiesReadModelJpaEntity> game, CriteriaQuery<?> query,
+    private static Predicate buildFileCopyStatusPredicate(
+            GameWithFileCopiesSearchFilter filter,
+            CriteriaBuilder builder,
+            ListJoin<GameFileWithCopiesReadModelJpaEntity, FileCopyReadModelJpaEntity> fileCopy) {
+        if (filter.status() == null) {
+            return builder.conjunction();
+        }
+        return builder.equal(fileCopy.get(FileCopyReadModelJpaEntity_.status), filter.status().name());
+    }
+
+    private static Predicate buildSearchQueryPredicate(
+            String searchQuery, Root<GameWithFileCopiesReadModelJpaEntity> game,
+            Join<GameWithFileCopiesReadModelJpaEntity, GameFileWithCopiesReadModelJpaEntity> gameFile,
+            CriteriaQuery<?> query,
             CriteriaBuilder builder) {
+        if (searchQuery == null || searchQuery.isBlank()) {
+            return builder.conjunction();
+        }
         query.distinct(true);
 
-        Join<?, ?> gameFile = game.join(GameWithFileCopiesReadModelJpaEntity_.gameFilesWithCopies, JoinType.LEFT);
         Path<Object> fileSource = gameFile.get(GameFileWithCopiesReadModelJpaEntity_.FILE_SOURCE);
 
         String escapedSearchQuery = escapeForLikePattern(searchQuery);
