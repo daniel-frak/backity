@@ -169,7 +169,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     @Test
     void findAllPaginatedShouldTokenizeEveryWordIfNotQuoted() {
         var pageable = new Pagination(0, 5);
-        var searchQuery = EXISTING_GAMES.GAME_1.getTitle().toUpperCase();
+        var searchQuery = "Test Game";
 
         Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pageable, searchQuery);
 
@@ -190,6 +190,22 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                         .withValuesFrom(EXISTING_GAMES.GAME_2)
                         .build()
         ), 5, 1, 2, 5, 0);
+        assertFoundInOrder(result, expectedResult);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Test_Game", "100%", "Better\\Edition"})
+    void findAllPaginatedShouldEscapeCharacters(String searchQuery) {
+        var pageable = new Pagination(0, 5);
+
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pageable, searchQuery);
+
+        Page<GameWithFileCopiesReadModel> expectedResult = new Page<>(List.of(
+                TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
+                        .withValuesFrom(EXISTING_GAMES.GAME_2)
+                        .build()
+        ),
+                5, 1, 1, 5, 0);
         assertFoundInOrder(result, expectedResult);
     }
 
@@ -236,9 +252,6 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                                         )
                                 )
                         ))
-                        .build(),
-                TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                        .withValuesFrom(EXISTING_GAMES.GAME_2)
                         .build()
         ), 5, 1, 2, 5, 0);
         assertFoundInOrder(result, expectedResult);
@@ -408,13 +421,13 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
         public static final Game GAME_1 = TestGame.anyBuilder()
                 .withId(new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"))
-                .withTitle("Test Game 1")
+                .withTitle("Test Game 1001")
                 .withDateCreated(TODAY.atStartOfDay())
                 .build();
 
         public static final Game GAME_2 = TestGame.anyBuilder()
                 .withId(new GameId("1eec1c19-25bf-4094-b926-84b5bb8fa281"))
-                .withTitle("Test Game 2")
+                .withTitle("Test_Game 2 - 100% Better\\Edition") // [_%\] included to test escaping characters
                 .withDateCreated(YESTERDAY.atStartOfDay())
                 .build();
 

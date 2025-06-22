@@ -17,8 +17,9 @@ public class GameWithFileCopiesReadModelSpecifications {
     private static final Locale LOCALE = Locale.ENGLISH;
     private static final Pattern TOKENIZER_PATTERN =
             Pattern.compile("\"(.*?)\"|\\S+", Pattern.UNICODE_CHARACTER_CLASS);
+    public static final char LIKE_ESCAPE_CHAR = '\\';
 
-    @SuppressWarnings("DataFlowIssue") // Query is never NULL
+    @SuppressWarnings("DataFlowIssue") // searchQuery is never NULL
     public static Specification<GameWithFileCopiesReadModelJpaEntity> fitsSearchCriteria(String searchQuery) {
         return (root, query, builder) -> {
             if (searchQuery == null || searchQuery.isBlank()) {
@@ -38,9 +39,18 @@ public class GameWithFileCopiesReadModelSpecifications {
         Join<?, ?> gameFile = root.join("gameFilesWithCopies", JoinType.LEFT);
         Path<Object> fileSource = gameFile.get("fileSource");
 
-        List<Predicate> tokenPredicates = buildSearchQueryTokenPredicates(root, builder, searchQuery, fileSource);
+        String escapedSearchQuery = escapeForLikePattern(searchQuery);
+        List<Predicate> tokenPredicates =
+                buildSearchQueryTokenPredicates(root, builder, escapedSearchQuery, fileSource);
 
-        return builder.or(tokenPredicates.toArray(new Predicate[0]));
+        return builder.and(tokenPredicates.toArray(new Predicate[0]));
+    }
+
+    private static String escapeForLikePattern(String input) {
+        return input
+                .replace("\\", "\\\\")
+                .replace("%", "\\%")
+                .replace("_", "\\_");
     }
 
     private static List<Predicate> buildSearchQueryTokenPredicates(
@@ -49,13 +59,17 @@ public class GameWithFileCopiesReadModelSpecifications {
         List<String> searchQueryTokens = tokenize(searchQuery);
 
         List<Predicate> tokenPredicates = new ArrayList<>();
+        Expression<String> titleLower = builder.lower(root.get("title"));
+        Expression<String> originalGameTitleLower = builder.lower(fileSource.get("originalGameTitle"));
+        Expression<String> fileTitleLower = builder.lower(fileSource.get("fileTitle"));
+        Expression<String> originalFileNameLower = builder.lower(fileSource.get("originalFileName"));
         for (String token : searchQueryTokens) {
             String pattern = "%" + token.toLowerCase(LOCALE) + "%";
             tokenPredicates.add(builder.or(
-                    builder.like(builder.lower(root.get("title")), pattern),
-                    builder.like(builder.lower(fileSource.get("originalGameTitle")), pattern),
-                    builder.like(builder.lower(fileSource.get("fileTitle")), pattern),
-                    builder.like(builder.lower(fileSource.get("originalFileName")), pattern)
+                    builder.like(titleLower, pattern, LIKE_ESCAPE_CHAR),
+                    builder.like(originalGameTitleLower, pattern, LIKE_ESCAPE_CHAR),
+                    builder.like(fileTitleLower, pattern, LIKE_ESCAPE_CHAR),
+                    builder.like(originalFileNameLower, pattern, LIKE_ESCAPE_CHAR)
             ));
         }
 
