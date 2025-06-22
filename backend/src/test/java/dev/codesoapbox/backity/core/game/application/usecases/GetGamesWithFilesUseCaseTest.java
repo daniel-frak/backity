@@ -8,6 +8,7 @@ import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesAndReplicationProgresses;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesReadModelRepository;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesSearchFilter;
+import dev.codesoapbox.backity.core.game.application.TestGameWithFileCopiesSearchFilter;
 import dev.codesoapbox.backity.core.game.application.readmodel.*;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.shared.domain.Page;
@@ -46,7 +47,7 @@ class GetGamesWithFilesUseCaseTest {
     void shouldGetGamesWithFilesWithProgress() {
         var pagination = new Pagination(0, 2);
         var searchQuery = "someSearchQuery";
-        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
+        GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
         FileCopy localCopy = TestFileCopy.storedIntegrityUnknown();
         GameWithFileCopiesReadModel game = mockGameIsFound(localCopy, pagination, filter);
         FileCopyReplicationProgress replicationProgress = mockReplicationProgressExists(localCopy);
@@ -87,7 +88,7 @@ class GetGamesWithFilesUseCaseTest {
     void shouldGetGamesWithFilesWithoutProgress() {
         var pagination = new Pagination(0, 2);
         var searchQuery = "someSearchQuery";
-        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
+        GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
         FileCopy localCopy = TestFileCopy.storedIntegrityUnknown();
         GameWithFileCopiesReadModel game = mockGameIsFound(localCopy, pagination, filter);
 

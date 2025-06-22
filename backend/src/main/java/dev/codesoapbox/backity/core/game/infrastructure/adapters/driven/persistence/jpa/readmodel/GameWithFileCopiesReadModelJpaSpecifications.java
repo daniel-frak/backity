@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class GameWithFileCopiesReadModelSpecifications {
+public class GameWithFileCopiesReadModelJpaSpecifications {
 
     private static final Locale LOCALE = Locale.ENGLISH;
     private static final Pattern TOKENIZER_PATTERN =

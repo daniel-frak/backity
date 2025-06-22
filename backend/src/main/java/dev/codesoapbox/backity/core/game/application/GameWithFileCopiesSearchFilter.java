@@ -6,8 +6,4 @@ public record GameWithFileCopiesSearchFilter(
         String searchQuery,
         FileCopyStatus status
 ) {
-
-    public static GameWithFileCopiesSearchFilter onlySearchQuery(String searchQuery) {
-        return new GameWithFileCopiesSearchFilter(searchQuery, null);
-    }
 }
