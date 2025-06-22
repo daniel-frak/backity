@@ -54,7 +54,8 @@ import {
   NamedValueContainerComponent
 } from "@app/shared/components/named-value-container/named-value-container.component";
 import {InputComponent} from "@app/shared/components/form/input/input.component";
-import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {SelectComponent} from "@app/shared/components/select/select.component";
 
 @Component({
   selector: 'app-games-with-file-copies-section',
@@ -73,7 +74,9 @@ import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
     AutoLayoutComponent,
     NamedValueContainerComponent,
     InputComponent,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SelectComponent,
+    FormsModule
   ],
   templateUrl: './games-with-file-copies-section.component.html',
   styleUrl: './games-with-file-copies-section.component.scss'
@@ -81,6 +84,16 @@ import {FormControl, FormGroup, ReactiveFormsModule} from "@angular/forms";
 export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
 
   FileCopyStatus = FileCopyStatus;
+
+  fileCopyStatuses: Array<FileCopyStatus | undefined> = [
+    undefined,
+    FileCopyStatus.Tracked,
+    FileCopyStatus.Enqueued,
+    FileCopyStatus.InProgress,
+    FileCopyStatus.Failed,
+    FileCopyStatus.StoredIntegrityUnknown,
+    FileCopyStatus.StoredIntegrityVerified
+  ];
 
   gamesAreLoading: boolean = true;
   storageSolutionStatusesById: Map<string, StorageSolutionStatus> = new Map();
@@ -103,8 +116,6 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
   );
 
   private readonly subscriptions: Subscription[] = [];
-
-  readonly refreshAction = () => this.refresh();
 
   constructor(private readonly gamesClient: GamesClient,
               private readonly fileCopiesClient: FileCopiesClient,
@@ -196,10 +207,12 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
   }
 
   private async getGamesWithFileCopies() {
+    const searchQuery = this.searchForm.get('searchBox')?.value;
+    const fileCopyStatusFilter = this.searchForm.get('fileCopyStatus')?.value;
     this.gameWithFileCopiesPage = await firstValueFrom(this.gamesClient.getGames({
       page: this.pageNumber - 1,
       size: this.pageSize,
-    }, this.searchForm.get('searchBox')?.value));
+    }, searchQuery, fileCopyStatusFilter));
     this.potentialFileCopiesWithContextByGameFileId =
       this.mapToPotentialFileCopiesWithContext(this.gameWithFileCopiesPage.content);
   }
