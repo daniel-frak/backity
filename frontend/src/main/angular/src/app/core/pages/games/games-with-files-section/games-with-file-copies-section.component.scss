@@ -1,13 +1,26 @@
 @use "sass:map";
 @import "bootstrap/basics";
 
-.search {
-  display: flex;
-  flex-direction: row;
-  gap: map.get($spacers, 3);
-  width: 100%;
 
-  > .search-box {
-    flex-grow: 1;
+form {
+  display: flex;
+  flex-direction: column;
+  gap: map.get($spacers, 3);
+
+  .search-bar {
+    display: flex;
+    flex-direction: row;
+    gap: map.get($spacers, 3);
+    width: 100%;
+
+    > .search-box {
+      flex-grow: 1;
+    }
+  }
+
+  .search-filters {
+    > * {
+      max-width: 24rem;
+    }
   }
 }

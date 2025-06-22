@@ -12,13 +12,15 @@
                      class="search-box">
             Search
           </app-input>
-          <app-button [actionAsync]="refreshAction"
-                      [disabled]="gamesAreLoading"
+          <app-button buttonType="submit" [disabled]="gamesAreLoading"
                       title="Search"
                       testId="search-btn"
                       buttonStyle="secondary">
             Search
           </app-button>
+        </div>
+        <div class="search-filters">
+          <app-select [elements]="fileCopyStatuses" label="File copy status" formControlName="fileCopyStatus"/>
         </div>
       </form>
 

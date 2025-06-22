@@ -145,7 +145,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(gamesClient.getGames).toHaveBeenCalledWith({page: 0, size: component.pageSize}, '');
+    expect(gamesClient.getGames).toHaveBeenCalledWith({page: 0, size: component.pageSize}, '', '' as any);
     expect(component.gameWithFileCopiesPage).toEqual(gameWithFileCopiesPage);
     expect(component.storageSolutionStatusesById.get("someStorageSolutionId"))
       .toEqual(StorageSolutionStatus.Connected);
