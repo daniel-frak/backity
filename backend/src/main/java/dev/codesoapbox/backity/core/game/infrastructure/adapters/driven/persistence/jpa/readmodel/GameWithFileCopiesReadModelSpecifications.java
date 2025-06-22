@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.readmodel;
 
+import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesSearchFilter;
 import jakarta.persistence.criteria.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,9 @@ public class GameWithFileCopiesReadModelSpecifications {
     public static final char LIKE_ESCAPE_CHAR = '\\';
 
     @SuppressWarnings("DataFlowIssue") // searchQuery is never NULL
-    public static Specification<GameWithFileCopiesReadModelJpaEntity> fitsSearchCriteria(String searchQuery) {
+    public static Specification<GameWithFileCopiesReadModelJpaEntity> fitsSearchCriteria(
+            GameWithFileCopiesSearchFilter filter) {
+        String searchQuery = filter.searchQuery();
         return (root, query, builder) -> {
             if (searchQuery == null || searchQuery.isBlank()) {
                 return null;

@@ -7,6 +7,7 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesAndReplicationProgresses;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesReadModelRepository;
+import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesSearchFilter;
 import dev.codesoapbox.backity.core.game.application.readmodel.*;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.shared.domain.Page;
@@ -45,11 +46,12 @@ class GetGamesWithFilesUseCaseTest {
     void shouldGetGamesWithFilesWithProgress() {
         var pagination = new Pagination(0, 2);
         var searchQuery = "someSearchQuery";
+        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
         FileCopy localCopy = TestFileCopy.storedIntegrityUnknown();
-        GameWithFileCopiesReadModel game = mockGameIsFound(localCopy, pagination, searchQuery);
+        GameWithFileCopiesReadModel game = mockGameIsFound(localCopy, pagination, filter);
         FileCopyReplicationProgress replicationProgress = mockReplicationProgressExists(localCopy);
 
-        Page<GameWithFileCopiesAndReplicationProgresses> result = useCase.getGamesWithFiles(pagination, searchQuery);
+        Page<GameWithFileCopiesAndReplicationProgresses> result = useCase.getGamesWithFiles(pagination, filter);
 
         var gameWithProgresses = new GameWithFileCopiesAndReplicationProgresses(game, List.of(replicationProgress));
         Page<GameWithFileCopiesAndReplicationProgresses> expectedResult =
@@ -58,7 +60,8 @@ class GetGamesWithFilesUseCaseTest {
                 .usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
-    private GameWithFileCopiesReadModel mockGameIsFound(FileCopy localCopy, Pagination pagination, String searchQuery) {
+    private GameWithFileCopiesReadModel mockGameIsFound(FileCopy localCopy, Pagination pagination,
+                                                        GameWithFileCopiesSearchFilter filter) {
         GameWithFileCopiesReadModel game = TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
                 .withGameFilesWithCopies(List.of(
                         new GameFileWithCopiesReadModel(
@@ -67,7 +70,7 @@ class GetGamesWithFilesUseCaseTest {
                                 )
                 ))
                 .build();
-        when(gameReadModelRepository.findAllPaginated(pagination, searchQuery))
+        when(gameReadModelRepository.findAllPaginated(pagination, filter))
                 .thenReturn(TestPage.of(List.of(game), pagination));
 
         return game;
@@ -84,10 +87,11 @@ class GetGamesWithFilesUseCaseTest {
     void shouldGetGamesWithFilesWithoutProgress() {
         var pagination = new Pagination(0, 2);
         var searchQuery = "someSearchQuery";
+        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
         FileCopy localCopy = TestFileCopy.storedIntegrityUnknown();
-        GameWithFileCopiesReadModel game = mockGameIsFound(localCopy, pagination, searchQuery);
+        GameWithFileCopiesReadModel game = mockGameIsFound(localCopy, pagination, filter);
 
-        Page<GameWithFileCopiesAndReplicationProgresses> result = useCase.getGamesWithFiles(pagination, searchQuery);
+        Page<GameWithFileCopiesAndReplicationProgresses> result = useCase.getGamesWithFiles(pagination, filter);
 
         var gameWithProgresses = new GameWithFileCopiesAndReplicationProgresses(game, emptyList());
         Page<GameWithFileCopiesAndReplicationProgresses> expectedResult =

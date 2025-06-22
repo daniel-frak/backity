@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.TestFileCopyReplicationProgres
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesAndReplicationProgresses;
+import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesSearchFilter;
 import dev.codesoapbox.backity.core.game.application.readmodel.GameFileWithCopiesReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.TestFileCopyReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.TestGameFileReadModel;
@@ -43,6 +44,7 @@ class GetGamesControllerIT {
         var gameId = new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5");
         var pagination = new Pagination(0, 2);
         var searchQuery = "someSearchQuery";
+        var expectedFilter = GameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
         Page<GameWithFileCopiesAndReplicationProgresses> gameWithFileCopiesPage = TestPage.of(List.of(
                 new GameWithFileCopiesAndReplicationProgresses(
                         TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
@@ -66,7 +68,7 @@ class GetGamesControllerIT {
                                 .build())
                 )
         ), pagination);
-        when(getGamesWithFilesUseCase.getGamesWithFiles(pagination, searchQuery))
+        when(getGamesWithFilesUseCase.getGamesWithFiles(pagination, expectedFilter))
                 .thenReturn(gameWithFileCopiesPage);
 
         mockMvc.perform(get("/api/games?page=0&size=2&query=someSearchQuery"))

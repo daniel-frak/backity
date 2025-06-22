@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesAndReplicationProgresses;
+import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesSearchFilter;
 import dev.codesoapbox.backity.core.game.application.usecases.GetGamesWithFilesUseCase;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.http.model.GameWithFileCopiesHttpDto;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.http.model.GameWithFileCopiesReadModelHttpDtoMapper;
@@ -32,8 +33,9 @@ public class GetGamesController {
             @Valid @Parameter(name = "pagination") PaginationHttpDto paginationHttpDto,
             @RequestParam(name = "query", required = false) String searchQuery) {
         Pagination pagination = paginationMapper.toModel(paginationHttpDto);
+        var filter = new GameWithFileCopiesSearchFilter(searchQuery);
         Page<GameWithFileCopiesAndReplicationProgresses> gamesWithFiles =
-                getGamesWithFilesUseCase.getGamesWithFiles(pagination, searchQuery);
+                getGamesWithFilesUseCase.getGamesWithFiles(pagination, filter);
         return pageHttpDtoMapper.toDto(gamesWithFiles, mapper::toDto);
     }
 }

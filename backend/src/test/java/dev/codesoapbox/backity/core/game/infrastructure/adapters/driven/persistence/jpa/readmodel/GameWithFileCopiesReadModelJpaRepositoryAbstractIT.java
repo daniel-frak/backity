@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyNaturalId;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.persistence.jpa.FileCopyJpaEntityMapper;
+import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesSearchFilter;
 import dev.codesoapbox.backity.core.game.application.readmodel.*;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
@@ -108,8 +109,9 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     @ValueSource(strings = {" \n"})
     void shouldFindAllPaginatedGivenEmptyQuery(String searchQuery) {
         var pagination = new Pagination(0, 5);
+        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, searchQuery);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
 
         Page<GameWithFileCopiesReadModel> expectedResult =
                 toExpectedPage(pagination, List.of(GAME_1_READ_MODEL, GAME_2_READ_MODEL), 1, 2);
@@ -126,18 +128,20 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     void shouldNotThrowDuringCountQuery() {
         var pagination = new Pagination(0, 1);
         String searchQuery = null;
+        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        assertThatCode(() -> repository.findAllPaginated(pagination, searchQuery))
+        assertThatCode(() -> repository.findAllPaginated(pagination, filter))
                 .doesNotThrowAnyException();
     }
 
     @Test
     void findAllPaginatedShouldFetchAllEntities() {
         var pagination = new Pagination(0, 1);
+        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(null);
 
         List<GameWithFileCopiesReadModelJpaEntity> entities = interceptFetchedEntities();
 
-        repository.findAllPaginated(pagination, null);
+        repository.findAllPaginated(pagination, filter);
         entityManager.clear(); // Detach all entities to make sure there's no lazy loading
 
         GameWithFileCopiesReadModelJpaEntity firstGame = entities.getFirst();
@@ -182,8 +186,9 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     void findAllPaginatedShouldTokenizeEveryWordIfNotQuoted() {
         var pagination = new Pagination(0, 5);
         var searchQuery = "Test Game";
+        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, searchQuery);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
 
         Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
                 List.of(GAME_1_READ_MODEL, GAME_2_READ_MODEL), 1, 2);
@@ -194,8 +199,9 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     @ValueSource(strings = {"Test_Game", "100%", "Better\\Edition"})
     void findAllPaginatedShouldEscapeCharacters(String searchQuery) {
         var pagination = new Pagination(0, 5);
+        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, searchQuery);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
 
         Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
                 List.of(GAME_2_READ_MODEL), 1, 1);
@@ -206,8 +212,9 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     void shouldFindAllPaginatedGivenGameTitleCaseInsensitive() {
         var pagination = new Pagination(0, 5);
         var searchQuery = "\"" + EXISTING_GAMES.GAME_1.getTitle().toUpperCase() + "\"";
+        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, searchQuery);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
 
         Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
                 List.of(GAME_1_READ_MODEL), 1, 1);
@@ -218,8 +225,9 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     void shouldFindAllPaginatedGivenPartOfGameTitleCaseInsensitive() {
         var pagination = new Pagination(0, 5);
         var partOfGameTitleQuery = "\"EST GAME\"";
+        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(partOfGameTitleQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, partOfGameTitleQuery);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
 
         Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
                 List.of(GAME_1_READ_MODEL), 1, 1);
@@ -231,8 +239,9 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         var pagination = new Pagination(0, 5);
         var searchQuery = "\"" + EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1.getFileSource().fileTitle()
                 .toUpperCase() + "\"";
+        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, searchQuery);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
 
         Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
                 List.of(GAME_1_READ_MODEL), 1, 1);
@@ -243,8 +252,9 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     void shouldFindAllPaginatedGivenPartOfFileTitleCaseInsensitive() {
         var pagination = new Pagination(0, 5);
         var partOfFileTitleQuery = "\"1 (INSTALLER\"";
+        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(partOfFileTitleQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, partOfFileTitleQuery);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
 
         Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
                 List.of(GAME_1_READ_MODEL), 1, 1);
@@ -256,8 +266,9 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         var pagination = new Pagination(0, 5);
         var searchQuery = "\"" + EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1.getFileSource().originalFileName()
                 .toUpperCase() + "\"";
+        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, searchQuery);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
 
         Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
                 List.of(GAME_1_READ_MODEL), 1, 1);
@@ -268,8 +279,9 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     void shouldFindAllPaginatedGivenPartOfOriginalFileNameCaseInsensitive() {
         var pagination = new Pagination(0, 5);
         var partOfOriginalFileNameQuery = "\"1_INSTALLER.EX\"";
+        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(partOfOriginalFileNameQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, partOfOriginalFileNameQuery);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
 
         Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
                 List.of(GAME_1_READ_MODEL), 1, 1);
@@ -281,8 +293,9 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         var pagination = new Pagination(0, 5);
         var searchQuery = "\"" + EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1.getFileSource().originalGameTitle()
                 .toUpperCase() + "\"";
+        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, searchQuery);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
 
         Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
                 List.of(GAME_1_READ_MODEL), 1, 1);
@@ -293,9 +306,10 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     void shouldFindAllPaginatedGivenPartOfOriginalGameTitleCaseInsensitive() {
         var pagination = new Pagination(0, 5);
         var partOfOriginalGameTitleSearchQuery = "\"RIGINAL GAME 1\"";
+        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(partOfOriginalGameTitleSearchQuery);
 
         Page<GameWithFileCopiesReadModel> result =
-                repository.findAllPaginated(pagination, partOfOriginalGameTitleSearchQuery);
+                repository.findAllPaginated(pagination, filter);
 
         Page<GameWithFileCopiesReadModel> expectedResult = toExpectedPage(pagination,
                 List.of(GAME_1_READ_MODEL), 1, 1);
@@ -306,8 +320,9 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     void findAllPaginatedShouldReturnEmptyGivenNothingMatches() {
         var pagination = new Pagination(0, 5);
         var searchQuery = "\"notMatchingAnything\"";
+        var filter = GameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, searchQuery);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
         Page<GameWithFileCopiesReadModel> expectedResult =
                 toExpectedPage(pagination, emptyList(), 0, 0);
         assertFoundInOrder(result, expectedResult);
