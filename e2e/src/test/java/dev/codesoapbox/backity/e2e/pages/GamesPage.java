@@ -1,7 +1,9 @@
 package dev.codesoapbox.backity.e2e.pages;
 
-import com.microsoft.playwright.*;
-import com.microsoft.playwright.options.ElementState;
+import com.microsoft.playwright.Download;
+import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Response;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import dev.codesoapbox.backity.e2e.actions.Repeat;
 
@@ -54,11 +56,11 @@ public class GamesPage {
     private void deleteAllFileCopiesOneByOne() {
         Repeat.on(page)
                 .action(() -> {
-                    ElementHandle currentDeleteButton = deleteFileCopyButtons.first().elementHandle();
+                    Locator currentDeleteButton = deleteFileCopyButtons.first();
                     currentDeleteButton.click();
                     confirmFileCopyDeleteButton.click();
                     loader.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
-                    currentDeleteButton.waitForElementState(ElementState.HIDDEN);
+                    currentDeleteButton.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
                 })
                 .expectingResponse(this::deleteApiResponseIsSuccessful)
                 .until(() -> deleteFileCopyButtons.count() == 0);
