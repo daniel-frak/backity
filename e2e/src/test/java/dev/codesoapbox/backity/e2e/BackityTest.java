@@ -55,7 +55,13 @@ class BackityTest {
         if (gameProvidersPage.isGogAuthenticated()) {
             gameProvidersPage.logOutFromGog();
         }
-        assertFalse(gameProvidersPage.isGogAuthenticated());
+        assertIsNotAuthenticated();
+    }
+
+    private void assertIsNotAuthenticated() {
+        assertThat(gameProvidersPage.getAuthenticationStatusLocator())
+                .containsText(GameProvidersPage.NOT_AUTHENTICATED_LOWERCASE,
+                        new LocatorAssertions.ContainsTextOptions().setIgnoreCase(true));
     }
 
     private void deleteAllFileBackups() {
