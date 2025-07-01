@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.testing.http.annotations;
 
 import dev.codesoapbox.backity.core.backuptarget.application.GetBackupTargetsUseCase;
-import dev.codesoapbox.backity.core.backuptarget.config.BackupTargetControllerBeanConfig;
+import dev.codesoapbox.backity.core.backuptarget.infrastructure.config.BackupTargetControllerBeanConfig;
 import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryService;
 import dev.codesoapbox.backity.core.discovery.application.usecases.GetGameContentDiscoveryOverviewsUseCase;
 import dev.codesoapbox.backity.core.discovery.application.usecases.StartGameContentDiscoveryUseCase;

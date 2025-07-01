@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backuptarget.config;
+package dev.codesoapbox.backity.core.backuptarget.infrastructure.config;
 
 import dev.codesoapbox.backity.core.backuptarget.application.GetBackupTargetsUseCase;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;

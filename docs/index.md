@@ -51,9 +51,9 @@ See [Profiles overview](#profiles-overview) for more mock dependencies.
 
 ## Running the application
 
-1. Build the project:
+1. Build the project:\
    `./mvnw clean package`
-2. Start the backend:
+2. Start the backend:\
    `./mvnw spring-boot:run -Dspring-boot.run.profiles=dev,dev-provider-api`
 3. Access the application at [http://localhost:8080](http://localhost:8080).
 
