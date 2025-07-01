@@ -8,6 +8,7 @@ import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import dev.codesoapbox.backity.BackityApplication;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.repository.Repository;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,7 +37,8 @@ public class AdditionalArchitectureRules {
     static final String SPRING_PACKAGE = "org.springframework..";
     static final String DOMAIN_PACKAGE = ".." + PortsAndAdaptersArchitectureRules.Constants.DOMAIN_PACKAGE
                                          + "..";
-    static final String CONFIG_PACKAGE = ".." + PortsAndAdaptersArchitectureRules.Constants.CONFIG_PACKAGE
+    static final String CONFIG_PACKAGE = "..infrastructure."
+                                         + PortsAndAdaptersArchitectureRules.Constants.CONFIG_PACKAGE
                                          + "..";
     static final String APPLICATION_PACKAGE = ".."
                                               + PortsAndAdaptersArchitectureRules.Constants.APPLICATION_PACKAGE + "..";
@@ -69,6 +71,29 @@ public class AdditionalArchitectureRules {
                     Negative consequences:
                     - May introduce additional complexity in small modules, \
                     as each feature package may need its own exception subpackage.
+                    """);
+
+    @ArchTest
+    static final ArchRule CONFIGURATION_SHOULD_RESIDE_IN_CORRECT_PACKAGE = classes().that()
+            .areAnnotatedWith(Configuration.class)
+            .should().resideInAPackage(CONFIG_PACKAGE)
+            .because("""
+                    a consistent structure makes code easier to work with.
+                    
+                    Context:
+                    If configuration classes are scattered across the project, developers \
+                    may struggle to find and use them properly. This can lead to duplicated and messy code.
+                    Keeping them in a dedicated package makes it easier to manage and understand them.
+                    
+                    Positive consequences:
+                    - Makes configuration classes easier to locate and manage.
+                    - Reduces confusion by maintaining a consistent project structure.
+                    
+                    Neutral consequences:
+                    - Configuration classes will still be spread across feature packages.
+                    
+                    Negative consequences:
+                    - Can introduce unnecessary subpackage complexity in simple modules.
                     """);
 
     @ArchTest
