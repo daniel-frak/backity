@@ -34,8 +34,9 @@ spring:
     driverClassName: org.h2.Driver
     username: sa
     password: password
-  codec:
-    max-in-memory-size: 10MB
+  http:
+    codecs:
+      max-in-memory-size: 10MB
   jpa:
     open-in-view: false
     properties:

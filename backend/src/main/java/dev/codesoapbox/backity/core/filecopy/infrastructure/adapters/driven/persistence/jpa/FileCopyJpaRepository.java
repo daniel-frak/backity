@@ -52,15 +52,14 @@ public class FileCopyJpaRepository implements FileCopyRepository {
     }
 
     private void schedulePublishingDomainEventsAfterCommit(FileCopy fileCopy) {
-        // Since we're about to clear the Aggregate's events, we must copy them to reference after committing:
-        List<DomainEvent> events = new ArrayList<>(fileCopy.getDomainEvents());
-
-        // Clear the domain events to prevent them from being republished in case of several calls to save():
-        fileCopy.clearDomainEvents();
+        List<DomainEvent> events = fileCopy.getDomainEvents();
 
         // Events should only be published after the Aggregate changes have been committed to the database:
         TransactionSynchronizationManager.registerSynchronization(
                 new PublishEventsAfterCommitTransactionSynchronization(events));
+
+        // Clear the domain events to prevent them from being republished in case this instance is saved several times:
+        fileCopy.clearDomainEvents();
     }
 
     @Override
