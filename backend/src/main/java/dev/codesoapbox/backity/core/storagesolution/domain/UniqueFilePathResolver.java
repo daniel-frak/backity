@@ -22,7 +22,6 @@ public class UniqueFilePathResolver {
     private static final StringSanitizer PLACEHOLDER_SANITIZER = PATH_TEMPLATE_SANITIZER
             .withAdditionalCharactersToRemove(Set.of('{', '}'));
 
-
     private String replaceWithCorrectFileSeparator(String pathTemplate, StorageSolution storageSolution) {
         return pathTemplate
                 .replace("/", storageSolution.getSeparator())
