@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 @Transactional
 abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
-    private static final LocalDateTime NOW = FakeTimeBeanConfig.FIXED_DATE_TIME;
+    private static final LocalDateTime NOW = FakeTimeBeanConfig.DEFAULT_NOW;
     private static final LocalDate TODAY = NOW.toLocalDate();
     private static final LocalDate YESTERDAY = TODAY.minusDays(1);
 

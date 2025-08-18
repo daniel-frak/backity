@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 
 public class FakeTimeBeanConfig {
 
-    public static final LocalDateTime FIXED_DATE_TIME = LocalDateTime.of(
+    public static final LocalDateTime DEFAULT_NOW = LocalDateTime.of(
             1970, 1, 1, 0, 0);
-    public static final FakeClock CLOCK = FakeClock.at(FIXED_DATE_TIME);
+    public static final FakeClock CLOCK = FakeClock.at(DEFAULT_NOW);
 
     @Bean
     public FakeClock fixedClock() {

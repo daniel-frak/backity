@@ -30,6 +30,6 @@ import java.lang.annotation.Target;
 @DataJpaTest
 @EnableJpaAuditing
 @TestPropertySource(properties = {"spring.jpa.hibernate.ddl-auto=validate"})
-@JpaRepositoryTestBeans
+@ConfigureJpaRepositoryTestBeans
 public @interface JpaRepositoryTest {
 }

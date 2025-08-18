@@ -1,13 +1,16 @@
 package dev.codesoapbox.backity.testing.time;
 
-import lombok.AllArgsConstructor;
-
 import java.time.*;
 
-@AllArgsConstructor
 public class FakeClock extends Clock {
 
+    private final Clock initialClock;
     private Clock currentClock;
+
+    public FakeClock(Clock currentClock) {
+        this.initialClock = currentClock;
+        this.currentClock = currentClock;
+    }
 
     public static FakeClock at(LocalDate localDate) {
         ZoneId zoneId = ZoneId.of("UTC");
@@ -45,5 +48,13 @@ public class FakeClock extends Clock {
     @Override
     public long millis() {
         return currentClock.millis();
+    }
+
+    public void setAt(Instant now) {
+        currentClock = Clock.fixed(now, ZoneOffset.UTC);
+    }
+
+    public void reset() {
+        currentClock = initialClock;
     }
 }

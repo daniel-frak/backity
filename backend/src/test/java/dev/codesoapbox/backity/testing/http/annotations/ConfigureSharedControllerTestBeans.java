@@ -23,8 +23,10 @@ import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.config.GogControllerBeanConfig;
 import dev.codesoapbox.backity.shared.infrastructure.config.SharedControllerBeanConfig;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
+import dev.codesoapbox.backity.testing.time.config.ResetClockTestExecutionListener;
 import jakarta.persistence.EntityManager;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.lang.annotation.ElementType;
@@ -34,6 +36,8 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@TestExecutionListeners(listeners = ResetClockTestExecutionListener.class,
+        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 @Import({
         // Common
         SharedControllerBeanConfig.class,

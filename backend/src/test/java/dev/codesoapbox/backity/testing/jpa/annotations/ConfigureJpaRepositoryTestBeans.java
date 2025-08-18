@@ -8,7 +8,9 @@ import dev.codesoapbox.backity.core.gamefile.infrastructure.config.GameFileJpaRe
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.shared.infrastructure.config.jpa.SharedJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
+import dev.codesoapbox.backity.testing.time.config.ResetClockTestExecutionListener;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.lang.annotation.ElementType;
@@ -18,6 +20,8 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
+@TestExecutionListeners(listeners = ResetClockTestExecutionListener.class,
+        mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 @Import({
         // Common
         SharedJpaRepositoryBeanConfig.class,
@@ -33,5 +37,5 @@ import java.lang.annotation.Target;
 @MockitoBean(types = {
         DomainEventPublisher.class
 })
-public @interface JpaRepositoryTestBeans {
+public @interface ConfigureJpaRepositoryTestBeans {
 }
