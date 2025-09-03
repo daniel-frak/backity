@@ -7,11 +7,16 @@ import java.util.List;
 
 @Schema(name = "Page")
 public record PageHttpDto<T>(
-        @NotNull List<T> content,
-        @NotNull int size,
-        @NotNull int totalPages,
-        @NotNull long totalElements,
-        @NotNull int pageSize,
-        @NotNull int pageNumber
+        @NotNull
+        List<T> content,
+
+        @NotNull
+        int totalPages,
+
+        @NotNull
+        long totalElements,
+
+        @NotNull
+        PaginationHttpDto pagination
 ) {
 }

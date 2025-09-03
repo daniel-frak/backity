@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {NgbPagination, NgbPaginationPages} from "@ng-bootstrap/ng-bootstrap";
-import {TableContent} from "@app/shared/components/table/table-content";
+import {Page} from "@app/shared/components/table/page";
 
 import {FormsModule} from "@angular/forms";
 import {ActivatedRoute, Params, Router} from '@angular/router';
@@ -20,10 +20,10 @@ const LEADING_ZEROES_REGEX = /^0+/;
     templateUrl: './pagination.component.html',
     styleUrl: './pagination.component.scss'
 })
-export class PaginationComponent implements OnInit {
+export class PaginationComponent<T> implements OnInit {
 
   @Input()
-  currentPage?: TableContent;
+  currentPage?: Page<T>;
 
   @Input()
   pageNumber: number = 0;

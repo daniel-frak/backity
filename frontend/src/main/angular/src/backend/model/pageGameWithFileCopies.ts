@@ -7,15 +7,14 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { Pagination } from './pagination';
 import { GameWithFileCopies } from './gameWithFileCopies';
 
 
 export interface PageGameWithFileCopies { 
     content: Array<GameWithFileCopies>;
-    size: number;
     totalPages: number;
     totalElements: number;
-    pageSize: number;
-    pageNumber: number;
+    pagination: Pagination;
 }
 

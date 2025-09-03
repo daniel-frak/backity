@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.shared.infrastructure.config.jpa;
 
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.PageEntityMapper;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.PaginationEntityMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageableMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,12 +9,12 @@ import org.springframework.context.annotation.Configuration;
 public class SharedJpaRepositoryBeanConfig {
 
     @Bean
-    public PageEntityMapper pageEntityMapper() {
-        return new PageEntityMapper();
+    public SpringPageMapper springPageMapper() {
+        return new SpringPageMapper();
     }
 
     @Bean
-    public PaginationEntityMapper paginationEntityMapper() {
-        return new PaginationEntityMapper();
+    public SpringPageableMapper springPageableMapper() {
+        return new SpringPageableMapper();
     }
 }

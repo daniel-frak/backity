@@ -139,8 +139,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
     private Page<GameWithFileCopiesReadModel> toExpectedPage(
             Pagination pagination, List<GameWithFileCopiesReadModel> content, int totalPages, int totalElements) {
-        return new Page<>(content, pagination.pageSize(), totalPages, totalElements, pagination.pageSize(),
-                pagination.pageNumber());
+        return new Page<>(content, totalPages, totalElements, pagination);
     }
 
     @Test

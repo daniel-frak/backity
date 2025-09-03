@@ -17,8 +17,8 @@ import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driven.pers
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.PageEntityMapper;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.PaginationEntityMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageableMapper;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -214,7 +214,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
     void findByNaturalIdOrCreateShouldFindGivenCreatedInParallel() {
         FileCopySpringRepository mockSpringRepository = mock(FileCopySpringRepository.class);
         repository = new FileCopyJpaRepository(mockSpringRepository, entityMapper,
-                mock(PageEntityMapper.class), mock(PaginationEntityMapper.class), domainEventPublisher);
+                mock(SpringPageMapper.class), mock(SpringPageableMapper.class), domainEventPublisher);
         FileCopy expectedExisting = EXISTING_FILE_COPIES.DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1.get();
         FileCopyNaturalId naturalId = expectedExisting.getNaturalId();
         FileCopy newFileCopy = TestFileCopy.trackedBuilder()
@@ -272,11 +272,9 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                                     List<FileCopy> items) {
         return new Page<>(
                 items,
-                pagination.pageSize(),
                 totalPages,
                 totalElements,
-                pagination.pageSize(),
-                pagination.pageNumber()
+                pagination
         );
     }
 

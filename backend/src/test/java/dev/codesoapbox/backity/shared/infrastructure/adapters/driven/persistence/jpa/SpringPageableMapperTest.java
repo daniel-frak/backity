@@ -8,15 +8,15 @@ import org.springframework.data.domain.Sort;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class PaginationEntityMapperTest {
+class SpringPageableMapperTest {
 
-    private static final PaginationEntityMapper MAPPER = new PaginationEntityMapper();
+    private static final SpringPageableMapper MAPPER = new SpringPageableMapper();
 
     @Test
-    void shouldMapToEntity() {
+    void shouldMapToPageable() {
         var pagination = new Pagination(1, 2);
 
-        Pageable result = MAPPER.toEntity(pagination);
+        Pageable result = MAPPER.toPageable(pagination);
 
         Pageable expectedResult = PageRequest.of(1, 2);
         assertThat(result).usingRecursiveComparison()
@@ -24,11 +24,11 @@ class PaginationEntityMapperTest {
     }
 
     @Test
-    void shouldMapToEntityWithSort() {
+    void shouldMapToPageableWithSort() {
         var pagination = new Pagination(1, 2);
         var sort = Sort.by(Sort.Direction.ASC, "dateCreated");
 
-        Pageable result = MAPPER.toEntity(pagination, sort);
+        Pageable result = MAPPER.toPageable(pagination, sort);
 
         Pageable expectedResult = PageRequest.of(1, 2, sort);
         assertThat(result).usingRecursiveComparison()

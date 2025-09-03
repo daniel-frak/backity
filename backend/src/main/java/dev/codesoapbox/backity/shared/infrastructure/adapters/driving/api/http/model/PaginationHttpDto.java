@@ -9,6 +9,7 @@ import jakarta.validation.constraints.PositiveOrZero;
 public record PaginationHttpDto(
         @PositiveOrZero
         Integer page,
+
         @NotNull
         @Positive
         @Schema(example = "20")

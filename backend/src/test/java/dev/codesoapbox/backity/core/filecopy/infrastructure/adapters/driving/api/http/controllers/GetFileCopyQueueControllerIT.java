@@ -75,11 +75,12 @@ class GetFileCopyQueueControllerIT {
                       }
                     }
                   ],
-                  "size": 4,
                   "totalPages": 3,
                   "totalElements": 2,
-                  "pageSize": 1,
-                  "pageNumber": 0
+                  "pagination": {
+                      "size": 1,
+                      "page": 0
+                  }
                 }
                 """;
 
@@ -103,7 +104,7 @@ class GetFileCopyQueueControllerIT {
 
     private Page<FileCopyWithContext> pageWith(FileCopyWithContext fileCopyWithContext) {
         return new Page<>(singletonList(fileCopyWithContext),
-                4, 3, 2, 1, 0);
+                3, 2, new Pagination(0, 1));
     }
 
     @Test
