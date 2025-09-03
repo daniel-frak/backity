@@ -8,14 +8,13 @@
  * Do not edit the class manually.
  */
 import { FileCopyWithContext } from './fileCopyWithContext';
+import { Pagination } from './pagination';
 
 
 export interface PageFileCopyWithContext { 
     content: Array<FileCopyWithContext>;
-    size: number;
     totalPages: number;
     totalElements: number;
-    pageSize: number;
-    pageNumber: number;
+    pagination: Pagination;
 }
 

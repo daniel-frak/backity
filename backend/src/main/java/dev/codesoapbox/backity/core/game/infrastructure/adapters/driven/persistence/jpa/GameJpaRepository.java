@@ -6,8 +6,8 @@ import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.game.domain.exceptions.GameNotFoundException;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.PageEntityMapper;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.PaginationEntityMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageableMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,8 +26,8 @@ public class GameJpaRepository implements GameRepository {
 
     private final GameJpaEntitySpringRepository springRepository;
     private final GameJpaEntityMapper entityMapper;
-    private final PageEntityMapper pageMapper;
-    private final PaginationEntityMapper paginationMapper;
+    private final SpringPageMapper pageMapper;
+    private final SpringPageableMapper paginationMapper;
 
     @Transactional
     @Override
@@ -58,7 +58,7 @@ public class GameJpaRepository implements GameRepository {
 
     @Override
     public Page<Game> findAll(Pagination pagination) {
-        Pageable pageable = paginationMapper.toEntity(pagination, SORT_BY_DATE_CREATED_ASC);
+        Pageable pageable = paginationMapper.toPageable(pagination, SORT_BY_DATE_CREATED_ASC);
         org.springframework.data.domain.Page<GameJpaEntity> foundEntities = springRepository.findAll(pageable);
         return pageMapper.toDomain(foundEntities, entityMapper::toDomain);
     }

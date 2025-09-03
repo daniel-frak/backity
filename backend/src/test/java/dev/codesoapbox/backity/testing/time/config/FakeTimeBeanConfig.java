@@ -11,8 +11,9 @@ import java.time.LocalDateTime;
 
 public class FakeTimeBeanConfig {
 
+    // Year 2000 chosen (instead of Epoch) to allow timestamps in the past
     public static final LocalDateTime DEFAULT_NOW = LocalDateTime.of(
-            1970, 1, 1, 0, 0);
+            2000, 1, 1, 0, 0);
     public static final FakeClock CLOCK = FakeClock.at(DEFAULT_NOW);
 
     @Bean

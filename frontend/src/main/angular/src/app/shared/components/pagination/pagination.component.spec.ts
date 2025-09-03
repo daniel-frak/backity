@@ -9,8 +9,8 @@ import SpyObj = jasmine.SpyObj;
 import createSpyObj = jasmine.createSpyObj;
 
 describe('PaginationComponent', () => {
-  let component: PaginationComponent;
-  let fixture: ComponentFixture<PaginationComponent>;
+  let component: PaginationComponent<unknown>;
+  let fixture: ComponentFixture<PaginationComponent<unknown>>;
   let router: SpyObj<Router>;
   let activatedRoute: ActivatedRoute;
 
@@ -37,7 +37,10 @@ describe('PaginationComponent', () => {
     component.currentPage = {
       totalElements: 100,
       content: Array(10),
-      pageNumber: 1,
+      pagination: {
+        page: 1,
+        size: 1
+      },
     };
     component.pageSize = 10;
     component.pageNumber = 1;
@@ -76,7 +79,10 @@ describe('PaginationComponent', () => {
     component.pageSize = 10;
     component.currentPage = {
       totalElements: 100,
-      pageNumber: 1,
+      pagination: {
+        page: 1,
+        size: 1
+      },
       content: Array(10),
     };
 
@@ -88,7 +94,10 @@ describe('PaginationComponent', () => {
     component.pageSize = 10;
     component.currentPage = {
       totalElements: 95,
-      pageNumber: 10,
+      pagination: {
+        page: 1,
+        size: 1
+      },
       content: Array(5),
     };
 
@@ -100,7 +109,10 @@ describe('PaginationComponent', () => {
     component.pageSize = 10;
     component.currentPage = {
       totalElements: 20,
-      pageNumber: 2,
+      pagination: {
+        page: 1,
+        size: 1
+      },
       content: [],
     };
 
@@ -120,7 +132,10 @@ describe('PaginationComponent', () => {
     component.pageSize = 10;
     component.currentPage = {
       totalElements: 150,
-      pageNumber: 1,
+      pagination: {
+        page: 1,
+        size: 1
+      },
       content: Array(10),
     };
     expect(component.getTotalElements()).toBe(150);
@@ -129,7 +144,10 @@ describe('PaginationComponent', () => {
   it('should return 0 as the total elements count if totalElements is undefined', () => {
     component.currentPage = {
       totalElements: undefined,
-      pageNumber: 1,
+      pagination: {
+        page: 1,
+        size: 1
+      },
       content: Array(10),
     };
 

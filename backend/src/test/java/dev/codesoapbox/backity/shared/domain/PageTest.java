@@ -10,19 +10,20 @@ class PageTest {
 
     @Test
     void shouldMap() {
-        Page<Integer> page = new Page<>(List.of(99), 4, 3, 2, 1, 0);
+        var pagination = new Pagination(0, 1);
+        Page<Integer> page = new Page<>(List.of(99), 3, 2, pagination);
 
         Page<String> result = page.map(c -> c + "_mapped");
 
-        Page<String> expectedPage = new Page<>(List.of("99_mapped"),
-                4, 3, 2, 1, 0);
+        Page<String> expectedPage = new Page<>(List.of("99_mapped"), 3, 2, pagination);
         assertThat(result).usingRecursiveComparison()
                 .isEqualTo(expectedPage);
     }
 
     @Test
     void asEmptyShouldReturnEmptyPage() {
-        Page<Integer> page = new Page<>(List.of(123), 4, 3, 2, 1, 0);
+        var pagination = new Pagination(0, 1);
+        Page<Integer> page = new Page<>(List.of(123), 3, 2, pagination);
 
         Page<String> result = page.asEmpty();
 

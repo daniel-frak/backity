@@ -3,8 +3,8 @@ package dev.codesoapbox.backity.core.game.infrastructure.config;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.readmodel.GameWithFileCopiesReadModelJpaRepository;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.readmodel.GameWithFileCopiesReadModelSpringRepository;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.readmodel.GameWithFilesCopiesReadModelJpaEntityMapper;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.PageEntityMapper;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.PaginationEntityMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageableMapper;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,10 +21,10 @@ public class GameWithFileCopiesReadModelJpaRepositoryBeanConfig {
     GameWithFileCopiesReadModelJpaRepository gameWithFileCopiesReadModelJpaRepository(
             GameWithFileCopiesReadModelSpringRepository springRepository,
             GameWithFilesCopiesReadModelJpaEntityMapper entityMapper,
-            PageEntityMapper pageEntityMapper,
-            PaginationEntityMapper paginationEntityMapper
+            SpringPageMapper springPageMapper,
+            SpringPageableMapper springPageableMapper
     ) {
         return new GameWithFileCopiesReadModelJpaRepository(springRepository, entityMapper,
-                pageEntityMapper, paginationEntityMapper);
+                springPageMapper, springPageableMapper);
     }
 }

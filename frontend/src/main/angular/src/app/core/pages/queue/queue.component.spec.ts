@@ -10,7 +10,6 @@ import {
   FileCopyStatusChangedEvent,
   FileCopyWithContext,
   FileDownloadProgressUpdatedEvent,
-  PageFileCopyWithContext,
   StorageSolutionsClient,
   StorageSolutionStatus,
   StorageSolutionStatusesResponse
@@ -28,6 +27,7 @@ import {TestProgressUpdatedEvent} from "@app/shared/testing/objects/test-progres
 import {deepClone} from "@app/shared/testing/deep-clone";
 import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
 import {AutoLayoutStubComponent} from "@app/shared/components/auto-layout/auto-layout.stub.component";
+import {Page} from "@app/shared/components/table/page";
 import createSpyObj = jasmine.createSpyObj;
 import anything = jasmine.anything;
 import SpyObj = jasmine.SpyObj;
@@ -44,7 +44,7 @@ describe('QueueComponent', () => {
 
   let initialEnqueuedFileCopy: FileCopy = TestFileCopy.enqueued();
   let initialFileCopyWithContext: FileCopyWithContext = TestFileCopyWithContext.withFileCopy(initialEnqueuedFileCopy);
-  let initialQueue: PageFileCopyWithContext = TestPage.of([initialFileCopyWithContext]);
+  let initialQueue: Page<FileCopyWithContext> = TestPage.of([initialFileCopyWithContext]);
   let initialStorageSolutionStatusResponse: StorageSolutionStatusesResponse;
 
   beforeEach(async () => {
@@ -142,26 +142,33 @@ describe('QueueComponent', () => {
       expect(component.fileCopiesAreLoading).toBeFalse();
     });
 
-  it('should retrieve files on init', async () => {
+  it('refresh should do nothing given file copies are still loading', async () => {
+    component.fileCopiesAreLoading = true;
+    await component.refresh();
+    expect(fileCopiesClient.getFileCopyQueue).not.toHaveBeenCalled();
+    expect(storageSolutionsClient.getStorageSolutionStatuses).not.toHaveBeenCalled();
+  })
+
+  it('refresh should reload files and storage solution statuses', async () => {
     fileCopiesClient.getFileCopyQueue.withArgs(anything())
-      .and.returnValue(of(deepClone(initialQueue)) as any);
-    fixture.detectChanges();
-    await fixture.whenStable();
+      .and.returnValue(of(deepClone(initialQueue) as any));
+    storageSolutionsClient.getStorageSolutionStatuses
+      .and.returnValue(of(deepClone(initialStorageSolutionStatusResponse) as any));
+
+    await component.refresh();
     fixture.detectChanges();
 
     expect(fileCopiesClient.getFileCopyQueue).toHaveBeenCalledWith({
       page: 0,
       size: component.pageSize
     });
-    expect(component.fileCopiesAreLoading).toBe(false);
+    expect(storageSolutionsClient.getStorageSolutionStatuses).toHaveBeenCalled();
+    expect(component.fileCopiesAreLoading).toBeFalse();
     assertQueueContains(initialFileCopyWithContext);
-  });
+    expect(fixture.nativeElement.textContent).toContain("CONNECTED");
+  })
 
-  function assertQueueContains(fileCopyWithContext: FileCopyWithContext) {
-    expect(fixture.nativeElement.textContent).toContain(fileCopyWithContext.gameFile.fileSource.fileTitle);
-  }
-
-  it('should retrieve storage solution statuses on init', async () => {
+  it('should retrieve files and storage solution statuses on init', async () => {
     fileCopiesClient.getFileCopyQueue.withArgs(anything())
       .and.returnValue(of(deepClone(initialQueue) as any));
     storageSolutionsClient.getStorageSolutionStatuses
@@ -170,10 +177,21 @@ describe('QueueComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
 
-    expect(storageSolutionsClient.getStorageSolutionStatuses).toHaveBeenCalled();
     expect(component.fileCopiesAreLoading).toBe(false);
+
+    expect(fileCopiesClient.getFileCopyQueue).toHaveBeenCalledWith({
+      page: 0,
+      size: component.pageSize
+    });
+    assertQueueContains(initialFileCopyWithContext);
+
+    expect(storageSolutionsClient.getStorageSolutionStatuses).toHaveBeenCalled();
     expect(fixture.nativeElement.textContent).toContain("CONNECTED");
   });
+
+  function assertQueueContains(fileCopyWithContext: FileCopyWithContext) {
+    expect(fixture.nativeElement.textContent).toContain(fileCopyWithContext.gameFile.fileSource.fileTitle);
+  }
 
   it('should get storage solution status', async () => {
     component.storageSolutionStatusesById = new Map<string, StorageSolutionStatus>();

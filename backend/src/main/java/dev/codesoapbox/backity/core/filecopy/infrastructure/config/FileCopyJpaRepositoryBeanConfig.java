@@ -5,8 +5,8 @@ import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.pers
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.persistence.jpa.FileCopyJpaRepository;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.persistence.jpa.FileCopySpringRepository;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.PageEntityMapper;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.PaginationEntityMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageableMapper;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,10 +22,10 @@ public class FileCopyJpaRepositoryBeanConfig {
     @Bean
     FileCopyRepository fileCopyRepository(FileCopySpringRepository springRepository,
                                           FileCopyJpaEntityMapper entityMapper,
-                                          PageEntityMapper pageEntityMapper,
-                                          PaginationEntityMapper paginationEntityMapper,
+                                          SpringPageMapper springPageMapper,
+                                          SpringPageableMapper springPageableMapper,
                                           DomainEventPublisher domainEventPublisher) {
         return new FileCopyJpaRepository(
-                springRepository, entityMapper, pageEntityMapper, paginationEntityMapper, domainEventPublisher);
+                springRepository, entityMapper, springPageMapper, springPageableMapper, domainEventPublisher);
     }
 }

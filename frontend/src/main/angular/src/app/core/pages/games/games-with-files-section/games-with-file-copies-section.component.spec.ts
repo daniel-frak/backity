@@ -13,7 +13,6 @@ import {
   FileDownloadProgressUpdatedEvent,
   GamesClient,
   GameWithFileCopies,
-  PageGameWithFileCopies,
   StorageSolutionsClient,
   StorageSolutionStatus,
   StorageSolutionStatusesResponse
@@ -42,9 +41,10 @@ import {
   PotentialFileCopyWithContext
 } from "@app/core/pages/games/games-with-files-section/potential-file-copy-with-context";
 import {TestGameFile} from "@app/shared/testing/objects/test-game-file";
+import {PotentialFileCopyFactory} from "@app/core/pages/games/games-with-files-section/potential-file-copy";
+import {Page} from "@app/shared/components/table/page";
 import createSpyObj = jasmine.createSpyObj;
 import SpyObj = jasmine.SpyObj;
-import {PotentialFileCopyFactory} from "@app/core/pages/games/games-with-files-section/potential-file-copy";
 
 describe('GamesWithFileCopiesSectionComponent', () => {
   let component: GamesWithFileCopiesSectionComponent;
@@ -138,7 +138,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     const gameWithFileCopies: GameWithFileCopies = TestGameWithFileCopies.withInProgressFileCopy();
     const fileCopyWithProgress = gameWithFileCopies.gameFilesWithCopies[0].fileCopiesWithProgress[0];
     fileCopyWithProgress.fileCopy.naturalId.backupTargetId = localFolderBackupTarget.id;
-    const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
+    const gameWithFileCopiesPage: Page<GameWithFileCopies> = TestPage.of([gameWithFileCopies]);
     gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
 
     fixture.detectChanges();
@@ -280,7 +280,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     const gameWithFileCopies = TestGameWithFileCopies.withTrackedFileCopy();
     gameWithFileCopies.gameFilesWithCopies[0].fileCopiesWithProgress[0].fileCopy.naturalId.backupTargetId =
       localFolderBackupTarget.id;
-    const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
+    const gameWithFileCopiesPage: Page<GameWithFileCopies> = TestPage.of([gameWithFileCopies]);
     gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
 
     await component.deleteFileCopy(gameFileId);
@@ -328,7 +328,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
   function mockGameWithFileCopiesExists(gameWithFileCopies: GameWithFileCopies) {
     gameWithFileCopies.gameFilesWithCopies[0].fileCopiesWithProgress[0].fileCopy.naturalId.backupTargetId =
       localFolderBackupTarget.id;
-    const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
+    const gameWithFileCopiesPage: Page<GameWithFileCopies> = TestPage.of([gameWithFileCopies]);
     gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
   }
 
@@ -365,7 +365,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
       const gameWithFileCopies: GameWithFileCopies = TestGameWithFileCopies.withInProgressFileCopy();
       const fileCopy = gameWithFileCopies.gameFilesWithCopies[0].fileCopiesWithProgress[0].fileCopy;
       fileCopy.naturalId.backupTargetId = localFolderBackupTarget.id;
-      const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
+      const gameWithFileCopiesPage: Page<GameWithFileCopies> = TestPage.of([gameWithFileCopies]);
       gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
 
       const progressChangedMessage: FileDownloadProgressUpdatedEvent =
@@ -381,7 +381,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     ' and file copy is not found in list',
     async () => {
       const gameWithFileCopies: GameWithFileCopies = TestGameWithFileCopies.withTrackedFileCopy();
-      const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
+      const gameWithFileCopiesPage: Page<GameWithFileCopies> = TestPage.of([gameWithFileCopies]);
       gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
 
       const progressChangedMessage: FileDownloadProgressUpdatedEvent =
@@ -409,7 +409,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     const gameWithFileCopies: GameWithFileCopies = TestGameWithFileCopies.withStoredUnverifiedFileCopy();
     gameWithFileCopies.gameFilesWithCopies[0].fileCopiesWithProgress[0].fileCopy.naturalId.backupTargetId =
       localFolderBackupTarget.id;
-    const gameWithFileCopiesPage: PageGameWithFileCopies = TestPage.of([gameWithFileCopies]);
+    const gameWithFileCopiesPage: Page<GameWithFileCopies> = TestPage.of([gameWithFileCopies]);
     gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
 
     const fileCopy: FileCopy = gameWithFileCopies.gameFilesWithCopies[0].fileCopiesWithProgress[0].fileCopy;

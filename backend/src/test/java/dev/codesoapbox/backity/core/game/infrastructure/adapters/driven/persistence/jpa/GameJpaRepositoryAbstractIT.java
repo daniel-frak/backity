@@ -145,8 +145,8 @@ abstract class GameJpaRepositoryAbstractIT {
         Page<Game> result = repository.findAll(pageable);
 
         Page<Game> expectedResult = new Page<>(List.of(GAMES.GAME_1.get(), GAMES.GAME_2.get()),
-                5, 1, 2,
-                5, 0);
+                1, 2,
+                new Pagination(0, 5));
         assertThat(result).usingRecursiveComparison()
                 .ignoringFields("content")
                 .isEqualTo(expectedResult);

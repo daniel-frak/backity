@@ -1,7 +1,9 @@
 package dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model;
 
 import dev.codesoapbox.backity.shared.domain.Page;
+import dev.codesoapbox.backity.shared.domain.Pagination;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.function.Function;
 
@@ -16,4 +18,8 @@ public abstract class PageHttpDtoMapper {
     }
 
     protected abstract PageHttpDto<Object> toDtoInternal(Page<Object> page);
+
+    @Mapping(target = "size", source = "pageSize")
+    @Mapping(target = "page", source = "pageNumber")
+    protected abstract PaginationHttpDto toPaginationDto(Pagination pagination);
 }

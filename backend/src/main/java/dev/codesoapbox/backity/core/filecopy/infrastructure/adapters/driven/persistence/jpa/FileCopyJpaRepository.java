@@ -8,8 +8,8 @@ import dev.codesoapbox.backity.shared.domain.DomainEvent;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.PageEntityMapper;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.PaginationEntityMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageableMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
@@ -33,8 +33,8 @@ public class FileCopyJpaRepository implements FileCopyRepository {
 
     private final FileCopySpringRepository springRepository;
     private final FileCopyJpaEntityMapper entityMapper;
-    private final PageEntityMapper pageMapper;
-    private final PaginationEntityMapper paginationMapper;
+    private final SpringPageMapper pageMapper;
+    private final SpringPageableMapper paginationMapper;
     private final DomainEventPublisher domainEventPublisher;
 
     @Transactional
@@ -108,7 +108,7 @@ public class FileCopyJpaRepository implements FileCopyRepository {
 
     @Override
     public Page<FileCopy> findAllInProgressOrEnqueued(Pagination pagination) {
-        Pageable pageable = paginationMapper.toEntity(pagination);
+        Pageable pageable = paginationMapper.toPageable(pagination);
         org.springframework.data.domain.Page<FileCopyJpaEntity> foundPage =
                 springRepository.findAllInProgressOrEnqueuedOrderByStatusThenDateModified(pageable);
 
