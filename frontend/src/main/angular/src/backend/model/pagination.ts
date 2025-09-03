@@ -10,7 +10,7 @@
 
 
 export interface Pagination { 
-    page?: number;
+    page: number;
     size: number;
 }
 
