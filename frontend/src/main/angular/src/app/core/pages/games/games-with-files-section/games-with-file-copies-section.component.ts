@@ -107,8 +107,8 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
 
   public searchForm: FormGroup = new FormGroup(
     {
-      searchBox: new FormControl(''),
-      fileCopyStatus: new FormControl('')
+      searchBox: new FormControl<string>(''),
+      fileCopyStatus: new FormControl<FileCopyStatus | undefined>(undefined),
     },
     {
       updateOn: 'submit'
@@ -323,8 +323,8 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
   }
 
   private async getGamesWithFileCopies() {
-    const searchQuery = this.searchForm.get('searchBox')?.value;
-    const fileCopyStatusFilter = this.searchForm.get('fileCopyStatus')?.value;
+    const searchQuery: string = this.searchForm.controls.searchBox?.value;
+    const fileCopyStatusFilter: FileCopyStatus = this.searchForm.controls.fileCopyStatus?.value;
     this.gameWithFileCopiesPage = await firstValueFrom(this.gamesClient.getGames({
       page: this.pageNumber - 1,
       size: this.pageSize,
