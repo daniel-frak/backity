@@ -110,7 +110,7 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
   pageNumber: number = 1;
   pageSize: number = 3;
 
-  public searchForm: FormGroup = new FormGroup<SearchForm>(
+  public searchForm: FormGroup<SearchForm> = new FormGroup(
     {
       searchBox: new FormControl<string>('', {nonNullable: true}),
       fileCopyStatus: new FormControl<FileCopyStatus | undefined>(undefined, {nonNullable: true}),
@@ -144,8 +144,10 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
   async refresh(): Promise<void> {
     try {
       this.gamesAreLoading = true;
-      await this.getBackupTargets();
-      await this.getStorageSolutionStatuses();
+      await Promise.all([
+        this.getBackupTargets(),
+        this.getStorageSolutionStatuses()
+      ]);
       await this.getGamesWithFileCopies();
     } catch (error) {
       this.notificationService.showFailure('Error fetching games', error);
@@ -329,7 +331,7 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
 
   private async getGamesWithFileCopies() {
     const searchQuery: string = this.searchForm.controls.searchBox?.value;
-    const fileCopyStatusFilter: FileCopyStatus = this.searchForm.controls.fileCopyStatus?.value;
+    const fileCopyStatusFilter: FileCopyStatus | undefined = this.searchForm.controls.fileCopyStatus?.value;
     this.gameWithFileCopiesPage = await firstValueFrom(this.gamesClient.getGames({
       page: this.pageNumber - 1,
       size: this.pageSize,
