@@ -57,6 +57,11 @@ import {FormControl, FormGroup, FormsModule, ReactiveFormsModule} from "@angular
 import {SelectComponent} from "@app/shared/components/select/select.component";
 import {Page} from "@app/shared/components/table/page";
 
+interface SearchForm {
+  searchBox: FormControl<string>;
+  fileCopyStatus: FormControl<FileCopyStatus | undefined>;
+}
+
 @Component({
   selector: 'app-games-with-file-copies-section',
   imports: [
@@ -105,10 +110,10 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
   pageNumber: number = 1;
   pageSize: number = 3;
 
-  public searchForm: FormGroup = new FormGroup(
+  public searchForm: FormGroup = new FormGroup<SearchForm>(
     {
-      searchBox: new FormControl<string>(''),
-      fileCopyStatus: new FormControl<FileCopyStatus | undefined>(undefined),
+      searchBox: new FormControl<string>('', {nonNullable: true}),
+      fileCopyStatus: new FormControl<FileCopyStatus | undefined>(undefined, {nonNullable: true}),
     },
     {
       updateOn: 'submit'
@@ -282,7 +287,7 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
 
   private findPotentialFileCopyWithContext(fileCopyNaturalId: FileCopyNaturalId):
     PotentialFileCopyWithContext | undefined {
-    return Array.from(this.potentialFileCopiesWithContextByGameFileId?.values())
+    return Array.from(this.potentialFileCopiesWithContextByGameFileId.values())
       .flat()
       .find((potentialFileCopyWithContext) => {
         return this.fileCopyNaturalIdsAreEqual(
