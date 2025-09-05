@@ -10,39 +10,42 @@ import {finalize} from "rxjs";
 
 const SOMETHING_WENT_WRONG_TEXT = "Something went wrong during GOG authentication";
 
+interface GogAuthForm {
+  gogCodeUrl: FormControl<string>;
+}
+
 @Component({
-    selector: 'app-gog-auth-modal',
-    imports: [
-        FormsModule,
-        ButtonComponent,
-        InputComponent,
-        ReactiveFormsModule,
-        LoadedContentComponent,
-    ],
-    templateUrl: './gog-auth-modal.component.html',
-    styleUrl: './gog-auth-modal.component.scss'
+  selector: 'app-gog-auth-modal',
+  imports: [
+    FormsModule,
+    ButtonComponent,
+    InputComponent,
+    ReactiveFormsModule,
+    LoadedContentComponent,
+  ],
+  templateUrl: './gog-auth-modal.component.html',
+  styleUrl: './gog-auth-modal.component.scss'
 })
 export class GogAuthModalComponent {
 
   public gogAuthUrl?: string;
   public isLoading: boolean = false;
-
-  constructor(public readonly modal: NgbActiveModal,
-              private readonly gogAuthClient: GOGAuthenticationClient,
-              private readonly notificationService: NotificationService) {
-  }
-
-  public gogAuthForm: FormGroup = new FormGroup(
+  public gogAuthForm: FormGroup<GogAuthForm> = new FormGroup(
     {
-      gogCodeUrl: new FormControl('', Validators.required)
+      gogCodeUrl: new FormControl('', {nonNullable: true, validators: [Validators.required]})
     },
     {
       updateOn: 'submit'
     }
   );
 
-  get gogCodeUrlInput(): AbstractControl<any, any> {
-    const control = this.gogAuthForm.get('gogCodeUrl');
+  constructor(public readonly modal: NgbActiveModal,
+              private readonly gogAuthClient: GOGAuthenticationClient,
+              private readonly notificationService: NotificationService) {
+  }
+
+  get gogCodeUrlInput(): AbstractControl<string, string> {
+    const control: FormControl<string> = this.gogAuthForm.controls.gogCodeUrl;
     if (!control) {
       throw new Error('The control "gogCodeUrl" does not exist in the form.');
     }
@@ -74,6 +77,15 @@ export class GogAuthModalComponent {
     }
   }
 
+  getFormErrors(form: FormGroup): Record<string, any> {
+    return Object.entries(form.controls)
+      .filter(([_, control]) => control.errors)
+      .reduce((errorMap, [controlName, control]) => {
+        errorMap[controlName] = control.errors;
+        return errorMap;
+      }, {} as Record<string, any>);
+  }
+
   private handleAuthenticationResponse(response: RefreshTokenResponse) {
     if (response.refresh_token) {
       this.notificationService.showSuccess("GOG authentication successful");
@@ -94,14 +106,5 @@ export class GogAuthModalComponent {
     const gogCodeUrl = this.gogCodeUrlInput.value;
     const params: URLSearchParams = new URL(gogCodeUrl).searchParams;
     return params.get("code") as string;
-  }
-
-  getFormErrors(form: FormGroup): Record<string, any> {
-    return Object.entries(form.controls)
-      .filter(([_, control]) => control.errors)
-      .reduce((errorMap, [controlName, control]) => {
-        errorMap[controlName] = control.errors;
-        return errorMap;
-      }, {} as Record<string, any>);
   }
 }

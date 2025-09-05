@@ -88,7 +88,7 @@ describe('GogAuthModalComponent', () => {
     expect(component.isLoading).toBeFalse();
     expect(notificationService.showSuccess).toHaveBeenCalledWith('GOG authentication successful');
     expect(notificationService.showFailure).toHaveBeenCalledTimes(0);
-    expect(component.gogCodeUrlInput.value).toBeNull();
+    expect(component.gogCodeUrlInput.value).toBe('')
   });
 
   it('should not authenticate if refresh token is missing', () => {
