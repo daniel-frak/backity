@@ -17,6 +17,6 @@ public record PageHttpDto<T>(
         long totalElements,
 
         @NotNull
-        PaginationHttpDto pagination
+        ResponsePaginationHttpDto pagination
 ) {
 }

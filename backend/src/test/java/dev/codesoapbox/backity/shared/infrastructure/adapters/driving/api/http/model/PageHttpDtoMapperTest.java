@@ -21,7 +21,7 @@ class PageHttpDtoMapperTest {
         PageHttpDto<String> result = MAPPER.toDto(page, c -> c + "_mapped");
 
         PageHttpDto<String> expectedResult = new PageHttpDto<>(List.of("99_mapped"),
-                2, 2, new PaginationHttpDto(0, 1));
+                2, 2, new ResponsePaginationHttpDto(0, 1));
         assertThat(result).usingRecursiveComparison()
                 .isEqualTo(expectedResult);
     }

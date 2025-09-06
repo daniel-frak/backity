@@ -45,11 +45,7 @@ export class GogAuthModalComponent {
   }
 
   get gogCodeUrlInput(): AbstractControl<string, string> {
-    const control: FormControl<string> = this.gogAuthForm.controls.gogCodeUrl;
-    if (!control) {
-      throw new Error('The control "gogCodeUrl" does not exist in the form.');
-    }
-    return control;
+    return this.gogAuthForm.controls.gogCodeUrl;
   }
 
   showGogAuthPopup = () => {

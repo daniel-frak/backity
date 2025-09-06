@@ -37,6 +37,7 @@ export * from './pageGameWithFileCopies';
 export * from './pagination';
 export * from './progress';
 export * from './refreshTokenResponse';
+export * from './requestPagination';
 export * from './storageSolutionStatus';
 export * from './storageSolutionStatusesResponse';
 export * from './validationError';

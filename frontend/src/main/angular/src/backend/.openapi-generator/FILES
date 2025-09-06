@@ -58,6 +58,7 @@ model/pageGameWithFileCopies.ts
 model/pagination.ts
 model/progress.ts
 model/refreshTokenResponse.ts
+model/requestPagination.ts
 model/storageSolutionStatus.ts
 model/storageSolutionStatusesResponse.ts
 model/validationError.ts
