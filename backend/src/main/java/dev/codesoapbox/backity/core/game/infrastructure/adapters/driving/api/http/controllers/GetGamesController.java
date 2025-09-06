@@ -9,10 +9,7 @@ import dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.htt
 import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.FileCopyStatusHttpDto;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.PageHttpDto;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.PageHttpDtoMapper;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.PaginationHttpDto;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.PaginationHttpDtoMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -28,13 +25,13 @@ public class GetGamesController {
 
     private final GetGamesWithFilesUseCase getGamesWithFilesUseCase;
     private final GameWithFileCopiesReadModelHttpDtoMapper mapper;
-    private final PaginationHttpDtoMapper paginationMapper;
+    private final RequestPaginationHttpDtoMapper paginationMapper;
     private final PageHttpDtoMapper pageHttpDtoMapper;
 
     @Operation(summary = "Get games", description = "Returns a paginated list of discovered games")
     @GetMapping
     public PageHttpDto<GameWithFileCopiesHttpDto> getGames(
-            @Valid @Parameter(name = "pagination") PaginationHttpDto paginationHttpDto,
+            @Valid @Parameter(name = "pagination") RequestPaginationHttpDto paginationHttpDto,
             @RequestParam(name = "query", required = false) String searchQuery,
             @RequestParam(name = "file-copy-status", required = false) FileCopyStatusHttpDto fileCopyStatusDto) {
         Pagination pagination = paginationMapper.toModel(paginationHttpDto);

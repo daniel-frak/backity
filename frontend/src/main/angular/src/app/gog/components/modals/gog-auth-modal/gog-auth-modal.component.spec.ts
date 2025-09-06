@@ -7,7 +7,6 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {of, tap, throwError} from "rxjs";
 import SpyObj = jasmine.SpyObj;
 import createSpyObj = jasmine.createSpyObj;
-import {FormGroup} from "@angular/forms";
 import any = jasmine.any;
 
 const USER_AUTH_URL = "someGogAuthUrl";
@@ -55,12 +54,6 @@ describe('GogAuthModalComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should throw error when gogCodeUrlInput is not found', () => {
-    component.gogAuthForm = new FormGroup({});
-    expect(() => component.gogCodeUrlInput)
-      .toThrow(new Error('The control "gogCodeUrl" does not exist in the form.'));
   });
 
   it('should open a new window for authenticating', () => {

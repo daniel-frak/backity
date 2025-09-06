@@ -106,19 +106,4 @@ class GetFileCopyQueueControllerIT {
         return new Page<>(singletonList(fileCopyWithContext),
                 3, 2, new Pagination(0, 1));
     }
-
-    @Test
-    void shouldReturnBadRequestGivenSizeIsMissingFromUrl() throws Exception {
-        var expectedJson = """
-                [{
-                  "fieldName":"size",
-                  "message":"must not be null"
-                }]
-                """;
-
-        mockMvc.perform(get("/api/" + FileCopyQueueRestResource.RESOURCE_URL))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().json(expectedJson));
-    }
 }

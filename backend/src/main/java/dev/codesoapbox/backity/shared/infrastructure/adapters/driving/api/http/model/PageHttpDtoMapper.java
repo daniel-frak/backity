@@ -21,5 +21,5 @@ public abstract class PageHttpDtoMapper {
 
     @Mapping(target = "size", source = "pageSize")
     @Mapping(target = "page", source = "pageNumber")
-    protected abstract PaginationHttpDto toPaginationDto(Pagination pagination);
+    protected abstract ResponsePaginationHttpDto toPaginationDto(Pagination pagination);
 }

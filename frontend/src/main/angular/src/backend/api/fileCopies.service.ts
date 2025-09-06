@@ -23,7 +23,7 @@ import { ErrorMessage } from '../model/errorMessage';
 // @ts-ignore
 import { PageFileCopyWithContext } from '../model/pageFileCopyWithContext';
 // @ts-ignore
-import { Pagination } from '../model/pagination';
+import { RequestPagination } from '../model/requestPagination';
 // @ts-ignore
 import { ValidationError } from '../model/validationError';
 
@@ -269,10 +269,10 @@ export class FileCopiesClient extends BaseService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getFileCopyQueue(pagination: Pagination, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageFileCopyWithContext>;
-    public getFileCopyQueue(pagination: Pagination, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageFileCopyWithContext>>;
-    public getFileCopyQueue(pagination: Pagination, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageFileCopyWithContext>>;
-    public getFileCopyQueue(pagination: Pagination, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+    public getFileCopyQueue(pagination: RequestPagination, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageFileCopyWithContext>;
+    public getFileCopyQueue(pagination: RequestPagination, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageFileCopyWithContext>>;
+    public getFileCopyQueue(pagination: RequestPagination, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<PageFileCopyWithContext>>;
+    public getFileCopyQueue(pagination: RequestPagination, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
         if (pagination === null || pagination === undefined) {
             throw new Error('Required parameter pagination was null or undefined when calling getFileCopyQueue.');
         }
