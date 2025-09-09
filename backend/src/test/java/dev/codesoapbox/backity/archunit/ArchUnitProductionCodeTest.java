@@ -6,10 +6,7 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.junit.ArchTests;
 import com.tngtech.archunit.junit.CacheMode;
 import dev.codesoapbox.backity.BackityApplication;
-import dev.codesoapbox.backity.archunit.rules.AdditionalArchitectureRules;
-import dev.codesoapbox.backity.archunit.rules.GeneralCodingRules;
-import dev.codesoapbox.backity.archunit.rules.JpaRules;
-import dev.codesoapbox.backity.archunit.rules.PortsAndAdaptersArchitectureRules;
+import dev.codesoapbox.backity.archunit.rules.*;
 
 @SuppressWarnings("unused")
 @AnalyzeClasses(packagesOf = BackityApplication.class, importOptions = ImportOption.DoNotIncludeTests.class,
@@ -24,8 +21,11 @@ public class ArchUnitProductionCodeTest {
     static final ArchTests ADDITIONAL_ARCHITECTURE_RULES = ArchTests.in(AdditionalArchitectureRules.class);
 
     @ArchTest
-    static final ArchTests CODING_RULES = ArchTests.in(GeneralCodingRules.class);
+    static final ArchTests GENERAL_CODING_RULES = ArchTests.in(GeneralCodingRules.class);
 
     @ArchTest
     static final ArchTests JPA_RULES = ArchTests.in(JpaRules.class);
+
+    @ArchTest
+    static final ArchTests CONTROLLER_RULES = ArchTests.in(ControllerRules.class);
 }
