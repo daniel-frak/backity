@@ -21,9 +21,11 @@ In terms of creating the domain objects themselves, there are two possible appro
   starting with an object in a "newly created" state, and mutating it to the desired state by calling its methods.
 
 Proponents of the latter approach argue that it guarantees that the domain objects are in a valid state.
-However, this approach may lead to situations where an object is be impossible to create, e.g.,:
+However, this approach may lead to situations where an object is impossible to create, e.g.,:
 - when certain fields, such as `version` are only ever modified in the database,
 - when we actually want to create an object in an invalid state, for defensive testing purposes.
+- when we want to create an object in a state that will be possible to create in the future, but is not yet implemented
+  (e.g., when testing mapping from domain to DTO in an API-first approach).
 
 Additionally, constructors can be made to enforce object invariants during their creation, preventing invalid states
 when necessary.
@@ -45,9 +47,9 @@ when necessary.
   (e.g. `TestSomeObject.inStateXBuilder()`).
   - Strongly prefer hiding object construction details in Object Mother factory methods. Only use the builders
     when the test robustness would otherwise suffer.
-  - Avoid using the `@Builder` annotation on domain objects to prevent invalid states in production code.
+  - Avoid using the `@Builder` annotation on domain objects.
 - Do not use static imports for Object Mothers, as it would reduce the readability of code.
-- Create test objects using their constructors instead of mutating them by calling their methods.
+- Create test objects in their target state using their constructors instead of mutating them by calling their methods.
 
 ## Consequences
 
