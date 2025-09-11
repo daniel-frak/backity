@@ -21,10 +21,10 @@ class StartGameContentDiscoveryControllerIT {
     private StartGameContentDiscoveryUseCase useCase;
 
     @Test
-    void shouldStartContentDiscovery() throws Exception {
+    void shouldStartGameContentDiscovery() throws Exception {
         mockMvc.perform(post("/api/" + GameContentDiscoveryActionsRestResource.RESOURCE_URL + "/start"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isAccepted());
 
         verify(useCase).startContentDiscovery();
     }

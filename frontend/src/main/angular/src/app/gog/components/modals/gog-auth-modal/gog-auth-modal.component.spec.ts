@@ -139,4 +139,15 @@ describe('GogAuthModalComponent', () => {
     expect(notificationService.showFailure)
       .toHaveBeenCalledWith("Something went wrong during GOG authentication", any(Error))
   });
+
+  it('authenticateGog should throw given code is missing from URL', () => {
+    component.gogCodeUrlInput.setValue('https://www.missingcodeparam.com');
+
+    component.authenticateGog();
+
+    expect(ngbActiveModalSpy.close).not.toHaveBeenCalled();
+    expect(component.isLoading).toBeFalse();
+    expect(notificationService.showFailure)
+      .toHaveBeenCalledWith("Invalid URL: missing 'code' parameter");
+  });
 });
