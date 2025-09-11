@@ -47,6 +47,7 @@ model/gameFileInFileCopyContext.ts
 model/gameFileWithCopies.ts
 model/gameInFileCopyContext.ts
 model/gameWithFileCopies.ts
+model/gogAuthenticationRequest.ts
 model/gogConfig.ts
 model/gogGameFile.ts
 model/gogGameWithFiles.ts

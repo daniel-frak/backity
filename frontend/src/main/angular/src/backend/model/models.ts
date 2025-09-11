@@ -27,6 +27,7 @@ export * from './gameFileInFileCopyContext';
 export * from './gameFileWithCopies';
 export * from './gameInFileCopyContext';
 export * from './gameWithFileCopies';
+export * from './gogAuthenticationRequest';
 export * from './gogConfig';
 export * from './gogGameFile';
 export * from './gogGameWithFiles';

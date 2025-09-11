@@ -61,7 +61,9 @@ export class GogAuthModalComponent {
         return;
       }
       const code: string = this.extractCodeFromUrl();
-      this.gogAuthClient.authenticateGog(code)
+      this.gogAuthClient.authenticateGog({
+        code: code
+      })
         .pipe(finalize(() => this.isLoading = false))
         .subscribe({
           next: response => this.handleAuthenticationResponse(response),
