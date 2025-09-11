@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ControllerTest
-class StartContentDiscoveryControllerIT {
+class StartGameContentDiscoveryControllerIT {
 
     @Autowired
     private MockMvc mockMvc;

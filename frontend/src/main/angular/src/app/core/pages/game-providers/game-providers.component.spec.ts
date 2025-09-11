@@ -57,7 +57,7 @@ describe('GameProvidersComponent', () => {
         {
           provide: GameContentDiscoveryClient,
           useValue: createSpyObj('GameContentDiscoveryClient',
-            ['getDiscoveryOverviews', 'startDiscovery', 'stopDiscovery'])
+            ['getGameContentDiscoveryOverviews', 'startGameContentDiscovery', 'stopGameContentDiscovery'])
         },
         {
           provide: NotificationService,
@@ -94,7 +94,7 @@ describe('GameProvidersComponent', () => {
         discoveryProgressSubscriptions.push(callback);
       }
     });
-    gameContentDiscoveryClient.getDiscoveryOverviews.and.returnValue(of([]) as any);
+    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
 
     fixture.detectChanges();
   });
@@ -105,7 +105,7 @@ describe('GameProvidersComponent', () => {
 
   it('should refresh info on init', async () => {
     const newOverview: GameContentDiscoveryOverview = TestGameContentDiscoveryOverview.inProgress();
-    gameContentDiscoveryClient.getDiscoveryOverviews.and.returnValue(of([newOverview]) as any);
+    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([newOverview]) as any);
 
     component.ngOnInit();
     await fixture.whenStable();
@@ -203,21 +203,21 @@ describe('GameProvidersComponent', () => {
 
   it('should start game content discovery', async () => {
     const fakeObservable = of(new HttpResponse());
-    gameContentDiscoveryClient.startDiscovery.and.returnValue(fakeObservable);
+    gameContentDiscoveryClient.startGameContentDiscovery.and.returnValue(fakeObservable);
     component.discoveryStatusUnknownByGameProviderId.set('someGameProviderId', false);
 
-    await component.startDiscovery();
+    await component.startGameContentDiscovery();
 
-    expect(gameContentDiscoveryClient.startDiscovery).toHaveBeenCalled();
+    expect(gameContentDiscoveryClient.startGameContentDiscovery).toHaveBeenCalled();
     expect(component.discoveryStatusUnknownByGameProviderId.get('someGameProviderId')).toBeTrue();
   });
 
   it('should log an error when game content discovery cannot be started', async () => {
     const mockError = new Error('Discovery failed');
 
-    gameContentDiscoveryClient.startDiscovery.and.returnValue(throwError(() => mockError));
+    gameContentDiscoveryClient.startGameContentDiscovery.and.returnValue(throwError(() => mockError));
 
-    await component.startDiscovery();
+    await component.startGameContentDiscovery();
 
     expect(notificationService.showFailure).toHaveBeenCalledWith(
       'Error starting discovery', mockError);
@@ -225,21 +225,21 @@ describe('GameProvidersComponent', () => {
 
   it('should stop game content discovery', async () => {
     const fakeObservable = of(new HttpResponse());
-    gameContentDiscoveryClient.stopDiscovery.and.returnValue(fakeObservable);
+    gameContentDiscoveryClient.stopGameContentDiscovery.and.returnValue(fakeObservable);
     component.discoveryStatusUnknownByGameProviderId.set('someGameProviderId', false);
 
-    await component.stopDiscovery();
+    await component.stopGameContentDiscovery();
 
-    expect(gameContentDiscoveryClient.stopDiscovery).toHaveBeenCalled();
+    expect(gameContentDiscoveryClient.stopGameContentDiscovery).toHaveBeenCalled();
     expect(component.discoveryStatusUnknownByGameProviderId.get('someGameProviderId')).toBeTrue();
   });
 
   it('should log an error when game content discovery cannot be stopped', async () => {
     const mockError = new Error('Discovery failed');
 
-    gameContentDiscoveryClient.stopDiscovery.and.returnValue(throwError(() => mockError));
+    gameContentDiscoveryClient.stopGameContentDiscovery.and.returnValue(throwError(() => mockError));
 
-    await component.stopDiscovery();
+    await component.stopGameContentDiscovery();
 
     expect(notificationService.showFailure).toHaveBeenCalledWith(
       'Error stopping discovery', mockError);

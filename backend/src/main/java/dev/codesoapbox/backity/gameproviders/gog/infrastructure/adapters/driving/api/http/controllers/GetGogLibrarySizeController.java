@@ -11,9 +11,9 @@ public class GetGogLibrarySizeController {
 
     private final GetGogLibrarySizeUseCase useCase;
 
-    @Operation(summary = "Get library size", description = "Returns the size of the user's GOG library")
+    @Operation(summary = "Get GOG library size", description = "Returns the size of the user's GOG library")
     @GetMapping("library/size")
-    public String getLibrarySize() {
+    public String getGogLibrarySize() {
         return useCase.getLibrarySize();
     }
 }

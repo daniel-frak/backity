@@ -15,14 +15,14 @@
         unknown: anyDiscoveryStatusIsUnknown(),
         ongoing: discoveryOngoing()
       };
-      <app-button [actionAsync]="onClickStartDiscovery()"
+      <app-button [actionAsync]="onClickStartGameContentDiscovery()"
                   testId="start-game-content-discovery-btn"
                   [disabled]="state.unknown || state.ongoing"
                   buttonClass="mt-2 me-1">
         Start every discovery
       </app-button>
 
-      <app-button [actionAsync]="onClickStopDiscovery()"
+      <app-button [actionAsync]="onClickStopGameContentDiscovery()"
                   testId="stop-game-content-discovery-btn"
                   [disabled]="state.unknown || !state.ongoing"
                   buttonClass="mt-2 me-1">
