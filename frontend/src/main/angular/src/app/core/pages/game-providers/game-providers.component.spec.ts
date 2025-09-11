@@ -30,6 +30,7 @@ import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layou
 import {AutoLayoutStubComponent} from "@app/shared/components/auto-layout/auto-layout.stub.component";
 import SpyObj = jasmine.SpyObj;
 import createSpyObj = jasmine.createSpyObj;
+import {By} from "@angular/platform-browser";
 
 describe('GameProvidersComponent', () => {
   let component: GameProvidersComponent;
@@ -201,12 +202,19 @@ describe('GameProvidersComponent', () => {
     expect(component.discoveryStatusUnknownByGameProviderId.get(event.gameProviderId)).toBeFalse();
   });
 
+  async function clickButtonByTestId(testId: string) {
+    const button = fixture.debugElement.query(By.css('[data-testid="' + testId + '"]'));
+    button.triggerEventHandler('click');
+    await fixture.whenStable();
+    fixture.detectChanges();
+  }
+
   it('should start game content discovery', async () => {
     const fakeObservable = of(new HttpResponse());
     gameContentDiscoveryClient.startGameContentDiscovery.and.returnValue(fakeObservable);
     component.discoveryStatusUnknownByGameProviderId.set('someGameProviderId', false);
 
-    await component.startGameContentDiscovery();
+    await clickButtonByTestId('start-game-content-discovery-btn');
 
     expect(gameContentDiscoveryClient.startGameContentDiscovery).toHaveBeenCalled();
     expect(component.discoveryStatusUnknownByGameProviderId.get('someGameProviderId')).toBeTrue();
@@ -228,7 +236,7 @@ describe('GameProvidersComponent', () => {
     gameContentDiscoveryClient.stopGameContentDiscovery.and.returnValue(fakeObservable);
     component.discoveryStatusUnknownByGameProviderId.set('someGameProviderId', false);
 
-    await component.stopGameContentDiscovery();
+    await clickButtonByTestId('stop-game-content-discovery-btn');
 
     expect(gameContentDiscoveryClient.stopGameContentDiscovery).toHaveBeenCalled();
     expect(component.discoveryStatusUnknownByGameProviderId.get('someGameProviderId')).toBeTrue();
