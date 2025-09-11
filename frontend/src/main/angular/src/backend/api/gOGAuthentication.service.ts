@@ -21,6 +21,8 @@ import { ErrorMessage } from '../model/errorMessage';
 // @ts-ignore
 import { GogAuthenticationRequest } from '../model/gogAuthenticationRequest';
 // @ts-ignore
+import { RefreshGogAccessTokenRequest } from '../model/refreshGogAccessTokenRequest';
+// @ts-ignore
 import { RefreshTokenResponse } from '../model/refreshTokenResponse';
 // @ts-ignore
 import { ValidationError } from '../model/validationError';
@@ -211,21 +213,17 @@ export class GOGAuthenticationClient extends BaseService {
     /**
      * Refresh access token
      * Refreshes the access token using a refresh token
-     * @param refreshToken 
+     * @param refreshGogAccessTokenRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public refreshGogAccessToken(refreshToken: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<RefreshTokenResponse>;
-    public refreshGogAccessToken(refreshToken: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<RefreshTokenResponse>>;
-    public refreshGogAccessToken(refreshToken: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<RefreshTokenResponse>>;
-    public refreshGogAccessToken(refreshToken: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (refreshToken === null || refreshToken === undefined) {
-            throw new Error('Required parameter refreshToken was null or undefined when calling refreshGogAccessToken.');
+    public refreshGogAccessToken(refreshGogAccessTokenRequest: RefreshGogAccessTokenRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<RefreshTokenResponse>;
+    public refreshGogAccessToken(refreshGogAccessTokenRequest: RefreshGogAccessTokenRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<RefreshTokenResponse>>;
+    public refreshGogAccessToken(refreshGogAccessTokenRequest: RefreshGogAccessTokenRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<RefreshTokenResponse>>;
+    public refreshGogAccessToken(refreshGogAccessTokenRequest: RefreshGogAccessTokenRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (refreshGogAccessTokenRequest === null || refreshGogAccessTokenRequest === undefined) {
+            throw new Error('Required parameter refreshGogAccessTokenRequest was null or undefined when calling refreshGogAccessToken.');
         }
-
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>refreshToken, 'refresh_token');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -240,6 +238,15 @@ export class GOGAuthenticationClient extends BaseService {
 
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
@@ -257,7 +264,7 @@ export class GOGAuthenticationClient extends BaseService {
         return this.httpClient.request<RefreshTokenResponse>('put', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                params: localVarQueryParameters,
+                body: refreshGogAccessTokenRequest,
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
