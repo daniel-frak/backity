@@ -19,6 +19,8 @@ import { Observable }                                        from 'rxjs';
 // @ts-ignore
 import { ErrorMessage } from '../model/errorMessage';
 // @ts-ignore
+import { GogAuthenticationRequest } from '../model/gogAuthenticationRequest';
+// @ts-ignore
 import { RefreshTokenResponse } from '../model/refreshTokenResponse';
 // @ts-ignore
 import { ValidationError } from '../model/validationError';
@@ -42,21 +44,17 @@ export class GOGAuthenticationClient extends BaseService {
     /**
      * Authenticate
      * Returns a refresh token based on a code
-     * @param code 
+     * @param gogAuthenticationRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public authenticateGog(code: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<RefreshTokenResponse>;
-    public authenticateGog(code: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<RefreshTokenResponse>>;
-    public authenticateGog(code: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<RefreshTokenResponse>>;
-    public authenticateGog(code: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
-        if (code === null || code === undefined) {
-            throw new Error('Required parameter code was null or undefined when calling authenticateGog.');
+    public authenticateGog(gogAuthenticationRequest: GogAuthenticationRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<RefreshTokenResponse>;
+    public authenticateGog(gogAuthenticationRequest: GogAuthenticationRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<RefreshTokenResponse>>;
+    public authenticateGog(gogAuthenticationRequest: GogAuthenticationRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpEvent<RefreshTokenResponse>>;
+    public authenticateGog(gogAuthenticationRequest: GogAuthenticationRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any> {
+        if (gogAuthenticationRequest === null || gogAuthenticationRequest === undefined) {
+            throw new Error('Required parameter gogAuthenticationRequest was null or undefined when calling authenticateGog.');
         }
-
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>code, 'code');
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -71,6 +69,15 @@ export class GOGAuthenticationClient extends BaseService {
 
         const localVarTransferCache: boolean = options?.transferCache ?? true;
 
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
+        }
 
         let responseType_: 'text' | 'json' | 'blob' = 'json';
         if (localVarHttpHeaderAcceptSelected) {
@@ -88,7 +95,7 @@ export class GOGAuthenticationClient extends BaseService {
         return this.httpClient.request<RefreshTokenResponse>('post', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                params: localVarQueryParameters,
+                body: gogAuthenticationRequest,
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,

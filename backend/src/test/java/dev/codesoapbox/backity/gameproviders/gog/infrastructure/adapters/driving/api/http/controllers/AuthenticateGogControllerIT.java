@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.gameproviders.gog.application.usecases.Authentica
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.when;
@@ -34,7 +35,14 @@ class AuthenticateGogControllerIT {
         when(useCase.authenticateAndGetRefreshToken(code))
                 .thenReturn(refreshToken);
 
-        mockMvc.perform(post("/api/" + GogAuthRestResource.RESOURCE_URL + "?code=" + code))
+        mockMvc.perform(post("/api/" + GogAuthRestResource.RESOURCE_URL + "?code=" + code)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "code": "%s"
+                                }
+                                """.formatted(code))
+                )
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
