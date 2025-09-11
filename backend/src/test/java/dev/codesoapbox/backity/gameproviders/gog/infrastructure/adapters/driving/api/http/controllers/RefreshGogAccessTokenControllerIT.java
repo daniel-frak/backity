@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.gameproviders.gog.application.usecases.RefreshGog
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.when;
@@ -33,7 +34,13 @@ class RefreshGogAccessTokenControllerIT {
         when(useCase.refreshAccessToken(refreshToken))
                 .thenReturn(accessToken);
 
-        mockMvc.perform(put("/api/" + GogAuthRestResource.RESOURCE_URL + "?refresh_token=" + refreshToken))
+        mockMvc.perform(put("/api/" + GogAuthRestResource.RESOURCE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "refreshToken": "%s"
+                                }
+                                """.formatted(refreshToken)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
