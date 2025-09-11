@@ -60,7 +60,13 @@ export class GogAuthModalComponent {
         this.isLoading = false;
         return;
       }
-      const code: string = this.extractCodeFromUrl();
+
+      const code: string | null = this.extractCodeFromUrl();
+      if (!code) {
+        this.notificationService.showFailure("Invalid URL: missing 'code' parameter");
+        this.isLoading = false;
+        return;
+      }
       this.gogAuthClient.authenticateGog({
         code: code
       })
@@ -100,9 +106,9 @@ export class GogAuthModalComponent {
       this.getFormErrors(this.gogAuthForm));
   }
 
-  private extractCodeFromUrl() {
+  private extractCodeFromUrl(): string | null {
     const gogCodeUrl = this.gogCodeUrlInput.value;
     const params: URLSearchParams = new URL(gogCodeUrl).searchParams;
-    return params.get("code") as string;
+    return params.get("code");
   }
 }

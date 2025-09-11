@@ -31,6 +31,10 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
   discoveryOverviewsByGameProviderId: Map<string, GameContentDiscoveryOverview | undefined> = new Map();
   discoveryStatusUnknownByGameProviderId: Map<string, boolean> = new Map();
 
+  private readonly startGameContentDiscoveryClickHandler: () => Promise<void> =
+    async () => this.startGameContentDiscovery();
+  private readonly stopGameContentDiscoveryClickHandler: () => Promise<void> =
+    async () => this.stopGameContentDiscovery();
   private readonly subscriptions: Subscription[] = [];
 
   constructor(private readonly gameContentDiscoveryClient: GameContentDiscoveryClient,
@@ -129,7 +133,7 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
   }
 
   onClickStartGameContentDiscovery(): () => Promise<void> {
-    return async () => this.startGameContentDiscovery();
+    return this.startGameContentDiscoveryClickHandler;
   }
 
   async startGameContentDiscovery(): Promise<void> {
@@ -142,7 +146,7 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
   }
 
   onClickStopGameContentDiscovery(): () => Promise<void> {
-    return async () => this.stopGameContentDiscovery();
+    return this.stopGameContentDiscoveryClickHandler;
   }
 
   async stopGameContentDiscovery(): Promise<void> {

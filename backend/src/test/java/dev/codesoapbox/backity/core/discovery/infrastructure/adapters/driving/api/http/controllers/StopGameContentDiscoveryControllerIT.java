@@ -21,7 +21,7 @@ class StopGameContentDiscoveryControllerIT {
     private StopGameContentDiscoveryUseCase useCase;
 
     @Test
-    void shouldStopFileDiscovery() throws Exception {
+    void shouldStopGameContentDiscovery() throws Exception {
         mockMvc.perform(post("/api/" + GameContentDiscoveryActionsRestResource.RESOURCE_URL + "/stop"))
                 .andDo(print())
                 .andExpect(status().isOk());
