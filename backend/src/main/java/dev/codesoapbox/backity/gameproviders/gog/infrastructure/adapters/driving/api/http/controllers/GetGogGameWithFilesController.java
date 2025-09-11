@@ -10,14 +10,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @GogRestResource
 @RequiredArgsConstructor
-public class GetGogGamesWithFilesController {
+public class GetGogGameWithFilesController {
 
     private final GetGogGameDetailsUseCase useCase;
     private final GogGameWithFilesHttpDtoMapper gameDetailsResponseMapper;
 
-    @Operation(summary = "Get game details", description = "Returns the details of a game")
+    @Operation(summary = "Get GOG game details", description = "Returns the details of a game")
     @GetMapping("games/{id}")
-    public GogGameWithFilesHttpDto getGameDetails(@PathVariable String id) {
+    public GogGameWithFilesHttpDto getGogGameWithFiles(@PathVariable String id) {
         return gameDetailsResponseMapper.toDto(useCase.getGameDetails(id));
     }
 }

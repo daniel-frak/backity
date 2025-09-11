@@ -14,7 +14,7 @@ public class GetGogAuthenticationStatusController {
     @Operation(summary = "Get authentication status",
             description = "Returns whether or not the user is currently authenticated")
     @GetMapping
-    public boolean checkAuthentication() {
+    public boolean getGogAuthenticationStatus() {
         return useCase.isAuthenticated();
     }
 }

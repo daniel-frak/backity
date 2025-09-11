@@ -34,7 +34,7 @@ describe('GogAuthComponent', () => {
         },
         {
           provide: GOGAuthenticationClient,
-          useValue: createSpyObj(GOGAuthenticationClient, ['checkAuthentication', 'logOutOfGog'])
+          useValue: createSpyObj(GOGAuthenticationClient, ['getGogAuthenticationStatus', 'logOutOfGog'])
         },
         {
           provide: NotificationService,
@@ -52,7 +52,7 @@ describe('GogAuthComponent', () => {
     notificationService = TestBed.inject(NotificationService);
     modalService = TestBed.inject(NgbModal) as SpyObj<NgbModal>;
 
-    gogAuthClientMock.checkAuthentication.and.returnValue(of(false) as any);
+    gogAuthClientMock.getGogAuthenticationStatus.and.returnValue(of(false) as any);
     gogConfigClientMock.getGogConfig.and.returnValue(of(GOG_CONFIG_RESPONSE) as any);
 
     fixture.detectChanges();
@@ -63,7 +63,7 @@ describe('GogAuthComponent', () => {
   });
 
   it('should check authentication status on init', () => {
-    gogAuthClientMock.checkAuthentication.and.returnValue(defer(() => {
+    gogAuthClientMock.getGogAuthenticationStatus.and.returnValue(defer(() => {
       expect(component.gogIsLoading).toBeTrue();
       return of(true);
     }) as any);
@@ -76,7 +76,7 @@ describe('GogAuthComponent', () => {
 
   it('should notify and disable loading on authentication check failure', () => {
     const error = new Error('Test error');
-    gogAuthClientMock.checkAuthentication.and.returnValue(throwError(() => error));
+    gogAuthClientMock.getGogAuthenticationStatus.and.returnValue(throwError(() => error));
 
     component.ngOnInit();
 

@@ -15,7 +15,7 @@ public class RefreshGogAccessTokenController {
 
     @Operation(summary = "Refresh access token", description = "Refreshes the access token using a refresh token")
     @PutMapping
-    public RefreshTokenHttpDto refreshAccessToken(@RequestParam("refresh_token") String refreshToken) {
+    public RefreshTokenHttpDto refreshGogAccessToken(@RequestParam("refresh_token") String refreshToken) {
         String accessToken = useCase.refreshAccessToken(refreshToken);
         return RefreshTokenHttpDto.of(accessToken);
     }

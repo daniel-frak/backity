@@ -32,7 +32,7 @@ describe('GogAuthModalComponent', () => {
         {provide: NgbActiveModal, useValue: modalMock},
         {
           provide: GOGAuthenticationClient,
-          useValue: createSpyObj(GOGAuthenticationClient, ['authenticate'])
+          useValue: createSpyObj(GOGAuthenticationClient, ['authenticateGog'])
         },
         {
           provide: NotificationService,
@@ -67,7 +67,7 @@ describe('GogAuthModalComponent', () => {
 
   it('should authenticate with a valid URL', () => {
     component.gogCodeUrlInput.setValue('https://www.example.com?code=1234');
-    gogAuthClientMock.authenticate.and.returnValue(
+    gogAuthClientMock.authenticateGog.and.returnValue(
       of({refresh_token: 'someRefreshToken'}).pipe(
         tap(() => {
           expect(component.isLoading).toBeTrue();
@@ -86,7 +86,7 @@ describe('GogAuthModalComponent', () => {
 
   it('should not authenticate if refresh token is missing', () => {
     component.gogCodeUrlInput.setValue('https://www.example.com?code=1234');
-    gogAuthClientMock.authenticate.and.returnValue(
+    gogAuthClientMock.authenticateGog.and.returnValue(
       of({refresh_token: undefined}).pipe(
         tap(() => {
           expect(component.isLoading).toBeTrue();
@@ -108,7 +108,7 @@ describe('GogAuthModalComponent', () => {
     component.authenticateGog();
 
     expect(ngbActiveModalSpy.close).not.toHaveBeenCalled();
-    expect(gogAuthClientMock.authenticate).not.toHaveBeenCalled();
+    expect(gogAuthClientMock.authenticateGog).not.toHaveBeenCalled();
     const expectedErrors = {
       gogCodeUrl: {required: true}
     };
@@ -118,7 +118,8 @@ describe('GogAuthModalComponent', () => {
 
   it('should not authenticate given response returns error', () => {
     component.gogCodeUrlInput.setValue('https://www.example.com?code=1234');
-    gogAuthClientMock.authenticate.and.returnValue(throwError(() => new Error('Authentication failed')));
+    gogAuthClientMock.authenticateGog.and.returnValue(
+      throwError(() => new Error('Authentication failed')));
 
     component.authenticateGog();
 

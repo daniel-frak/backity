@@ -15,7 +15,7 @@ public class AuthenticateGogController {
 
     @Operation(summary = "Authenticate", description = "Returns a refresh token based on a code")
     @PostMapping
-    public RefreshTokenHttpDto authenticate(@RequestParam("code") String code) {
+    public RefreshTokenHttpDto authenticateGog(@RequestParam("code") String code) {
         String refreshToken = useCase.authenticateAndGetRefreshToken(code);
         return RefreshTokenHttpDto.of(refreshToken);
     }

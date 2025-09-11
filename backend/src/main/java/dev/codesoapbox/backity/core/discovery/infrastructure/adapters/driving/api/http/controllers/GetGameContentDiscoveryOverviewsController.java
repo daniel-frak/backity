@@ -19,7 +19,7 @@ public class GetGameContentDiscoveryOverviewsController {
     @Operation(summary = "List game provider content discovery overviews",
             description = "Returns a list of content discovery overviews for every game provider")
     @GetMapping
-    public List<GameContentDiscoveryOverviewHttpDto> getDiscoveryOverviews() {
+    public List<GameContentDiscoveryOverviewHttpDto> getGameContentDiscoveryOverviews() {
         return useCase.getDiscoveryOverviews().stream()
                 .map(gameContentDiscoveryOverviewMapper::toDto)
                 .toList();

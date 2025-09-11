@@ -101,7 +101,7 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
 
   private refreshInfo() {
     this.infoIsLoading = true;
-    this.gameContentDiscoveryClient.getDiscoveryOverviews()
+    this.gameContentDiscoveryClient.getGameContentDiscoveryOverviews()
       .subscribe(discoveryOverviews => {
         for (const discoveryOverview of discoveryOverviews) {
           this.discoveryIsInProgressByGameProviderId.set(discoveryOverview.gameProviderId, discoveryOverview.isInProgress);
@@ -128,27 +128,27 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
     return overview;
   }
 
-  onClickStartDiscovery(): () => Promise<void> {
-    return async () => this.startDiscovery();
+  onClickStartGameContentDiscovery(): () => Promise<void> {
+    return async () => this.startGameContentDiscovery();
   }
 
-  async startDiscovery(): Promise<void> {
+  async startGameContentDiscovery(): Promise<void> {
     this.setAllDiscoveryStatusesUnknown();
     try {
-      await firstValueFrom(this.gameContentDiscoveryClient.startDiscovery());
+      await firstValueFrom(this.gameContentDiscoveryClient.startGameContentDiscovery());
     } catch (error) {
       this.notificationService.showFailure('Error starting discovery', error);
     }
   }
 
-  onClickStopDiscovery(): () => Promise<void> {
-    return async () => this.stopDiscovery();
+  onClickStopGameContentDiscovery(): () => Promise<void> {
+    return async () => this.stopGameContentDiscovery();
   }
 
-  async stopDiscovery(): Promise<void> {
+  async stopGameContentDiscovery(): Promise<void> {
     this.setAllDiscoveryStatusesUnknown();
     try {
-      await firstValueFrom(this.gameContentDiscoveryClient.stopDiscovery());
+      await firstValueFrom(this.gameContentDiscoveryClient.stopGameContentDiscovery());
       this.refreshInfo();
     } catch (error) {
       this.notificationService.showFailure('Error stopping discovery', error);

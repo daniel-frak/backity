@@ -61,7 +61,7 @@ export class GogAuthComponent implements OnInit {
 
   ngOnInit() {
     this.gogIsLoading = true;
-    const auth$: Observable<boolean> = this.gogAuthClient.checkAuthentication();
+    const auth$: Observable<boolean> = this.gogAuthClient.getGogAuthenticationStatus();
     const config$: Observable<GogConfig> = this.gogConfigClient.getGogConfig();
 
     forkJoin([auth$, config$])
