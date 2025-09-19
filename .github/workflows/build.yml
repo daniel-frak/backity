@@ -14,8 +14,8 @@ on:
       - '**.md'
 
 env:
-  JAVA_VERSION: 21
-  JAVA_DISTRIBUTION: adopt
+  JAVA_VERSION: '25-ea'
+  JAVA_DISTRIBUTION: temurin
   MAVEN_CACHE_PATH: ~/.m2
 
 jobs:
