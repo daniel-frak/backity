@@ -1,12 +1,10 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.config;
 
-import dev.codesoapbox.backity.core.backup.application.DownloadService;
-import dev.codesoapbox.backity.core.backup.application.FileBackupService;
-import dev.codesoapbox.backity.core.backup.application.FileCopyReplicator;
-import dev.codesoapbox.backity.core.backup.application.GameProviderFileBackupService;
+import dev.codesoapbox.backity.core.backup.application.*;
 import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgressFactory;
 import dev.codesoapbox.backity.core.backup.application.usecases.BackUpOldestFileCopyUseCase;
 import dev.codesoapbox.backity.core.backup.application.usecases.RecoverInterruptedFileBackupUseCase;
+import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProcess;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
@@ -38,13 +36,24 @@ public class FileBackupUseCaseBeanConfig {
     }
 
     @Bean
-    BackUpOldestFileCopyUseCase backUpOldestFileCopyUseCase(GameFileRepository gameFileRepository,
+    FileCopyReplicationProcess fileCopyReplicationProcess() {
+        return new FileCopyReplicationProcess();
+    }
+
+    @Bean
+    FileBackupContextFactory fileBackupContextFactory(GameFileRepository gameFileRepository,
+                                                      BackupTargetRepository backupTargetRepository,
+                                                      StorageSolutionRepository storageSolutionRepository) {
+        return new FileBackupContextFactory(gameFileRepository, backupTargetRepository, storageSolutionRepository);
+    }
+
+    @Bean
+    BackUpOldestFileCopyUseCase backUpOldestFileCopyUseCase(FileCopyReplicationProcess fileCopyReplicationProcess,
                                                             FileCopyRepository fileCopyRepository,
-                                                            BackupTargetRepository backupTargetRepository,
-                                                            StorageSolutionRepository storageSolutionRepository,
+                                                            FileBackupContextFactory fileBackupContextFactory,
                                                             FileBackupService fileBackupService) {
-        return new BackUpOldestFileCopyUseCase(fileCopyRepository, gameFileRepository, backupTargetRepository,
-                storageSolutionRepository, fileBackupService);
+        return new BackUpOldestFileCopyUseCase(fileCopyReplicationProcess, fileCopyRepository, fileBackupContextFactory,
+                fileBackupService);
     }
 
     @Bean

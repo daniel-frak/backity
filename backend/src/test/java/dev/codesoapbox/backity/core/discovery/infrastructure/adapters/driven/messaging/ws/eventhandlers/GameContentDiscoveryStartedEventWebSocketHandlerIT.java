@@ -8,6 +8,7 @@ import dev.codesoapbox.backity.testing.messaging.TestMessageChannel;
 import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketEventHandlerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 
 @WebSocketEventHandlerTest
 class GameContentDiscoveryStartedEventWebSocketHandlerIT {
@@ -16,13 +17,16 @@ class GameContentDiscoveryStartedEventWebSocketHandlerIT {
     private TestMessageChannel messageChannel;
 
     @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @Autowired
     private GameContentDiscoveryStartedEventWebSocketHandler eventHandler;
 
     @Test
     void shouldPublishWebSocketEvent() throws JsonProcessingException {
         GameContentDiscoveryStartedEvent event = TestGameContentDiscoveryEvent.discoveryStarted();
 
-        eventHandler.handle(event);
+        applicationEventPublisher.publishEvent(event);
 
         var expectedJson = """
                 {

@@ -3,21 +3,15 @@ package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messa
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgress;
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
 import dev.codesoapbox.backity.core.backup.domain.events.FileDownloadProgressChangedEvent;
-import dev.codesoapbox.backity.shared.domain.DomainEventHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
 
 @RequiredArgsConstructor
-public class FileDownloadProgressChangedRepositoryHandler
-        implements DomainEventHandler<FileDownloadProgressChangedEvent> {
+public class FileDownloadProgressChangedRepositoryHandler {
 
     private final FileCopyReplicationProgressRepository fileCopyReplicationProgressRepository;
 
-    @Override
-    public Class<FileDownloadProgressChangedEvent> getEventClass() {
-        return FileDownloadProgressChangedEvent.class;
-    }
-
-    @Override
+    @EventListener
     public void handle(FileDownloadProgressChangedEvent event) {
         FileCopyReplicationProgress progress = toReplicationProgress(event);
         fileCopyReplicationProgressRepository.save(progress);
