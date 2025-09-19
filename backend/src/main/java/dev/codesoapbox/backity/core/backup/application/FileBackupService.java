@@ -26,8 +26,12 @@ public class FileBackupService {
     private final FileCopyRepository fileCopyRepository;
     private final FileCopyReplicator fileCopyReplicator;
 
-    public void backUpFile(FileCopy fileCopy, GameFile gameFile, BackupTarget backupTarget,
-                           StorageSolution storageSolution) {
+    public void backUpFile(FileBackupContext fileBackupContext) {
+        FileCopy fileCopy = fileBackupContext.fileCopy();
+        GameFile gameFile = fileBackupContext.gameFile();
+        BackupTarget backupTarget = fileBackupContext.backupTarget();
+        StorageSolution storageSolution = fileBackupContext.storageSolution();
+
         if (!fileCopyReplicator.gameProviderIsConnected(gameFile)) {
             log.debug("Game provider for game file (id={}) is not connected, skipping...", gameFile.getId());
             return;

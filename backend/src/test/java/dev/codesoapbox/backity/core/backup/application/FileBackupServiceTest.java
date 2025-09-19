@@ -2,14 +2,10 @@ package dev.codesoapbox.backity.core.backup.application;
 
 import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCanceledException;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
-import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
-import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
-import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolver;
@@ -50,13 +46,10 @@ class FileBackupServiceTest {
 
     @Test
     void shouldDoNothingGivenGameProviderNotConnected() {
-        GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.tracked();
-        BackupTarget backupTarget = TestBackupTarget.localFolder();
-        StorageSolution storageSolution = mock(StorageSolution.class);
-        mockGameProviderIsNotConnected(gameFile);
+        FileBackupContext fileBackupContext = TestFileBackupContext.trackedLocalGog();
+        mockGameProviderIsNotConnected(fileBackupContext.gameFile());
 
-        fileBackupService.backUpFile(fileCopy, gameFile, backupTarget, storageSolution);
+        fileBackupService.backUpFile(fileBackupContext);
 
         verifyNoMoreInteractions(uniqueFilePathResolver, fileCopyRepository, fileCopyReplicator);
     }
@@ -68,20 +61,20 @@ class FileBackupServiceTest {
 
     @Test
     void shouldBackupFile() throws IOException {
-        GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.enqueued();
-        BackupTarget backupTarget = TestBackupTarget.localFolder();
-        StorageSolution storageSolution = mock(StorageSolution.class);
-        mockGameProviderIsConnected(gameFile);
+        FileBackupContext fileBackupContext = TestFileBackupContext.enqueuedLocalGog();
+        mockGameProviderIsConnected(fileBackupContext.gameFile());
         PersistedChangesToFileCopy persistedChangesToFileCopy = trackPersistedChangesToFileCopy();
-        String expectedFilePath = mockFilePathCreation(backupTarget.getPathTemplate(), gameFile, storageSolution);
+        String expectedFilePath = mockFilePathCreation(
+                fileBackupContext.backupTarget().getPathTemplate(), fileBackupContext.gameFile(),
+                fileBackupContext.storageSolution());
 
-        fileBackupService.backUpFile(fileCopy, gameFile, backupTarget, storageSolution);
+        fileBackupService.backUpFile(fileBackupContext);
 
         assertOnlyPersistedStatusChangesWere(persistedChangesToFileCopy,
                 List.of(FileCopyStatus.IN_PROGRESS, FileCopyStatus.STORED_INTEGRITY_UNKNOWN));
         assertFilePathWasPersisted(persistedChangesToFileCopy, expectedFilePath);
-        verify(fileCopyReplicator).replicateFile(storageSolution, gameFile, fileCopy);
+        verify(fileCopyReplicator).replicateFile(
+                fileBackupContext.storageSolution(), fileBackupContext.gameFile(), fileBackupContext.fileCopy());
     }
 
     private void assertOnlyPersistedStatusChangesWere(PersistedChangesToFileCopy persistedChangesToFileCopy,
@@ -127,22 +120,22 @@ class FileBackupServiceTest {
 
     @Test
     void shouldMarkFileCopyAsFailedAndRemoveFileAndRethrowWrappedGivenIOException() throws IOException {
-        GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.enqueued();
-        BackupTarget backupTarget = TestBackupTarget.localFolder();
         var storageSolution = new FakeUnixStorageSolution(5120);
-        mockGameProviderIsConnected(gameFile);
-        String filePath = mockFilePathCreation(backupTarget.getPathTemplate(), gameFile, storageSolution);
+        FileBackupContext fileBackupContext = TestFileBackupContext.enqueuedLocalGogBuilder()
+                .storageSolution(storageSolution)
+                .build();
+        mockGameProviderIsConnected(fileBackupContext.gameFile());
+        String filePath = mockFilePathCreation(fileBackupContext.backupTarget().getPathTemplate(),
+                fileBackupContext.gameFile(), fileBackupContext.storageSolution());
         IOException coreException = mockFileCopyReplicatorThrowsExceptionDuringBackup();
 
         assertThatThrownBy(() ->
-                fileBackupService.backUpFile(fileCopy, gameFile, backupTarget, storageSolution))
+                fileBackupService.backUpFile(fileBackupContext))
                 .isInstanceOf(FileBackupFailedException.class)
                 .hasCause(coreException);
-        assertIsFailedWithReason(fileCopy, coreException);
-        verify(fileCopyRepository, times(2)).save(fileCopy);
+        assertIsFailedWithReason(fileBackupContext.fileCopy(), coreException);
+        verify(fileCopyRepository, times(2)).save(fileBackupContext.fileCopy());
         assertThat(storageSolution.fileDeleteWasAttempted(filePath)).isTrue();
-        assertThat(fileCopy.getFilePath()).isNull();
     }
 
     private void assertIsFailedWithReason(FileCopy fileCopy, Throwable coreException) {
@@ -164,22 +157,23 @@ class FileBackupServiceTest {
     @Test
     void shouldMarkFileCopyAsFailedAndRethrowWrappedOriginalExceptionGivenRemovingExistingFileThrowsAfterFailure()
             throws IOException {
-        GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.enqueued();
-        BackupTarget backupTarget = TestBackupTarget.localFolder();
-        StorageSolution storageSolution = mock(StorageSolution.class);
-        mockGameProviderIsConnected(gameFile);
-        mockFilePathCreation(backupTarget.getPathTemplate(), gameFile, storageSolution);
+        StorageSolution storageSolution = mock();
+        FileBackupContext fileBackupContext = TestFileBackupContext.enqueuedLocalGogBuilder()
+                .storageSolution(storageSolution)
+                .build();
+        mockGameProviderIsConnected(fileBackupContext.gameFile());
+        mockFilePathCreation(fileBackupContext.backupTarget().getPathTemplate(), fileBackupContext.gameFile(),
+                fileBackupContext.storageSolution());
         IOException coreException = mockFileCopyReplicatorThrowsExceptionDuringBackup();
         mockThrowsExceptionDuringFileDelete(storageSolution);
 
         assertThatThrownBy(() ->
-                fileBackupService.backUpFile(fileCopy, gameFile, backupTarget, storageSolution))
+                fileBackupService.backUpFile(fileBackupContext))
                 .isInstanceOf(FileBackupFailedException.class)
                 .hasCause(coreException);
-        assertIsFailedWithReason(fileCopy, coreException);
-        verify(fileCopyRepository, times(2)).save(fileCopy);
-        assertThat(fileCopy.getFilePath()).isNotNull();
+        assertIsFailedWithReason(fileBackupContext.fileCopy(), coreException);
+        verify(fileCopyRepository, times(2)).save(fileBackupContext.fileCopy());
+        assertThat(fileBackupContext.fileCopy().getFilePath()).isNotNull();
     }
 
     private void mockThrowsExceptionDuringFileDelete(StorageSolution storageSolution) {
@@ -189,20 +183,20 @@ class FileBackupServiceTest {
 
     @Test
     void shouldNotTryToDeleteFileGivenMarkingAsFailedButPathIsNull() {
-        GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.tracked();
-        BackupTarget backupTarget = TestBackupTarget.localFolder();
-        StorageSolution storageSolution = mock(StorageSolution.class);
-        mockGameProviderIsConnected(gameFile);
+        StorageSolution storageSolution = mock();
+        FileBackupContext fileBackupContext = TestFileBackupContext.trackedLocalGogBuilder()
+                .storageSolution(storageSolution)
+                .build();
+        mockGameProviderIsConnected(fileBackupContext.gameFile());
         RuntimeException coreException = mockPathResolverThrows();
 
         assertThatThrownBy(() ->
-                fileBackupService.backUpFile(fileCopy, gameFile, backupTarget, storageSolution))
+                fileBackupService.backUpFile(fileBackupContext))
                 .isInstanceOf(FileBackupFailedException.class)
                 .hasCause(coreException);
-        assertIsFailedWithReason(fileCopy, coreException);
-        verify(fileCopyRepository, times(1)).save(fileCopy);
-        assertThat(fileCopy.getFilePath()).isNull();
+        assertIsFailedWithReason(fileBackupContext.fileCopy(), coreException);
+        verify(fileCopyRepository, times(1)).save(fileBackupContext.fileCopy());
+        assertThat(fileBackupContext.fileCopy().getFilePath()).isNull();
         verify(storageSolution, never()).deleteIfExists(any());
     }
 
@@ -215,38 +209,37 @@ class FileBackupServiceTest {
 
     @Test
     void shouldMarkFailedWithUnknownErrorMessageGivenExceptionMessageIsNull() {
-        GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.tracked();
-        BackupTarget backupTarget = TestBackupTarget.localFolder();
-        StorageSolution storageSolution = mock(StorageSolution.class);
-        mockGameProviderIsConnected(gameFile);
+        FileBackupContext fileBackupContext = TestFileBackupContext.trackedLocalGog();
+        mockGameProviderIsConnected(fileBackupContext.gameFile());
         RuntimeException coreException = mockPathResolverThrowsWithNullMessage();
 
         assertThatThrownBy(() ->
-                fileBackupService.backUpFile(fileCopy, gameFile, backupTarget, storageSolution))
+                fileBackupService.backUpFile(fileBackupContext))
                 .isInstanceOf(FileBackupFailedException.class)
                 .hasCause(coreException);
-        assertThat(fileCopy.getFailedReason()).isEqualTo("Unknown error");
+        assertThat(fileBackupContext.fileCopy().getFailedReason()).isEqualTo("Unknown error");
     }
 
     @Test
     void shouldMarkTrackedGivenFileDownloadWasCanceled() throws IOException {
-        GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.enqueued();
-        BackupTarget backupTarget = TestBackupTarget.localFolder();
         StorageSolution storageSolution = mock(StorageSolution.class);
-        mockGameProviderIsConnected(gameFile);
+        FileBackupContext fileBackupContext = TestFileBackupContext.enqueuedLocalGogBuilder()
+                .storageSolution(storageSolution)
+                .build();
+        mockGameProviderIsConnected(fileBackupContext.gameFile());
         PersistedChangesToFileCopy persistedChangesToFileCopy = trackPersistedChangesToFileCopy();
-        mockFilePathCreation(backupTarget.getPathTemplate(), gameFile, storageSolution);
+        mockFilePathCreation(fileBackupContext.backupTarget().getPathTemplate(), fileBackupContext.gameFile(),
+                storageSolution);
         doThrow(new FileDownloadWasCanceledException("someFilePath"))
-                .when(fileCopyReplicator).replicateFile(storageSolution, gameFile, fileCopy);
+                .when(fileCopyReplicator).replicateFile(storageSolution, fileBackupContext.gameFile(),
+                        fileBackupContext.fileCopy());
 
-        fileBackupService.backUpFile(fileCopy, gameFile, backupTarget, storageSolution);
+        fileBackupService.backUpFile(fileBackupContext);
 
         verify(storageSolution).deleteIfExists(any());
         assertOnlyPersistedStatusChangesWere(persistedChangesToFileCopy,
                 List.of(FileCopyStatus.IN_PROGRESS, FileCopyStatus.TRACKED));
-        assertThat(fileCopy.getFilePath()).isNull();
+        assertThat(fileBackupContext.fileCopy().getFilePath()).isNull();
     }
 
     private RuntimeException mockPathResolverThrowsWithNullMessage() {

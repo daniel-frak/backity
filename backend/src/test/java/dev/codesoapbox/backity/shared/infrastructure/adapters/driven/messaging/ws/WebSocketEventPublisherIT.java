@@ -1,8 +1,7 @@
-package dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging;
+package dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.WebSocketEventPublisher;
 import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketConfig;
 import dev.codesoapbox.backity.testing.messaging.WebSocketMessaging;
 import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketPublisherTest;

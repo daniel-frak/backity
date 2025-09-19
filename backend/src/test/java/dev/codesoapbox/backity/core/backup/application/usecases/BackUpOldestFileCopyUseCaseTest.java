@@ -1,28 +1,21 @@
 package dev.codesoapbox.backity.core.backup.application.usecases;
 
+import dev.codesoapbox.backity.core.backup.application.FileBackupContext;
+import dev.codesoapbox.backity.core.backup.application.FileBackupContextFactory;
 import dev.codesoapbox.backity.core.backup.application.FileBackupService;
-import dev.codesoapbox.backity.core.backup.domain.events.BackupRecoveryCompletedEvent;
-import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
-import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
-import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
+import dev.codesoapbox.backity.core.backup.application.TestFileBackupContext;
+import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProcess;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
-import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
-import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
-import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,123 +25,88 @@ class BackUpOldestFileCopyUseCaseTest {
     private BackUpOldestFileCopyUseCase backUpOldestFileCopyUseCase;
 
     @Mock
-    private GameFileRepository gameFileRepository;
+    private FileCopyReplicationProcess fileCopyReplicationProcess;
 
     @Mock
     private FileCopyRepository fileCopyRepository;
 
     @Mock
-    private BackupTargetRepository backupTargetRepository;
-
-    @Mock
-    private StorageSolutionRepository storageSolutionRepository;
+    private FileBackupContextFactory fileBackupContextFactory;
 
     @Mock
     private FileBackupService fileBackupService;
 
     @Test
-    void shouldDoNothingGivenAlreadyInProgress() {
-        backUpOldestFileCopyUseCase.enqueuedFileCopyReference.set(TestFileCopy.tracked());
+    void shouldDoNothingGivenFileCopyReplicationProcessNotReady() {
+        fileCopyReplicationProcessIsNotReady();
 
         backUpOldestFileCopyUseCase.backUpOldestFileCopy();
 
-        verifyNoInteractions(fileCopyRepository, gameFileRepository, fileBackupService);
+        verifyNoInteractions(fileCopyRepository, fileBackupContextFactory, fileBackupService);
+    }
+
+    private void fileCopyReplicationProcessIsNotReady() {
+        when(fileCopyReplicationProcess.canStart())
+                .thenReturn(false);
     }
 
     @Test
     void shouldBackUpEnqueuedGameFileIfNotCurrentlyDownloading() {
-        backUpOldestFileCopyUseCase.handle(new BackupRecoveryCompletedEvent());
-        FileCopy fileCopy = TestFileCopy.tracked();
-        GameFile gameFile = TestGameFile.gog();
-        mockIsNextInQueue(gameFile, fileCopy);
-        BackupTarget backupTarget = mockBackupTargetExists(fileCopy);
-        StorageSolution storageSolution = mockStorageSolutionExists(backupTarget);
-        AtomicBoolean fileCopyWasKeptAsReferenceDuringProcessing =
-                watchFileCopyWasKeptAsReferenceDuringProcessing(fileCopy);
+        fileCopyReplicationProcessIsReady();
+        FileBackupContext context = fileCopyHasContext();
+        mockIsNextInQueue(context.fileCopy());
 
         backUpOldestFileCopyUseCase.backUpOldestFileCopy();
 
-        verify(fileBackupService).backUpFile(fileCopy, gameFile, backupTarget, storageSolution);
-        assertThat(backUpOldestFileCopyUseCase.enqueuedFileCopyReference.get()).isNull();
-        assertThat(fileCopyWasKeptAsReferenceDuringProcessing).isTrue();
+        verify(fileBackupService).backUpFile(context);
     }
 
-    private BackupTarget mockBackupTargetExists(FileCopy fileCopy) {
-        BackupTarget backupTarget = TestBackupTarget.localFolder();
-        when(backupTargetRepository.getById(fileCopy.getNaturalId().backupTargetId()))
-                .thenReturn(backupTarget);
-        return backupTarget;
-    }
-
-    private StorageSolution mockStorageSolutionExists(BackupTarget backupTarget) {
-        StorageSolution storageSolution = mock(StorageSolution.class);
-        when(storageSolutionRepository.getById(backupTarget.getStorageSolutionId()))
-                .thenReturn(storageSolution);
-        return storageSolution;
-    }
-
-    private void mockIsNextInQueue(GameFile gameFile, FileCopy fileCopy) {
+    private void mockIsNextInQueue(FileCopy fileCopy) {
         when(fileCopyRepository.findOldestEnqueued())
                 .thenReturn(Optional.of(fileCopy));
-        when(gameFileRepository.getById(fileCopy.getNaturalId().gameFileId()))
-                .thenReturn(gameFile);
-    }
-
-    private AtomicBoolean watchFileCopyWasKeptAsReferenceDuringProcessing(FileCopy fileCopy) {
-        var fileCopyWasKeptAsReferenceDuringProcessing = new AtomicBoolean();
-        doAnswer(inv -> {
-            fileCopyWasKeptAsReferenceDuringProcessing.set(
-                    backUpOldestFileCopyUseCase.enqueuedFileCopyReference.get() == fileCopy);
-            return null;
-        }).when(fileBackupService).backUpFile(eq(fileCopy), any(), any(), any());
-        return fileCopyWasKeptAsReferenceDuringProcessing;
     }
 
     @Test
-    void shouldMarkAsFailedGracefully() {
-        backUpOldestFileCopyUseCase.handle(new BackupRecoveryCompletedEvent());
-        FileCopy fileCopy = TestFileCopy.tracked();
-        GameFile gameFile = TestGameFile.gog();
-        mockIsNextInQueue(gameFile, fileCopy);
-        BackupTarget backupTarget = mockBackupTargetExists(fileCopy);
-        mockStorageSolutionExists(backupTarget);
-        mockBackupServiceFails();
+    void shouldMarkFileCopyReplicationProcessAsCompletedAfterSuccessfulBackup() {
+        fileCopyReplicationProcessIsReady();
+        FileBackupContext context = fileCopyHasContext();
+        mockIsNextInQueue(context.fileCopy());
 
         backUpOldestFileCopyUseCase.backUpOldestFileCopy();
 
-        assertThat(backUpOldestFileCopyUseCase.enqueuedFileCopyReference.get()).isNull();
-        verifyNoMoreInteractions(fileBackupService);
+        InOrder inOrder = inOrder(fileCopyReplicationProcess, fileBackupService);
+        inOrder.verify(fileBackupService).backUpFile(any());
+        inOrder.verify(fileCopyReplicationProcess).markAsCompleted();
     }
 
-    private void mockBackupServiceFails() {
+    private FileBackupContext fileCopyHasContext() {
+        FileBackupContext context = TestFileBackupContext.trackedLocalGog();
+        when(fileBackupContextFactory.create(context.fileCopy()))
+                .thenReturn(context);
+        return context;
+    }
+
+    private void fileCopyReplicationProcessIsReady() {
+        when(fileCopyReplicationProcess.canStart())
+                .thenReturn(true);
+    }
+
+    @Test
+    void shouldMarkFileCopyReplicationProcessAsCompletedAfterFailedBackup() {
+        fileCopyReplicationProcessIsReady();
+        FileBackupContext context = fileCopyHasContext();
+        mockIsNextInQueue(context.fileCopy());
+        backupServiceThrows();
+
+        backUpOldestFileCopyUseCase.backUpOldestFileCopy();
+
+        InOrder inOrder = inOrder(fileCopyReplicationProcess, fileBackupService);
+        inOrder.verify(fileBackupService).backUpFile(any());
+        inOrder.verify(fileCopyReplicationProcess).markAsCompleted();
+    }
+
+    private void backupServiceThrows() {
         doThrow(new RuntimeException("someFailedReason"))
-                .when(fileBackupService).backUpFile(any(), any(), any(), any());
-    }
-
-    @Test
-    void shouldDoNothingIfCurrentlyDownloading() {
-        backUpOldestFileCopyUseCase.handle(new BackupRecoveryCompletedEvent());
-        FileCopy fileCopy = TestFileCopy.tracked();
-
-        backUpOldestFileCopyUseCase.enqueuedFileCopyReference.set(fileCopy);
-        backUpOldestFileCopyUseCase.backUpOldestFileCopy();
-
-        verifyNoInteractions(fileCopyRepository, gameFileRepository, backupTargetRepository, storageSolutionRepository,
-                fileBackupService);
-    }
-
-    @Test
-    void shouldDoNothingIfBackupRecoveryNotComplete() {
-        backUpOldestFileCopyUseCase.backUpOldestFileCopy();
-
-        verifyNoInteractions(fileCopyRepository, gameFileRepository, backupTargetRepository, storageSolutionRepository,
-                fileBackupService);
-    }
-
-    @Test
-    void shouldGetEventClass() {
-        Class<BackupRecoveryCompletedEvent> result = backUpOldestFileCopyUseCase.getEventClass();
-
-        assertThat(result).isEqualTo(BackupRecoveryCompletedEvent.class);
+                .when(fileBackupService).backUpFile(any());
     }
 }
