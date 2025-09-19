@@ -5,22 +5,16 @@ import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.mes
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.model.GameContentDiscoveryProgressChangedWsEvent;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.model.GameContentDiscoveryProgressChangedWsEventMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.WebSocketEventPublisher;
-import dev.codesoapbox.backity.shared.domain.DomainEventHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
 
 @RequiredArgsConstructor
-public class GameContentDiscoveryProgressChangedEventWebSocketHandler
-        implements DomainEventHandler<GameContentDiscoveryProgressChangedEvent> {
+public class GameContentDiscoveryProgressChangedEventWebSocketHandler {
 
     private final WebSocketEventPublisher wsEventPublisher;
     private final GameContentDiscoveryProgressChangedWsEventMapper wsEventMapper;
 
-    @Override
-    public Class<GameContentDiscoveryProgressChangedEvent> getEventClass() {
-        return GameContentDiscoveryProgressChangedEvent.class;
-    }
-
-    @Override
+    @EventListener
     public void handle(GameContentDiscoveryProgressChangedEvent event) {
         GameContentDiscoveryProgressChangedWsEvent payload = wsEventMapper.toWsEvent(event);
         wsEventPublisher.publish(

@@ -8,6 +8,7 @@ import dev.codesoapbox.backity.testing.messaging.TestMessageChannel;
 import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketEventHandlerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 
 @WebSocketEventHandlerTest
 class FileBackupFailedEventWebSocketHandlerIT {
@@ -16,13 +17,16 @@ class FileBackupFailedEventWebSocketHandlerIT {
     private TestMessageChannel messageChannel;
 
     @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+
+    @Autowired
     private FileBackupFailedEventWebSocketHandler eventHandler;
 
     @Test
     void shouldPublishWebSocketEvent() throws JsonProcessingException {
         FileBackupFailedEvent event = TestFileBackupEvent.failed();
 
-        eventHandler.handle(event);
+        applicationEventPublisher.publishEvent(event);
 
         var expectedJson = """
                 {
