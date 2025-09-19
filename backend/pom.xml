@@ -12,11 +12,6 @@
     <description>The backend module built with Spring Boot</description>
 
     <properties>
-        <!--
-        Warning: SpringDoc 2.8.0 breaks generics!
-        E.g., now Page<X> and Page<Y> will become PageX and PageY.
-        In 2.8.0, they will become a single Page, with X as the expected content.
-        -->
         <springdoc.version>2.8.13</springdoc.version>
         <openapi-generator.version>7.15.0</openapi-generator.version>
         <maven-clean.version>3.5.0</maven-clean.version>
