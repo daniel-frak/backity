@@ -30,6 +30,8 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <!-- END of Project version info -->
 
+        <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
+
         <!-- Sonar -->
         <sonar.projectKey>backity</sonar.projectKey>
         <sonar.projectName>Backity</sonar.projectName>
