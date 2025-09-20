@@ -10,16 +10,16 @@ import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
-import dev.codesoapbox.backity.shared.domain.DomainEventHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.event.EventListener;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 @RequiredArgsConstructor
-public class BackUpOldestFileCopyUseCase implements DomainEventHandler<BackupRecoveryCompletedEvent> {
+public class BackUpOldestFileCopyUseCase {
 
     final AtomicReference<FileCopy> enqueuedFileCopyReference = new AtomicReference<>();
     private final FileCopyRepository fileCopyRepository;
@@ -76,8 +76,9 @@ public class BackUpOldestFileCopyUseCase implements DomainEventHandler<BackupRec
         return BackupRecoveryCompletedEvent.class;
     }
 
-    @Override
-    public void handle(BackupRecoveryCompletedEvent event) {
+    // @TODO Integration test this
+    @EventListener(BackupRecoveryCompletedEvent.class)
+    public void handleBackupRecoveryCompleted() {
         recoveryCompleted.set(true);
     }
 }

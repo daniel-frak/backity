@@ -57,7 +57,7 @@ class BackUpOldestFileCopyUseCaseTest {
 
     @Test
     void shouldBackUpEnqueuedGameFileIfNotCurrentlyDownloading() {
-        backUpOldestFileCopyUseCase.handle(new BackupRecoveryCompletedEvent());
+        backUpOldestFileCopyUseCase.handleBackupRecoveryCompleted();
         FileCopy fileCopy = TestFileCopy.tracked();
         GameFile gameFile = TestGameFile.gog();
         mockIsNextInQueue(gameFile, fileCopy);
@@ -106,7 +106,7 @@ class BackUpOldestFileCopyUseCaseTest {
 
     @Test
     void shouldMarkAsFailedGracefully() {
-        backUpOldestFileCopyUseCase.handle(new BackupRecoveryCompletedEvent());
+        backUpOldestFileCopyUseCase.handleBackupRecoveryCompleted();
         FileCopy fileCopy = TestFileCopy.tracked();
         GameFile gameFile = TestGameFile.gog();
         mockIsNextInQueue(gameFile, fileCopy);
@@ -127,7 +127,7 @@ class BackUpOldestFileCopyUseCaseTest {
 
     @Test
     void shouldDoNothingIfCurrentlyDownloading() {
-        backUpOldestFileCopyUseCase.handle(new BackupRecoveryCompletedEvent());
+        backUpOldestFileCopyUseCase.handleBackupRecoveryCompleted();
         FileCopy fileCopy = TestFileCopy.tracked();
 
         backUpOldestFileCopyUseCase.enqueuedFileCopyReference.set(fileCopy);

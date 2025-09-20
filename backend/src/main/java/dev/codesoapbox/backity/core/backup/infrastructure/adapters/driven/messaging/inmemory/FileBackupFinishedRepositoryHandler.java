@@ -2,20 +2,15 @@ package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messa
 
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
-import dev.codesoapbox.backity.shared.domain.DomainEventHandler;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
 
 @RequiredArgsConstructor
-public class FileBackupFinishedRepositoryHandler implements DomainEventHandler<FileBackupFinishedEvent> {
+public class FileBackupFinishedRepositoryHandler {
 
     private final FileCopyReplicationProgressRepository fileCopyReplicationProgressRepository;
 
-    @Override
-    public Class<FileBackupFinishedEvent> getEventClass() {
-        return FileBackupFinishedEvent.class;
-    }
-
-    @Override
+    @EventListener
     public void handle(FileBackupFinishedEvent event) {
         fileCopyReplicationProgressRepository.deleteByFileCopyId(event.fileCopyId());
     }
