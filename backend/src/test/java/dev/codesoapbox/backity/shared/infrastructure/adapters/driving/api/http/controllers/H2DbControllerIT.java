@@ -9,7 +9,7 @@ import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.core.gamefile.infrastructure.config.GameFileJpaRepositoryBeanConfig;
-import dev.codesoapbox.backity.shared.infrastructure.config.DomainEventPublisherBeanConfig;
+import dev.codesoapbox.backity.shared.infrastructure.config.SpringDomainEventPublisherBeanConfig;
 import dev.codesoapbox.backity.shared.infrastructure.config.jpa.SharedJpaRepositoryBeanConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         GameJpaRepositoryBeanConfig.class,
         GameFileJpaRepositoryBeanConfig.class,
         SharedJpaRepositoryBeanConfig.class,
-        DomainEventPublisherBeanConfig.class
+        SpringDomainEventPublisherBeanConfig.class
 })
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
