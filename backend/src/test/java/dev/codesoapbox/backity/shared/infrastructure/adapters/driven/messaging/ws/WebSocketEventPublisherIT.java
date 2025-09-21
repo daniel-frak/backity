@@ -5,27 +5,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketConfig;
 import dev.codesoapbox.backity.testing.messaging.WebSocketMessaging;
 import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketPublisherTest;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.messaging.simp.stomp.StompFrameHandler;
-import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 
 @WebSocketPublisherTest
 class WebSocketEventPublisherIT {
@@ -61,7 +55,7 @@ class WebSocketEventPublisherIT {
     @Test
     void shouldPublishWebSocketEvent() throws IOException {
         String topic = "/topic/test-topic";
-        subscribeTo(topic);
+        webSocketMessaging.subscribeTo(topic, session);
 
         eventPublisher.publish(topic, new TestPayload("testValue"));
 
@@ -72,34 +66,6 @@ class WebSocketEventPublisherIT {
                 }
                 """;
         assertSameJson(expectedMessage, receivedMessage);
-    }
-
-    @SneakyThrows
-    private void subscribeTo(String destination) {
-        session.subscribe(destination,
-                new StompFrameHandler() {
-
-                    @Override
-                    public Type getPayloadType(StompHeaders headers) {
-                        return Object.class;
-                    }
-
-                    @Override
-                    public void handleFrame(StompHeaders headers, Object payload) {
-                        String jsonPayload = new String((byte[]) payload, StandardCharsets.UTF_8);
-                        webSocketMessaging.addMessage(jsonPayload, destination);
-                    }
-                });
-
-        waitForSuccessfulSubscription(destination);
-    }
-
-    private void waitForSuccessfulSubscription(String destination) {
-        String handshakeMessage = "subscription successful";
-        session.send(destination, handshakeMessage.getBytes(StandardCharsets.UTF_8));
-        await()
-                .atMost(15, SECONDS)
-                .until(() -> webSocketMessaging.receive(destination) != null);
     }
 
     private void assertSameJson(String expectedPayload, String sentPayload) throws JsonProcessingException {
