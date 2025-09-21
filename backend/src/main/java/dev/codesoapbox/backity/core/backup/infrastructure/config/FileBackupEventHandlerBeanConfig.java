@@ -2,9 +2,9 @@ package dev.codesoapbox.backity.core.backup.infrastructure.config;
 
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProcess;
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
-import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.inmemory.BackupRecoveryCompletedEventHandler;
-import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.inmemory.FileBackupFinishedRepositoryHandler;
-import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.inmemory.FileDownloadProgressChangedRepositoryHandler;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.inmemory.eventlisteners.BackupRecoveryCompletedEventListener;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.inmemory.eventlisteners.FileBackupFinishedEventListener;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.inmemory.eventlisteners.FileDownloadProgressChangedEventListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,20 +12,20 @@ import org.springframework.context.annotation.Configuration;
 public class FileBackupEventHandlerBeanConfig {
 
     @Bean
-    FileDownloadProgressChangedRepositoryHandler fileDownloadProgressChangedRepositoryHandler(
+    FileDownloadProgressChangedEventListener fileDownloadProgressChangedRepositoryHandler(
             FileCopyReplicationProgressRepository replicationProgressRepository) {
-        return new FileDownloadProgressChangedRepositoryHandler(replicationProgressRepository);
+        return new FileDownloadProgressChangedEventListener(replicationProgressRepository);
     }
 
     @Bean
-    FileBackupFinishedRepositoryHandler fileBackupFinishedRepositoryHandler(
+    FileBackupFinishedEventListener fileBackupFinishedRepositoryHandler(
             FileCopyReplicationProgressRepository replicationProgressRepository) {
-        return new FileBackupFinishedRepositoryHandler(replicationProgressRepository);
+        return new FileBackupFinishedEventListener(replicationProgressRepository);
     }
 
     @Bean
-    BackupRecoveryCompletedEventHandler backupRecoveryCompletedEventHandler(
+    BackupRecoveryCompletedEventListener backupRecoveryCompletedEventHandler(
             FileCopyReplicationProcess fileCopyReplicationProcess) {
-        return new BackupRecoveryCompletedEventHandler(fileCopyReplicationProcess);
+        return new BackupRecoveryCompletedEventListener(fileCopyReplicationProcess);
     }
 }

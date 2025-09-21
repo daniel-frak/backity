@@ -12,10 +12,6 @@ public class FileCopyReplicationProcess {
 
     private final AtomicBoolean isInProgress = new AtomicBoolean(false);
 
-    public void markAsInProgress() {
-        isInProgress.set(true);
-    }
-
     public void markAsCompleted() {
         isInProgress.set(false);
     }
@@ -24,7 +20,10 @@ public class FileCopyReplicationProcess {
         backupRecoveryCompleted.set(true);
     }
 
-    public boolean canStart() {
-        return !isInProgress.get() && backupRecoveryCompleted.get();
+    public boolean tryStart() {
+        if (!backupRecoveryCompleted.get()) {
+            return false;
+        }
+        return isInProgress.compareAndSet(false, true);
     }
 }

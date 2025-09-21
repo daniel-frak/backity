@@ -408,7 +408,8 @@
                         <excludedClass>*JpaSpecifications</excludedClass>
                         <excludedClass>*StartupListener</excludedClass>
                         <excludedClass>*SpringScheduler</excludedClass>
-                        <excludedClass>*WebSocketHandler</excludedClass>
+                        <excludedClass>*EventListener</excludedClass>
+                        <excludedClass>*EventWebSocketListener</excludedClass>
                         <excludedClass>*WebSocketPublisher</excludedClass>
                         <excludedClass>*WebSocketEventPublisher</excludedClass>
                         <excludedClass>*LogbackLogService</excludedClass>

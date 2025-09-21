@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers;
+package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventlisteners;
 
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.FileBackupWebSocketTopics;
@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 
 @RequiredArgsConstructor
-public class FileBackupFinishedEventWebSocketHandler {
+public class FileBackupFinishedEventWebSocketListener {
 
     private final WebSocketEventPublisher wsEventPublisher;
     private final FileCopyStatusChangedWsEventMapper wsEventMapper;

@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 public class DomainEventPublisherBeanConfig {
 
     @Bean
-    DomainEventSpringPublisher domainEventWebSocketPublisher(ApplicationEventPublisher applicationEventPublisher) {
+    DomainEventSpringPublisher domainEventSpringPublisher(ApplicationEventPublisher applicationEventPublisher) {
         return new DomainEventSpringPublisher(applicationEventPublisher);
     }
 }

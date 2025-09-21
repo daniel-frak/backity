@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.config;
 
-import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers.FileBackupFailedEventWebSocketHandler;
-import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers.FileBackupFinishedEventWebSocketHandler;
-import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers.FileBackupStartedEventWebSocketHandler;
-import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers.FileDownloadProgressChangedEventWebSocketHandler;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventlisteners.FileBackupFailedEventWebSocketListener;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventlisteners.FileBackupFinishedEventWebSocketListener;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventlisteners.FileBackupStartedEventWebSocketListener;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventlisteners.FileDownloadProgressChangedEventWebSocketListener;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileCopyStatusChangedWsEventMapper;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileDownloadProgressUpdatedWsEventMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.WebSocketEventPublisher;
@@ -20,36 +20,36 @@ public class FileBackupWebSocketBeanConfig {
     }
 
     @Bean
-    FileBackupStartedEventWebSocketHandler fileBackupStartedEventWebSocketHandler(
+    FileBackupStartedEventWebSocketListener fileBackupStartedEventWebSocketHandler(
             WebSocketEventPublisher webSocketEventPublisher,
             FileCopyStatusChangedWsEventMapper fileCopyStatusChangedMapper) {
 
-        return new FileBackupStartedEventWebSocketHandler(
+        return new FileBackupStartedEventWebSocketListener(
                 webSocketEventPublisher, fileCopyStatusChangedMapper);
     }
 
     @Bean
-    FileBackupFinishedEventWebSocketHandler fileBackupFinishedEventWebSocketHandler(
+    FileBackupFinishedEventWebSocketListener fileBackupFinishedEventWebSocketHandler(
             WebSocketEventPublisher webSocketEventPublisher,
             FileCopyStatusChangedWsEventMapper fileCopyStatusChangedMapper) {
 
-        return new FileBackupFinishedEventWebSocketHandler(webSocketEventPublisher, fileCopyStatusChangedMapper);
+        return new FileBackupFinishedEventWebSocketListener(webSocketEventPublisher, fileCopyStatusChangedMapper);
     }
 
     @Bean
-    FileDownloadProgressChangedEventWebSocketHandler fileDownloadProgressChangedEventWebSocketHandler(
+    FileDownloadProgressChangedEventWebSocketListener fileDownloadProgressChangedEventWebSocketHandler(
             WebSocketEventPublisher webSocketEventPublisher) {
         FileDownloadProgressUpdatedWsEventMapper downloadProgressUpdatedMapper =
                 Mappers.getMapper(FileDownloadProgressUpdatedWsEventMapper.class);
 
-        return new FileDownloadProgressChangedEventWebSocketHandler(
+        return new FileDownloadProgressChangedEventWebSocketListener(
                 webSocketEventPublisher, downloadProgressUpdatedMapper);
     }
 
     @Bean
-    FileBackupFailedEventWebSocketHandler fileBackupFailedEventWebSocketHandler(
+    FileBackupFailedEventWebSocketListener fileBackupFailedEventWebSocketHandler(
             WebSocketEventPublisher webSocketEventPublisher,
             FileCopyStatusChangedWsEventMapper fileCopyStatusChangedMapper) {
-        return new FileBackupFailedEventWebSocketHandler(webSocketEventPublisher, fileCopyStatusChangedMapper);
+        return new FileBackupFailedEventWebSocketListener(webSocketEventPublisher, fileCopyStatusChangedMapper);
     }
 }

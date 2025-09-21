@@ -46,7 +46,7 @@ class BackUpOldestFileCopyUseCaseTest {
     }
 
     private void fileCopyReplicationProcessIsNotReady() {
-        when(fileCopyReplicationProcess.canStart())
+        when(fileCopyReplicationProcess.tryStart())
                 .thenReturn(false);
     }
 
@@ -54,14 +54,14 @@ class BackUpOldestFileCopyUseCaseTest {
     void shouldBackUpEnqueuedGameFileIfNotCurrentlyDownloading() {
         fileCopyReplicationProcessIsReady();
         FileBackupContext context = fileCopyHasContext();
-        mockIsNextInQueue(context.fileCopy());
+        isNextInQueue(context.fileCopy());
 
         backUpOldestFileCopyUseCase.backUpOldestFileCopy();
 
         verify(fileBackupService).backUpFile(context);
     }
 
-    private void mockIsNextInQueue(FileCopy fileCopy) {
+    private void isNextInQueue(FileCopy fileCopy) {
         when(fileCopyRepository.findOldestEnqueued())
                 .thenReturn(Optional.of(fileCopy));
     }
@@ -70,7 +70,7 @@ class BackUpOldestFileCopyUseCaseTest {
     void shouldMarkFileCopyReplicationProcessAsCompletedAfterSuccessfulBackup() {
         fileCopyReplicationProcessIsReady();
         FileBackupContext context = fileCopyHasContext();
-        mockIsNextInQueue(context.fileCopy());
+        isNextInQueue(context.fileCopy());
 
         backUpOldestFileCopyUseCase.backUpOldestFileCopy();
 
@@ -87,7 +87,7 @@ class BackUpOldestFileCopyUseCaseTest {
     }
 
     private void fileCopyReplicationProcessIsReady() {
-        when(fileCopyReplicationProcess.canStart())
+        when(fileCopyReplicationProcess.tryStart())
                 .thenReturn(true);
     }
 
@@ -95,7 +95,7 @@ class BackUpOldestFileCopyUseCaseTest {
     void shouldMarkFileCopyReplicationProcessAsCompletedAfterFailedBackup() {
         fileCopyReplicationProcessIsReady();
         FileBackupContext context = fileCopyHasContext();
-        mockIsNextInQueue(context.fileCopy());
+        isNextInQueue(context.fileCopy());
         backupServiceThrows();
 
         backUpOldestFileCopyUseCase.backUpOldestFileCopy();
@@ -108,5 +108,20 @@ class BackUpOldestFileCopyUseCaseTest {
     private void backupServiceThrows() {
         doThrow(new RuntimeException("someFailedReason"))
                 .when(fileBackupService).backUpFile(any());
+    }
+
+    @Test
+    void shouldCompleteProcessGivenQueueIsEmpty() {
+        fileCopyReplicationProcessIsReady();
+        queueIsEmpty();
+
+        backUpOldestFileCopyUseCase.backUpOldestFileCopy();
+
+        verify(fileCopyReplicationProcess).markAsCompleted();
+        verifyNoInteractions(fileBackupContextFactory, fileBackupService);
+    }
+
+    private void queueIsEmpty() {
+        when(fileCopyRepository.findOldestEnqueued()).thenReturn(Optional.empty());
     }
 }

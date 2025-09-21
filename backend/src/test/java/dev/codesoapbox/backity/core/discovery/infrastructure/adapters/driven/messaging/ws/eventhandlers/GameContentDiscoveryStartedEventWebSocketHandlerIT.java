@@ -19,9 +19,6 @@ class GameContentDiscoveryStartedEventWebSocketHandlerIT {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
-    @Autowired
-    private GameContentDiscoveryStartedEventWebSocketHandler eventHandler;
-
     @Test
     void shouldPublishWebSocketEvent() throws JsonProcessingException {
         GameContentDiscoveryStartedEvent event = TestGameContentDiscoveryEvent.discoveryStarted();

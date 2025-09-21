@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers;
+package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventlisteners;
 
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.FileBackupWebSocketTopics;
@@ -9,14 +9,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 
 @RequiredArgsConstructor
-public class FileBackupStartedEventWebSocketHandler {
+public class FileBackupStartedEventWebSocketListener {
 
     private final WebSocketEventPublisher wsEventPublisher;
-    private final FileCopyStatusChangedWsEventMapper statusChangedWsEventMapper;
+    private final FileCopyStatusChangedWsEventMapper wsEventMapper;
 
     @EventListener
     public void handle(FileBackupStartedEvent event) {
-        FileCopyStatusChangedWsEvent payload = statusChangedWsEventMapper.toWsEvent(event);
+        FileCopyStatusChangedWsEvent payload = wsEventMapper.toWsEvent(event);
         wsEventPublisher.publish(FileBackupWebSocketTopics.BACKUP_STATUS_CHANGED.wsDestination(), payload);
     }
 }
