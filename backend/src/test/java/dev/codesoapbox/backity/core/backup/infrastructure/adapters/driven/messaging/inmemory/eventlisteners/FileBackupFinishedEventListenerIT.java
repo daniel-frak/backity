@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.inmemory;
+package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.inmemory.eventlisteners;
 
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import static org.mockito.Mockito.verify;
 
 @DomainEventHandlerTest
-class FileBackupFinishedRepositoryHandlerIT {
+class FileBackupFinishedEventListenerIT {
 
     @Autowired
     private FileCopyReplicationProgressRepository fileCopyReplicationProgressRepositoryMock;

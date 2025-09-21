@@ -27,19 +27,18 @@ public class FileBackupService {
     private final FileCopyReplicator fileCopyReplicator;
 
     public void backUpFile(FileBackupContext fileBackupContext) {
-        FileCopy fileCopy = fileBackupContext.fileCopy();
         GameFile gameFile = fileBackupContext.gameFile();
-        BackupTarget backupTarget = fileBackupContext.backupTarget();
-        StorageSolution storageSolution = fileBackupContext.storageSolution();
-
         if (!fileCopyReplicator.gameProviderIsConnected(gameFile)) {
             log.debug("Game provider for game file (id={}) is not connected, skipping...", gameFile.getId());
             return;
         }
+        FileCopy fileCopy = fileBackupContext.fileCopy();
         log.info("Backing up game file (id={}, fileCopyId={}, url={})...", gameFile.getId(),
                 fileCopy.getId(), gameFile.getFileSource().url());
 
+        StorageSolution storageSolution = fileBackupContext.storageSolution();
         try {
+            BackupTarget backupTarget = fileBackupContext.backupTarget();
             tryToBackUp(fileCopy, gameFile, backupTarget, storageSolution);
         } catch (IOException | RuntimeException e) {
             try {

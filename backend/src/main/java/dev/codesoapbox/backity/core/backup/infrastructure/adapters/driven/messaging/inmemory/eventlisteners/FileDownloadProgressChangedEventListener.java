@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.inmemory;
+package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.inmemory.eventlisteners;
 
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgress;
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 
 @RequiredArgsConstructor
-public class FileDownloadProgressChangedRepositoryHandler {
+public class FileDownloadProgressChangedEventListener {
 
     private final FileCopyReplicationProgressRepository fileCopyReplicationProgressRepository;
 

@@ -1,7 +1,7 @@
-package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers;
+package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventlisteners;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import dev.codesoapbox.backity.core.backup.domain.events.FileDownloadProgressChangedEvent;
+import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.TestFileBackupEvent;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.FileBackupWebSocketTopics;
 import dev.codesoapbox.backity.testing.messaging.TestMessageChannel;
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
 @WebSocketEventHandlerTest
-class FileDownloadProgressChangedEventWebSocketHandlerIT {
+class FileBackupFailedEventWebSocketListenerIT {
 
     @Autowired
     private TestMessageChannel messageChannel;
@@ -19,12 +19,9 @@ class FileDownloadProgressChangedEventWebSocketHandlerIT {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
-    @Autowired
-    private FileDownloadProgressChangedEventWebSocketHandler eventHandler;
-
     @Test
     void shouldPublishWebSocketEvent() throws JsonProcessingException {
-        FileDownloadProgressChangedEvent event = TestFileBackupEvent.progressChanged();
+        FileBackupFailedEvent event = TestFileBackupEvent.failed();
 
         applicationEventPublisher.publishEvent(event);
 
@@ -35,11 +32,11 @@ class FileDownloadProgressChangedEventWebSocketHandlerIT {
                     "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
                     "backupTargetId": "d46dde81-e519-4300-9a54-6f9e7d637926"
                   },
-                  "percentage": 50,
-                  "timeLeftSeconds": 999
+                  "newStatus": "FAILED",
+                  "failedReason": "some failed reason"
                 }
                 """;
         messageChannel.assertPublishedWebSocketEvent(
-                FileBackupWebSocketTopics.BACKUP_PROGRESS_CHANGED.wsDestination(), expectedJson);
+                FileBackupWebSocketTopics.BACKUP_STATUS_CHANGED.wsDestination(), expectedJson);
     }
 }

@@ -17,9 +17,6 @@ class GameContentDiscoveryStoppedEventWebSocketHandlerIT {
     private TestMessageChannel messageChannel;
 
     @Autowired
-    private GameContentDiscoveryStoppedEventWebSocketHandler eventHandler;
-
-    @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Test

@@ -18,12 +18,12 @@ public class BackUpOldestFileCopyUseCase {
     private final FileBackupContextFactory fileBackupContextFactory;
     private final FileBackupService fileBackupService;
 
-    public synchronized void backUpOldestFileCopy() {
-        if (!fileCopyReplicationProcess.canStart()) {
+    public void backUpOldestFileCopy() {
+        if (!fileCopyReplicationProcess.tryStart()) {
+            log.debug("Backup skipped: file copy replication process is not ready.");
             return;
         }
 
-        fileCopyReplicationProcess.markAsInProgress();
         try {
             fileCopyRepository.findOldestEnqueued()
                     .ifPresent(this::tryToBackUp);
@@ -36,7 +36,7 @@ public class BackUpOldestFileCopyUseCase {
         try {
             backUp(fileCopy);
         } catch (RuntimeException e) {
-            log.error("An error occurred while trying to process enqueued game file (id: {})",
+            log.error("An error occurred while trying to process enqueued file copy (id={})",
                     fileCopy.getId(), e);
         }
     }
@@ -44,7 +44,7 @@ public class BackUpOldestFileCopyUseCase {
     /*
     Note that the current implementation won't mark the FileCopy as "FAILED" when one of the repository calls fails,
     potentially leading to backups getting stuck, as the failing backup will always be the first in the queue.
-    This is probably not a problem, though, as these repository calls failing is likely to be a problem unrelated
+    This is probably not a problem, though, the fileBackupContextFactory failing is likely to be a problem unrelated
     to the FileCopy itself.
      */
     private void backUp(FileCopy fileCopy) {

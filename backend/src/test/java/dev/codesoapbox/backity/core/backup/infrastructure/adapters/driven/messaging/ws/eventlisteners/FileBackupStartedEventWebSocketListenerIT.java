@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers;
+package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventlisteners;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
@@ -11,16 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
 @WebSocketEventHandlerTest
-class FileBackupStartedEventWebSocketHandlerIT {
+class FileBackupStartedEventWebSocketListenerIT {
 
     @Autowired
     private TestMessageChannel messageChannel;
 
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
-
-    @Autowired
-    private FileBackupStartedEventWebSocketHandler eventHandler;
 
     @Test
     void shouldPublishWebSocketEvent() throws JsonProcessingException {

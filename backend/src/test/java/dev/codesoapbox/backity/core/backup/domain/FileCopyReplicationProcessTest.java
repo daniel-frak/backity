@@ -15,37 +15,38 @@ class FileCopyReplicationProcessTest {
     }
 
     @Test
-    void canStartShouldReturnTrueGivenNotInProgressAndBackupRecoveryCompleted() {
+    void tryStartShouldReturnTrueGivenNotInProgressAndBackupRecoveryCompleted() {
         process.markBackupRecoveryCompleted();
 
-        boolean result = process.canStart();
+        boolean result = process.tryStart();
 
         assertThat(result).isTrue();
     }
 
     @Test
-    void canStartShouldReturnFalseGivenNotInProgressButBackupRecoveryNotCompleted() {
-        boolean result = process.canStart();
+    void tryStartShouldReturnFalseGivenNotInProgressButBackupRecoveryNotCompleted() {
+        boolean result = process.tryStart();
 
         assertThat(result).isFalse();
     }
 
     @Test
-    void canStartShouldReturnFalseGivenBackupRecoveryCompletedButInProgress() {
-        process.markAsInProgress();
-
-        boolean result = process.canStart();
-
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    void catStartShouldReturnTrueGivenInProgressProcessWasCompleted() {
+    void tryStartShouldReturnFalseGivenBackupRecoveryCompletedButInProgress() {
         process.markBackupRecoveryCompleted();
-        process.markAsInProgress();
+        process.tryStart();
+
+        boolean result = process.tryStart();
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void tryStartShouldReturnTrueGivenInProgressProcessWasCompleted() {
+        process.markBackupRecoveryCompleted();
+        process.tryStart();
 
         process.markAsCompleted();
-        boolean result = process.canStart();
+        boolean result = process.tryStart();
 
         assertThat(result).isTrue();
     }

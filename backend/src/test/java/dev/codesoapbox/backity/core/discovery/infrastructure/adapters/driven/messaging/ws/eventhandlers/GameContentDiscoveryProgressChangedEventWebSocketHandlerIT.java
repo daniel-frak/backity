@@ -19,9 +19,6 @@ class GameContentDiscoveryProgressChangedEventWebSocketHandlerIT {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
-    @Autowired
-    private GameContentDiscoveryProgressChangedEventWebSocketHandler eventHandler;
-
     @Test
     void shouldPublishWebSocketEvent() throws JsonProcessingException {
         GameContentDiscoveryProgressChangedEvent event = TestGameContentDiscoveryEvent.progressChanged();

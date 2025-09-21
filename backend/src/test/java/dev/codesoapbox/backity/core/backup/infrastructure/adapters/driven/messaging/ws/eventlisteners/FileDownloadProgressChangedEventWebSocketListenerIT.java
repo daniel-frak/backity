@@ -1,7 +1,7 @@
-package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventhandlers;
+package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventlisteners;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
+import dev.codesoapbox.backity.core.backup.domain.events.FileDownloadProgressChangedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.TestFileBackupEvent;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.FileBackupWebSocketTopics;
 import dev.codesoapbox.backity.testing.messaging.TestMessageChannel;
@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 
 @WebSocketEventHandlerTest
-class FileBackupFinishedEventWebSocketHandlerIT {
+class FileDownloadProgressChangedEventWebSocketListenerIT {
 
     @Autowired
     private TestMessageChannel messageChannel;
@@ -20,11 +20,11 @@ class FileBackupFinishedEventWebSocketHandlerIT {
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
-    private FileBackupFinishedEventWebSocketHandler eventHandler;
+    private FileDownloadProgressChangedEventWebSocketListener eventHandler;
 
     @Test
     void shouldPublishWebSocketEvent() throws JsonProcessingException {
-        FileBackupFinishedEvent event = TestFileBackupEvent.finishedIntegrityUnknown();
+        FileDownloadProgressChangedEvent event = TestFileBackupEvent.progressChanged();
 
         applicationEventPublisher.publishEvent(event);
 
@@ -35,11 +35,11 @@ class FileBackupFinishedEventWebSocketHandlerIT {
                     "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
                     "backupTargetId": "d46dde81-e519-4300-9a54-6f9e7d637926"
                   },
-                  "newStatus": "STORED_INTEGRITY_UNKNOWN",
-                  "failedReason": null
+                  "percentage": 50,
+                  "timeLeftSeconds": 999
                 }
                 """;
         messageChannel.assertPublishedWebSocketEvent(
-                FileBackupWebSocketTopics.BACKUP_STATUS_CHANGED.wsDestination(), expectedJson);
+                FileBackupWebSocketTopics.BACKUP_PROGRESS_CHANGED.wsDestination(), expectedJson);
     }
 }

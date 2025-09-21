@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketConfig;
-import dev.codesoapbox.backity.testing.messaging.WebSocketMessaging;
+import dev.codesoapbox.backity.testing.messaging.TestWebSocketMessaging;
 import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketPublisherTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,13 +34,13 @@ class WebSocketEventPublisherIT {
     @Autowired
     private WebSocketEventPublisher eventPublisher;
 
-    private WebSocketMessaging webSocketMessaging;
+    private TestWebSocketMessaging testWebSocketMessaging;
     private StompSession session;
     private WebSocketStompClient stompClient;
 
     @BeforeEach
     void setUp() throws ExecutionException, InterruptedException, TimeoutException {
-        webSocketMessaging = new WebSocketMessaging();
+        testWebSocketMessaging = new TestWebSocketMessaging();
         stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         session = connectToWebSocket(stompClient);
     }
@@ -70,11 +70,11 @@ class WebSocketEventPublisherIT {
     @Test
     void shouldPublishWebSocketEvent() throws IOException {
         String topic = "/topic/test-topic";
-        webSocketMessaging.subscribeTo(topic, session);
+        testWebSocketMessaging.subscribeTo(topic, session);
 
         eventPublisher.publish(topic, new TestPayload("testValue"));
 
-        String receivedMessage = webSocketMessaging.receive(topic);
+        String receivedMessage = testWebSocketMessaging.receive(topic);
         String expectedMessage = """
                 {
                     "value": "testValue"
