@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProcess;
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.eventlisteners.spring.BackupRecoveryCompletedEventSpringListener;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.eventlisteners.spring.FileBackupFinishedEventSpringListener;
-import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.eventlisteners.spring.FileDownloadProgressChangedEventSpringListener;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.eventlisteners.spring.FileCopyReplicationProgressChangedEventSpringListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,13 +12,13 @@ import org.springframework.context.annotation.Configuration;
 public class FileBackupSpringEventListenerBeanConfig {
 
     @Bean
-    FileDownloadProgressChangedEventSpringListener fileDownloadProgressChangedEventSpringListener(
+    FileCopyReplicationProgressChangedEventSpringListener fileCopyReplicationProgressChangedEventSpringListener(
             FileCopyReplicationProgressRepository replicationProgressRepository) {
-        return new FileDownloadProgressChangedEventSpringListener(replicationProgressRepository);
+        return new FileCopyReplicationProgressChangedEventSpringListener(replicationProgressRepository);
     }
 
     @Bean
-    FileBackupFinishedEventSpringListener fileBackupFinishedSpringListener(
+    FileBackupFinishedEventSpringListener fileBackupFinishedEventSpringListener(
             FileCopyReplicationProgressRepository replicationProgressRepository) {
         return new FileBackupFinishedEventSpringListener(replicationProgressRepository);
     }

@@ -10,9 +10,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-/**
- * A version of a game file, either not yet downloaded, already downloaded or anything in-between.
- */
 @SuppressWarnings(
         // @Data and @EqualsAndHashCode are safe to use here because:
         // - We explicitly add a @NoArgsConstructor (required by Jpa spec)

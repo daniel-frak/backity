@@ -50,10 +50,14 @@ public class GameContentDiscoveryService {
         log.info("Discovering content for gameProviderId: {}", gameProviderDiscoveryService.getGameProviderId());
 
         discoveryProgressTracker.initializeTracking(gameProviderDiscoveryService.getGameProviderId());
-
+        GameDiscoveryProgressTracker gameDiscoveryProgressTracker =
+                discoveryProgressTracker.getGameDiscoveryTracker(
+                        gameProviderDiscoveryService.getGameProviderId());
         CompletableFuture.runAsync(() -> gameProviderDiscoveryService.discoverAllFiles(
-                        fileSource -> saveDiscoveredFileInfo(
-                                gameProviderDiscoveryService.getGameProviderId(), fileSource)), discoveryExecutor)
+                                fileSource -> saveDiscoveredFileInfo(
+                                        gameProviderDiscoveryService.getGameProviderId(), fileSource),
+                                gameDiscoveryProgressTracker),
+                        discoveryExecutor)
                 .whenComplete((v, e) ->
                         handleGameProviderDiscoveryFinished(gameProviderDiscoveryService, e));
     }

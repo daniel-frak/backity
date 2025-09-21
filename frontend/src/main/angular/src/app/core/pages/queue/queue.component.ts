@@ -5,7 +5,7 @@ import {
   FileCopyStatus,
   FileCopyStatusChangedEvent,
   FileCopyWithContext,
-  FileDownloadProgressUpdatedEvent,
+  FileCopyReplicationProgressUpdatedEvent,
   StorageSolutionsClient,
   StorageSolutionStatus,
   StorageSolutionStatusesResponse
@@ -174,7 +174,7 @@ export class QueueComponent implements OnInit, OnDestroy {
   }
 
   private onReplicationProgressChanged(payload: Message) {
-    const event: FileDownloadProgressUpdatedEvent = JSON.parse(payload.body);
+    const event: FileCopyReplicationProgressUpdatedEvent = JSON.parse(payload.body);
     const foundFileCopyWithContext: FileCopyWithContext | undefined =
       this.findFileCopyWithContextInQueue(event.fileCopyId);
     if (!foundFileCopyWithContext) {

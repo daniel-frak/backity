@@ -19,10 +19,10 @@
            }"
            aria-hidden="true">
         </i>
-        @if (overview?.progress) {
+        @if (overview?.isInProgress) {
           Discovering...
         }
-        @if (!overview?.progress) {
+        @if (!overview?.isInProgress) {
           @if (gogAuthenticated) {
             Authenticated
           }
@@ -39,24 +39,24 @@
         <app-loading-placeholder [widths]="['6rem']"/>
       </ng-container>
 
-      @if (overview?.progress) {
+      @if (overview?.isInProgress) {
         <app-progress-bar [percentage]="overview?.progress?.percentage ?? 0"/>
       }
 
-      @if (overview?.progress) {
+      @if (overview?.isInProgress) {
         <app-button [disabled]="true" buttonStyle="secondary" testId="stop-discovery-btn">
           Stop discovery
         </app-button>
       }
 
-      @if (!gogAuthenticated && !overview?.progress) {
+      @if (!gogAuthenticated && !overview?.isInProgress) {
         <app-button [action]="openGogModal"
                     buttonType="button" testId="show-gog-auth-modal-btn" buttonStyle="primary">
           Authenticate
         </app-button>
       }
 
-      @if (gogAuthenticated && !overview?.progress) {
+      @if (gogAuthenticated && !overview?.isInProgress) {
         <app-button [actionAsync]="onClickSignOutGog()" buttonStyle="danger" testId="log-out-gog-btn">
           Log out
         </app-button>
@@ -69,7 +69,7 @@
         <app-loading-placeholder [widths]="['20rem', '20rem', '20rem', '20rem', '20rem', '8rem']"/>
       </ng-container>
 
-      @if (!overview?.progress) {
+      @if (!overview?.isInProgress) {
         <app-named-value-container>
           <app-named-value>
             <ng-container name>Last successful discovery stopped at</ng-container>
@@ -119,7 +119,7 @@
           </app-named-value>
         </app-named-value-container>
       }
-      @if (overview?.progress) {
+      @if (overview?.isInProgress) {
         <app-named-value-container>
           <app-named-value>
             <ng-container name>Games discovered</ng-container>

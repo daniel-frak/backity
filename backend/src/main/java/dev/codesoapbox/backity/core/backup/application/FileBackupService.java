@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.backup.application;
 
-import dev.codesoapbox.backity.core.backup.application.exceptions.FileDownloadWasCanceledException;
+import dev.codesoapbox.backity.core.backup.application.exceptions.FileWriteWasCanceledException;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
@@ -11,12 +11,8 @@ import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolve
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-
 /**
- * Wrapper for all gameProviderId file backup services.
- * <p>
- * Downloads files from remote servers.
+ * Orchestrates the overall backup workflow, including state management and cleanup operations.
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -40,7 +36,7 @@ public class FileBackupService {
         try {
             BackupTarget backupTarget = fileBackupContext.backupTarget();
             tryToBackUp(fileCopy, gameFile, backupTarget, storageSolution);
-        } catch (IOException | RuntimeException e) {
+        } catch (RuntimeException e) {
             try {
                 deleteFileAndMarkFailed(fileCopy, storageSolution, e);
             } catch (RuntimeException e1) {
@@ -50,16 +46,16 @@ public class FileBackupService {
         }
     }
 
-    @SuppressWarnings("java:S1166") // Intentionally suppressing FileDownloadWasCanceledException
+    @SuppressWarnings("java:S1166") // Intentionally suppressing FileWriteWasCanceledException
     private void tryToBackUp(FileCopy fileCopy, GameFile gameFile, BackupTarget backupTarget,
-                             StorageSolution storageSolution) throws IOException {
+                             StorageSolution storageSolution) {
         String filePath = uniqueFilePathResolver.resolve(
                 backupTarget.getPathTemplate(), gameFile.getFileSource(), storageSolution);
         markInProgress(fileCopy, filePath);
 
         try {
-            fileCopyReplicator.replicateFile(storageSolution, gameFile, fileCopy);
-        } catch (FileDownloadWasCanceledException e) {
+            fileCopyReplicator.replicate(storageSolution, gameFile, fileCopy);
+        } catch (FileWriteWasCanceledException e) {
             storageSolution.deleteIfExists(fileCopy.getFilePath());
             markCanceled(fileCopy);
             return;

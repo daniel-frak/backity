@@ -13,7 +13,7 @@ import java.util.UUID;
 @Mapper
 public abstract class FileCopyJpaEntityMapper {
 
-    @BeanMapping(ignoreUnmappedSourceProperties = "domainEvents")
+    @BeanMapping(ignoreUnmappedSourceProperties = {"domainEvents", "stored"})
     public abstract FileCopyJpaEntity toEntity(FileCopy model);
 
     protected UUID toUuid(FileCopyId id) {

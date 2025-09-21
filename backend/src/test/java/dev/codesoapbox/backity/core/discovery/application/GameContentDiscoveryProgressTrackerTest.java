@@ -1,12 +1,10 @@
 package dev.codesoapbox.backity.core.discovery.application;
 
-import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryOutcome;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryProgress;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResult;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResultRepository;
-import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStartedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStoppedEvent;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
@@ -18,16 +16,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,19 +40,31 @@ class GameContentDiscoveryProgressTrackerTest {
 
     private FakeGameProviderFileDiscoveryService gameProviderFileDiscoveryService;
 
+    @Mock
+    private GameProviderFileDiscoveryService anotherGameProviderFileDiscoveryService;
+
+    private FakeClock clock;
+
     private int providerTrackerResetCounter = 0;
 
     @BeforeEach
     void setUp() {
-        FakeClock clock = FakeClock.atEpochUtc();
+        clock = FakeClock.atEpochUtc();
         gameProviderFileDiscoveryService = new FakeGameProviderFileDiscoveryService();
+        when(anotherGameProviderFileDiscoveryService.getGameProviderId())
+                .thenReturn(new GameProviderId("anotherGameProviderId"));
         tracker = new GameContentDiscoveryProgressTracker(
-                clock, domainEventPublisher, discoveryResultRepository, List.of(gameProviderFileDiscoveryService),
+                clock, domainEventPublisher, discoveryResultRepository,
+                List.of(gameProviderFileDiscoveryService, anotherGameProviderFileDiscoveryService),
                 resetProviderTrackerWhenNewRequested());
     }
 
     private Function<GameProviderId, GameProviderContentDiscoveryTracker> resetProviderTrackerWhenNewRequested() {
         return (GameProviderId gameProviderId) -> {
+            if(!gameProviderId.equals(gameProviderFileDiscoveryService.getGameProviderId())) {
+                // Return different tracker for anotherGameProviderFileDiscoveryService
+                return mock(GameProviderContentDiscoveryTracker.class);
+            }
             providerTrackerResetCounter++;
             reset(providerTracker);
             return providerTracker;
@@ -147,7 +153,7 @@ class GameContentDiscoveryProgressTrackerTest {
         @Test
         void finalizeTrackingShouldSetInProgressToFalse() {
             tracker.initializeTracking(
-                    gameProviderFileDiscoveryService.getGameProviderId()); // To set in progress to true
+                    gameProviderFileDiscoveryService.getGameProviderId()); // To set in progressTracker to true
             reset(providerTracker); // To make sure any assertions on behavior don't include setup behavior
             mockProviderTrackerReturnsDiscoveryResult();
 
@@ -197,75 +203,24 @@ class GameContentDiscoveryProgressTrackerTest {
     class MarkingSuccessful {
 
         @Test
-        void markSuccessfulShouldSetLastSuccessfulDiscoveryCompletedAt() {
-            tracker.markSuccessful(gameProviderFileDiscoveryService.getGameProviderId());
-
-            verify(providerTracker).setLastSuccessfulDiscoveryCompletedAt(LocalDateTime.parse("1970-01-01T00:00:00"));
-        }
-
-        @Test
         void markSuccessfulShouldSetDiscoveryOutcomeAsSuccess() {
             tracker.markSuccessful(gameProviderFileDiscoveryService.getGameProviderId());
 
-            verify(providerTracker).setDiscoveryOutcome(GameContentDiscoveryOutcome.SUCCESS);
+            verify(providerTracker).setDiscoveryOutcome(GameContentDiscoveryOutcome.SUCCESS, clock);
         }
     }
 
     @Nested
-    class HandlingProgressUpdates {
+    class GetGameDiscoveryTracker {
 
         @Test
-        void shouldUpdateTrackerOnProgress() {
-            gameProviderFileDiscoveryService.simulateProgressUpdate();
+        void shouldReturnProgressTrackerUniqueToGameProvider() {
+            GameDiscoveryProgressTracker gameProvider1Tracker =
+                    tracker.getGameDiscoveryTracker(gameProviderFileDiscoveryService.getGameProviderId());
+            GameDiscoveryProgressTracker gameProvider2Tracker =
+                    tracker.getGameDiscoveryTracker(anotherGameProviderFileDiscoveryService.getGameProviderId());
 
-            verify(providerTracker).updateProgressInfo(gameProviderFileDiscoveryService.getProgressInfo());
-        }
-
-        @Test
-        void shouldPublishProgressChangedEventOnProgressGivenInitialValues() {
-            List<GameContentDiscoveryProgressChangedEvent> progressUpdateEvents = trackProgressUpdateEvents();
-
-            gameProviderFileDiscoveryService.simulateProgressUpdate();
-
-            var expectedEvent = new GameContentDiscoveryProgressChangedEvent(
-                    gameProviderFileDiscoveryService.getGameProviderId(),
-                    25,
-                    Duration.of(1234, ChronoUnit.SECONDS),
-                    0,
-                    0
-            );
-            assertThat(progressUpdateEvents).containsExactly(expectedEvent);
-        }
-
-        private List<GameContentDiscoveryProgressChangedEvent> trackProgressUpdateEvents() {
-            List<GameContentDiscoveryProgressChangedEvent> progressList = new ArrayList<>();
-            lenient().doAnswer(inv -> {
-                progressList.add(inv.getArgument(0));
-                return null;
-            }).when(domainEventPublisher).publish(any(GameContentDiscoveryProgressChangedEvent.class));
-
-            return progressList;
-        }
-
-        @Test
-        void shouldPublishProgressChangedEventOnProgressGivenProgressWasMade() {
-            ProgressInfo progressInfo = gameProviderFileDiscoveryService.getProgressInfo();
-            when(providerTracker.getGamesDiscovered())
-                    .thenReturn(5);
-            when(providerTracker.getGameFilesDiscovered())
-                    .thenReturn(70);
-            List<GameContentDiscoveryProgressChangedEvent> progressUpdateEvents = trackProgressUpdateEvents();
-
-            gameProviderFileDiscoveryService.simulateProgressUpdate();
-
-            var expectedEvent = new GameContentDiscoveryProgressChangedEvent(
-                    gameProviderFileDiscoveryService.getGameProviderId(),
-                    progressInfo.percentage(),
-                    progressInfo.timeLeft(),
-                    5,
-                    70
-            );
-            assertThat(progressUpdateEvents).containsExactly(expectedEvent);
+            assertThat(gameProvider1Tracker).isNotEqualTo(gameProvider2Tracker);
         }
     }
 
@@ -281,19 +236,17 @@ class GameContentDiscoveryProgressTrackerTest {
 
             List<GameContentDiscoveryOverview> result = tracker.getDiscoveryOverviews();
 
-            List<GameContentDiscoveryOverview> expectedResult = List.of(
-                    new GameContentDiscoveryOverview(
-                            gameProviderId, true, discoveryProgress, contentDiscoveryResult)
-            );
-            assertThat(result).usingRecursiveComparison()
-                    .isEqualTo(expectedResult);
+            GameContentDiscoveryOverview expectedResult = new GameContentDiscoveryOverview(
+                            gameProviderId, true, discoveryProgress, contentDiscoveryResult);
+            assertThat(result).contains(expectedResult);
         }
 
         private GameContentDiscoveryResult mockDiscoveryResultExistsInRepository(GameProviderId gameProviderId) {
             GameContentDiscoveryResult contentDiscoveryResult = mock(GameContentDiscoveryResult.class);
             lenient().when(contentDiscoveryResult.getGameProviderId())
                     .thenReturn(gameProviderId);
-            when(discoveryResultRepository.findAllByGameProviderIdIn(Set.of(gameProviderId)))
+            when(discoveryResultRepository.findAllByGameProviderIdIn(Set.of(gameProviderId,
+                    anotherGameProviderFileDiscoveryService.getGameProviderId())))
                     .thenReturn(List.of(contentDiscoveryResult));
             return contentDiscoveryResult;
         }

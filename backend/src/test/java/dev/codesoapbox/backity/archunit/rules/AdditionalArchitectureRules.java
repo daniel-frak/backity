@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
@@ -44,6 +45,8 @@ public class AdditionalArchitectureRules {
                                               + PortsAndAdaptersArchitectureRules.Constants.APPLICATION_PACKAGE + "..";
     static final String GAME_PROVIDERS_PACKAGE =
             BackityApplication.class.getPackageName() + ".gameproviders.(*)..";
+    static final String GAME_PROVIDERS_SHARED_PACKAGE =
+            BackityApplication.class.getPackageName() + ".gameproviders.shared..";
     static final String INFRASTRUCTURE_PACKAGE =
             BackityApplication.class.getPackageName() + ".infrastructure.(*)..";
 
@@ -111,7 +114,7 @@ public class AdditionalArchitectureRules {
                     making the domain logic harder to test, reuse, and adapt to different environments.
                     
                     However, enforcing this rule strictly means developers can no longer use framework annotations
-                    on domain classes, making things bean instantiation require a bit more code.
+                    on domain classes, making things like bean instantiation require a bit more code.
                     
                     Positive consequences:
                     - Improves testability and maintainability of domain logic.
@@ -123,6 +126,36 @@ public class AdditionalArchitectureRules {
                     
                     Negative consequences:
                     - Developers can no longer use framework annotations on domain classes, which may introduce
+                    more boilerplate code.
+                    """);
+
+    @ArchTest
+    static final ArchRule APPLICATION_SHOULD_NOT_DEPEND_ON_SPRING = noClasses().that()
+            .resideInAPackage(APPLICATION_PACKAGE)
+            .should().dependOnClassesThat(resideInAPackage(SPRING_PACKAGE))
+            .because("""
+                    application should not be polluted with infrastructural code.
+                    
+                    Context:
+                    Historically, developers have used Spring annotations \
+                    such as @Service and @Transactional for convenience. \
+                    While these annotations simplify dependency management, \
+                    they also introduce implicit framework dependencies, \
+                    making the application logic harder to test, reuse, and adapt to different environments.
+                    
+                    However, enforcing this rule strictly means developers can no longer use framework annotations
+                    on application classes, making things like bean instantiation require a bit more code.
+                    
+                    Positive consequences:
+                    - Improves testability and maintainability of application logic.
+                    - Keeps application logic independent of infrastructure frameworks.
+                    - Allows application logic to be reused in non-Spring environments.
+                    
+                    Neutral consequences:
+                    - Some developers might prefer framework integrations for convenience.
+                    
+                    Negative consequences:
+                    - Developers can no longer use framework annotations on application classes, which may introduce
                     more boilerplate code.
                     """);
 
@@ -459,6 +492,8 @@ public class AdditionalArchitectureRules {
     static final ArchRule GAME_PROVIDER_INTEGRATIONS_SHOULD_NOT_DEPEND_ON_EACH_OTHER = slices()
             .matching(GAME_PROVIDERS_PACKAGE)
             .should().notDependOnEachOther()
+            .ignoreDependency(
+                    resideInAnyPackage(GAME_PROVIDERS_PACKAGE), resideInAPackage(GAME_PROVIDERS_SHARED_PACKAGE))
             .because("""
                     making integrations unaware of each other will increase maintainability.
                     

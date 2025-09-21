@@ -4,14 +4,14 @@ import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscovery
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.GameContentDiscoveryWebSocketTopics;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.model.GameContentDiscoveryStartedWsEvent;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.model.GameContentDiscoveryStartedWsEventMapper;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.WebSocketEventPublisher;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.SpringWebSocketEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 
 @RequiredArgsConstructor
 public class GameContentDiscoveryStartedEventSpringWebSocketListener {
 
-    private final WebSocketEventPublisher wsEventPublisher;
+    private final SpringWebSocketEventPublisher wsEventPublisher;
     private final GameContentDiscoveryStartedWsEventMapper wsEventMapper;
 
     @EventListener

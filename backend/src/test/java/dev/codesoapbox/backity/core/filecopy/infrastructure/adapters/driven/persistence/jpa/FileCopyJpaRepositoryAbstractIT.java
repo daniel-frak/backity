@@ -362,6 +362,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                                 EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1.get().getId(),
                                 new BackupTargetId("f882cf23-35f9-4396-832d-bd08cd50e413")
                         ))
+                        .filePath("filePath1")
                         .dateModified(YESTERDAY.atStartOfDay())
                         .build();
 
@@ -372,6 +373,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                                 EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1.get().getId(),
                                 new BackupTargetId("ab150d94-c56c-4bd5-9a73-4c0427b48ede")
                         ))
+                        .filePath("filePath2")
                         .dateModified(TODAY.atStartOfDay())
                         .build();
 
@@ -382,6 +384,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                                 EXISTING_GAME_FILES.GOG_GAME_FILE_2_FOR_GAME_1.get().getId(),
                                 new BackupTargetId("17b72fc0-4f2b-41da-b4d4-9b33be11f990")
                         ))
+                        .filePath("filePath3")
                         .dateModified(YESTERDAY.atStartOfDay())
                         .build();
 
@@ -392,6 +395,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                                 EXISTING_GAME_FILES.GOG_GAME_FILE_2_FOR_GAME_1.get().getId(),
                                 new BackupTargetId("75653edd-f557-4262-a378-ae3877143fc6")
                         ))
+                        .filePath("filePath4")
                         .dateModified(YESTERDAY.atStartOfDay())
                         .build();
 
@@ -402,6 +406,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                                 EXISTING_GAME_FILES.GOG_GAME_FILE_2_FOR_GAME_1.get().getId(),
                                 new BackupTargetId("a7380842-7f49-4499-96b7-93f75de60c8b")
                         ))
+                        .filePath("filePath5")
                         .dateModified(TODAY.atStartOfDay())
                         .build();
 
@@ -412,6 +417,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                                 EXISTING_GAME_FILES.GOG_GAME_FILE_2_FOR_GAME_1.get().getId(),
                                 new BackupTargetId("9a22c5d8-7540-4bd3-8cd3-e56c97fe6550")
                         ))
+                        .filePath("filePath6")
                         .dateModified(YESTERDAY.atStartOfDay())
                         .build();
 
@@ -422,6 +428,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                                 EXISTING_GAME_FILES.GOG_GAME_FILE_2_FOR_GAME_1.get().getId(),
                                 new BackupTargetId("9f8b7374-0041-4cdf-9003-c3c3b08f32ac")
                         ))
+                        .filePath("filePath7")
                         .dateModified(BEFORE_YESTERDAY.atStartOfDay())
                         .build();
 
@@ -432,6 +439,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                                 EXISTING_GAME_FILES.GOG_GAME_FILE_2_FOR_GAME_1.get().getId(),
                                 new BackupTargetId("ac548b50-104c-41a5-97b0-8857eb743a71")
                         ))
+                        .filePath("filePath8")
                         .dateModified(TODAY.atStartOfDay())
                         .build();
 

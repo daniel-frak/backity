@@ -11,7 +11,7 @@ public record GameContentDiscoveryResultWsDto(
         @NotNull LocalDateTime stoppedAt,
         @NotNull GameContentDiscoveryOutcomeWsDto discoveryOutcome,
         LocalDateTime lastSuccessfulDiscoveryCompletedAt,
-        @NotNull int gamesDiscovered,
+        @NotNull long gamesDiscovered,
         @NotNull int gameFilesDiscovered
 ) {
 }

@@ -10,7 +10,7 @@ public record GameContentDiscoveryProgressChangedEvent(
         @NonNull GameProviderId gameProviderId,
         int percentage,
         @NonNull Duration timeLeft,
-        int gamesDiscovered,
+        long gamesDiscovered,
         int gameFilesDiscovered
 ) implements DomainEvent {
 }

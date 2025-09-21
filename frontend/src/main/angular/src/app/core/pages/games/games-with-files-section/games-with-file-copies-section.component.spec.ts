@@ -10,7 +10,7 @@ import {
   FileCopyNaturalId,
   FileCopyStatus,
   FileCopyStatusChangedEvent,
-  FileDownloadProgressUpdatedEvent,
+  FileCopyReplicationProgressUpdatedEvent,
   GamesClient,
   GameWithFileCopies,
   StorageSolutionsClient,
@@ -368,7 +368,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
       const gameWithFileCopiesPage: Page<GameWithFileCopies> = TestPage.of([gameWithFileCopies]);
       gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
 
-      const progressChangedMessage: FileDownloadProgressUpdatedEvent =
+      const progressChangedMessage: FileCopyReplicationProgressUpdatedEvent =
         TestProgressUpdatedEvent.twentyFivePercent(fileCopy.id, fileCopy.naturalId);
       await simulateFileCopyProgressChangedEventReceived(progressChangedMessage);
 
@@ -384,7 +384,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
       const gameWithFileCopiesPage: Page<GameWithFileCopies> = TestPage.of([gameWithFileCopies]);
       gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
 
-      const progressChangedMessage: FileDownloadProgressUpdatedEvent =
+      const progressChangedMessage: FileCopyReplicationProgressUpdatedEvent =
         TestProgressUpdatedEvent.twentyFivePercent(
           'unknownFileCopyId', {gameFileId: 'unknownGameFileId', backupTargetId: 'unknownBackupTargetId'});
       await simulateFileCopyProgressChangedEventReceived(progressChangedMessage);
@@ -394,7 +394,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
         .toBeUndefined();
     });
 
-  async function simulateFileCopyProgressChangedEventReceived(progressChangedMessage: FileDownloadProgressUpdatedEvent):
+  async function simulateFileCopyProgressChangedEventReceived(progressChangedMessage: FileCopyReplicationProgressUpdatedEvent):
     Promise<void> {
     await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
       FileBackupMessageTopics.TopicBackupsProgressUpdate, progressChangedMessage);

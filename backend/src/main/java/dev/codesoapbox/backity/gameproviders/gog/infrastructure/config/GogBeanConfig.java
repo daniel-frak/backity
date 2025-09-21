@@ -1,12 +1,15 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.config;
 
-import dev.codesoapbox.backity.core.backup.application.DownloadService;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.*;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.auth.GogAuthClient;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.auth.GogAuthSpringService;
-import dev.codesoapbox.backity.gameproviders.gog.application.usecases.GetGogConfigUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.application.GogConfigInfo;
+import dev.codesoapbox.backity.gameproviders.gog.application.usecases.GetGogConfigUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.auth.GogAuthClient;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.auth.GogAuthSpringService;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.GogEmbedWebClient;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.GogFileBackupService;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.GogFileDiscoveryService;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.GogGameWithFilesMapper;
+import dev.codesoapbox.backity.gameproviders.shared.infrastructure.adapters.driven.api.spring.DataBufferFluxTrackableFileStreamFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
@@ -24,8 +27,8 @@ public class GogBeanConfig {
 
     protected static final String USER_AUTH_URL_SUFFIX =
             "/auth?client_id=46899977096215655" +
-            "&redirect_uri=https%3A%2F%2Fembed.gog.com%2Fon_login_success%3Forigin%3Dclient" +
-            "&response_type=code&layout=client2";
+                    "&redirect_uri=https%3A%2F%2Fembed.gog.com%2Fon_login_success%3Forigin%3Dclient" +
+                    "&response_type=code&layout=client2";
 
     private final GogProperties gogProperties;
 
@@ -50,14 +53,14 @@ public class GogBeanConfig {
 
     @Bean
     GogEmbedWebClient gogEmbedClient(@Qualifier("gogEmbed") WebClient webClientEmbed, GogAuthService authService,
+                                     DataBufferFluxTrackableFileStreamFactory dataBufferFluxTrackableFileStreamFactory,
                                      Clock clock) {
-        return new GogEmbedWebClient(webClientEmbed, authService, clock);
+        return new GogEmbedWebClient(webClientEmbed, authService, dataBufferFluxTrackableFileStreamFactory, clock);
     }
 
     @Bean
-    GogFileBackupService gogFileBackupService(GogEmbedWebClient gogEmbedClient, GogAuthService authService,
-                                              DownloadService downloadService) {
-        return new GogFileBackupService(gogEmbedClient, authService, downloadService);
+    GogFileBackupService gogFileBackupService(GogEmbedWebClient gogEmbedClient, GogAuthService authService) {
+        return new GogFileBackupService(gogEmbedClient, authService);
     }
 
     @Bean
