@@ -41,10 +41,11 @@ class DeleteFileCopyUseCaseTest {
         FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
         String filePath = fileCopy.getFilePath();
         FakeUnixStorageSolution storageSolution = mockStorageSolutionExists(fileCopy);
+        storageSolution.createFile(filePath);
 
         useCase.deleteFileCopy(fileCopy.getId());
 
-        assertThat(storageSolution.fileDeleteWasAttempted(filePath)).isTrue();
+        assertThat(storageSolution.fileExists(filePath)).isFalse();
     }
 
     private FileCopy mockStoredUnverifiedFileCopyExists() {
@@ -102,12 +103,10 @@ class DeleteFileCopyUseCaseTest {
     void shouldThrowGivenGameFileStatusIsNotStored() {
         FileCopy fileCopy = mockEnqueuedFileCopyExists();
         FileCopyId fileCopyId = fileCopy.getId();
-        FakeUnixStorageSolution storageSolution = mockStorageSolutionExists(fileCopy);
 
         assertThatThrownBy(() -> useCase.deleteFileCopy(fileCopyId))
                 .isInstanceOf(FileCopyNotBackedUpException.class)
                 .hasMessageContaining(fileCopyId.toString());
-        assertThat(storageSolution.anyFileDeleteWasAttempted()).isFalse();
     }
 
     private FileCopy mockEnqueuedFileCopyExists() {

@@ -7,12 +7,12 @@ import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,93 +28,114 @@ class FileCopyReplicatorTest {
     @Mock
     private DownloadProgressFactory downloadProgressFactory;
 
-    @Test
-    void shouldReplicateFile() throws IOException {
-        StorageSolution storageSolution = mock(StorageSolution.class);
-        GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.inProgress();
-        mockGameProviderExistsFor(gameFile);
-        DownloadProgress downloadProgress = mockDownloadProgressCreation(fileCopy);
-        var fileCopyReplicator = new FileCopyReplicator(
-                List.of(gameProviderFileBackupService), downloadProgressFactory);
+    @Mock
+    private DownloadService downloadService;
 
-        fileCopyReplicator.replicateFile(storageSolution, gameFile, fileCopy);
-
-        verify(gameProviderFileBackupService).replicateFile(storageSolution, gameFile, fileCopy, downloadProgress);
-    }
-
-    private void mockGameProviderExistsFor(GameFile gameFile) {
+    private void gameProviderExistsFor(GameFile gameFile) {
         when(gameProviderFileBackupService.getGameProviderId())
                 .thenReturn(gameFile.getFileSource().gameProviderId());
     }
 
-    private DownloadProgress mockDownloadProgressCreation(FileCopy fileCopy) {
-        DownloadProgress downloadProgress = mock(DownloadProgress.class);
-        when(downloadProgressFactory.create(fileCopy))
-                .thenReturn(downloadProgress);
-        return downloadProgress;
-    }
+    @Nested
+    class ReplicateFile {
 
-    @Test
-    void replicateFileShouldThrowGivenFileCopyNotInProgress() {
-        StorageSolution storageSolution = mock(StorageSolution.class);
-        GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.enqueued();
-        var fileCopyReplicator = new FileCopyReplicator(
-                List.of(gameProviderFileBackupService), downloadProgressFactory);
+        @Test
+        void shouldReplicateFile() {
+            StorageSolution storageSolution = mock(StorageSolution.class);
+            GameFile gameFile = TestGameFile.gog();
+            FileCopy fileCopy = TestFileCopy.inProgress();
+            gameProviderExistsFor(gameFile);
+            DownloadProgress downloadProgress = downloadProgressIsProvidedFor(fileCopy);
+            TrackableFileStream fileStream = gameProviderProvidesFileStream(gameFile, downloadProgress);
+            var fileCopyReplicator = new FileCopyReplicator(
+                    List.of(gameProviderFileBackupService), downloadProgressFactory, downloadService);
 
-        assertThatThrownBy(() -> fileCopyReplicator.replicateFile(storageSolution, gameFile, fileCopy))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Cannot replicate file copy that is not in progress (id=" + fileCopy.getId() + ")");
-    }
+            fileCopyReplicator.replicate(storageSolution, gameFile, fileCopy);
 
-    @Test
-    void replicateFileShouldThrowGivenGameProviderDoesNotExist() {
-        StorageSolution storageSolution = mock(StorageSolution.class);
-        GameFile gameFile = TestGameFile.gog();
-        FileCopy fileCopy = TestFileCopy.inProgress();
-        var fileCopyReplicator = new FileCopyReplicator(
-                List.of(gameProviderFileBackupService), downloadProgressFactory);
+            verify(downloadService).downloadFile(storageSolution, fileStream, gameFile, fileCopy.getFilePath());
+        }
 
-        assertThatThrownBy(() -> fileCopyReplicator.replicateFile(storageSolution, gameFile, fileCopy))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("File backup service for gameProviderId not found: "
+        private TrackableFileStream gameProviderProvidesFileStream(
+                GameFile gameFile, DownloadProgress downloadProgress) {
+            TrackableFileStream fileStream = mock(TrackableFileStream.class);
+            when(gameProviderFileBackupService.acquireTrackableFileStream(
+                    gameFile, downloadProgress))
+                    .thenReturn(fileStream);
+            return fileStream;
+        }
+
+        private DownloadProgress downloadProgressIsProvidedFor(FileCopy fileCopy) {
+            DownloadProgress downloadProgress = mock(DownloadProgress.class);
+            when(downloadProgressFactory.create(fileCopy))
+                    .thenReturn(downloadProgress);
+            return downloadProgress;
+        }
+
+        @Test
+        void shouldThrowGivenFileCopyNotInProgress() {
+            StorageSolution storageSolution = mock(StorageSolution.class);
+            GameFile gameFile = TestGameFile.gog();
+            FileCopy fileCopy = TestFileCopy.enqueued();
+            var fileCopyReplicator = new FileCopyReplicator(
+                    List.of(gameProviderFileBackupService), downloadProgressFactory, downloadService);
+
+            assertThatThrownBy(() -> fileCopyReplicator.replicate(storageSolution, gameFile, fileCopy))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("Cannot replicate file copy that is not in progress (id=" + fileCopy.getId() + ")");
+        }
+
+        @Test
+        void shouldThrowGivenGameProviderDoesNotExist() {
+            StorageSolution storageSolution = mock(StorageSolution.class);
+            GameFile gameFile = TestGameFile.gog();
+            FileCopy fileCopy = TestFileCopy.inProgress();
+            var fileCopyReplicator = new FileCopyReplicator(
+                    List.of(gameProviderFileBackupService), downloadProgressFactory, downloadService);
+
+            assertThatThrownBy(() -> fileCopyReplicator.replicate(storageSolution, gameFile, fileCopy))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("File backup service for gameProviderId not found: "
                             + gameFile.getFileSource().gameProviderId());
+        }
     }
 
-    @Test
-    void gameProviderIsConnectedShouldReturnTrueGivenConnected() {
-        GameFile gameFile = TestGameFile.gog();
-        mockGameProviderExistsFor(gameFile);
-        mockGameProviderIsConnected();
-        var fileCopyReplicator = new FileCopyReplicator(
-                List.of(gameProviderFileBackupService), downloadProgressFactory);
+    @Nested
+    class GameProviderIsConnected {
 
-        boolean result = fileCopyReplicator.gameProviderIsConnected(gameFile);
+        @Test
+        void shouldReturnTrueGivenConnected() {
+            GameFile gameFile = TestGameFile.gog();
+            gameProviderExistsFor(gameFile);
+            mockGameProviderIsConnected();
+            var fileCopyReplicator = new FileCopyReplicator(
+                    List.of(gameProviderFileBackupService), downloadProgressFactory, downloadService);
 
-        assertThat(result).isTrue();
-    }
+            boolean result = fileCopyReplicator.gameProviderIsConnected(gameFile);
 
-    private void mockGameProviderIsConnected() {
-        when(gameProviderFileBackupService.isConnected())
-                .thenReturn(true);
-    }
+            assertThat(result).isTrue();
+        }
 
-    @Test
-    void gameProviderIsConnectedShouldReturnFalseGivenNotConnected() {
-        GameFile gameFile = TestGameFile.gog();
-        mockGameProviderExistsFor(gameFile);
-        mockGameProviderIsNotConnected();
-        var fileCopyReplicator = new FileCopyReplicator(
-                List.of(gameProviderFileBackupService), downloadProgressFactory);
+        private void mockGameProviderIsConnected() {
+            when(gameProviderFileBackupService.isConnected())
+                    .thenReturn(true);
+        }
 
-        boolean result = fileCopyReplicator.gameProviderIsConnected(gameFile);
+        @Test
+        void shouldReturnFalseGivenNotConnected() {
+            GameFile gameFile = TestGameFile.gog();
+            gameProviderExistsFor(gameFile);
+            gameProviderIsNotConnected();
+            var fileCopyReplicator = new FileCopyReplicator(
+                    List.of(gameProviderFileBackupService), downloadProgressFactory, downloadService);
 
-        assertThat(result).isFalse();
-    }
+            boolean result = fileCopyReplicator.gameProviderIsConnected(gameFile);
 
-    private void mockGameProviderIsNotConnected() {
-        when(gameProviderFileBackupService.isConnected())
-                .thenReturn(false);
+            assertThat(result).isFalse();
+        }
+
+        private void gameProviderIsNotConnected() {
+            when(gameProviderFileBackupService.isConnected())
+                    .thenReturn(false);
+        }
     }
 }

@@ -14,7 +14,7 @@ import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 public class TestFileBackupContext {
 
     private static final FakeUnixStorageSolution DEFAULT_STORAGE_SOLUTION =
-            new FakeUnixStorageSolution(5120);
+            new FakeUnixStorageSolution();
 
     @lombok.Builder.Default
     FileCopy fileCopy = TestFileCopy.tracked();

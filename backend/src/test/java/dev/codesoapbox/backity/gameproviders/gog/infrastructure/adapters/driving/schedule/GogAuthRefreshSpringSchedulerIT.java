@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driving.schedule;
 
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.auth.GogAuthSpringService;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.auth.GogAuthSpringService;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.config.GogAuthSchedulerBeanConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.scheduling.annotation.EnableScheduling;

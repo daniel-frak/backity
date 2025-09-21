@@ -4,14 +4,14 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileDownloadProgressCha
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.FileBackupWebSocketTopics;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileDownloadProgressUpdatedWsEvent;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileDownloadProgressUpdatedWsEventMapper;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.WebSocketEventPublisher;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.SpringWebSocketEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 
 @RequiredArgsConstructor
 public class FileDownloadProgressChangedEventSpringWebSocketListener {
 
-    private final WebSocketEventPublisher wsEventPublisher;
+    private final SpringWebSocketEventPublisher wsEventPublisher;
     private final FileDownloadProgressUpdatedWsEventMapper wsEventMapper;
 
     @EventListener

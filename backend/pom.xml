@@ -289,6 +289,7 @@
                 <!-- Unit tests -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
                 <configuration>
                     <properties>
                         <configurationParameters>
@@ -306,46 +307,6 @@
 
                             <!-- Desired parallelism is multiplied by this value: -->
                             junit.jupiter.execution.parallel.config.dynamic.factor=1
-                        </configurationParameters>
-                    </properties>
-                </configuration>
-            </plugin>
-            <plugin>
-                <!-- Integration tests -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <!--
-                    Fool Sonar to show both unit and integration tests together by instructing Failsafe to store its
-                    test reports in the same directory as Surefire instead of the default failsafe-reports. See:
-                    https://theholyjava.wordpress.com/2012/02/05/separating-integration-and-unit-tests-with-maven-sonar-failsafe-and-jacoco/
-                    -->
-                    <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
-                    <properties>
-                        <configurationParameters>
-                            <!--
-                            There are many ways to configure parallelism.
-                            We must think about how we want our integration tests to work, especially in terms of
-                            TestContainers:
-                            - We could run all tests sequentially (no parallelism) and share containers between
-                              test classes
-                            - We could run only methods within test classes sequentially, but test classes in parallel,
-                              sharing containers only within a test class
-                            -->
-                            <!-- Enable parallel test execution: -->
-                            <!-- junit.jupiter.execution.parallel.enabled=true-->
-
-                            <!-- Execute tests within class in sequence: -->
-                            <!-- junit.jupiter.execution.parallel.mode.default=same_thread-->
-
-                            <!-- Execute test classes in parallel: -->
-                            <!-- junit.jupiter.execution.parallel.mode.classes.default=concurrent-->
-
-                            <!-- Compute desired parallelism based on number of available processors/cores: -->
-                            <!-- junit.jupiter.execution.parallel.config.strategy=fixed-->
-
-                            <!-- Desired parallelism: -->
-                            <!-- junit.jupiter.execution.parallel.config.fixed.parallelism=1-->
                         </configurationParameters>
                     </properties>
                 </configuration>
@@ -409,7 +370,7 @@
                         <excludedClass>*StartupListener</excludedClass>
                         <excludedClass>*SpringScheduler</excludedClass>
                         <excludedClass>*EventSpringListener</excludedClass>
-                        <excludedClass>*EventWebSocketListener</excludedClass>
+                        <excludedClass>*EventSpringWebSocketListener</excludedClass>
                         <excludedClass>*WebSocketPublisher</excludedClass>
                         <excludedClass>*WebSocketEventPublisher</excludedClass>
                         <excludedClass>*LogbackLogService</excludedClass>

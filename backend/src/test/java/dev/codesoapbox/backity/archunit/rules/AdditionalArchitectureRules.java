@@ -127,6 +127,37 @@ public class AdditionalArchitectureRules {
                     """);
 
     @ArchTest
+    static final ArchRule APPLICATION_SHOULD_NOT_DEPEND_ON_SPRING = noClasses().that()
+            .resideInAPackage(APPLICATION_PACKAGE)
+            .should().dependOnClassesThat(resideInAPackage(SPRING_PACKAGE))
+            // @TODO Change because
+            .because("""
+                    application should not be polluted with infrastructural code.
+                    
+                    Context:
+                    Historically, developers have used Spring annotations \
+                    such as @Service and @Transactional for convenience. \
+                    While these annotations simplify dependency management, \
+                    they also introduce implicit framework dependencies, \
+                    making the application logic harder to test, reuse, and adapt to different environments.
+                    
+                    However, enforcing this rule strictly means developers can no longer use framework annotations
+                    on application classes, making things bean instantiation require a bit more code.
+                    
+                    Positive consequences:
+                    - Improves testability and maintainability of application logic.
+                    - Keeps business rules independent of infrastructure frameworks.
+                    - Allows application models to be reused in non-Spring environments.
+                    
+                    Neutral consequences:
+                    - Some developers might prefer framework integrations for convenience.
+                    
+                    Negative consequences:
+                    - Developers can no longer use framework annotations on application classes, which may introduce
+                    more boilerplate code.
+                    """);
+
+    @ArchTest
     static final ArchRule REPOSITORY_IMPLEMENTATIONS_SHOULD_RESIDE_IN_CORRECT_PACKAGE = classes().that()
             .areNotInterfaces().and()
             .haveNameMatching(".*Repository")

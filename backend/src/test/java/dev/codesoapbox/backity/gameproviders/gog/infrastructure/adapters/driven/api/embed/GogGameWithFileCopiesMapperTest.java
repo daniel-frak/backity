@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.gamefile.domain.TestFileSource;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import dev.codesoapbox.backity.gameproviders.gog.domain.TestGogGameFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.TestGogGameWithFiles;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.GogGameWithFilesMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 

@@ -11,8 +11,6 @@ import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolve
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
-
 /**
  * Wrapper for all gameProviderId file backup services.
  * <p>
@@ -40,7 +38,7 @@ public class FileBackupService {
         try {
             BackupTarget backupTarget = fileBackupContext.backupTarget();
             tryToBackUp(fileCopy, gameFile, backupTarget, storageSolution);
-        } catch (IOException | RuntimeException e) {
+        } catch (RuntimeException e) {
             try {
                 deleteFileAndMarkFailed(fileCopy, storageSolution, e);
             } catch (RuntimeException e1) {
@@ -52,13 +50,14 @@ public class FileBackupService {
 
     @SuppressWarnings("java:S1166") // Intentionally suppressing FileDownloadWasCanceledException
     private void tryToBackUp(FileCopy fileCopy, GameFile gameFile, BackupTarget backupTarget,
-                             StorageSolution storageSolution) throws IOException {
+                             StorageSolution storageSolution) {
+        // @TODO How do we ensure the same filePath is not resolved twice at the same time?
         String filePath = uniqueFilePathResolver.resolve(
                 backupTarget.getPathTemplate(), gameFile.getFileSource(), storageSolution);
         markInProgress(fileCopy, filePath);
 
         try {
-            fileCopyReplicator.replicateFile(storageSolution, gameFile, fileCopy);
+            fileCopyReplicator.replicate(storageSolution, gameFile, fileCopy);
         } catch (FileDownloadWasCanceledException e) {
             storageSolution.deleteIfExists(fileCopy.getFilePath());
             markCanceled(fileCopy);

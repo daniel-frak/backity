@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.config;
 
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.auth.GogAuthSpringService;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.auth.GogAuthSpringService;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driving.schedule.GogAuthRefreshSpringScheduler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
