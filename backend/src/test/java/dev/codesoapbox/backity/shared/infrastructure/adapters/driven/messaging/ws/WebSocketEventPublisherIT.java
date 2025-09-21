@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketConfig;
 import dev.codesoapbox.backity.testing.messaging.WebSocketMessaging;
 import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketPublisherTest;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +36,12 @@ class WebSocketEventPublisherIT {
 
     private WebSocketMessaging webSocketMessaging;
     private StompSession session;
+    private WebSocketStompClient stompClient;
 
     @BeforeEach
     void setUp() throws ExecutionException, InterruptedException, TimeoutException {
         webSocketMessaging = new WebSocketMessaging();
-        var stompClient = new WebSocketStompClient(new StandardWebSocketClient());
+        stompClient = new WebSocketStompClient(new StandardWebSocketClient());
         session = connectToWebSocket(stompClient);
     }
 
@@ -50,6 +52,19 @@ class WebSocketEventPublisherIT {
                         new StompSessionHandlerAdapter() {
                         })
                 .get(5, SECONDS);
+    }
+
+    @AfterEach
+    void tearDown() {
+        try {
+            if (session != null && session.isConnected()) {
+                session.disconnect();
+            }
+        } finally {
+            if (stompClient != null) {
+                stompClient.stop();
+            }
+        }
     }
 
     @Test
