@@ -1,11 +1,12 @@
 package dev.codesoapbox.backity.core.backup.application;
 
-import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
-import org.springframework.core.io.buffer.DataBuffer;
+import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import reactor.core.publisher.Flux;
 
-public record TrackableFileStream(
-        Flux<DataBuffer> dataStream,
-        DownloadProgress progress
-) {
+public interface TrackableFileStream {
+
+    void writeToStorageSolution(StorageSolution storageSolution, String filePath, Flux<Boolean> cancelTrigger);
+
+    OutputStreamProgressTracker outputStreamProgressTracker();
 }

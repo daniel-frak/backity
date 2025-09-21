@@ -79,7 +79,7 @@ The following basic properties can be customized:
 
 The following advanced properties can be customized:
 
-- `backity.file-download-queue-scheduler` - how often the file download queue should be checked
+- `backity.file-backup-queue-scheduler` - how often the file copy queue should be checked
 - `backity.gog-auth-scheduler` - how often the system should check if GOG authentication should be refreshed 
 
 ### S3 support

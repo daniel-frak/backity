@@ -10,7 +10,7 @@ import org.mapstruct.Mapper;
 @Mapper
 public abstract class FileCopyHttpDtoMapper {
 
-    @BeanMapping(ignoreUnmappedSourceProperties = "domainEvents")
+    @BeanMapping(ignoreUnmappedSourceProperties = {"domainEvents", "stored"})
     public abstract FileCopyHttpDto toDto(FileCopy fileCopy);
 
     protected String getValue(FileCopyId id) {

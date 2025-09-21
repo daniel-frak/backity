@@ -40,8 +40,8 @@ public final class TestFileBackupEvent {
         );
     }
 
-    public static FileDownloadProgressChangedEvent progressChanged() {
-        return new FileDownloadProgressChangedEvent(
+    public static FileCopyReplicationProgressChangedEvent progressChanged() {
+        return new FileCopyReplicationProgressChangedEvent(
                 FILE_COPY_ID,
                 FILE_COPY_NATURAL_ID,
                 50,

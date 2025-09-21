@@ -9,7 +9,7 @@ public record GameContentDiscoveryProgress(
         GameProviderId gameProviderId,
         int percentage,
         Duration timeLeft,
-        int gamesDiscovered,
+        long gamesDiscovered,
         int gameFilesDiscovered
 ) {
 

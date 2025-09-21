@@ -10,7 +10,7 @@ import lombok.NonNull;
 import java.time.LocalDateTime;
 
 /**
- * A version of a game file, either not yet downloaded, already downloaded or anything in-between.
+ * A version of a game file, either not yet backed up, already backed up or anything in-between.
  */
 @Data
 @AllArgsConstructor

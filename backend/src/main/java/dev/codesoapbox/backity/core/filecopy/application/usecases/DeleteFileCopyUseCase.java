@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
+import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotBackedUpException;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +19,9 @@ public class DeleteFileCopyUseCase {
 
     public void deleteFileCopy(FileCopyId fileCopyId) {
         FileCopy fileCopy = fileCopyRepository.getById(fileCopyId);
-        fileCopy.validateIsBackedUp();
+        if(!fileCopy.isStored()) {
+            throw new FileCopyNotBackedUpException(fileCopyId);
+        }
 
         deleteFileCopy(fileCopy);
         fileCopy.toTracked();

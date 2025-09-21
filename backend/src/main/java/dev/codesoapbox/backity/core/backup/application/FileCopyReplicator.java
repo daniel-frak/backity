@@ -1,33 +1,36 @@
 package dev.codesoapbox.backity.core.backup.application;
 
-import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgress;
-import dev.codesoapbox.backity.core.backup.application.downloadprogress.DownloadProgressFactory;
+import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
+import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTrackerFactory;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class FileCopyReplicator {
 
     private final Map<GameProviderId, GameProviderFileBackupService> gameProviderFileBackupServices;
-    private final DownloadProgressFactory downloadProgressFactory;
+    private final OutputStreamProgressTrackerFactory outputStreamProgressTrackerFactory;
+    private final StorageSolutionWriteService storageSolutionWriteService;
 
     public FileCopyReplicator(List<GameProviderFileBackupService> gameProviderFileBackupServices,
-                              DownloadProgressFactory downloadProgressFactory) {
+                              OutputStreamProgressTrackerFactory outputStreamProgressTrackerFactory,
+                              StorageSolutionWriteService storageSolutionWriteService) {
         this.gameProviderFileBackupServices = gameProviderFileBackupServices.stream()
                 .collect(Collectors.toMap(GameProviderFileBackupService::getGameProviderId,
                         d -> d));
-        this.downloadProgressFactory = downloadProgressFactory;
+        this.outputStreamProgressTrackerFactory = outputStreamProgressTrackerFactory;
+        this.storageSolutionWriteService = storageSolutionWriteService;
     }
 
-    public void replicateFile(StorageSolution storageSolution, GameFile gameFile, FileCopy fileCopy)
-            throws IOException {
+    public void replicate(StorageSolution storageSolution, GameFile gameFile, FileCopy fileCopy) {
         if (fileCopy.getStatus() != FileCopyStatus.IN_PROGRESS) {
             throw new IllegalArgumentException(
                     "Cannot replicate file copy that is not in progress (id=" + fileCopy.getId() + ")");
@@ -35,9 +38,12 @@ public class FileCopyReplicator {
 
         GameProviderId gameProviderId = gameFile.getFileSource().gameProviderId();
         GameProviderFileBackupService gameProviderFileBackupService = getGameProviderFileBackupService(gameProviderId);
-        DownloadProgress downloadProgress = downloadProgressFactory.create(fileCopy);
-
-        gameProviderFileBackupService.replicateFile(storageSolution, gameFile, fileCopy, downloadProgress);
+        OutputStreamProgressTracker outputStreamProgressTracker = outputStreamProgressTrackerFactory.create(fileCopy);
+        TrackableFileStream fileStream = gameProviderFileBackupService.acquireTrackableFileStream(
+                gameFile, outputStreamProgressTracker);
+        String filePath = fileCopy.getFilePath();
+        storageSolutionWriteService.writeFileToStorage(fileStream, storageSolution, filePath);
+        log.info("Replicated file {} to {}", gameFile, filePath);
     }
 
     private GameProviderFileBackupService getGameProviderFileBackupService(GameProviderId gameProviderId) {

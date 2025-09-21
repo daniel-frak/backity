@@ -9,7 +9,7 @@ import {
   FileCopyStatus,
   FileCopyStatusChangedEvent,
   FileCopyWithProgress,
-  FileDownloadProgressUpdatedEvent,
+  FileCopyReplicationProgressUpdatedEvent,
   GameFile,
   GameFileWithCopies,
   GamesClient,
@@ -303,7 +303,7 @@ export class GamesWithFileCopiesSectionComponent implements OnInit, OnDestroy {
   }
 
   private onReplicationProgressChanged(payload: Message) {
-    const event: FileDownloadProgressUpdatedEvent = JSON.parse(payload.body);
+    const event: FileCopyReplicationProgressUpdatedEvent = JSON.parse(payload.body);
     const inProgressFileCopyWithContext: PotentialFileCopyWithContext | undefined =
       this.findPotentialFileCopyWithContext(event.fileCopyNaturalId);
 

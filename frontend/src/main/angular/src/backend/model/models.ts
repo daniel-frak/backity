@@ -10,7 +10,7 @@ export * from './fileCopyStatus';
 export * from './fileCopyStatusChangedEvent';
 export * from './fileCopyWithContext';
 export * from './fileCopyWithProgress';
-export * from './fileDownloadProgressUpdatedEvent';
+export * from './fileCopyReplicationProgressUpdatedEvent';
 export * from './fileSource';
 export * from './gameContentDiscoveryOutcome';
 export * from './gameContentDiscoveryOutcomeWs';

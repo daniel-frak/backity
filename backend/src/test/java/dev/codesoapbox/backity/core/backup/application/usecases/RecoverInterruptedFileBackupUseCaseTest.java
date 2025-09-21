@@ -53,12 +53,13 @@ class RecoverInterruptedFileBackupUseCaseTest {
     void shouldRecoverInterruptedFileBackup() {
         FileCopy fileCopy = mockInProgressFileCopyExists();
         FakeUnixStorageSolution storageSolution = mockStorageSolutionExists();
+        storageSolution.createFile(fileCopy.getFilePath());
         mockBackupTargetExists(fileCopy, storageSolution);
         String filePathToDelete = fileCopy.getFilePath();
 
         useCase.recoverInterruptedFileBackup();
 
-        assertThat(storageSolution.fileDeleteWasAttempted(filePathToDelete)).isTrue();
+        assertThat(storageSolution.fileExists(filePathToDelete)).isFalse();
         FileCopy savedFileCopy = getSavedFileCopy();
         assertThat(savedFileCopy.getId()).isEqualTo(fileCopy.getId());
         assertThat(savedFileCopy.getStatus()).isEqualTo(FileCopyStatus.FAILED);

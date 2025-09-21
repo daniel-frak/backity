@@ -9,7 +9,7 @@ public class FileBackupQueueSpringScheduler {
 
     private final BackUpOldestFileCopyUseCase backUpOldestFileCopyUseCase;
 
-    @Scheduled(fixedRateString = "${backity.file-download-queue-scheduler.rate-ms}")
+    @Scheduled(fixedRateString = "${backity.file-backup-queue-scheduler.rate-ms}")
     public void processQueue() {
         backUpOldestFileCopyUseCase.backUpOldestFileCopy();
     }

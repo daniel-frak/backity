@@ -16,7 +16,7 @@ import static org.mockito.Mockito.verify;
 
 @EnableScheduling
 @SpringJUnitConfig(FileBackupQueueSchedulerBeanConfig.class)
-@TestPropertySource(properties = "backity.file-download-queue-scheduler.rate-ms=1")
+@TestPropertySource(properties = "backity.file-backup-queue-scheduler.rate-ms=1")
 class FileBackupQueueSpringSchedulerIT {
 
     @MockitoBean

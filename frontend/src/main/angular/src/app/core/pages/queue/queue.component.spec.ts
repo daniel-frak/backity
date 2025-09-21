@@ -9,7 +9,7 @@ import {
   FileCopyStatus,
   FileCopyStatusChangedEvent,
   FileCopyWithContext,
-  FileDownloadProgressUpdatedEvent,
+  FileCopyReplicationProgressUpdatedEvent,
   StorageSolutionsClient,
   StorageSolutionStatus,
   StorageSolutionStatusesResponse
@@ -298,7 +298,7 @@ describe('QueueComponent', () => {
 
   async function simulateReplicationProgressUpdateEventReceived(
     fileCopyId: string, fileCopyNaturalId: FileCopyNaturalId): Promise<void> {
-    const event: FileDownloadProgressUpdatedEvent =
+    const event: FileCopyReplicationProgressUpdatedEvent =
       TestProgressUpdatedEvent.twentyFivePercent(fileCopyId, fileCopyNaturalId);
     await MessageTesting.simulateWebSocketMessageReceived(fixture, messagesService,
       FileBackupMessageTopics.TopicBackupsProgressUpdate, event);

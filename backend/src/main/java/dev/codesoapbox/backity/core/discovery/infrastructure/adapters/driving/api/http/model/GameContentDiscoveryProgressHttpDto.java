@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 public record GameContentDiscoveryProgressHttpDto(
         @NotNull int percentage,
         @NotNull long timeLeftSeconds,
-        @NotNull int gamesDiscovered,
+        @NotNull long gamesDiscovered,
         @NotNull int gameFilesDiscovered
 ) {
 }

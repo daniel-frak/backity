@@ -74,7 +74,7 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
     this.discoveryIsInProgressByGameProviderId.set(event.gameProviderId, false);
     let overview: GameContentDiscoveryOverview | undefined =
       this.discoveryOverviewsByGameProviderId.get(event.gameProviderId);
-    if (!overview) {
+    if (!overview?.isInProgress) {
       overview = {
         gameProviderId: event.gameProviderId,
         isInProgress: false

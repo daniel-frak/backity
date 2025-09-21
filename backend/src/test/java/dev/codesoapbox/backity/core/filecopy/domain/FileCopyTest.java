@@ -406,23 +406,27 @@ class FileCopyTest {
     }
 
     @Nested
-    class Validation {
+    class IsStored {
 
         @Test
-        void validateIsBackedUpShouldDoNothingGivenStatusIsStoredIntegrityUnknown() {
+        void shouldReturnTrueGivenStatusIsStoredIntegrityUnknown() {
             FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
 
-            assertThatCode(fileCopy::validateIsBackedUp)
-                    .doesNotThrowAnyException();
+            assertThat(fileCopy.isStored()).isTrue();
         }
 
         @Test
-        void validateIsBackedUpShouldThrowGivenStatusIsNotStored() {
+        void shouldReturnTrueGivenStatusIsStoredIntegrityVerified() {
+            FileCopy fileCopy = TestFileCopy.storedIntegrityVerified();
+
+            assertThat(fileCopy.isStored()).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseGivenStatusIsNotStored() {
             FileCopy fileCopy = TestFileCopy.tracked();
 
-            assertThatThrownBy(fileCopy::validateIsBackedUp)
-                    .isInstanceOf(FileCopyNotBackedUpException.class)
-                    .hasMessageContaining(fileCopy.getId().toString());
+            assertThat(fileCopy.isStored()).isFalse();
         }
     }
 

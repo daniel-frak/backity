@@ -16,7 +16,7 @@ public class DeleteFileCopyController {
 
     private final DeleteFileCopyUseCase useCase;
 
-    @Operation(summary = "Delete file copy", description = "Deletes an already downloaded file copy")
+    @Operation(summary = "Delete file copy", description = "Deletes an already replicated file copy")
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deleteFileCopy(
             @SuppressWarnings("java:S6856")

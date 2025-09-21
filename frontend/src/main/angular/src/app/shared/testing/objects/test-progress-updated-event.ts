@@ -1,9 +1,9 @@
-import {FileCopyNaturalId, FileDownloadProgressUpdatedEvent} from "@backend";
+import {FileCopyNaturalId, FileCopyReplicationProgressUpdatedEvent} from "@backend";
 
 export namespace TestProgressUpdatedEvent {
 
   export function twentyFivePercent(fileCopyId: string, fileCopyNaturalId: FileCopyNaturalId
-  ): FileDownloadProgressUpdatedEvent {
+  ): FileCopyReplicationProgressUpdatedEvent {
     return {
       fileCopyId: fileCopyId,
       fileCopyNaturalId: fileCopyNaturalId,

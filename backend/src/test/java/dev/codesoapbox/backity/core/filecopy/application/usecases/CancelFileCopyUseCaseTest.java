@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.filecopy.application.usecases;
 
-import dev.codesoapbox.backity.core.backup.application.DownloadService;
+import dev.codesoapbox.backity.core.backup.application.StorageSolutionWriteService;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
@@ -24,11 +24,11 @@ class CancelFileCopyUseCaseTest {
     private FileCopyRepository fileCopyRepository;
 
     @Mock
-    private DownloadService downloadService;
+    private StorageSolutionWriteService storageSolutionWriteService;
 
     @BeforeEach
     void setUp() {
-        useCase = new CancelFileCopyUseCase(fileCopyRepository, downloadService);
+        useCase = new CancelFileCopyUseCase(fileCopyRepository, storageSolutionWriteService);
     }
 
     @Test
@@ -36,7 +36,7 @@ class CancelFileCopyUseCaseTest {
         FileCopy fileCopy = mockTrackedFileCopyExists();
 
         useCase.cancelFileCopy(fileCopy.getId());
-        verifyNoMoreInteractions(fileCopyRepository, downloadService);
+        verifyNoMoreInteractions(fileCopyRepository, storageSolutionWriteService);
     }
 
     private FileCopy mockTrackedFileCopyExists() {
@@ -52,7 +52,7 @@ class CancelFileCopyUseCaseTest {
 
         FileCopy savedFileCopy = getSavedFileCopy();
         assertThat(savedFileCopy.getStatus()).isEqualTo(FileCopyStatus.TRACKED);
-        verifyNoInteractions(downloadService);
+        verifyNoInteractions(storageSolutionWriteService);
     }
 
     private FileCopy mockEnqueuedFileCopyExists() {
@@ -79,7 +79,7 @@ class CancelFileCopyUseCaseTest {
 
         useCase.cancelFileCopy(fileCopy.getId());
 
-        verify(downloadService).cancelDownload(filePath);
+        verify(storageSolutionWriteService).cancelWrite(filePath);
         verifyNoMoreInteractions(fileCopyRepository);
     }
 

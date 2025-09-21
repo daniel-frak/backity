@@ -7,6 +7,7 @@ import dev.codesoapbox.backity.core.discovery.application.GameProviderFileDiscov
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResultRepository;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.shared.application.progress.ProgressTracker;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +27,8 @@ public class GameContentDiscoveryBeanConfig {
             List<GameProviderFileDiscoveryService> discoveryServices) {
         return new GameContentDiscoveryProgressTracker(
                 clock, eventPublisher, discoveryResultRepository, discoveryServices,
-                GameProviderContentDiscoveryTracker::new);
+                gameProviderId -> new GameProviderContentDiscoveryTracker(
+                        gameProviderId, eventPublisher, new ProgressTracker(clock)));
     }
 
     @Bean

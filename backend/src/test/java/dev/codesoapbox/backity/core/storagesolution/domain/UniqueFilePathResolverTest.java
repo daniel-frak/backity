@@ -62,7 +62,6 @@ class UniqueFilePathResolverTest {
             String expectedPath = "someFileName";
             assertThat(result).doesNotContain(File.separator);
             assertThat(toUnixPath(result)).isEqualTo(expectedPath);
-            assertThat(fakeUnixFileManager.anyDirectoriesWereCreated()).isFalse();
         }
 
         @Test

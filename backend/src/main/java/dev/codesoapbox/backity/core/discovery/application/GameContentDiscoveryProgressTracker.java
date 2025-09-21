@@ -1,18 +1,15 @@
 package dev.codesoapbox.backity.core.discovery.application;
 
-import dev.codesoapbox.backity.core.backup.application.downloadprogress.ProgressInfo;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResult;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResultRepository;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryOutcome;
-import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStartedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStoppedEvent;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.Clock;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +41,6 @@ public class GameContentDiscoveryProgressTracker {
         this.discoveryResultRepository = gameContentDiscoveryResultRepository;
         this.providerTrackerFactory = providerTrackerFactory;
         initializeValues(gameProviderFileDiscoveryServices);
-        publishEventsOnProgressChange(gameProviderFileDiscoveryServices);
     }
 
     private void initializeValues(List<GameProviderFileDiscoveryService> gameProviderFileDiscoveryServices) {
@@ -55,29 +51,6 @@ public class GameContentDiscoveryProgressTracker {
 
     private void resetStats(GameProviderId gameProviderId) {
         trackersByGameProviderId.put(gameProviderId, providerTrackerFactory.apply(gameProviderId));
-    }
-
-    private void publishEventsOnProgressChange(
-            List<GameProviderFileDiscoveryService> gameProviderFileDiscoveryServices) {
-        gameProviderFileDiscoveryServices.forEach(discoveryService ->
-                discoveryService.subscribeToProgress(progressInfo ->
-                        updateProgress(discoveryService.getGameProviderId(), progressInfo)));
-    }
-
-    private void updateProgress(GameProviderId gameProviderId, ProgressInfo progressInfo) {
-        GameProviderContentDiscoveryTracker tracker = trackersByGameProviderId.get(gameProviderId);
-        tracker.updateProgressInfo(progressInfo);
-        publishStatusChangedEvent(gameProviderId, progressInfo, tracker);
-        log.debug("Discovery progress: {}", progressInfo);
-    }
-
-    private void publishStatusChangedEvent(GameProviderId gameProviderId, ProgressInfo progressInfo,
-                                           GameProviderContentDiscoveryTracker tracker) {
-        int percentage = progressInfo.percentage();
-        Duration timeLeft = progressInfo.timeLeft();
-        var event = new GameContentDiscoveryProgressChangedEvent(gameProviderId, percentage, timeLeft,
-                tracker.getGamesDiscovered(), tracker.getGameFilesDiscovered());
-        domainEventPublisher.publish(event);
     }
 
     public boolean isInProgress(GameProviderFileDiscoveryService discoveryService) {
@@ -149,7 +122,10 @@ public class GameContentDiscoveryProgressTracker {
 
     public void markSuccessful(GameProviderId gameProviderId) {
         GameProviderContentDiscoveryTracker tracker = trackersByGameProviderId.get(gameProviderId);
-        tracker.setLastSuccessfulDiscoveryCompletedAt(LocalDateTime.now(clock));
-        tracker.setDiscoveryOutcome(GameContentDiscoveryOutcome.SUCCESS);
+        tracker.setDiscoveryOutcome(GameContentDiscoveryOutcome.SUCCESS, clock);
+    }
+
+    public GameDiscoveryProgressTracker getGameDiscoveryTracker(GameProviderId gameProviderId) {
+        return trackersByGameProviderId.get(gameProviderId);
     }
 }

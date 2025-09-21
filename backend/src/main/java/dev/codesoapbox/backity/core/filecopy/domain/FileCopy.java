@@ -127,10 +127,9 @@ public class FileCopy {
         domainEvents.add(event);
     }
 
-    public void validateIsBackedUp() {
-        if (status != FileCopyStatus.STORED_INTEGRITY_UNKNOWN) {
-            throw new FileCopyNotBackedUpException(id);
-        }
+    public boolean isStored() {
+        return status == FileCopyStatus.STORED_INTEGRITY_UNKNOWN
+                || status == FileCopyStatus.STORED_INTEGRITY_VERIFIED;
     }
 
     public void clearDomainEvents() {
