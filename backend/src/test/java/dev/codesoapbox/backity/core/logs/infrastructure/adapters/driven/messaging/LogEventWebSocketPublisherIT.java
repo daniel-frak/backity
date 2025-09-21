@@ -6,11 +6,11 @@ import dev.codesoapbox.backity.core.logs.infrastructure.adapters.driven.messagin
 import dev.codesoapbox.backity.core.logs.infrastructure.adapters.driven.messaging.ws.LogWebSocketTopics;
 import dev.codesoapbox.backity.core.logs.domain.model.LogCreatedEvent;
 import dev.codesoapbox.backity.testing.messaging.TestMessageChannel;
-import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketEventHandlerTest;
+import dev.codesoapbox.backity.testing.messaging.annotations.SpringWebSocketEventListenerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@WebSocketEventHandlerTest
+@SpringWebSocketEventListenerTest
 class LogEventWebSocketPublisherIT {
 
     @Autowired

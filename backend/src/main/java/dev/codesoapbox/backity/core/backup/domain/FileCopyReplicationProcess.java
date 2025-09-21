@@ -21,9 +21,7 @@ public class FileCopyReplicationProcess {
     }
 
     public boolean tryStart() {
-        if (!backupRecoveryCompleted.get()) {
-            return false;
-        }
-        return isInProgress.compareAndSet(false, true);
+        return backupRecoveryCompleted.get()
+                && isInProgress.compareAndSet(false, true);
     }
 }
