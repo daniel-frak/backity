@@ -25,7 +25,7 @@ class OutputStreamProgressTrackerTest {
     @Test
     void shouldTrackOutputStream() throws IOException {
         var outputStreamProgressTracker = new OutputStreamProgressTracker();
-        AtomicInteger currentPercentage = new AtomicInteger();
+        var currentPercentage = new AtomicInteger();
         outputStreamProgressTracker.subscribeToProgress(
                 progressInfo -> currentPercentage.set(progressInfo.percentage()));
 

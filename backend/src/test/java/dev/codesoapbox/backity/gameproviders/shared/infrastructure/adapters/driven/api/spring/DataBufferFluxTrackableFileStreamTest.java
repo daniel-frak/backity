@@ -210,12 +210,12 @@ class DataBufferFluxTrackableFileStreamTest {
         class Canceling {
 
             private static Stream<Arguments> cancelScenarios() {
-                final Flux<Boolean> CANCEL_IMMEDIATELY = Flux.just(true);
-                final Flux<Boolean> CANCEL_MID_WRITE = Flux.just(false)
+                final Flux<Boolean> cancelImmediately = Flux.just(true);
+                final Flux<Boolean> cancelMidWrite = Flux.just(false)
                         .thenMany(Flux.just(true));
                 return Stream.of(
-                        Arguments.of("immediately", CANCEL_IMMEDIATELY),
-                        Arguments.of("mid-write", CANCEL_MID_WRITE)
+                        Arguments.of("immediately", cancelImmediately),
+                        Arguments.of("mid-write", cancelMidWrite)
                 );
             }
 

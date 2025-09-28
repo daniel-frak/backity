@@ -33,7 +33,11 @@ public class OutputStreamProgressTracker {
     }
 
     public OutputStream track(OutputStream fileOutputStream) {
-        return new TrackedFilterOutputStream(this, fileOutputStream);
+        var trackedFilterOutputStream = new TrackedFilterOutputStream(fileOutputStream);
+        trackedFilterOutputStream.setOnWrite(this::incrementWrittenBytes);
+        trackedFilterOutputStream.setOnClose(this::updateContentLength);
+
+        return trackedFilterOutputStream;
     }
 
     public void subscribeToProgress(Consumer<ProgressInfo> progressConsumer) {

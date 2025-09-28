@@ -138,7 +138,9 @@ class FileBackupServiceTest {
                         List.of(FileCopyStatus.IN_PROGRESS, FileCopyStatus.STORED_INTEGRITY_UNKNOWN));
                 assertFilePathWasPersisted(persistedChangesToFileCopy, expectedFilePath);
                 verify(fileCopyReplicator).replicate(
-                        fileBackupContext.storageSolution(), fileBackupContext.gameFile(), fileBackupContext.fileCopy());
+                        fileBackupContext.storageSolution(),
+                        fileBackupContext.gameFile(),
+                        fileBackupContext.fileCopy());
             }
 
             private void assertFilePathWasPersisted(
@@ -261,7 +263,8 @@ class FileBackupServiceTest {
                     RuntimeException coreException = fileCopyReplicatorThrowsAfterCreatingFile(
                             storageSolution, filePath);
 
-                    assertThatThrownBy(() -> fileBackupService.backUpFile(fileBackupContext));
+                    assertThatThrownBy(() -> fileBackupService.backUpFile(fileBackupContext))
+                            .isInstanceOf(Throwable.class);
 
                     assertIsFailedWithReason(fileBackupContext.fileCopy(), coreException);
                     verify(fileCopyRepository, times(2)).save(fileBackupContext.fileCopy());
@@ -278,7 +281,8 @@ class FileBackupServiceTest {
                     String filePath = aUniqueFilePathIsResolvedFor(fileBackupContext);
                     fileCopyReplicatorThrowsAfterCreatingFile(storageSolution, filePath);
 
-                    assertThatThrownBy(() -> fileBackupService.backUpFile(fileBackupContext));
+                    assertThatThrownBy(() -> fileBackupService.backUpFile(fileBackupContext))
+                            .isInstanceOf(Throwable.class);
                     assertThat(storageSolution.fileExists(filePath)).isFalse();
                 }
             }
@@ -317,7 +321,8 @@ class FileBackupServiceTest {
                     gameProviderIsConnectedFor(fileBackupContext.gameFile());
                     RuntimeException coreException = pathResolverAlwaysThrows();
 
-                    assertThatThrownBy(() -> fileBackupService.backUpFile(fileBackupContext));
+                    assertThatThrownBy(() -> fileBackupService.backUpFile(fileBackupContext))
+                            .isInstanceOf(Throwable.class);
 
                     assertIsFailedWithReason(fileBackupContext.fileCopy(), coreException);
                     verify(fileCopyRepository, times(1)).save(fileBackupContext.fileCopy());
@@ -354,7 +359,8 @@ class FileBackupServiceTest {
                     gameProviderIsConnectedFor(fileBackupContext.gameFile());
                     pathResolverAlwaysThrows();
 
-                    assertThatThrownBy(() -> fileBackupService.backUpFile(fileBackupContext));
+                    assertThatThrownBy(() -> fileBackupService.backUpFile(fileBackupContext))
+                            .isInstanceOf(Throwable.class);
 
                     verify(storageSolution, never()).deleteIfExists(any());
                 }
@@ -371,7 +377,8 @@ class FileBackupServiceTest {
                             .build();
                     gameProviderIsConnectedFor(fileBackupContext.gameFile());
                     aUniqueFilePathIsResolvedFor(fileBackupContext);
-                    RuntimeException coreException = fileCopyReplicatorThrowsAfterCreatingFile(storageSolution, "filePath");
+                    RuntimeException coreException =
+                            fileCopyReplicatorThrowsAfterCreatingFile(storageSolution, "filePath");
 
                     assertThatThrownBy(() ->
                             fileBackupService.backUpFile(fileBackupContext))
@@ -394,9 +401,11 @@ class FileBackupServiceTest {
                             .build();
                     gameProviderIsConnectedFor(fileBackupContext.gameFile());
                     aUniqueFilePathIsResolvedFor(fileBackupContext);
-                    RuntimeException coreException = fileCopyReplicatorThrowsAfterCreatingFile(storageSolution, "filePath");
+                    RuntimeException coreException =
+                            fileCopyReplicatorThrowsAfterCreatingFile(storageSolution, "filePath");
 
-                    assertThatThrownBy(() -> fileBackupService.backUpFile(fileBackupContext));
+                    assertThatThrownBy(() -> fileBackupService.backUpFile(fileBackupContext))
+                            .isInstanceOf(Throwable.class);
 
                     assertIsFailedWithReason(fileBackupContext.fileCopy(), coreException);
                     verify(fileCopyRepository, times(2)).save(fileBackupContext.fileCopy());
@@ -413,7 +422,8 @@ class FileBackupServiceTest {
                     aUniqueFilePathIsResolvedFor(fileBackupContext);
                     fileCopyReplicatorThrowsAfterCreatingFile(storageSolution, "filePath");
 
-                    assertThatThrownBy(() -> fileBackupService.backUpFile(fileBackupContext));
+                    assertThatThrownBy(() -> fileBackupService.backUpFile(fileBackupContext))
+                            .isInstanceOf(Throwable.class);
 
                     assertThat(fileBackupContext.fileCopy().getFilePath()).isNotNull();
                     verify(fileCopyRepository, times(2)).save(fileBackupContext.fileCopy());

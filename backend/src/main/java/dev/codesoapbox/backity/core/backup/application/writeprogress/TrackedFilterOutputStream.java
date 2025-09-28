@@ -1,34 +1,39 @@
 package dev.codesoapbox.backity.core.backup.application.writeprogress;
 
+import lombok.Setter;
+
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.function.Consumer;
 
 class TrackedFilterOutputStream extends FilterOutputStream {
 
-    private final OutputStreamProgressTracker outputStreamProgressTracker;
+    @Setter
+    private Consumer<Integer> onWrite;
 
-    public TrackedFilterOutputStream(
-            OutputStreamProgressTracker outputStreamProgressTracker, OutputStream fileOutputStream) {
+    @Setter
+    private Runnable onClose;
+
+    public TrackedFilterOutputStream(OutputStream fileOutputStream) {
         super(fileOutputStream);
-        this.outputStreamProgressTracker = outputStreamProgressTracker;
     }
 
     @Override
     public void write(byte[] bytesToWrite, int offset, int length) throws IOException {
         out.write(bytesToWrite, offset, length);
-        outputStreamProgressTracker.incrementWrittenBytes(length);
+        onWrite.accept(length);
     }
 
     @Override
     public void write(int byteToWrite) throws IOException {
         out.write(byteToWrite);
-        outputStreamProgressTracker.incrementWrittenBytes(1);
+        onWrite.accept(1);
     }
 
     @Override
     public void close() throws IOException {
         super.close();
-        outputStreamProgressTracker.updateContentLength();
+        onClose.run();
     }
 }

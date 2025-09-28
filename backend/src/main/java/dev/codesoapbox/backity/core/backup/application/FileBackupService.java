@@ -55,7 +55,7 @@ public class FileBackupService {
 
         try {
             fileCopyReplicator.replicate(storageSolution, gameFile, fileCopy);
-        } catch (FileWriteWasCanceledException e) {
+        } catch (FileWriteWasCanceledException _) {
             storageSolution.deleteIfExists(fileCopy.getFilePath());
             markCanceled(fileCopy);
             return;

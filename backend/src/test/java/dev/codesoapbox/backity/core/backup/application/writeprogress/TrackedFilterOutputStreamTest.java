@@ -10,6 +10,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -17,15 +18,19 @@ class TrackedFilterOutputStreamTest {
 
     private TrackedFilterOutputStream trackedFilterOutputStream;
 
-    @Mock
-    private OutputStreamProgressTracker outputStreamProgressTracker;
+    private int writtenBytesLength;
+    private boolean wasClosed;
 
     @Mock
     private OutputStream outputStream;
 
     @BeforeEach
     void setUp() {
-        trackedFilterOutputStream = new TrackedFilterOutputStream(outputStreamProgressTracker, outputStream);
+        writtenBytesLength = 0;
+        wasClosed = false;
+        trackedFilterOutputStream = new TrackedFilterOutputStream(outputStream);
+        trackedFilterOutputStream.setOnWrite(bytesLength -> writtenBytesLength += bytesLength);
+        trackedFilterOutputStream.setOnClose(() -> wasClosed = true);
     }
 
     @Nested
@@ -39,10 +44,10 @@ class TrackedFilterOutputStreamTest {
         }
 
         @Test
-        void writeShouldUpdateOutputStreamProgressGivenLength() throws IOException {
+        void writeShouldNotifySubscriberGivenLength() throws IOException {
             trackedFilterOutputStream.write(new byte[]{1, 2}, 20, 30);
 
-            verify(outputStreamProgressTracker).incrementWrittenBytes(30);
+            assertThat(writtenBytesLength).isEqualTo(30);
         }
 
         @Test
@@ -53,10 +58,10 @@ class TrackedFilterOutputStreamTest {
         }
 
         @Test
-        void writeShouldUpdateOutputStreamProgressGivenSingleByte() throws IOException {
+        void writeShouldNotifySubscriberGivenSingleByte() throws IOException {
             trackedFilterOutputStream.write(12);
 
-            verify(outputStreamProgressTracker).incrementWrittenBytes(1);
+            assertThat(writtenBytesLength).isEqualTo(1);
         }
     }
 
@@ -71,10 +76,10 @@ class TrackedFilterOutputStreamTest {
         }
 
         @Test
-        void closeShouldUpdateContentLength() throws IOException {
+        void closeShouldNotifySubscriber() throws IOException {
             trackedFilterOutputStream.close();
 
-            verify(outputStreamProgressTracker).updateContentLength();
+            assertThat(wasClosed).isTrue();
         }
     }
 }

@@ -311,6 +311,12 @@
                     </properties>
                 </configuration>
             </plugin>
+            <plugin>
+                <!-- Integration tests -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${maven-failsafe-plugin.version}</version>
+            </plugin>
             <!-- END of Test configuration -->
 
             <!-- Sonarqube code coverage -->
