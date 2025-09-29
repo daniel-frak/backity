@@ -37,7 +37,7 @@ class GetStorageSolutionStatusesUseCaseTest {
         Map<StorageSolutionId, StorageSolutionStatus> result = useCase.getStorageSolutionStatuses();
 
         Map<StorageSolutionId, StorageSolutionStatus> expectedResult = Map.of(
-                FakeUnixStorageSolution.ID, StorageSolutionStatus.CONNECTED
+                FakeUnixStorageSolution.DEFAULT_ID, StorageSolutionStatus.CONNECTED
         );
         assertThat(result).isEqualTo(expectedResult);
     }

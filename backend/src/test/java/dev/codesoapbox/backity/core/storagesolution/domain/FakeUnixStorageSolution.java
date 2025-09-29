@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.storagesolution.domain;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -8,14 +9,12 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 @NoArgsConstructor
 public class FakeUnixStorageSolution implements StorageSolution {
 
-    public static final StorageSolutionId ID = new StorageSolutionId("FakeUnixStorageSolution");
+    public static final StorageSolutionId DEFAULT_ID = new StorageSolutionId("FakeUnixStorageSolution");
 
     private final Map<String, Integer> openStreamCountByFilePath = new HashMap<>();
     private final Map<String, ByteArrayOutputStream> outputStreamsByPath = new HashMap<>();
@@ -27,6 +26,10 @@ public class FakeUnixStorageSolution implements StorageSolution {
     @Setter
     private RuntimeException shouldThrowOnGetOutputStream;
 
+    @Getter
+    @Setter
+    private StorageSolutionId id = DEFAULT_ID;
+
     private static String asUnixPath(String path) {
         return path.replace('\\', '/');
     }
@@ -34,11 +37,6 @@ public class FakeUnixStorageSolution implements StorageSolution {
     public boolean allOutputStreamsWereClosed() {
         return openStreamCountByFilePath.values().stream()
                 .allMatch(count -> count <= 0);
-    }
-
-    @Override
-    public StorageSolutionId getId() {
-        return ID;
     }
 
     @Override

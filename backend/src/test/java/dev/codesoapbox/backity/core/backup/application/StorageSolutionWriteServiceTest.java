@@ -4,6 +4,8 @@ import dev.codesoapbox.backity.core.backup.application.exceptions.ConcurrentFile
 import dev.codesoapbox.backity.core.backup.application.exceptions.StorageSolutionWriteFailedException;
 import dev.codesoapbox.backity.core.backup.application.exceptions.FileWriteWasCanceledException;
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
+import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class StorageSolutionWriteServiceTest {
@@ -75,6 +78,22 @@ class StorageSolutionWriteServiceTest {
                         fileStream, storageSolution, filePath))
                         .isInstanceOf(ConcurrentFileWriteException.class);
             }
+
+            @Test
+            void shouldNotThrowGivenWritingToSameFilePathButDifferentStorageSolution() {
+                var differentStorageSolution = new FakeUnixStorageSolution();
+                differentStorageSolution.setId(new StorageSolutionId("DifferentStorageSolutionId"));
+                var filePath = "testFilePath";
+                var firstFileStream = new FakeTrackableFileStream();
+                var secondFileStream = new FakeTrackableFileStream();
+                firstFileStream.triggerOnWrite(
+                        () -> storageSolutionWriteService.writeFileToStorage(
+                                secondFileStream, differentStorageSolution, filePath));
+
+                assertThatCode(() -> storageSolutionWriteService.writeFileToStorage(
+                        firstFileStream, storageSolution, filePath))
+                        .doesNotThrowAnyException();
+            }
         }
     }
 
@@ -84,8 +103,9 @@ class StorageSolutionWriteServiceTest {
         @Test
         void shouldThrow() {
             var filePath = "testFilePath";
+            var writeDestination = new WriteDestination(storageSolution.getId(), filePath);
             var fileStream = new FakeTrackableFileStream();
-            fileStream.triggerOnWrite(() -> storageSolutionWriteService.cancelWrite(filePath));
+            fileStream.triggerOnWrite(() -> storageSolutionWriteService.cancelWrite(writeDestination));
 
             assertThatThrownBy(() -> storageSolutionWriteService.writeFileToStorage(
                     fileStream, storageSolution, filePath))
@@ -95,27 +115,30 @@ class StorageSolutionWriteServiceTest {
         @Test
         void shouldNotValidateSizeGivenWriteWasCanceled() {
             var filePath = "testFilePath";
+            var writeDestination = new WriteDestination(storageSolution.getId(), filePath);
             var fileStream = new FakeTrackableFileStream();
-            fileStream.triggerOnWrite(() -> storageSolutionWriteService.cancelWrite(filePath));
+            fileStream.triggerOnWrite(() -> storageSolutionWriteService.cancelWrite(writeDestination));
 
             storageSolution.overrideWrittenSizeFor(filePath, smallerThanExpectedSizeInBytes(fileStream));
 
-            assertThatThrownBy(() -> storageSolutionWriteService.writeFileToStorage(fileStream, storageSolution, filePath))
+            assertThatThrownBy(() -> storageSolutionWriteService.writeFileToStorage(
+                    fileStream, storageSolution, filePath))
                     .isInstanceOf(FileWriteWasCanceledException.class);
         }
 
         @Test
         void cancelWriteShouldNotThrowGivenFileIsNotCurrentlyBeingWritten() {
-            assertThatCode(() -> storageSolutionWriteService.cancelWrite("nonExistentFilePath"))
+            var writeDestination = new WriteDestination(storageSolution.getId(), "nonExistentFilePath");
+            assertThatCode(() -> storageSolutionWriteService.cancelWrite(writeDestination))
                     .doesNotThrowAnyException();
         }
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void cancelWriteShouldThrowGivenNullFilePath() {
+        void cancelWriteShouldThrowGivenNullWriteDestination() {
             assertThatThrownBy(() -> storageSolutionWriteService.cancelWrite(null))
                     .isInstanceOf(NullPointerException.class)
-                    .hasMessageContaining("filePath");
+                    .hasMessageContaining("writeDestination");
         }
     }
 }
