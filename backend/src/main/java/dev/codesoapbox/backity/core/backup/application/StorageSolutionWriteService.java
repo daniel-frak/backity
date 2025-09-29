@@ -17,32 +17,34 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class StorageSolutionWriteService {
 
-    private final ConcurrentHashMap<String, ActiveWrite> activeWritesByFilePath = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<WriteDestination, ActiveWrite> activeWritesByDestination =
+            new ConcurrentHashMap<>();
 
     public void writeFileToStorage(
             TrackableFileStream trackableFileStream, StorageSolution storageSolution, String filePath) {
-        initializeCancellationTracker(filePath);
+        var writeDestination = new WriteDestination(storageSolution.getId(), filePath);
+        initializeCancellationTracker(writeDestination);
         try {
-            Flux<Boolean> cancelTrigger = getCancelTrigger(filePath);
+            Flux<Boolean> cancelTrigger = getCancelTrigger(writeDestination);
             trackableFileStream.writeToStorageSolution(storageSolution, filePath, cancelTrigger);
 
             OutputStreamProgressTracker outputStreamProgressTracker = trackableFileStream.outputStreamProgressTracker();
             validateWrittenFileSize(storageSolution, filePath, outputStreamProgressTracker.getContentLengthBytes());
         } finally {
-            activeWritesByFilePath.remove(filePath);
+            activeWritesByDestination.remove(writeDestination);
         }
     }
 
-    private void initializeCancellationTracker(String filePath) {
+    private void initializeCancellationTracker(WriteDestination writeDestination) {
         ActiveWrite existingActiveWrite =
-                activeWritesByFilePath.putIfAbsent(filePath, new ActiveWrite());
+                activeWritesByDestination.putIfAbsent(writeDestination, new ActiveWrite());
         if (existingActiveWrite != null) {
-            throw new ConcurrentFileWriteException(filePath);
+            throw new ConcurrentFileWriteException(writeDestination);
         }
     }
 
-    private Flux<Boolean> getCancelTrigger(String filePath) {
-        return activeWritesByFilePath.get(filePath).getCancelSignal().asFlux();
+    private Flux<Boolean> getCancelTrigger(WriteDestination writeDestination) {
+        return activeWritesByDestination.get(writeDestination).getCancelSignal().asFlux();
     }
 
     private void validateWrittenFileSize(
@@ -57,8 +59,8 @@ public class StorageSolutionWriteService {
         }
     }
 
-    public void cancelWrite(@NonNull String filePath) {
-        ActiveWrite activeWrite = activeWritesByFilePath.get(filePath);
+    public void cancelWrite(@NonNull WriteDestination writeDestination) {
+        ActiveWrite activeWrite = activeWritesByDestination.get(writeDestination);
         if (activeWrite != null) {
             activeWrite.triggerCancellation();
         }

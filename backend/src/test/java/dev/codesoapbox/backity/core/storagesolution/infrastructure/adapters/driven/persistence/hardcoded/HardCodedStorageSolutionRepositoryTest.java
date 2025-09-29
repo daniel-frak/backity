@@ -25,14 +25,14 @@ class HardCodedStorageSolutionRepositoryTest {
 
     @Test
     void shouldGetById() {
-        StorageSolution result = repository.getById(FakeUnixStorageSolution.ID);
+        StorageSolution result = repository.getById(FakeUnixStorageSolution.DEFAULT_ID);
 
         assertThat(result).isEqualTo(fakeUnixStorageSolution);
     }
 
     @Test
     void getByIdShouldThrowExceptionGivenNotFound() {
-        StorageSolutionId nonExistentId = new StorageSolutionId("nonExistentId");
+        var nonExistentId = new StorageSolutionId("nonExistentId");
         assertThatThrownBy(() -> repository.getById(nonExistentId))
                 .isInstanceOf(StorageSolutionNotFoundException.class)
                 .hasMessageContaining(nonExistentId.toString());

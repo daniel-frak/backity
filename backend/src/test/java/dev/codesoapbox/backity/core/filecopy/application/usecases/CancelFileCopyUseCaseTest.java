@@ -1,6 +1,10 @@
 package dev.codesoapbox.backity.core.filecopy.application.usecases;
 
 import dev.codesoapbox.backity.core.backup.application.StorageSolutionWriteService;
+import dev.codesoapbox.backity.core.backup.application.WriteDestination;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
+import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
@@ -24,11 +28,14 @@ class CancelFileCopyUseCaseTest {
     private FileCopyRepository fileCopyRepository;
 
     @Mock
+    private BackupTargetRepository backupTargetRepository;
+
+    @Mock
     private StorageSolutionWriteService storageSolutionWriteService;
 
     @BeforeEach
     void setUp() {
-        useCase = new CancelFileCopyUseCase(fileCopyRepository, storageSolutionWriteService);
+        useCase = new CancelFileCopyUseCase(fileCopyRepository, backupTargetRepository, storageSolutionWriteService);
     }
 
     @Test
@@ -75,12 +82,21 @@ class CancelFileCopyUseCaseTest {
     @Test
     void shouldCancelInProgressFileCopy() {
         FileCopy fileCopy = mockInProgressFileCopyExists();
+        BackupTarget backupTarget = mockBackupTargetExistsFor(fileCopy);
         String filePath = fileCopy.getFilePath();
 
         useCase.cancelFileCopy(fileCopy.getId());
 
-        verify(storageSolutionWriteService).cancelWrite(filePath);
+        var expectedWriteDestination = new WriteDestination(backupTarget.getStorageSolutionId(), filePath);
+        verify(storageSolutionWriteService).cancelWrite(expectedWriteDestination);
         verifyNoMoreInteractions(fileCopyRepository);
+    }
+
+    private BackupTarget mockBackupTargetExistsFor(FileCopy fileCopy) {
+        BackupTarget backupTarget = TestBackupTarget.localFolder();
+        when(backupTargetRepository.getById(fileCopy.getNaturalId().backupTargetId()))
+                .thenReturn(backupTarget);
+        return backupTarget;
     }
 
     private FileCopy mockInProgressFileCopyExists() {

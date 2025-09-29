@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.gameproviders.shared.infrastructure.adapters.driven.api.spring;
 
+import dev.codesoapbox.backity.core.backup.application.WriteDestination;
 import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
 import dev.codesoapbox.backity.shared.application.progress.ProgressInfo;
 import dev.codesoapbox.backity.core.backup.application.exceptions.ConcurrentFileWriteException;
@@ -308,7 +309,8 @@ class DataBufferFluxTrackableFileStreamTest {
                 OutputStreamProgressTracker progress = initializedOutputStreamProgressTrackerFor(dataBufferFlux.data());
                 var fileStream = new DataBufferFluxTrackableFileStream(
                         dataBufferFlux, progress, NEVER_RETRY, NO_RETRY_BACKOFF);
-                storage.setShouldThrowOnFileDeletion(new ConcurrentFileWriteException(A_FILE_PATH));
+                var writeDestination = new WriteDestination(storage.getId(), A_FILE_PATH);
+                storage.setShouldThrowOnFileDeletion(new ConcurrentFileWriteException(writeDestination));
 
                 assertThatThrownBy(() -> fileStream.writeToStorageSolution(storage, A_FILE_PATH, NEVER_CANCEL))
                         .isInstanceOf(ConcurrentFileWriteException.class);

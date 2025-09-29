@@ -31,8 +31,9 @@ public class FileCopyUseCaseBeanConfig {
     @Bean
     CancelFileCopyUseCase cancelFileCopyUseCase(
             FileCopyRepository fileCopyRepository,
+            BackupTargetRepository backupTargetRepository,
             StorageSolutionWriteService storageSolutionWriteService) {
-        return new CancelFileCopyUseCase(fileCopyRepository, storageSolutionWriteService);
+        return new CancelFileCopyUseCase(fileCopyRepository, backupTargetRepository, storageSolutionWriteService);
     }
 
     @Bean
