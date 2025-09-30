@@ -40,8 +40,8 @@ class HardCodedBackupTargetRepositoryTest {
 
             List<BackupTarget> expectedResult = List.of(new BackupTarget(
                     new BackupTargetId("d46dde81-e519-4300-9a54-6f9e7d637926"),
-                    "S3 bucket",
                     S3StorageSolution.ID,
+                    "S3 bucket",
                     pathTemplate
             ));
             assertThat(result).usingRecursiveComparison()
@@ -57,8 +57,8 @@ class HardCodedBackupTargetRepositoryTest {
 
             List<BackupTarget> expectedResult = List.of(new BackupTarget(
                     new BackupTargetId("224440e2-6e5c-4f24-94ac-3222587652f7"),
-                    "Local folder",
                     LocalFileSystemStorageSolution.ID,
+                    "Local folder",
                     pathTemplate
             ));
             assertThat(result).usingRecursiveComparison()
@@ -74,8 +74,8 @@ class HardCodedBackupTargetRepositoryTest {
 
             BackupTarget expectedResult = new BackupTarget(
                     new BackupTargetId("224440e2-6e5c-4f24-94ac-3222587652f7"),
-                    "Local folder",
                     LocalFileSystemStorageSolution.ID,
+                    "Local folder",
                     pathTemplate
             );
             assertThat(result).usingRecursiveComparison()
@@ -103,8 +103,8 @@ class HardCodedBackupTargetRepositoryTest {
 
             List<BackupTarget> expectedResult = List.of(new BackupTarget(
                     new BackupTargetId("224440e2-6e5c-4f24-94ac-3222587652f7"),
-                    "Local folder",
                     LocalFileSystemStorageSolution.ID,
+                    "Local folder",
                     pathTemplate
             ));
             assertThat(result).usingRecursiveComparison()

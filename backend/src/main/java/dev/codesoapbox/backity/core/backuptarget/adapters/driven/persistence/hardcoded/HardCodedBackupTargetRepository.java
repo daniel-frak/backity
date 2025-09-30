@@ -26,16 +26,16 @@ public class HardCodedBackupTargetRepository implements BackupTargetRepository {
         if (s3Enabled) {
             availableBackupTargets.add(new BackupTarget(
                     new BackupTargetId("d46dde81-e519-4300-9a54-6f9e7d637926"),
-                    "S3 bucket",
                     new StorageSolutionId("S3"),
+                    "S3 bucket",
                     pathTemplate
             ));
         }
         if (localEnabled) {
             availableBackupTargets.add(new BackupTarget(
                     new BackupTargetId("224440e2-6e5c-4f24-94ac-3222587652f7"),
-                    "Local folder",
                     new StorageSolutionId("LOCAL_FILE_SYSTEM"),
+                    "Local folder",
                     pathTemplate
             ));
         }

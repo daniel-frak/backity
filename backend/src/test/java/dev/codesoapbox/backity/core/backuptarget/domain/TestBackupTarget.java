@@ -39,7 +39,7 @@ public class TestBackupTarget {
 
         public BackupTarget build() {
             TestBackupTarget temp = internalBuilder();
-            return new BackupTarget(temp.id, temp.title, temp.storageSolutionId, temp.pathTemplate);
+            return new BackupTarget(temp.id, temp.storageSolutionId, temp.title, temp.pathTemplate);
         }
     }
 
