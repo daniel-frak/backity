@@ -1,30 +1,26 @@
 package dev.codesoapbox.backity.testing.http.annotations;
 
+import dev.codesoapbox.backity.BackityApplication;
 import dev.codesoapbox.backity.core.backuptarget.application.GetBackupTargetsUseCase;
-import dev.codesoapbox.backity.core.backuptarget.infrastructure.config.BackupTargetControllerBeanConfig;
 import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryService;
 import dev.codesoapbox.backity.core.discovery.application.usecases.GetGameContentDiscoveryOverviewsUseCase;
 import dev.codesoapbox.backity.core.discovery.application.usecases.StartGameContentDiscoveryUseCase;
 import dev.codesoapbox.backity.core.discovery.application.usecases.StopGameContentDiscoveryUseCase;
-import dev.codesoapbox.backity.core.discovery.infrastructure.config.GameContentDiscoveryControllerBeanConfig;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.*;
-import dev.codesoapbox.backity.core.filecopy.infrastructure.config.FileCopyControllerBeanConfig;
 import dev.codesoapbox.backity.core.game.application.usecases.GetGamesWithFilesUseCase;
-import dev.codesoapbox.backity.core.game.infrastructure.config.GameControllerBeanConfig;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
-import dev.codesoapbox.backity.core.gamefile.infrastructure.config.GameFileControllerBeanConfig;
 import dev.codesoapbox.backity.core.logs.application.GetLogsUseCase;
 import dev.codesoapbox.backity.core.logs.domain.services.LogService;
 import dev.codesoapbox.backity.core.storagesolution.application.GetStorageSolutionStatusesUseCase;
-import dev.codesoapbox.backity.core.storagesolution.infrastructure.config.StorageSolutionControllerBeanConfig;
 import dev.codesoapbox.backity.gameproviders.gog.application.usecases.*;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.config.GogControllerBeanConfig;
-import dev.codesoapbox.backity.shared.infrastructure.config.SharedControllerBeanConfig;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.ControllerBeanConfiguration;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import dev.codesoapbox.backity.testing.time.config.ResetClockTestExecutionListener;
 import jakarta.persistence.EntityManager;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -39,19 +35,16 @@ import java.lang.annotation.Target;
 @TestExecutionListeners(listeners = ResetClockTestExecutionListener.class,
         mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 @Import({
-        // Common
-        SharedControllerBeanConfig.class,
-        FakeTimeBeanConfig.class,
-
-        // Specific
-        GameContentDiscoveryControllerBeanConfig.class,
-        GogControllerBeanConfig.class,
-        GameControllerBeanConfig.class,
-        GameFileControllerBeanConfig.class,
-        FileCopyControllerBeanConfig.class,
-        BackupTargetControllerBeanConfig.class,
-        StorageSolutionControllerBeanConfig.class
+        FakeTimeBeanConfig.class
 })
+@ComponentScan(
+        basePackageClasses = BackityApplication.class,
+        includeFilters = @ComponentScan.Filter(
+                type = FilterType.ANNOTATION,
+                classes = ControllerBeanConfiguration.class
+        ),
+        useDefaultFilters = false
+)
 @MockitoBean(types = {
         // Common
         EntityManager.class,

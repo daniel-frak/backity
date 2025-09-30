@@ -1,13 +1,15 @@
 package dev.codesoapbox.backity.testing.messaging.annotations;
 
-import dev.codesoapbox.backity.core.backup.infrastructure.config.FileBackupWebSocketBeanConfig;
-import dev.codesoapbox.backity.core.discovery.infrastructure.config.GameContentDiscoverySpringWebSocketListenerBeanConfig;
+import dev.codesoapbox.backity.BackityApplication;
 import dev.codesoapbox.backity.core.logs.infrastructure.config.LogsWebSocketBeanConfig;
 import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketConfig;
 import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketEventPublisherBeanConfig;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringWebSocketListenerBeanConfiguration;
 import dev.codesoapbox.backity.testing.messaging.config.SharedSpringWebSocketEventListenerTestConfig;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.websocket.servlet.WebSocketMessagingAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -25,10 +27,16 @@ import java.lang.annotation.*;
         WebSocketEventPublisherBeanConfig.class,
 
         // Project - specific
-        LogsWebSocketBeanConfig.class,
-        GameContentDiscoverySpringWebSocketListenerBeanConfig.class,
-        FileBackupWebSocketBeanConfig.class
+        LogsWebSocketBeanConfig.class
 })
+@ComponentScan(
+        basePackageClasses = BackityApplication.class,
+        includeFilters = @ComponentScan.Filter(
+                type = FilterType.ANNOTATION,
+                classes = SpringWebSocketListenerBeanConfiguration.class
+        ),
+        useDefaultFilters = false
+)
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

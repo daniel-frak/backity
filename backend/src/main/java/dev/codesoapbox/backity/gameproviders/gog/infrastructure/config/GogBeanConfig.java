@@ -1,7 +1,5 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.config;
 
-import dev.codesoapbox.backity.gameproviders.gog.application.GogConfigInfo;
-import dev.codesoapbox.backity.gameproviders.gog.application.usecases.GetGogConfigUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.auth.GogAuthClient;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.auth.GogAuthSpringService;
@@ -25,18 +23,7 @@ import java.time.Clock;
 @RequiredArgsConstructor
 public class GogBeanConfig {
 
-    protected static final String USER_AUTH_URL_SUFFIX =
-            "/auth?client_id=46899977096215655" +
-                    "&redirect_uri=https%3A%2F%2Fembed.gog.com%2Fon_login_success%3Forigin%3Dclient" +
-                    "&response_type=code&layout=client2";
-
     private final GogProperties gogProperties;
-
-    @Bean
-    GetGogConfigUseCase getGogConfigUseCase() {
-        var gogConfigInfo = new GogConfigInfo(gogProperties.auth().baseUrl() + USER_AUTH_URL_SUFFIX);
-        return new GetGogConfigUseCase(gogConfigInfo);
-    }
 
     @Bean
     GogAuthClient gogAuthClient(@Qualifier("gogAuth") WebClient webClientAuth) {

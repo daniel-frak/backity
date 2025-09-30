@@ -1,21 +1,38 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.config;
 
+import dev.codesoapbox.backity.gameproviders.gog.application.GogConfigInfo;
+import dev.codesoapbox.backity.gameproviders.gog.application.usecases.GetGogConfigUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.application.usecases.GetGogGameDetailsUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.application.usecases.GetGogLibrarySizeUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@RequiredArgsConstructor
 @Configuration
 public class GogUseCaseBeanConfig {
 
+    private static final String USER_AUTH_URL_SUFFIX =
+            "/auth?client_id=46899977096215655" +
+                    "&redirect_uri=https%3A%2F%2Fembed.gog.com%2Fon_login_success%3Forigin%3Dclient" +
+                    "&response_type=code&layout=client2";
+
+    private final GogProperties gogProperties;
+
     @Bean
-    public GetGogLibrarySizeUseCase getGogLibrarySizeUseCase(GogLibraryService gogLibraryService) {
+    GetGogConfigUseCase getGogConfigUseCase() {
+        var gogConfigInfo = new GogConfigInfo(gogProperties.auth().baseUrl() + USER_AUTH_URL_SUFFIX);
+        return new GetGogConfigUseCase(gogConfigInfo);
+    }
+
+    @Bean
+    GetGogLibrarySizeUseCase getGogLibrarySizeUseCase(GogLibraryService gogLibraryService) {
         return new GetGogLibrarySizeUseCase(gogLibraryService);
     }
 
     @Bean
-    public GetGogGameDetailsUseCase getGogGameDetailsUseCase(GogLibraryService gogLibraryService) {
+    GetGogGameDetailsUseCase getGogGameDetailsUseCase(GogLibraryService gogLibraryService) {
         return new GetGogGameDetailsUseCase(gogLibraryService);
     }
 }

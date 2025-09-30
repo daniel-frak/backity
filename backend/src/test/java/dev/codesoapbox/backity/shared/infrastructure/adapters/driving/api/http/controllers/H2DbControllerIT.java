@@ -1,16 +1,15 @@
 package dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.storagesolution.infrastructure.config.LocalFileSystemStorageSolutionBeanConfig;
+import dev.codesoapbox.backity.BackityApplication;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
-import dev.codesoapbox.backity.core.game.infrastructure.config.GameJpaRepositoryBeanConfig;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
-import dev.codesoapbox.backity.core.gamefile.infrastructure.config.GameFileJpaRepositoryBeanConfig;
+import dev.codesoapbox.backity.core.storagesolution.infrastructure.config.LocalFileSystemStorageSolutionBeanConfig;
 import dev.codesoapbox.backity.shared.infrastructure.config.SpringDomainEventPublisherBeanConfig;
-import dev.codesoapbox.backity.shared.infrastructure.config.jpa.SharedJpaRepositoryBeanConfig;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositoryBeanConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -37,11 +38,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = H2DbController.class, properties = "backity.h2dump.path=test_dump.sql")
 @Import({
         LocalFileSystemStorageSolutionBeanConfig.class,
-        GameJpaRepositoryBeanConfig.class,
-        GameFileJpaRepositoryBeanConfig.class,
-        SharedJpaRepositoryBeanConfig.class,
         SpringDomainEventPublisherBeanConfig.class
 })
+@ComponentScan(
+        basePackageClasses = BackityApplication.class,
+        includeFilters = @ComponentScan.Filter(
+                type = FilterType.ANNOTATION,
+                classes = JpaRepositoryBeanConfiguration.class
+        ),
+        useDefaultFilters = false
+)
 @AutoConfigureDataJpa
 @AutoConfigureTestDatabase
 @EnableJpaAuditing

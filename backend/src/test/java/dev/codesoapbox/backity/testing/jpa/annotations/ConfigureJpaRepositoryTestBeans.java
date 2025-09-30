@@ -1,14 +1,13 @@
 package dev.codesoapbox.backity.testing.jpa.annotations;
 
-import dev.codesoapbox.backity.core.discovery.infrastructure.config.GameContentDiscoveryResultJpaRepositoryConfig;
-import dev.codesoapbox.backity.core.filecopy.infrastructure.config.FileCopyJpaRepositoryBeanConfig;
-import dev.codesoapbox.backity.core.game.infrastructure.config.GameJpaRepositoryBeanConfig;
-import dev.codesoapbox.backity.core.game.infrastructure.config.GameWithFileCopiesReadModelJpaRepositoryBeanConfig;
-import dev.codesoapbox.backity.core.gamefile.infrastructure.config.GameFileJpaRepositoryBeanConfig;
+import dev.codesoapbox.backity.BackityApplication;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.shared.infrastructure.config.jpa.SharedJpaRepositoryBeanConfig;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositoryBeanConfiguration;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import dev.codesoapbox.backity.testing.time.config.ResetClockTestExecutionListener;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -24,16 +23,16 @@ import java.lang.annotation.Target;
         mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 @Import({
         // Common
-        SharedJpaRepositoryBeanConfig.class,
-        FakeTimeBeanConfig.class,
-
-        // Specific
-        GameJpaRepositoryBeanConfig.class,
-        GameFileJpaRepositoryBeanConfig.class,
-        FileCopyJpaRepositoryBeanConfig.class,
-        GameContentDiscoveryResultJpaRepositoryConfig.class,
-        GameWithFileCopiesReadModelJpaRepositoryBeanConfig.class
+        FakeTimeBeanConfig.class
 })
+@ComponentScan(
+        basePackageClasses = BackityApplication.class,
+        includeFilters = @ComponentScan.Filter(
+                type = FilterType.ANNOTATION,
+                classes = JpaRepositoryBeanConfiguration.class
+        ),
+        useDefaultFilters = false
+)
 @MockitoBean(types = {
         DomainEventPublisher.class
 })
