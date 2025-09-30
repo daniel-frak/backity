@@ -10,14 +10,14 @@ public class BackupTarget {
 
     @EqualsAndHashCode.Include
     @NonNull
-    private BackupTargetId id;
+    private final BackupTargetId id;
+
+    @NonNull
+    private final StorageSolutionId storageSolutionId;
 
     @NonNull
     @Setter
     private String name;
-
-    @NonNull
-    private StorageSolutionId storageSolutionId;
 
     @NonNull
     private String pathTemplate;
