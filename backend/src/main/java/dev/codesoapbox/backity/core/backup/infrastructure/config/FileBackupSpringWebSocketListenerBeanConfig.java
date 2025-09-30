@@ -7,12 +7,12 @@ import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messag
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileCopyReplicationProgressUpdatedWsEventMapper;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileCopyStatusChangedWsEventMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.SpringWebSocketEventPublisher;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringWebSocketListenerBeanConfiguration;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
-public class FileBackupWebSocketBeanConfig {
+@SpringWebSocketListenerBeanConfiguration
+public class FileBackupSpringWebSocketListenerBeanConfig {
 
     @Bean
     FileCopyStatusChangedWsEventMapper fileCopyStatusChangedWsEventMapper() {

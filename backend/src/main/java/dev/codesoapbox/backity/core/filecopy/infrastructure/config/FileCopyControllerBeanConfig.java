@@ -2,11 +2,11 @@ package dev.codesoapbox.backity.core.filecopy.infrastructure.config;
 
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyHttpDtoMapper;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyWithContextHttpDtoMapper;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.ControllerBeanConfiguration;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@ControllerBeanConfiguration
 public class FileCopyControllerBeanConfig {
 
     @Bean
