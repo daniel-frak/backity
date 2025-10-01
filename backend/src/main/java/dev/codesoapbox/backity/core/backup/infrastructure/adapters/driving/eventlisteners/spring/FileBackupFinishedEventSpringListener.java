@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.eventlisteners.spring;
 
-import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.FileBackupFinishedEventHandler;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
@@ -8,10 +8,10 @@ import org.springframework.context.event.EventListener;
 @RequiredArgsConstructor
 public class FileBackupFinishedEventSpringListener {
 
-    private final FileCopyReplicationProgressRepository fileCopyReplicationProgressRepository;
+    private final FileBackupFinishedEventHandler eventHandler;
 
     @EventListener
     public void handle(FileBackupFinishedEvent event) {
-        fileCopyReplicationProgressRepository.deleteByFileCopyId(event.fileCopyId());
+        eventHandler.handle(event);
     }
 }

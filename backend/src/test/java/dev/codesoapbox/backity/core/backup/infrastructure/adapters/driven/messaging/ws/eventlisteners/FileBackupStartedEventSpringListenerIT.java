@@ -1,7 +1,7 @@
-package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.eventlisteners.spring;
+package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.eventlisteners;
 
-import dev.codesoapbox.backity.core.backup.application.eventhandlers.FileBackupFinishedEventHandler;
-import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.FileBackupStartedEventHandler;
+import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.TestFileBackupEvent;
 import dev.codesoapbox.backity.testing.messaging.annotations.SpringEventListenerTest;
 import org.junit.jupiter.api.Test;
@@ -11,17 +11,17 @@ import org.springframework.context.ApplicationEventPublisher;
 import static org.mockito.Mockito.verify;
 
 @SpringEventListenerTest
-class FileBackupFinishedEventSpringListenerIT {
+class FileBackupStartedEventSpringListenerIT {
 
     @Autowired
-    private FileBackupFinishedEventHandler eventHandler;
+    private FileBackupStartedEventHandler eventHandler;
 
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Test
-    void shouldHandleEvent() {
-        FileBackupFinishedEvent event = TestFileBackupEvent.finishedIntegrityUnknown();
+    void shouldPublishWebSocketEvent() {
+        FileBackupStartedEvent event = TestFileBackupEvent.started();
 
         applicationEventPublisher.publishEvent(event);
 

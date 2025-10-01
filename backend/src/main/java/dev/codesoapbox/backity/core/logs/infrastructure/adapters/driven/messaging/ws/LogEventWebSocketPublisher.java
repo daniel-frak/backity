@@ -4,16 +4,17 @@ import dev.codesoapbox.backity.core.logs.infrastructure.adapters.driven.messagin
 import dev.codesoapbox.backity.core.logs.infrastructure.adapters.driven.messaging.ws.model.LogCreatedWsEventMapper;
 import dev.codesoapbox.backity.core.logs.domain.model.LogCreatedEvent;
 import dev.codesoapbox.backity.core.logs.domain.services.LogEventPublisher;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.SpringWebSocketEventPublisher;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.WebSocketEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+// @TODO Remove entirely or change to LogEventWebSocketForwarder?
 @Slf4j
 @RequiredArgsConstructor
 public class LogEventWebSocketPublisher implements LogEventPublisher {
 
     private final LogCreatedWsEventMapper mapper;
-    private final SpringWebSocketEventPublisher eventPublisher;
+    private final WebSocketEventPublisher eventPublisher;
 
     @Override
     public void publish(LogCreatedEvent event) {
