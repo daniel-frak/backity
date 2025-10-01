@@ -1,7 +1,6 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.eventlisteners.spring;
 
-import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgress;
-import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.FileCopyReplicationProgressChangedEventHandler;
 import dev.codesoapbox.backity.core.backup.domain.events.FileCopyReplicationProgressChangedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.TestFileBackupEvent;
 import dev.codesoapbox.backity.testing.messaging.annotations.SpringEventListenerTest;
@@ -18,7 +17,7 @@ class FileCopyReplicationProgressChangedEventSpringListenerIT {
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
-    private FileCopyReplicationProgressRepository replicationProgressRepositoryMock;
+    private FileCopyReplicationProgressChangedEventHandler eventHandler;
 
     @Test
     void shouldHandle() {
@@ -26,8 +25,6 @@ class FileCopyReplicationProgressChangedEventSpringListenerIT {
 
         applicationEventPublisher.publishEvent(event);
 
-        var expectedReplicationProgress = new FileCopyReplicationProgress(
-                event.fileCopyId(), event.percentage(), event.timeLeft());
-        verify(replicationProgressRepositoryMock).save(expectedReplicationProgress);
+        verify(eventHandler).handle(event);
     }
 }

@@ -1,0 +1,22 @@
+package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.forwarders;
+
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.FileBackupStartedEventExternalForwarder;
+import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.FileBackupWebSocketTopics;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileCopyStatusChangedWsEvent;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.model.FileCopyStatusChangedWsEventMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.WebSocketEventPublisher;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+public class FileBackupStartedEventWebSocketForwarder implements FileBackupStartedEventExternalForwarder {
+
+    private final WebSocketEventPublisher wsEventPublisher;
+    private final FileCopyStatusChangedWsEventMapper wsEventMapper;
+
+    @Override
+    public void forward(FileBackupStartedEvent event) {
+        FileCopyStatusChangedWsEvent payload = wsEventMapper.toWsEvent(event);
+        wsEventPublisher.publish(FileBackupWebSocketTopics.BACKUP_STATUS_CHANGED.wsDestination(), payload);
+    }
+}

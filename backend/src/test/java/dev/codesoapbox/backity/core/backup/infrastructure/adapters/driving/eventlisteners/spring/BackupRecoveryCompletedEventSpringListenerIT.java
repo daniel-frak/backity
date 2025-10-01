@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.eventlisteners.spring;
 
-import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProcess;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.BackupRecoveryCompletedEventHandler;
 import dev.codesoapbox.backity.core.backup.domain.events.BackupRecoveryCompletedEvent;
 import dev.codesoapbox.backity.testing.messaging.annotations.SpringEventListenerTest;
 import org.junit.jupiter.api.Test;
@@ -13,17 +13,17 @@ import static org.mockito.Mockito.verify;
 class BackupRecoveryCompletedEventSpringListenerIT {
 
     @Autowired
-    private FileCopyReplicationProcess fileCopyReplicationProcessMock;
+    private BackupRecoveryCompletedEventHandler eventHandler;
 
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
     @Test
-    void shouldNotifyFileCopyOfCompletedRecovery() {
+    void shouldHandleEvent() {
         var event = new BackupRecoveryCompletedEvent();
 
         applicationEventPublisher.publishEvent(event);
 
-        verify(fileCopyReplicationProcessMock).markBackupRecoveryCompleted();
+        verify(eventHandler).handle();
     }
 }
