@@ -1,21 +1,20 @@
 package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.forwarders;
 
-import dev.codesoapbox.backity.core.discovery.application.eventhandlers.GameContentDiscoveryProgressChangedEventExternalForwarder;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.GameContentDiscoveryWebSocketTopics;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.model.GameContentDiscoveryProgressChangedWsEvent;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.model.GameContentDiscoveryProgressChangedWsEventMapper;
+import dev.codesoapbox.backity.shared.application.eventhandlers.DomainEventForwarder;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.WebSocketEventPublisher;
 import lombok.RequiredArgsConstructor;
 
+@DomainEventForwarder
 @RequiredArgsConstructor
-public class GameContentDiscoveryProgressChangedEventWebSocketForwarder
-        implements GameContentDiscoveryProgressChangedEventExternalForwarder {
+public class GameContentDiscoveryProgressChangedEventWebSocketForwarder {
 
     private final WebSocketEventPublisher wsEventPublisher;
     private final GameContentDiscoveryProgressChangedWsEventMapper wsEventMapper;
 
-    @Override
     public void forward(GameContentDiscoveryProgressChangedEvent event) {
         GameContentDiscoveryProgressChangedWsEvent payload = wsEventMapper.toWsEvent(event);
         wsEventPublisher.publish(

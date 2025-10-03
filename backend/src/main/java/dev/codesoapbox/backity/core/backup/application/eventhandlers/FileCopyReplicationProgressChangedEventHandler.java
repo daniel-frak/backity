@@ -9,13 +9,10 @@ import lombok.RequiredArgsConstructor;
 public class FileCopyReplicationProgressChangedEventHandler {
 
     private final FileCopyReplicationProgressRepository fileCopyReplicationProgressRepository;
-    private final FileCopyReplicationProgressChangedEventExternalForwarder eventForwarder;
 
     public void handle(FileCopyReplicationProgressChangedEvent event) {
-        // @TODO Handle independently:
         FileCopyReplicationProgress progress = toReplicationProgress(event);
         fileCopyReplicationProgressRepository.save(progress);
-        eventForwarder.forward(event);
     }
 
     private FileCopyReplicationProgress toReplicationProgress(FileCopyReplicationProgressChangedEvent event) {

@@ -1,6 +1,8 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.config.events;
 
-import dev.codesoapbox.backity.core.backup.application.eventhandlers.*;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.BackupRecoveryCompletedEventHandler;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.FileBackupFinishedEventHandler;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.FileCopyReplicationProgressChangedEventHandler;
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProcess;
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.DomainEventHandlerBeanConfiguration;
@@ -11,32 +13,19 @@ public class FileBackupEventHandlerBeanConfig {
 
     @Bean
     FileCopyReplicationProgressChangedEventHandler fileCopyReplicationProgressChangedEventHandler(
-            FileCopyReplicationProgressRepository replicationProgressRepository,
-            FileCopyReplicationProgressChangedEventExternalForwarder eventForwarder) {
-        return new FileCopyReplicationProgressChangedEventHandler(replicationProgressRepository, eventForwarder);
-    }
-
-    @Bean
-    public FileBackupStartedEventHandler fileBackupStartedEventHandler(
-            FileBackupStartedEventExternalForwarder eventForwarder) {
-        return new FileBackupStartedEventHandler(eventForwarder);
+            FileCopyReplicationProgressRepository replicationProgressRepository) {
+        return new FileCopyReplicationProgressChangedEventHandler(replicationProgressRepository);
     }
 
     @Bean
     public FileBackupFinishedEventHandler fileBackupFinishedEventHandler(
-            FileCopyReplicationProgressRepository fileCopyReplicationProgressRepository,
-            FileBackupFinishedEventExternalForwarder eventForwarder) {
-        return new FileBackupFinishedEventHandler(fileCopyReplicationProgressRepository, eventForwarder);
+            FileCopyReplicationProgressRepository fileCopyReplicationProgressRepository) {
+        return new FileBackupFinishedEventHandler(fileCopyReplicationProgressRepository);
     }
 
     @Bean
     BackupRecoveryCompletedEventHandler backupRecoveryCompletedEventHandler(
             FileCopyReplicationProcess fileCopyReplicationProcess) {
         return new BackupRecoveryCompletedEventHandler(fileCopyReplicationProcess);
-    }
-
-    @Bean
-    FileBackupFailedEventHandler fileBackupFailedEventHandler(FileBackupFailedEventExternalForwarder eventForwarder) {
-        return new FileBackupFailedEventHandler(eventForwarder);
     }
 }

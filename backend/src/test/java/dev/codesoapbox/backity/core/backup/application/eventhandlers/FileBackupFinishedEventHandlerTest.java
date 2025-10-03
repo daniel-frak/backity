@@ -17,14 +17,11 @@ class FileBackupFinishedEventHandlerTest {
     @Mock
     private FileCopyReplicationProgressRepository fileCopyReplicationProgressRepository;
 
-    @Mock
-    private FileBackupFinishedEventExternalForwarder eventForwarder;
-
     private FileBackupFinishedEventHandler eventHandler;
 
     @BeforeEach
     void setUp() {
-        eventHandler = new FileBackupFinishedEventHandler(fileCopyReplicationProgressRepository, eventForwarder);
+        eventHandler = new FileBackupFinishedEventHandler(fileCopyReplicationProgressRepository);
     }
 
     @Test
@@ -34,6 +31,5 @@ class FileBackupFinishedEventHandlerTest {
         eventHandler.handle(event);
 
         verify(fileCopyReplicationProgressRepository).deleteByFileCopyId(event.fileCopyId());
-        verify(eventForwarder).forward(event);
     }
 }

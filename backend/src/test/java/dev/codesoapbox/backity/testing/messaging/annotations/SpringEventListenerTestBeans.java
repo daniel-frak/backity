@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.testing.messaging.annotations;
 
 import dev.codesoapbox.backity.BackityApplication;
-import dev.codesoapbox.backity.core.backup.application.eventhandlers.*;
-import dev.codesoapbox.backity.core.discovery.application.eventhandlers.GameContentDiscoveryProgressChangedEventHandler;
-import dev.codesoapbox.backity.core.discovery.application.eventhandlers.GameContentDiscoveryStartedEventHandler;
-import dev.codesoapbox.backity.core.discovery.application.eventhandlers.GameContentDiscoveryStoppedEventHandler;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.BackupRecoveryCompletedEventHandler;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.FileBackupFinishedEventHandler;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.FileCopyReplicationProgressChangedEventHandler;
+import dev.codesoapbox.backity.shared.application.eventhandlers.DomainEventForwardingHandler;
 import dev.codesoapbox.backity.shared.infrastructure.config.SpringDomainEventPublisherBeanConfig;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringEventListenerBeanConfiguration;
 import org.springframework.context.annotation.ComponentScan;
@@ -26,14 +26,10 @@ import java.lang.annotation.*;
         useDefaultFilters = false
 )
 @MockitoBean(types = {
-        FileBackupStartedEventHandler.class,
         FileBackupFinishedEventHandler.class,
-        FileBackupFailedEventHandler.class,
         BackupRecoveryCompletedEventHandler.class,
         FileCopyReplicationProgressChangedEventHandler.class,
-        GameContentDiscoveryStartedEventHandler.class,
-        GameContentDiscoveryProgressChangedEventHandler.class,
-        GameContentDiscoveryStoppedEventHandler.class,
+        DomainEventForwardingHandler.class
 })
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
