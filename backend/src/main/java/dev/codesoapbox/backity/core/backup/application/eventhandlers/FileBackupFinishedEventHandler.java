@@ -8,11 +8,8 @@ import lombok.RequiredArgsConstructor;
 public class FileBackupFinishedEventHandler {
 
     private final FileCopyReplicationProgressRepository fileCopyReplicationProgressRepository;
-    private final FileBackupFinishedEventExternalForwarder eventForwarder;
 
     public void handle(FileBackupFinishedEvent event) {
-        // @TODO Handle independently:
         fileCopyReplicationProgressRepository.deleteByFileCopyId(event.fileCopyId());
-        eventForwarder.forward(event);
     }
 }

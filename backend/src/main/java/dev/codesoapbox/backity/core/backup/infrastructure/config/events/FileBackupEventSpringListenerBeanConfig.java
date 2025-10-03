@@ -15,22 +15,9 @@ public class FileBackupEventSpringListenerBeanConfig {
     }
 
     @Bean
-    FileBackupStartedEventSpringListener fileBackupStartedEventSpringListener(
-            FileBackupStartedEventHandler eventHandler) {
-
-        return new FileBackupStartedEventSpringListener(eventHandler);
-    }
-
-    @Bean
     FileBackupFinishedEventSpringListener fileBackupFinishedEventSpringListener(
             FileBackupFinishedEventHandler eventHandler) {
         return new FileBackupFinishedEventSpringListener(eventHandler);
-    }
-
-    @Bean
-    FileBackupFailedEventSpringListener fileBackupFailedEventSpringListener(
-            FileBackupFailedEventHandler eventHandler) {
-        return new FileBackupFailedEventSpringListener(eventHandler);
     }
 
     @Bean

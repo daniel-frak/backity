@@ -18,15 +18,12 @@ class FileCopyReplicationProgressChangedEventHandlerTest {
     @Mock
     private FileCopyReplicationProgressRepository replicationProgressRepository;
 
-    @Mock
-    private FileCopyReplicationProgressChangedEventExternalForwarder eventForwarder;
-
     private FileCopyReplicationProgressChangedEventHandler eventHandler;
 
     @BeforeEach
     void setUp() {
         eventHandler = new FileCopyReplicationProgressChangedEventHandler(
-                replicationProgressRepository, eventForwarder);
+                replicationProgressRepository);
     }
 
     @Test
@@ -38,6 +35,5 @@ class FileCopyReplicationProgressChangedEventHandlerTest {
         var expectedReplicationProgress = new FileCopyReplicationProgress(
                 event.fileCopyId(), event.percentage(), event.timeLeft());
         verify(replicationProgressRepository).save(expectedReplicationProgress);
-        verify(eventForwarder).forward(event);
     }
 }

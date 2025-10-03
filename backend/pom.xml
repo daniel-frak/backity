@@ -375,10 +375,11 @@
                         <excludedClass>*JpaSpecifications</excludedClass>
                         <excludedClass>*StartupListener</excludedClass>
                         <excludedClass>*SpringScheduler</excludedClass>
-                        <excludedClass>*EventSpringListener</excludedClass>
-                        <excludedClass>*EventSpringWebSocketListener</excludedClass>
+                        <excludedClass>*SpringListener</excludedClass>
+                        <excludedClass>*SpringWebSocketListener</excludedClass>
                         <excludedClass>*WebSocketPublisher</excludedClass>
                         <excludedClass>*WebSocketEventPublisher</excludedClass>
+                        <excludedClass>*WebSocketForwarder</excludedClass>
                         <excludedClass>*LogbackLogService</excludedClass>
                         <excludedClass>*StorageSolution</excludedClass>
                         <excludedClass>*GogEmbedWebClient</excludedClass>

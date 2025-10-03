@@ -20,7 +20,7 @@ public class FileBackupEventWebSocketForwarderBeanConfig {
     }
 
     @Bean
-    FileBackupStartedEventWebSocketForwarder fileBackupStartedEventWebSocketListener(
+    FileBackupStartedEventWebSocketForwarder fileBackupStartedEventWebSocketForwarder(
             WebSocketEventPublisher webSocketEventPublisher,
             FileCopyStatusChangedWsEventMapper fileCopyStatusChangedMapper) {
 
@@ -29,7 +29,7 @@ public class FileBackupEventWebSocketForwarderBeanConfig {
     }
 
     @Bean
-    FileBackupFinishedEventWebSocketForwarder fileBackupFinishedEventWebSocketListener(
+    FileBackupFinishedEventWebSocketForwarder fileBackupFinishedEventWebSocketForwarder(
             WebSocketEventPublisher webSocketEventPublisher,
             FileCopyStatusChangedWsEventMapper fileCopyStatusChangedMapper) {
 
@@ -49,7 +49,7 @@ public class FileBackupEventWebSocketForwarderBeanConfig {
     }
 
     @Bean
-    FileBackupFailedEventWebSocketForwarder fileBackupFailedEventWebSocketListener(
+    FileBackupFailedEventWebSocketForwarder fileBackupFailedEventWebSocketForwarder(
             WebSocketEventPublisher webSocketEventPublisher,
             FileCopyStatusChangedWsEventMapper fileCopyStatusChangedMapper) {
         return new FileBackupFailedEventWebSocketForwarder(
