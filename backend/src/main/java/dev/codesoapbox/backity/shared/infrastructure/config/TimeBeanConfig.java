@@ -1,15 +1,15 @@
 package dev.codesoapbox.backity.shared.infrastructure.config;
 
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SystemServiceBeanConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.time.Clock;
 
-@Configuration
+@SystemServiceBeanConfiguration
 public class TimeBeanConfig {
 
     @Bean
-    public Clock clock() {
+    Clock clock() {
         return Clock.systemUTC();
     }
 }

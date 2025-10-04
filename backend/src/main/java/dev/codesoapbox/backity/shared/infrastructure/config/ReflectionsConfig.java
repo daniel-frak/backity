@@ -1,17 +1,17 @@
 package dev.codesoapbox.backity.shared.infrastructure.config;
 
 import dev.codesoapbox.backity.BackityApplication;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.InfrastructureUtilityBeanConfiguration;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.FilterBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@InfrastructureUtilityBeanConfiguration
 public class ReflectionsConfig {
 
     @Bean
-    public Reflections reflections() {
+    Reflections reflections() {
         return new Reflections(BackityApplication.class.getPackageName(),
                 Scanners.SubTypes.filterResultsBy(new FilterBuilder()));
     }

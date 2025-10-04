@@ -30,19 +30,19 @@ public class AdditionalArchitectureRules {
 
     static final String EXCEPTIONS_PACKAGE = "..exceptions..";
     static final String PERSISTENCE_ADAPTER_PACKAGE = ".." +
-                                                      PortsAndAdaptersArchitectureRules.Constants.ADAPTERS_PACKAGE +
-                                                      ".driven.persistence..";
+            PortsAndAdaptersArchitectureRules.Constants.ADAPTERS_PACKAGE +
+            ".driven.persistence..";
     static final String CONTROLLER_PACKAGE = ".." +
-                                             PortsAndAdaptersArchitectureRules.Constants.ADAPTERS_PACKAGE +
-                                             ".driving.api.http.controllers..";
+            PortsAndAdaptersArchitectureRules.Constants.ADAPTERS_PACKAGE +
+            ".driving.api.http.controllers..";
     static final String SPRING_PACKAGE = "org.springframework..";
     static final String DOMAIN_PACKAGE = ".." + PortsAndAdaptersArchitectureRules.Constants.DOMAIN_PACKAGE
-                                         + "..";
+            + "..";
     static final String CONFIG_PACKAGE = "..infrastructure."
-                                         + PortsAndAdaptersArchitectureRules.Constants.CONFIG_PACKAGE
-                                         + "..";
+            + PortsAndAdaptersArchitectureRules.Constants.CONFIG_PACKAGE
+            + "..";
     static final String APPLICATION_PACKAGE = ".."
-                                              + PortsAndAdaptersArchitectureRules.Constants.APPLICATION_PACKAGE + "..";
+            + PortsAndAdaptersArchitectureRules.Constants.APPLICATION_PACKAGE + "..";
     static final String GAME_PROVIDERS_PACKAGE =
             BackityApplication.class.getPackageName() + ".gameproviders.(*)..";
     static final String GAME_PROVIDERS_SHARED_PACKAGE =
@@ -435,7 +435,7 @@ public class AdditionalArchitectureRules {
                         JavaMethod javaMethod, ConditionEvents events, Map.Entry<JavaClass, List<JavaClass>> entry) {
                     String message = String.format(
                             "%s accepts class %s as argument which transitively depends on the following" +
-                            " domain classes:%n - %s",
+                                    " domain classes:%n - %s",
                             javaMethod.getFullName(),
                             entry.getKey().getFullName(),
                             entry.getValue().stream()
@@ -540,5 +540,26 @@ public class AdditionalArchitectureRules {
                     
                     Negative consequences:
                     - Adds some complexity due to requiring an additional layer of abstraction
+                    """);
+
+    @ArchTest
+    static final ArchRule SPRING_CONFIGURATION_ANNOTATION_SHOULD_NOT_BE_USED_DIRECTLY = noClasses()
+            .that().areNotInterfaces()
+            .should().beAnnotatedWith(Configuration.class)
+            .because("""
+                    using the @Configuration annotation only via meta-annotations provides clarity \
+                    and makes slice testing easier.
+                    
+                    Context:
+                    When using @Configuration classes through meta-annotations, these meta-annotations can be used \
+                    to provide context around where the configured beans fit within the architecture of the application.
+                    Additionally, these meta-annotations can be used to automatically configure slice tests.
+                    
+                    Positive consequences:
+                    - Improved clarity due to meta-annotations providing context for the beans.
+                    - Auto-configuring slice tests is possible due to meta-annotations on which @ComponentScan can rely.
+                    
+                    Negative consequences:
+                    - Slightly more ceremony when defining bean factories.
                     """);
 }

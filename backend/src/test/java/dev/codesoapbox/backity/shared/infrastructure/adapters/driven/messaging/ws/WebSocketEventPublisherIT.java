@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketConfig;
+import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketBrokerConfig;
 import dev.codesoapbox.backity.testing.messaging.TestWebSocketMessaging;
 import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketPublisherTest;
 import org.junit.jupiter.api.AfterEach;
@@ -48,7 +48,7 @@ class WebSocketEventPublisherIT {
     private StompSession connectToWebSocket(WebSocketStompClient stompClient)
             throws InterruptedException, ExecutionException, TimeoutException {
         return stompClient
-                .connectAsync("ws://localhost:" + serverPort + WebSocketConfig.WS_ENDPOINT_SUFFIX,
+                .connectAsync("ws://localhost:" + serverPort + WebSocketBrokerConfig.WS_ENDPOINT_SUFFIX,
                         new StompSessionHandlerAdapter() {
                         })
                 .get(5, SECONDS);

@@ -1,31 +1,22 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.config;
 
-import dev.codesoapbox.backity.core.backup.application.StorageSolutionWriteService;
 import dev.codesoapbox.backity.core.backup.application.FileCopyFactory;
-import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
+import dev.codesoapbox.backity.core.backup.application.StorageSolutionWriteService;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
 import dev.codesoapbox.backity.core.filecopy.application.FileCopyWithContextFactory;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.*;
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
-import dev.codesoapbox.backity.core.game.domain.GameRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseBeanConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@UseCaseBeanConfiguration
 public class FileCopyUseCaseBeanConfig {
 
     @Bean
-    FileCopyFactory fileCopyFactory() {
-        return new FileCopyFactory(FileCopyId::newInstance);
-    }
-
-    @Bean
-    EnqueueFileCopyUseCase enqueueFileUseCase(FileCopyRepository fileCopyRepositoryRepository,
+    EnqueueFileCopyUseCase enqueueFileUseCase(FileCopyRepository fileCopyRepository,
                                               FileCopyFactory fileCopyFactory) {
-        return new EnqueueFileCopyUseCase(fileCopyRepositoryRepository, fileCopyFactory);
+        return new EnqueueFileCopyUseCase(fileCopyRepository, fileCopyFactory);
     }
 
     @Bean
@@ -34,15 +25,6 @@ public class FileCopyUseCaseBeanConfig {
             BackupTargetRepository backupTargetRepository,
             StorageSolutionWriteService storageSolutionWriteService) {
         return new CancelFileCopyUseCase(fileCopyRepository, backupTargetRepository, storageSolutionWriteService);
-    }
-
-    @Bean
-    FileCopyWithContextFactory fileCopyWithContextFactory(
-            GameFileRepository gameFileRepository, GameRepository gameRepository,
-            BackupTargetRepository backupTargetRepository,
-            FileCopyReplicationProgressRepository replicationProgressRepository) {
-        return new FileCopyWithContextFactory(gameFileRepository, gameRepository, backupTargetRepository,
-                replicationProgressRepository);
     }
 
     @Bean

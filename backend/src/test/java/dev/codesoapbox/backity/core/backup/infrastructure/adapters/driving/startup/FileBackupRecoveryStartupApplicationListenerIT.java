@@ -7,8 +7,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.mockito.Mockito.verify;
 
-@SpringBootTest(classes = FileBackupRecoveryStartupListener.class)
-class FileBackupRecoveryStartupListenerIT {
+@SpringBootTest(classes = FileBackupRecoveryStartupApplicationListener.class)
+class FileBackupRecoveryStartupApplicationListenerIT {
 
     @MockitoBean
     private RecoverInterruptedFileBackupUseCase useCase;

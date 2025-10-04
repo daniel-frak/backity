@@ -18,7 +18,7 @@ public class FileBackupEventHandlerBeanConfig {
     }
 
     @Bean
-    public FileBackupFinishedEventHandler fileBackupFinishedEventHandler(
+    FileBackupFinishedEventHandler fileBackupFinishedEventHandler(
             FileCopyReplicationProgressRepository fileCopyReplicationProgressRepository) {
         return new FileBackupFinishedEventHandler(fileCopyReplicationProgressRepository);
     }

@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.shared.infrastructure.config.security;
 
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.WebMvcConfiguration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.util.List;
 
 @RequiredArgsConstructor
-@Configuration
+@WebMvcConfiguration
 @Profile("dev")
 public class DevCorsConfig implements WebMvcConfigurer {
 

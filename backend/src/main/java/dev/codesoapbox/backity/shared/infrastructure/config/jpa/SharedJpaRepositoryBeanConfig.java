@@ -9,12 +9,12 @@ import org.springframework.context.annotation.Bean;
 public class SharedJpaRepositoryBeanConfig {
 
     @Bean
-    public SpringPageMapper springPageMapper() {
+    SpringPageMapper springPageMapper() {
         return new SpringPageMapper();
     }
 
     @Bean
-    public SpringPageableMapper springPageableMapper() {
+    SpringPageableMapper springPageableMapper() {
         return new SpringPageableMapper();
     }
 }

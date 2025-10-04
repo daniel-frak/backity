@@ -1,12 +1,13 @@
 package dev.codesoapbox.backity.archunit.rules;
 
 import com.tngtech.archunit.base.DescribedPredicate;
-import com.tngtech.archunit.core.domain.JavaAnnotation;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
+import java.lang.annotation.Annotation;
 
 import static com.tngtech.archunit.core.domain.properties.CanBeAnnotated.Predicates.annotatedWith;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.*;
@@ -170,22 +171,22 @@ public class GeneralCodingRules {
     static final ArchRule FIELD_INJECTION_SHOULD_NOT_BE_USED = noFields().that()
             .areDeclaredInClassesThat(new DescribedPredicate<>(
                     "don't have configuration annotation on themselves or on parent classes") {
+
                 @Override
                 public boolean test(JavaClass javaClass) {
                     while (javaClass != null) {
-                        for (JavaAnnotation<?> javaAnnotation : javaClass.getAnnotations()) {
-                            List<String> configurationAnnotations = List.of(
-                                    "org.springframework.context.annotation.Configuration",
-                                    "org.springframework.boot.context.properties.ConfigurationProperties"
-                            );
-                            String annotationName = javaAnnotation.getRawType().getName();
-                            if (configurationAnnotations.contains(annotationName)) {
-                                return false;
-                            }
+                        if(isMetaAnnotated(Configuration.class, javaClass)
+                                || isMetaAnnotated(ConfigurationProperties.class, javaClass)) {
+                            return false;
                         }
                         javaClass = javaClass.getEnclosingClass().orElse(null);
                     }
                     return true;
+                }
+
+                private <T extends Annotation> boolean isMetaAnnotated(
+                        Class<T> annotationType, JavaClass javaClass) {
+                    return ArchUnitMetaAnnotation.tryGet(annotationType, javaClass.getAnnotations()).isPresent();
                 }
             })
             .should(BE_ANNOTATED_WITH_AN_INJECTION_ANNOTATION)

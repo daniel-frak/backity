@@ -5,7 +5,7 @@ import dev.codesoapbox.backity.core.backup.application.eventhandlers.BackupRecov
 import dev.codesoapbox.backity.core.backup.application.eventhandlers.FileBackupFinishedEventHandler;
 import dev.codesoapbox.backity.core.backup.application.eventhandlers.FileCopyReplicationProgressChangedEventHandler;
 import dev.codesoapbox.backity.shared.application.eventhandlers.DomainEventForwardingHandler;
-import dev.codesoapbox.backity.shared.infrastructure.config.SpringDomainEventPublisherBeanConfig;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringApplicationEventPublisherBeanConfiguration;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringEventListenerBeanConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
@@ -14,14 +14,15 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.lang.annotation.*;
 
-@Import({
-        SpringDomainEventPublisherBeanConfig.class
-})
+@Import({}) // Needed to make @ComponentScan work
 @ComponentScan(
         basePackageClasses = BackityApplication.class,
         includeFilters = @ComponentScan.Filter(
                 type = FilterType.ANNOTATION,
-                classes = SpringEventListenerBeanConfiguration.class
+                classes = {
+                        SpringEventListenerBeanConfiguration.class,
+                        SpringApplicationEventPublisherBeanConfiguration.class
+                }
         ),
         useDefaultFilters = false
 )

@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.shared.infrastructure.config.openapi;
 
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.lowercaseenums.openapi.SwaggerEnumLowerCaseModelConverter;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.OpenApiBeanConfiguration;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -10,14 +11,13 @@ import lombok.AllArgsConstructor;
 import org.reflections.Reflections;
 import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
 import java.util.Arrays;
 
 import static java.util.Collections.singletonList;
 
-@Configuration
+@OpenApiBeanConfiguration
 @OpenAPIDefinition
 @AllArgsConstructor
 public class OpenApiConfig {
@@ -32,7 +32,7 @@ public class OpenApiConfig {
     private final Environment environment;
 
     @Bean
-    public OpenAPI customOpenAPI(OpenApiProperties properties) {
+    OpenAPI customOpenAPI(OpenApiProperties properties) {
         var openApi = new OpenAPI()
                 .info(getInfo(properties))
                 .components(new Components());
@@ -59,12 +59,12 @@ public class OpenApiConfig {
     }
 
     @Bean
-    public OpenApiCustomizer addAdditionalClasses(Reflections reflections) {
+    OpenApiCustomizer addAdditionalClasses(Reflections reflections) {
         return new OpenApiAdditionalSchemaProvider(reflections);
     }
 
     @Bean
-    public SwaggerEnumLowerCaseModelConverter swaggerEnumLowerCaseModelConverter() {
+    SwaggerEnumLowerCaseModelConverter swaggerEnumLowerCaseModelConverter() {
         return new SwaggerEnumLowerCaseModelConverter();
     }
 }
