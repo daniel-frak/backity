@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 public class FileCopyControllerBeanConfig {
 
     @Bean
-    public FileCopyHttpDtoMapper fileCopyHttpDtoMapper() {
+    FileCopyHttpDtoMapper fileCopyHttpDtoMapper() {
         return Mappers.getMapper(FileCopyHttpDtoMapper.class);
     }
 

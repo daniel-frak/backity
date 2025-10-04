@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 public class GameContentDiscoveryControllerBeanConfig {
 
     @Bean
-    public GameContentDiscoveryOverviewHttpDtoMapper gameContentDiscoveryOverviewHttpDtoMapper() {
+    GameContentDiscoveryOverviewHttpDtoMapper gameContentDiscoveryOverviewHttpDtoMapper() {
         return Mappers.getMapper(GameContentDiscoveryOverviewHttpDtoMapper.class);
     }
 }

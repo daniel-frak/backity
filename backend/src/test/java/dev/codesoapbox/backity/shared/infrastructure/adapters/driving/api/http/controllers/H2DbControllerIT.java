@@ -7,9 +7,10 @@ import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
-import dev.codesoapbox.backity.core.storagesolution.infrastructure.config.LocalFileSystemStorageSolutionBeanConfig;
-import dev.codesoapbox.backity.shared.infrastructure.config.SpringDomainEventPublisherBeanConfig;
+import dev.codesoapbox.backity.core.storagesolution.infrastructure.config.slices.LocalFileSystemStorageSolutionBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.jpa.JpaAuditingConfig;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositoryBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringApplicationEventPublisherBeanConfiguration;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -36,15 +36,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = H2DbController.class, properties = "backity.h2dump.path=test_dump.sql")
-@Import({
-        LocalFileSystemStorageSolutionBeanConfig.class,
-        SpringDomainEventPublisherBeanConfig.class
-})
 @ComponentScan(
         basePackageClasses = BackityApplication.class,
         includeFilters = @ComponentScan.Filter(
                 type = FilterType.ANNOTATION,
-                classes = JpaRepositoryBeanConfiguration.class
+                classes = {
+                        JpaRepositoryBeanConfiguration.class,
+                        LocalFileSystemStorageSolutionBeanConfiguration.class,
+                        SpringApplicationEventPublisherBeanConfiguration.class
+                }
+        ),
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = JpaAuditingConfig.class
         ),
         useDefaultFilters = false
 )

@@ -1,11 +1,11 @@
 package dev.codesoapbox.backity.shared.infrastructure.config;
 
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.WebSocketEventPublisher;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.WebSocketEventPublisherBeanConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
-@Configuration
+@WebSocketEventPublisherBeanConfiguration
 public class WebSocketEventPublisherBeanConfig {
 
     @Bean
