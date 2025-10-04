@@ -10,12 +10,12 @@ import org.springframework.context.annotation.Bean;
 public class GogControllerBeanConfig {
 
     @Bean
-    public GogGameWithFilesHttpDtoMapper gameDetailsResponseHttpDtoMapper() {
+    GogGameWithFilesHttpDtoMapper gameDetailsResponseHttpDtoMapper() {
         return Mappers.getMapper(GogGameWithFilesHttpDtoMapper.class);
     }
 
     @Bean
-    public GogConfigHttpDtoMapper gogConfigResponseHttpDtoMapper() {
+    GogConfigHttpDtoMapper gogConfigResponseHttpDtoMapper() {
         return Mappers.getMapper(GogConfigHttpDtoMapper.class);
     }
 }

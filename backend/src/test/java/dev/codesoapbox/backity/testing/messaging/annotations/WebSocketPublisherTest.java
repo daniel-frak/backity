@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.testing.messaging.annotations;
 
-import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketConfig;
+import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketBrokerConfig;
 import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketEventPublisherBeanConfig;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -22,7 +22,7 @@ import java.lang.annotation.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @OverrideAutoConfiguration(enabled = false)
 @ContextConfiguration(classes = {
-        WebSocketConfig.class,
+        WebSocketBrokerConfig.class,
         WebSocketEventPublisherBeanConfig.class
 })
 @ImportAutoConfiguration({

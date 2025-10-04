@@ -2,10 +2,10 @@ package dev.codesoapbox.backity.core.backuptarget.infrastructure.config;
 
 import dev.codesoapbox.backity.core.backuptarget.application.GetBackupTargetsUseCase;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseBeanConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@UseCaseBeanConfiguration
 public class BackupTargetUseCaseBeanConfig {
 
     @Bean

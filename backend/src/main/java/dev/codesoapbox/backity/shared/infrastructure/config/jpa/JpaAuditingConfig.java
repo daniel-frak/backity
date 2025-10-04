@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.shared.infrastructure.config.jpa;
 
-import org.springframework.context.annotation.Configuration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositoryBeanConfiguration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @EnableJpaAuditing
-@Configuration
+@JpaRepositoryBeanConfiguration
 public class JpaAuditingConfig {
 }

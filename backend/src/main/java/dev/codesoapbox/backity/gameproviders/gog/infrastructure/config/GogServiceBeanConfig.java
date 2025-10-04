@@ -8,20 +8,18 @@ import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.GogFileDiscoveryService;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.GogGameWithFilesMapper;
 import dev.codesoapbox.backity.gameproviders.shared.infrastructure.adapters.driven.api.spring.DataBufferFluxTrackableFileStreamFactory;
+import dev.codesoapbox.backity.gameproviders.shared.infrastructure.config.slices.GameProviderServiceConfiguration;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.time.Clock;
 
-@Slf4j
-@Configuration
+@GameProviderServiceConfiguration
 @RequiredArgsConstructor
-public class GogBeanConfig {
+public class GogServiceBeanConfig {
 
     private final GogProperties gogProperties;
 
@@ -34,7 +32,7 @@ public class GogBeanConfig {
     }
 
     @Bean
-    GogAuthService gogAuthService(GogAuthClient gogAuthClient) {
+    GogAuthSpringService gogAuthService(GogAuthClient gogAuthClient) {
         return new GogAuthSpringService(gogAuthClient);
     }
 

@@ -17,7 +17,7 @@ public class FakeTimeBeanConfig {
     public static final FakeClock CLOCK = FakeClock.at(DEFAULT_NOW);
 
     @Bean
-    public FakeClock fixedClock() {
+    FakeClock fixedClock() {
         return CLOCK;
     }
 
@@ -25,7 +25,7 @@ public class FakeTimeBeanConfig {
      * Freezes time for bean validation, so that annotations like {@code @FutureOrPresent} don't break in the future.
      */
     @Bean
-    public ValidationConfigurationCustomizer validationConfigurationCustomizer(Clock clock) {
+    ValidationConfigurationCustomizer validationConfigurationCustomizer(Clock clock) {
         FakeClockProvider fixedClockProvider = new FakeClockProvider(clock);
         return c -> c.clockProvider(fixedClockProvider);
     }

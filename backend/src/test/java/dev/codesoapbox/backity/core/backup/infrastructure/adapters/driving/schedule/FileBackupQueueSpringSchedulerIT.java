@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.schedule;
 
 import dev.codesoapbox.backity.core.backup.application.usecases.BackUpOldestFileCopyUseCase;
-import dev.codesoapbox.backity.core.backup.infrastructure.config.FileBackupQueueSchedulerBeanConfig;
+import dev.codesoapbox.backity.core.backup.infrastructure.config.FileBackupQueueSpringSchedulerBeanConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.test.context.TestPropertySource;
@@ -15,7 +15,7 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.verify;
 
 @EnableScheduling
-@SpringJUnitConfig(FileBackupQueueSchedulerBeanConfig.class)
+@SpringJUnitConfig(FileBackupQueueSpringSchedulerBeanConfig.class)
 @TestPropertySource(properties = "backity.file-backup-queue-scheduler.rate-ms=1")
 class FileBackupQueueSpringSchedulerIT {
 

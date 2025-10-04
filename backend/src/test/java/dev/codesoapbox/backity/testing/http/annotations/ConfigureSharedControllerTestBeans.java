@@ -35,6 +35,7 @@ import java.lang.annotation.Target;
 @TestExecutionListeners(listeners = ResetClockTestExecutionListener.class,
         mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 @Import({
+        // Common
         FakeTimeBeanConfig.class
 })
 @ComponentScan(
