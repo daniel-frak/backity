@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 public class GameFileControllerBeanConfig {
 
     @Bean
-    public GameFileHttpDtoMapper gameFileHttpDtoMapper() {
+    GameFileHttpDtoMapper gameFileHttpDtoMapper() {
         return Mappers.getMapper(GameFileHttpDtoMapper.class);
     }
 }

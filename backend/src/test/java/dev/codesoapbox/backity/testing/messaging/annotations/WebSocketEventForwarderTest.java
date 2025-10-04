@@ -1,9 +1,18 @@
 package dev.codesoapbox.backity.testing.messaging.annotations;
 
+import dev.codesoapbox.backity.BackityApplication;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.WebSocketEventForwarderBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.WebSocketEventPublisherBeanConfiguration;
 import dev.codesoapbox.backity.testing.messaging.TestMessageChannel;
+import dev.codesoapbox.backity.testing.messaging.config.SharedSpringWebSocketEventListenerTestConfig;
 import dev.codesoapbox.backity.testing.messaging.extensions.WebSocketEventPublisherTestExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.lang.annotation.*;
@@ -22,12 +31,31 @@ import java.lang.annotation.*;
  * Thus, making all WebSocket event handler tests share a single application context should protect against
  * cache eviction slowing down the tests.
  */
-@ExtendWith(SpringExtension.class)
-@ExtendWith(WebSocketEventPublisherTestExtension.class)
-@WebSocketEventPublisherTestBeans
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
+@ExtendWith(SpringExtension.class)
+@ExtendWith(WebSocketEventPublisherTestExtension.class)
+@ContextConfiguration(classes = {
+        WebSocketEventForwarderTest.TestContext.class,
+        SharedSpringWebSocketEventListenerTestConfig.class,
+        JacksonAutoConfiguration.class
+})
 public @interface WebSocketEventForwarderTest {
+
+    @ComponentScan(
+            basePackageClasses = BackityApplication.class,
+            includeFilters = @ComponentScan.Filter(
+                    type = FilterType.ANNOTATION,
+                    classes = {
+                            WebSocketEventPublisherBeanConfiguration.class,
+                            WebSocketEventForwarderBeanConfiguration.class
+                    }
+            ),
+            useDefaultFilters = false
+    )
+    @TestConfiguration
+    class TestContext {
+    }
 }

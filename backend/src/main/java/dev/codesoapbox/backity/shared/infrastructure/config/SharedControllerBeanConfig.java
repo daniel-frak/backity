@@ -10,12 +10,12 @@ import org.springframework.context.annotation.Bean;
 public class SharedControllerBeanConfig {
 
     @Bean
-    public PageHttpDtoMapper pageHttpDtoMapper() {
+    PageHttpDtoMapper pageHttpDtoMapper() {
         return Mappers.getMapper(PageHttpDtoMapper.class);
     }
 
     @Bean
-    public RequestPaginationHttpDtoMapper paginationHttpDtoMapper() {
+    RequestPaginationHttpDtoMapper paginationHttpDtoMapper() {
         return Mappers.getMapper(RequestPaginationHttpDtoMapper.class);
     }
 }

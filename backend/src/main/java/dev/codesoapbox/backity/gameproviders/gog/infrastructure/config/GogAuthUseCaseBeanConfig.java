@@ -5,29 +5,29 @@ import dev.codesoapbox.backity.gameproviders.gog.application.usecases.CheckGogAu
 import dev.codesoapbox.backity.gameproviders.gog.application.usecases.LogOutOfGogUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.application.usecases.RefreshGogAccessTokenUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseBeanConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@UseCaseBeanConfiguration
 public class GogAuthUseCaseBeanConfig {
 
     @Bean
-    public AuthenticateGogUseCase authenticateGogUseCase(GogAuthService authService) {
+    AuthenticateGogUseCase authenticateGogUseCase(GogAuthService authService) {
         return new AuthenticateGogUseCase(authService);
     }
 
     @Bean
-    public CheckGogAuthenticationUseCase checkGogAuthenticationUseCase(GogAuthService authService) {
+    CheckGogAuthenticationUseCase checkGogAuthenticationUseCase(GogAuthService authService) {
         return new CheckGogAuthenticationUseCase(authService);
     }
 
     @Bean
-    public RefreshGogAccessTokenUseCase refreshGogAccessTokenUseCase(GogAuthService authService) {
+    RefreshGogAccessTokenUseCase refreshGogAccessTokenUseCase(GogAuthService authService) {
         return new RefreshGogAccessTokenUseCase(authService);
     }
 
     @Bean
-    public LogOutOfGogUseCase logOutOfGogUseCase(GogAuthService authService) {
+    LogOutOfGogUseCase logOutOfGogUseCase(GogAuthService authService) {
         return new LogOutOfGogUseCase(authService);
     }
 }

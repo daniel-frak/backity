@@ -9,15 +9,15 @@ import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import dev.codesoapbox.backity.shared.application.progress.ProgressTracker;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.InternalApplicationServiceBeanConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.time.Clock;
 import java.util.List;
 import java.util.concurrent.Executors;
 
-@Configuration
-public class GameContentDiscoveryBeanConfig {
+@InternalApplicationServiceBeanConfiguration
+public class GameContentDiscoveryInternalServiceBeanConfig {
 
     @Bean
     GameContentDiscoveryProgressTracker gameContentDiscoveryProgressTracker(
