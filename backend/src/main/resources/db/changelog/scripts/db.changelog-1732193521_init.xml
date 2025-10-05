@@ -131,4 +131,23 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet id="create_outbox_event_table" author="daniel_frak">
+        <createTable tableName="outbox_event">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="type" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="payload" type="JSON">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processed" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>
