@@ -46,7 +46,7 @@ jobs:
           additional-folders: frontend/src/main/angular/coverage
 
       - name: Upload application jar
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: app-jar
           path: backend/target/*.jar
@@ -67,7 +67,7 @@ jobs:
           cache: maven
 
       - name: Download application jar
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v6
         with:
           name: app-jar
           path: backend/target
