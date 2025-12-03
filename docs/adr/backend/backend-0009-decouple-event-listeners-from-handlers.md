@@ -1,5 +1,5 @@
 ---
-title: 0007 - Decouple event listeners from handlers
+title: 0009 - Decouple event listeners from handlers
 parent: Architecture Decision Records (backend)
 ---
 
@@ -19,7 +19,7 @@ A custom application-layer annotation like `@DomainEventHandler` could be writte
 from the Spring framework. An infrastructure-layer inbound adapter could then dynamically register event listeners
 based on the presence of this annotation.
 However, Spring currently does not provide an easy way to programmatically register
-event listeners, while writing a custom equivalent of `@EventListenerMethodProcessor` would be a significant maintenance
+event listeners, while writing a custom equivalent of `EventListenerMethodProcessor` would be a significant maintenance
 burden.
 
 Until Spring provides a better way to programmatically register event listeners, the most straightforward solution is to
