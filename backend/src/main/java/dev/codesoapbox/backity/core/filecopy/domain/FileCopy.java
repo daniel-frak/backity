@@ -3,7 +3,6 @@ package dev.codesoapbox.backity.core.filecopy.domain;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
-import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotBackedUpException;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.InvalidFileCopyStatusTransitionException;
 import dev.codesoapbox.backity.shared.domain.DomainEvent;
 import lombok.EqualsAndHashCode;
@@ -66,7 +65,7 @@ public class FileCopy {
 
     private boolean statusIsStored() {
         return status == FileCopyStatus.STORED_INTEGRITY_UNKNOWN
-               || status == FileCopyStatus.STORED_INTEGRITY_VERIFIED;
+                || status == FileCopyStatus.STORED_INTEGRITY_VERIFIED;
     }
 
     public void toTracked() {
