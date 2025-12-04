@@ -7,7 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { FileCopyNaturalIdWsDto } from './fileCopyNaturalIdWsDto';
+import {FileCopyNaturalIdWsDto} from './fileCopyNaturalIdWsDto';
 
 
 export interface FileCopyReplicationProgressUpdatedEvent {
