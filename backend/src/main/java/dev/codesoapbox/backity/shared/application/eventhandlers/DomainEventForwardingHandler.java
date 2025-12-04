@@ -41,7 +41,7 @@ public class DomainEventForwardingHandler {
             failures.forEach(forwardingException::addSuppressed);
             throw forwardingException;
         }
-        log.info("Event successfully handled by {} forwarders: {}", forwardingConsumers.size(), event);
+        log.debug("Event successfully handled by {} forwarders: {}", forwardingConsumers.size(), event);
     }
 
     public interface EventForwardingConsumer<T> extends Consumer<T> {

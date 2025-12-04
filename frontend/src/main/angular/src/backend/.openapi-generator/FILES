@@ -26,11 +26,11 @@ model/fileBackupMessageTopics.ts
 model/fileCopy.ts
 model/fileCopyNaturalId.ts
 model/fileCopyNaturalIdWsDto.ts
+model/fileCopyReplicationProgressUpdatedEvent.ts
 model/fileCopyStatus.ts
 model/fileCopyStatusChangedEvent.ts
 model/fileCopyWithContext.ts
 model/fileCopyWithProgress.ts
-model/fileDownloadProgressUpdatedEvent.ts
 model/fileSource.ts
 model/gameContentDiscoveryOutcome.ts
 model/gameContentDiscoveryOutcomeWs.ts
