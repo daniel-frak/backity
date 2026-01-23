@@ -72,7 +72,7 @@ public final class OpenApiControllerRules {
                 - Class names may need to be more verbose, unless the schema name is explicitly defined.
                 """);
     @ArchTest
-    static final ArchRule operation_ids_must_include_controller_resource_name =
+    static final ArchRule OPERATION_IDS_MUST_INCLUDE_CONTROLLER_RESOURCE_NAME =
             methods().that().arePublic()
                     .and().areDeclaredInClassesThat().areMetaAnnotatedWith(RestController.class)
                     .and().areMetaAnnotatedWith(RequestMapping.class)
@@ -167,7 +167,7 @@ public final class OpenApiControllerRules {
         @Override
         public void check(JavaMethod method, ConditionEvents events) {
             String operationId = getOperationId(method);
-            operationIdsByMethods.computeIfAbsent(operationId, k -> new HashSet<>()).add(method);
+            operationIdsByMethods.computeIfAbsent(operationId, _ -> new HashSet<>()).add(method);
         }
 
         @Override
@@ -243,6 +243,8 @@ public final class OpenApiControllerRules {
 
         private boolean isIndirectlyUsedInRequestMapping(JavaClass javaClass, Set<JavaClass> visited) {
             return javaClass.getDirectDependenciesToSelf().stream()
+                    // Enum properties are not part of the API
+                    .filter(dependency -> !dependency.getOriginClass().isEnum())
                     .filter(dependency -> dependency.getOriginClass().getFields().stream()
                             .anyMatch(field -> field.getAllInvolvedRawTypes().contains(javaClass)))
                     .anyMatch(dependency -> isUsedInRequestMapping(dependency.getOriginClass(), visited));
@@ -266,7 +268,7 @@ public final class OpenApiControllerRules {
         @Override
         public void check(JavaClass clazz, ConditionEvents events) {
             String schemaName = getSchemaName(clazz);
-            schemaNamesByClass.computeIfAbsent(schemaName, k -> new HashSet<>()).add(clazz);
+            schemaNamesByClass.computeIfAbsent(schemaName, _ -> new HashSet<>()).add(clazz);
         }
 
         @Override
