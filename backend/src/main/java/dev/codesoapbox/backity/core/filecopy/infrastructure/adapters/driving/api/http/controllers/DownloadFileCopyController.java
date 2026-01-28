@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers;
 
+import dev.codesoapbox.backity.core.filecopy.application.usecases.DownloadFileCopyUseCase;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
-import dev.codesoapbox.backity.core.filecopy.application.usecases.DownloadFileCopyUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -40,7 +40,7 @@ public class DownloadFileCopyController {
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""
                                                              + fileResource.fileName() + "\"")
                     .body(inputStreamResource);
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException _) {
             return ResponseEntity.notFound().build();
         } catch (RuntimeException e) {
             if (fileResource != null) {

@@ -56,7 +56,7 @@ public class S3StorageSolution implements StorageSolution {
         try {
             s3Client.headObject(request -> request.bucket(bucketName).key(key));
             return true;
-        } catch (NoSuchKeyException e) {
+        } catch (NoSuchKeyException _) {
             return false;
         }
     }
@@ -75,7 +75,7 @@ public class S3StorageSolution implements StorageSolution {
     public long getSizeInBytes(String filePath) {
         try {
             return s3Client.headObject(request -> request.bucket(bucketName).key(filePath)).contentLength();
-        } catch (NoSuchKeyException e) {
+        } catch (NoSuchKeyException _) {
             return 0L;
         }
     }
@@ -85,7 +85,7 @@ public class S3StorageSolution implements StorageSolution {
     public FileResource getFileResource(String filePath) throws FileNotFoundException {
         try {
             return tryToGetFileResource(filePath);
-        } catch (NoSuchKeyException e) {
+        } catch (NoSuchKeyException _) {
             throw new FileNotFoundException("File not found: " + filePath);
         }
     }
