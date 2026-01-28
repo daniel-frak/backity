@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.shared.infrastructure.config.exceptionhandling;
 
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotBackedUpException;
+import dev.codesoapbox.backity.shared.domain.exceptions.DomainInvariantViolationException;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.exceptionhandling.ErrorMessageHttpDto;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.exceptionhandling.ValidationErrorHttpDto;
-import dev.codesoapbox.backity.shared.domain.exceptions.DomainInvariantViolationException;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -72,10 +73,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                         null));
     }
 
+    @SuppressWarnings("java:S2638") // False positive
     @ApiResponse(responseCode = "400", description = "The server cannot or will not process the request due to"
-                                                     + " something that is perceived to be a client error",
+            + " something that is perceived to be a client error",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = ValidationErrorHttpDto.class))))
     @Override
+    @Nullable
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   @NonNull HttpHeaders headers,
                                                                   @NonNull HttpStatusCode status,

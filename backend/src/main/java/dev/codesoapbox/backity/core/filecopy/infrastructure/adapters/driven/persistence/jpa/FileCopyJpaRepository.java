@@ -82,7 +82,7 @@ public class FileCopyJpaRepository implements FileCopyRepository {
                 .orElseGet(() -> {
                     try {
                         return create(fileCopyFactory);
-                    } catch (DataIntegrityViolationException e) {
+                    } catch (DataIntegrityViolationException _) {
                         // Someone else just inserted it – reload and return that
                         FileCopyJpaEntity entity =
                                 springRepository.getByNaturalIdGameFileIdAndNaturalIdBackupTargetId(
