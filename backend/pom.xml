@@ -13,7 +13,7 @@
 
     <properties>
         <springdoc.version>2.8.15</springdoc.version>
-        <openapi-generator.version>7.17.0</openapi-generator.version>
+        <openapi-generator.version>7.19.0</openapi-generator.version>
         <maven-clean.version>3.5.0</maven-clean.version>
         <angular-openapi.version>19.0.0</angular-openapi.version>
         <jacoco.version>0.8.14</jacoco.version>
