@@ -28,7 +28,6 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.auditing.AuditingHandler;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -113,11 +112,11 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     @Autowired
     private TestEntityManager entityManager;
 
-    @MockitoSpyBean
-    private GameWithFilesCopiesReadModelJpaEntityMapper entityMapper;
+    @Autowired
+    private GameWithFilesCopiesReadModelJpaEntityMapper entityMapperSpy;
 
-    @MockitoSpyBean
-    private AuditingHandler auditingHandler;
+    @Autowired
+    private AuditingHandler auditingHandlerSpy;
 
     @BeforeEach
     void setUp() {
@@ -128,7 +127,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         // Prevent Spring Data JPA auditing from overwriting preset @CreatedDate/@LastModifiedDate values
         // during test data setup:
         doAnswer(inv -> inv)
-                .when(auditingHandler).markCreated(any());
+                .when(auditingHandlerSpy).markCreated(any());
 
         for (Game game : EXISTING_GAMES.getAll()) {
             entityManager.persist(EXISTING_GAMES.MAPPER.toEntity(game));
@@ -240,7 +239,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     private List<GameWithFileCopiesReadModelJpaEntity> interceptFetchedEntities() {
         List<GameWithFileCopiesReadModelJpaEntity> entities = new ArrayList<>();
         var captor = ArgumentCaptor.forClass(GameWithFileCopiesReadModelJpaEntity.class);
-        when(entityMapper.toReadModel(captor.capture()))
+        when(entityMapperSpy.toReadModel(captor.capture()))
                 .thenAnswer(_ -> {
                     entities.add(captor.getValue());
                     return null;
