@@ -39,7 +39,6 @@ public class GameContentDiscoveryResultJpaEntity {
     @Enumerated(EnumType.STRING)
     private GameContentDiscoveryOutcome discoveryOutcome;
 
-    @NotNull
     private LocalDateTime lastSuccessfulDiscoveryCompletedAt;
 
     @NotNull
