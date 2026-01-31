@@ -1,10 +1,9 @@
 package dev.codesoapbox.backity.testing.messaging;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.AbstractSubscribableChannel;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -15,14 +14,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RequiredArgsConstructor
 public class TestMessageChannel extends AbstractSubscribableChannel {
 
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
     private final List<Message<?>> messages = new ArrayList<>();
 
-    public void assertPublishedWebSocketEvent(String destination, String expectedJson) throws JsonProcessingException {
+    public void assertPublishedWebSocketEvent(String destination, String expectedJson) {
         String receivedMessage = receiveMessage(destination);
         assertThat(receivedMessage).isNotNull();
-        assertThat(objectMapper.readTree(receivedMessage))
-                .isEqualTo(objectMapper.readTree(expectedJson));
+        assertThat(jsonMapper.readTree(receivedMessage))
+                .isEqualTo(jsonMapper.readTree(expectedJson));
     }
 
     private String receiveMessage(String destination) {

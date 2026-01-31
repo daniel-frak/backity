@@ -1,6 +1,8 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.readmodel;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,11 +13,31 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FileSourceReadModelJpaEmbeddable {
 
+    @NotNull
+    @Column(nullable = false)
     private String gameProviderId;
+
+    @NotNull
+    @Column(nullable = false)
     private String originalGameTitle;
+
+    @NotNull
+    @Column(nullable = false)
     private String fileTitle;
+
+    @NotNull
+    @Column(nullable = false)
     private String version;
+
+    @NotNull
+    @Column(nullable = false)
     private String url;
+
+    @NotNull
+    @Column(nullable = false)
     private String originalFileName;
+
+    @NotNull
+    @Column(nullable = false)
     private long sizeInBytes;
 }
