@@ -146,7 +146,12 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
     @ParameterizedTest
     @NullSource
-    @ValueSource(strings = {" \n"})
+    @ValueSource(strings = {
+            " \n", // Blank (blank search query)
+            "\"\"", // "" (empty token list)
+            "\"\t\""// "  " (blank token)
+    }
+    )
     void findAllPaginatedShouldReturnGamesGivenEmptyQueryAndNoOtherFilters(String searchQuery) {
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
