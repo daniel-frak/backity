@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,11 +27,13 @@ public class GameWithFileCopiesReadModelJpaSpecifications {
         return (game, query, builder) -> {
             Join<GameWithFileCopiesReadModelJpaEntity, GameFileWithCopiesReadModelJpaEntity> gameFile =
                     game.join(GameWithFileCopiesReadModelJpaEntity_.gameFilesWithCopies, JoinType.LEFT);
-            ListJoin<GameFileWithCopiesReadModelJpaEntity, FileCopyReadModelJpaEntity> fileCopy =
-                    gameFile.join(GameFileWithCopiesReadModelJpaEntity_.fileCopies, JoinType.LEFT);
+
+            // Prevent duplicate Games when a Game has multiple matching GameFiles.
+            // Also helps count query produce correct totals in most providers.
+            Objects.requireNonNull(query).distinct(true);
 
             return builder.and(
-                    buildFileCopyStatusPredicate(filter, builder, fileCopy),
+                    buildFileCopyStatusPredicate(filter, game, query, builder),
                     buildSearchQueryPredicate(searchQuery, game, gameFile, query, builder)
             );
         };
@@ -38,12 +41,30 @@ public class GameWithFileCopiesReadModelJpaSpecifications {
 
     private static Predicate buildFileCopyStatusPredicate(
             GameWithFileCopiesSearchFilter filter,
-            CriteriaBuilder builder,
-            ListJoin<GameFileWithCopiesReadModelJpaEntity, FileCopyReadModelJpaEntity> fileCopy) {
+            Root<GameWithFileCopiesReadModelJpaEntity> game,
+            CriteriaQuery<?> query,
+            CriteriaBuilder builder) {
+
         if (filter.status() == null) {
             return builder.conjunction();
         }
-        return builder.equal(fileCopy.get(FileCopyReadModelJpaEntity_.status), filter.status().name());
+
+        // Use EXISTS instead of joining fileCopies in the main query to avoid row multiplication
+        // (which breaks pagination totals).
+        Subquery<Integer> existsSubquery = query.subquery(Integer.class);
+        Root<GameFileWithCopiesReadModelJpaEntity> gameFile =
+                existsSubquery.from(GameFileWithCopiesReadModelJpaEntity.class);
+        ListJoin<GameFileWithCopiesReadModelJpaEntity, FileCopyReadModelJpaEntity> fileCopy =
+                gameFile.join(GameFileWithCopiesReadModelJpaEntity_.fileCopies, JoinType.INNER);
+
+        existsSubquery.select(builder.literal(1));
+        existsSubquery.where(
+                builder.equal(gameFile.get(GameFileWithCopiesReadModelJpaEntity_.gameId),
+                        game.get(GameWithFileCopiesReadModelJpaEntity_.id)),
+                builder.equal(fileCopy.get(FileCopyReadModelJpaEntity_.status), filter.status())
+        );
+
+        return builder.exists(existsSubquery);
     }
 
     private static Predicate buildSearchQueryPredicate(
