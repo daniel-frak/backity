@@ -50,19 +50,21 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     private static final LocalDate YESTERDAY = TODAY.minusDays(1);
     private static final LocalDate TWO_DAYS_AGO = TODAY.minusDays(2);
 
+    private static final Pagination EVERYTHING_ON_ONE_PAGE = new Pagination(0, 99);
+
     private static final GameWithFileCopiesReadModel GAME_1_READ_MODEL =
             TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                    .withValuesFrom(EXISTING_GAMES.GAME_1)
+                    .withValuesFrom(ExistingGames.GAME_1)
                     .withGameFilesWithCopies(List.of(
                             new GameFileWithCopiesReadModel(
-                                    TestGameFileReadModel.from(EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1),
+                                    TestGameFileReadModel.from(ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1),
                                     List.of(
-                                            TestFileCopyReadModel.from(EXISTING_FILE_COPIES
+                                            TestFileCopyReadModel.from(ExistingFileCopies
                                                     .TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1_FOR_GAME_1),
                                             // There used to be a bug where pagination would be incorrect due to
                                             // counting FileCopies instead of Games.
                                             // Adding the second FileCopy here helps to verify that the bug is fixed.
-                                            TestFileCopyReadModel.from(EXISTING_FILE_COPIES
+                                            TestFileCopyReadModel.from(ExistingFileCopies
                                                     .TRACKED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_1_FOR_GAME_1)
                                     )
                             ),
@@ -70,9 +72,9 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                             // counting GameFiles instead of Games.
                             // Adding the second GameFile here helps to verify that the bug is fixed.
                             new GameFileWithCopiesReadModel(
-                                    TestGameFileReadModel.from(EXISTING_GAME_FILES.GOG_GAME_FILE_2_FOR_GAME_1),
+                                    TestGameFileReadModel.from(ExistingGameFiles.GOG_GAME_FILE_2_FOR_GAME_1),
                                     List.of(
-                                            TestFileCopyReadModel.from(EXISTING_FILE_COPIES
+                                            TestFileCopyReadModel.from(ExistingFileCopies
                                                     .TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2_FOR_GAME_1)
                                     )
                             )
@@ -81,12 +83,12 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
     private static final GameWithFileCopiesReadModel GAME_2_READ_MODEL =
             TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                    .withValuesFrom(EXISTING_GAMES.GAME_2)
+                    .withValuesFrom(ExistingGames.GAME_2)
                     .withGameFilesWithCopies(List.of(
                             new GameFileWithCopiesReadModel(
-                                    TestGameFileReadModel.from(EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_2),
+                                    TestGameFileReadModel.from(ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_2),
                                     List.of(
-                                            TestFileCopyReadModel.from(EXISTING_FILE_COPIES
+                                            TestFileCopyReadModel.from(ExistingFileCopies
                                                     .ENQUEUED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_1_FOR_GAME_2)
                                     )
                             )
@@ -95,12 +97,12 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
     private static final GameWithFileCopiesReadModel GAME_3_READ_MODEL =
             TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                    .withValuesFrom(EXISTING_GAMES.GAME_3)
+                    .withValuesFrom(ExistingGames.GAME_3)
                     .withGameFilesWithCopies(List.of(
                             // This game has a single GameFile with no FileCopies.
                             // We want to make sure it's still returned from queries.
                             new GameFileWithCopiesReadModel(
-                                    TestGameFileReadModel.from(EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_3),
+                                    TestGameFileReadModel.from(ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_3),
                                     emptyList()
                             )
                     ))
@@ -129,14 +131,14 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         doAnswer(inv -> inv)
                 .when(auditingHandlerSpy).markCreated(any());
 
-        for (Game game : EXISTING_GAMES.getAll()) {
-            entityManager.persist(EXISTING_GAMES.MAPPER.toEntity(game));
+        for (Game game : ExistingGames.getAll()) {
+            entityManager.persist(ExistingGames.MAPPER.toEntity(game));
         }
-        for (GameFile gameFile : EXISTING_GAME_FILES.getAll()) {
-            entityManager.persist(EXISTING_GAME_FILES.MAPPER.toEntity(gameFile));
+        for (GameFile gameFile : ExistingGameFiles.getAll()) {
+            entityManager.persist(ExistingGameFiles.MAPPER.toEntity(gameFile));
         }
-        for (FileCopy fileCopy : EXISTING_FILE_COPIES.getAll()) {
-            entityManager.persist(EXISTING_FILE_COPIES.MAPPER.toEntity(fileCopy));
+        for (FileCopy fileCopy : ExistingFileCopies.getAll()) {
+            entityManager.persist(ExistingFileCopies.MAPPER.toEntity(fileCopy));
         }
         entityManager.flush();
         entityManager.clear();
@@ -145,11 +147,10 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {" \n"})
-    void shouldReturnGamesGivenEmptyQueryAndNoOtherFilters(String searchQuery) {
-        var pagination = new Pagination(0, 5);
+    void findAllPaginatedShouldReturnGamesGivenEmptyQueryAndNoOtherFilters(String searchQuery) {
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
 
         List<GameWithFileCopiesReadModel> expectedContent =
                 List.of(GAME_1_READ_MODEL, GAME_2_READ_MODEL, GAME_3_READ_MODEL);
@@ -164,11 +165,10 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     }
 
     @Test
-    void shouldReturnGamesOrderedByCreatedAt() {
-        var pagination = new Pagination(0, 5);
+    void findAllPaginatedShouldReturnGamesOrderedByCreatedAt() {
         var filter = emptyFilter();
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
 
         List<GameWithFileCopiesReadModel> expectedContent =
                 List.of(GAME_1_READ_MODEL, GAME_2_READ_MODEL, GAME_3_READ_MODEL);
@@ -187,8 +187,8 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     }
 
     @Test
-    void shouldProperlyPaginate() {
-        var pagination = new Pagination(0, 2);
+    void findAllPaginatedShouldProperlyPaginate() {
+        Pagination pagination = new Pagination(0, 2);
         var filter = emptyFilter();
 
         Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
@@ -211,19 +211,18 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     }
 
     @Test
-    void shouldFilterByFileCopyStatus() {
-        var pagination = new Pagination(0, 5);
+    void findAllPaginatedShouldFilterByFileCopyStatus() {
         var filter = new GameWithFileCopiesSearchFilter(null, FileCopyStatus.ENQUEUED);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
 
         List<GameWithFileCopiesReadModel> expectedContent = List.of(GAME_2_READ_MODEL);
         assertContentContainsExactlyInAnyOrder(result, expectedContent);
     }
 
     @Test
-    void shouldFetchAllEntities() {
-        var pagination = new Pagination(0, 1);
+    void findAllPaginatedShouldFetchAllEntities() {
+        Pagination pagination = new Pagination(0, 1);
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(null);
 
         List<GameWithFileCopiesReadModelJpaEntity> entities = interceptFetchedEntities();
@@ -261,11 +260,10 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
     @Test
     void findAllPaginatedShouldTokenizeEveryWordIfNotQuoted() {
-        var pagination = new Pagination(0, 5);
         var searchQuery = "Test Game";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
 
         assertThat(result.content())
                 .contains(GAME_2_READ_MODEL); // Matched even though it has "TEST_GAME"
@@ -273,127 +271,117 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
     @ParameterizedTest
     @ValueSource(strings = {"Test_Game", "100%", "Better\\Edition"})
-    void shouldEscapeCharacters(String searchQuery) {
-        var pagination = new Pagination(0, 5);
+    void findAllPaginatedShouldEscapeCharacters(String searchQuery) {
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
 
         List<GameWithFileCopiesReadModel> expectedContent = List.of(GAME_2_READ_MODEL);
         assertContentContainsExactlyInAnyOrder(result, expectedContent);
     }
 
     @Test
-    void shouldFilterByFullGameTitleCaseInsensitive() {
-        var pagination = new Pagination(0, 5);
-        var searchQuery = "\"" + EXISTING_GAMES.GAME_1.getTitle().toUpperCase() + "\"";
+    void findAllPaginatedShouldFilterByFullGameTitleCaseInsensitive() {
+        var searchQuery = "\"" + ExistingGames.GAME_1.getTitle().toUpperCase() + "\"";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
 
         List<GameWithFileCopiesReadModel> expectedContent = List.of(GAME_1_READ_MODEL);
         assertContentContainsExactlyInAnyOrder(result, expectedContent);
     }
 
     @Test
-    void shouldFilterByPartOfGameTitleCaseInsensitive() {
-        var pagination = new Pagination(0, 5);
+    void findAllPaginatedShouldFilterByPartOfGameTitleCaseInsensitive() {
         var partOfGameTitleQuery = "\"EST GAME 1\"";
         GameWithFileCopiesSearchFilter filter =
                 TestGameWithFileCopiesSearchFilter.onlySearchQuery(partOfGameTitleQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
 
         List<GameWithFileCopiesReadModel> expectedContent = List.of(GAME_1_READ_MODEL);
         assertContentContainsExactlyInAnyOrder(result, expectedContent);
     }
 
     @Test
-    void shouldFilterByFullFileTitleCaseInsensitive() {
-        var pagination = new Pagination(0, 5);
-        var searchQuery = "\"" + EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1.getFileSource().fileTitle()
+    void findAllPaginatedShouldFilterByFullFileTitleCaseInsensitive() {
+        var searchQuery = "\"" + ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1.getFileSource().fileTitle()
                 .toUpperCase() + "\"";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
 
         List<GameWithFileCopiesReadModel> expectedContent = List.of(GAME_1_READ_MODEL);
         assertContentContainsExactlyInAnyOrder(result, expectedContent);
     }
 
     @Test
-    void shouldFilterByPartOfFileTitleCaseInsensitive() {
-        var pagination = new Pagination(0, 5);
+    void findAllPaginatedShouldFilterByPartOfFileTitleCaseInsensitive() {
         var partOfFileTitleQuery = "\"1 (INSTALLER\"";
         GameWithFileCopiesSearchFilter filter =
                 TestGameWithFileCopiesSearchFilter.onlySearchQuery(partOfFileTitleQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
 
         List<GameWithFileCopiesReadModel> expectedContent = List.of(GAME_1_READ_MODEL);
         assertContentContainsExactlyInAnyOrder(result, expectedContent);
     }
 
     @Test
-    void shouldFilterByFullOriginalFileNameCaseInsensitive() {
-        var pagination = new Pagination(0, 5);
-        var searchQuery = "\"" + EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1.getFileSource().originalFileName()
+    void findAllPaginatedShouldFilterByFullOriginalFileNameCaseInsensitive() {
+        var searchQuery = "\"" + ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1.getFileSource().originalFileName()
                 .toUpperCase() + "\"";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
 
         List<GameWithFileCopiesReadModel> expectedContent = List.of(GAME_1_READ_MODEL);
         assertContentContainsExactlyInAnyOrder(result, expectedContent);
     }
 
     @Test
-    void shouldFilterByPartOfOriginalFileNameCaseInsensitive() {
-        var pagination = new Pagination(0, 5);
+    void findAllPaginatedShouldFilterByPartOfOriginalFileNameCaseInsensitive() {
         var partOfOriginalFileNameQuery = "\"1_INSTALLER.EX\"";
         GameWithFileCopiesSearchFilter filter =
                 TestGameWithFileCopiesSearchFilter.onlySearchQuery(partOfOriginalFileNameQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
 
         List<GameWithFileCopiesReadModel> expectedContent = List.of(GAME_1_READ_MODEL);
         assertContentContainsExactlyInAnyOrder(result, expectedContent);
     }
 
     @Test
-    void shouldFilterByFullOriginalGameTitleCaseInsensitive() {
-        var pagination = new Pagination(0, 5);
-        var searchQuery = "\"" + EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1.getFileSource().originalGameTitle()
+    void findAllPaginatedShouldFilterByFullOriginalGameTitleCaseInsensitive() {
+        var searchQuery = "\"" + ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1.getFileSource().originalGameTitle()
                 .toUpperCase() + "\"";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
 
         List<GameWithFileCopiesReadModel> expectedContent = List.of(GAME_1_READ_MODEL);
         assertContentContainsExactlyInAnyOrder(result, expectedContent);
     }
 
     @Test
-    void shouldFilterByPartOfOriginalGameTitleCaseInsensitive() {
-        var pagination = new Pagination(0, 5);
+    void findAllPaginatedShouldFilterByPartOfOriginalGameTitleCaseInsensitive() {
         var partOfOriginalGameTitleSearchQuery = "\"RIGINAL GAME 1\"";
         GameWithFileCopiesSearchFilter filter =
                 TestGameWithFileCopiesSearchFilter.onlySearchQuery(partOfOriginalGameTitleSearchQuery);
 
         Page<GameWithFileCopiesReadModel> result =
-                repository.findAllPaginated(pagination, filter);
+                repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
 
         List<GameWithFileCopiesReadModel> expectedContent = List.of(GAME_1_READ_MODEL);
         assertContentContainsExactlyInAnyOrder(result, expectedContent);
     }
 
     @Test
-    void shouldReturnEmptyListGivenNothingMatches() {
-        var pagination = new Pagination(0, 5);
+    void findAllPaginatedShouldReturnEmptyListGivenNothingMatches() {
         var searchQuery = "\"notMatchingAnything\"";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
 
         assertContentIsEmpty(result);
     }
@@ -402,7 +390,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         assertContentContainsExactlyInAnyOrder(result, emptyList());
     }
 
-    private static class EXISTING_GAMES {
+    private static class ExistingGames {
 
         public static final Game GAME_1 = TestGame.anyBuilder()
                 .withId(new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"))
@@ -429,11 +417,11 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         }
     }
 
-    private static class EXISTING_GAME_FILES {
+    private static class ExistingGameFiles {
 
         public static final GameFile GOG_GAME_FILE_1_FOR_GAME_1 = TestGameFile.gogBuilder()
                 .id(new GameFileId("acde26d7-33c7-42ee-be16-bca91a604b48"))
-                .gameId(EXISTING_GAMES.GAME_1.getId())
+                .gameId(ExistingGames.GAME_1.getId())
                 .fileSource(TestFileSource.minimalGogBuilder()
                         .originalGameTitle("Original Game 1 Title")
                         .fileTitle("Game 1 (Installer)")
@@ -443,7 +431,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
         public static final GameFile GOG_GAME_FILE_2_FOR_GAME_1 = TestGameFile.gogBuilder()
                 .id(new GameFileId("119c7d15-4d83-46d0-9fd2-511f3abae641"))
-                .gameId(EXISTING_GAMES.GAME_1.getId())
+                .gameId(ExistingGames.GAME_1.getId())
                 .fileSource(TestFileSource.minimalGogBuilder()
                         .originalGameTitle("Original Game 1 Title")
                         .fileTitle("Game 1 (Patch)")
@@ -453,7 +441,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
         public static final GameFile GOG_GAME_FILE_1_FOR_GAME_2 = TestGameFile.gogBuilder()
                 .id(new GameFileId("533f6571-d125-4a7e-a2f2-dc066e8ce538"))
-                .gameId(EXISTING_GAMES.GAME_2.getId())
+                .gameId(ExistingGames.GAME_2.getId())
                 .fileSource(TestFileSource.minimalGogBuilder()
                         .originalGameTitle("Original Game 2 Title")
                         .fileTitle("Game 2 File")
@@ -463,7 +451,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
         public static final GameFile GOG_GAME_FILE_1_FOR_GAME_3 = TestGameFile.gogBuilder()
                 .id(new GameFileId("a7e54ff1-74d9-4bb1-b7b4-7d4528f4c16e"))
-                .gameId(EXISTING_GAMES.GAME_3.getId())
+                .gameId(ExistingGames.GAME_3.getId())
                 .fileSource(TestFileSource.minimalGogBuilder()
                         .originalGameTitle("Original Game 3 Title")
                         .fileTitle("Game 3 File")
@@ -483,13 +471,13 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         }
     }
 
-    private static class EXISTING_FILE_COPIES {
+    private static class ExistingFileCopies {
 
         public static final FileCopy TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1_FOR_GAME_1 =
                 TestFileCopy.trackedBuilder()
                         .id(new FileCopyId("9fdad52f-b4a6-46bc-af6d-bf27f9661eae"))
                         .naturalId(new FileCopyNaturalId(
-                                EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1.getId(),
+                                ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1.getId(),
                                 new BackupTargetId("f882cf23-35f9-4396-832d-bd08cd50e413")
                         ))
                         .dateModified(YESTERDAY.atStartOfDay())
@@ -499,7 +487,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                 TestFileCopy.trackedBuilder()
                         .id(new FileCopyId("52ecf8c9-bfb0-4345-ae02-d069a3eb5267"))
                         .naturalId(new FileCopyNaturalId(
-                                EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_1.getId(),
+                                ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1.getId(),
                                 new BackupTargetId("a9a91a74-8a57-4bb1-9a0c-e65bf8f449f0")
                         ))
                         .dateModified(TODAY.atStartOfDay())
@@ -509,7 +497,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                 TestFileCopy.trackedBuilder()
                         .id(new FileCopyId("d6a7ae5e-25d9-4410-8f08-bdc15324dd93"))
                         .naturalId(new FileCopyNaturalId(
-                                EXISTING_GAME_FILES.GOG_GAME_FILE_2_FOR_GAME_1.getId(),
+                                ExistingGameFiles.GOG_GAME_FILE_2_FOR_GAME_1.getId(),
                                 new BackupTargetId("f882cf23-35f9-4396-832d-bd08cd50e413")
                         ))
                         .dateModified(YESTERDAY.atStartOfDay())
@@ -519,7 +507,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                 TestFileCopy.enqueuedBuilder()
                         .id(new FileCopyId("0cfa21fe-dc8d-4a07-a570-7207f29b9f38"))
                         .naturalId(new FileCopyNaturalId(
-                                EXISTING_GAME_FILES.GOG_GAME_FILE_1_FOR_GAME_2.getId(),
+                                ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_2.getId(),
                                 new BackupTargetId("8327a5e0-ea30-4af2-b5b5-06a232017d97")
                         ))
                         .dateModified(TODAY.atStartOfDay())
