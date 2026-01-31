@@ -7,7 +7,7 @@ import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.FileCouldN
 import dev.codesoapbox.backity.testing.s3.annotations.S3RepositoryTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import software.amazon.awssdk.services.s3.S3Client;
 
 import java.io.*;

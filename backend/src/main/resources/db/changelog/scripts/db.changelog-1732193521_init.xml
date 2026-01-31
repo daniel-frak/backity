@@ -131,4 +131,10 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet id="make_last_successful_discovery_completed_at_nullable" author="daniel_frak">
+        <dropNotNullConstraint tableName="game_content_discovery_result"
+                               columnName="last_successful_discovery_completed_at"
+                               columnDataType="DATETIME"/>
+    </changeSet>
+
 </databaseChangeLog>

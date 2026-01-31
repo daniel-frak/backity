@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.testing.jpa.annotations;
 
 import dev.codesoapbox.backity.testing.jpa.containers.PostgresContainerInitializer;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.junit.jupiter.Testcontainers;
