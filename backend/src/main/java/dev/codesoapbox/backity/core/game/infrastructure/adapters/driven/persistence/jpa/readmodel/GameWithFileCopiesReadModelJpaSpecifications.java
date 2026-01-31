@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.readmodel;
 
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesSearchFilter;
 import jakarta.persistence.criteria.*;
 import lombok.AccessLevel;
@@ -23,67 +24,105 @@ public class GameWithFileCopiesReadModelJpaSpecifications {
 
     public static Specification<GameWithFileCopiesReadModelJpaEntity> fitsSearchCriteria(
             GameWithFileCopiesSearchFilter filter) {
-        String searchQuery = filter.searchQuery();
+
+        return hasAnyFileCopyWithStatus(filter.status())
+                .and(matchesSearchQuery(filter.searchQuery()));
+    }
+
+    private static Specification<GameWithFileCopiesReadModelJpaEntity> hasAnyFileCopyWithStatus(FileCopyStatus status) {
+        if (status == null) {
+            return Specification.unrestricted();
+        }
+
         return (game, query, builder) -> {
-            Join<GameWithFileCopiesReadModelJpaEntity, GameFileWithCopiesReadModelJpaEntity> gameFile =
-                    game.join(GameWithFileCopiesReadModelJpaEntity_.gameFilesWithCopies, JoinType.LEFT);
+            // Filter via EXISTS to avoid row multiplication (keeps pagination totals correct).
+            Subquery<Integer> subquery = Objects.requireNonNull(query).subquery(Integer.class);
+            Root<GameFileWithCopiesReadModelJpaEntity> gameFile =
+                    subquery.from(GameFileWithCopiesReadModelJpaEntity.class);
+            ListJoin<GameFileWithCopiesReadModelJpaEntity, FileCopyReadModelJpaEntity> fileCopy =
+                    gameFile.join(GameFileWithCopiesReadModelJpaEntity_.fileCopies, JoinType.INNER);
 
-            // Prevent duplicate Games when a Game has multiple matching GameFiles.
-            // Also helps count query produce correct totals in most providers.
-            Objects.requireNonNull(query).distinct(true);
+            subquery.select(builder.literal(1))
+                    .where(
+                            builder.equal(gameFile.get(GameFileWithCopiesReadModelJpaEntity_.gameId),
+                                    game.get(GameWithFileCopiesReadModelJpaEntity_.id)),
+                            builder.equal(fileCopy.get(FileCopyReadModelJpaEntity_.status), status)
+                    );
 
-            return builder.and(
-                    buildFileCopyStatusPredicate(filter, game, query, builder),
-                    buildSearchQueryPredicate(searchQuery, game, gameFile, query, builder)
-            );
+            return builder.exists(subquery);
         };
     }
 
-    private static Predicate buildFileCopyStatusPredicate(
-            GameWithFileCopiesSearchFilter filter,
-            Root<GameWithFileCopiesReadModelJpaEntity> game,
-            CriteriaQuery<?> query,
-            CriteriaBuilder builder) {
-
-        if (filter.status() == null) {
-            return builder.conjunction();
+    private static Specification<GameWithFileCopiesReadModelJpaEntity> matchesSearchQuery(String searchQuery) {
+        if (searchQuery == null || searchQuery.isBlank()) {
+            return Specification.unrestricted();
         }
 
-        // Use EXISTS instead of joining fileCopies in the main query to avoid row multiplication
-        // (which breaks pagination totals).
-        Subquery<Integer> existsSubquery = query.subquery(Integer.class);
-        Root<GameFileWithCopiesReadModelJpaEntity> gameFile =
-                existsSubquery.from(GameFileWithCopiesReadModelJpaEntity.class);
-        ListJoin<GameFileWithCopiesReadModelJpaEntity, FileCopyReadModelJpaEntity> fileCopy =
-                gameFile.join(GameFileWithCopiesReadModelJpaEntity_.fileCopies, JoinType.INNER);
+        List<String> tokens = tokenize(searchQuery);
+        if (tokens.isEmpty()) {
+            return Specification.unrestricted();
+        }
 
-        existsSubquery.select(builder.literal(1));
-        existsSubquery.where(
-                builder.equal(gameFile.get(GameFileWithCopiesReadModelJpaEntity_.gameId),
-                        game.get(GameWithFileCopiesReadModelJpaEntity_.id)),
-                builder.equal(fileCopy.get(FileCopyReadModelJpaEntity_.status), filter.status())
-        );
+        return (game, query, builder) -> {
+            Objects.requireNonNull(query);
 
-        return builder.exists(existsSubquery);
+            List<String> likePatternsLower = toLikePatternsLower(tokens);
+
+            Expression<String> gameTitleLower = builder.lower(game.get(GameWithFileCopiesReadModelJpaEntity_.title));
+            Predicate matchesAnyTokenInTitle = anyLike(builder, gameTitleLower, likePatternsLower);
+
+            // Match ANY token in ANY of file source fields using EXISTS (pagination-safe).
+            Subquery<Integer> fileMatchSubquery = query.subquery(Integer.class);
+            Root<GameFileWithCopiesReadModelJpaEntity> gameFile =
+                    fileMatchSubquery.from(GameFileWithCopiesReadModelJpaEntity.class);
+
+            Path<Object> fileSource = gameFile.get(GameFileWithCopiesReadModelJpaEntity_.FILE_SOURCE);
+
+            Expression<String> originalGameTitleLower =
+                    builder.lower(fileSource.get(FileSourceReadModelJpaEmbeddable_.ORIGINAL_GAME_TITLE));
+            Expression<String> fileTitleLower =
+                    builder.lower(fileSource.get(FileSourceReadModelJpaEmbeddable_.FILE_TITLE));
+            Expression<String> originalFileNameLower =
+                    builder.lower(fileSource.get(FileSourceReadModelJpaEmbeddable_.ORIGINAL_FILE_NAME));
+
+            Predicate matchesAnyTokenInAnyFileSourceField = builder.or(
+                    anyLike(builder, originalGameTitleLower, likePatternsLower),
+                    anyLike(builder, fileTitleLower, likePatternsLower),
+                    anyLike(builder, originalFileNameLower, likePatternsLower)
+            );
+
+            fileMatchSubquery.select(builder.literal(1))
+                    .where(
+                            builder.equal(
+                                    gameFile.get(GameFileWithCopiesReadModelJpaEntity_.gameId),
+                                    game.get(GameWithFileCopiesReadModelJpaEntity_.id)
+                            ),
+                            matchesAnyTokenInAnyFileSourceField
+                    );
+
+            return builder.or(matchesAnyTokenInTitle, builder.exists(fileMatchSubquery));
+        };
     }
 
-    private static Predicate buildSearchQueryPredicate(
-            String searchQuery, Root<GameWithFileCopiesReadModelJpaEntity> game,
-            Join<GameWithFileCopiesReadModelJpaEntity, GameFileWithCopiesReadModelJpaEntity> gameFile,
-            CriteriaQuery<?> query,
-            CriteriaBuilder builder) {
-        if (searchQuery == null || searchQuery.isBlank()) {
-            return builder.conjunction();
+    private static Predicate anyLike(
+            CriteriaBuilder builder,
+            Expression<String> valueLower,
+            List<String> likePatternsLower
+    ) {
+        List<Predicate> predicates = new ArrayList<>(likePatternsLower.size());
+        for (String patternLower : likePatternsLower) {
+            predicates.add(builder.like(valueLower, patternLower, LIKE_ESCAPE_CHAR));
         }
-        query.distinct(true);
+        return builder.or(predicates.toArray(new Predicate[0]));
+    }
 
-        Path<Object> fileSource = gameFile.get(GameFileWithCopiesReadModelJpaEntity_.FILE_SOURCE);
-
-        String escapedSearchQuery = escapeForLikePattern(searchQuery);
-        List<Predicate> tokenPredicates =
-                buildSearchQueryTokenPredicates(game, builder, escapedSearchQuery, fileSource);
-
-        return builder.and(tokenPredicates.toArray(new Predicate[0]));
+    private static List<String> toLikePatternsLower(List<String> tokens) {
+        List<String> likePatternsLower = new ArrayList<>(tokens.size());
+        for (String token : tokens) {
+            String escapedTokenLower = escapeForLikePattern(token).toLowerCase(LOCALE);
+            likePatternsLower.add("%" + escapedTokenLower + "%");
+        }
+        return likePatternsLower;
     }
 
     private static String escapeForLikePattern(String input) {
@@ -93,43 +132,19 @@ public class GameWithFileCopiesReadModelJpaSpecifications {
                 .replace("_", "\\_");
     }
 
-    private static List<Predicate> buildSearchQueryTokenPredicates(
-            Root<GameWithFileCopiesReadModelJpaEntity> root, CriteriaBuilder builder, String searchQuery,
-            Path<Object> fileSource) {
-        List<String> searchQueryTokens = tokenize(searchQuery);
-
-        List<Predicate> tokenPredicates = new ArrayList<>();
-        Expression<String> titleLower = builder.lower(root.get(GameWithFileCopiesReadModelJpaEntity_.title));
-        Expression<String> originalGameTitleLower =
-                builder.lower(fileSource.get(FileSourceReadModelJpaEmbeddable_.ORIGINAL_GAME_TITLE));
-        Expression<String> fileTitleLower =
-                builder.lower(fileSource.get(FileSourceReadModelJpaEmbeddable_.FILE_TITLE));
-        Expression<String> originalFileNameLower =
-                builder.lower(fileSource.get(FileSourceReadModelJpaEmbeddable_.ORIGINAL_FILE_NAME));
-        for (String token : searchQueryTokens) {
-            String pattern = "%" + token.toLowerCase(LOCALE) + "%";
-            tokenPredicates.add(builder.or(
-                    builder.like(titleLower, pattern, LIKE_ESCAPE_CHAR),
-                    builder.like(originalGameTitleLower, pattern, LIKE_ESCAPE_CHAR),
-                    builder.like(fileTitleLower, pattern, LIKE_ESCAPE_CHAR),
-                    builder.like(originalFileNameLower, pattern, LIKE_ESCAPE_CHAR)
-            ));
-        }
-
-        return tokenPredicates;
-    }
-
-
     private static List<String> tokenize(String searchQuery) {
         List<String> tokens = new ArrayList<>();
         Matcher matcher = TOKENIZER_PATTERN.matcher(searchQuery);
 
         while (matcher.find()) {
             String quoted = matcher.group(1);
-            if (quoted != null) {
-                tokens.add(quoted.trim());
-            } else {
-                tokens.add(matcher.group().trim());
+            String token = (quoted != null)
+                    ? quoted.trim()
+                    : matcher.group().trim();
+
+            // Avoid empty tokens (e.g. "" or "   "), which can produce "%%" and match everything.
+            if (!token.isBlank()) {
+                tokens.add(token);
             }
         }
 
