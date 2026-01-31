@@ -21,8 +21,6 @@ public class TestRules {
             noClasses().that().resideOutsideOfPackage("..archunit..").should()
                     .dependOnClassesThat()
                     .haveFullyQualifiedName(org.junit.jupiter.api.Assertions.class.getName())
-                    .orShould().dependOnClassesThat()
-                    .haveFullyQualifiedName(org.junit.Assert.class.getName())
                     .because("AssertJ assertions provide a more fluent and expressive API," +
                             " offering a wider range of assertion options and clearer failure messages");
 
