@@ -30,78 +30,94 @@ public class GameWithFileCopiesReadModelJpaSpecifications {
     }
 
     private static Specification<GameWithFileCopiesReadModelJpaEntity> hasAnyFileCopyWithStatus(FileCopyStatus status) {
+        return (game, query, builder) ->
+                hasAnyFileCopyWithStatus(game, query, builder, status);
+    }
+
+    private static Predicate hasAnyFileCopyWithStatus(
+            Root<GameWithFileCopiesReadModelJpaEntity> game,
+            CriteriaQuery<?> query,
+            CriteriaBuilder builder,
+            FileCopyStatus status
+    ) {
         if (status == null) {
-            return Specification.unrestricted();
+            return null;
         }
 
-        return (game, query, builder) -> {
-            // Filter via EXISTS to avoid row multiplication (keeps pagination totals correct).
-            Subquery<Integer> subquery = Objects.requireNonNull(query).subquery(Integer.class);
-            Root<GameFileWithCopiesReadModelJpaEntity> gameFile =
-                    subquery.from(GameFileWithCopiesReadModelJpaEntity.class);
-            ListJoin<GameFileWithCopiesReadModelJpaEntity, FileCopyReadModelJpaEntity> fileCopy =
-                    gameFile.join(GameFileWithCopiesReadModelJpaEntity_.fileCopies, JoinType.INNER);
+        // Filter via EXISTS to avoid row multiplication (keeps pagination totals correct).
+        Subquery<Integer> subquery = Objects.requireNonNull(query).subquery(Integer.class);
+        Root<GameFileWithCopiesReadModelJpaEntity> gameFile =
+                subquery.from(GameFileWithCopiesReadModelJpaEntity.class);
+        ListJoin<GameFileWithCopiesReadModelJpaEntity, FileCopyReadModelJpaEntity> fileCopy =
+                gameFile.join(GameFileWithCopiesReadModelJpaEntity_.fileCopies, JoinType.INNER);
 
-            subquery.select(builder.literal(1))
-                    .where(
-                            builder.equal(gameFile.get(GameFileWithCopiesReadModelJpaEntity_.gameId),
-                                    game.get(GameWithFileCopiesReadModelJpaEntity_.id)),
-                            builder.equal(fileCopy.get(FileCopyReadModelJpaEntity_.status), status)
-                    );
+        subquery.select(builder.literal(1))
+                .where(
+                        builder.equal(gameFile.get(GameFileWithCopiesReadModelJpaEntity_.gameId),
+                                game.get(GameWithFileCopiesReadModelJpaEntity_.id)),
+                        builder.equal(fileCopy.get(FileCopyReadModelJpaEntity_.status), status)
+                );
 
-            return builder.exists(subquery);
-        };
+        return builder.exists(subquery);
     }
 
     private static Specification<GameWithFileCopiesReadModelJpaEntity> matchesSearchQuery(String searchQuery) {
+        return (game, query, builder) ->
+                matchesSearchQuery(game, query, builder, searchQuery);
+    }
+
+    private static Predicate matchesSearchQuery(
+            Root<GameWithFileCopiesReadModelJpaEntity> game,
+            CriteriaQuery<?> query,
+            CriteriaBuilder builder,
+            String searchQuery
+    ) {
         if (searchQuery == null || searchQuery.isBlank()) {
-            return Specification.unrestricted();
+            return null;
         }
 
         List<String> tokens = tokenize(searchQuery);
         if (tokens.isEmpty()) {
-            return Specification.unrestricted();
+            return null;
         }
 
-        return (game, query, builder) -> {
-            Objects.requireNonNull(query);
+        Objects.requireNonNull(query);
 
-            List<String> likePatternsLower = toLikePatternsLower(tokens);
+        List<String> likePatternsLower = toLikePatternsLower(tokens);
 
-            Expression<String> gameTitleLower = builder.lower(game.get(GameWithFileCopiesReadModelJpaEntity_.title));
-            Predicate matchesAnyTokenInTitle = anyLike(builder, gameTitleLower, likePatternsLower);
+        Expression<String> gameTitleLower = builder.lower(game.get(GameWithFileCopiesReadModelJpaEntity_.title));
+        Predicate matchesAnyTokenInTitle = anyLike(builder, gameTitleLower, likePatternsLower);
 
-            // Match ANY token in ANY of file source fields using EXISTS (pagination-safe).
-            Subquery<Integer> fileMatchSubquery = query.subquery(Integer.class);
-            Root<GameFileWithCopiesReadModelJpaEntity> gameFile =
-                    fileMatchSubquery.from(GameFileWithCopiesReadModelJpaEntity.class);
+        // Match ANY token in ANY of file source fields using EXISTS (pagination-safe).
+        Subquery<Integer> fileMatchSubquery = query.subquery(Integer.class);
+        Root<GameFileWithCopiesReadModelJpaEntity> gameFile =
+                fileMatchSubquery.from(GameFileWithCopiesReadModelJpaEntity.class);
 
-            Path<Object> fileSource = gameFile.get(GameFileWithCopiesReadModelJpaEntity_.FILE_SOURCE);
+        Path<Object> fileSource = gameFile.get(GameFileWithCopiesReadModelJpaEntity_.FILE_SOURCE);
 
-            Expression<String> originalGameTitleLower =
-                    builder.lower(fileSource.get(FileSourceReadModelJpaEmbeddable_.ORIGINAL_GAME_TITLE));
-            Expression<String> fileTitleLower =
-                    builder.lower(fileSource.get(FileSourceReadModelJpaEmbeddable_.FILE_TITLE));
-            Expression<String> originalFileNameLower =
-                    builder.lower(fileSource.get(FileSourceReadModelJpaEmbeddable_.ORIGINAL_FILE_NAME));
+        Expression<String> originalGameTitleLower =
+                builder.lower(fileSource.get(FileSourceReadModelJpaEmbeddable_.ORIGINAL_GAME_TITLE));
+        Expression<String> fileTitleLower =
+                builder.lower(fileSource.get(FileSourceReadModelJpaEmbeddable_.FILE_TITLE));
+        Expression<String> originalFileNameLower =
+                builder.lower(fileSource.get(FileSourceReadModelJpaEmbeddable_.ORIGINAL_FILE_NAME));
 
-            Predicate matchesAnyTokenInAnyFileSourceField = builder.or(
-                    anyLike(builder, originalGameTitleLower, likePatternsLower),
-                    anyLike(builder, fileTitleLower, likePatternsLower),
-                    anyLike(builder, originalFileNameLower, likePatternsLower)
-            );
+        Predicate matchesAnyTokenInAnyFileSourceField = builder.or(
+                anyLike(builder, originalGameTitleLower, likePatternsLower),
+                anyLike(builder, fileTitleLower, likePatternsLower),
+                anyLike(builder, originalFileNameLower, likePatternsLower)
+        );
 
-            fileMatchSubquery.select(builder.literal(1))
-                    .where(
-                            builder.equal(
-                                    gameFile.get(GameFileWithCopiesReadModelJpaEntity_.gameId),
-                                    game.get(GameWithFileCopiesReadModelJpaEntity_.id)
-                            ),
-                            matchesAnyTokenInAnyFileSourceField
-                    );
+        fileMatchSubquery.select(builder.literal(1))
+                .where(
+                        builder.equal(
+                                gameFile.get(GameFileWithCopiesReadModelJpaEntity_.gameId),
+                                game.get(GameWithFileCopiesReadModelJpaEntity_.id)
+                        ),
+                        matchesAnyTokenInAnyFileSourceField
+                );
 
-            return builder.or(matchesAnyTokenInTitle, builder.exists(fileMatchSubquery));
-        };
+        return builder.or(matchesAnyTokenInTitle, builder.exists(fileMatchSubquery));
     }
 
     private static Predicate anyLike(
@@ -142,7 +158,7 @@ public class GameWithFileCopiesReadModelJpaSpecifications {
                     ? quoted.trim()
                     : matcher.group().trim();
 
-            // Avoid empty tokens (e.g. "" or "   "), which can produce "%%" and match everything.
+            // Avoid empty tokens, which can produce "%%" and match everything.
             if (!token.isBlank()) {
                 tokens.add(token);
             }
