@@ -1,7 +1,5 @@
 package dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketBrokerConfig;
 import dev.codesoapbox.backity.testing.messaging.TestWebSocketMessaging;
 import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketPublisherTest;
@@ -14,8 +12,8 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
+import tools.jackson.databind.json.JsonMapper;
 
-import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -29,7 +27,7 @@ class WebSocketEventPublisherIT {
     private int serverPort;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private JsonMapper jsonMapper;
 
     @Autowired
     private WebSocketEventPublisher eventPublisher;
@@ -68,7 +66,7 @@ class WebSocketEventPublisherIT {
     }
 
     @Test
-    void shouldPublishWebSocketEvent() throws IOException {
+    void shouldPublishWebSocketEvent() {
         String topic = "/topic/test-topic";
         testWebSocketMessaging.subscribeTo(topic, session);
 
@@ -83,9 +81,9 @@ class WebSocketEventPublisherIT {
         assertSameJson(expectedMessage, receivedMessage);
     }
 
-    private void assertSameJson(String expectedPayload, String sentPayload) throws JsonProcessingException {
-        assertThat(objectMapper.readTree(sentPayload))
-                .isEqualTo(objectMapper.readTree(expectedPayload));
+    private void assertSameJson(String expectedPayload, String sentPayload) {
+        assertThat(jsonMapper.readTree(sentPayload))
+                .isEqualTo(jsonMapper.readTree(expectedPayload));
     }
 
     private record TestPayload(String value) {

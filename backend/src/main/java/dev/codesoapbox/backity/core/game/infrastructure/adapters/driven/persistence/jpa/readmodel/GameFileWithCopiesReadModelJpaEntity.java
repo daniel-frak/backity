@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.readmodel;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -31,9 +32,13 @@ public class GameFileWithCopiesReadModelJpaEntity {
     @EqualsAndHashCode.Include
     private UUID id;
 
+    @NotNull
     private UUID gameId;
 
+    @NotNull
     private LocalDateTime dateCreated;
+
+    @NotNull
     private LocalDateTime dateModified;
 
     @Embedded

@@ -19,7 +19,7 @@ import dev.codesoapbox.backity.shared.infrastructure.config.slices.ControllerBea
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import dev.codesoapbox.backity.testing.time.config.ResetClockTestExecutionListener;
 import jakarta.persistence.EntityManager;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;

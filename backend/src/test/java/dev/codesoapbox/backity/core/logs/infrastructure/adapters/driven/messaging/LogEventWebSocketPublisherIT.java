@@ -1,10 +1,8 @@
 package dev.codesoapbox.backity.core.logs.infrastructure.adapters.driven.messaging;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import dev.codesoapbox.backity.core.logs.domain.model.LogCreatedEvent;
 import dev.codesoapbox.backity.core.logs.infrastructure.adapters.driven.messaging.ws.LogEventWebSocketPublisher;
 import dev.codesoapbox.backity.core.logs.infrastructure.adapters.driven.messaging.ws.LogWebSocketTopics;
-import dev.codesoapbox.backity.core.logs.domain.model.LogCreatedEvent;
 import dev.codesoapbox.backity.testing.messaging.TestMessageChannel;
 import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketEventForwarderTest;
 import org.junit.jupiter.api.Test;
@@ -19,11 +17,8 @@ class LogEventWebSocketPublisherIT {
     @Autowired
     private LogEventWebSocketPublisher eventPublisher;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Test
-    void shouldPublishWebSocketEvent() throws JsonProcessingException {
+    void shouldPublishWebSocketEvent() {
         LogCreatedEvent event = LogCreatedEvent.of("someMessage", 123);
 
         eventPublisher.publish(event);

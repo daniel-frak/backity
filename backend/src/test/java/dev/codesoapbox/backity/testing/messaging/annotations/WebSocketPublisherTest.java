@@ -3,14 +3,12 @@ package dev.codesoapbox.backity.testing.messaging.annotations;
 import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketBrokerConfig;
 import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketEventPublisherBeanConfig;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.embedded.EmbeddedWebServerFactoryCustomizerAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.autoconfigure.websocket.servlet.WebSocketMessagingAutoConfiguration;
-import org.springframework.boot.autoconfigure.websocket.servlet.WebSocketServletAutoConfiguration;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration;
+import org.springframework.boot.webmvc.autoconfigure.DispatcherServletAutoConfiguration;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
+import org.springframework.boot.websocket.autoconfigure.servlet.WebSocketMessagingAutoConfiguration;
 
 import java.lang.annotation.*;
 
@@ -24,10 +22,8 @@ import java.lang.annotation.*;
 })
 @ImportAutoConfiguration({
         WebSocketMessagingAutoConfiguration.class,
+        TomcatServletWebServerAutoConfiguration.class,
         JacksonAutoConfiguration.class,
-        WebSocketServletAutoConfiguration.class,
-        EmbeddedWebServerFactoryCustomizerAutoConfiguration.class,
-        ServletWebServerFactoryAutoConfiguration.class,
         DispatcherServletAutoConfiguration.class,
         WebMvcAutoConfiguration.class
 })

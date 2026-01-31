@@ -1,11 +1,11 @@
 package dev.codesoapbox.backity.shared.infrastructure.config.messaging.ws;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.converter.JacksonJsonMessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomWebSocketMessageBrokerConfigurer implements WebSocketMessageBrokerConfigurer {
 
-    private final ObjectMapper objectMapper;
+    private final JsonMapper jsonMapper;
 
     /**
      * Otherwise the default uses a {@link MessageConverter} that uses its own ObjectMapper, which is not configured
@@ -21,8 +21,7 @@ public class CustomWebSocketMessageBrokerConfigurer implements WebSocketMessageB
      */
     @Override
     public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
-        var messageConverter = new MappingJackson2MessageConverter();
-        messageConverter.setObjectMapper(objectMapper);
+        var messageConverter = new JacksonJsonMessageConverter(jsonMapper);
         messageConverters.add(messageConverter);
 
         return true;

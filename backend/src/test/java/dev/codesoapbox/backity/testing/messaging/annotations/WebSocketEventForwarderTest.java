@@ -8,7 +8,7 @@ import dev.codesoapbox.backity.testing.messaging.config.SharedSpringWebSocketEve
 import dev.codesoapbox.backity.testing.messaging.extensions.WebSocketEventPublisherTestExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;

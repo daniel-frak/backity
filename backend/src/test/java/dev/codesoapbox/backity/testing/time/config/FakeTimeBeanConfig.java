@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.testing.time.config;
 import dev.codesoapbox.backity.testing.time.FakeClock;
 import jakarta.validation.ClockProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.validation.ValidationConfigurationCustomizer;
+import org.springframework.boot.validation.autoconfigure.ValidationConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
 
 import java.time.Clock;

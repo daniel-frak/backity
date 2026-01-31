@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persist
 
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,10 +35,15 @@ public class FileCopyReadModelJpaEntity {
     private FileCopyNaturalIdReadModelJpaEmbeddable naturalId;
 
     @Enumerated(EnumType.STRING)
+    @NotNull
     private FileCopyStatus status;
 
     private String failedReason;
     private String filePath;
+
+    @NotNull
     private LocalDateTime dateCreated;
+
+    @NotNull
     private LocalDateTime dateModified;
 }
