@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.forwarders;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.TestFileBackupEvent;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.FileBackupWebSocketTopics;
@@ -19,7 +18,7 @@ class FileBackupFinishedEventWebSocketForwarderIT {
     private FileBackupFinishedEventWebSocketForwarder forwarder;
 
     @Test
-    void shouldPublishWebSocketEvent() throws JsonProcessingException {
+    void shouldPublishWebSocketEvent() {
         FileBackupFinishedEvent event = TestFileBackupEvent.finishedIntegrityUnknown();
 
         forwarder.forward(event);

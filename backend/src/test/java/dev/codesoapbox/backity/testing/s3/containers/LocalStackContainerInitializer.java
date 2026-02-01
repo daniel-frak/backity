@@ -3,7 +3,6 @@ package dev.codesoapbox.backity.testing.s3.containers;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.testcontainers.containers.localstack.LocalStackContainer;
 
 /**
  * {@link ApplicationContextInitializer} that configures a reusable LocalStack container for integration testing.
@@ -29,7 +28,7 @@ public class LocalStackContainerInitializer
     private static final String SECRET_KEY_PROPERTY = "spring.cloud.aws.credentials.secret-key";
 
     public LocalStackContainerInitializer() {
-        CONTAINER.withServices(LocalStackContainer.Service.SQS, LocalStackContainer.Service.S3)
+        CONTAINER.withServices("sqs", "s3")
                 .start();
     }
 
@@ -41,7 +40,7 @@ public class LocalStackContainerInitializer
     public void initialize(ConfigurableApplicationContext applicationContext) {
         TestPropertyValues.of(
                 AWS_REGION_PROPERTY + "=" + CONTAINER.getRegion(),
-                S3_ENDPOINT_PROPERTY + "=" + CONTAINER.getEndpointOverride(LocalStackContainer.Service.S3),
+                S3_ENDPOINT_PROPERTY + "=" + CONTAINER.getEndpoint(),
                 ACCESS_KEY_PROPERTY + "=" + CONTAINER.getAccessKey(),
                 SECRET_KEY_PROPERTY + "=" + CONTAINER.getSecretKey()
         ).applyTo(applicationContext.getEnvironment());

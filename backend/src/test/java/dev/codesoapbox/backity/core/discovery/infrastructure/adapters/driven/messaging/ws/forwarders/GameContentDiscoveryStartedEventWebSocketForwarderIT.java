@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.forwarders;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStartedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.TestGameContentDiscoveryEvent;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.GameContentDiscoveryWebSocketTopics;
@@ -19,7 +18,7 @@ class GameContentDiscoveryStartedEventWebSocketForwarderIT {
     private GameContentDiscoveryStartedEventWebSocketForwarder forwarder;
 
     @Test
-    void shouldPublishWebSocketEvent() throws JsonProcessingException {
+    void shouldPublishWebSocketEvent() {
         GameContentDiscoveryStartedEvent event = TestGameContentDiscoveryEvent.discoveryStarted();
 
         forwarder.forward(event);
