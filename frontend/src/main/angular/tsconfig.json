@@ -16,10 +16,6 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "es2022",
-    "lib": [
-      "es2022",
-      "dom"
-    ],
     "paths": {
       "@environment/*": [
         "src/environments/*"

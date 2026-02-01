@@ -28,9 +28,9 @@ import {
 } from "@app/shared/testing/objects/test-game-content-discovery-stopped-event";
 import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
 import {AutoLayoutStubComponent} from "@app/shared/components/auto-layout/auto-layout.stub.component";
+import {By} from "@angular/platform-browser";
 import SpyObj = jasmine.SpyObj;
 import createSpyObj = jasmine.createSpyObj;
-import {By} from "@angular/platform-browser";
 
 describe('GameProvidersComponent', () => {
   let component: GameProvidersComponent;
@@ -96,11 +96,10 @@ describe('GameProvidersComponent', () => {
       }
     });
     gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
@@ -108,9 +107,8 @@ describe('GameProvidersComponent', () => {
     const newOverview: GameContentDiscoveryOverview = TestGameContentDiscoveryOverview.inProgress();
     gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([newOverview]) as any);
 
-    component.ngOnInit();
-    await fixture.whenStable();
     fixture.detectChanges();
+    await fixture.whenStable();
 
     expect(component.discoveryIsInProgressByGameProviderId.get('someGameProviderId')).toBeTrue();
     expect(component.discoveryOverviewsByGameProviderId.get('someGameProviderId')).toEqual(newOverview);
@@ -118,14 +116,17 @@ describe('GameProvidersComponent', () => {
   });
 
   it('should subscribe to discovery started events', () => {
+    fixture.detectChanges();
     expect(discoveryStartedSubscriptions.length).toBe(1);
   });
 
   it('should subscribe to discovery stopped events', () => {
+    fixture.detectChanges();
     expect(discoveryStoppedSubscriptions.length).toBe(1);
   });
 
   it('should subscribe to discovery progress updates', () => {
+    fixture.detectChanges();
     expect(discoveryProgressSubscriptions.length).toBe(1);
   });
 
@@ -134,6 +135,7 @@ describe('GameProvidersComponent', () => {
   }
 
   it('should update discovery status given discovery started event received', () => {
+    fixture.detectChanges();
     const event: GameContentDiscoveryStartedEvent = TestGameContentDiscoveryStartedEvent.any();
 
     simulateDiscoveryStartedEventReceived(event);
@@ -144,6 +146,7 @@ describe('GameProvidersComponent', () => {
 
   it('should not update overview given discovery started event received but overview is undefined',
     () => {
+      fixture.detectChanges();
       const event: GameContentDiscoveryStartedEvent = TestGameContentDiscoveryStartedEvent.any();
       component.discoveryOverviewsByGameProviderId.delete(event.gameProviderId);
 
@@ -154,6 +157,7 @@ describe('GameProvidersComponent', () => {
 
   it('should update overview given discovery started event received and overview exists',
     () => {
+      fixture.detectChanges();
       const event: GameContentDiscoveryStartedEvent = TestGameContentDiscoveryStartedEvent.any();
       component.discoveryOverviewsByGameProviderId.set(event.gameProviderId,
         TestGameContentDiscoveryOverview.notInProgress());
@@ -164,6 +168,7 @@ describe('GameProvidersComponent', () => {
     });
 
   it('should update discovery status given discovery stopped event received', () => {
+    fixture.detectChanges();
     const event: GameContentDiscoveryStoppedEvent = TestGameContentDiscoveryStoppedEvent.successfulSubsequent();
     component.discoveryIsInProgressByGameProviderId.set(event.gameProviderId, true);
 
@@ -178,6 +183,7 @@ describe('GameProvidersComponent', () => {
   }
 
   it('should update overview given discovery stopped event received and overview exists', () => {
+    fixture.detectChanges();
     const event: GameContentDiscoveryStoppedEvent = TestGameContentDiscoveryStoppedEvent.successfulSubsequent();
     component.discoveryOverviewsByGameProviderId.set(event.gameProviderId,
       TestGameContentDiscoveryOverview.inProgress());
@@ -191,6 +197,7 @@ describe('GameProvidersComponent', () => {
   });
 
   it('should update overview given discovery stopped event received and overview is undefined', () => {
+    fixture.detectChanges();
     const event: GameContentDiscoveryStoppedEvent = TestGameContentDiscoveryStoppedEvent.successfulSubsequent();
     component.discoveryOverviewsByGameProviderId.delete(event.gameProviderId);
 
@@ -210,6 +217,7 @@ describe('GameProvidersComponent', () => {
   }
 
   it('should start game content discovery', async () => {
+    fixture.detectChanges();
     const fakeObservable = of(new HttpResponse());
     gameContentDiscoveryClient.startGameContentDiscovery.and.returnValue(fakeObservable);
     component.discoveryStatusUnknownByGameProviderId.set('someGameProviderId', false);
@@ -221,6 +229,7 @@ describe('GameProvidersComponent', () => {
   });
 
   it('should log an error when game content discovery cannot be started', async () => {
+    fixture.detectChanges();
     const mockError = new Error('Discovery failed');
 
     gameContentDiscoveryClient.startGameContentDiscovery.and.returnValue(throwError(() => mockError));
@@ -232,6 +241,7 @@ describe('GameProvidersComponent', () => {
   });
 
   it('should stop game content discovery', async () => {
+    fixture.detectChanges();
     const fakeObservable = of(new HttpResponse());
     gameContentDiscoveryClient.stopGameContentDiscovery.and.returnValue(fakeObservable);
     component.discoveryStatusUnknownByGameProviderId.set('someGameProviderId', false);
@@ -243,6 +253,7 @@ describe('GameProvidersComponent', () => {
   });
 
   it('should log an error when game content discovery cannot be stopped', async () => {
+    fixture.detectChanges();
     const mockError = new Error('Discovery failed');
 
     gameContentDiscoveryClient.stopGameContentDiscovery.and.returnValue(throwError(() => mockError));
@@ -254,6 +265,7 @@ describe('GameProvidersComponent', () => {
   });
 
   it('should not update discovery progress given event received but overview is undefined', () => {
+    fixture.detectChanges();
     const event: GameContentDiscoveryProgressChangedEvent =
       TestGameContentDiscoveryProgressChangedEvent.twentyFivePercent();
     simulateDiscoveryProgressChangedEventReceived(event);
@@ -268,6 +280,7 @@ describe('GameProvidersComponent', () => {
   }
 
   it('should update discovery progress given event received and overview is defined', () => {
+    fixture.detectChanges();
     const event: GameContentDiscoveryProgressChangedEvent =
       TestGameContentDiscoveryProgressChangedEvent.twentyFivePercent();
     component.discoveryOverviewsByGameProviderId.set(event.gameProviderId, {
@@ -282,11 +295,13 @@ describe('GameProvidersComponent', () => {
   });
 
   it('should return undefined from getOverview when game provider not found', () => {
+    fixture.detectChanges();
     const gameProviderId = 'someGameProvider';
     expect(component.getOverview(gameProviderId)).toEqual(undefined);
   });
 
   it('should get overview for specific game provider', () => {
+    fixture.detectChanges();
     const expectedOverview: GameContentDiscoveryOverview =
       TestGameContentDiscoveryOverview.notInProgressAfterSuccessfulSubsequent();
     component.discoveryOverviewsByGameProviderId.set(expectedOverview.gameProviderId, expectedOverview);
@@ -295,6 +310,8 @@ describe('GameProvidersComponent', () => {
   });
 
   it('should return if discovery is ongoing', () => {
+    fixture.detectChanges();
+
     expect(component.discoveryOngoing()).toBeFalse();
 
     component.discoveryIsInProgressByGameProviderId.set('someGameProviderId', false);

@@ -19,11 +19,11 @@ describe('NotificationContainerComponent', () => {
     fixture = TestBed.createComponent(NotificationContainerComponent);
     component = fixture.componentInstance;
     notificationService = TestBed.inject(NotificationService);
-
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    fixture.detectChanges();
+
     expect(component).toBeTruthy();
   });
 
@@ -34,7 +34,6 @@ describe('NotificationContainerComponent', () => {
         content: 'Content 1',
       }
     ];
-
     fixture.detectChanges();
 
     const toastElements: DebugElement[] = fixture.debugElement.queryAll(By.css('ngb-toast'));

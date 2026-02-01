@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { StorageSolutionStatusBadgeComponent } from './storage-solution-status-badge.component';
+import {StorageSolutionStatusBadgeComponent} from './storage-solution-status-badge.component';
 import {StorageSolutionStatus} from "@backend";
 
 describe('StorageSolutionStatusBadgeComponent', () => {
@@ -15,10 +15,11 @@ describe('StorageSolutionStatusBadgeComponent', () => {
 
     fixture = TestBed.createComponent(StorageSolutionStatusBadgeComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    fixture.detectChanges();
+
     expect(component).toBeTruthy();
   });
 

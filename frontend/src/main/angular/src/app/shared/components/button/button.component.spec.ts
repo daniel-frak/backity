@@ -17,11 +17,11 @@ describe('ButtonComponent', () => {
 
     fixture = TestBed.createComponent(ButtonComponent);
     component = fixture.componentInstance;
-
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    fixture.detectChanges();
+
     expect(component).toBeTruthy();
   });
 
@@ -84,6 +84,8 @@ describe('ButtonComponent', () => {
   }));
 
   it('should do nothing when onClick is called but isLoading is already true', fakeAsync(() => {
+    fixture.detectChanges();
+
     let actionWasCalled = false;
     component.isLoading = true;
     component.actionAsync = jasmine.createSpy().and.callFake(() => {
@@ -109,7 +111,7 @@ describe('ButtonComponent', () => {
   });
 
   it('should set correct size class', () => {
-    component.buttonSize = 'small';
+    fixture.componentRef.setInput('buttonSize', 'small')
     fixture.detectChanges();
     const buttonElement = fixture.debugElement.query(By.css('button'));
     expect(buttonElement.classes['btn-sm']).toBeTrue();

@@ -1,4 +1,4 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import {QueueComponent} from './queue.component';
 import {
@@ -6,10 +6,10 @@ import {
   FileCopiesClient,
   FileCopy,
   FileCopyNaturalId,
+  FileCopyReplicationProgressUpdatedEvent,
   FileCopyStatus,
   FileCopyStatusChangedEvent,
   FileCopyWithContext,
-  FileCopyReplicationProgressUpdatedEvent,
   StorageSolutionsClient,
   StorageSolutionStatus,
   StorageSolutionStatusesResponse
@@ -168,13 +168,13 @@ describe('QueueComponent', () => {
     expect(fixture.nativeElement.textContent).toContain("CONNECTED");
   })
 
-  it('should retrieve files and storage solution statuses on init', async () => {
+  it('should retrieve files and storage solution statuses on init', fakeAsync(() => {
     fileCopiesClient.getFileCopyQueue.withArgs(anything())
       .and.returnValue(of(deepClone(initialQueue) as any));
     storageSolutionsClient.getStorageSolutionStatuses
       .and.returnValue(of(deepClone(initialStorageSolutionStatusResponse) as any));
     fixture.detectChanges();
-    await fixture.whenStable();
+    tick();
     fixture.detectChanges();
 
     expect(component.fileCopiesAreLoading).toBe(false);
@@ -187,7 +187,7 @@ describe('QueueComponent', () => {
 
     expect(storageSolutionsClient.getStorageSolutionStatuses).toHaveBeenCalled();
     expect(fixture.nativeElement.textContent).toContain("CONNECTED");
-  });
+  }));
 
   function assertQueueContains(fileCopyWithContext: FileCopyWithContext) {
     expect(fixture.nativeElement.textContent).toContain(fileCopyWithContext.gameFile.fileSource.fileTitle);
