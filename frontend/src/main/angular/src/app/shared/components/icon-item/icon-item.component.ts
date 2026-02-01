@@ -1,15 +1,15 @@
 import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, ViewChild} from '@angular/core';
-import { NgClass } from "@angular/common";
+import {NgClass} from "@angular/common";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
 
 @Component({
-    selector: 'app-icon-item',
-    imports: [
+  selector: 'app-icon-item',
+  imports: [
     NgClass,
     ButtonComponent
-],
-    templateUrl: './icon-item.component.html',
-    styleUrl: './icon-item.component.scss'
+  ],
+  templateUrl: './icon-item.component.html',
+  styleUrl: './icon-item.component.scss'
 })
 export class IconItemComponent implements AfterViewInit {
 
@@ -55,5 +55,6 @@ export class IconItemComponent implements AfterViewInit {
 
   toggleHideableDetails() {
     this.showHideableDetails = !this.showHideableDetails;
+    this.cdRef.markForCheck();
   }
 }

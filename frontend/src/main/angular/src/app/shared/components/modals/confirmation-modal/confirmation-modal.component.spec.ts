@@ -23,22 +23,23 @@ describe('ConfirmationModalComponent', () => {
     fixture = TestBed.createComponent(ConfirmationModalComponent);
     component = fixture.componentInstance;
     ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as SpyObj<NgbActiveModal>;
-
-    fixture.detectChanges();
   });
 
   it('should create the component', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
   });
 
   it('should have the default message "Are you sure?"', () => {
+    fixture.detectChanges();
+
     const messageElement = fixture.debugElement.query(By.css('.modal-body'));
     expect(messageElement).toBeTruthy(); // Ensure the element exists
     expect(messageElement.nativeElement.textContent).toContain('Are you sure?');
   });
 
   it('should display the input message', () => {
-    component.message = 'Do you want to proceed?';
+    fixture.componentRef.setInput('message', 'Do you want to proceed?');
     fixture.detectChanges();
 
     const messageElement = fixture.debugElement.query(By.css('.modal-body'));
@@ -47,11 +48,15 @@ describe('ConfirmationModalComponent', () => {
   });
 
   it('should call close on the modal when confirmed', () => {
+    fixture.detectChanges();
+
     component.modal.close();
     expect(ngbActiveModalSpy.close).toHaveBeenCalled();
   });
 
   it('should call dismiss on the modal when canceled', () => {
+    fixture.detectChanges();
+
     component.modal.dismiss();
     expect(ngbActiveModalSpy.dismiss).toHaveBeenCalled();
   });

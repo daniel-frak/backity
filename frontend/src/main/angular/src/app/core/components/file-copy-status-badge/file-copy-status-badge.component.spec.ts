@@ -17,14 +17,17 @@ describe('FileCopyStatusBadgeComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(FileCopyStatusBadgeComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    fixture.detectChanges();
+
     expect(component).toBeTruthy();
   });
 
   it('should have the default status as undefined (Untracked)', () => {
+    fixture.detectChanges();
+
     expect(component.status).toBe(undefined);
   });
 

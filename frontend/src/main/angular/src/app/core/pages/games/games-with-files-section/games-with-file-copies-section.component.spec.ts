@@ -1,4 +1,4 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {
   BackupTarget,
   BackupTargetsClient,
@@ -8,9 +8,9 @@ import {
   FileCopiesClient,
   FileCopy,
   FileCopyNaturalId,
+  FileCopyReplicationProgressUpdatedEvent,
   FileCopyStatus,
   FileCopyStatusChangedEvent,
-  FileCopyReplicationProgressUpdatedEvent,
   GamesClient,
   GameWithFileCopies,
   StorageSolutionsClient,
@@ -24,7 +24,7 @@ import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {By} from "@angular/platform-browser";
 import {MessageTesting} from "@app/shared/testing/message-testing";
 import {DebugElement} from "@angular/core";
-import {provideRouter} from "@angular/router";
+import {ActivatedRoute, provideRouter} from "@angular/router";
 
 import {GamesWithFileCopiesSectionComponent} from './games-with-file-copies-section.component';
 import {TestGameWithFileCopies} from '@app/shared/testing/objects/test-game-with-file-copies';
@@ -68,6 +68,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
       imports: [GamesWithFileCopiesSectionComponent],
       providers: [
         provideRouter([]),
+        {provide: ActivatedRoute, useValue: {queryParams: of({})}},
         {provide: GamesClient, useValue: createSpyObj('GamesClient', ['getGames'])},
         {
           provide: FileCopiesClient,
@@ -134,7 +135,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     expect(component.gamesAreLoading).toBeTrue();
   });
 
-  it('should refresh on init', async () => {
+  it('should refresh on init via pagination', fakeAsync(() => {
     const gameWithFileCopies: GameWithFileCopies = TestGameWithFileCopies.withInProgressFileCopy();
     const fileCopyWithProgress = gameWithFileCopies.gameFilesWithCopies[0].fileCopiesWithProgress[0];
     fileCopyWithProgress.fileCopy.naturalId.backupTargetId = localFolderBackupTarget.id;
@@ -142,8 +143,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
 
     fixture.detectChanges();
-    await fixture.whenStable();
-    fixture.detectChanges();
+    tick();
 
     expect(gamesClient.getGames).toHaveBeenCalledWith({page: 0, size: component.pageSize}, '', null as any);
     expect(component.gameWithFileCopiesPage).toEqual(gameWithFileCopiesPage);
@@ -157,12 +157,13 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     expect(pageText).toContain(localFolderBackupTarget.name);
     expect(pageText).toContain(s3BackupTarget.name);
     expect(pageText).toContain(fileCopyWithProgress.progress!.percentage + "%");
-  });
+  }));
 
   it('should log an error when games cannot be retrieved', async () => {
     const mockError = new Error('Discovery failed');
 
     gamesClient.getGames.and.returnValue(throwError(() => mockError));
+    await component.refresh();
 
     fixture.detectChanges();
     await fixture.whenStable();
@@ -304,6 +305,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
   it('should update file copy status when status changed event is received', async () => {
     const gameWithFileCopies: GameWithFileCopies = TestGameWithFileCopies.withTrackedFileCopy();
     mockGameWithFileCopiesExists(gameWithFileCopies);
+    await component.refresh();
     await simulateStatusChangedEventReceivedToInProgressForFirstFileCopy(gameWithFileCopies);
 
     expect(component.gameWithFileCopiesPage?.content?.[0]?.gameFilesWithCopies[0]
@@ -405,7 +407,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
       .and.returnValue(of(deepClone(response)) as any);
   }
 
-  it('should download file', async () => {
+  it('should download file', fakeAsync(() => {
     const gameWithFileCopies: GameWithFileCopies = TestGameWithFileCopies.withStoredUnverifiedFileCopy();
     gameWithFileCopies.gameFilesWithCopies[0].fileCopiesWithProgress[0].fileCopy.naturalId.backupTargetId =
       localFolderBackupTarget.id;
@@ -422,7 +424,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     fileCopiesClient.configuration = configuration;
 
     fixture.detectChanges();
-    await fixture.whenStable();
+    tick();
     fixture.detectChanges();
 
     const gameListTable: DebugElement = getGameList();
@@ -431,5 +433,5 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     downloadBtn.nativeElement.click();
 
     expect(mockWindow.location.href).toBe(`someBasePath/api/file-copies/${fileCopy.id}`);
-  });
+  }));
 });

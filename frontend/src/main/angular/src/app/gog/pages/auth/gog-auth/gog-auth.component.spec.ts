@@ -54,11 +54,11 @@ describe('GogAuthComponent', () => {
 
     gogAuthClientMock.getGogAuthenticationStatus.and.returnValue(of(false) as any);
     gogConfigClientMock.getGogConfig.and.returnValue(of(GOG_CONFIG_RESPONSE) as any);
-
-    fixture.detectChanges();
   });
 
   it('should create the component', () => {
+    fixture.detectChanges();
+
     expect(component).toBeTruthy();
   });
 
@@ -67,6 +67,7 @@ describe('GogAuthComponent', () => {
       expect(component.gogIsLoading).toBeTrue();
       return of(true);
     }) as any);
+    fixture.detectChanges();
 
     component.ngOnInit();
 
@@ -77,8 +78,7 @@ describe('GogAuthComponent', () => {
   it('should notify and disable loading on authentication check failure', () => {
     const error = new Error('Test error');
     gogAuthClientMock.getGogAuthenticationStatus.and.returnValue(throwError(() => error));
-
-    component.ngOnInit();
+    fixture.detectChanges();
 
     expect(component.gogIsLoading).toBeFalse();
     expect(notificationService.showFailure).toHaveBeenCalledWith(
@@ -88,8 +88,7 @@ describe('GogAuthComponent', () => {
   it('should notify and disable loading on configuration check failure', () => {
     const error = new Error('Test error');
     gogConfigClientMock.getGogConfig.and.returnValue(throwError(() => error));
-
-    component.ngOnInit();
+    fixture.detectChanges();
 
     expect(component.gogIsLoading).toBeFalse();
     expect(notificationService.showFailure).toHaveBeenCalledWith(
@@ -97,6 +96,8 @@ describe('GogAuthComponent', () => {
   });
 
   it('should open authentication modal when user clicks on "Authenticate with GOG"', async () => {
+    fixture.detectChanges();
+
     const mockModalRef = mockAuthModalImmediatelyReturnsTrue();
 
     modalService.open.and.returnValue(mockModalRef as any);
@@ -121,6 +122,7 @@ describe('GogAuthComponent', () => {
   }
 
   it('should not open second authentication modal when one is already open', async () => {
+    fixture.detectChanges();
     mockAuthModalNeverCloses();
 
     const authenticateButton: DebugElement = getAuthenticateButton();
@@ -140,6 +142,7 @@ describe('GogAuthComponent', () => {
   }
 
   it('should open authentication modal after authentication succeeded', async () => {
+    fixture.detectChanges();
     mockAuthModalImmediatelyReturnsTrue();
 
     const authenticateButton: DebugElement = getAuthenticateButton();
@@ -150,6 +153,7 @@ describe('GogAuthComponent', () => {
   });
 
   it('should open authentication modal after authentication failed', async () => {
+    fixture.detectChanges();
     mockAuthModalImmediatelyRejects();
 
     const authenticateButton: DebugElement = getAuthenticateButton();
@@ -168,8 +172,10 @@ describe('GogAuthComponent', () => {
   }
 
   it('should log out given logged in', async () => {
-    makeAuthenticated();
+    mockIsAuthenticated();
     gogAuthClientMock.logOutOfGog.and.returnValue(of(true) as any);
+    fixture.detectChanges();
+
     const logOutButton: DebugElement = getLogOutButton();
 
     await logOutButton.nativeElement.click();
@@ -179,9 +185,8 @@ describe('GogAuthComponent', () => {
     expect(notificationService.showSuccess).toHaveBeenCalledWith("Logged out of GOG");
   });
 
-  function makeAuthenticated() {
-    component.gogAuthenticated = true;
-    fixture.detectChanges();
+  function mockIsAuthenticated() {
+    gogAuthClientMock.getGogAuthenticationStatus.and.returnValue(of(true) as any);
   }
 
   function getLogOutButton(): DebugElement {
@@ -189,8 +194,10 @@ describe('GogAuthComponent', () => {
   }
 
   it('should handle error during log out', async () => {
-    makeAuthenticated();
+    mockIsAuthenticated();
     const error = throwErrorDuringLogOut();
+    fixture.detectChanges();
+
     const logOutButton: DebugElement = getLogOutButton();
 
     await logOutButton.nativeElement.click();
