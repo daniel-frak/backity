@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.forwarders;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.TestFileBackupEvent;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.FileBackupWebSocketTopics;
@@ -19,7 +18,7 @@ class FileBackupFailedEventWebSocketForwarderIT {
     private FileBackupFailedEventWebSocketForwarder forwarder;
 
     @Test
-    void shouldPublishWebSocketEvent() throws JsonProcessingException {
+    void shouldPublishWebSocketEvent() {
         FileBackupFailedEvent event = TestFileBackupEvent.failed();
 
         forwarder.forward(event);

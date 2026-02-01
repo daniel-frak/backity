@@ -9,7 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.MethodParameter;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.BindingResult;
@@ -40,7 +40,7 @@ class RestExceptionHandlerIT {
         testController = mock(TestController.class);
         this.mockMvc = standaloneSetup(testController)
                 .setControllerAdvice(RestExceptionHandler.class)
-                .setMessageConverters(new MappingJackson2HttpMessageConverter()).build();
+                .setMessageConverters(new JacksonJsonHttpMessageConverter()).build();
     }
 
     @AfterEach
@@ -63,7 +63,7 @@ class RestExceptionHandlerIT {
         when(testController.testEndpoint()).thenThrow(new DomainInvariantViolationException(expectedMessage));
 
         mockMvc.perform(get("/"))
-                .andExpect(status().isUnprocessableEntity())
+                .andExpect(status().isUnprocessableContent())
                 .andExpect(jsonPath("$.message").value(expectedMessage));
     }
 
@@ -74,7 +74,7 @@ class RestExceptionHandlerIT {
                 .thenThrow(new DomainInvariantViolationException(expectedMessage, new RuntimeException()));
 
         mockMvc.perform(get("/"))
-                .andExpect(status().isUnprocessableEntity())
+                .andExpect(status().isUnprocessableContent())
                 .andExpect(jsonPath("$.message").value(expectedMessage));
     }
 
@@ -85,7 +85,7 @@ class RestExceptionHandlerIT {
                 .thenThrow(expectedException);
 
         mockMvc.perform(get("/"))
-                .andExpect(status().isUnprocessableEntity())
+                .andExpect(status().isUnprocessableContent())
                 .andExpect(jsonPath("$.message").value(expectedException.getMessage()))
                 .andExpect(jsonPath("$.messageKey").value("FILE_COPY_NOT_BACKED_UP"));
     }
@@ -97,7 +97,7 @@ class RestExceptionHandlerIT {
                 new FileCopyNotBackedUpException(FileCopyId.newInstance())));
 
         mockMvc.perform(get("/"))
-                .andExpect(status().isUnprocessableEntity())
+                .andExpect(status().isUnprocessableContent())
                 .andExpect(jsonPath("$.message").value(expectedMessage))
                 .andExpect(jsonPath("$.messageKey").value("FILE_COPY_NOT_BACKED_UP"));
     }

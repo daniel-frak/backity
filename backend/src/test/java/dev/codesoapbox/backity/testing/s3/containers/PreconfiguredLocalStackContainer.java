@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.testing.s3.containers;
 
-import org.testcontainers.containers.localstack.LocalStackContainer;
+import org.testcontainers.localstack.LocalStackContainer;
 import org.testcontainers.utility.DockerImageName;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -29,7 +29,7 @@ public class PreconfiguredLocalStackContainer extends LocalStackContainer {
      */
     public S3Client buildS3Client() {
         return S3Client.builder()
-                .endpointOverride(getEndpointOverride(LocalStackContainer.Service.S3))
+                .endpointOverride(getEndpoint())
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(
                         getAccessKey(), getSecretKey())))
                 .region(Region.of(getRegion()))

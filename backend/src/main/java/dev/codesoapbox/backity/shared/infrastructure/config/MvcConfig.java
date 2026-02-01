@@ -6,11 +6,11 @@ import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.l
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.lowercaseenums.openapi.LowercaseApiEnum;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.WebMvcConfiguration;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.format.FormatterRegistry;
-import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerTypePredicate;
 import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
@@ -61,7 +61,7 @@ public class MvcConfig implements WebMvcConfigurer {
     }
 
     @Override
-    public void addFormatters(FormatterRegistry registry) {
+    public void addFormatters(@NonNull FormatterRegistry registry) {
         makeAnnotatedControllerEnumArgumentsCaseInsensitive(registry);
     }
 
