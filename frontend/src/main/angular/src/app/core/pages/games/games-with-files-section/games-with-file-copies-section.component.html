@@ -1,5 +1,5 @@
 <app-section>
-  <app-loaded-content [isLoading]="gamesAreLoading">
+  <app-loaded-content [isLoading]="gamesAreLoading()">
     <app-auto-layout>
       <form [formGroup]="searchForm" (ngSubmit)="refresh()">
         <div class="search-bar">
@@ -12,7 +12,7 @@
                      class="search-box">
             Search
           </app-input>
-          <app-button buttonType="submit" [disabled]="gamesAreLoading"
+          <app-button buttonType="submit" [disabled]="gamesAreLoading()"
                       title="Search"
                       testId="search-btn"
                       buttonStyle="secondary">
@@ -25,7 +25,8 @@
       </form>
 
       <app-auto-layout data-testid="game-list">
-        @for (gameWithFileCopies of gameWithFileCopiesPage?.content; track trackByGameId($index, gameWithFileCopies)) {
+        @for (gameWithFileCopies of gameWithFileCopiesPage()?.content;
+          track trackByGameId($index, gameWithFileCopies)) {
           <app-icon-item iconClass="bi bi-joystick">
             <ng-container title>{{ gameWithFileCopies.title }}</ng-container>
             <ng-container details>
@@ -58,7 +59,7 @@
                   </ng-container>
                   <ng-container details>
                     @for (potentialFileCopyWithContext
-                      of potentialFileCopiesWithContextByGameFileId.get(gameFileWithCopies.gameFile.id)!;
+                      of potentialFileCopiesWithContextByGameFileId().get(gameFileWithCopies.gameFile.id)!;
                       track trackByFileCopyNaturalId($index, potentialFileCopyWithContext
                       )) {
                       <app-icon-item iconClass="bi bi-copy" size="sm" data-testid="file-copy-item">
@@ -148,11 +149,12 @@
         }
       </app-auto-layout>
 
-      <app-pagination [disabled]="gamesAreLoading"
-                      [currentPage]="gameWithFileCopiesPage"
-                      [(pageNumber)]="pageNumber"
-                      [(pageSize)]="pageSize"
-                      (onPageChange)="refresh()"/>
+      <app-pagination [disabled]="gamesAreLoading()"
+                      [currentPage]="gameWithFileCopiesPage()"
+                      [pageNumber]="pageNumber()"
+                      (pageNumberChange)="pageNumber.set($event); refresh()"
+                      [pageSize]="pageSize()"
+                      (pageSizeChange)="pageSize.set($event); refresh()"/>
     </app-auto-layout>
   </app-loaded-content>
 </app-section>

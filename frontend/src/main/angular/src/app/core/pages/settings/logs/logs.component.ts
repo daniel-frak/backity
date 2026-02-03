@@ -1,12 +1,11 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit, signal} from '@angular/core';
 import {LogCreatedEvent, LogsClient, LogsMessageTopics} from "@backend";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
-import {Message} from "@stomp/stompjs";
 import {PageHeaderComponent} from '@app/shared/components/page-header/page-header.component';
 
 import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
-import {Subscription} from "rxjs";
 import {SectionComponent} from "@app/shared/components/section/section.component";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
     selector: 'app-logs',
@@ -14,43 +13,39 @@ import {SectionComponent} from "@app/shared/components/section/section.component
     styleUrls: ['./logs.component.scss'],
     imports: [PageHeaderComponent, LoadedContentComponent, SectionComponent]
 })
-export class LogsComponent implements OnInit, OnDestroy {
+export class LogsComponent implements OnInit {
 
-  logs: string[] = [];
-  public logsAreLoading: boolean = false;
-  private readonly subscriptions: Subscription[] = [];
+  logs = signal<string[]>([]);
+  public logsAreLoading = signal(true);
 
   constructor(private readonly logsClient: LogsClient, private readonly messageService: MessagesService) {
+    this.messageService.watchJson<LogCreatedEvent>(LogsMessageTopics.TopicLogs)
+      .pipe(takeUntilDestroyed())
+      .subscribe(event => this.onLogReceived(event));
   }
 
   ngOnInit(): void {
-    this.subscriptions.push(
-      this.messageService.watch(LogsMessageTopics.TopicLogs).subscribe(p => this.onLogReceived(p))
-    )
-
     this.refresh();
   }
 
-  private onLogReceived(payload: Message) {
-    const event: LogCreatedEvent = JSON.parse(payload.body);
-    this.logs.unshift(event.message as string);
-    if (this.logs.length > (event.maxLogs as number)) {
-      this.logs.pop();
-    }
+  private onLogReceived(event: LogCreatedEvent) {
+    this.logs.update(logs => {
+      const newLogs = [event.message as string, ...logs];
+      if (newLogs.length > (event.maxLogs as number)) {
+        newLogs.pop();
+      }
+      return newLogs;
+    });
   }
 
   refresh() {
-    this.logsAreLoading = true;
+    this.logsAreLoading.set(true);
     this.logsClient.getLogs()
       .subscribe(l => this.updateLogs(l));
   }
 
   private updateLogs(logs: Array<string>) {
-    this.logs = [...logs].reverse();
-    this.logsAreLoading = false;
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
+    this.logs.set([...logs].reverse());
+    this.logsAreLoading.set(false);
   }
 }

@@ -28,12 +28,7 @@ describe('NotificationContainerComponent', () => {
   });
 
   it('should display notifications', () => {
-    notificationService.notifications = [
-      {
-        title: 'Test Notification 1',
-        content: 'Content 1',
-      }
-    ];
+    notificationService.show('Content 1', 'Test Notification 1');
     fixture.detectChanges();
 
     const toastElements: DebugElement[] = fixture.debugElement.queryAll(By.css('ngb-toast'));
@@ -44,12 +39,7 @@ describe('NotificationContainerComponent', () => {
   });
 
   it('should remove notification when close button is clicked', () => {
-    notificationService.notifications = [
-      {
-        title: '',
-        content: 'Some content'
-      }
-    ];
+    notificationService.show('Some content');
 
     fixture.detectChanges();
 
@@ -59,22 +49,12 @@ describe('NotificationContainerComponent', () => {
     closeButton.triggerEventHandler('click', null);
     fixture.detectChanges();
 
-    expect(notificationService.notifications.length).toBe(0);
+    expect(notificationService.notifications().length).toBe(0);
   });
 
   it('should apply the correct classes to the close button', () => {
-    notificationService.notifications = [
-      {
-        title: '',
-        content: 'Light Text',
-        shouldShowLightText: true
-      },
-      {
-        title: '',
-        content: 'Normal Text',
-        shouldShowLightText: false
-      }
-    ];
+    notificationService.show('Normal Text');
+    notificationService.showFailure('Light Text');
 
     fixture.detectChanges();
 
@@ -85,11 +65,7 @@ describe('NotificationContainerComponent', () => {
   });
 
   it('should remove notification when hidden event is triggered', () => {
-    notificationService.notifications = [
-      {
-        content: 'This will hide'
-      }
-    ];
+    notificationService.show('This will hide');
 
     fixture.detectChanges();
 
@@ -99,6 +75,6 @@ describe('NotificationContainerComponent', () => {
     toastElement.triggerEventHandler('hidden', null);
     fixture.detectChanges();
 
-    expect(notificationService.notifications.length).toBe(0);
+    expect(notificationService.notifications().length).toBe(0);
   });
 });

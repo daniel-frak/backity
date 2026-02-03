@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, ReplaySubject} from "rxjs";
+import {map, Observable, ReplaySubject} from "rxjs";
 import {RxStompService} from "@app/shared/backend/services/rx-stomp/rx-stomp.service";
 import {IMessage} from "@stomp/stompjs";
 
@@ -15,7 +15,13 @@ export class MessagesService {
     this.subscriptions.subscribe(func => func(rxStompService));
   }
 
-  public watch(topic: string): Observable<IMessage> {
+  public watchJson<T>(topic: string): Observable<T> {
+    return this.watch(topic).pipe(
+      map(message => JSON.parse(message.body) as T)
+    );
+  }
+
+  private watch(topic: string): Observable<IMessage> {
     return this.rxStompService.watch(topic);
   }
 }

@@ -1,4 +1,3 @@
-import {Message} from "@stomp/stompjs";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {ComponentFixture, fakeAsync, tick} from "@angular/core/testing";
 import {MessageTesting} from "@app/shared/testing/message-testing";
@@ -10,15 +9,15 @@ describe('MessageTesting', () => {
   let messagesServiceSpy: SpyObj<MessagesService>;
 
   beforeEach(() => {
-    messagesServiceSpy = createSpyObj('MessagesService', ['watch']);
+    messagesServiceSpy = createSpyObj('MessagesService', ['watchJson']);
   });
 
-  it('should mock watch and call messageRouter callback', () => {
+  it('should mock watchJson and call messageRouter callback', () => {
     const messageRouter = jasmine.createSpy('messageRouter');
-    MessageTesting.mockWatch(messagesServiceSpy, messageRouter);
+    MessageTesting.mockWatchJson(messagesServiceSpy, messageRouter);
 
     const callback = jasmine.createSpy('callback');
-    const subscription = messagesServiceSpy.watch('someDestination').subscribe(callback);
+    const subscription = messagesServiceSpy.watchJson('someDestination').subscribe(callback);
 
     expect(messageRouter).toHaveBeenCalledWith('someDestination', jasmine.any(Function));
     expect(subscription).toBe(Subscription.EMPTY);
@@ -30,17 +29,17 @@ describe('MessageTesting', () => {
 
     const message = {key: 'value'};
     const topic = 'someTopic';
-    let receivedMessage: Message | null = null;
+    let receivedMessage: any = null;
 
-    messagesServiceSpy.watch.and.callFake((destination: string) => {
+    messagesServiceSpy.watchJson.and.callFake((destination: string) => {
       return {
-        subscribe: (callback: (message: Message) => void) => {
-          callback(message as any);
+        subscribe: (callback: (message: any) => void) => {
+          callback(message);
           return Subscription.EMPTY;
         }
-      } as Observable<Message>;
+      } as Observable<any>;
     });
-    messagesServiceSpy.watch(topic).subscribe(msg => {
+    messagesServiceSpy.watchJson(topic).subscribe(msg => {
       receivedMessage = msg;
     });
 
@@ -48,17 +47,17 @@ describe('MessageTesting', () => {
 
     expect(fixture.detectChanges).toHaveBeenCalledTimes(2);
     expect(fixture.whenStable).toHaveBeenCalledTimes(2);
-    expect(messagesServiceSpy.watch).toHaveBeenCalledWith(topic);
-    expect(receivedMessage).toEqual(message as any);
+    expect(messagesServiceSpy.watchJson).toHaveBeenCalledWith(topic);
+    expect(receivedMessage).toEqual(message);
   });
 
   it('should return correct callback for topic', () => {
     let callbackRan: boolean = false;
-    let receivedMessage: Message | null = null;
-    const expectedMessage: Message = {body: JSON.stringify({key: 'value'})} as Message;
+    let receivedMessage: any = null;
+    const expectedMessage = {key: 'value'};
     const callbackForTopic =
-      MessageTesting.mockWatchAndGetCallbackForTopic(messagesServiceSpy, 'someTopic');
-    messagesServiceSpy.watch('someTopic').subscribe(message => {
+      MessageTesting.mockWatchJsonAndGetCallbackForTopic(messagesServiceSpy, 'someTopic');
+    messagesServiceSpy.watchJson('someTopic').subscribe(message => {
       callbackRan = true;
       receivedMessage = message;
     });
@@ -66,18 +65,18 @@ describe('MessageTesting', () => {
     callbackForTopic.execute(expectedMessage);
 
     expect(callbackRan).toBe(true);
-    expect(receivedMessage).toBe(expectedMessage as any);
+    expect(receivedMessage).toBe(expectedMessage);
   });
 
   it('should return default callback if topic not found', fakeAsync(() => {
     spyOn(console, 'error');
     let callbackRan: boolean = false;
-    const expectedMessage: Message = {body: JSON.stringify({key: 'value'})} as Message;
+    const expectedMessage = {key: 'value'};
 
     const callbackForTopic =
-      MessageTesting.mockWatchAndGetCallbackForTopic(messagesServiceSpy, 'incorrectTopic');
+      MessageTesting.mockWatchJsonAndGetCallbackForTopic(messagesServiceSpy, 'incorrectTopic');
 
-    const subscription = messagesServiceSpy.watch('someTopic').subscribe(message => {
+    const subscription = messagesServiceSpy.watchJson('someTopic').subscribe(message => {
       callbackRan = true;
     });
 

@@ -1,4 +1,3 @@
-import {Message} from "@stomp/stompjs";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {Observable, Subscription} from "rxjs";
 import {ComponentFixture} from "@angular/core/testing";
@@ -6,42 +5,41 @@ import SpyObj = jasmine.SpyObj;
 
 export class MessageTesting {
 
-  static mockWatch(messagesService: SpyObj<MessagesService>,
-                   messageRouter: (destination: string, callback: ((message: Message) => void)) => any): void {
-    messagesService.watch.and.callFake((destination: string) => {
+  static mockWatchJson(messagesService: SpyObj<MessagesService>,
+                       messageRouter: (destination: string, callback: ((message: any) => void)) => any): void {
+    messagesService.watchJson.and.callFake((destination: string) => {
       return {
-        subscribe: (callback: (message: Message) => void) => {
+        subscribe: (callback: (message: any) => void) => {
           messageRouter(destination, callback);
           return Subscription.EMPTY;
         }
-      } as Observable<Message>;
+      } as Observable<any>;
     });
   }
 
   static async simulateWebSocketMessageReceived(
     fixture: ComponentFixture<any>, messagesService: SpyObj<MessagesService>, topic: string, message: any):
     Promise<void> {
-    const payload: Message = {body: JSON.stringify(message)} as any;
     const topicCallback =
-      MessageTesting.mockWatchAndGetCallbackForTopic(messagesService, topic);
+      MessageTesting.mockWatchJsonAndGetCallbackForTopic(messagesService, topic);
 
     fixture.detectChanges();
     await fixture.whenStable();
 
-    topicCallback.execute(payload);
+    topicCallback.execute(message);
     await fixture.whenStable();
 
     fixture.detectChanges();
   }
 
-  static mockWatchAndGetCallbackForTopic(messagesService: SpyObj<MessagesService>, topic: string) {
+  static mockWatchJsonAndGetCallbackForTopic(messagesService: SpyObj<MessagesService>, topic: string) {
     const topicCallback = {
-      execute: (message: Message) => {
+      execute: (message: any) => {
         console.error("Topic callback not found for: " + topic);
       }
     };
 
-    MessageTesting.mockWatch(messagesService, (destination, callback) => {
+    MessageTesting.mockWatchJson(messagesService, (destination, callback) => {
       if (destination == topic) {
         topicCallback.execute = callback;
       }

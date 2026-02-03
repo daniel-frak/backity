@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, computed, signal} from '@angular/core';
 import {PageHeaderComponent} from '@app/shared/components/page-header/page-header.component';
 import {GogAuthComponent} from '@app/gog/pages/auth/gog-auth/gog-auth.component';
 import {SectionComponent} from "@app/shared/components/section/section.component";
@@ -10,13 +10,13 @@ import {
   GameContentDiscoveryStoppedEvent,
   GameContentDiscoveryWebSocketTopics
 } from "@backend";
-import {IMessage} from "@stomp/stompjs";
 import {MessagesService} from "@app/shared/backend/services/messages.service";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
-import {firstValueFrom, Subscription} from "rxjs";
+import {firstValueFrom} from "rxjs";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
 import {LoadedContentComponent} from "@app/shared/components/loaded-content/loaded-content.component";
 import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-game-providers',
@@ -24,100 +24,39 @@ import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layou
   styleUrls: ['./game-providers.component.scss'],
   imports: [PageHeaderComponent, GogAuthComponent, SectionComponent, ButtonComponent, LoadedContentComponent, AutoLayoutComponent]
 })
-export class GameProvidersComponent implements OnInit, OnDestroy {
+export class GameProvidersComponent {
 
-  infoIsLoading: boolean = false;
-  discoveryIsInProgressByGameProviderId: Map<string, boolean> = new Map();
-  discoveryOverviewsByGameProviderId: Map<string, GameContentDiscoveryOverview | undefined> = new Map();
-  discoveryStatusUnknownByGameProviderId: Map<string, boolean> = new Map();
+  infoIsLoading = signal(false);
+  discoveryIsInProgressByGameProviderId = signal<Map<string, boolean>>(new Map());
+  discoveryOverviewsByGameProviderId =
+    signal<Map<string, GameContentDiscoveryOverview | undefined>>(new Map());
+  discoveryStatusUnknownByGameProviderId = signal<Map<string, boolean>>(new Map());
 
-  private readonly startGameContentDiscoveryClickHandler: () => Promise<void> =
-    async () => this.startGameContentDiscovery();
-  private readonly stopGameContentDiscoveryClickHandler: () => Promise<void> =
-    async () => this.stopGameContentDiscovery();
-  private readonly subscriptions: Subscription[] = [];
+  anyDiscoveryStatusIsUnknown = computed(() =>
+    Array.from(this.discoveryStatusUnknownByGameProviderId().values()).some(Boolean)
+  );
+
+  discoveryOngoing = computed(() =>
+    Array.from(this.discoveryIsInProgressByGameProviderId().values()).some(Boolean)
+  );
 
   constructor(private readonly gameContentDiscoveryClient: GameContentDiscoveryClient,
               private readonly messageService: MessagesService,
               private readonly notificationService: NotificationService) {
-  }
-
-  ngOnInit(): void {
-    this.subscriptions.push(
-      this.messageService.watch(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStarted)
-        .subscribe(p => this.onDiscoveryStarted(p)),
-      this.messageService.watch(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStopped)
-        .subscribe(p => this.onDiscoveryStopped(p)),
-      this.messageService.watch(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryProgressUpdate)
-        .subscribe(p => this.onDiscoveryProgressChanged(p))
-    )
+    this.messageService.watchJson<GameContentDiscoveryStartedEvent>(
+      GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStarted)
+      .pipe(takeUntilDestroyed())
+      .subscribe(event => this.onDiscoveryStarted(event));
+    this.messageService.watchJson<GameContentDiscoveryStoppedEvent>(
+      GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStopped)
+      .pipe(takeUntilDestroyed())
+      .subscribe(event => this.onDiscoveryStopped(event));
+    this.messageService.watchJson<GameContentDiscoveryProgressChangedEvent>(
+      GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryProgressUpdate)
+      .pipe(takeUntilDestroyed())
+      .subscribe(event => this.onDiscoveryProgressChanged(event));
 
     this.refreshInfo();
-  }
-
-  private onDiscoveryStarted(payload: IMessage) {
-    const event: GameContentDiscoveryStartedEvent = JSON.parse(payload.body);
-
-    this.discoveryIsInProgressByGameProviderId.set(event.gameProviderId, true);
-    this.discoveryStatusUnknownByGameProviderId.set(event.gameProviderId, false);
-
-    const overview: GameContentDiscoveryOverview | undefined =
-      this.discoveryOverviewsByGameProviderId.get(event.gameProviderId);
-    if (overview) {
-      overview.isInProgress = true;
-    }
-  }
-
-  private onDiscoveryStopped(payload: IMessage) {
-    const event: GameContentDiscoveryStoppedEvent = JSON.parse(payload.body);
-
-    this.discoveryIsInProgressByGameProviderId.set(event.gameProviderId, false);
-    let overview: GameContentDiscoveryOverview | undefined =
-      this.discoveryOverviewsByGameProviderId.get(event.gameProviderId);
-    if (!overview?.isInProgress) {
-      overview = {
-        gameProviderId: event.gameProviderId,
-        isInProgress: false
-      };
-      this.discoveryOverviewsByGameProviderId.set(event.gameProviderId, overview);
-    }
-    overview.isInProgress = false;
-    overview.progress = undefined;
-    overview.lastDiscoveryResult = event.discoveryResult;
-    this.discoveryStatusUnknownByGameProviderId.set(event.gameProviderId, false);
-  }
-
-  private onDiscoveryProgressChanged(payload: IMessage) {
-    const event: GameContentDiscoveryProgressChangedEvent = JSON.parse(payload.body);
-    const overview: GameContentDiscoveryOverview | undefined =
-      this.discoveryOverviewsByGameProviderId.get(event.gameProviderId);
-    this.discoveryStatusUnknownByGameProviderId.set(event.gameProviderId, false);
-    if (overview == undefined) {
-      return;
-    }
-    overview.progress = {
-      percentage: event.percentage,
-      timeLeftSeconds: event.timeLeftSeconds,
-      gamesDiscovered: event.gamesDiscovered,
-      gameFilesDiscovered: event.gameFilesDiscovered
-    }
-  }
-
-  private refreshInfo() {
-    this.infoIsLoading = true;
-    this.gameContentDiscoveryClient.getGameContentDiscoveryOverviews()
-      .subscribe(discoveryOverviews => {
-        for (const discoveryOverview of discoveryOverviews) {
-          this.discoveryIsInProgressByGameProviderId.set(discoveryOverview.gameProviderId, discoveryOverview.isInProgress);
-          this.discoveryOverviewsByGameProviderId.set(discoveryOverview.gameProviderId, discoveryOverview);
-          this.discoveryStatusUnknownByGameProviderId.set(discoveryOverview.gameProviderId, false);
-        }
-        this.infoIsLoading = false;
-      });
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(s => s.unsubscribe());
   }
 
   getGogOverview(): GameContentDiscoveryOverview | undefined {
@@ -125,8 +64,8 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
   }
 
   getOverview(gameProviderId: string): GameContentDiscoveryOverview | undefined {
-    const overview = this.discoveryOverviewsByGameProviderId.get(gameProviderId);
-    if (!this.discoveryIsInProgressByGameProviderId.has(gameProviderId)) {
+    const overview = this.discoveryOverviewsByGameProviderId().get(gameProviderId);
+    if (!this.discoveryIsInProgressByGameProviderId().has(gameProviderId)) {
       return undefined;
     }
     return overview;
@@ -159,19 +98,102 @@ export class GameProvidersComponent implements OnInit, OnDestroy {
     }
   }
 
+  private readonly startGameContentDiscoveryClickHandler: () => Promise<void> =
+    async () => this.startGameContentDiscovery();
+
+  private readonly stopGameContentDiscoveryClickHandler: () => Promise<void> =
+    async () => this.stopGameContentDiscovery();
+
+  private onDiscoveryStarted(event: GameContentDiscoveryStartedEvent) {
+    this.discoveryIsInProgressByGameProviderId.update(map => new Map(map).set(event.gameProviderId, true));
+    this.discoveryStatusUnknownByGameProviderId.update(map => new Map(map).set(event.gameProviderId, false));
+
+    this.discoveryOverviewsByGameProviderId.update(map => {
+      const newMap = new Map(map);
+      const overview = newMap.get(event.gameProviderId);
+      if (overview) {
+        newMap.set(event.gameProviderId, {...overview, isInProgress: true});
+      }
+      return newMap;
+    });
+  }
+
+  private onDiscoveryStopped(event: GameContentDiscoveryStoppedEvent) {
+    this.discoveryIsInProgressByGameProviderId.update(map => new Map(map).set(event.gameProviderId, false));
+    this.discoveryOverviewsByGameProviderId.update(map => {
+      const newMap = new Map(map);
+      let overview = newMap.get(event.gameProviderId);
+      overview ??= {
+        gameProviderId: event.gameProviderId,
+        isInProgress: false
+      };
+      newMap.set(event.gameProviderId, {
+        ...overview,
+        isInProgress: false,
+        progress: undefined,
+        lastDiscoveryResult: event.discoveryResult
+      });
+      return newMap;
+    });
+    this.discoveryStatusUnknownByGameProviderId.update(map => new Map(map).set(event.gameProviderId, false));
+  }
+
+  private onDiscoveryProgressChanged(event: GameContentDiscoveryProgressChangedEvent) {
+    this.discoveryStatusUnknownByGameProviderId.update(map => new Map(map).set(event.gameProviderId, false));
+    this.discoveryOverviewsByGameProviderId.update(map => {
+      const newMap = new Map(map);
+      const overview = newMap.get(event.gameProviderId);
+      if (overview) {
+        newMap.set(event.gameProviderId, {
+          ...overview,
+          progress: {
+            percentage: event.percentage,
+            timeLeftSeconds: event.timeLeftSeconds,
+            gamesDiscovered: event.gamesDiscovered,
+            gameFilesDiscovered: event.gameFilesDiscovered
+          }
+        });
+      }
+      return newMap;
+    });
+  }
+
+  private refreshInfo() {
+    this.infoIsLoading.set(true);
+    this.gameContentDiscoveryClient.getGameContentDiscoveryOverviews()
+      .subscribe({
+        next: discoveryOverviews => {
+          this.discoveryIsInProgressByGameProviderId.update(map => {
+            const newMap = new Map(map);
+            discoveryOverviews.forEach(o => newMap.set(o.gameProviderId, o.isInProgress));
+            return newMap;
+          });
+          this.discoveryOverviewsByGameProviderId.update(map => {
+            const newMap = new Map(map);
+            discoveryOverviews.forEach(o => newMap.set(o.gameProviderId, o));
+            return newMap;
+          });
+          this.discoveryStatusUnknownByGameProviderId.update(map => {
+            const newMap = new Map(map);
+            discoveryOverviews.forEach(o => newMap.set(o.gameProviderId, false));
+            return newMap;
+          });
+          this.infoIsLoading.set(false);
+        },
+        error: error => {
+          this.notificationService.showFailure('Error fetching discovery overviews', error);
+          this.infoIsLoading.set(false);
+        }
+      });
+  }
+
   private setAllDiscoveryStatusesUnknown() {
-    for (const gameProviderId of this.discoveryStatusUnknownByGameProviderId.keys()) {
-      this.discoveryStatusUnknownByGameProviderId.set(gameProviderId, true);
-    }
-  }
-
-  anyDiscoveryStatusIsUnknown(): boolean {
-    return Array.from(this.discoveryStatusUnknownByGameProviderId)
-      .some(([_, isUnknown]) => isUnknown);
-  }
-
-  discoveryOngoing(): boolean {
-    return Array.from(this.discoveryIsInProgressByGameProviderId)
-      .some(([_, inProgress]) => inProgress);
+    this.discoveryStatusUnknownByGameProviderId.update(map => {
+      const newMap = new Map(map);
+      for (const gameProviderId of newMap.keys()) {
+        newMap.set(gameProviderId, true);
+      }
+      return newMap;
+    });
   }
 }

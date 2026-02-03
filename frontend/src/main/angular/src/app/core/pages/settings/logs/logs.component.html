@@ -6,10 +6,10 @@
   <div class="gutters-1">
     <div>
       <span class="badge bg-secondary">
-        @if (logs && logs.length > 0) {
-          Showing {{ logs.length }} newest logs.
+        @if (logs() && logs().length > 0) {
+          Showing {{ logs().length }} newest logs.
         }
-        @if (!logs || logs.length == 0) {
+        @if (!logs() || logs().length == 0) {
           Showing no logs.
         }
       </span>
@@ -20,10 +20,10 @@
 <app-section sectionTitle="Backend logs">
   <button class="btn btn-secondary mt-2 me-3" (click)="refresh()">Refresh</button>
 
-  <app-loaded-content [isLoading]="logsAreLoading">
+  <app-loaded-content [isLoading]="logsAreLoading()">
     <code>
       <hr>
-        @for (log of logs; track log) {
+        @for (log of logs(); track log) {
           {{ log }}
           <hr>
           }

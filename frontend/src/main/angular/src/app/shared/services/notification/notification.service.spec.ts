@@ -19,10 +19,10 @@ describe('NotificationService', () => {
 
     service.show(content);
 
-    expect(service.notifications.length).toBe(1);
-    expect(service.notifications[0].content).toBe(content);
-    expect(service.notifications[0].title).toBeUndefined();
-    expect(service.notifications[0].shouldShowLightText).toBeFalse();
+    expect(service.notifications().length).toBe(1);
+    expect(service.notifications()[0].content).toBe(content);
+    expect(service.notifications()[0].title).toBeUndefined();
+    expect(service.notifications()[0].shouldShowLightText).toBeFalse();
   });
 
   it('should add a success notification', () => {
@@ -30,11 +30,11 @@ describe('NotificationService', () => {
 
     service.showSuccess(content);
 
-    expect(service.notifications.length).toBe(1);
-    expect(service.notifications[0].content).toBe(content);
-    expect(service.notifications[0].title).toBeUndefined();
-    expect(service.notifications[0].class).toBe('bg-success text-light');
-    expect(service.notifications[0].shouldShowLightText).toBeTrue();
+    expect(service.notifications().length).toBe(1);
+    expect(service.notifications()[0].content).toBe(content);
+    expect(service.notifications()[0].title).toBeUndefined();
+    expect(service.notifications()[0].class).toBe('bg-success text-light');
+    expect(service.notifications()[0].shouldShowLightText).toBeTrue();
   });
 
   it('should add a failure notification', () => {
@@ -43,36 +43,35 @@ describe('NotificationService', () => {
 
     service.showFailure(content);
 
-    expect(service.notifications.length).toBe(1);
-    expect(service.notifications[0].content).toBe(content);
-    expect(service.notifications[0].title).toBeUndefined();
-    expect(service.notifications[0].class).toBe('bg-danger text-light');
-    expect(service.notifications[0].shouldShowLightText).toBeTrue();
+    expect(service.notifications().length).toBe(1);
+    expect(service.notifications()[0].content).toBe(content);
+    expect(service.notifications()[0].title).toBeUndefined();
+    expect(service.notifications()[0].class).toBe('bg-danger text-light');
+    expect(service.notifications()[0].shouldShowLightText).toBeTrue();
     expect(console.error).toHaveBeenCalledWith(content);
   });
 
   it('should remove a notification', () => {
     const content = 'Test Notification';
-    const notification: UserNotification = {title: 'Test', content, shouldShowLightText: false};
-    service.notifications.push(notification);
+    service.show(content, 'Test');
 
-    service.remove(notification);
+    service.remove(service.notifications()[0]);
 
-    expect(service.notifications.length).toBe(0);
+    expect(service.notifications().length).toBe(0);
   });
 
   it('should not remove a non-existing notification', () => {
     const content = 'Test Notification';
-    const notification: UserNotification = {content};
-    service.notifications.push(notification);
+    service.show(content);
+    const notification = service.notifications()[0];
     const nonExistingNotification: UserNotification = {
       content: 'Nope'
     };
 
     service.remove(nonExistingNotification);
 
-    expect(service.notifications.length).toBe(1);
-    expect(service.notifications[0]).toBe(notification);
+    expect(service.notifications().length).toBe(1);
+    expect(service.notifications()[0]).toBe(notification);
   });
 
   it('should add default notification with a title', () => {
@@ -80,7 +79,7 @@ describe('NotificationService', () => {
     const title = 'Test Title';
 
     service.show(content, title);
-    expect(service.notifications[0].title).toBe(title);
+    expect(service.notifications()[0].title).toBe(title);
   });
 
   it('should add success notification with a title', () => {
@@ -89,9 +88,9 @@ describe('NotificationService', () => {
 
     service.showSuccess(content, title);
 
-    expect(service.notifications[0].title).toBe(title);
-    expect(service.notifications[0].class).toBe('bg-success text-light');
-    expect(service.notifications[0].shouldShowLightText).toBeTrue();
+    expect(service.notifications()[0].title).toBe(title);
+    expect(service.notifications()[0].class).toBe('bg-success text-light');
+    expect(service.notifications()[0].shouldShowLightText).toBeTrue();
   });
 
   it('should add failure notification with optional error params', () => {
@@ -102,8 +101,8 @@ describe('NotificationService', () => {
 
     service.showFailure(content, optionalParam1, optionalParam2);
 
-    expect(service.notifications[0].class).toBe('bg-danger text-light');
-    expect(service.notifications[0].shouldShowLightText).toBeTrue();
+    expect(service.notifications()[0].class).toBe('bg-danger text-light');
+    expect(service.notifications()[0].shouldShowLightText).toBeTrue();
     expect(console.error).toHaveBeenCalledWith(content, optionalParam1, optionalParam2);
   });
 });
