@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit, input} from '@angular/core';
 import {FileCopyStatus} from "@backend";
 import {CommonModule} from '@angular/common';
 
@@ -10,8 +10,7 @@ import {CommonModule} from '@angular/common';
 })
 export class FileCopyStatusBadgeComponent implements OnInit {
 
-  @Input()
-  public status: FileCopyStatus | undefined = undefined;
+  public readonly status = input<FileCopyStatus>();
 
   constructor() {
   }
@@ -23,7 +22,7 @@ export class FileCopyStatusBadgeComponent implements OnInit {
   public readonly FileCopyStatus = FileCopyStatus;
 
   getBadgeClass() {
-    switch (this.status) {
+    switch (this.status()) {
       case FileCopyStatus.StoredIntegrityUnknown:
         return 'bg-success';
       case FileCopyStatus.InProgress:

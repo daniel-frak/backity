@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Optional, Output, Self} from '@angular/core';
+import {Component, EventEmitter, Optional, Output, Self, input} from '@angular/core';
 import {ControlValueAccessor, FormsModule, NgControl, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
@@ -12,9 +12,9 @@ import {ControlValueAccessor, FormsModule, NgControl, ReactiveFormsModule} from 
 })
 export class SelectComponent<T> implements ControlValueAccessor {
 
-  @Input() elements: T[] = [];
-  @Input() label = '';
-  @Input() floating = true;
+  readonly elements = input<T[]>([]);
+  readonly label = input('');
+  readonly floating = input(true);
 
   value!: T;
   @Output() valueChange = new EventEmitter<T>();

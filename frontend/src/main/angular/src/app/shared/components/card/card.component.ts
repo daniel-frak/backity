@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 
 
 @Component({
@@ -9,5 +9,5 @@ import {Component, Input} from '@angular/core';
 })
 export class CardComponent {
 
-  @Input() cardTitle?: string;
+  readonly cardTitle = input<string>();
 }

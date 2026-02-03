@@ -13,16 +13,16 @@
            [ngClass]="{'text-primary': gogAuthenticated, 'text-danger-emphasis': !gogAuthenticated}">
         <i class="me-1"
            [ngClass]="{
-           'bi bi-check-circle': gogAuthenticated && !overview?.progress,
-           'bi bi-x-circle': !gogAuthenticated && !overview?.progress,
-           'bi bi-hourglass': overview?.progress
+           'bi bi-check-circle': gogAuthenticated && !overview()?.progress,
+           'bi bi-x-circle': !gogAuthenticated && !overview()?.progress,
+           'bi bi-hourglass': overview()?.progress
            }"
            aria-hidden="true">
         </i>
-        @if (overview?.isInProgress) {
+        @if (overview()?.isInProgress) {
           Discovering...
         }
-        @if (!overview?.isInProgress) {
+        @if (!overview()?.isInProgress) {
           @if (gogAuthenticated) {
             Authenticated
           }
@@ -39,24 +39,24 @@
         <app-loading-placeholder [widths]="['6rem']"/>
       </ng-container>
 
-      @if (overview?.isInProgress) {
-        <app-progress-bar [percentage]="overview?.progress?.percentage ?? 0"/>
+      @if (overview()?.isInProgress) {
+        <app-progress-bar [percentage]="overview()?.progress?.percentage ?? 0"/>
       }
 
-      @if (overview?.isInProgress) {
+      @if (overview()?.isInProgress) {
         <app-button [disabled]="true" buttonStyle="secondary" testId="stop-discovery-btn">
           Stop discovery
         </app-button>
       }
 
-      @if (!gogAuthenticated && !overview?.isInProgress) {
+      @if (!gogAuthenticated && !overview()?.isInProgress) {
         <app-button [action]="openGogModal"
                     buttonType="button" testId="show-gog-auth-modal-btn" buttonStyle="primary">
           Authenticate
         </app-button>
       }
 
-      @if (gogAuthenticated && !overview?.isInProgress) {
+      @if (gogAuthenticated && !overview()?.isInProgress) {
         <app-button [actionAsync]="onClickSignOutGog()" buttonStyle="danger" testId="log-out-gog-btn">
           Log out
         </app-button>
@@ -69,13 +69,13 @@
         <app-loading-placeholder [widths]="['20rem', '20rem', '20rem', '20rem', '20rem', '8rem']"/>
       </ng-container>
 
-      @if (!overview?.isInProgress) {
+      @if (!overview()?.isInProgress) {
         <app-named-value-container>
           <app-named-value>
             <ng-container name>Last successful discovery stopped at</ng-container>
             <ng-container value>
-              @if (overview?.lastDiscoveryResult) {
-                {{ overview?.lastDiscoveryResult?.lastSuccessfulDiscoveryCompletedAt | date:'dd.MM.yyyy HH:mm:ss' }}
+              @if (overview()?.lastDiscoveryResult) {
+                {{ overview()?.lastDiscoveryResult?.lastSuccessfulDiscoveryCompletedAt | date:'dd.MM.yyyy HH:mm:ss' }}
               } @else {
                 N/A
               }
@@ -84,8 +84,8 @@
           <app-named-value>
             <ng-container name>Last attempted discovery stopped at</ng-container>
             <ng-container value>
-              @if (overview?.lastDiscoveryResult) {
-                {{ overview?.lastDiscoveryResult?.stoppedAt | date:'dd.MM.yyyy HH:mm:ss' }}
+              @if (overview()?.lastDiscoveryResult) {
+                {{ overview()?.lastDiscoveryResult?.stoppedAt | date:'dd.MM.yyyy HH:mm:ss' }}
               } @else {
                 N/A
               }
@@ -94,14 +94,14 @@
           <app-named-value>
             <ng-container name>Last discovery outcome</ng-container>
             <ng-container value>
-              <app-game-content-discovery-outcome-badge [status]="overview?.lastDiscoveryResult?.discoveryOutcome"/>
+              <app-game-content-discovery-outcome-badge [status]="overview()?.lastDiscoveryResult?.discoveryOutcome"/>
             </ng-container>
           </app-named-value>
           <app-named-value>
             <ng-container name>Last games discovered</ng-container>
             <ng-container value>
-              @if (overview?.lastDiscoveryResult) {
-                {{ overview?.lastDiscoveryResult?.gamesDiscovered }}
+              @if (overview()?.lastDiscoveryResult) {
+                {{ overview()?.lastDiscoveryResult?.gamesDiscovered }}
               } @else {
                 N/A
               }
@@ -110,8 +110,8 @@
           <app-named-value>
             <ng-container name>Last game files discovered</ng-container>
             <ng-container value>
-              @if (overview?.lastDiscoveryResult) {
-                {{ overview?.lastDiscoveryResult?.gameFilesDiscovered }}
+              @if (overview()?.lastDiscoveryResult) {
+                {{ overview()?.lastDiscoveryResult?.gameFilesDiscovered }}
               } @else {
                 N/A
               }
@@ -119,25 +119,25 @@
           </app-named-value>
         </app-named-value-container>
       }
-      @if (overview?.isInProgress) {
+      @if (overview()?.isInProgress) {
         <app-named-value-container>
           <app-named-value>
             <ng-container name>Games discovered</ng-container>
             <ng-container value>
-              {{ overview?.progress?.gamesDiscovered }}
+              {{ overview()?.progress?.gamesDiscovered }}
             </ng-container>
           </app-named-value>
           <app-named-value>
             <ng-container name>Game files discovered</ng-container>
             <ng-container value>
-              {{ overview?.progress?.gameFilesDiscovered }}
+              {{ overview()?.progress?.gameFilesDiscovered }}
             </ng-container>
           </app-named-value>
           <app-named-value>
             <ng-container name>Time left</ng-container>
             <ng-container value>
               <ng-container>
-                {{ (overview?.progress?.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }}
+                {{ (overview()?.progress?.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }}
               </ng-container>
             </ng-container>
           </app-named-value>

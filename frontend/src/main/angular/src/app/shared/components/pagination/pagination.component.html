@@ -1,22 +1,23 @@
-@if (currentPage && (currentPage.totalElements ?? 0) > 0) {
-  <div class="pagination-container">
-    <div class="pagination-options">
-      <div class="elements-per-page">
-        <app-select [elements]="availablePageSizes" label="Rows per page" [(ngModel)]="pageSize"
-                    (ngModelChange)="onPageSizeChange($event)"/>
+@if (currentPage(); as page) {
+  @if ((page.totalElements ?? 0) > 0) {
+    <div class="pagination-container">
+      <div class="pagination-options">
+        <div class="elements-per-page">
+          <app-select [elements]="availablePageSizes()" label="Rows per page" [ngModel]="pageSize()"
+                      (ngModelChange)="onPageSizeChange($event)"/>
+        </div>
+        <div>
+          Showing {{ getFirstElementNumber() }}-{{ getLastElementNumber() }} of {{ getTotalElements() }}
+        </div>
       </div>
       <div>
-        Showing {{ getFirstElementNumber() }}-{{ getLastElementNumber() }} of {{ getTotalElements() }}
-      </div>
-    </div>
-    <div>
-      <ngb-pagination
-        [disabled]="disabled"
-        (pageChange)="onPageNumberChange($event)"
-        [collectionSize]="currentPage.totalElements!"
-        [(page)]="pageNumber"
-        [pageSize]="pageSize"
-        [boundaryLinks]="true">
+        <ngb-pagination
+          [disabled]="disabled()"
+          (pageChange)="onPageNumberChange($event)"
+          [collectionSize]="page.totalElements!"
+          [page]="pageNumber()"
+          [pageSize]="pageSize()"
+          [boundaryLinks]="true">
         <ng-template ngbPaginationPages let-page let-pages="pages">
           @if (pages.length > 0) {
             <li class="page-container"> <!--/* //NOSONAR */-->
@@ -30,7 +31,7 @@
                     inputmode="numeric"
                     pattern="[0-9]*"
                     class="form-control"
-                    [value]="pageNumber"
+                    [value]="pageNumber()"
                     (keyup.enter)="onPageNumberChange(Number(pageNumberInput.value))"
                     (blur)="onPageNumberChange(Number(pageNumberInput.value))"
                     (input)="restrictToNumbers($any($event).target)"
@@ -45,3 +46,4 @@
       </div>
     </div>
   }
+}

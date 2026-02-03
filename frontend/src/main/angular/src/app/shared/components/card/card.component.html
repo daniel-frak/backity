@@ -1,7 +1,7 @@
 <div class="card mt-3">
   <div class="card-body">
-    @if (cardTitle) {
-      <h2 class="card-title">{{ cardTitle }}</h2>
+    @if (cardTitle()) {
+      <h2 class="card-title">{{ cardTitle() }}</h2>
     }
     <ng-content/>
   </div>

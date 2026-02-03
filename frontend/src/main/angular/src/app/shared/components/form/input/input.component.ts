@@ -1,4 +1,4 @@
-import {Component, Input, Optional, Self} from '@angular/core';
+import {Component, Optional, Self, input, signal} from '@angular/core';
 import {NgClass} from "@angular/common";
 import {ControlValueAccessor, NgControl, ReactiveFormsModule} from "@angular/forms";
 
@@ -13,13 +13,13 @@ import {ControlValueAccessor, NgControl, ReactiveFormsModule} from "@angular/for
 })
 export class InputComponent implements ControlValueAccessor {
 
-  @Input() id?: string = undefined;
-  @Input() type: 'text' | 'email' | 'password' = 'text';
-  @Input() disabled: boolean = false;
-  @Input() placeholder?: string;
-  @Input() testId?: string;
-  @Input() floating?: boolean = true;
-  @Input() iconClass?: string;
+  readonly id = input<string>();
+  readonly type = input<'text' | 'email' | 'password'>('text');
+  readonly disabled = signal<boolean>(false);
+  readonly placeholder = input<string>();
+  readonly testId = input<string>();
+  readonly floating = input<boolean | undefined>(true);
+  readonly iconClass = input<string>();
 
   value: any;
 
@@ -54,6 +54,6 @@ export class InputComponent implements ControlValueAccessor {
   }
 
   setDisabledState?(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this.disabled.set(isDisabled);
   }
 }

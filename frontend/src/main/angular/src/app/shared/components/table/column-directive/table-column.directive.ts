@@ -1,4 +1,4 @@
-import {Directive, Input, TemplateRef} from '@angular/core';
+import {Directive, TemplateRef, input} from '@angular/core';
 
 @Directive({
   selector: '[app-table-column]',
@@ -9,16 +9,14 @@ export class TableColumnDirective {
   constructor(public readonly template: TemplateRef<any>) {
   }
 
-  @Input('app-table-column')
-  columnTitle?: string;
+  readonly columnTitle = input<string>(undefined, { alias: "app-table-column" });
 
   get hideTitleOnMobile(): boolean {
-    return !!this._hideTitleOnMobile || this._hideTitleOnMobile === '';
+    const _hideTitleOnMobile = this._hideTitleOnMobile();
+    return !!_hideTitleOnMobile || _hideTitleOnMobile === '';
   }
 
-  @Input('hide-title-on-mobile')
-  _hideTitleOnMobile?: string | boolean;
+  readonly _hideTitleOnMobile = input<string | boolean>(undefined, { alias: "hide-title-on-mobile" });
 
-  @Input('append-class')
-  class?: string;
+  readonly class = input<string>(undefined, { alias: "append-class" });
 }

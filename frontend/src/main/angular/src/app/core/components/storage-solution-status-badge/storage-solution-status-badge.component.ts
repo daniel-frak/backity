@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {StorageSolutionStatus} from "@backend";
 import {NgClass} from "@angular/common";
 
@@ -12,10 +12,10 @@ import {NgClass} from "@angular/common";
 })
 export class StorageSolutionStatusBadgeComponent {
 
-  @Input() status?: StorageSolutionStatus;
+  readonly status = input<StorageSolutionStatus>();
 
   getBadgeClass(): string {
-    switch (this.status) {
+    switch (this.status()) {
       case StorageSolutionStatus.Connected:
         return 'bg-secondary';
       case StorageSolutionStatus.NotConnected:

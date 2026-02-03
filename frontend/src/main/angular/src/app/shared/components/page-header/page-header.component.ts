@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit, input} from '@angular/core';
 import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -9,8 +9,7 @@ import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 })
 export class PageHeaderComponent implements OnInit {
 
-  @Input()
-  title: string = "No title";
+  readonly title = input<string>("No title");
 
   constructor() { }
 

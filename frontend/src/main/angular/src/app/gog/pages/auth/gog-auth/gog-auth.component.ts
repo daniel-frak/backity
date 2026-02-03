@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit, input} from '@angular/core';
 import {GameContentDiscoveryOverview, GOGAuthenticationClient, GogConfig, GOGConfigurationClient} from "@backend";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
@@ -45,11 +45,9 @@ export class GogAuthComponent implements OnInit {
   public gogAuthenticated: boolean = false;
   public gogIsLoading: boolean = true;
 
-  @Input()
-  externalDataIsLoading: boolean = false;
+  readonly externalDataIsLoading = input<boolean>(false);
 
-  @Input()
-  overview?: GameContentDiscoveryOverview;
+  readonly overview = input<GameContentDiscoveryOverview>();
 
   public openGogModal = () => this.showGogAuthModal();
 
@@ -76,7 +74,7 @@ export class GogAuthComponent implements OnInit {
   }
 
   isLoading(): boolean {
-    return this.gogIsLoading || this.externalDataIsLoading;
+    return this.gogIsLoading || this.externalDataIsLoading();
   }
 
   showGogAuthModal(): Promise<void> {

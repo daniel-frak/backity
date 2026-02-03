@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit, input} from '@angular/core';
 
 
 @Component({
@@ -9,8 +9,7 @@ import {Component, Input, OnInit} from '@angular/core';
 })
 export class LoadedContentComponent implements OnInit {
 
-  @Input()
-  isLoading: boolean = true;
+  readonly isLoading = input<boolean>(true);
 
   constructor() {
   }

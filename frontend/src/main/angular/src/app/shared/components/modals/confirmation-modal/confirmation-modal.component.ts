@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, model} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
@@ -12,7 +12,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 })
 export class ConfirmationModalComponent {
 
-  @Input() message: string = "Are you sure?";
+  readonly message = model<string>("Are you sure?");
 
   constructor(public readonly modal: NgbActiveModal) {
   }

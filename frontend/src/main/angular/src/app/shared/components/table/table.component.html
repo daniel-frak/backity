@@ -1,7 +1,7 @@
-<app-loaded-content [isLoading]="isLoading">
-  <table [attr.data-testid]="testId" class="table table-custom-responsive-lg-down">
-    @if (caption) {
-      <caption>{{ caption }}</caption>
+<app-loaded-content [isLoading]="isLoading()">
+  <table [attr.data-testid]="testId()" class="table table-custom-responsive-lg-down">
+    @if (caption()) {
+      <caption>{{ caption() }}</caption>
     }
     @if (templateRefs.length) {
       <thead>
@@ -14,8 +14,8 @@
         </tr>
       </thead>
     }
-    @if (groupedContent) {
-      @for (group of groupedContent; track group) {
+    @if (groupedContent()) {
+      @for (group of groupedContent(); track group) {
         <tbody>
           <tr class="caption">
             @if (group.caption) {
@@ -27,7 +27,7 @@
           @for (row of group.items; track row) {
             <tr>
               @for (columnContent of templateRefs; track columnContent; let i = $index) {
-                <td [attr.data-title]="columnContent.columnTitle"
+                <td [attr.data-title]="columnContent.columnTitle()"
                   [ngClass]="getTdClass(columnContent)">
                   <ng-container
                   *ngTemplateOutlet="columnContent.template; context: { $implicit: row, index: i }"></ng-container>
@@ -39,10 +39,10 @@
       }
     } @else {
       <tbody>
-        @for (row of content; track row) {
+        @for (row of content(); track row) {
           <tr>
             @for (columnContent of templateRefs; track columnContent; let i = $index) {
-              <td [attr.data-title]="columnContent.columnTitle"
+              <td [attr.data-title]="columnContent.columnTitle()"
                 [ngClass]="getTdClass(columnContent)">
                 <ng-container
                 *ngTemplateOutlet="columnContent.template; context: { $implicit: row, index: i }"></ng-container>

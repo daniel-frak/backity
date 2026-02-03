@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TableComponent} from './table.component';
-import {Component, Input, QueryList, ViewChild} from "@angular/core";
+import {Component, QueryList, ViewChild} from "@angular/core";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
 import {By} from "@angular/platform-browser";
 import {TableContentGroup} from "@app/shared/components/table/table-content-group";
@@ -32,14 +32,11 @@ class TableComponentWrapper {
   @ViewChild(TableComponent)
   tableComponent: TableComponent = new TableComponent();
 
-  @Input()
-  isLoading?: boolean;
+  standardContent: any[] | undefined;
 
-  @Input()
-  standardContent?: any[];
+  groupedContent: TableContentGroup[] | undefined;
 
-  @Input()
-  groupedContent?: TableContentGroup[];
+  isLoading: boolean | undefined;
 }
 
 describe('TableComponent', () => {

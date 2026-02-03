@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {GameContentDiscoveryOverview} from "@backend";
 
 @Component({
@@ -8,9 +8,7 @@ import {GameContentDiscoveryOverview} from "@backend";
 })
 export class GogAuthComponentStub {
 
-  @Input()
-  externalDataIsLoading: boolean = false;
+  readonly externalDataIsLoading = input<boolean>(false);
 
-  @Input()
-  overview?: GameContentDiscoveryOverview;
+  readonly overview = input<GameContentDiscoveryOverview>();
 }

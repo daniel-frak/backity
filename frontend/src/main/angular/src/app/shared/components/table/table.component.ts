@@ -1,4 +1,4 @@
-import { Component, ContentChildren, Input, OnInit, QueryList } from '@angular/core';
+import { Component, ContentChildren, OnInit, QueryList, input } from '@angular/core';
 import { TableColumnDirective } from "@app/shared/components/table/column-directive/table-column.directive";
 import { LoadedContentComponent } from '../loaded-content/loaded-content.component';
 import { NgClass, NgTemplateOutlet } from '@angular/common';
@@ -15,20 +15,15 @@ export class TableComponent implements OnInit {
   @ContentChildren(TableColumnDirective, { descendants: false })
   templateRefs!: QueryList<TableColumnDirective>;
 
-  @Input()
-  testId?: string;
+  readonly testId = input<string>();
 
-  @Input()
-  content?: any[];
+  readonly content = input<any[]>();
 
-  @Input()
-  groupedContent?: TableContentGroup[];
+  readonly groupedContent = input<TableContentGroup[]>();
 
-  @Input()
-  caption: string | undefined;
+  readonly caption = input<string>();
 
-  @Input()
-  isLoading: boolean = false;
+  readonly isLoading = input<boolean>(false);
 
   constructor() { }
 
@@ -38,7 +33,7 @@ export class TableComponent implements OnInit {
 
   getColumnTitles(): string[] {
     const columns: string[] = [];
-    this.templateRefs.forEach(t => columns.push(t.columnTitle as string));
+    this.templateRefs.forEach(t => columns.push(t.columnTitle() as string));
 
     return columns;
   }
@@ -50,8 +45,9 @@ export class TableComponent implements OnInit {
       classes.push('hide-title')
     }
 
-    if (column.class) {
-      classes.push(column.class);
+    const columnClass = column.class();
+    if (columnClass) {
+      classes.push(columnClass);
     }
 
     return classes.join(" ");

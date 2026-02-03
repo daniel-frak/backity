@@ -34,17 +34,17 @@ describe('PaginationComponent', () => {
     router = TestBed.inject(Router) as SpyObj<Router>;
     activatedRoute = TestBed.inject(ActivatedRoute);
 
-    component.currentPage = {
+    fixture.componentRef.setInput('currentPage', {
       totalElements: 100,
       content: Array(10),
       pagination: {
         page: 1,
         size: 1
       },
-    };
-    component.pageSize = 10;
-    component.pageNumber = 1;
-    component.availablePageSizes = [5, 10, 15];
+    });
+    fixture.componentRef.setInput('pageSize', 10);
+    fixture.componentRef.setInput('pageNumber', 1);
+    fixture.componentRef.setInput('availablePageSizes', [5, 10, 15]);
   });
 
   it('should create the component', () => {
@@ -61,130 +61,133 @@ describe('PaginationComponent', () => {
   });
 
   it('should return 1 as the first element number on the first page', () => {
-    component.pageNumber = 1;
-    component.pageSize = 10;
+    fixture.componentRef.setInput('pageNumber', 1);
+    fixture.componentRef.setInput('pageSize', 10);
 
     expect(component.getFirstElementNumber()).toBe(1);
   });
 
   it('should return the correct first element number for a middle page', () => {
-    component.pageNumber = 3;
-    component.pageSize = 10;
+    fixture.componentRef.setInput('pageNumber', 3);
+    fixture.componentRef.setInput('pageSize', 10);
 
     expect(component.getFirstElementNumber()).toBe(21);
   });
 
   it('should return the correct last element number for a full page', () => {
-    component.pageNumber = 1;
-    component.pageSize = 10;
-    component.currentPage = {
+    fixture.componentRef.setInput('pageNumber', 1);
+    fixture.componentRef.setInput('pageSize', 10);
+    fixture.componentRef.setInput('currentPage', {
       totalElements: 100,
       pagination: {
         page: 1,
         size: 1
       },
       content: Array(10),
-    };
+    });
 
     expect(component.getLastElementNumber()).toBe(10);
   });
 
   it('should return the correct last element number for a partially filled page', () => {
-    component.pageNumber = 10;
-    component.pageSize = 10;
-    component.currentPage = {
+    fixture.componentRef.setInput('pageNumber', 10);
+    fixture.componentRef.setInput('pageSize', 10);
+    fixture.componentRef.setInput('currentPage', {
       totalElements: 95,
       pagination: {
         page: 1,
         size: 1
       },
       content: Array(5),
-    };
+    });
 
     expect(component.getLastElementNumber()).toBe(95);
   });
 
   it('should return the first element number as the last element number for an empty page', () => {
-    component.pageNumber = 2;
-    component.pageSize = 10;
-    component.currentPage = {
+    fixture.componentRef.setInput('pageNumber', 2);
+    fixture.componentRef.setInput('pageSize', 10);
+    fixture.componentRef.setInput('currentPage', {
       totalElements: 20,
       pagination: {
         page: 1,
         size: 1
       },
       content: [],
-    };
+    });
 
     expect(component.getLastElementNumber()).toBe(11);
   });
 
   it('should return the first element number as the last element number if the page is undefined', () => {
-    component.pageNumber = 2;
-    component.pageSize = 10;
-    component.currentPage = undefined;
+    fixture.componentRef.setInput('pageNumber', 2);
+    fixture.componentRef.setInput('pageSize', 10);
+    fixture.componentRef.setInput('currentPage', undefined);
 
     expect(component.getLastElementNumber()).toBe(11);
   });
 
   it('should return the correct total elements count when available', () => {
-    component.pageNumber = 2;
-    component.pageSize = 10;
-    component.currentPage = {
+    fixture.componentRef.setInput('pageNumber', 2);
+    fixture.componentRef.setInput('pageSize', 10);
+    fixture.componentRef.setInput('currentPage', {
       totalElements: 150,
       pagination: {
         page: 1,
         size: 1
       },
       content: Array(10),
-    };
+    });
     expect(component.getTotalElements()).toBe(150);
   });
 
   it('should return 0 as the total elements count if totalElements is undefined', () => {
-    component.currentPage = {
+    fixture.componentRef.setInput('currentPage', {
       totalElements: undefined,
       pagination: {
         page: 1,
         size: 1
       },
       content: Array(10),
-    };
+    });
 
     expect(component.getTotalElements()).toBe(0);
   });
 
   it('should emit page number change and onPageChange when onPageNumberChange is called' +
     ' with page number different than current', () => {
-    spyOn(component.pageNumberChange, 'emit');
+    const pageNumberChangeSpy = jasmine.createSpy('pageNumberChange');
+    fixture.componentRef.instance.pageNumber.subscribe(pageNumberChangeSpy);
     spyOn(component.onPageChange, 'emit');
-    const newPageNumber = component.pageNumber + 1;
+    const newPageNumber = component.pageNumber() + 1;
 
     component.onPageNumberChange(newPageNumber);
 
-    expect(component.pageNumberChange.emit).toHaveBeenCalledWith(newPageNumber);
+    expect(pageNumberChangeSpy).toHaveBeenCalledWith(newPageNumber);
     expect(component.onPageChange.emit).toHaveBeenCalled();
   });
 
   it('should do nothing when onPageNumberChange is called with page number same as current', () => {
-    spyOn(component.pageNumberChange, 'emit');
+    const pageNumberChangeSpy = jasmine.createSpy('pageNumberChange');
+    fixture.componentRef.instance.pageNumber.subscribe(pageNumberChangeSpy);
     spyOn(component.onPageChange, 'emit');
-    const newPageNumber = component.pageNumber;
+    const newPageNumber = component.pageNumber();
 
     component.onPageNumberChange(newPageNumber);
 
-    expect(component.pageNumberChange.emit).not.toHaveBeenCalled();
+    expect(pageNumberChangeSpy).not.toHaveBeenCalled();
     expect(component.onPageChange.emit).not.toHaveBeenCalled();
   });
 
   it('should call onPageSizeChange and onPageChange when page size is changed', () => {
-    spyOn(component.pageSizeChange, 'emit');
+    const pageSizeChangeSpy = jasmine.createSpy('pageSizeChange');
+    fixture.componentRef.instance.pageSize.subscribe(pageSizeChangeSpy);
     spyOn(component.onPageChange, 'emit');
     const newPageSize = 20;
 
     component.onPageSizeChange(newPageSize);
 
-    expect(component.pageSizeChange.emit).toHaveBeenCalledWith(newPageSize);
+    expect(pageSizeChangeSpy).toHaveBeenCalledWith(newPageSize);
     expect(component.onPageChange.emit).toHaveBeenCalled();
   });
 
@@ -195,7 +198,7 @@ describe('PaginationComponent', () => {
   });
 
   it('should disable NgbPagination when disabled input is true', () => {
-    component.disabled = true;
+    fixture.componentRef.setInput('disabled', true);
     fixture.detectChanges();
 
     const pagination: DebugElement = fixture.debugElement.query(By.directive(NgbPagination));
@@ -223,14 +226,16 @@ describe('PaginationComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
 
-    expect(component.pageNumber).toBe(2);
-    expect(component.pageSize).toBe(15);
+    expect(component.pageNumber()).toBe(2);
+    expect(component.pageSize()).toBe(15);
   });
 
   it('should emit pageNumberChange, pageSizeChange, and onPageChange when query params are read',
     async () => {
-      spyOn(component.pageNumberChange, 'emit');
-      spyOn(component.pageSizeChange, 'emit');
+      const pageNumberChangeSpy = jasmine.createSpy('pageNumberChange');
+      fixture.componentRef.instance.pageNumber.subscribe(pageNumberChangeSpy);
+      const pageSizeChangeSpy = jasmine.createSpy('pageSizeChange');
+      fixture.componentRef.instance.pageSize.subscribe(pageSizeChangeSpy);
       spyOn(component.onPageChange, 'emit');
       activatedRoute.queryParams = of({
         page: '2',
@@ -240,8 +245,8 @@ describe('PaginationComponent', () => {
       component.ngOnInit();
       await fixture.whenStable();
 
-      expect(component.pageNumberChange.emit).toHaveBeenCalledWith(2);
-      expect(component.pageSizeChange.emit).toHaveBeenCalledWith(15);
+      expect(pageNumberChangeSpy).toHaveBeenCalledWith(2);
+      expect(pageSizeChangeSpy).toHaveBeenCalledWith(15);
       expect(component.onPageChange.emit).toHaveBeenCalled();
     });
 
@@ -266,13 +271,14 @@ describe('PaginationComponent', () => {
   });
 
   it('should do nothing given pageNumber is zero when onPageNumberChange is called', () => {
-    spyOn(component.pageNumberChange, 'emit');
+    const pageNumberChangeSpy = jasmine.createSpy('pageNumberChange');
+    fixture.componentRef.instance.pageNumber.subscribe(pageNumberChangeSpy);
     spyOn(component.onPageChange, 'emit');
 
     component.onPageNumberChange(0);
 
-    expect(component.pageNumber).toBe(1);
-    expect(component.pageNumberChange.emit).not.toHaveBeenCalled();
+    expect(component.pageNumber()).toBe(1);
+    expect(pageNumberChangeSpy).not.toHaveBeenCalled();
     expect(component.onPageChange.emit).not.toHaveBeenCalled();
     expect(router.navigate).not.toHaveBeenCalled();
   });

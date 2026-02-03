@@ -22,7 +22,7 @@ describe('LoadingPlaceholderComponent', () => {
   });
 
   it('should handle duplicate widths', () => {
-    component.widths = ['20rem', '20rem', '20rem'];
+    fixture.componentRef.setInput('widths', ['20rem', '20rem', '20rem']);
     fixture.detectChanges();
     const placeholders = fixture.nativeElement.querySelectorAll('.placeholder');
     expect(placeholders.length).toBe(3);

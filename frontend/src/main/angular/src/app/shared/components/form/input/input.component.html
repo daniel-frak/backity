@@ -1,15 +1,15 @@
 <div
   class="form-input-wrapper"
-  [class.form-floating]="floating"
-  [class.input-icon-wrapper]="!!iconClass">
-  @if (iconClass) {
-    <i class="input-icon" [ngClass]="iconClass" aria-hidden="true"></i>
+  [class.form-floating]="floating()"
+  [class.input-icon-wrapper]="!!iconClass()">
+  @if (iconClass()) {
+    <i class="input-icon" [ngClass]="iconClass()" aria-hidden="true"></i>
   }
-  <input [attr.data-testid]="testId"
-         [type]="type"
-         [id]="id"
-         [placeholder]="placeholder"
-         [disabled]="disabled"
+  <input [attr.data-testid]="testId()"
+         [type]="type()"
+         [id]="id()"
+         [placeholder]="placeholder()"
+         [disabled]="disabled()"
          (blur)="onTouched()"
          [value]="value"
          (input)="onInput($event)"
@@ -17,8 +17,8 @@
          'form-control': true,
          'is-invalid': ngControl.invalid && (ngControl.dirty || !ngControl.untouched)
          }">
-  @if (floating) {
-    <label [for]="id"><!--/* //NOSONAR */-->
+  @if (floating()) {
+    <label [for]="id()"><!--/* //NOSONAR */-->
       <ng-content/>
     </label>
   }

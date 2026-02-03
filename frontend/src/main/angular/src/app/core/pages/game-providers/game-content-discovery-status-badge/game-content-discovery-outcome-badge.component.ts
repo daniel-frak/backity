@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {GameContentDiscoveryOutcome} from "@backend";
 
@@ -11,6 +11,5 @@ import {GameContentDiscoveryOutcome} from "@backend";
 })
 export class GameContentDiscoveryOutcomeBadgeComponent {
 
-  @Input()
-  public status: GameContentDiscoveryOutcome | undefined = undefined;
+  public readonly status = input<GameContentDiscoveryOutcome>();
 }

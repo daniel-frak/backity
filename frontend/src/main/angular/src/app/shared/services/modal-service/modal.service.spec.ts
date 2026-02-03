@@ -37,14 +37,23 @@ describe('ModalService', () => {
     await service.withConfirmationModal('Test message', callback);
 
     expect(modalService.open).toHaveBeenCalledWith(ConfirmationModalComponent);
-    expect((mockModalRef.componentInstance as ConfirmationModalComponent).message).toBe('Test message');
+    expect((mockModalRef.componentInstance as any).message.val).toBe('Test message');
   });
 
   function mockNgbModalConfirmationAfterOpening(): NgbModalRef {
+    const mockMessage = {
+      set: createSpy('set').and.callFake(function(val: any) {
+        mockMessage.val = val;
+      }),
+      val: 'Are you sure?'
+    };
     const mockModalRef = {
-      componentInstance: {},
+      componentInstance: {
+        message: mockMessage
+      },
       result: Promise.resolve(true)
-    } as NgbModalRef;
+    } as any;
+
     modalService.open.and.returnValue(mockModalRef);
 
     return mockModalRef;
@@ -70,9 +79,13 @@ describe('ModalService', () => {
 
   function mockNgbModalCancellationAfterOpening(): NgbModalRef {
     const mockModalRef = {
-      componentInstance: {},
+      componentInstance: {
+        message: {
+          set: createSpy('set')
+        }
+      },
       result: Promise.resolve(false)
-    } as NgbModalRef;
+    } as any;
     modalService.open.and.returnValue(mockModalRef);
 
     return mockModalRef;
@@ -89,9 +102,13 @@ describe('ModalService', () => {
 
   function mockNgbModalDismissalAfterOpening(): NgbModalRef {
     const mockModalRef = {
-      componentInstance: {},
+      componentInstance: {
+        message: {
+          set: createSpy('set')
+        }
+      },
       result: Promise.reject('dismiss')
-    } as NgbModalRef;
+    } as any;
     modalService.open.and.returnValue(mockModalRef);
 
     return mockModalRef;
