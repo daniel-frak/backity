@@ -158,37 +158,37 @@ describe('PaginationComponent', () => {
     ' with page number different than current', () => {
     const pageNumberChangeSpy = jasmine.createSpy('pageNumberChange');
     fixture.componentRef.instance.pageNumber.subscribe(pageNumberChangeSpy);
-    spyOn(component.onPageChange, 'emit');
+    spyOn(component.pageChanged, 'emit');
     const newPageNumber = component.pageNumber() + 1;
 
     component.onPageNumberChange(newPageNumber);
 
     expect(pageNumberChangeSpy).toHaveBeenCalledWith(newPageNumber);
-    expect(component.onPageChange.emit).toHaveBeenCalled();
+    expect(component.pageChanged.emit).toHaveBeenCalled();
   });
 
   it('should do nothing when onPageNumberChange is called with page number same as current', () => {
     const pageNumberChangeSpy = jasmine.createSpy('pageNumberChange');
     fixture.componentRef.instance.pageNumber.subscribe(pageNumberChangeSpy);
-    spyOn(component.onPageChange, 'emit');
+    spyOn(component.pageChanged, 'emit');
     const newPageNumber = component.pageNumber();
 
     component.onPageNumberChange(newPageNumber);
 
     expect(pageNumberChangeSpy).not.toHaveBeenCalled();
-    expect(component.onPageChange.emit).not.toHaveBeenCalled();
+    expect(component.pageChanged.emit).not.toHaveBeenCalled();
   });
 
   it('should call onPageSizeChange and onPageChange when page size is changed', () => {
     const pageSizeChangeSpy = jasmine.createSpy('pageSizeChange');
     fixture.componentRef.instance.pageSize.subscribe(pageSizeChangeSpy);
-    spyOn(component.onPageChange, 'emit');
+    spyOn(component.pageChanged, 'emit');
     const newPageSize = 20;
 
     component.onPageSizeChange(newPageSize);
 
     expect(pageSizeChangeSpy).toHaveBeenCalledWith(newPageSize);
-    expect(component.onPageChange.emit).toHaveBeenCalled();
+    expect(component.pageChanged.emit).toHaveBeenCalled();
   });
 
   it('should render pagination options', () => {
@@ -236,7 +236,7 @@ describe('PaginationComponent', () => {
       fixture.componentRef.instance.pageNumber.subscribe(pageNumberChangeSpy);
       const pageSizeChangeSpy = jasmine.createSpy('pageSizeChange');
       fixture.componentRef.instance.pageSize.subscribe(pageSizeChangeSpy);
-      spyOn(component.onPageChange, 'emit');
+      spyOn(component.pageChanged, 'emit');
       activatedRoute.queryParams = of({
         page: '2',
         'page-size': '15',
@@ -247,7 +247,7 @@ describe('PaginationComponent', () => {
 
       expect(pageNumberChangeSpy).toHaveBeenCalledWith(2);
       expect(pageSizeChangeSpy).toHaveBeenCalledWith(15);
-      expect(component.onPageChange.emit).toHaveBeenCalled();
+      expect(component.pageChanged.emit).toHaveBeenCalled();
     });
 
   it('should update URL query parameters when onPageNumberChange is called', () => {
@@ -273,13 +273,13 @@ describe('PaginationComponent', () => {
   it('should do nothing given pageNumber is zero when onPageNumberChange is called', () => {
     const pageNumberChangeSpy = jasmine.createSpy('pageNumberChange');
     fixture.componentRef.instance.pageNumber.subscribe(pageNumberChangeSpy);
-    spyOn(component.onPageChange, 'emit');
+    spyOn(component.pageChanged, 'emit');
 
     component.onPageNumberChange(0);
 
     expect(component.pageNumber()).toBe(1);
     expect(pageNumberChangeSpy).not.toHaveBeenCalled();
-    expect(component.onPageChange.emit).not.toHaveBeenCalled();
+    expect(component.pageChanged.emit).not.toHaveBeenCalled();
     expect(router.navigate).not.toHaveBeenCalled();
   });
 

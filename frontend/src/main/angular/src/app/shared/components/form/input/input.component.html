@@ -13,38 +13,35 @@
          (blur)="onTouched()"
          [value]="value"
          (input)="onInput($event)"
+         [attr.aria-invalid]="ngControl?.invalid && (ngControl?.dirty || !ngControl?.untouched)"
+         [attr.aria-describedby]="(ngControl?.invalid && (ngControl?.dirty || !ngControl?.untouched)) ? id() + '-error' : null"
          [ngClass]="{
          'form-control': true,
-         'is-invalid': ngControl.invalid && (ngControl.dirty || !ngControl.untouched)
+         'is-invalid': ngControl?.invalid && (ngControl?.dirty || !ngControl?.untouched)
          }">
   @if (floating()) {
     <label [for]="id()"><!--/* //NOSONAR */-->
       <ng-content/>
     </label>
   }
-  @if (ngControl.errors?.['required']) {
-    <div class="invalid-feedback">
-      Must not be empty
-    </div>
-  }
-  @if (ngControl.errors?.['email']) {
-    <div class="invalid-feedback">
-      Please enter a valid email address
-    </div>
-  }
-  @if (ngControl.errors?.['minlength']) {
-    <div class="invalid-feedback">
-      Minimum length is {{ ngControl.errors?.['minlength'].requiredLength }} characters
-    </div>
-  }
-  @if (ngControl.errors?.['maxlength']) {
-    <div class="invalid-feedback">
-      Maximum length is {{ ngControl.errors?.['maxlength'].requiredLength }} characters
-    </div>
-  }
-  @if (ngControl.errors?.['pattern']) {
-    <div class="invalid-feedback">
-      Invalid format
+
+  @if (ngControl?.invalid && (ngControl?.dirty || !ngControl?.untouched)) {
+    <div [id]="id() + '-error'" class="invalid-feedback" aria-live="polite">
+      @if (ngControl?.errors?.['required']) {
+        <div>Must not be empty</div>
+      }
+      @if (ngControl?.errors?.['email']) {
+        <div>Please enter a valid email address</div>
+      }
+      @if (ngControl?.errors?.['minlength']) {
+        <div>Minimum length is {{ ngControl?.errors?.['minlength'].requiredLength }} characters</div>
+      }
+      @if (ngControl?.errors?.['maxlength']) {
+        <div>Maximum length is {{ ngControl?.errors?.['maxlength'].requiredLength }} characters</div>
+      }
+      @if (ngControl?.errors?.['pattern']) {
+        <div>Invalid format</div>
+      }
     </div>
   }
 </div>

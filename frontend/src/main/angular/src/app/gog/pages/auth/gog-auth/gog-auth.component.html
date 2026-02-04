@@ -136,9 +136,12 @@
           <app-named-value>
             <ng-container name>Time left</ng-container>
             <ng-container value>
-              <ng-container>
-                {{ (overview()?.progress?.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }}
-              </ng-container>
+              @if (overview()?.progress?.timeLeftSeconds !== undefined
+              && overview()?.progress?.timeLeftSeconds !== null) {
+                {{ (overview()?.progress!.timeLeftSeconds * 1000) | date:'H:mm:ss':'UTC' }}
+              } @else {
+                N/A
+              }
             </ng-container>
           </app-named-value>
         </app-named-value-container>

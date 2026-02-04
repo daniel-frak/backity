@@ -1,6 +1,6 @@
 import {Component, OnInit, signal} from '@angular/core';
 import {LogCreatedEvent, LogsClient, LogsMessageTopics} from "@backend";
-import {MessagesService} from "@app/shared/backend/services/messages.service";
+import {MessageService} from "@app/shared/backend/services/message.service";
 import {PageHeaderComponent} from '@app/shared/components/page-header/page-header.component';
 
 import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
@@ -18,8 +18,8 @@ export class LogsComponent implements OnInit {
   logs = signal<string[]>([]);
   public logsAreLoading = signal(true);
 
-  constructor(private readonly logsClient: LogsClient, private readonly messageService: MessagesService) {
-    this.messageService.watchJson<LogCreatedEvent>(LogsMessageTopics.TopicLogs)
+  constructor(private readonly logsClient: LogsClient, private readonly messageService: MessageService) {
+    this.messageService.watch<LogCreatedEvent>(LogsMessageTopics.TopicLogs)
       .pipe(takeUntilDestroyed())
       .subscribe(event => this.onLogReceived(event));
   }

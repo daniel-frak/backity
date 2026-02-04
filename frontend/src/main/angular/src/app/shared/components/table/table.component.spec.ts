@@ -11,15 +11,15 @@ import {TableContentGroup} from "@app/shared/components/table/table-content-grou
     <app-table id="standard-table" [testId]="'someTestId1'" [isLoading]="isLoading || false"
                [content]="standardContent" caption="Test table 1">
       <ng-template app-table-column="Test column 1-1" let-item>Col1-1: {{ item }}</ng-template>
-      <ng-template app-table-column="Test column 1-2" hide-title-on-mobile let-item>Col1-2: {{ item }}</ng-template>
-      <ng-template app-table-column="Test column 1-3" append-class="custom-class" let-item>Col1-3: {{ item }}
+      <ng-template app-table-column="Test column 1-2" hideTitleOnMobile let-item>Col1-2: {{ item }}</ng-template>
+      <ng-template app-table-column="Test column 1-3" appendClass="custom-class" let-item>Col1-3: {{ item }}
       </ng-template>
     </app-table>
     <app-table id="grouped-table" [testId]="'someTestId2'" [isLoading]="isLoading || false"
                [groupedContent]="groupedContent" caption="Test table 2">
       <ng-template app-table-column="Test column 2-1" let-item>Col2-1: {{ item }}</ng-template>
-      <ng-template app-table-column="Test column 2-2" hide-title-on-mobile let-item>Col2-2: {{ item }}</ng-template>
-      <ng-template app-table-column="Test column 2-3" append-class="custom-class" let-item>Col2-3: {{ item }}
+      <ng-template app-table-column="Test column 2-2" hideTitleOnMobile let-item>Col2-2: {{ item }}</ng-template>
+      <ng-template app-table-column="Test column 2-3" appendClass="custom-class" let-item>Col2-3: {{ item }}
       </ng-template>
     </app-table>
   `,
@@ -99,7 +99,7 @@ describe('TableComponent', () => {
     expect(fixture.nativeElement.textContent).not.toContain("Test table 2");
   });
 
-  it('should add class to row if hide-title-on-mobile is used', () => {
+  it('should add class to row if hideTitleOnMobile is used', () => {
     fixture.componentInstance.standardContent = ["testContent"];
     fixture.componentInstance.groupedContent = [{
       caption: 'Test grouped element',

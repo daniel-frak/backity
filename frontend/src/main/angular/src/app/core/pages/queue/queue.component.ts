@@ -11,7 +11,7 @@ import {
   StorageSolutionStatusesResponse
 } from "@backend";
 import {firstValueFrom} from "rxjs";
-import {MessagesService} from "@app/shared/backend/services/messages.service";
+import {MessageService} from "@app/shared/backend/services/message.service";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {PageHeaderComponent} from "@app/shared/components/page-header/page-header.component";
 import {SectionComponent} from "@app/shared/components/section/section.component";
@@ -71,12 +71,12 @@ export class QueueComponent implements OnInit {
 
   constructor(private readonly fileCopiesClient: FileCopiesClient,
               private readonly storageSolutionsClient: StorageSolutionsClient,
-              private readonly messageService: MessagesService,
+              private readonly messageService: MessageService,
               private readonly notificationService: NotificationService) {
-    this.messageService.watchJson<FileCopyStatusChangedEvent>(FileBackupMessageTopics.TopicBackupsStatusChanged)
+    this.messageService.watch<FileCopyStatusChangedEvent>(FileBackupMessageTopics.TopicBackupsStatusChanged)
       .pipe(takeUntilDestroyed())
       .subscribe(event => this.onStatusChanged(event));
-    this.messageService.watchJson<FileCopyReplicationProgressUpdatedEvent>(FileBackupMessageTopics.TopicBackupsProgressUpdate)
+    this.messageService.watch<FileCopyReplicationProgressUpdatedEvent>(FileBackupMessageTopics.TopicBackupsProgressUpdate)
       .pipe(takeUntilDestroyed())
       .subscribe(event => this.onReplicationProgressChanged(event));
   }

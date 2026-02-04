@@ -1,25 +1,20 @@
-import {Component, OnInit, input} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {FileCopyStatus} from "@backend";
 import {CommonModule} from '@angular/common';
 
 @Component({
-    selector: 'app-file-copy-status-badge',
-    templateUrl: './file-copy-status-badge.component.html',
-    styleUrls: ['./file-copy-status-badge.component.scss'],
-    imports: [CommonModule]
+  selector: 'app-file-copy-status-badge',
+  templateUrl: './file-copy-status-badge.component.html',
+  styleUrls: ['./file-copy-status-badge.component.scss'],
+  imports: [CommonModule]
 })
-export class FileCopyStatusBadgeComponent implements OnInit {
+export class FileCopyStatusBadgeComponent {
 
   public readonly status = input<FileCopyStatus>();
+  public readonly FileCopyStatus = FileCopyStatus;
 
   constructor() {
   }
-
-  ngOnInit(): void {
-    // Nothing to initialize
-  }
-
-  public readonly FileCopyStatus = FileCopyStatus;
 
   getBadgeClass() {
     switch (this.status()) {

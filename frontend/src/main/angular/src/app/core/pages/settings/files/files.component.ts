@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-files',
@@ -6,12 +6,8 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./files.component.scss'],
   standalone: true
 })
-export class FilesComponent implements OnInit {
+export class FilesComponent {
 
   constructor() {
-  }
-
-  ngOnInit(): void {
-    // Nothing to initialize
   }
 }

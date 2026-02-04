@@ -13,7 +13,7 @@ import {ButtonSize} from "@app/shared/components/button/button-size";
 })
 export class ButtonComponent {
 
-  readonly isLoading = model(false, {alias: 'isLoading'});
+  readonly isLoading = model(false);
   readonly buttonStyle = input<ButtonStyle>("primary");
   readonly outline = input(false);
   readonly buttonType = input("button");

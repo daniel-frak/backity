@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output, model, input} from '@angular/core';
+import {Component, EventEmitter, input, model, OnInit, Output} from '@angular/core';
 import {NgbPagination, NgbPaginationPages} from "@ng-bootstrap/ng-bootstrap";
 import {Page} from "@app/shared/components/table/page";
 
@@ -10,34 +10,31 @@ const NOT_NUMBERS_REGEX = /\D/g;
 const LEADING_ZEROES_REGEX = /^0+/;
 
 @Component({
-    selector: 'app-pagination',
+  selector: 'app-pagination',
   imports: [
     NgbPagination,
     FormsModule,
     NgbPaginationPages,
     SelectComponent
   ],
-    templateUrl: './pagination.component.html',
-    styleUrl: './pagination.component.scss'
+  templateUrl: './pagination.component.html',
+  styleUrl: './pagination.component.scss'
 })
 export class PaginationComponent<T> implements OnInit {
 
   readonly currentPage = input<Page<T>>();
-
-  readonly pageNumber = model<number>(0, {alias: 'pageNumber'});
-
-  readonly pageSize = model<number>(10, {alias: 'pageSize'});
-
+  readonly pageNumber = model<number>(0);
+  readonly pageSize = model<number>(10);
   readonly disabled = input(false);
 
   @Output()
-  onPageChange: EventEmitter<void> = new EventEmitter();
+  pageChanged: EventEmitter<void> = new EventEmitter();
 
   readonly availablePageSizes = input<number[]>([2, 3, 5, 10, 20]);
-
   readonly pageNumberQueryParamName = input<string>('page');
-
   readonly pageSizeQueryParamName = input<string>('page-size');
+
+  protected readonly Number = Number;
 
   constructor(private readonly activatedRoute: ActivatedRoute,
               private readonly router: Router) {
@@ -57,7 +54,7 @@ export class PaginationComponent<T> implements OnInit {
         if (params[this.pageSizeQueryParamName()]) {
           this.pageSize.set(Number.parseInt(params[this.pageSizeQueryParamName()]));
         }
-        this.onPageChange.emit();
+        this.pageChanged.emit();
       });
     });
   }
@@ -68,24 +65,16 @@ export class PaginationComponent<T> implements OnInit {
     }
     if (this.pageNumber() != pageNumber) {
       this.pageNumber.set(pageNumber);
-      this.onPageChange.emit();
+      this.pageChanged.emit();
       this.updateUrlQueryParams({
         [this.pageNumberQueryParamName()]: pageNumber,
       });
     }
   }
 
-  private updateUrlQueryParams(queryParams: any) {
-    this.router.navigate([], {
-      relativeTo: this.activatedRoute,
-      queryParams: queryParams,
-      queryParamsHandling: 'merge',
-    });
-  }
-
   onPageSizeChange(pageSize: number) {
     this.pageSize.set(pageSize);
-    this.onPageChange.emit();
+    this.pageChanged.emit();
     this.updateUrlQueryParams({
       [this.pageSizeQueryParamName()]: pageSize,
     });
@@ -103,5 +92,11 @@ export class PaginationComponent<T> implements OnInit {
     return this.currentPage()?.totalElements ?? 0;
   }
 
-  protected readonly Number = Number;
+  private updateUrlQueryParams(queryParams: any) {
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: queryParams,
+      queryParamsHandling: 'merge',
+    });
+  }
 }

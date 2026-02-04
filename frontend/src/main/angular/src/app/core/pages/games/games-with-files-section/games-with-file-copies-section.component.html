@@ -58,10 +58,9 @@
                     </app-named-value-container>
                   </ng-container>
                   <ng-container details>
-                    @for (potentialFileCopyWithContext
-                      of potentialFileCopiesWithContextByGameFileId().get(gameFileWithCopies.gameFile.id)!;
-                      track trackByFileCopyNaturalId($index, potentialFileCopyWithContext
-                      )) {
+                    @for (backupTarget of backupTargets(); track backupTarget.id) {
+                      @let potentialFileCopyWithContext =
+                        getPotentialFileCopyWithContext(gameFileWithCopies.gameFile.id, backupTarget.id)!;
                       <app-icon-item iconClass="bi bi-copy" size="sm" data-testid="file-copy-item">
                         <ng-container title>
                           {{ potentialFileCopyWithContext.backupTarget.name }}

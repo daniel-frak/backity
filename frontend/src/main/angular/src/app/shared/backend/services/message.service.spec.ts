@@ -1,13 +1,13 @@
 import {TestBed} from '@angular/core/testing';
 
 import {of} from "rxjs";
-import {MessagesService} from './messages.service';
+import {MessageService} from './message.service';
 import {Client} from "@stomp/stompjs";
 import {RxStompService} from "@app/shared/backend/services/rx-stomp/rx-stomp.service";
 import createSpyObj = jasmine.createSpyObj;
 
-describe('MessagesService', () => {
-  let service: MessagesService;
+describe('MessageService', () => {
+  let service: MessageService;
   let rxStompService: any;
 
   beforeEach(() => {
@@ -20,7 +20,7 @@ describe('MessagesService', () => {
       ]
     });
 
-    service = TestBed.inject(MessagesService);
+    service = TestBed.inject(MessageService);
     rxStompService = TestBed.inject(RxStompService);
   });
 
@@ -43,7 +43,7 @@ describe('MessagesService', () => {
       return of({body: JSON.stringify(messagePayload)} as any);
     });
 
-    service.watchJson<any>(expectedDestination)
+    service.watch<any>(expectedDestination)
       .subscribe(data => callbackResult = data);
 
     expect(calledDestination).toEqual(expectedDestination);

@@ -2,7 +2,7 @@
   <select class="form-select" [attr.aria-label]="label()"
           [(ngModel)]="value"
           (ngModelChange)="handleChange($event)">
-    @for (value of elements(); track value) {
+    @for (value of elements(); track $index) {
       <option [ngValue]="value">{{ value }}</option>
     }
   </select>

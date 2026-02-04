@@ -25,7 +25,7 @@ import {ModalService} from "@app/shared/services/modal-service/modal.service";
 import {ButtonComponent} from '@app/shared/components/button/button.component';
 import {LoadedContentComponent} from '@app/shared/components/loaded-content/loaded-content.component';
 import {DatePipe} from '@angular/common';
-import {MessagesService} from "@app/shared/backend/services/messages.service";
+import {MessageService} from "@app/shared/backend/services/message.service";
 import {PaginationComponent} from "@app/shared/components/pagination/pagination.component";
 import {
   FileCopyStatusBadgeComponent
@@ -103,8 +103,8 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
   gamesAreLoading = signal(true);
   storageSolutionStatusesById = signal<Map<string, StorageSolutionStatus>>(new Map());
   gameWithFileCopiesPage = signal<Page<GameWithFileCopies> | undefined>(undefined);
-  potentialFileCopiesWithContextByGameFileId = signal<Map<string, PotentialFileCopyWithContext[]>>(
-    new Map<string, PotentialFileCopyWithContext[]>());
+  potentialFileCopiesWithContext = signal<Map<string, PotentialFileCopyWithContext>>(
+    new Map<string, PotentialFileCopyWithContext>());
 
   backupTargets = signal<Array<BackupTarget>>([]);
   pageNumber = signal(1);
@@ -124,14 +124,15 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
               private readonly fileCopiesClient: FileCopiesClient,
               private readonly backupTargetsClient: BackupTargetsClient,
               private readonly storageSolutionsClient: StorageSolutionsClient,
-              private readonly messageService: MessagesService,
+              private readonly messageService: MessageService,
               private readonly notificationService: NotificationService,
               private readonly modalService: ModalService,
               @Inject('Window') private readonly window: Window) {
-    this.messageService.watchJson<FileCopyStatusChangedEvent>(FileBackupMessageTopics.TopicBackupsStatusChanged)
+    this.messageService.watch<FileCopyStatusChangedEvent>(FileBackupMessageTopics.TopicBackupsStatusChanged)
       .pipe(takeUntilDestroyed())
       .subscribe(event => this.onStatusChanged(event));
-    this.messageService.watchJson<FileCopyReplicationProgressUpdatedEvent>(FileBackupMessageTopics.TopicBackupsProgressUpdate)
+    this.messageService.watch<FileCopyReplicationProgressUpdatedEvent>(
+      FileBackupMessageTopics.TopicBackupsProgressUpdate)
       .pipe(takeUntilDestroyed())
       .subscribe(event => this.onReplicationProgressChanged(event));
   }
@@ -162,6 +163,10 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
     return async () => this.enqueueFileCopy(potentialFileCopy);
   }
 
+  getPotentialFileCopyWithContext(gameFileId: string, backupTargetId: string): PotentialFileCopyWithContext | undefined {
+    return this.potentialFileCopiesWithContext().get(`${gameFileId}-${backupTargetId}`);
+  }
+
   async enqueueFileCopy(potentialFileCopy: PotentialFileCopy): Promise<void> {
     try {
       const request: EnqueueFileCopyRequest = {
@@ -171,7 +176,13 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
         .pipe(catchError(e => {
           throw e;
         })));
-      potentialFileCopy.status = FileCopyStatus.Enqueued;
+      this.updatePotentialFileCopyWithContext(potentialFileCopy.naturalId, context => ({
+        ...context,
+        potentialFileCopy: {
+          ...context.potentialFileCopy,
+          status: FileCopyStatus.Enqueued
+        }
+      }));
       this.notificationService.showSuccess("File copy enqueued");
     } catch (error) {
       this.notificationService.showFailure(
@@ -192,14 +203,16 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
         .pipe(catchError(e => {
           throw e;
         })));
-      potentialFileCopy.status = FileCopyStatus.Tracked;
 
-      const potentialFileCopyWithContext: PotentialFileCopyWithContext | undefined =
-        this.findPotentialFileCopyWithContext(potentialFileCopy.naturalId);
+      this.updatePotentialFileCopyWithContext(potentialFileCopy.naturalId, context => ({
+        ...context,
+        potentialFileCopy: {
+          ...context.potentialFileCopy,
+          status: FileCopyStatus.Tracked
+        },
+        progress: undefined
+      }));
 
-      if (potentialFileCopyWithContext) {
-        potentialFileCopyWithContext.progress = undefined;
-      }
       this.notificationService.showSuccess("Backup canceled");
     } catch (error) {
       this.notificationService.showFailure(
@@ -229,7 +242,7 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
     return async () => this.viewFilePath(fileCopyId);
   }
 
-  async viewFilePath(gameFileId: string): Promise<void> {
+  async viewFilePath(fileCopyId: string): Promise<void> {
     this.notificationService.showFailure('Viewing file paths not yet implemented');
   }
 
@@ -244,16 +257,16 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
      */
     this.window.location.href = `${this.fileCopiesClient.configuration.basePath}/api/file-copies/${this.fileCopiesClient
       .configuration.encodeParam({
-      name: "fileCopyId", value: fileCopyId, in: "path", style: "simple", explode: false, dataType: "string",
-      dataFormat: undefined
-    })}`;
+        name: "fileCopyId", value: fileCopyId, in: "path", style: "simple", explode: false, dataType: "string",
+        dataFormat: undefined
+      })}`;
   }
 
   onClickViewError(gameFileId: string): () => Promise<void> {
     return async () => this.viewError(gameFileId);
   }
 
-  async viewError(gameFileId: string): Promise<void> {
+  async viewError(fileCopyId: string): Promise<void> {
     this.notificationService.showFailure('Viewing errors not yet implemented');
   }
 
@@ -265,86 +278,43 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
     return gameFileWithCopies.gameFile.id;
   }
 
-  trackByFileCopyNaturalId(index: number, potentialFileCopyWithContext: PotentialFileCopyWithContext)
-    : FileCopyNaturalId {
-    return potentialFileCopyWithContext.potentialFileCopy.naturalId;
+  private updatePotentialFileCopyWithContext(fileCopyNaturalId: FileCopyNaturalId,
+                                             updateFn: (context: PotentialFileCopyWithContext) => PotentialFileCopyWithContext): void {
+    this.potentialFileCopiesWithContext.update(map => {
+      const key = this.getNaturalIdKey(fileCopyNaturalId);
+      const context = map.get(key);
+      if (!context) {
+        return map;
+      }
+      return new Map(map)
+        .set(key, updateFn(context));
+    });
+  }
+
+  private getNaturalIdKey(fileCopyNaturalId: FileCopyNaturalId): string {
+    return `${fileCopyNaturalId.gameFileId}-${fileCopyNaturalId.backupTargetId}`;
   }
 
   private onStatusChanged(event: FileCopyStatusChangedEvent) {
-    const potentialFileCopyWithContext: PotentialFileCopyWithContext | undefined =
-      this.findPotentialFileCopyWithContext(event.fileCopyNaturalId);
-
-    if (potentialFileCopyWithContext) {
-      this.potentialFileCopiesWithContextByGameFileId.update(map => {
-        const newMap = new Map(map);
-        const list = newMap.get(event.fileCopyNaturalId.gameFileId);
-        if (list) {
-          const index = list.indexOf(potentialFileCopyWithContext);
-          if (index !== -1) {
-            const newList = [...list];
-            newList[index] = {
-              ...potentialFileCopyWithContext,
-              potentialFileCopy: {
-                ...potentialFileCopyWithContext.potentialFileCopy,
-                id: event.fileCopyId,
-                status: event.newStatus as FileCopyStatus
-              },
-              progress: undefined
-            };
-            newMap.set(event.fileCopyNaturalId.gameFileId, newList);
-          }
-        }
-        return newMap;
-      });
-      console.debug("Updated potential file copy", event, potentialFileCopyWithContext);
-    } else {
-      console.warn("Could not find potential file copy", event, this.potentialFileCopiesWithContextByGameFileId());
-    }
-  }
-
-  private findPotentialFileCopyWithContext(fileCopyNaturalId: FileCopyNaturalId):
-    PotentialFileCopyWithContext | undefined {
-    return Array.from(this.potentialFileCopiesWithContextByGameFileId().values())
-      .flat()
-      .find((potentialFileCopyWithContext) => {
-        return this.fileCopyNaturalIdsAreEqual(
-          potentialFileCopyWithContext.potentialFileCopy.naturalId, fileCopyNaturalId);
-      });
-  }
-
-  private fileCopyNaturalIdsAreEqual(a: FileCopyNaturalId, b: FileCopyNaturalId): boolean {
-    return Object.entries(a)
-      .every(([key, value]) => b[key as keyof FileCopyNaturalId] === value);
+    this.updatePotentialFileCopyWithContext(event.fileCopyNaturalId, context => ({
+      ...context,
+      potentialFileCopy: {
+        ...context.potentialFileCopy,
+        id: event.fileCopyId,
+        status: event.newStatus as FileCopyStatus
+      },
+      progress: undefined
+    }));
   }
 
   private onReplicationProgressChanged(event: FileCopyReplicationProgressUpdatedEvent) {
-    const inProgressFileCopyWithContext: PotentialFileCopyWithContext | undefined =
-      this.findPotentialFileCopyWithContext(event.fileCopyNaturalId);
-
-    if (inProgressFileCopyWithContext) {
-      this.potentialFileCopiesWithContextByGameFileId.update(map => {
-        const newMap = new Map(map);
-        const list = newMap.get(event.fileCopyNaturalId.gameFileId);
-        if (list) {
-          const index = list.indexOf(inProgressFileCopyWithContext);
-          if (index !== -1) {
-            const newList = [...list];
-            newList[index] = {
-              ...inProgressFileCopyWithContext,
-              progress: {
-                percentage: event.percentage,
-                timeLeftSeconds: event.timeLeftSeconds,
-              }
-            };
-            newMap.set(event.fileCopyNaturalId.gameFileId, newList);
-          }
-        }
-        return newMap;
-      });
-    } else {
-      console.warn("Could not find potential file copy", event,
-        this.potentialFileCopiesWithContextByGameFileId());
-    }
+    this.updatePotentialFileCopyWithContext(event.fileCopyNaturalId, context => ({
+      ...context,
+      progress: {
+        percentage: event.percentage,
+        timeLeftSeconds: event.timeLeftSeconds,
+      }
+    }));
   }
 
   private async getBackupTargets() {
@@ -366,26 +336,23 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
       size: this.pageSize(),
     }, searchQuery, fileCopyStatusFilter));
     this.gameWithFileCopiesPage.set(page);
-    this.potentialFileCopiesWithContextByGameFileId.set(
+    this.potentialFileCopiesWithContext.set(
       this.mapToPotentialFileCopiesWithContext(page.content));
   }
 
   private mapToPotentialFileCopiesWithContext(gamesWithFileCopies: GameWithFileCopies[])
-    : Map<string, PotentialFileCopyWithContext[]> {
-    const resultMap = new Map<string, PotentialFileCopyWithContext[]>();
+    : Map<string, PotentialFileCopyWithContext> {
+    const resultMap = new Map<string, PotentialFileCopyWithContext>();
 
     for (const {gameFilesWithCopies} of gamesWithFileCopies) {
       for (const {gameFile, fileCopiesWithProgress} of gameFilesWithCopies) {
-        const potentialFileCopiesWithContext = resultMap.get(gameFile.id) ?? [];
-        resultMap.set(gameFile.id, potentialFileCopiesWithContext);
-
         for (const backupTarget of this.backupTargets()) {
           const potentialCopy = this.createPotentialFileCopyWithContext(
             gameFile,
             fileCopiesWithProgress,
             backupTarget
           );
-          potentialFileCopiesWithContext.push(potentialCopy);
+          resultMap.set(this.getNaturalIdKey(potentialCopy.potentialFileCopy.naturalId), potentialCopy);
         }
       }
     }

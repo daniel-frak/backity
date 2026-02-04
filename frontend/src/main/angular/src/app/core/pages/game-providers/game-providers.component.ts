@@ -10,7 +10,7 @@ import {
   GameContentDiscoveryStoppedEvent,
   GameContentDiscoveryWebSocketTopics
 } from "@backend";
-import {MessagesService} from "@app/shared/backend/services/messages.service";
+import {MessageService} from "@app/shared/backend/services/message.service";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {firstValueFrom} from "rxjs";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
@@ -41,17 +41,17 @@ export class GameProvidersComponent {
   );
 
   constructor(private readonly gameContentDiscoveryClient: GameContentDiscoveryClient,
-              private readonly messageService: MessagesService,
+              private readonly messageService: MessageService,
               private readonly notificationService: NotificationService) {
-    this.messageService.watchJson<GameContentDiscoveryStartedEvent>(
+    this.messageService.watch<GameContentDiscoveryStartedEvent>(
       GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStarted)
       .pipe(takeUntilDestroyed())
       .subscribe(event => this.onDiscoveryStarted(event));
-    this.messageService.watchJson<GameContentDiscoveryStoppedEvent>(
+    this.messageService.watch<GameContentDiscoveryStoppedEvent>(
       GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStopped)
       .pipe(takeUntilDestroyed())
       .subscribe(event => this.onDiscoveryStopped(event));
-    this.messageService.watchJson<GameContentDiscoveryProgressChangedEvent>(
+    this.messageService.watch<GameContentDiscoveryProgressChangedEvent>(
       GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryProgressUpdate)
       .pipe(takeUntilDestroyed())
       .subscribe(event => this.onDiscoveryProgressChanged(event));
@@ -165,17 +165,23 @@ export class GameProvidersComponent {
         next: discoveryOverviews => {
           this.discoveryIsInProgressByGameProviderId.update(map => {
             const newMap = new Map(map);
-            discoveryOverviews.forEach(o => newMap.set(o.gameProviderId, o.isInProgress));
+            discoveryOverviews.forEach(o => {
+              newMap.set(o.gameProviderId, o.isInProgress)
+            });
             return newMap;
           });
           this.discoveryOverviewsByGameProviderId.update(map => {
             const newMap = new Map(map);
-            discoveryOverviews.forEach(o => newMap.set(o.gameProviderId, o));
+            discoveryOverviews.forEach(o => {
+              newMap.set(o.gameProviderId, o);
+            });
             return newMap;
           });
           this.discoveryStatusUnknownByGameProviderId.update(map => {
             const newMap = new Map(map);
-            discoveryOverviews.forEach(o => newMap.set(o.gameProviderId, false));
+            discoveryOverviews.forEach(o => {
+              newMap.set(o.gameProviderId, false)
+            });
             return newMap;
           });
           this.infoIsLoading.set(false);

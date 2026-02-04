@@ -1,18 +1,18 @@
-import { Component, ContentChildren, OnInit, QueryList, input } from '@angular/core';
-import { TableColumnDirective } from "@app/shared/components/table/column-directive/table-column.directive";
-import { LoadedContentComponent } from '../loaded-content/loaded-content.component';
-import { NgClass, NgTemplateOutlet } from '@angular/common';
+import {Component, ContentChildren, input, QueryList} from '@angular/core';
+import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
+import {LoadedContentComponent} from '../loaded-content/loaded-content.component';
+import {NgClass, NgTemplateOutlet} from '@angular/common';
 import {TableContentGroup} from "@app/shared/components/table/table-content-group";
 
 @Component({
-    selector: 'app-table',
-    templateUrl: './table.component.html',
-    styleUrls: ['./table.component.scss'],
-    imports: [LoadedContentComponent, NgClass, NgTemplateOutlet]
+  selector: 'app-table',
+  templateUrl: './table.component.html',
+  styleUrls: ['./table.component.scss'],
+  imports: [LoadedContentComponent, NgClass, NgTemplateOutlet]
 })
-export class TableComponent implements OnInit {
+export class TableComponent {
 
-  @ContentChildren(TableColumnDirective, { descendants: false })
+  @ContentChildren(TableColumnDirective, {descendants: false})
   templateRefs!: QueryList<TableColumnDirective>;
 
   readonly testId = input<string>();
@@ -25,27 +25,21 @@ export class TableComponent implements OnInit {
 
   readonly isLoading = input<boolean>(false);
 
-  constructor() { }
-
-  ngOnInit(): void {
-    // Nothing to initialize
+  constructor() {
   }
 
   getColumnTitles(): string[] {
-    const columns: string[] = [];
-    this.templateRefs.forEach(t => columns.push(t.columnTitle() as string));
-
-    return columns;
+    return this.templateRefs.map(t => t.columnTitle() as string);
   }
 
   getTdClass(column: TableColumnDirective): string {
     const classes = [];
 
-    if (column.hideTitleOnMobile) {
+    if (column.hideTitleOnMobile()) {
       classes.push('hide-title')
     }
 
-    const columnClass = column.class();
+    const columnClass = column.appendClass();
     if (columnClass) {
       classes.push(columnClass);
     }

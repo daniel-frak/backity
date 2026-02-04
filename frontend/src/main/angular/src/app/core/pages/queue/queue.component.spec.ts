@@ -14,9 +14,10 @@ import {
   StorageSolutionStatus,
   StorageSolutionStatusesResponse
 } from "@backend";
-import {MessagesService} from "@app/shared/backend/services/messages.service";
+import {MessageService} from "@app/shared/backend/services/message.service";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {of, throwError} from "rxjs";
+import {MessageSimulator} from "@app/shared/testing/message-simulator";
 import {provideRouter} from "@angular/router";
 import {TestPage} from "@app/shared/testing/objects/test-page";
 import {TestFileCopy} from "@app/shared/testing/objects/test-file-copy";
@@ -37,13 +38,15 @@ describe('QueueComponent', () => {
 
   let fileCopiesClient: SpyObj<FileCopiesClient>;
   let storageSolutionsClient: SpyObj<StorageSolutionsClient>;
-  let messagesService: SpyObj<MessagesService>;
+  let messagesService: SpyObj<MessageService>;
   let notificationService: NotificationService;
 
   let initialEnqueuedFileCopy: FileCopy = TestFileCopy.enqueued();
   let initialFileCopyWithContext: FileCopyWithContext = TestFileCopyWithContext.withFileCopy(initialEnqueuedFileCopy);
   let initialQueue: Page<FileCopyWithContext> = TestPage.of([initialFileCopyWithContext]);
   let initialStorageSolutionStatusResponse: StorageSolutionStatusesResponse;
+
+  let messageSimulator: MessageSimulator;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -58,8 +61,8 @@ describe('QueueComponent', () => {
           useValue: createSpyObj('StorageSolutionsClient', ['getStorageSolutionStatuses'])
         },
         {
-          provide: MessagesService,
-          useValue: createSpyObj('MessagesService', ['watchJson'])
+          provide: MessageService,
+          useValue: createSpyObj('MessagesService', ['watch'])
         },
         {
           provide: NotificationService,
@@ -76,10 +79,11 @@ describe('QueueComponent', () => {
 
     fileCopiesClient = TestBed.inject(FileCopiesClient) as SpyObj<FileCopiesClient>;
     storageSolutionsClient = TestBed.inject(StorageSolutionsClient) as SpyObj<StorageSolutionsClient>;
-    messagesService = TestBed.inject(MessagesService) as SpyObj<MessagesService>;
+    messagesService = TestBed.inject(MessageService) as SpyObj<MessageService>;
     notificationService = TestBed.inject(NotificationService);
 
-    messagesService.watchJson.and.returnValue(of() as any);
+    messageSimulator = MessageSimulator.given(messagesService);
+
     fileCopiesClient.getFileCopyQueue.and.returnValue(of({content: []}) as any);
     storageSolutionsClient.getStorageSolutionStatuses.and.returnValue(of({statuses: {}}) as any);
 
@@ -101,25 +105,12 @@ describe('QueueComponent', () => {
   });
 
   it('should subscribe to message topics on initialization', () => {
-    const topicsSubscribed: string[] = [];
-    messagesService.watchJson.and.callFake(((topic: string) => {
-      topicsSubscribed.push(topic);
-      return of();
-    }) as any);
-
     fixture = TestBed.createComponent(QueueComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
 
-    expect(topicsSubscribed).toContain(FileBackupMessageTopics.TopicBackupsStatusChanged);
-    expect(topicsSubscribed).toContain(FileBackupMessageTopics.TopicBackupsProgressUpdate);
-  });
-
-  it('should unsubscribe from message topics on destruction', () => {
-    // With takeUntilDestroyed, we don't manually manage subscriptions anymore.
-    // Testing this would require checking if the internal DestroyRef was triggered,
-    // which is usually handled by Angular itself.
-    expect(true).toBeTrue();
+    expect(messagesService.watch).toHaveBeenCalledWith(FileBackupMessageTopics.TopicBackupsStatusChanged);
+    expect(messagesService.watch).toHaveBeenCalledWith(FileBackupMessageTopics.TopicBackupsProgressUpdate);
   });
 
   it('should show failure notification given error when refresh is called',
@@ -281,10 +272,14 @@ describe('QueueComponent', () => {
     const event: FileCopyStatusChangedEvent =
       TestFileCopyStatusChangedEvent.withContent(fileCopyId, fileCopyNaturalId, newStatus);
 
-    (component as any).onStatusChanged(event);
+    emitFileCopyStatusChanged(event);
     fixture.detectChanges();
     tick();
     fixture.detectChanges();
+  }
+
+  function emitFileCopyStatusChanged(event: FileCopyStatusChangedEvent) {
+    messageSimulator.emit(FileBackupMessageTopics.TopicBackupsStatusChanged, event);
   }
 
   function assertQueueDoesNotContain(fileCopyWithContext: FileCopyWithContext) {
@@ -324,10 +319,14 @@ describe('QueueComponent', () => {
     fileCopyId: string, fileCopyNaturalId: FileCopyNaturalId): void {
     const event: FileCopyReplicationProgressUpdatedEvent =
       TestProgressUpdatedEvent.twentyFivePercent(fileCopyId, fileCopyNaturalId);
-    (component as any).onReplicationProgressChanged(event);
+    emitProgressUpdated(event);
     fixture.detectChanges();
     tick();
     fixture.detectChanges();
+  }
+
+  function emitProgressUpdated(event: FileCopyReplicationProgressUpdatedEvent) {
+    messageSimulator.emit(FileBackupMessageTopics.TopicBackupsProgressUpdate, event);
   }
 
   it('should not update file copy progress in queue when progress update event is received' +

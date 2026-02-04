@@ -12,8 +12,9 @@ import {
   GameContentDiscoveryWebSocketTopics
 } from "@backend";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
-import {MessagesService} from "@app/shared/backend/services/messages.service";
-import {of, Subject, throwError} from "rxjs";
+import {MessageService} from "@app/shared/backend/services/message.service";
+import {of, throwError} from "rxjs";
+import {MessageSimulator} from "@app/shared/testing/message-simulator";
 import {TestGameContentDiscoveryOverview} from "@app/shared/testing/objects/test-game-content-discovery-overview";
 import {HttpResponse} from "@angular/common/http";
 import {
@@ -35,24 +36,18 @@ describe('GameProvidersComponent', () => {
   let component: GameProvidersComponent;
   let fixture: ComponentFixture<GameProvidersComponent>;
 
-  let discoveryStartedSubject: Subject<GameContentDiscoveryStartedEvent>;
-  let discoveryStoppedSubject: Subject<GameContentDiscoveryStoppedEvent>;
-  let discoveryProgressSubject: Subject<GameContentDiscoveryProgressChangedEvent>;
+  let messageSimulator: MessageSimulator;
   let gameContentDiscoveryClient: SpyObj<GameContentDiscoveryClient>;
   let notificationService: SpyObj<NotificationService>;
-  let messagesService: SpyObj<MessagesService>;
+  let messagesService: SpyObj<MessageService>;
 
   beforeEach(async () => {
-    discoveryStartedSubject = new Subject();
-    discoveryStoppedSubject = new Subject();
-    discoveryProgressSubject = new Subject();
-
     await TestBed.configureTestingModule({
       imports: [GameProvidersComponent],
       providers: [
         {
-          provide: MessagesService,
-          useValue: createSpyObj(MessagesService, ['watchJson'])
+          provide: MessageService,
+          useValue: createSpyObj(MessageService, ['watch'])
         },
         {
           provide: GameContentDiscoveryClient,
@@ -73,22 +68,11 @@ describe('GameProvidersComponent', () => {
   });
 
   beforeEach(() => {
-    messagesService = TestBed.inject(MessagesService) as SpyObj<MessagesService>;
+    messagesService = TestBed.inject(MessageService) as SpyObj<MessageService>;
     gameContentDiscoveryClient = TestBed.inject(GameContentDiscoveryClient) as SpyObj<GameContentDiscoveryClient>;
     notificationService = TestBed.inject(NotificationService) as SpyObj<NotificationService>;
 
-    messagesService.watchJson.and.callFake(((destination: string) => {
-      if (destination === GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStarted) {
-        return discoveryStartedSubject;
-      }
-      if (destination === GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStopped) {
-        return discoveryStoppedSubject;
-      }
-      if (destination === GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryProgressUpdate) {
-        return discoveryProgressSubject;
-      }
-      return of();
-    }) as any);
+    messageSimulator = MessageSimulator.given(messagesService);
   });
 
   it('should create', () => {
@@ -119,7 +103,7 @@ describe('GameProvidersComponent', () => {
     fixture = TestBed.createComponent(GameProvidersComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    expect(messagesService.watchJson)
+    expect(messagesService.watch)
       .toHaveBeenCalledWith(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStarted);
   });
 
@@ -128,7 +112,7 @@ describe('GameProvidersComponent', () => {
     fixture = TestBed.createComponent(GameProvidersComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    expect(messagesService.watchJson)
+    expect(messagesService.watch)
       .toHaveBeenCalledWith(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStopped);
   });
 
@@ -137,7 +121,7 @@ describe('GameProvidersComponent', () => {
     fixture = TestBed.createComponent(GameProvidersComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    expect(messagesService.watchJson)
+    expect(messagesService.watch)
       .toHaveBeenCalledWith(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryProgressUpdate);
   });
 
@@ -148,12 +132,16 @@ describe('GameProvidersComponent', () => {
     fixture.detectChanges();
     const event: GameContentDiscoveryStartedEvent = TestGameContentDiscoveryStartedEvent.any();
 
-    discoveryStartedSubject.next(event);
+    emitDiscoveryStarted(event);
     tick();
 
     expect(component.discoveryIsInProgressByGameProviderId().get(event.gameProviderId)).toBeTrue();
     expect(component.discoveryStatusUnknownByGameProviderId().get(event.gameProviderId)).toBeFalse();
   }));
+
+  function emitDiscoveryStarted(event: GameContentDiscoveryStartedEvent) {
+    messageSimulator.emit(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStarted, event);
+  }
 
   it('should update overview given discovery started event received and overview exists',
     fakeAsync(() => {
@@ -165,7 +153,7 @@ describe('GameProvidersComponent', () => {
       component.discoveryOverviewsByGameProviderId.update(map =>
         new Map(map).set(event.gameProviderId, TestGameContentDiscoveryOverview.notInProgress()));
 
-      discoveryStartedSubject.next(event);
+      emitDiscoveryStarted(event);
       tick();
 
       expect(component.discoveryOverviewsByGameProviderId().get(event.gameProviderId)?.isInProgress).toBeTrue();
@@ -180,12 +168,16 @@ describe('GameProvidersComponent', () => {
     component.discoveryIsInProgressByGameProviderId.update(map =>
       new Map(map).set(event.gameProviderId, true));
 
-    discoveryStoppedSubject.next(event);
+    emitDiscoveryStopped(event);
     tick();
 
     expect(component.discoveryIsInProgressByGameProviderId().get(event.gameProviderId)).toBeFalse();
     expect(component.discoveryStatusUnknownByGameProviderId().get(event.gameProviderId)).toBeFalse();
   }));
+
+  function emitDiscoveryStopped(event: GameContentDiscoveryStoppedEvent) {
+    messageSimulator.emit(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStopped, event);
+  }
 
   it('should update overview given discovery stopped event received and overview exists', fakeAsync(() => {
     gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
@@ -196,7 +188,7 @@ describe('GameProvidersComponent', () => {
     component.discoveryOverviewsByGameProviderId.update(map =>
       new Map(map).set(event.gameProviderId, TestGameContentDiscoveryOverview.inProgress()));
 
-    discoveryStoppedSubject.next(event);
+    emitDiscoveryStopped(event);
     tick();
 
     const expectedOverview: GameContentDiscoveryOverview =
@@ -217,7 +209,7 @@ describe('GameProvidersComponent', () => {
       return newMap;
     });
 
-    discoveryStoppedSubject.next(event);
+    emitDiscoveryStopped(event);
     tick();
 
     const expectedOverview: GameContentDiscoveryOverview =
@@ -305,12 +297,16 @@ describe('GameProvidersComponent', () => {
       isInProgress: true
     }));
 
-    discoveryProgressSubject.next(event);
+    emitProgressUpdate(event);
 
     expect(component.discoveryOverviewsByGameProviderId().get(event.gameProviderId!))
       .toEqual(TestGameContentDiscoveryOverview.inProgressAtTwentyFivePercent());
     expect(component.discoveryStatusUnknownByGameProviderId().get(event.gameProviderId)).toBeFalse();
   });
+
+  function emitProgressUpdate(event: GameContentDiscoveryProgressChangedEvent) {
+    messageSimulator.emit(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryProgressUpdate, event);
+  }
 
   it('should return undefined from getOverview when game provider not found', () => {
     gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
