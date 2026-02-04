@@ -304,6 +304,20 @@ describe('GameProvidersComponent', () => {
     expect(component.discoveryStatusUnknownByGameProviderId().get(event.gameProviderId)).toBeFalse();
   });
 
+  it('should show error when discovery overviews fetch fails in refreshInfo', fakeAsync(() => {
+    const mockError = new Error('fetch failed');
+    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(throwError(() => mockError) as any);
+
+    fixture = TestBed.createComponent(GameProvidersComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+    tick();
+
+    expect(notificationService.showFailure)
+      .toHaveBeenCalledWith('Error fetching discovery overviews', mockError);
+    expect(component.infoIsLoading()).toBeFalse();
+  }));
+
   function emitProgressUpdate(event: GameContentDiscoveryProgressChangedEvent) {
     messageSimulator.emit(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryProgressUpdate, event);
   }

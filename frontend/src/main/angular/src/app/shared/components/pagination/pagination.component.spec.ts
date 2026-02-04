@@ -300,4 +300,16 @@ describe('PaginationComponent', () => {
 
     expect(inputElement.value).toBe('123');
   });
+
+  it('should not update pageNumber or pageSize when query params are missing', async () => {
+    activatedRoute.queryParams = of({});
+    fixture.componentRef.setInput('pageNumber', 5);
+    fixture.componentRef.setInput('pageSize', 20);
+
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(component.pageNumber()).toBe(5);
+    expect(component.pageSize()).toBe(20);
+  });
 });

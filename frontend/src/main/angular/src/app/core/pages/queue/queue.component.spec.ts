@@ -374,4 +374,63 @@ describe('QueueComponent', () => {
       `An error occurred while trying to cancel the backup`, fileCopyWithContext, mockError);
     expect(fileCopyWithContext.progress).toBeUndefined();
   }));
+
+  it('onClickCancelBackup should return a callable that delegates to cancelBackup', async () => {
+    const spy = spyOn(component, 'cancelBackup').and.returnValue(Promise.resolve());
+    const fileCopyWithContext = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
+
+    await component.onClickCancelBackup(fileCopyWithContext)();
+
+    expect(spy).toHaveBeenCalledWith(fileCopyWithContext);
+  });
+
+  it('removeFileCopyFromQueue should return current page if page is undefined', () => {
+    component.fileCopyWithContextPage.set(undefined);
+    component.removeFileCopyFromQueue({fileCopy: {id: 'any'}} as any);
+    expect(component.fileCopyWithContextPage()).toBeUndefined();
+  });
+
+  it('updateFileCopyStatusInQueue should return current page if page is undefined', () => {
+    component.fileCopyWithContextPage.set(undefined);
+    component.updateFileCopyStatusInQueue({fileCopy: {id: 'any'}} as any);
+    expect(component.fileCopyWithContextPage()).toBeUndefined();
+  });
+
+  it('onReplicationProgressChanged should return early if page is undefined', () => {
+    component.fileCopyWithContextPage.set(undefined);
+    component.onReplicationProgressChanged({fileCopyId: 'any', percentage: 10, timeLeftSeconds: 10} as any);
+    expect(component.fileCopyWithContextPage()).toBeUndefined();
+  });
+
+  it('removeFileCopyFromQueue should return current page if item is not found in content', () => {
+    const item = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
+    const page = TestPage.of([TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued())]);
+    component.fileCopyWithContextPage.set(page);
+
+    component.removeFileCopyFromQueue(item);
+
+    expect(component.fileCopyWithContextPage()).toBe(page);
+  });
+
+  it('updateFileCopyStatusInQueue should return current page if item is not found in content', () => {
+    const item = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
+    const page = TestPage.of([TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued())]);
+    component.fileCopyWithContextPage.set(page);
+
+    component.updateFileCopyStatusInQueue(item);
+
+    expect(component.fileCopyWithContextPage()).toBe(page);
+  });
+
+  it('onReplicationProgressChanged should return early if item is not found in content during update', () => {
+    const item = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
+    const page = TestPage.of([item]);
+    component.fileCopyWithContextPage.set(page);
+
+    spyOn(component, 'findFileCopyWithContextInQueue').and.returnValue(TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued()) as any);
+
+    component.onReplicationProgressChanged({fileCopyId: 'any', percentage: 10, timeLeftSeconds: 10} as any);
+
+    expect(component.fileCopyWithContextPage()).toBe(page);
+  });
 });

@@ -115,5 +115,18 @@ describe('ButtonComponent', () => {
     fixture.detectChanges();
     const buttonElement = fixture.debugElement.query(By.css('button'));
     expect(buttonElement.classes['btn-sm']).toBeTrue();
-  })
+  });
+
+  it('should set outline style class', () => {
+    fixture.componentRef.setInput('buttonStyle', 'primary');
+    fixture.componentRef.setInput('outline', true);
+    fixture.detectChanges();
+    const buttonElement = fixture.debugElement.query(By.css('button'));
+    expect(buttonElement.classes['btn-outline-primary']).toBeTrue();
+  });
+
+  it('getSizeClass should return empty string if buttonSize is missing', () => {
+    fixture.componentRef.setInput('buttonSize', undefined);
+    expect(component.getSizeClass()).toBe('');
+  });
 });

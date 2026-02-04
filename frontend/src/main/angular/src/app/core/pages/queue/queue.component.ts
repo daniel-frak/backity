@@ -146,14 +146,16 @@ export class QueueComponent implements OnInit {
     }
   }
 
-  private findFileCopyWithContextInQueue(fileCopyId: string): FileCopyWithContext | undefined {
+  findFileCopyWithContextInQueue(fileCopyId: string): FileCopyWithContext | undefined {
     return this.fileCopyWithContextPage()?.content
       ?.find(fileCopyWithContext => fileCopyWithContext?.fileCopy.id == fileCopyId);
   }
 
-  private removeFileCopyFromQueue(foundFileCopyWithContext: FileCopyWithContext) {
+  removeFileCopyFromQueue(foundFileCopyWithContext: FileCopyWithContext) {
     this.fileCopyWithContextPage.update(page => {
-      if (!page) return page;
+      if (!page) {
+        return page;
+      }
       const index = page.content.indexOf(foundFileCopyWithContext);
       if (index !== -1) {
         const newContent = [...page.content];
@@ -164,9 +166,11 @@ export class QueueComponent implements OnInit {
     });
   }
 
-  private updateFileCopyStatusInQueue(foundFileCopyWithContext: FileCopyWithContext) {
+  updateFileCopyStatusInQueue(foundFileCopyWithContext: FileCopyWithContext) {
     this.fileCopyWithContextPage.update(page => {
-      if (!page) return page;
+      if (!page) {
+        return page;
+      }
       const index = page.content.indexOf(foundFileCopyWithContext);
       if (index !== -1) {
         const newContent = [...page.content];
@@ -189,7 +193,7 @@ export class QueueComponent implements OnInit {
     });
   }
 
-  private onReplicationProgressChanged(event: FileCopyReplicationProgressUpdatedEvent) {
+  onReplicationProgressChanged(event: FileCopyReplicationProgressUpdatedEvent) {
     const foundFileCopyWithContext: FileCopyWithContext | undefined =
       this.findFileCopyWithContextInQueue(event.fileCopyId);
     if (!foundFileCopyWithContext) {
@@ -197,7 +201,9 @@ export class QueueComponent implements OnInit {
     }
 
     this.fileCopyWithContextPage.update(page => {
-      if (!page) return page;
+      if (!page) {
+        return page;
+      }
       const index = page.content.indexOf(foundFileCopyWithContext);
       if (index !== -1) {
         const newContent = [...page.content];

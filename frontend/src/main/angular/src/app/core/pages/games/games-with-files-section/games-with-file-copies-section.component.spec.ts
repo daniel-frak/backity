@@ -492,4 +492,30 @@ describe('GamesWithFileCopiesSectionComponent', () => {
   function emitProgressUpdate(progressChangedEvent: FileCopyReplicationProgressUpdatedEvent) {
     messageSimulator.emit(FileBackupMessageTopics.TopicBackupsProgressUpdate, progressChangedEvent);
   }
+
+  it('refresh should do nothing if already loading and page exists', fakeAsync(() => {
+    component.gamesAreLoading.set(true);
+    component.gameWithFileCopiesPage.set(TestPage.of([]));
+
+    component.refresh();
+    tick();
+
+    expect(gamesClient.getGames).not.toHaveBeenCalled();
+  }));
+
+  it('onClickDeleteFileCopy should return a callable that delegates to deleteFileCopy', async () => {
+    const spy = spyOn(component, 'deleteFileCopy').and.returnValue(Promise.resolve());
+
+    await component.onClickDeleteFileCopy('fileCopyId')();
+
+    expect(spy).toHaveBeenCalledWith('fileCopyId');
+  });
+
+  it('onClickDownload should return a callable that delegates to download', async () => {
+    const spy = spyOn(component, 'download').and.returnValue(Promise.resolve());
+
+    await component.onClickDownload('fileCopyId')();
+
+    expect(spy).toHaveBeenCalledWith('fileCopyId');
+  });
 });

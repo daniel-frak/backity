@@ -78,4 +78,17 @@ describe('InputComponent', () => {
     expect(inputComponent.value).toBe(inputValue);
     expect(onChangeSpy).toHaveBeenCalledWith(inputValue);
   });
+
+  it('writeValue should set empty string when value is undefined or null', () => {
+    inputComponent.writeValue(undefined);
+    expect(inputComponent.value).toBe('');
+
+    inputComponent.writeValue(null as any);
+    expect(inputComponent.value).toBe('');
+  });
+
+  it('writeValue should set provided value when non-empty', () => {
+    inputComponent.writeValue('hello');
+    expect(inputComponent.value).toBe('hello');
+  });
 });
