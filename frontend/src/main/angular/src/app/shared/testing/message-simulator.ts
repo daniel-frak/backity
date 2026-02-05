@@ -27,9 +27,13 @@ export class MessageSimulator {
   }
 
   private getOrCreateSubject(topic: string): Subject<any> {
-    if (!this.subjects.has(topic)) {
-      this.subjects.set(topic, new Subject<any>());
+    let subject: Subject<any> | undefined = this.subjects.get(topic);
+
+    if (!subject) {
+      subject = new Subject<any>();
+      this.subjects.set(topic, subject);
     }
-    return this.subjects.get(topic)!;
+
+    return subject;
   }
 }

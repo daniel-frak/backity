@@ -1,4 +1,4 @@
-import {Component, computed, signal} from '@angular/core';
+import {Component, computed, OnInit, signal} from '@angular/core';
 import {PageHeaderComponent} from '@app/shared/components/page-header/page-header.component';
 import {GogAuthComponent} from '@app/gog/pages/auth/gog-auth/gog-auth.component';
 import {SectionComponent} from "@app/shared/components/section/section.component";
@@ -24,7 +24,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   styleUrl: './game-providers.component.scss',
   imports: [PageHeaderComponent, GogAuthComponent, SectionComponent, ButtonComponent, LoadedContentComponent, AutoLayoutComponent]
 })
-export class GameProvidersComponent {
+export class GameProvidersComponent implements OnInit {
 
   infoIsLoading = signal(false);
   discoveryIsInProgressByGameProviderId = signal<Map<string, boolean>>(new Map());
@@ -55,7 +55,9 @@ export class GameProvidersComponent {
       GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryProgressUpdate)
       .pipe(takeUntilDestroyed())
       .subscribe(event => this.onDiscoveryProgressChanged(event));
+  }
 
+  ngOnInit(): void {
     this.refreshInfo();
   }
 

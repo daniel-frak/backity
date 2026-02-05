@@ -143,6 +143,18 @@ describe('GameProvidersComponent', () => {
     messageSimulator.emit(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStarted, event);
   }
 
+  it('should return early from refreshInfo when already loading', () => {
+    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
+    fixture = TestBed.createComponent(GameProvidersComponent);
+    component = fixture.componentInstance;
+    component.infoIsLoading.set(true);
+    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.calls.reset();
+
+    fixture.detectChanges();
+
+    expect(gameContentDiscoveryClient.getGameContentDiscoveryOverviews).not.toHaveBeenCalled();
+  });
+
   it('should update overview given discovery started event received and overview exists',
     fakeAsync(() => {
       gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);

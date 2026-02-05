@@ -7,7 +7,7 @@ import {By} from "@angular/platform-browser";
 import {TableContentGroup} from "@app/shared/components/table/table-content-group";
 
 @Component({
-    template: `
+  template: `
     <app-table id="standard-table" [testId]="'someTestId1'" [isLoading]="isLoading || false"
                [content]="standardContent" caption="Test table 1">
       <ng-template app-table-column="Test column 1-1" let-item>Col1-1: {{ item }}</ng-template>
@@ -23,10 +23,10 @@ import {TableContentGroup} from "@app/shared/components/table/table-content-grou
       </ng-template>
     </app-table>
   `,
-    imports: [
-        TableComponent,
-        TableColumnDirective
-    ]
+  imports: [
+    TableComponent,
+    TableColumnDirective
+  ]
 })
 class TableComponentWrapper {
   @ViewChild(TableComponent)
@@ -132,5 +132,33 @@ describe('TableComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain("Test table 1");
     expect(fixture.nativeElement.textContent).toContain("Test table 2");
+  });
+
+  it('should update columns when templateRefs change', () => {
+    const queryList = new QueryList<TableColumnDirective>();
+    const column1 = {
+      columnTitle: () => 'Column A',
+      hideTitleOnMobile: () => false,
+      appendClass: () => undefined
+    } as TableColumnDirective;
+    const column2 = {
+      columnTitle: () => 'Column B',
+      hideTitleOnMobile: () => false,
+      appendClass: () => undefined
+    } as TableColumnDirective;
+    component.templateRefs = queryList;
+    component.ngAfterContentInit();
+
+    // initial state
+    queryList.reset([column1, column2]);
+    queryList.notifyOnChanges();
+
+    expect(component.columnTitles()).toEqual(['Column A', 'Column B']);
+
+    // simulate content children changing
+    queryList.reset([column2]);
+    queryList.notifyOnChanges();
+
+    expect(component.columnTitles()).toEqual(['Column B']);
   });
 });

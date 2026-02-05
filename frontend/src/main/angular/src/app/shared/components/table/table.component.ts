@@ -94,10 +94,6 @@ export class TableComponent implements AfterContentInit {
     });
   }
 
-  getColumnTitles(): string[] {
-    return this.templateRefs.map(t => t.columnTitle() as string);
-  }
-
   getTdClass(column: TableColumnDirective): string {
     const classes = [];
 
