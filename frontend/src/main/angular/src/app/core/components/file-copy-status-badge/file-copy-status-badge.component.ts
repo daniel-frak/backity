@@ -5,7 +5,7 @@ import {CommonModule} from '@angular/common';
 @Component({
   selector: 'app-file-copy-status-badge',
   templateUrl: './file-copy-status-badge.component.html',
-  styleUrls: ['./file-copy-status-badge.component.scss'],
+  styleUrl: './file-copy-status-badge.component.scss',
   imports: [CommonModule]
 })
 export class FileCopyStatusBadgeComponent {

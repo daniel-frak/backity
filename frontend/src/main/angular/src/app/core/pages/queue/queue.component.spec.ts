@@ -38,7 +38,7 @@ describe('QueueComponent', () => {
 
   let fileCopiesClient: SpyObj<FileCopiesClient>;
   let storageSolutionsClient: SpyObj<StorageSolutionsClient>;
-  let messagesService: SpyObj<MessageService>;
+  let messageService: SpyObj<MessageService>;
   let notificationService: NotificationService;
 
   let initialEnqueuedFileCopy: FileCopy = TestFileCopy.enqueued();
@@ -62,7 +62,7 @@ describe('QueueComponent', () => {
         },
         {
           provide: MessageService,
-          useValue: createSpyObj('MessagesService', ['watch'])
+          useValue: createSpyObj('MessageService', ['watch'])
         },
         {
           provide: NotificationService,
@@ -79,10 +79,10 @@ describe('QueueComponent', () => {
 
     fileCopiesClient = TestBed.inject(FileCopiesClient) as SpyObj<FileCopiesClient>;
     storageSolutionsClient = TestBed.inject(StorageSolutionsClient) as SpyObj<StorageSolutionsClient>;
-    messagesService = TestBed.inject(MessageService) as SpyObj<MessageService>;
+    messageService = TestBed.inject(MessageService) as SpyObj<MessageService>;
     notificationService = TestBed.inject(NotificationService);
 
-    messageSimulator = MessageSimulator.given(messagesService);
+    messageSimulator = MessageSimulator.given(messageService);
 
     fileCopiesClient.getFileCopyQueue.and.returnValue(of({content: []}) as any);
     storageSolutionsClient.getStorageSolutionStatuses.and.returnValue(of({statuses: {}}) as any);
@@ -105,12 +105,10 @@ describe('QueueComponent', () => {
   });
 
   it('should subscribe to message topics on initialization', () => {
-    fixture = TestBed.createComponent(QueueComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
 
-    expect(messagesService.watch).toHaveBeenCalledWith(FileBackupMessageTopics.TopicBackupsStatusChanged);
-    expect(messagesService.watch).toHaveBeenCalledWith(FileBackupMessageTopics.TopicBackupsProgressUpdate);
+    expect(messageService.watch).toHaveBeenCalledWith(FileBackupMessageTopics.TopicBackupsStatusChanged);
+    expect(messageService.watch).toHaveBeenCalledWith(FileBackupMessageTopics.TopicBackupsProgressUpdate);
   });
 
   it('should show failure notification given error when refresh is called',
@@ -291,7 +289,7 @@ describe('QueueComponent', () => {
       fixture.detectChanges();
       tick();
 
-      component.fileCopyWithContextPage.set(TestPage.of([initialFileCopyWithContext]));
+      component.fileCopyWithContextPage.set(initialQueue);
       const notFoundFileCopy = TestFileCopy.inProgress();
       notFoundFileCopy.id = 'notFoundFileCopyId';
       notFoundFileCopy.naturalId.gameFileId = 'notFoundFileCopyId';
@@ -299,6 +297,7 @@ describe('QueueComponent', () => {
       simulateFileCopyStatusChangedEventReceived(
         notFoundFileCopy.id, notFoundFileCopy.naturalId, FileCopyStatus.InProgress);
 
+      expect(component.fileCopyWithContextPage()).toBe(initialQueue);
       assertQueueContains(initialFileCopyWithContext);
     }));
 
@@ -335,10 +334,11 @@ describe('QueueComponent', () => {
       fixture.detectChanges();
       tick();
 
-      component.fileCopyWithContextPage.set(TestPage.of([initialFileCopyWithContext]));
+      component.fileCopyWithContextPage.set(initialQueue);
       simulateReplicationProgressUpdateEventReceived('unknownFileCopyId',
         {gameFileId: 'unknownGameFileId', backupTargetId: 'unknownBackupTargetId'});
 
+      expect(component.fileCopyWithContextPage()).toBe(initialQueue);
       expect(fixture.nativeElement.textContent).not.toContain('25%');
     }));
 
@@ -384,53 +384,68 @@ describe('QueueComponent', () => {
     expect(spy).toHaveBeenCalledWith(fileCopyWithContext);
   });
 
-  it('removeFileCopyFromQueue should return current page if page is undefined', () => {
+  it('should not remove file copy from queue when status changed event is received and page is undefined', () => {
     component.fileCopyWithContextPage.set(undefined);
-    component.removeFileCopyFromQueue({fileCopy: {id: 'any'}} as any);
+
+    emitFileCopyStatusChanged(TestFileCopyStatusChangedEvent.withContent(
+      'any', {gameFileId: 'any', backupTargetId: 'any'}, FileCopyStatus.StoredIntegrityVerified));
+
     expect(component.fileCopyWithContextPage()).toBeUndefined();
   });
 
-  it('updateFileCopyStatusInQueue should return current page if page is undefined', () => {
+  it('should not update file copy status in queue when status changed event is received and page is undefined', () => {
     component.fileCopyWithContextPage.set(undefined);
-    component.updateFileCopyStatusInQueue({fileCopy: {id: 'any'}} as any);
+
+    emitFileCopyStatusChanged(TestFileCopyStatusChangedEvent.withContent(
+      'any', {gameFileId: 'any', backupTargetId: 'any'}, FileCopyStatus.InProgress));
+
     expect(component.fileCopyWithContextPage()).toBeUndefined();
   });
 
   it('onReplicationProgressChanged should return early if page is undefined', () => {
     component.fileCopyWithContextPage.set(undefined);
+
     component.onReplicationProgressChanged({fileCopyId: 'any', percentage: 10, timeLeftSeconds: 10} as any);
+
     expect(component.fileCopyWithContextPage()).toBeUndefined();
   });
 
-  it('removeFileCopyFromQueue should return current page if item is not found in content', () => {
+  it('should not remove file copy from queue when status changed event is received and item is not found in content', () => {
     const item = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
-    const page = TestPage.of([TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued())]);
-    component.fileCopyWithContextPage.set(page);
+    item.fileCopy.id = 'notFoundId';
+    component.fileCopyWithContextPage.set(initialQueue);
 
-    component.removeFileCopyFromQueue(item);
+    emitFileCopyStatusChanged(TestFileCopyStatusChangedEvent.withContent(
+      item.fileCopy.id, item.fileCopy.naturalId, FileCopyStatus.StoredIntegrityVerified));
 
-    expect(component.fileCopyWithContextPage()).toBe(page);
+    expect(component.fileCopyWithContextPage()).toBe(initialQueue);
   });
 
-  it('updateFileCopyStatusInQueue should return current page if item is not found in content', () => {
+  it('should not update file copy status in queue when status changed event is received and item is not found in content', () => {
     const item = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
-    const page = TestPage.of([TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued())]);
-    component.fileCopyWithContextPage.set(page);
+    item.fileCopy.id = 'notFoundId';
+    component.fileCopyWithContextPage.set(initialQueue);
 
-    component.updateFileCopyStatusInQueue(item);
+    emitFileCopyStatusChanged(TestFileCopyStatusChangedEvent.withContent(
+      item.fileCopy.id, item.fileCopy.naturalId, FileCopyStatus.InProgress));
 
-    expect(component.fileCopyWithContextPage()).toBe(page);
+    expect(component.fileCopyWithContextPage()).toBe(initialQueue);
   });
 
   it('onReplicationProgressChanged should return early if item is not found in content during update', () => {
-    const item = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
-    const page = TestPage.of([item]);
-    component.fileCopyWithContextPage.set(page);
+    component.fileCopyWithContextPage.set(initialQueue);
 
-    spyOn(component, 'findFileCopyWithContextInQueue').and.returnValue(TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued()) as any);
+    component.onReplicationProgressChanged({fileCopyId: 'notFoundId', percentage: 10, timeLeftSeconds: 10} as any);
 
-    component.onReplicationProgressChanged({fileCopyId: 'any', percentage: 10, timeLeftSeconds: 10} as any);
+    expect(component.fileCopyWithContextPage()).toBe(initialQueue);
+  });
 
-    expect(component.fileCopyWithContextPage()).toBe(page);
+  it('should block refresh when already loading', async () => {
+    fileCopiesClient.getFileCopyQueue.calls.reset();
+    component.fileCopiesAreLoading.set(true);
+
+    await component.refreshAction();
+
+    expect(fileCopiesClient.getFileCopyQueue).not.toHaveBeenCalled();
   });
 });

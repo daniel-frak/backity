@@ -4,7 +4,7 @@ import {Component, input} from '@angular/core';
 @Component({
   selector: 'app-loaded-content',
   templateUrl: './loaded-content.component.html',
-  styleUrls: ['./loaded-content.component.scss'],
+  styleUrl: './loaded-content.component.scss',
   imports: []
 })
 export class LoadedContentComponent {

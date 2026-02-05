@@ -1,6 +1,6 @@
 import {TestBed} from '@angular/core/testing';
 
-import {of} from "rxjs";
+import {from, of} from "rxjs";
 import {MessageService} from './message.service';
 import {Client} from "@stomp/stompjs";
 import {RxStompService} from "@app/shared/backend/services/rx-stomp/rx-stomp.service";
@@ -48,5 +48,34 @@ describe('MessageService', () => {
 
     expect(calledDestination).toEqual(expectedDestination);
     expect(callbackResult).toEqual(messagePayload);
+  });
+
+  it('should drop malformed JSON messages and continue the stream', () => {
+    const expectedDestination = 'topic';
+    const badBody = '{bad-json';
+    const goodPayload = {ok: true};
+    const values: any[] = [];
+    let errored = false;
+
+    spyOn(console, 'error');
+
+    rxStompService.watch.and.callFake((destination: string) => {
+      expect(destination).toEqual(expectedDestination);
+      return from([
+        {body: badBody} as any,
+        {body: JSON.stringify(goodPayload)} as any
+      ]);
+    });
+
+    service.watch<any>(expectedDestination).subscribe({
+      next: v => values.push(v),
+      error: () => {
+        errored = true;
+      }
+    });
+
+    expect(errored).toBeFalse();
+    expect(values).toEqual([goodPayload]);
+    expect(console.error).toHaveBeenCalled();
   });
 });

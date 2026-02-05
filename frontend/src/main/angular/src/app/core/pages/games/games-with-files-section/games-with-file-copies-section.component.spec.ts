@@ -53,7 +53,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
   let fileCopiesClient: SpyObj<FileCopiesClient>;
   let backupTargetsClient: SpyObj<BackupTargetsClient>;
   let storageSolutionsClient: SpyObj<StorageSolutionsClient>;
-  let messagesService: SpyObj<MessageService>;
+  let messageService: SpyObj<MessageService>;
   let notificationService: SpyObj<NotificationService>;
   let modalService: SpyObj<ModalService>;
   let mockWindow: any;
@@ -84,7 +84,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
           provide: StorageSolutionsClient,
           useValue: createSpyObj('StorageSolutionsClient', ['getStorageSolutionStatuses'])
         },
-        {provide: MessageService, useValue: createSpyObj('MessagesService', ['watch'])},
+        {provide: MessageService, useValue: createSpyObj('MessageService', ['watch'])},
         {provide: NotificationService, useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])},
         {provide: ModalService, useValue: createSpyObj('ModalService', ['withConfirmationModal'])},
         {provide: 'Window', useValue: mockWindow}
@@ -101,11 +101,11 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     (fileCopiesClient as any).configuration = new Configuration({basePath: 'http://localhost:8080'});
     backupTargetsClient = TestBed.inject(BackupTargetsClient) as SpyObj<BackupTargetsClient>;
     storageSolutionsClient = TestBed.inject(StorageSolutionsClient) as SpyObj<StorageSolutionsClient>;
-    messagesService = TestBed.inject(MessageService) as SpyObj<MessageService>;
+    messageService = TestBed.inject(MessageService) as SpyObj<MessageService>;
     notificationService = TestBed.inject(NotificationService) as SpyObj<NotificationService>;
     modalService = TestBed.inject(ModalService) as SpyObj<ModalService>;
 
-    messageSimulator = MessageSimulator.given(messagesService);
+    messageSimulator = MessageSimulator.given(messageService);
 
     localFolderBackupTarget = TestBackupTarget.localFolder();
     s3BackupTarget = TestBackupTarget.s3();
@@ -131,10 +131,6 @@ describe('GamesWithFileCopiesSectionComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should initialize with loading state', () => {
-    expect(component.gamesAreLoading()).toBeTrue();
   });
 
   it('should refresh on init', fakeAsync(() => {
@@ -185,6 +181,15 @@ describe('GamesWithFileCopiesSectionComponent', () => {
 
     expect(notificationService.showFailure).toHaveBeenCalledWith('Error fetching games', mockError);
   }));
+
+  it('should block refresh when already loading', async () => {
+    gamesClient.getGames.calls.reset();
+    component.gamesAreLoading.set(true);
+
+    await component.refresh();
+
+    expect(gamesClient.getGames).not.toHaveBeenCalled();
+  });
 
   it('should enqueue file copy and set its status to Enqueued', async () => {
     const fileCopy = TestFileCopy.enqueued();
@@ -372,10 +377,8 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     fileCopyId: string, fileCopyNaturalId: FileCopyNaturalId, newStatus: FileCopyStatus): void {
     const event: FileCopyStatusChangedEvent =
       TestFileCopyStatusChangedEvent.withContent(fileCopyId, fileCopyNaturalId, newStatus);
-    if (fixture) {
-      emitBackupStatusChanged(event);
-      fixture.detectChanges();
-    }
+    emitBackupStatusChanged(event);
+    fixture.detectChanges();
   }
 
   function emitBackupStatusChanged(event: FileCopyStatusChangedEvent) {
@@ -481,12 +484,9 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     }));
 
   function simulateFileCopyProgressChangedEventReceived(
-    progressChangedEvent: FileCopyReplicationProgressUpdatedEvent):
-    void {
-    if (fixture) {
-      emitProgressUpdate(progressChangedEvent);
-      fixture.detectChanges();
-    }
+    progressChangedEvent: FileCopyReplicationProgressUpdatedEvent): void {
+    emitProgressUpdate(progressChangedEvent);
+    fixture.detectChanges();
   }
 
   function emitProgressUpdate(progressChangedEvent: FileCopyReplicationProgressUpdatedEvent) {

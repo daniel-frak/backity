@@ -61,7 +61,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 })
 export class QueueComponent implements OnInit {
 
-  fileCopiesAreLoading = signal(true);
+  fileCopiesAreLoading = signal(false);
   fileCopyWithContextPage = signal<Page<FileCopyWithContext> | undefined>(undefined);
   pageNumber = signal(1);
   pageSize = signal(3);
@@ -88,7 +88,7 @@ export class QueueComponent implements OnInit {
   readonly refreshAction: () => Promise<void> = () => this.refresh();
 
   async refresh(): Promise<void> {
-    if (this.fileCopiesAreLoading() && this.fileCopyWithContextPage() !== undefined) {
+    if (this.fileCopiesAreLoading()) {
       return;
     }
     this.fileCopiesAreLoading.set(true);
@@ -132,64 +132,60 @@ export class QueueComponent implements OnInit {
     return this.storageSolutionStatusesById().get(storageSolutionId);
   }
 
-  private onStatusChanged(event: FileCopyStatusChangedEvent) {
-    const foundFileCopyWithContext: FileCopyWithContext | undefined =
-      this.findFileCopyWithContextInQueue(event.fileCopyId);
-    if (!foundFileCopyWithContext) {
-      return;
-    }
-    if (event.newStatus != FileCopyStatus.Enqueued && event.newStatus != FileCopyStatus.InProgress) {
-      this.removeFileCopyFromQueue(foundFileCopyWithContext);
-    }
-    if (event.newStatus == FileCopyStatus.InProgress) {
-      this.updateFileCopyStatusInQueue(foundFileCopyWithContext);
-    }
-  }
-
   findFileCopyWithContextInQueue(fileCopyId: string): FileCopyWithContext | undefined {
     return this.fileCopyWithContextPage()?.content
       ?.find(fileCopyWithContext => fileCopyWithContext?.fileCopy.id == fileCopyId);
   }
 
-  removeFileCopyFromQueue(foundFileCopyWithContext: FileCopyWithContext) {
-    this.fileCopyWithContextPage.update(page => {
-      if (!page) {
-        return page;
+  private removeFileCopyFromQueue(foundFileCopyWithContext: FileCopyWithContext) {
+    const page = this.fileCopyWithContextPage();
+    if (!page) {
+      return;
+    }
+    const index: number = this.getIndexInPage(page, foundFileCopyWithContext);
+    if (index === -1) {
+      return;
+    }
+
+    this.fileCopyWithContextPage.update(p => {
+      if (!p) {
+        return p;
       }
-      const index = page.content.indexOf(foundFileCopyWithContext);
-      if (index !== -1) {
-        const newContent = [...page.content];
-        newContent.splice(index, 1);
-        return {...page, content: newContent};
-      }
-      return page;
+      const newContent = [...p.content];
+      newContent.splice(index, 1);
+      return {...p, content: newContent};
     });
   }
 
-  updateFileCopyStatusInQueue(foundFileCopyWithContext: FileCopyWithContext) {
-    this.fileCopyWithContextPage.update(page => {
-      if (!page) {
-        return page;
+  private updateFileCopyStatusInQueue(foundFileCopyWithContext: FileCopyWithContext) {
+    const page = this.fileCopyWithContextPage();
+    if (!page) {
+      return;
+    }
+    const index: number = this.getIndexInPage(page, foundFileCopyWithContext);
+    if (index === -1) {
+      return;
+    }
+
+    this.fileCopyWithContextPage.update(p => {
+      if (!p) {
+        return p;
       }
-      const index = page.content.indexOf(foundFileCopyWithContext);
-      if (index !== -1) {
-        const newContent = [...page.content];
-        newContent[index] = {
-          ...foundFileCopyWithContext,
-          fileCopy: {
-            ...foundFileCopyWithContext.fileCopy,
-            status: FileCopyStatus.InProgress
-          },
-          // We might have gotten the status change and progress update events out of order, in which case we don't want
-          // to reset the progress on status change:
-          progress: foundFileCopyWithContext.progress ?? {
-            percentage: 0,
-            timeLeftSeconds: 0
-          }
-        };
-        return {...page, content: newContent};
-      }
-      return page;
+      const newContent = [...p.content];
+      newContent[index] = {
+        ...foundFileCopyWithContext,
+        fileCopy: {
+          ...foundFileCopyWithContext.fileCopy,
+          status: FileCopyStatus.InProgress
+        },
+        // We might have gotten the status change and progress update events out of order, in which case we don't want
+        // to reset the progress on status change:
+        progress: foundFileCopyWithContext.progress ?? {
+          percentage: 0,
+          timeLeftSeconds: 0
+        }
+      };
+      return {...p, content: newContent};
     });
   }
 
@@ -204,7 +200,7 @@ export class QueueComponent implements OnInit {
       if (!page) {
         return page;
       }
-      const index = page.content.indexOf(foundFileCopyWithContext);
+      const index: number = this.getIndexInPage(page, foundFileCopyWithContext);
       if (index !== -1) {
         const newContent = [...page.content];
         newContent[index] = {
@@ -218,5 +214,23 @@ export class QueueComponent implements OnInit {
       }
       return page;
     });
+  }
+
+  private getIndexInPage(page: Page<FileCopyWithContext>, foundFileCopyWithContext: FileCopyWithContext) {
+    return page.content.findIndex(item => item.fileCopy.id == foundFileCopyWithContext.fileCopy.id)
+  }
+
+  private onStatusChanged(event: FileCopyStatusChangedEvent) {
+    const foundFileCopyWithContext: FileCopyWithContext | undefined =
+      this.findFileCopyWithContextInQueue(event.fileCopyId);
+    if (!foundFileCopyWithContext) {
+      return;
+    }
+    if (event.newStatus != FileCopyStatus.Enqueued && event.newStatus != FileCopyStatus.InProgress) {
+      this.removeFileCopyFromQueue(foundFileCopyWithContext);
+    }
+    if (event.newStatus == FileCopyStatus.InProgress) {
+      this.updateFileCopyStatusInQueue(foundFileCopyWithContext);
+    }
   }
 }

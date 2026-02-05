@@ -6,7 +6,7 @@
     @if (templateRefs.length) {
       <thead>
         <tr>
-          @for (columnTitle of getColumnTitles(); track columnTitle) {
+          @for (columnTitle of columnTitles(); track columnTitle) {
             <th scope="col">
               {{ columnTitle }}
             </th>
@@ -19,7 +19,7 @@
         <tbody>
           <tr class="caption">
             @if (group.caption) {
-              <th scope="rowgroup" [attr.colspan]="getColumnTitles().length" class="group-caption">
+              <th scope="rowgroup" [attr.colspan]="columnTitles().length" class="group-caption">
                 {{ group.caption }}
               </th>
             }
@@ -51,7 +51,7 @@
           </tr>
         } @empty {
           <tr>
-            <td [attr.colspan]="getColumnTitles().length" class="hide-title">No data</td>
+            <td [attr.colspan]="columnTitles().length" class="hide-title">No data</td>
           </tr>
         }
       </tbody>

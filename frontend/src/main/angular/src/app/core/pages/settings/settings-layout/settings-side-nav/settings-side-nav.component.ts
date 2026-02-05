@@ -6,7 +6,7 @@ import {RouterLink, RouterLinkActive} from '@angular/router';
 @Component({
     selector: 'app-settings-side-nav',
     templateUrl: './settings-side-nav.component.html',
-    styleUrls: ['./settings-side-nav.component.scss'],
+    styleUrl: './settings-side-nav.component.scss',
     imports: [
         NgClass,
         RouterLinkActive,

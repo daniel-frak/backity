@@ -100,7 +100,7 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
     FileCopyStatus.StoredIntegrityVerified
   ];
 
-  gamesAreLoading = signal(true);
+  gamesAreLoading = signal(false);
   storageSolutionStatusesById = signal<Map<string, StorageSolutionStatus>>(new Map());
   gameWithFileCopiesPage = signal<Page<GameWithFileCopies> | undefined>(undefined);
   potentialFileCopiesWithContext = signal<Map<string, PotentialFileCopyWithContext>>(
@@ -142,7 +142,7 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
   }
 
   async refresh(): Promise<void> {
-    if (this.gamesAreLoading() && this.gameWithFileCopiesPage() !== undefined) {
+    if (this.gamesAreLoading()) {
       return;
     }
     this.gamesAreLoading.set(true);

@@ -10,13 +10,13 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 @Component({
     selector: 'app-logs',
     templateUrl: './logs.component.html',
-    styleUrls: ['./logs.component.scss'],
+    styleUrl: './logs.component.scss',
     imports: [PageHeaderComponent, LoadedContentComponent, SectionComponent]
 })
 export class LogsComponent implements OnInit {
 
   logs = signal<string[]>([]);
-  public logsAreLoading = signal(true);
+  public logsAreLoading = signal(false);
 
   constructor(private readonly logsClient: LogsClient, private readonly messageService: MessageService) {
     this.messageService.watch<LogCreatedEvent>(LogsMessageTopics.TopicLogs)
@@ -39,6 +39,9 @@ export class LogsComponent implements OnInit {
   }
 
   refresh() {
+    if (this.logsAreLoading()) {
+      return;
+    }
     this.logsAreLoading.set(true);
     this.logsClient.getLogs()
       .subscribe(l => this.updateLogs(l));

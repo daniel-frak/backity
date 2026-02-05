@@ -5,21 +5,21 @@ import SpyObj = jasmine.SpyObj;
 /**
  * Utility for simulating incoming {@link MessageService} messages.
  *
- * Use {@link given} to initialize it with a MessagesService spy.
+ * Use {@link given} to initialize it with a MessageService spy.
  * Use {@link emit} to push a message to a specific topic.
  */
 export class MessageSimulator {
 
   private readonly subjects = new Map<string, Subject<any>>();
 
-  private constructor(private readonly messagesService: SpyObj<MessageService>) {
-    messagesService.watch.and.callFake((topic: string) => {
+  private constructor(private readonly messageService: SpyObj<MessageService>) {
+    messageService.watch.and.callFake((topic: string) => {
       return this.getOrCreateSubject(topic).asObservable();
     });
   }
 
-  static given(messagesService: SpyObj<MessageService>): MessageSimulator {
-    return new MessageSimulator(messagesService);
+  static given(messageService: SpyObj<MessageService>): MessageSimulator {
+    return new MessageSimulator(messageService);
   }
 
   emit(topic: string, message: any): void {

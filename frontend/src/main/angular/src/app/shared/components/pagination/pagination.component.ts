@@ -48,11 +48,20 @@ export class PaginationComponent<T> implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe((params: Params): void => {
       Promise.resolve().then(() => { // Make update async to avoid ExpressionChangedAfterItHasBeenCheckedError
-        if (params[this.pageNumberQueryParamName()]) {
-          this.pageNumber.set(Number.parseInt(params[this.pageNumberQueryParamName()]));
+        const pageNumberParam = params[this.pageNumberQueryParamName()];
+        if (pageNumberParam) {
+          const parsedPageNumber = Number.parseInt(pageNumberParam, 10);
+          if (Number.isFinite(parsedPageNumber) && parsedPageNumber > 0) {
+            this.pageNumber.set(parsedPageNumber);
+          }
         }
-        if (params[this.pageSizeQueryParamName()]) {
-          this.pageSize.set(Number.parseInt(params[this.pageSizeQueryParamName()]));
+
+        const pageSizeParam = params[this.pageSizeQueryParamName()];
+        if (pageSizeParam) {
+          const parsedPageSize = Number.parseInt(pageSizeParam, 10);
+          if (Number.isFinite(parsedPageSize) && parsedPageSize > 0) {
+            this.pageSize.set(parsedPageSize);
+          }
         }
         this.pageChanged.emit();
       });
@@ -60,7 +69,7 @@ export class PaginationComponent<T> implements OnInit {
   }
 
   onPageNumberChange(pageNumber: number) {
-    if (!pageNumber) {
+    if (!Number.isFinite(pageNumber) || pageNumber <= 0) {
       return;
     }
     if (this.pageNumber() != pageNumber) {
@@ -73,6 +82,9 @@ export class PaginationComponent<T> implements OnInit {
   }
 
   onPageSizeChange(pageSize: number) {
+    if (!Number.isFinite(pageSize) || pageSize <= 0) {
+      return;
+    }
     this.pageSize.set(pageSize);
     this.pageChanged.emit();
     this.updateUrlQueryParams({
@@ -92,7 +104,7 @@ export class PaginationComponent<T> implements OnInit {
     return this.currentPage()?.totalElements ?? 0;
   }
 
-  private updateUrlQueryParams(queryParams: any) {
+  private updateUrlQueryParams(queryParams: Params) {
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
       queryParams: queryParams,

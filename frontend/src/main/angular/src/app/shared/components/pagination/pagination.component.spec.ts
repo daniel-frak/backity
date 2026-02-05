@@ -312,4 +312,78 @@ describe('PaginationComponent', () => {
     expect(component.pageNumber()).toBe(5);
     expect(component.pageSize()).toBe(20);
   });
+
+  it('should ignore NaN, zero, and negative values from query params', async () => {
+    fixture.componentRef.setInput('pageNumber', 5);
+    fixture.componentRef.setInput('pageSize', 20);
+    activatedRoute.queryParams = of({
+      page: 'NaN',
+      'page-size': '0',
+    });
+
+    component.ngOnInit();
+    await fixture.whenStable();
+
+    expect(component.pageNumber()).toBe(5);
+    expect(component.pageSize()).toBe(20);
+
+    activatedRoute.queryParams = of({
+      page: '-1',
+      'page-size': '-10',
+    });
+
+    component.ngOnInit();
+    await fixture.whenStable();
+
+    expect(component.pageNumber()).toBe(5);
+    expect(component.pageSize()).toBe(20);
+  });
+
+  it('should ignore invalid values in onPageNumberChange', () => {
+    fixture.componentRef.setInput('pageNumber', 5);
+    spyOn(component.pageChanged, 'emit');
+
+    component.onPageNumberChange(NaN);
+    expect(component.pageNumber()).toBe(5);
+
+    component.onPageNumberChange(0);
+    expect(component.pageNumber()).toBe(5);
+
+    component.onPageNumberChange(-1);
+    expect(component.pageNumber()).toBe(5);
+
+    expect(component.pageChanged.emit).not.toHaveBeenCalled();
+  });
+
+  it('should ignore invalid values in onPageSizeChange', () => {
+    fixture.componentRef.setInput('pageSize', 20);
+    spyOn(component.pageChanged, 'emit');
+
+    component.onPageSizeChange(NaN);
+    expect(component.pageSize()).toBe(20);
+
+    component.onPageSizeChange(0);
+    expect(component.pageSize()).toBe(20);
+
+    component.onPageSizeChange(-1);
+    expect(component.pageSize()).toBe(20);
+
+    expect(component.pageChanged.emit).not.toHaveBeenCalled();
+  });
+
+  it('should ignore non-integer values from query params (parsed as integers)', async () => {
+    fixture.componentRef.setInput('pageNumber', 5);
+    fixture.componentRef.setInput('pageSize', 20);
+    activatedRoute.queryParams = of({
+      page: '2.5',
+      'page-size': '15.9',
+    });
+
+    component.ngOnInit();
+    await fixture.whenStable();
+
+    // parseInt will parse '2.5' as 2 and '15.9' as 15
+    expect(component.pageNumber()).toBe(2);
+    expect(component.pageSize()).toBe(15);
+  });
 });

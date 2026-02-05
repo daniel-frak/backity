@@ -5,7 +5,7 @@ import {GamesWithFileCopiesSectionComponent} from "@app/core/pages/games/games-w
 @Component({
     selector: 'app-games',
     templateUrl: './games.component.html',
-    styleUrls: ['./games.component.scss'],
+    styleUrl: './games.component.scss',
     imports: [PageHeaderComponent, GamesWithFileCopiesSectionComponent]
 })
 export class GamesComponent {

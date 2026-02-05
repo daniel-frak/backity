@@ -4,7 +4,7 @@ import {RouterOutlet} from '@angular/router';
 @Component({
   selector: 'app-contained-layout',
   templateUrl: './contained-layout.component.html',
-  styleUrls: ['./contained-layout.component.scss'],
+  styleUrl: './contained-layout.component.scss',
   imports: [RouterOutlet]
 })
 export class ContainedLayoutComponent {

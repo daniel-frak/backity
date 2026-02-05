@@ -9,7 +9,7 @@ import {ControlValueAccessor, NgControl, ReactiveFormsModule} from "@angular/for
     ReactiveFormsModule
   ],
   templateUrl: './input.component.html',
-  styleUrls: ['./input.component.scss']
+  styleUrl: './input.component.scss'
 })
 export class InputComponent implements ControlValueAccessor {
 
@@ -30,7 +30,7 @@ export class InputComponent implements ControlValueAccessor {
   }
 
   private generateId(): string {
-    return `input-${Math.random().toString(36).substring(2, 9)}`;
+    return `input-${Math.random().toString(36).substring(2, 9)}`; // NOSONAR
   }
 
   onChange: (value: any) => void = () => {

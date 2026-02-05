@@ -5,24 +5,24 @@ import SpyObj = jasmine.SpyObj;
 
 describe('MessageSimulator', () => {
 
-  let messagesServiceSpy: SpyObj<MessageService>;
+  let messageServiceSpy: SpyObj<MessageService>;
 
   beforeEach(() => {
-    messagesServiceSpy = createSpyObj('MessagesService', ['watch']);
+    messageServiceSpy = createSpyObj('MessageService', ['watch']);
   });
 
   it('should mock messageService.watch and route messages via given().emit()', () => {
     const topic = 'someTopic';
     const callback = jasmine.createSpy('callback');
 
-    const messageSimulator = MessageSimulator.given(messagesServiceSpy);
+    const messageSimulator = MessageSimulator.given(messageServiceSpy);
 
-    messagesServiceSpy.watch(topic).subscribe(callback);
+    messageServiceSpy.watch(topic).subscribe(callback);
 
     const message = {key: 'value'};
     messageSimulator.emit(topic, message);
 
     expect(callback).toHaveBeenCalledWith(message);
-    expect(messagesServiceSpy.watch).toHaveBeenCalledWith(topic);
+    expect(messageServiceSpy.watch).toHaveBeenCalledWith(topic);
   });
 });

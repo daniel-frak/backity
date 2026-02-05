@@ -22,7 +22,7 @@ import {
 @Component({
   selector: 'app-gog-auth',
   templateUrl: './gog-auth.component.html',
-  styleUrls: ['./gog-auth.component.scss'],
+  styleUrl: './gog-auth.component.scss',
   imports: [
     LoadedContentComponent,
     CommonModule,

@@ -13,7 +13,7 @@ describe('LogsComponent', () => {
   let fixture: ComponentFixture<LogsComponent>;
   let messageSimulator: MessageSimulator;
   let logsClient: SpyObj<LogsClient>;
-  let messagesService: SpyObj<MessageService>;
+  let messageService: SpyObj<MessageService>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -34,8 +34,8 @@ describe('LogsComponent', () => {
     logsClient = TestBed.inject(LogsClient) as SpyObj<LogsClient>;
     logsClient.getLogs.and.returnValue(of([]) as Observable<any>);
 
-    messagesService = TestBed.inject(MessageService) as SpyObj<MessageService>;
-    messageSimulator = MessageSimulator.given(messagesService);
+    messageService = TestBed.inject(MessageService) as SpyObj<MessageService>;
+    messageSimulator = MessageSimulator.given(messageService);
   });
 
   beforeEach(() => {
@@ -49,7 +49,7 @@ describe('LogsComponent', () => {
   });
 
   it('should subscribe to new logs', () => {
-    expect(messagesService.watch).toHaveBeenCalledWith(LogsMessageTopics.TopicLogs);
+    expect(messageService.watch).toHaveBeenCalledWith(LogsMessageTopics.TopicLogs);
   });
 
   it('should add new logs to list', () => {
@@ -73,5 +73,14 @@ describe('LogsComponent', () => {
 
   it('should refresh on init', () => {
     expect(logsClient.getLogs).toHaveBeenCalled();
+  });
+
+  it('should block refresh when already loading', () => {
+    logsClient.getLogs.calls.reset();
+    component.logsAreLoading.set(true);
+
+    component.refresh();
+
+    expect(logsClient.getLogs).not.toHaveBeenCalled();
   });
 });
