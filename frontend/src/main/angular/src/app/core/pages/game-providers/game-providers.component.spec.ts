@@ -143,14 +143,14 @@ describe('GameProvidersComponent', () => {
     messageSimulator.emit(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStarted, event);
   }
 
-  it('should return early from refreshInfo when already loading', () => {
+  it('should not refresh info when already loading', () => {
     gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
     fixture = TestBed.createComponent(GameProvidersComponent);
     component = fixture.componentInstance;
     component.infoIsLoading.set(true);
     gameContentDiscoveryClient.getGameContentDiscoveryOverviews.calls.reset();
 
-    fixture.detectChanges();
+    fixture.detectChanges(); // Triggers refreshInfo() on init
 
     expect(gameContentDiscoveryClient.getGameContentDiscoveryOverviews).not.toHaveBeenCalled();
   });
