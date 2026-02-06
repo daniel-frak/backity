@@ -9,6 +9,5 @@ public class LogCreatedEvent {
     @NotNull
     String message;
 
-    @NotNull
-    Integer maxLogs;
+    int maxLogs;
 }

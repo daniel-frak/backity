@@ -3,11 +3,11 @@
 </app-page-header>
 
 <app-section>
-  <app-loaded-content [isLoading]="fileCopiesAreLoading">
+  <app-loaded-content [isLoading]="fileCopiesAreLoading()">
     <app-auto-layout>
       <div class="button-container">
         <app-button [actionAsync]="refreshAction"
-                    [disabled]="fileCopiesAreLoading"
+                    [disabled]="fileCopiesAreLoading()"
                     title="Refresh"
                     buttonClass="btn-icon-only"
                     testId="refresh-queue-btn" buttonStyle="secondary">
@@ -15,7 +15,7 @@
         </app-button>
       </div>
 
-      @for (fileCopyWithContext of fileCopyWithContextPage?.content; track fileCopyWithContext) {
+      @for (fileCopyWithContext of fileCopyWithContextPage()?.content; track fileCopyWithContext) {
         <app-icon-item iconClass="bi bi-copy">
           <ng-container title>
             {{ fileCopyWithContext.backupTarget.name }}
@@ -72,11 +72,12 @@
 
       <app-pagination pageSizeQueryParamName="enqueued-file-copies-page-size"
                       pageNumberQueryParamName="enqueued-file-copies-page"
-                      [disabled]="fileCopiesAreLoading"
-                      [currentPage]="fileCopyWithContextPage"
-                      [(pageNumber)]="pageNumber"
-                      [(pageSize)]="pageSize"
-                      (onPageChange)="refresh()"/>
+                      [disabled]="fileCopiesAreLoading()"
+                      [currentPage]="fileCopyWithContextPage()"
+                      [pageNumber]="pageNumber()"
+                      (pageNumberChange)="pageNumber.set($event); refresh()"
+                      [pageSize]="pageSize()"
+                      (pageSizeChange)="pageSize.set($event); refresh()"/>
     </app-auto-layout>
   </app-loaded-content>
 </app-section>

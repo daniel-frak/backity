@@ -1,7 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import { InputComponent } from './input.component';
-import { By } from '@angular/platform-browser';
+import {InputComponent} from './input.component';
+import {By} from '@angular/platform-browser';
 import {Component, DebugElement} from '@angular/core';
 
 @Component({
@@ -77,5 +77,18 @@ describe('InputComponent', () => {
 
     expect(inputComponent.value).toBe(inputValue);
     expect(onChangeSpy).toHaveBeenCalledWith(inputValue);
+  });
+
+  it('writeValue should set empty string when value is undefined or null', () => {
+    inputComponent.writeValue(undefined);
+    expect(inputComponent.value).toBe('');
+
+    inputComponent.writeValue(null as any);
+    expect(inputComponent.value).toBe('');
+  });
+
+  it('writeValue should set provided value when non-empty', () => {
+    inputComponent.writeValue('hello');
+    expect(inputComponent.value).toBe('hello');
   });
 });

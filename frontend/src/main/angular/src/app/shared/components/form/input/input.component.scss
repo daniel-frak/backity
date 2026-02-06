@@ -1,5 +1,5 @@
 @use "sass:map";
-@import "bootstrap/basics";
+@use "bootstrap/basics" as *;
 
 .input-icon-wrapper {
   position: relative;

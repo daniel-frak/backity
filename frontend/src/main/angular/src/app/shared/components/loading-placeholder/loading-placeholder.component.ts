@@ -1,5 +1,5 @@
-import { Component, Input } from '@angular/core';
-import { NgStyle } from "@angular/common";
+import {Component, input} from '@angular/core';
+import {NgStyle} from "@angular/common";
 
 @Component({
     selector: 'app-loading-placeholder',
@@ -11,5 +11,5 @@ import { NgStyle } from "@angular/common";
 })
 export class LoadingPlaceholderComponent {
 
-  @Input() widths: string[] = ['6rem'];
+  readonly widths = input<string[]>(['6rem']);
 }

@@ -1,5 +1,5 @@
-import {Component, Input} from '@angular/core';
-import { NgClass } from "@angular/common";
+import {Component, input, model} from '@angular/core';
+import {NgClass} from "@angular/common";
 import {ButtonStyle} from "@app/shared/components/button/button-style";
 import {ButtonSize} from "@app/shared/components/button/button-size";
 
@@ -13,18 +13,18 @@ import {ButtonSize} from "@app/shared/components/button/button-size";
 })
 export class ButtonComponent {
 
-  @Input() isLoading = false;
-  @Input() buttonStyle: ButtonStyle = "primary";
-  @Input() outline = false;
-  @Input() buttonType = "button";
-  @Input() buttonSize: ButtonSize = undefined;
-  @Input() buttonClass = "";
-  @Input() disabled = false;
-  @Input() actionAsync?: () => Promise<void>;
-  @Input() action?: VoidFunction;
-  @Input() title?: string;
-  @Input() testId?: string;
-  @Input() ngbAutofocus?: boolean;
+  readonly isLoading = model(false);
+  readonly buttonStyle = input<ButtonStyle>("primary");
+  readonly outline = input(false);
+  readonly buttonType = input("button");
+  readonly buttonSize = input<ButtonSize>();
+  readonly buttonClass = input("");
+  readonly disabled = input(false);
+  readonly actionAsync = input<() => Promise<void>>();
+  readonly action = input<VoidFunction>();
+  readonly title = input<string>();
+  readonly testId = input<string>();
+  readonly ngbAutofocus = input<boolean>();
 
   private static readonly sizeClassMap = new Map<ButtonSize, string>([
     ['small',  'btn-sm'],
@@ -33,31 +33,33 @@ export class ButtonComponent {
   ]);
 
   getButtonStyle() {
-    if (this.outline) {
-      return "btn-outline-" + this.buttonStyle;
+    if (this.outline()) {
+      return "btn-outline-" + this.buttonStyle();
     }
-    return "btn-" + this.buttonStyle;
+    return "btn-" + this.buttonStyle();
   }
 
   getSizeClass() {
-    return ButtonComponent.sizeClassMap.get(this.buttonSize) ?? '';
+    return ButtonComponent.sizeClassMap.get(this.buttonSize()) ?? '';
   }
 
   async onClick() {
-    if (this.isLoading) {
+    if (this.isLoading()) {
       return;
     }
 
-    this.isLoading = true;
+    this.isLoading.set(true);
 
     try {
-      if (this.actionAsync) {
-        await this.actionAsync();
-      } else if (this.action) {
-        this.action();
+      const actionAsync = this.actionAsync();
+      const action = this.action();
+      if (actionAsync) {
+        await actionAsync();
+      } else if (action) {
+        action();
       }
     } finally {
-      this.isLoading = false;
+      this.isLoading.set(false);
     }
   }
 }

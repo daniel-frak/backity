@@ -10,8 +10,9 @@
 /* tslint:disable:no-unused-variable member-ordering */
 
 import {Inject, Injectable, Optional} from '@angular/core';
-import {HttpClient, HttpContext, HttpEvent, HttpParams, HttpResponse} from '@angular/common/http';
+import {HttpClient, HttpContext, HttpEvent, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
+import {OpenApiHttpParams, QueryParamStyle} from '../query.params';
 
 // @ts-ignore
 import {ErrorMessage} from '../model/errorMessage';
@@ -42,11 +43,13 @@ export class GamesClient extends BaseService {
     /**
      * Get games
      * Returns a paginated list of discovered games
+     * @endpoint get /api/games
      * @param pagination
      * @param query
      * @param fileCopyStatus
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public getGames(pagination: RequestPagination, query?: string, fileCopyStatus?: FileCopyStatus, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageGameWithFileCopies>;
     public getGames(pagination: RequestPagination, query?: string, fileCopyStatus?: FileCopyStatus, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageGameWithFileCopies>>;
@@ -56,13 +59,34 @@ export class GamesClient extends BaseService {
             throw new Error('Required parameter pagination was null or undefined when calling getGames.');
         }
 
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>pagination, 'pagination');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>query, 'query');
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>fileCopyStatus, 'file-copy-status');
+        let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'pagination',
+            <any>pagination,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'query',
+            <any>query,
+            QueryParamStyle.Form,
+            true,
+        );
+
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'file-copy-status',
+            <any>fileCopyStatus,
+            QueryParamStyle.Form,
+            true,
+        );
+
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -94,12 +118,12 @@ export class GamesClient extends BaseService {
         return this.httpClient.request<PageGameWithFileCopies>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                params: localVarQueryParameters,
+                params: localVarQueryParameters.toHttpParams(),
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );

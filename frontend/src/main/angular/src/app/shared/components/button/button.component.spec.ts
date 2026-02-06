@@ -30,7 +30,7 @@ describe('ButtonComponent', () => {
   }
 
   it('should disable the button when isLoading is true', () => {
-    component.isLoading = true;
+    fixture.componentRef.setInput('isLoading', true);
     fixture.detectChanges();
     const buttonNativeElement = getButtonDebugElement().nativeElement;
     expect(buttonNativeElement.disabled).toBeTrue();
@@ -38,7 +38,7 @@ describe('ButtonComponent', () => {
 
   it('should call actionAsync when provided', fakeAsync(() => {
     const actionAsyncSpy = jasmine.createSpy().and.returnValue(Promise.resolve());
-    component.actionAsync = actionAsyncSpy;
+    fixture.componentRef.setInput('actionAsync', actionAsyncSpy);
     fixture.detectChanges();
 
     const buttonDebugElement: DebugElement = getButtonDebugElement();
@@ -46,12 +46,12 @@ describe('ButtonComponent', () => {
     tick();
 
     expect(actionAsyncSpy).toHaveBeenCalled();
-    expect(component.isLoading).toBeFalse();
+    expect(component.isLoading()).toBeFalse();
   }));
 
   it('should call action when provided', fakeAsync(() => {
     const actionSpy = jasmine.createSpy();
-    component.action = actionSpy;
+    fixture.componentRef.setInput('action', actionSpy);
     fixture.detectChanges();
 
     const buttonElement = getButtonDebugElement();
@@ -59,7 +59,7 @@ describe('ButtonComponent', () => {
     tick();
 
     expect(actionSpy).toHaveBeenCalled();
-    expect(component.isLoading).toBeFalse();
+    expect(component.isLoading()).toBeFalse();
   }));
 
   function getLoaderDebugElement() {
@@ -67,7 +67,7 @@ describe('ButtonComponent', () => {
   }
 
   it('should show loader when isLoading is true', () => {
-    component.isLoading = true;
+    fixture.componentRef.setInput('isLoading', true);
     fixture.detectChanges();
 
     const loaderElement: DebugElement = getLoaderDebugElement();
@@ -75,25 +75,25 @@ describe('ButtonComponent', () => {
   });
 
   it('should set isLoading to false after the action completes', fakeAsync(() => {
-    component.actionAsync = jasmine.createSpy().and.returnValue(Promise.resolve());
+    fixture.componentRef.setInput('actionAsync', jasmine.createSpy().and.returnValue(Promise.resolve()));
 
     component.onClick();
     tick();
 
-    expect(component.isLoading).toBeFalse();
+    expect(component.isLoading()).toBeFalse();
   }));
 
   it('should do nothing when onClick is called but isLoading is already true', fakeAsync(() => {
     fixture.detectChanges();
 
     let actionWasCalled = false;
-    component.isLoading = true;
-    component.actionAsync = jasmine.createSpy().and.callFake(() => {
+    fixture.componentRef.setInput('isLoading', true);
+    fixture.componentRef.setInput('actionAsync', jasmine.createSpy().and.callFake(() => {
       return new Promise<void>((resolve) => {
         actionWasCalled = true;
         resolve();
       });
-    });
+    }));
 
     component.onClick();
     tick();
@@ -103,11 +103,11 @@ describe('ButtonComponent', () => {
 
   it('should set isLoading to false when an error is thrown from action', async () => {
     const error = new Error('Test error');
-    component.action = () => {
+    fixture.componentRef.setInput('action', () => {
       throw error;
-    };
+    });
     await expectAsync(component.onClick()).toBeRejected();
-    expect(component.isLoading).toBeFalse();
+    expect(component.isLoading()).toBeFalse();
   });
 
   it('should set correct size class', () => {
@@ -115,5 +115,18 @@ describe('ButtonComponent', () => {
     fixture.detectChanges();
     const buttonElement = fixture.debugElement.query(By.css('button'));
     expect(buttonElement.classes['btn-sm']).toBeTrue();
-  })
+  });
+
+  it('should set outline style class', () => {
+    fixture.componentRef.setInput('buttonStyle', 'primary');
+    fixture.componentRef.setInput('outline', true);
+    fixture.detectChanges();
+    const buttonElement = fixture.debugElement.query(By.css('button'));
+    expect(buttonElement.classes['btn-outline-primary']).toBeTrue();
+  });
+
+  it('getSizeClass should return empty string if buttonSize is missing', () => {
+    fixture.componentRef.setInput('buttonSize', undefined);
+    expect(component.getSizeClass()).toBe('');
+  });
 });

@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { SelectComponent } from './select.component';
+import {SelectComponent} from './select.component';
 
 describe('SelectComponent', () => {
   let component: SelectComponent<string>;
@@ -22,8 +22,8 @@ describe('SelectComponent', () => {
   });
 
   it('should render all provided elements as options', () => {
-    component.elements = ['One', 'Two', 'Three'];
-    component.label = 'Select an option';
+    fixture.componentRef.setInput('elements', ['One', 'Two', 'Three']);
+    fixture.componentRef.setInput('label', 'Select an option');
     fixture.detectChanges();
 
     const options = fixture.nativeElement.querySelectorAll('option');
@@ -34,7 +34,7 @@ describe('SelectComponent', () => {
   });
 
   it('should set label correctly', () => {
-    component.label = 'Custom Label';
+    fixture.componentRef.setInput('label', 'Custom Label');
     fixture.detectChanges();
 
     const label = fixture.nativeElement.querySelector('label');
@@ -42,7 +42,7 @@ describe('SelectComponent', () => {
   });
 
   it('should apply form-floating class when "floating" is true', () => {
-    component.floating = true;
+    fixture.componentRef.setInput('floating', true);
     fixture.detectChanges();
 
     const wrapper = fixture.nativeElement.querySelector('div');
@@ -50,7 +50,7 @@ describe('SelectComponent', () => {
   });
 
   it('should not apply form-floating class when "floating" is false', () => {
-    component.floating = false;
+    fixture.componentRef.setInput('floating', false);
     fixture.detectChanges();
 
     const wrapper = fixture.nativeElement.querySelector('div');

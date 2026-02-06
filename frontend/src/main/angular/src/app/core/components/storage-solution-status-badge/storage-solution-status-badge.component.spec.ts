@@ -24,7 +24,7 @@ describe('StorageSolutionStatusBadgeComponent', () => {
   });
 
   it('should render storage solution status given not connected', () => {
-    component.status = StorageSolutionStatus.NotConnected;
+    fixture.componentRef.setInput('status', StorageSolutionStatus.NotConnected);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('NOT_CONNECTED');
@@ -32,7 +32,7 @@ describe('StorageSolutionStatusBadgeComponent', () => {
   })
 
   it('should render storage solution status given connected', () => {
-    component.status = StorageSolutionStatus.Connected;
+    fixture.componentRef.setInput('status', StorageSolutionStatus.Connected);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('CONNECTED');
@@ -40,7 +40,7 @@ describe('StorageSolutionStatusBadgeComponent', () => {
   })
 
   it('should render default storage solution status given status is undefined', () => {
-    component.status = undefined;
+    fixture.componentRef.setInput('status', undefined);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.textContent).toContain('Connection status unknown');

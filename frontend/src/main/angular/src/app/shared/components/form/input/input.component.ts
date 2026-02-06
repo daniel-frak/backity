@@ -1,4 +1,4 @@
-import {Component, Input, Optional, Self} from '@angular/core';
+import {Component, input, model, Optional, Self} from '@angular/core';
 import {NgClass} from "@angular/common";
 import {ControlValueAccessor, NgControl, ReactiveFormsModule} from "@angular/forms";
 
@@ -9,24 +9,28 @@ import {ControlValueAccessor, NgControl, ReactiveFormsModule} from "@angular/for
     ReactiveFormsModule
   ],
   templateUrl: './input.component.html',
-  styleUrls: ['./input.component.scss']
+  styleUrl: './input.component.scss'
 })
 export class InputComponent implements ControlValueAccessor {
 
-  @Input() id?: string = undefined;
-  @Input() type: 'text' | 'email' | 'password' = 'text';
-  @Input() disabled: boolean = false;
-  @Input() placeholder?: string;
-  @Input() testId?: string;
-  @Input() floating?: boolean = true;
-  @Input() iconClass?: string;
+  readonly id = input<string>(this.generateId());
+  readonly type = input<'text' | 'email' | 'password'>('text');
+  readonly disabled = model<boolean>(false);
+  readonly placeholder = input<string>('');
+  readonly testId = input<string>();
+  readonly floating = input<boolean>(true);
+  readonly iconClass = input<string>();
 
-  value: any;
+  value: any = '';
 
   constructor(@Optional() @Self() public ngControl: NgControl) {
     if (this.ngControl != null) {
       this.ngControl.valueAccessor = this;
     }
+  }
+
+  private generateId(): string {
+    return `input-${Math.random().toString(36).substring(2, 9)}`; // NOSONAR
   }
 
   onChange: (value: any) => void = () => {
@@ -36,13 +40,13 @@ export class InputComponent implements ControlValueAccessor {
   };
 
   onInput(event: Event) {
-    const input = event.target as HTMLInputElement;
-    this.value = input.value;
+    const target = event.target as HTMLInputElement;
+    this.value = target.value;
     this.onChange(this.value);
   }
 
   writeValue(value: any): void {
-    this.value = value;
+    this.value = value ?? '';
   }
 
   registerOnChange(fn: (value: any) => void): void {
@@ -54,6 +58,6 @@ export class InputComponent implements ControlValueAccessor {
   }
 
   setDisabledState?(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this.disabled.set(isDisabled);
   }
 }

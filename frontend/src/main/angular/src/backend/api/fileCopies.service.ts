@@ -10,8 +10,9 @@
 /* tslint:disable:no-unused-variable member-ordering */
 
 import {Inject, Injectable, Optional} from '@angular/core';
-import {HttpClient, HttpContext, HttpEvent, HttpParams, HttpResponse} from '@angular/common/http';
+import {HttpClient, HttpContext, HttpEvent, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
+import {OpenApiHttpParams, QueryParamStyle} from '../query.params';
 
 // @ts-ignore
 import {EnqueueFileCopyRequest} from '../model/enqueueFileCopyRequest';
@@ -42,9 +43,11 @@ export class FileCopiesClient extends BaseService {
     /**
      * Cancel file copy
      * Removes a file copy from the backup queue
+     * @endpoint delete /api/file-copy-queue/{id}
      * @param id
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public cancelFileCopy(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
     public cancelFileCopy(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
@@ -88,7 +91,7 @@ export class FileCopiesClient extends BaseService {
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -97,9 +100,11 @@ export class FileCopiesClient extends BaseService {
     /**
      * Delete file copy
      * Deletes an already replicated file copy
+     * @endpoint delete /api/file-copies/{id}
      * @param id
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public deleteFileCopy(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
     public deleteFileCopy(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
@@ -143,7 +148,7 @@ export class FileCopiesClient extends BaseService {
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -152,9 +157,11 @@ export class FileCopiesClient extends BaseService {
     /**
      * Download file copy
      * Returns a file copy as a resource
+     * @endpoint get /api/file-copies/{id}
      * @param id
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public downloadFileCopy(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<Blob>;
     public downloadFileCopy(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<Blob>>;
@@ -187,7 +194,7 @@ export class FileCopiesClient extends BaseService {
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -196,9 +203,11 @@ export class FileCopiesClient extends BaseService {
     /**
      * Enqueue file copy
      * Adds a file copy to the backup queue
+     * @endpoint post /api/file-copy-queue
      * @param enqueueFileCopyRequest
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public enqueueFileCopy(enqueueFileCopyRequest: EnqueueFileCopyRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
     public enqueueFileCopy(enqueueFileCopyRequest: EnqueueFileCopyRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
@@ -252,7 +261,7 @@ export class FileCopiesClient extends BaseService {
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -261,9 +270,11 @@ export class FileCopiesClient extends BaseService {
     /**
      * Get the file copy queue
      * Returns a paginated list of file copies that are either enqueued or in progress
+     * @endpoint get /api/file-copy-queue
      * @param pagination
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public getFileCopyQueue(pagination: RequestPagination, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<PageFileCopyWithContext>;
     public getFileCopyQueue(pagination: RequestPagination, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<PageFileCopyWithContext>>;
@@ -273,9 +284,16 @@ export class FileCopiesClient extends BaseService {
             throw new Error('Required parameter pagination was null or undefined when calling getFileCopyQueue.');
         }
 
-        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
-        localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
-          <any>pagination, 'pagination');
+        let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
+
+        localVarQueryParameters = this.addToHttpParams(
+            localVarQueryParameters,
+            'pagination',
+            <any>pagination,
+            QueryParamStyle.Form,
+            true,
+        );
+
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -307,12 +325,12 @@ export class FileCopiesClient extends BaseService {
         return this.httpClient.request<PageFileCopyWithContext>('get', `${basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                params: localVarQueryParameters,
+                params: localVarQueryParameters.toHttpParams(),
                 responseType: <any>responseType_,
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );

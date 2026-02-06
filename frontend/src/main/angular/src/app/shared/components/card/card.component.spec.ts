@@ -23,7 +23,7 @@ describe('CardComponent', () => {
   });
 
   it('should render title when provided', () => {
-    component.cardTitle = 'Test Title';
+    fixture.componentRef.setInput('cardTitle', 'Test Title');
 
     fixture.detectChanges();
 
@@ -32,7 +32,7 @@ describe('CardComponent', () => {
   });
 
   it('should not render title when not provided', () => {
-    component.cardTitle = undefined;
+    fixture.componentRef.setInput('cardTitle', undefined);
 
     fixture.detectChanges();
 

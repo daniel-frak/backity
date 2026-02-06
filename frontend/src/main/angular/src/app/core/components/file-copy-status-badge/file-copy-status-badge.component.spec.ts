@@ -28,47 +28,47 @@ describe('FileCopyStatusBadgeComponent', () => {
   it('should have the default status as undefined (Untracked)', () => {
     fixture.detectChanges();
 
-    expect(component.status).toBe(undefined);
+    expect(component.status()).toBe(undefined);
   });
 
   it('should return the correct badge class for "Untracked"', () => {
-    component.status = undefined;
+    fixture.componentRef.setInput('status', undefined);
     fixture.detectChanges();
     expect(component.getBadgeClass()).toBe('bg-secondary');
   });
 
   it('should return the correct badge class for "Tracked"', () => {
-    component.status = FileCopyStatus.Tracked;
+    fixture.componentRef.setInput('status', FileCopyStatus.Tracked);
     fixture.detectChanges();
     expect(component.getBadgeClass()).toBe('bg-secondary');
   });
 
   it('should return the correct badge class for "Stored (integrity unknown)"', () => {
-    component.status = FileCopyStatus.StoredIntegrityUnknown;
+    fixture.componentRef.setInput('status', FileCopyStatus.StoredIntegrityUnknown);
     fixture.detectChanges();
     expect(component.getBadgeClass()).toBe('bg-success');
   });
 
   it('should return the correct badge class for "In Progress"', () => {
-    component.status = FileCopyStatus.InProgress;
+    fixture.componentRef.setInput('status', FileCopyStatus.InProgress);
     fixture.detectChanges();
     expect(component.getBadgeClass()).toBe('bg-warning');
   });
 
   it('should return the correct badge class for "Failed"', () => {
-    component.status = FileCopyStatus.Failed;
+    fixture.componentRef.setInput('status', FileCopyStatus.Failed);
     fixture.detectChanges();
     expect(component.getBadgeClass()).toBe('bg-danger');
   });
 
   it('should return the correct badge class for "Enqueued"', () => {
-    component.status = FileCopyStatus.Enqueued;
+    fixture.componentRef.setInput('status', FileCopyStatus.Enqueued);
     fixture.detectChanges();
     expect(component.getBadgeClass()).toBe('bg-secondary');
   });
 
   it('should return the default badge class for undefined status', () => {
-    component.status = undefined;
+    fixture.componentRef.setInput('status', undefined);
     fixture.detectChanges();
     expect(component.getBadgeClass()).toBe('bg-secondary');
   });

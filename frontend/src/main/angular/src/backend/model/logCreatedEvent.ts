@@ -10,7 +10,7 @@
 
 
 export interface LogCreatedEvent { 
-    message?: string;
-    maxLogs?: number;
+    message: string;
+    maxLogs: number;
 }
 

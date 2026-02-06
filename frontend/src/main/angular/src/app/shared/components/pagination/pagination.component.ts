@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, input, model, OnInit, Output} from '@angular/core';
 import {NgbPagination, NgbPaginationPages} from "@ng-bootstrap/ng-bootstrap";
 import {Page} from "@app/shared/components/table/page";
 
@@ -10,47 +10,31 @@ const NOT_NUMBERS_REGEX = /\D/g;
 const LEADING_ZEROES_REGEX = /^0+/;
 
 @Component({
-    selector: 'app-pagination',
+  selector: 'app-pagination',
   imports: [
     NgbPagination,
     FormsModule,
     NgbPaginationPages,
     SelectComponent
   ],
-    templateUrl: './pagination.component.html',
-    styleUrl: './pagination.component.scss'
+  templateUrl: './pagination.component.html',
+  styleUrl: './pagination.component.scss'
 })
 export class PaginationComponent<T> implements OnInit {
 
-  @Input()
-  currentPage?: Page<T>;
-
-  @Input()
-  pageNumber: number = 0;
-
-  @Output()
-  pageNumberChange: EventEmitter<number> = new EventEmitter();
-
-  @Input()
-  pageSize: number = 10;
+  readonly currentPage = input<Page<T>>();
+  readonly pageNumber = model<number>(1);
+  readonly pageSize = model<number>(10);
+  readonly disabled = input(false);
 
   @Output()
-  pageSizeChange: EventEmitter<number> = new EventEmitter<number>();
+  pageChanged: EventEmitter<void> = new EventEmitter();
 
-  @Input()
-  disabled = false;
+  readonly availablePageSizes = input<number[]>([2, 3, 5, 10, 20]);
+  readonly pageNumberQueryParamName = input<string>('page');
+  readonly pageSizeQueryParamName = input<string>('page-size');
 
-  @Output()
-  onPageChange: EventEmitter<void> = new EventEmitter();
-
-  @Input()
-  availablePageSizes: number[] = [2, 3, 5, 10, 20];
-
-  @Input()
-  pageNumberQueryParamName: string = 'page';
-
-  @Input()
-  pageSizeQueryParamName: string = 'page-size';
+  protected readonly Number = Number;
 
   constructor(private readonly activatedRoute: ActivatedRoute,
               private readonly router: Router) {
@@ -62,61 +46,70 @@ export class PaginationComponent<T> implements OnInit {
   }
 
   ngOnInit(): void {
-    this.activatedRoute.queryParams.subscribe((params: Params): void => {
+    this.activatedRoute.queryParams
+      .subscribe((params: Params): void => {
       Promise.resolve().then(() => { // Make update async to avoid ExpressionChangedAfterItHasBeenCheckedError
-        if (params[this.pageNumberQueryParamName]) {
-          this.pageNumber = Number.parseInt(params[this.pageNumberQueryParamName]);
-          this.pageNumberChange.emit(this.pageNumber);
+        const pageNumberParam = params[this.pageNumberQueryParamName()];
+        if (pageNumberParam) {
+          const parsedPageNumber = Number.parseInt(pageNumberParam, 10);
+          if (Number.isFinite(parsedPageNumber) && parsedPageNumber > 0) {
+            this.pageNumber.set(parsedPageNumber);
+          }
         }
-        if (params[this.pageSizeQueryParamName]) {
-          this.pageSize = Number.parseInt(params[this.pageSizeQueryParamName]);
-          this.pageSizeChange.emit(this.pageSize);
+
+        const pageSizeParam = params[this.pageSizeQueryParamName()];
+        if (pageSizeParam) {
+          const parsedPageSize = Number.parseInt(pageSizeParam, 10);
+          if (Number.isFinite(parsedPageSize) && parsedPageSize > 0) {
+            this.pageSize.set(parsedPageSize);
+          }
         }
-        this.onPageChange.emit();
+        this.pageChanged.emit();
       });
     });
   }
 
   onPageNumberChange(pageNumber: number) {
-    if (!pageNumber) {
+    if (!Number.isFinite(pageNumber) || pageNumber <= 0) {
       return;
     }
-    if (this.pageNumber != pageNumber) {
-      this.pageNumberChange.emit(pageNumber);
-      this.onPageChange.emit();
+    if (this.pageNumber() != pageNumber) {
+      this.pageNumber.set(pageNumber);
+      this.pageChanged.emit();
       this.updateUrlQueryParams({
-        [this.pageNumberQueryParamName]: pageNumber,
+        [this.pageNumberQueryParamName()]: pageNumber,
       });
     }
   }
 
-  private updateUrlQueryParams(queryParams: any) {
+  onPageSizeChange(pageSize: number) {
+    if (!Number.isFinite(pageSize) || pageSize <= 0) {
+      return;
+    }
+    this.pageSize.set(pageSize);
+    this.pageChanged.emit();
+    this.updateUrlQueryParams({
+      [this.pageSizeQueryParamName()]: pageSize,
+    });
+  }
+
+  getFirstElementNumber(): number {
+    return ((this.pageNumber() - 1) * this.pageSize()) + 1;
+  }
+
+  getLastElementNumber(): number {
+    return this.getFirstElementNumber() + Math.max(0, (this.currentPage()?.content?.length ?? 0) - 1);
+  }
+
+  getTotalElements(): number {
+    return this.currentPage()?.totalElements ?? 0;
+  }
+
+  private updateUrlQueryParams(queryParams: Params) {
     this.router.navigate([], {
       relativeTo: this.activatedRoute,
       queryParams: queryParams,
       queryParamsHandling: 'merge',
     });
   }
-
-  onPageSizeChange(pageSize: number) {
-    this.pageSizeChange.emit(pageSize);
-    this.onPageChange.emit();
-    this.updateUrlQueryParams({
-      [this.pageSizeQueryParamName]: pageSize,
-    });
-  }
-
-  getFirstElementNumber(): number {
-    return ((this.pageNumber - 1) * this.pageSize) + 1;
-  }
-
-  getLastElementNumber(): number {
-    return this.getFirstElementNumber() + Math.max(0, (this.currentPage?.content?.length ?? 0) - 1);
-  }
-
-  getTotalElements(): number {
-    return this.currentPage?.totalElements ?? 0;
-  }
-
-  protected readonly Number = Number;
 }

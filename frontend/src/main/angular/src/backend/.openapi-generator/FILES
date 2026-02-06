@@ -66,4 +66,5 @@ model/storageSolutionStatusesResponse.ts
 model/validationError.ts
 param.ts
 provide-api.ts
+query.params.ts
 variables.ts
