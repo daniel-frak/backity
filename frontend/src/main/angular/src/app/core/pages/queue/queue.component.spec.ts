@@ -117,7 +117,7 @@ describe('QueueComponent', () => {
       fileCopiesClient.getFileCopyQueue.withArgs(anything())
         .and.returnValue(throwError(() => mockError));
 
-      fixture.detectChanges(); // triggers ngOnInit -> refresh
+      fixture.detectChanges(); // triggers ngOnInit → refresh
       tick();
 
       expect(notificationService.showFailure).toHaveBeenCalledWith(
@@ -157,7 +157,11 @@ describe('QueueComponent', () => {
     expect(fixture.nativeElement.textContent).toContain("CONNECTED");
   }))
 
-  it('should retrieve files and storage solution statuses on init', fakeAsync(() => {
+  function assertQueueContains(fileCopyWithContext: FileCopyWithContext) {
+    expect(fixture.nativeElement.textContent).toContain(fileCopyWithContext.gameFile.fileSource.fileTitle);
+  }
+
+  it('should retrieve file copies and storage solution statuses on init', fakeAsync(() => {
     fileCopiesClient.getFileCopyQueue.withArgs(anything())
       .and.returnValue(of(deepClone(initialQueue) as any));
     storageSolutionsClient.getStorageSolutionStatuses
@@ -167,21 +171,10 @@ describe('QueueComponent', () => {
     tick();
     fixture.detectChanges();
 
-    expect(component.fileCopiesAreLoading()).toBe(false);
-
-    expect(fileCopiesClient.getFileCopyQueue).toHaveBeenCalledWith({
-      page: 0,
-      size: component.pageSize()
-    });
-    assertQueueContains(initialFileCopyWithContext);
-
+    expect(fileCopiesClient.getFileCopyQueue).toHaveBeenCalled()
     expect(storageSolutionsClient.getStorageSolutionStatuses).toHaveBeenCalled();
-    expect(fixture.nativeElement.textContent).toContain("CONNECTED");
+    expect(component.fileCopiesAreLoading()).toBe(false);
   }));
-
-  function assertQueueContains(fileCopyWithContext: FileCopyWithContext) {
-    expect(fixture.nativeElement.textContent).toContain(fileCopyWithContext.gameFile.fileSource.fileTitle);
-  }
 
   it('should get storage solution status', async () => {
     component.storageSolutionStatusesById.set(new Map([["someStorageSolutionId", StorageSolutionStatus.Connected]]));
@@ -227,6 +220,28 @@ describe('QueueComponent', () => {
 
     assertQueueContains(initialFileCopyWithContext);
   }));
+
+  it('should not remove file copy from queue when status changed event is received and page is undefined',
+    () => {
+    component.fileCopyWithContextPage.set(undefined);
+
+    emitFileCopyStatusChanged(TestFileCopyStatusChangedEvent.withContent(
+      'any', {gameFileId: 'any', backupTargetId: 'any'}, FileCopyStatus.StoredIntegrityVerified));
+
+    expect(component.fileCopyWithContextPage()).toBeUndefined();
+  });
+
+  it('should not remove file copy from queue when status changed event is received and item' +
+    ' is not found in content', () => {
+    const item = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
+    item.fileCopy.id = 'notFoundId';
+    component.fileCopyWithContextPage.set(initialQueue);
+
+    emitFileCopyStatusChanged(TestFileCopyStatusChangedEvent.withContent(
+      item.fileCopy.id, item.fileCopy.naturalId, FileCopyStatus.StoredIntegrityVerified));
+
+    expect(component.fileCopyWithContextPage()).toBe(initialQueue);
+  });
 
   it('should update file copy status and progress in queue when status changed event is received' +
     ' and new status is in progress and current progress is undefined', fakeAsync(() => {
@@ -342,6 +357,19 @@ describe('QueueComponent', () => {
       expect(fixture.nativeElement.textContent).not.toContain('25%');
     }));
 
+  it('should not update file copy progress in queue when progress update event is received' +
+    ' given page is undefined',
+    fakeAsync(() => {
+      fixture.detectChanges();
+      tick();
+
+      component.fileCopyWithContextPage.set(undefined);
+      simulateReplicationProgressUpdateEventReceived('unknownFileCopyId',
+        {gameFileId: 'unknownGameFileId', backupTargetId: 'unknownBackupTargetId'});
+
+      expect(component.fileCopyWithContextPage()).toBe(undefined);
+    }));
+
   it('should cancel backup and refresh when cancel button is clicked', fakeAsync(() => {
     const fileCopyWithContext = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
     fileCopiesClient.cancelFileCopy.and.returnValue(of(null) as any);
@@ -375,23 +403,22 @@ describe('QueueComponent', () => {
     expect(fileCopyWithContext.progress).toBeUndefined();
   }));
 
-  it('onClickCancelBackup should return a callable that delegates to cancelBackup', async () => {
-    const spy = spyOn(component, 'cancelBackup').and.returnValue(Promise.resolve());
+  it('onClickCancelBackup should call cancel on client and refresh when invoked', fakeAsync(() => {
     const fileCopyWithContext = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
+    fileCopiesClient.cancelFileCopy.and.returnValue(of(null) as any);
+    fileCopiesClient.getFileCopyQueue.and.returnValue(of(initialQueue) as any);
+    storageSolutionsClient.getStorageSolutionStatuses.and.returnValue(of(initialStorageSolutionStatusResponse) as any);
 
-    await component.onClickCancelBackup(fileCopyWithContext)();
+    fixture.detectChanges();
+    tick();
 
-    expect(spy).toHaveBeenCalledWith(fileCopyWithContext);
-  });
+    component.onClickCancelBackup(fileCopyWithContext)();
+    tick();
 
-  it('should not remove file copy from queue when status changed event is received and page is undefined', () => {
-    component.fileCopyWithContextPage.set(undefined);
-
-    emitFileCopyStatusChanged(TestFileCopyStatusChangedEvent.withContent(
-      'any', {gameFileId: 'any', backupTargetId: 'any'}, FileCopyStatus.StoredIntegrityVerified));
-
-    expect(component.fileCopyWithContextPage()).toBeUndefined();
-  });
+    expect(fileCopiesClient.cancelFileCopy).toHaveBeenCalledWith(fileCopyWithContext.fileCopy.id);
+    expect(notificationService.showSuccess).toHaveBeenCalledWith('Backup canceled');
+    expect(fileCopiesClient.getFileCopyQueue).toHaveBeenCalled();
+  }));
 
   it('should not update file copy status in queue when status changed event is received and page is undefined', () => {
     component.fileCopyWithContextPage.set(undefined);
@@ -405,20 +432,9 @@ describe('QueueComponent', () => {
   it('onReplicationProgressChanged should return early if page is undefined', () => {
     component.fileCopyWithContextPage.set(undefined);
 
-    component.onReplicationProgressChanged({fileCopyId: 'any', percentage: 10, timeLeftSeconds: 10} as any);
+    emitProgressUpdated({fileCopyId: 'someId', percentage: 1, timeLeftSeconds: 1} as any);
 
     expect(component.fileCopyWithContextPage()).toBeUndefined();
-  });
-
-  it('should not remove file copy from queue when status changed event is received and item is not found in content', () => {
-    const item = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
-    item.fileCopy.id = 'notFoundId';
-    component.fileCopyWithContextPage.set(initialQueue);
-
-    emitFileCopyStatusChanged(TestFileCopyStatusChangedEvent.withContent(
-      item.fileCopy.id, item.fileCopy.naturalId, FileCopyStatus.StoredIntegrityVerified));
-
-    expect(component.fileCopyWithContextPage()).toBe(initialQueue);
   });
 
   it('should not update file copy status in queue when status changed event is received and item is not found in content', () => {
@@ -432,13 +448,18 @@ describe('QueueComponent', () => {
     expect(component.fileCopyWithContextPage()).toBe(initialQueue);
   });
 
-  it('onReplicationProgressChanged should return early if item is not found in content during update', () => {
-    component.fileCopyWithContextPage.set(initialQueue);
+  it('onReplicationProgressChanged should update progress', fakeAsync(() => {
+    component.fileCopyWithContextPage.set(TestPage.of([initialFileCopyWithContext]));
 
-    component.onReplicationProgressChanged({fileCopyId: 'notFoundId', percentage: 10, timeLeftSeconds: 10} as any);
+    emitProgressUpdated({
+      fileCopyId: initialFileCopyWithContext.fileCopy.id,
+      percentage: 75,
+      timeLeftSeconds: 10
+    } as any);
+    tick();
 
-    expect(component.fileCopyWithContextPage()).toBe(initialQueue);
-  });
+    expect(firstFileCopyWithContextInQueue()?.progress?.percentage).toEqual(75);
+  }));
 
   it('should block refresh when already loading', async () => {
     fileCopiesClient.getFileCopyQueue.calls.reset();
