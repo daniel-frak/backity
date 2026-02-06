@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 
 @Component({
     selector: 'app-game-file-version-badge',
@@ -8,5 +8,5 @@ import {Component, Input} from '@angular/core';
 })
 export class GameFileVersionBadgeComponent {
 
-  @Input() version: string = '';
+  readonly version = input<string>('');
 }

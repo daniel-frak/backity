@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, input, OnInit} from '@angular/core';
 import {GameContentDiscoveryOverview, GOGAuthenticationClient, GogConfig, GOGConfigurationClient} from "@backend";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
@@ -20,44 +20,39 @@ import {
 } from "@app/shared/components/named-value-container/named-value-container.component";
 
 @Component({
-    selector: 'app-gog-auth',
-    templateUrl: './gog-auth.component.html',
-    styleUrls: ['./gog-auth.component.scss'],
-    imports: [
-        LoadedContentComponent,
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        ButtonComponent,
-        IconItemComponent,
-        LoadingPlaceholderComponent,
-        NamedValueComponent,
-        ProgressBarComponent,
-        GameContentDiscoveryOutcomeBadgeComponent,
-        NamedValueContainerComponent
-    ]
+  selector: 'app-gog-auth',
+  templateUrl: './gog-auth.component.html',
+  styleUrl: './gog-auth.component.scss',
+  imports: [
+    LoadedContentComponent,
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    ButtonComponent,
+    IconItemComponent,
+    LoadingPlaceholderComponent,
+    NamedValueComponent,
+    ProgressBarComponent,
+    GameContentDiscoveryOutcomeBadgeComponent,
+    NamedValueContainerComponent
+  ]
 })
 export class GogAuthComponent implements OnInit {
 
-  private gogAuthUrl?: string;
-  private activeModalRef?: NgbModalRef;
-
   public gogAuthenticated: boolean = false;
   public gogIsLoading: boolean = true;
-
-  @Input()
-  externalDataIsLoading: boolean = false;
-
-  @Input()
-  overview?: GameContentDiscoveryOverview;
-
-  public openGogModal = () => this.showGogAuthModal();
+  readonly externalDataIsLoading = input<boolean>(false);
+  readonly overview = input<GameContentDiscoveryOverview>();
+  private gogAuthUrl?: string;
+  private activeModalRef?: NgbModalRef;
 
   constructor(private readonly gogConfigClient: GOGConfigurationClient,
               private readonly gogAuthClient: GOGAuthenticationClient,
               private readonly notificationService: NotificationService,
               private readonly modalService: NgbModal) {
   }
+
+  public openGogModal = () => this.showGogAuthModal();
 
   ngOnInit() {
     this.gogIsLoading = true;
@@ -76,7 +71,7 @@ export class GogAuthComponent implements OnInit {
   }
 
   isLoading(): boolean {
-    return this.gogIsLoading || this.externalDataIsLoading;
+    return this.gogIsLoading || this.externalDataIsLoading();
   }
 
   showGogAuthModal(): Promise<void> {

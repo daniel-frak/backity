@@ -1,6 +1,6 @@
 <section>
-  @if (sectionTitle) {
-    <h2>{{ sectionTitle }}</h2>
+  @if (sectionTitle()) {
+    <h2>{{ sectionTitle() }}</h2>
   }
   <ng-content/>
 </section>

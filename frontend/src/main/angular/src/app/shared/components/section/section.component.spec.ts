@@ -23,7 +23,7 @@ describe('SectionComponent', () => {
   });
 
   it('should render title when provided', () => {
-    component.sectionTitle = 'Test Title';
+    fixture.componentRef.setInput('sectionTitle', 'Test Title');
 
     fixture.detectChanges();
 
@@ -34,7 +34,7 @@ describe('SectionComponent', () => {
   });
 
   it('should not render title when not provided', () => {
-    component.sectionTitle = undefined;
+    fixture.componentRef.setInput('sectionTitle', undefined);
 
     fixture.detectChanges();
 

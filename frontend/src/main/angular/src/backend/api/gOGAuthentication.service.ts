@@ -42,9 +42,11 @@ export class GOGAuthenticationClient extends BaseService {
     /**
      * Authenticate
      * Returns a refresh token based on a code
+     * @endpoint post /api/gog/auth
      * @param gogAuthenticationRequest
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public authenticateGog(gogAuthenticationRequest: GogAuthenticationRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<RefreshTokenResponse>;
     public authenticateGog(gogAuthenticationRequest: GogAuthenticationRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<RefreshTokenResponse>>;
@@ -98,7 +100,7 @@ export class GOGAuthenticationClient extends BaseService {
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -107,8 +109,10 @@ export class GOGAuthenticationClient extends BaseService {
     /**
      * Get authentication status
      * Returns whether or not the user is currently authenticated
+     * @endpoint get /api/gog/auth
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public getGogAuthenticationStatus(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<boolean>;
     public getGogAuthenticationStatus(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<boolean>>;
@@ -149,7 +153,7 @@ export class GOGAuthenticationClient extends BaseService {
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -158,8 +162,10 @@ export class GOGAuthenticationClient extends BaseService {
     /**
      * Log out of GOG
      * Logs out of GOG
+     * @endpoint delete /api/gog/auth
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public logOutOfGog(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<any>;
     public logOutOfGog(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<any>>;
@@ -200,7 +206,7 @@ export class GOGAuthenticationClient extends BaseService {
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );
@@ -209,9 +215,11 @@ export class GOGAuthenticationClient extends BaseService {
     /**
      * Refresh access token
      * Refreshes the access token using a refresh token
+     * @endpoint put /api/gog/auth
      * @param refreshGogAccessTokenRequest
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
+     * @param options additional options
      */
     public refreshGogAccessToken(refreshGogAccessTokenRequest: RefreshGogAccessTokenRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<RefreshTokenResponse>;
     public refreshGogAccessToken(refreshGogAccessTokenRequest: RefreshGogAccessTokenRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext, transferCache?: boolean}): Observable<HttpResponse<RefreshTokenResponse>>;
@@ -265,7 +273,7 @@ export class GOGAuthenticationClient extends BaseService {
                 ...(withCredentials ? { withCredentials } : {}),
                 headers: localVarHeaders,
                 observe: observe,
-                transferCache: localVarTransferCache,
+                ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
                 reportProgress: reportProgress
             }
         );

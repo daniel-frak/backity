@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, Input, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, input, ViewChild} from '@angular/core';
 import {NgClass} from "@angular/common";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
 
@@ -15,9 +15,9 @@ export class IconItemComponent implements AfterViewInit {
 
   readonly toggleHideableDetailsAction: () => void = () => this.toggleHideableDetails();
 
-  @Input() iconClass: string = '';
-  @Input() size: 'lg' | 'md' | 'sm' = 'lg';
-  @Input() showHideableDetailsOnInit: boolean = true;
+  readonly iconClass = input<string>('');
+  readonly size = input<'lg' | 'md' | 'sm'>('lg');
+  readonly showHideableDetailsOnInit = input<boolean>(true);
 
   @ViewChild('descriptorWrapper') descriptorWrapper?: ElementRef;
   descriptorExists = true;
@@ -44,13 +44,13 @@ export class IconItemComponent implements AfterViewInit {
     this.detailsExist = this.detailsWrapper?.nativeElement.children.length > 1;
 
     this.hideableDetailsExist = this.hideableDetailsWrapper?.nativeElement.children.length > 0;
-    this.showHideableDetails = this.hideableDetailsExist && this.showHideableDetailsOnInit;
+    this.showHideableDetails = this.hideableDetailsExist && this.showHideableDetailsOnInit();
 
     this.cdRef.detectChanges();
   }
 
   getIconSizeClass(): string {
-    return `icon-holder-${this.size}`;
+    return `icon-holder-${this.size()}`;
   }
 
   toggleHideableDetails() {

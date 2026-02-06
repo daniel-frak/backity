@@ -1,45 +1,42 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TableComponent} from './table.component';
-import {Component, Input, QueryList, ViewChild} from "@angular/core";
+import {Component, QueryList, ViewChild} from "@angular/core";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
 import {By} from "@angular/platform-browser";
 import {TableContentGroup} from "@app/shared/components/table/table-content-group";
 
 @Component({
-    template: `
+  template: `
     <app-table id="standard-table" [testId]="'someTestId1'" [isLoading]="isLoading || false"
                [content]="standardContent" caption="Test table 1">
       <ng-template app-table-column="Test column 1-1" let-item>Col1-1: {{ item }}</ng-template>
-      <ng-template app-table-column="Test column 1-2" hide-title-on-mobile let-item>Col1-2: {{ item }}</ng-template>
-      <ng-template app-table-column="Test column 1-3" append-class="custom-class" let-item>Col1-3: {{ item }}
+      <ng-template app-table-column="Test column 1-2" hideTitleOnMobile let-item>Col1-2: {{ item }}</ng-template>
+      <ng-template app-table-column="Test column 1-3" appendClass="custom-class" let-item>Col1-3: {{ item }}
       </ng-template>
     </app-table>
     <app-table id="grouped-table" [testId]="'someTestId2'" [isLoading]="isLoading || false"
                [groupedContent]="groupedContent" caption="Test table 2">
       <ng-template app-table-column="Test column 2-1" let-item>Col2-1: {{ item }}</ng-template>
-      <ng-template app-table-column="Test column 2-2" hide-title-on-mobile let-item>Col2-2: {{ item }}</ng-template>
-      <ng-template app-table-column="Test column 2-3" append-class="custom-class" let-item>Col2-3: {{ item }}
+      <ng-template app-table-column="Test column 2-2" hideTitleOnMobile let-item>Col2-2: {{ item }}</ng-template>
+      <ng-template app-table-column="Test column 2-3" appendClass="custom-class" let-item>Col2-3: {{ item }}
       </ng-template>
     </app-table>
   `,
-    imports: [
-        TableComponent,
-        TableColumnDirective
-    ]
+  imports: [
+    TableComponent,
+    TableColumnDirective
+  ]
 })
 class TableComponentWrapper {
   @ViewChild(TableComponent)
   tableComponent: TableComponent = new TableComponent();
 
-  @Input()
-  isLoading?: boolean;
+  standardContent: any[] | undefined;
 
-  @Input()
-  standardContent?: any[];
+  groupedContent: TableContentGroup[] | undefined;
 
-  @Input()
-  groupedContent?: TableContentGroup[];
+  isLoading: boolean | undefined;
 }
 
 describe('TableComponent', () => {
@@ -102,7 +99,7 @@ describe('TableComponent', () => {
     expect(fixture.nativeElement.textContent).not.toContain("Test table 2");
   });
 
-  it('should add class to row if hide-title-on-mobile is used', () => {
+  it('should add class to row if hideTitleOnMobile is used', () => {
     fixture.componentInstance.standardContent = ["testContent"];
     fixture.componentInstance.groupedContent = [{
       caption: 'Test grouped element',
@@ -135,5 +132,33 @@ describe('TableComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain("Test table 1");
     expect(fixture.nativeElement.textContent).toContain("Test table 2");
+  });
+
+  it('should update columns when templateRefs change', () => {
+    const queryList = new QueryList<TableColumnDirective>();
+    const column1 = {
+      columnTitle: () => 'Column A',
+      hideTitleOnMobile: () => false,
+      appendClass: () => undefined
+    } as TableColumnDirective;
+    const column2 = {
+      columnTitle: () => 'Column B',
+      hideTitleOnMobile: () => false,
+      appendClass: () => undefined
+    } as TableColumnDirective;
+    component.templateRefs = queryList;
+    component.ngAfterContentInit();
+
+    // initial state
+    queryList.reset([column1, column2]);
+    queryList.notifyOnChanges();
+
+    expect(component.columnTitles()).toEqual(['Column A', 'Column B']);
+
+    // simulate content children changing
+    queryList.reset([column2]);
+    queryList.notifyOnChanges();
+
+    expect(component.columnTitles()).toEqual(['Column B']);
   });
 });

@@ -1,57 +1,106 @@
-import { Component, ContentChildren, Input, OnInit, QueryList } from '@angular/core';
-import { TableColumnDirective } from "@app/shared/components/table/column-directive/table-column.directive";
-import { LoadedContentComponent } from '../loaded-content/loaded-content.component';
-import { NgClass, NgTemplateOutlet } from '@angular/common';
+import {AfterContentInit, Component, computed, ContentChildren, input, QueryList, signal} from '@angular/core';
+import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
+import {LoadedContentComponent} from '../loaded-content/loaded-content.component';
+import {NgClass, NgTemplateOutlet} from '@angular/common';
 import {TableContentGroup} from "@app/shared/components/table/table-content-group";
 
+/**
+ * @example
+ * // Component TypeScript
+ * items = [
+ *   { id: 1, name: 'Item 1', description: 'Description 1' },
+ *   { id: 2, name: 'Item 2', description: 'Description 2' }
+ * ];
+ *
+ * edit(item: any) {
+ *   console.log('Editing', item);
+ * }
+ *
+ * <!-- Component Template -->
+ * <app-table [content]="items" caption="My Items">
+ *   <ng-template app-table-column="Name" let-item>
+ *     {{ item.name }}
+ *   </ng-template>
+ *   <ng-template app-table-column="Actions" hideTitleOnMobile let-item>
+ *     <button (click)="edit(item)">Edit</button>
+ *   </ng-template>
+ * </app-table>
+ *
+ * @example
+ * // Component TypeScript
+ * groups: TableContentGroup[] = [
+ *   {
+ *     caption: 'Group A',
+ *     items: [
+ *       { id: 1, description: 'A1' },
+ *       { id: 2, description: 'A2' }
+ *     ]
+ *   },
+ *   {
+ *     caption: 'Group B',
+ *     items: [
+ *       { id: 3, description: 'B1' }
+ *     ]
+ *   }
+ * ];
+ *
+ * <!-- Component Template -->
+ * <app-table [groupedContent]="groups">
+ *   <ng-template app-table-column="ID" let-item>
+ *     {{ item.id }}
+ *   </ng-template>
+ *   <ng-template app-table-column="Description" let-item>
+ *     {{ item.description }}
+ *   </ng-template>
+ * </app-table>
+ */
 @Component({
-    selector: 'app-table',
-    templateUrl: './table.component.html',
-    styleUrls: ['./table.component.scss'],
-    imports: [LoadedContentComponent, NgClass, NgTemplateOutlet]
+  selector: 'app-table',
+  templateUrl: './table.component.html',
+  styleUrl: './table.component.scss',
+  imports: [LoadedContentComponent, NgClass, NgTemplateOutlet]
 })
-export class TableComponent implements OnInit {
+export class TableComponent implements AfterContentInit {
 
-  @ContentChildren(TableColumnDirective, { descendants: false })
+  @ContentChildren(TableColumnDirective, {descendants: false})
   templateRefs!: QueryList<TableColumnDirective>;
 
-  @Input()
-  testId?: string;
+  readonly testId = input<string>();
 
-  @Input()
-  content?: any[];
+  readonly content = input<any[]>();
 
-  @Input()
-  groupedContent?: TableContentGroup[];
+  readonly groupedContent = input<TableContentGroup[]>();
 
-  @Input()
-  caption: string | undefined;
+  readonly caption = input<string>();
 
-  @Input()
-  isLoading: boolean = false;
+  readonly isLoading = input<boolean>(false);
 
-  constructor() { }
+  private readonly columns = signal<TableColumnDirective[]>([]);
 
-  ngOnInit(): void {
-    // Nothing to initialize
-  }
+  readonly columnTitles = computed(() =>
+    this.columns()
+      .map(col => col.columnTitle())
+      .filter((t): t is string => !!t)
+  );
 
-  getColumnTitles(): string[] {
-    const columns: string[] = [];
-    this.templateRefs.forEach(t => columns.push(t.columnTitle as string));
+  ngAfterContentInit(): void {
+    this.columns.set(this.templateRefs.toArray());
 
-    return columns;
+    this.templateRefs.changes.subscribe(() => {
+      this.columns.set(this.templateRefs.toArray());
+    });
   }
 
   getTdClass(column: TableColumnDirective): string {
     const classes = [];
 
-    if (column.hideTitleOnMobile) {
+    if (column.hideTitleOnMobile()) {
       classes.push('hide-title')
     }
 
-    if (column.class) {
-      classes.push(column.class);
+    const columnClass = column.appendClass();
+    if (columnClass) {
+      classes.push(columnClass);
     }
 
     return classes.join(" ");

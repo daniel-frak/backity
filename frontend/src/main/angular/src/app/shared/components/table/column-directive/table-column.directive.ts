@@ -1,4 +1,4 @@
-import {Directive, Input, TemplateRef} from '@angular/core';
+import {booleanAttribute, Directive, input, TemplateRef} from '@angular/core';
 
 @Directive({
   selector: '[app-table-column]',
@@ -6,19 +6,12 @@ import {Directive, Input, TemplateRef} from '@angular/core';
 })
 export class TableColumnDirective {
 
+  readonly columnTitle = input<string>(undefined, {alias: "app-table-column"});
+  readonly hideTitleOnMobile = input<boolean, unknown>(false, {
+    transform: booleanAttribute
+  });
+  readonly appendClass = input<string | undefined>(undefined);
+
   constructor(public readonly template: TemplateRef<any>) {
   }
-
-  @Input('app-table-column')
-  columnTitle?: string;
-
-  get hideTitleOnMobile(): boolean {
-    return !!this._hideTitleOnMobile || this._hideTitleOnMobile === '';
-  }
-
-  @Input('hide-title-on-mobile')
-  _hideTitleOnMobile?: string | boolean;
-
-  @Input('append-class')
-  class?: string;
 }

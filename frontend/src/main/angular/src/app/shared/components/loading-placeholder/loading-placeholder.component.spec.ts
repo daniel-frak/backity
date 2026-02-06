@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { LoadingPlaceholderComponent } from './loading-placeholder.component';
+import {LoadingPlaceholderComponent} from './loading-placeholder.component';
 
 describe('LoadingPlaceholderComponent', () => {
   let component: LoadingPlaceholderComponent;
@@ -14,10 +14,20 @@ describe('LoadingPlaceholderComponent', () => {
 
     fixture = TestBed.createComponent(LoadingPlaceholderComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
+    fixture.detectChanges();
     expect(component).toBeTruthy();
+  });
+
+  it('should handle duplicate widths', () => {
+    fixture.componentRef.setInput('widths', ['20rem', '20rem', '20rem']);
+    fixture.detectChanges();
+    const placeholders = fixture.nativeElement.querySelectorAll('.placeholder');
+    expect(placeholders.length).toBe(3);
+    expect(placeholders[0].style.width).toBe('20rem');
+    expect(placeholders[1].style.width).toBe('20rem');
+    expect(placeholders[2].style.width).toBe('20rem');
   });
 });

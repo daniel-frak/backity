@@ -1,15 +1,15 @@
 <span class="badge"
       [ngClass]="{
-      'bg-success': status == 'SUCCESS',
-      'bg-secondary': !status,
-      'bg-danger': status == 'FAILED'
+      'bg-success': status() == 'SUCCESS',
+      'bg-secondary': !status(),
+      'bg-danger': status() == 'FAILED'
       }">
   <i class="me-1"
-     [ngClass]="{'bi bi-check-circle': status == 'SUCCESS',
-     'bi bi-question-circle': !status,
-     'bi bi-x-circle': status == 'FAILED'
+     [ngClass]="{'bi bi-check-circle': status() == 'SUCCESS',
+     'bi bi-question-circle': !status(),
+     'bi bi-x-circle': status() == 'FAILED'
      }"
      aria-hidden="true">
   </i>
-  {{ status ?? 'Unknown' }}
+  {{ status() ?? 'Unknown' }}
 </span>

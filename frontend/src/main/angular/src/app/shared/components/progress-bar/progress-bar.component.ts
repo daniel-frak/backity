@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, input} from '@angular/core';
 import {NgStyle} from "@angular/common";
 
 @Component({
@@ -11,5 +11,5 @@ import {NgStyle} from "@angular/common";
 })
 export class ProgressBarComponent {
 
-  @Input() percentage: number = 0;
+  readonly percentage = input<number>(0);
 }

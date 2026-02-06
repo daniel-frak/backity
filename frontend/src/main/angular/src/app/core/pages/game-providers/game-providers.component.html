@@ -4,12 +4,12 @@
 
 <app-section>
   <app-auto-layout>
-    <app-gog-auth [overview]="getGogOverview()" [externalDataIsLoading]="infoIsLoading"/>
+    <app-gog-auth [overview]="getGogOverview()" [externalDataIsLoading]="infoIsLoading()"/>
   </app-auto-layout>
 </app-section>
 
 <app-section>
-  <app-loaded-content [isLoading]="infoIsLoading">
+  <app-loaded-content [isLoading]="infoIsLoading()">
     <div class="button-container">
       @let state = {
         unknown: anyDiscoveryStatusIsUnknown(),

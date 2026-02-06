@@ -1,5 +1,5 @@
 <app-section>
-  <app-loaded-content [isLoading]="gamesAreLoading">
+  <app-loaded-content [isLoading]="gamesAreLoading()">
     <app-auto-layout>
       <form [formGroup]="searchForm" (ngSubmit)="refresh()">
         <div class="search-bar">
@@ -12,7 +12,7 @@
                      class="search-box">
             Search
           </app-input>
-          <app-button buttonType="submit" [disabled]="gamesAreLoading"
+          <app-button buttonType="submit" [disabled]="gamesAreLoading()"
                       title="Search"
                       testId="search-btn"
                       buttonStyle="secondary">
@@ -25,7 +25,8 @@
       </form>
 
       <app-auto-layout data-testid="game-list">
-        @for (gameWithFileCopies of gameWithFileCopiesPage?.content; track trackByGameId($index, gameWithFileCopies)) {
+        @for (gameWithFileCopies of gameWithFileCopiesPage()?.content;
+          track trackByGameId($index, gameWithFileCopies)) {
           <app-icon-item iconClass="bi bi-joystick">
             <ng-container title>{{ gameWithFileCopies.title }}</ng-container>
             <ng-container details>
@@ -57,82 +58,82 @@
                     </app-named-value-container>
                   </ng-container>
                   <ng-container details>
-                    @for (potentialFileCopyWithContext
-                      of potentialFileCopiesWithContextByGameFileId.get(gameFileWithCopies.gameFile.id)!;
-                      track trackByFileCopyNaturalId($index, potentialFileCopyWithContext
-                      )) {
-                      <app-icon-item iconClass="bi bi-copy" size="sm" data-testid="file-copy-item">
-                        <ng-container title>
-                          {{ potentialFileCopyWithContext.backupTarget.name }}
-                          <app-storage-solution-status-badge
-                            [status]="potentialFileCopyWithContext.storageSolutionStatus"/>
-                        </ng-container>
-                        <ng-container descriptor>
-                          <app-file-copy-status-badge data-testid="file-copy-status"
-                                                      [status]="potentialFileCopyWithContext.potentialFileCopy.status"/>
-                          @if (potentialFileCopyWithContext.progress) {
-                            (time left: {{
-                              (potentialFileCopyWithContext.progress.timeLeftSeconds! * 1000)
-                                | date:'H:mm:ss':'UTC'
-                            }})
-                          }
-                        </ng-container>
-                        <ng-container buttons>
-                          @if (potentialFileCopyWithContext.progress) {
-                            <app-progress-bar
-                              [percentage]="potentialFileCopyWithContext.progress.percentage"/>
-                          }
-                          @let status = potentialFileCopyWithContext.potentialFileCopy.status;
-                          @if (!status || status === FileCopyStatus.Tracked || status === FileCopyStatus.Failed) {
-                            <app-button
-                              [actionAsync]="onClickEnqueueFileCopy(potentialFileCopyWithContext.potentialFileCopy)"
-                              testId="backup-file-btn">
-                              <i class="bi bi-cloud-download" aria-hidden="true"></i>
-                              Back up
-                            </app-button>
-                          }
-                          @if (status === FileCopyStatus.Enqueued || status === FileCopyStatus.InProgress) {
-                            <app-button
-                              [actionAsync]="onClickCancelBackup(potentialFileCopyWithContext.potentialFileCopy)"
-                              testId="cancel-file-backup-btn"
-                              buttonStyle="secondary">
-                              Cancel backup
-                            </app-button>
-                          }
-                          @if (status === FileCopyStatus.Failed) {
-                            <app-button
-                              [actionAsync]="onClickViewError(potentialFileCopyWithContext.potentialFileCopy.id!)"
-                              testId="view-error-btn"
-                              buttonStyle="secondary">
-                              <i class="bi bi-bug" aria-hidden="true"></i>
-                              View error
-                            </app-button>
-                          }
-                          @if (status === FileCopyStatus.StoredIntegrityUnknown
-                          || status === FileCopyStatus.StoredIntegrityVerified) {
-                            <app-button
-                              [actionAsync]="onClickDownload(potentialFileCopyWithContext.potentialFileCopy.id!)"
-                              testId="download-file-copy-btn">
-                              <i class="bi bi-download" aria-hidden="true"></i>
-                              Download
-                            </app-button>
-                            <app-button
-                              [actionAsync]="onClickViewFilePath(potentialFileCopyWithContext.potentialFileCopy.id!)"
-                              testId="view-file-path-btn"
-                              buttonStyle="secondary">
-                              <i class="bi bi-device-hdd" aria-hidden="true"></i>
-                              View file path
-                            </app-button>
-                            <app-button
-                              [actionAsync]="onClickDeleteFileCopy(potentialFileCopyWithContext.potentialFileCopy.id!)"
-                              testId="delete-file-copy-btn"
-                              buttonStyle="danger">
-                              <i class="bi bi-trash" aria-hidden="true"></i>
-                              Delete copy
-                            </app-button>
-                          }
-                        </ng-container>
-                      </app-icon-item>
+                    @for (backupTarget of backupTargets(); track backupTarget.id) {
+                      @if (getPotentialFileCopyWithContext(gameFileWithCopies.gameFile.id, backupTarget.id);
+                        as potentialFileCopyWithContext) {
+                        <app-icon-item iconClass="bi bi-copy" size="sm" data-testid="file-copy-item">
+                          <ng-container title>
+                            {{ potentialFileCopyWithContext.backupTarget.name }}
+                            <app-storage-solution-status-badge
+                              [status]="potentialFileCopyWithContext.storageSolutionStatus"/>
+                          </ng-container>
+                          <ng-container descriptor>
+                            <app-file-copy-status-badge data-testid="file-copy-status"
+                                                        [status]="potentialFileCopyWithContext.potentialFileCopy.status"/>
+                            @if (potentialFileCopyWithContext.progress?.timeLeftSeconds) {
+                              (time left: {{
+                                (potentialFileCopyWithContext.progress?.timeLeftSeconds! * 1000)
+                                  | date:'H:mm:ss':'UTC'
+                              }})
+                            }
+                          </ng-container>
+                          <ng-container buttons>
+                            @if (potentialFileCopyWithContext.progress) {
+                              <app-progress-bar
+                                [percentage]="potentialFileCopyWithContext.progress.percentage"/>
+                            }
+                            @let status = potentialFileCopyWithContext.potentialFileCopy.status;
+                            @if (!status || status === FileCopyStatus.Tracked || status === FileCopyStatus.Failed) {
+                              <app-button
+                                [actionAsync]="onClickEnqueueFileCopy(potentialFileCopyWithContext.potentialFileCopy)"
+                                testId="backup-file-btn">
+                                <i class="bi bi-cloud-download" aria-hidden="true"></i>
+                                Back up
+                              </app-button>
+                            }
+                            @if (status === FileCopyStatus.Enqueued || status === FileCopyStatus.InProgress) {
+                              <app-button
+                                [actionAsync]="onClickCancelBackup(potentialFileCopyWithContext.potentialFileCopy)"
+                                testId="cancel-file-backup-btn"
+                                buttonStyle="secondary">
+                                Cancel backup
+                              </app-button>
+                            }
+                            @if (status === FileCopyStatus.Failed) {
+                              <app-button
+                                [actionAsync]="onClickViewError(potentialFileCopyWithContext.potentialFileCopy.id!)"
+                                testId="view-error-btn"
+                                buttonStyle="secondary">
+                                <i class="bi bi-bug" aria-hidden="true"></i>
+                                View error
+                              </app-button>
+                            }
+                            @if (status === FileCopyStatus.StoredIntegrityUnknown
+                            || status === FileCopyStatus.StoredIntegrityVerified) {
+                              <app-button
+                                [actionAsync]="onClickDownload(potentialFileCopyWithContext.potentialFileCopy.id!)"
+                                testId="download-file-copy-btn">
+                                <i class="bi bi-download" aria-hidden="true"></i>
+                                Download
+                              </app-button>
+                              <app-button
+                                [actionAsync]="onClickViewFilePath(potentialFileCopyWithContext.potentialFileCopy.id!)"
+                                testId="view-file-path-btn"
+                                buttonStyle="secondary">
+                                <i class="bi bi-device-hdd" aria-hidden="true"></i>
+                                View file path
+                              </app-button>
+                              <app-button
+                                [actionAsync]="onClickDeleteFileCopy(potentialFileCopyWithContext.potentialFileCopy.id!)"
+                                testId="delete-file-copy-btn"
+                                buttonStyle="danger">
+                                <i class="bi bi-trash" aria-hidden="true"></i>
+                                Delete copy
+                              </app-button>
+                            }
+                          </ng-container>
+                        </app-icon-item>
+                      }
                     } @empty {
                       No file copies.
                     }
@@ -148,11 +149,12 @@
         }
       </app-auto-layout>
 
-      <app-pagination [disabled]="gamesAreLoading"
-                      [currentPage]="gameWithFileCopiesPage"
-                      [(pageNumber)]="pageNumber"
-                      [(pageSize)]="pageSize"
-                      (onPageChange)="refresh()"/>
+      <app-pagination [disabled]="gamesAreLoading()"
+                      [currentPage]="gameWithFileCopiesPage()"
+                      [pageNumber]="pageNumber()"
+                      (pageNumberChange)="pageNumber.set($event); refresh()"
+                      [pageSize]="pageSize()"
+                      (pageSizeChange)="pageSize.set($event); refresh()"/>
     </app-auto-layout>
   </app-loaded-content>
 </app-section>
