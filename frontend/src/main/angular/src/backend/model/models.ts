@@ -31,8 +31,6 @@ export * from './gogAuthenticationRequest';
 export * from './gogConfig';
 export * from './gogGameFile';
 export * from './gogGameWithFiles';
-export * from './logCreatedEvent';
-export * from './logsMessageTopics';
 export * from './pageFileCopyWithContext';
 export * from './pageGameWithFileCopies';
 export * from './pagination';
