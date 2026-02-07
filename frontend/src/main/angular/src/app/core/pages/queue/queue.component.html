@@ -30,7 +30,7 @@
               <app-progress-bar
                 [percentage]="fileCopyWithContext.progress.percentage"/>
             }
-            <app-button [actionAsync]="onClickCancelBackup(fileCopyWithContext)" buttonStyle="primary">
+            <app-button [actionAsync]="onClickCancelBackup(fileCopyWithContext)" buttonStyle="primary" [outline]="true">
               Cancel
             </app-button>
           </ng-container>

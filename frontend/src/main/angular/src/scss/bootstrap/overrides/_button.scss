@@ -30,4 +30,14 @@
 
 .btn-outline-secondary {
   color: $white;
+  border-color: $white;
+}
+
+.btn-outline-danger {
+  color: $white;
+  border-color: $white;
+}
+
+.btn-hide-outline {
+  border: none;
 }
