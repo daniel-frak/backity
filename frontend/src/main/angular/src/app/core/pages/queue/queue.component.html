@@ -70,9 +70,7 @@
         Queue is empty.
       }
 
-      <app-pagination pageSizeQueryParamName="enqueued-file-copies-page-size"
-                      pageNumberQueryParamName="enqueued-file-copies-page"
-                      [disabled]="fileCopiesAreLoading()"
+      <app-pagination [disabled]="fileCopiesAreLoading()"
                       [currentPage]="fileCopyWithContextPage()"
                       [(pageNumber)]="pageNumber"
                       (pageNumberChange)="refresh()"

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, input, model, OnInit, Output} from '@angular/core';
+import {Component, effect, EventEmitter, input, model, OnInit, Output} from '@angular/core';
 import {NgbPagination, NgbPaginationPages} from "@ng-bootstrap/ng-bootstrap";
 import {Page} from "@app/shared/components/table/page";
 
@@ -38,6 +38,15 @@ export class PaginationComponent<T> implements OnInit {
 
   constructor(private readonly activatedRoute: ActivatedRoute,
               private readonly router: Router) {
+    effect(() => {
+      const pageNumberValue = this.pageNumber();
+      const pageSizeValue = this.pageSize();
+
+      this.updateUrlQueryParams({
+        [this.pageNumberQueryParamName()]: pageNumberValue,
+        [this.pageSizeQueryParamName()]: pageSizeValue,
+      });
+    });
   }
 
   restrictToNumbers(input: HTMLInputElement) {
@@ -48,25 +57,25 @@ export class PaginationComponent<T> implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.queryParams
       .subscribe((params: Params): void => {
-      Promise.resolve().then(() => { // Make update async to avoid ExpressionChangedAfterItHasBeenCheckedError
-        const pageNumberParam = params[this.pageNumberQueryParamName()];
-        if (pageNumberParam) {
-          const parsedPageNumber = Number.parseInt(pageNumberParam, 10);
-          if (Number.isFinite(parsedPageNumber) && parsedPageNumber > 0) {
-            this.pageNumber.set(parsedPageNumber);
+        Promise.resolve().then(() => { // Make update async to avoid ExpressionChangedAfterItHasBeenCheckedError
+          const pageNumberParam = params[this.pageNumberQueryParamName()];
+          if (pageNumberParam) {
+            const parsedPageNumber = Number.parseInt(pageNumberParam, 10);
+            if (Number.isFinite(parsedPageNumber) && parsedPageNumber > 0) {
+              this.pageNumber.set(parsedPageNumber);
+            }
           }
-        }
 
-        const pageSizeParam = params[this.pageSizeQueryParamName()];
-        if (pageSizeParam) {
-          const parsedPageSize = Number.parseInt(pageSizeParam, 10);
-          if (Number.isFinite(parsedPageSize) && parsedPageSize > 0) {
-            this.pageSize.set(parsedPageSize);
+          const pageSizeParam = params[this.pageSizeQueryParamName()];
+          if (pageSizeParam) {
+            const parsedPageSize = Number.parseInt(pageSizeParam, 10);
+            if (Number.isFinite(parsedPageSize) && parsedPageSize > 0) {
+              this.pageSize.set(parsedPageSize);
+            }
           }
-        }
-        this.pageChanged.emit();
+          this.pageChanged.emit();
+        });
       });
-    });
   }
 
   onPageNumberChange(pageNumber: number) {
@@ -76,9 +85,6 @@ export class PaginationComponent<T> implements OnInit {
     if (this.pageNumber() != pageNumber) {
       this.pageNumber.set(pageNumber);
       this.pageChanged.emit();
-      this.updateUrlQueryParams({
-        [this.pageNumberQueryParamName()]: pageNumber,
-      });
     }
   }
 
@@ -88,9 +94,6 @@ export class PaginationComponent<T> implements OnInit {
     }
     this.pageSize.set(pageSize);
     this.pageChanged.emit();
-    this.updateUrlQueryParams({
-      [this.pageSizeQueryParamName()]: pageSize,
-    });
   }
 
   getFirstElementNumber(): number {
@@ -106,7 +109,7 @@ export class PaginationComponent<T> implements OnInit {
   }
 
   private updateUrlQueryParams(queryParams: Params) {
-    this.router.navigate([], {
+    void this.router.navigate([], {
       relativeTo: this.activatedRoute,
       queryParams: queryParams,
       queryParamsHandling: 'merge',

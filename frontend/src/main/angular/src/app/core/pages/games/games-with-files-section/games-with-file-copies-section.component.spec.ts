@@ -161,6 +161,25 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     expect(pageText).toContain(fileCopyWithProgress.progress!.percentage + "%");
   }));
 
+  it('submitting the search form should reset page to 1 and perform a search', fakeAsync(() => {
+    component.pageNumber.set(3);
+
+    fixture.detectChanges();
+    tick();
+    gamesClient.getGames.calls.reset();
+
+    component.searchForm.controls.searchBox.setValue('doom');
+    const form: DebugElement = fixture.debugElement.query(By.css('[data-testid="search-form"]'));
+    form.triggerEventHandler('ngSubmit', {});
+    tick();
+
+    expect(gamesClient.getGames).toHaveBeenCalledWith(
+      { page: 0, size: component.pageSize() },
+      'doom',
+      null as any
+    );
+  }));
+
   it('should download file', async () => {
     const fileCopyId = 'someFileCopyId';
 

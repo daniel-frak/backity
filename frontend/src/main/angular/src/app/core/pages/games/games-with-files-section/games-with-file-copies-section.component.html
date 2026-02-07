@@ -1,7 +1,7 @@
 <app-section>
   <app-loaded-content [isLoading]="gamesAreLoading()">
     <app-auto-layout>
-      <form [formGroup]="searchForm" (ngSubmit)="refresh()">
+      <form data-testid="search-form" [formGroup]="searchForm" (ngSubmit)="search()">
         <div class="search-bar">
           <app-input formControlName="searchBox"
                      testId="search-input"

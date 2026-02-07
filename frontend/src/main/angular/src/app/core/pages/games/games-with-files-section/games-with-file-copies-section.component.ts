@@ -141,6 +141,11 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
     void this.refresh();
   }
 
+  async search(): Promise<void> {
+    this.pageNumber.set(1);
+    await this.refresh();
+  }
+
   async refresh(): Promise<void> {
     if (this.gamesAreLoading()) {
       return;
