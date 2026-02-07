@@ -11,6 +11,26 @@ $icon-width-sm: 2.75rem;
   display: flex;
   flex-direction: column;
   gap: $spacer-md;
+
+  &:not(:first-of-type)::before {
+    content: "";
+    border-top: 1px dashed $secondary;
+  }
+
+  &.icon-item-lg:not(:first-of-type)::before {
+    margin-left: $icon-width-lg/2;
+    width: calc(100% - $icon-width-lg/2);
+  }
+
+  &.icon-item-md:not(:first-of-type)::before {
+    margin-left: $icon-width-md/2;
+    width: calc(100% - $icon-width-md/2);
+  }
+
+  &.icon-item-sm:not(:first-of-type)::before {
+    margin-left: $icon-width-sm/2;
+    width: calc(100% - $icon-width-sm/2);
+  }
 }
 
 .icon-text-and-buttons {
@@ -41,6 +61,9 @@ $icon-width-sm: 2.75rem;
       &.icon-holder-md {
         width: $icon-width-md;
         height: $icon-width-md;
+        background-color: unset;
+        border: 1px solid $secondary;
+        color: $secondary-text-emphasis;
       }
 
       &.icon-holder-sm {
@@ -66,19 +89,6 @@ $icon-width-sm: 2.75rem;
       align-items: center;
       gap: $spacer-sm;
     }
-
-    // Uncomment for dotted line through the middle of each item
-    //&::after {
-    //  content: "";
-    //  display: flex;
-    //  flex: 1;
-    //  height: 2px;
-    //
-    //  background-image: radial-gradient(circle, $secondary 1px, transparent 1px);
-    //  background-size: 6px 2px;
-    //  background-repeat: repeat-x;
-    //  background-position: center;
-    //}
   }
 
   .buttons {
@@ -92,19 +102,6 @@ $icon-width-sm: 2.75rem;
       color: $primary;
     }
   }
-}
-
-:host:not(:first-of-type)::before {
-  content: "";
-  position: relative;
-  height: 2px;
-
-  display: block;
-  width: 100%;
-
-  background-image: radial-gradient(circle, $secondary 1px, transparent 1px);
-  background-size: 6px 2px;
-  background-repeat: repeat-x;
 }
 
 .text-holder {

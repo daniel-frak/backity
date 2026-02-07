@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, input, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, input, ViewChild} from '@angular/core';
 import {NgClass} from "@angular/common";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
 
@@ -32,6 +32,20 @@ export class IconItemComponent implements AfterViewInit {
   hideableDetailsExist = true;
 
   showHideableDetails: boolean = true;
+
+  @HostBinding('class')
+  get hostClass(): string {
+    switch (this.size()) {
+      case 'lg':
+        return 'icon-item-lg';
+      case 'md':
+        return 'icon-item-md';
+      case 'sm':
+        return 'icon-item-sm';
+      default:
+        return '';
+    }
+  }
 
   constructor(private readonly cdRef: ChangeDetectorRef) {
   }
