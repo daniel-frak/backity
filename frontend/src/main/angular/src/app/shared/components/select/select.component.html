@@ -2,7 +2,9 @@
   <select class="form-select" [attr.aria-label]="label()"
           [(ngModel)]="value"
           (ngModelChange)="handleChange($event)">
-    <option [ngValue]="null">{{ noValueText() }}</option>
+    @if (noValueText() !== undefined) {
+      <option [ngValue]="null">{{ noValueText() }}</option>
+    }
     @for (value of elements(); track value) {
       <option [ngValue]="value">{{ value }}</option>
     }
