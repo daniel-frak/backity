@@ -74,10 +74,10 @@
                       pageNumberQueryParamName="enqueued-file-copies-page"
                       [disabled]="fileCopiesAreLoading()"
                       [currentPage]="fileCopyWithContextPage()"
-                      [pageNumber]="pageNumber()"
-                      (pageNumberChange)="pageNumber.set($event); refresh()"
-                      [pageSize]="pageSize()"
-                      (pageSizeChange)="pageSize.set($event); refresh()"/>
+                      [(pageNumber)]="pageNumber"
+                      (pageNumberChange)="refresh()"
+                      [(pageSize)]="pageSize"
+                      (pageSizeChange)="refresh()"/>
     </app-auto-layout>
   </app-loaded-content>
 </app-section>
