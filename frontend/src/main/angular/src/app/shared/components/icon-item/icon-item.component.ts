@@ -53,6 +53,10 @@ export class IconItemComponent implements AfterViewInit {
     return `icon-holder-${this.size()}`;
   }
 
+  getDetailsSizeClass(): string {
+    return `details-${this.size()}`;
+  }
+
   toggleHideableDetails() {
     this.showHideableDetails = !this.showHideableDetails;
     this.cdRef.markForCheck();

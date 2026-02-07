@@ -4,6 +4,7 @@
 :host {
   display: block;
   text-align: center;
+  margin-top: map.get($spacers, 3);
 }
 
 .pagination-container {

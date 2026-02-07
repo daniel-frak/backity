@@ -90,8 +90,7 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
 
   FileCopyStatus = FileCopyStatus;
 
-  fileCopyStatuses: Array<FileCopyStatus | undefined> = [
-    undefined,
+  fileCopyStatuses: Array<FileCopyStatus> = [
     FileCopyStatus.Tracked,
     FileCopyStatus.Enqueued,
     FileCopyStatus.InProgress,

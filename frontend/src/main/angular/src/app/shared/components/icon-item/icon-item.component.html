@@ -25,7 +25,7 @@
   </div>
 </div>
 @if (detailsExist) {
-  <div class="details" #detailsWrapper>
+  <div [ngClass]="['details', getDetailsSizeClass()]" #detailsWrapper>
     <div #hideableDetailsWrapper class="collapsible" [class.open]="showHideableDetails">
       <ng-content select="[hideableDetails]"/>
     </div>
