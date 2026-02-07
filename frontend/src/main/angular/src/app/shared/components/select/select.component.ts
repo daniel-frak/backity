@@ -15,6 +15,7 @@ export class SelectComponent<T> implements ControlValueAccessor {
   readonly elements = input<T[]>([]);
   readonly label = input('');
   readonly floating = input(true);
+  readonly noValueText = input('None');
 
   value!: T;
   @Output() valueChange = new EventEmitter<T>();
