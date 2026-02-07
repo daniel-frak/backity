@@ -3,6 +3,9 @@
 
 $spacer-sm: map.get($spacers, 2);
 $spacer-md: map.get($spacers, 3);
+$icon-width-lg: 3.5rem;
+$icon-width-md: 3rem;
+$icon-width-sm: 2.75rem;
 
 :host {
   display: flex;
@@ -31,18 +34,20 @@ $spacer-md: map.get($spacers, 3);
       border-radius: 0.5rem;
 
       &.icon-holder-lg {
-        width: 3.5rem;
-        height: 3.5rem;
+        width: $icon-width-lg;
+        height: $icon-width-lg;
       }
 
       &.icon-holder-md {
-        width: 3rem;
-        height: 3rem;
+        width: $icon-width-md;
+        height: $icon-width-md;
       }
 
       &.icon-holder-sm {
-        width: 2.75rem;
-        height: 2.75rem;
+        width: $icon-width-sm;
+        height: $icon-width-sm;
+        background-color: unset;
+        color: $secondary-text-emphasis;
       }
     }
 
@@ -61,6 +66,19 @@ $spacer-md: map.get($spacers, 3);
       align-items: center;
       gap: $spacer-sm;
     }
+
+    // Uncomment for dotted line through the middle of each item
+    //&::after {
+    //  content: "";
+    //  display: flex;
+    //  flex: 1;
+    //  height: 2px;
+    //
+    //  background-image: radial-gradient(circle, $secondary 1px, transparent 1px);
+    //  background-size: 6px 2px;
+    //  background-repeat: repeat-x;
+    //  background-position: center;
+    //}
   }
 
   .buttons {
@@ -76,6 +94,19 @@ $spacer-md: map.get($spacers, 3);
   }
 }
 
+:host:not(:first-of-type)::before {
+  content: "";
+  position: relative;
+  height: 2px;
+
+  display: block;
+  width: 100%;
+
+  background-image: radial-gradient(circle, $secondary 1px, transparent 1px);
+  background-size: 6px 2px;
+  background-repeat: repeat-x;
+}
+
 .text-holder {
   .descriptor {
     color: $text-secondary;
@@ -87,6 +118,20 @@ $spacer-md: map.get($spacers, 3);
   display: flex;
   flex-direction: column;
   gap: $spacer-md;
+
+  border-left: 1px solid $secondary;
+
+  &.details-lg {
+    margin-left: $icon-width-lg/2;
+  }
+
+  &.details-md {
+    margin-left: $icon-width-md/2;
+  }
+
+  &.details-sm {
+    margin-left: $icon-width-sm/2;
+  }
 }
 
 .collapsible {
