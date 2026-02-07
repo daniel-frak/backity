@@ -111,28 +111,27 @@ describe('QueueComponent', () => {
     expect(messageService.watch).toHaveBeenCalledWith(FileBackupMessageTopics.TopicBackupsProgressUpdate);
   });
 
-  it('should show failure notification given error when refresh is called',
-    fakeAsync(() => {
-      const mockError = new Error('test error');
-      fileCopiesClient.getFileCopyQueue.withArgs(anything())
-        .and.returnValue(throwError(() => mockError));
+  it('should show failure notification given error when refresh is called', fakeAsync(() => {
+    const mockError = new Error('test error');
+    fileCopiesClient.getFileCopyQueue.withArgs(anything())
+      .and.returnValue(throwError(() => mockError));
 
-      fixture.detectChanges(); // triggers ngOnInit → refresh
-      tick();
+    fixture.detectChanges(); // triggers ngOnInit → refresh
+    tick();
 
-      expect(notificationService.showFailure).toHaveBeenCalledWith(
-        'Error fetching enqueued files', mockError);
-      expect(component.fileCopiesAreLoading()).toBeFalse();
-    }));
+    expect(notificationService.showFailure).toHaveBeenCalledWith(
+      'Error fetching enqueued files', mockError);
+    expect(component.fileCopiesAreLoading()).toBeFalse();
+  }));
 
   it('refresh should do nothing given file copies are still loading', fakeAsync(() => {
     fixture.detectChanges();
-    tick();
-
     component.fileCopiesAreLoading.set(true);
     component.fileCopyWithContextPage.set(TestPage.of([]));
+
     component.refresh();
     tick();
+
     expect(fileCopiesClient.getFileCopyQueue).toHaveBeenCalledTimes(1); // Only the one from init
     expect(storageSolutionsClient.getStorageSolutionStatuses).toHaveBeenCalledTimes(1);
   }))
@@ -145,7 +144,6 @@ describe('QueueComponent', () => {
 
     fixture.detectChanges(); // ngOnInit -> refresh
     tick();
-    fixture.detectChanges();
 
     expect(fileCopiesClient.getFileCopyQueue).toHaveBeenCalledWith({
       page: 0,
@@ -169,7 +167,6 @@ describe('QueueComponent', () => {
 
     fixture.detectChanges(); // triggers ngOnInit
     tick();
-    fixture.detectChanges();
 
     expect(fileCopiesClient.getFileCopyQueue).toHaveBeenCalled()
     expect(storageSolutionsClient.getStorageSolutionStatuses).toHaveBeenCalled();
@@ -223,13 +220,13 @@ describe('QueueComponent', () => {
 
   it('should not remove file copy from queue when status changed event is received and page is undefined',
     () => {
-    component.fileCopyWithContextPage.set(undefined);
+      component.fileCopyWithContextPage.set(undefined);
 
-    emitFileCopyStatusChanged(TestFileCopyStatusChangedEvent.withContent(
-      'any', {gameFileId: 'any', backupTargetId: 'any'}, FileCopyStatus.StoredIntegrityVerified));
+      emitFileCopyStatusChanged(TestFileCopyStatusChangedEvent.withContent(
+        'any', {gameFileId: 'any', backupTargetId: 'any'}, FileCopyStatus.StoredIntegrityVerified));
 
-    expect(component.fileCopyWithContextPage()).toBeUndefined();
-  });
+      expect(component.fileCopyWithContextPage()).toBeUndefined();
+    });
 
   it('should not remove file copy from queue when status changed event is received and item' +
     ' is not found in content', () => {
@@ -287,8 +284,6 @@ describe('QueueComponent', () => {
 
     emitFileCopyStatusChanged(event);
     fixture.detectChanges();
-    tick();
-    fixture.detectChanges();
   }
 
   function emitFileCopyStatusChanged(event: FileCopyStatusChangedEvent) {
@@ -335,8 +330,6 @@ describe('QueueComponent', () => {
       TestProgressUpdatedEvent.twentyFivePercent(fileCopyId, fileCopyNaturalId);
     emitProgressUpdated(event);
     fixture.detectChanges();
-    tick();
-    fixture.detectChanges();
   }
 
   function emitProgressUpdated(event: FileCopyReplicationProgressUpdatedEvent) {
@@ -370,8 +363,8 @@ describe('QueueComponent', () => {
       expect(component.fileCopyWithContextPage()).toBe(undefined);
     }));
 
-  it('should cancel backup and refresh when cancel button is clicked', fakeAsync(() => {
-    const fileCopyWithContext = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
+  it('cancelBackup should cancel backup and refresh', fakeAsync(() => {
+    const fileCopyWithContext: FileCopyWithContext = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
     fileCopiesClient.cancelFileCopy.and.returnValue(of(null) as any);
     fileCopiesClient.getFileCopyQueue.and.returnValue(of(initialQueue) as any);
     storageSolutionsClient.getStorageSolutionStatuses.and.returnValue(of(initialStorageSolutionStatusResponse) as any);
@@ -392,9 +385,9 @@ describe('QueueComponent', () => {
     fileCopiesClient.cancelFileCopy.and.returnValue(throwError(() => mockError));
     fileCopiesClient.getFileCopyQueue.and.returnValue(of(initialQueue) as any);
     storageSolutionsClient.getStorageSolutionStatuses.and.returnValue(of(initialStorageSolutionStatusResponse) as any);
-
     fixture.detectChanges();
     tick();
+
     component.cancelBackup(fileCopyWithContext);
     tick();
 
@@ -403,24 +396,17 @@ describe('QueueComponent', () => {
     expect(fileCopyWithContext.progress).toBeUndefined();
   }));
 
-  it('onClickCancelBackup should call cancel on client and refresh when invoked', fakeAsync(() => {
-    const fileCopyWithContext = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
-    fileCopiesClient.cancelFileCopy.and.returnValue(of(null) as any);
-    fileCopiesClient.getFileCopyQueue.and.returnValue(of(initialQueue) as any);
-    storageSolutionsClient.getStorageSolutionStatuses.and.returnValue(of(initialStorageSolutionStatusResponse) as any);
+  it('onClickCancelBackup should return a callable that delegates to cancelBackup',
+    async () => {
+      const fileCopyWithContext: FileCopyWithContext = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
 
-    fixture.detectChanges();
-    tick();
+      await component.onClickCancelBackup(fileCopyWithContext)();
 
-    component.onClickCancelBackup(fileCopyWithContext)();
-    tick();
+      expect(fileCopiesClient.cancelFileCopy).toHaveBeenCalledWith(fileCopyWithContext.fileCopy.id);
+    });
 
-    expect(fileCopiesClient.cancelFileCopy).toHaveBeenCalledWith(fileCopyWithContext.fileCopy.id);
-    expect(notificationService.showSuccess).toHaveBeenCalledWith('Backup canceled');
-    expect(fileCopiesClient.getFileCopyQueue).toHaveBeenCalled();
-  }));
-
-  it('should not update file copy status in queue when status changed event is received and page is undefined', () => {
+  it('should not update file copy status in queue when status changed event is received' +
+    ' and page is undefined', () => {
     component.fileCopyWithContextPage.set(undefined);
 
     emitFileCopyStatusChanged(TestFileCopyStatusChangedEvent.withContent(
@@ -437,8 +423,9 @@ describe('QueueComponent', () => {
     expect(component.fileCopyWithContextPage()).toBeUndefined();
   });
 
-  it('should not update file copy status in queue when status changed event is received and item is not found in content', () => {
-    const item = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
+  it('should not update file copy status in queue when status changed event is received' +
+    ' and item is not found in content', () => {
+    const item: FileCopyWithContext = TestFileCopyWithContext.withFileCopy(TestFileCopy.enqueued());
     item.fileCopy.id = 'notFoundId';
     component.fileCopyWithContextPage.set(initialQueue);
 
@@ -456,7 +443,6 @@ describe('QueueComponent', () => {
       percentage: 75,
       timeLeftSeconds: 10
     } as any);
-    tick();
 
     expect(firstFileCopyWithContextInQueue()?.progress?.percentage).toEqual(75);
   }));
