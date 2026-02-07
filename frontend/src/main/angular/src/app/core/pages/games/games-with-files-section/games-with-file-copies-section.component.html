@@ -87,6 +87,7 @@
                             @if (!status || status === FileCopyStatus.Tracked || status === FileCopyStatus.Failed) {
                               <app-button
                                 [actionAsync]="onClickEnqueueFileCopy(potentialFileCopyWithContext.potentialFileCopy)"
+                                [outline]="true"
                                 testId="backup-file-btn">
                                 <i class="bi bi-cloud-download" aria-hidden="true"></i>
                                 Back up
@@ -95,6 +96,7 @@
                             @if (status === FileCopyStatus.Enqueued || status === FileCopyStatus.InProgress) {
                               <app-button
                                 [actionAsync]="onClickCancelBackup(potentialFileCopyWithContext.potentialFileCopy)"
+                                [outline]="true"
                                 testId="cancel-file-backup-btn"
                                 buttonStyle="secondary">
                                 Cancel backup
@@ -103,6 +105,7 @@
                             @if (status === FileCopyStatus.Failed) {
                               <app-button
                                 [actionAsync]="onClickViewError(potentialFileCopyWithContext.potentialFileCopy.id!)"
+                                [outline]="true"
                                 testId="view-error-btn"
                                 buttonStyle="secondary">
                                 <i class="bi bi-bug" aria-hidden="true"></i>
@@ -113,12 +116,14 @@
                             || status === FileCopyStatus.StoredIntegrityVerified) {
                               <app-button
                                 [actionAsync]="onClickDownload(potentialFileCopyWithContext.potentialFileCopy.id!)"
+                                [outline]="true"
                                 testId="download-file-copy-btn">
                                 <i class="bi bi-download" aria-hidden="true"></i>
                                 Download
                               </app-button>
                               <app-button
                                 [actionAsync]="onClickViewFilePath(potentialFileCopyWithContext.potentialFileCopy.id!)"
+                                [outline]="true"
                                 testId="view-file-path-btn"
                                 buttonStyle="secondary">
                                 <i class="bi bi-device-hdd" aria-hidden="true"></i>
@@ -126,6 +131,7 @@
                               </app-button>
                               <app-button
                                 [actionAsync]="onClickDeleteFileCopy(potentialFileCopyWithContext.potentialFileCopy.id!)"
+                                [outline]="true"
                                 testId="delete-file-copy-btn"
                                 buttonStyle="danger">
                                 <i class="bi bi-trash" aria-hidden="true"></i>
