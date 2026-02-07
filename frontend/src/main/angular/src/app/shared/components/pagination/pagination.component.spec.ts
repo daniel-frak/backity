@@ -250,26 +250,6 @@ describe('PaginationComponent', () => {
       expect(component.pageChanged.emit).toHaveBeenCalled();
     });
 
-  it('should update URL query parameters when onPageNumberChange is called', () => {
-    component.onPageNumberChange(3);
-
-    expect(router.navigate).toHaveBeenCalledWith([], {
-      relativeTo: activatedRoute,
-      queryParams: {page: 3},
-      queryParamsHandling: 'merge',
-    });
-  });
-
-  it('should update URL query parameters when onPageSizeChange is called', () => {
-    component.onPageSizeChange(20);
-
-    expect(router.navigate).toHaveBeenCalledWith([], {
-      relativeTo: activatedRoute,
-      queryParams: {'page-size': 20},
-      queryParamsHandling: 'merge',
-    });
-  });
-
   it('should do nothing given pageNumber is zero when onPageNumberChange is called', () => {
     const pageNumberChangeSpy = jasmine.createSpy('pageNumberChange');
     fixture.componentRef.instance.pageNumber.subscribe(pageNumberChangeSpy);
@@ -386,4 +366,42 @@ describe('PaginationComponent', () => {
     expect(component.pageNumber()).toBe(2);
     expect(component.pageSize()).toBe(15);
   });
+
+  it('should update URL query params when pageSize signal is updated',
+    async () => {
+      fixture.detectChanges();
+      router.navigate.calls.reset();
+
+      fixture.componentRef.setInput('pageSize', 20);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(router.navigate).toHaveBeenCalledWith([], {
+        relativeTo: activatedRoute,
+        queryParams: {
+          'page': 1,
+          'page-size': 20,
+        },
+        queryParamsHandling: 'merge',
+      });
+    });
+
+  it('should update URL query params when pageNumber signal is updated',
+    async () => {
+      fixture.detectChanges();
+      router.navigate.calls.reset();
+
+      fixture.componentRef.setInput('pageNumber', 3);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(router.navigate).toHaveBeenCalledWith([], {
+        relativeTo: activatedRoute,
+        queryParams: {
+          'page': 3,
+          'page-size': 10,
+        },
+        queryParamsHandling: 'merge',
+      });
+    });
 });
