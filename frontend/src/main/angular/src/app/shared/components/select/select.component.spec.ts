@@ -24,13 +24,15 @@ describe('SelectComponent', () => {
   it('should render all provided elements as options', () => {
     fixture.componentRef.setInput('elements', ['One', 'Two', 'Three']);
     fixture.componentRef.setInput('label', 'Select an option');
+    fixture.componentRef.setInput('noValueText', 'None');
     fixture.detectChanges();
 
     const options = fixture.nativeElement.querySelectorAll('option');
-    expect(options.length).toBe(3);
-    expect(options[0].textContent).toContain('One');
-    expect(options[1].textContent).toContain('Two');
-    expect(options[2].textContent).toContain('Three');
+    expect(options.length).toBe(4);
+    expect(options[0].textContent).toContain('None');
+    expect(options[1].textContent).toContain('One');
+    expect(options[2].textContent).toContain('Two');
+    expect(options[3].textContent).toContain('Three');
   });
 
   it('should set label correctly', () => {
