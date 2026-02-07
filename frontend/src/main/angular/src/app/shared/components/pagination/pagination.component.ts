@@ -109,7 +109,7 @@ export class PaginationComponent<T> implements OnInit {
   }
 
   private updateUrlQueryParams(queryParams: Params) {
-    void this.router.navigate([], {
+    this.router.navigate([], {
       relativeTo: this.activatedRoute,
       queryParams: queryParams,
       queryParamsHandling: 'merge',
