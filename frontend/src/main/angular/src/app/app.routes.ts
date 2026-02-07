@@ -3,7 +3,6 @@ import {DefaultLayoutComponent} from "@app/shared/layout/default-layout/default-
 import {ContainedLayoutComponent} from "@app/shared/layout/contained-layout/contained-layout.component";
 import {GameProvidersComponent} from "@app/core/pages/game-providers/game-providers.component";
 import {GamesComponent} from "@app/core/pages/games/games.component";
-import {LogsComponent} from "@app/core/pages/settings/logs/logs.component";
 import {ThemeComponent} from "@app/core/pages/theme/theme.component";
 import {SettingsLayoutComponent} from "@app/core/pages/settings/settings-layout/settings-layout.component";
 import {FilesComponent} from "@app/core/pages/settings/files/files.component";
@@ -22,7 +21,6 @@ export const routes: Routes = [
           {path: 'game-providers', component: GameProvidersComponent},
           {path: 'queue', component: QueueComponent},
           {path: 'games', component: GamesComponent},
-          {path: 'logs', component: LogsComponent},
           {
             path: 'theme',
             component: ThemeComponent
@@ -34,7 +32,6 @@ export const routes: Routes = [
         component: SettingsLayoutComponent,
         children: [
           {path: '', component: FilesComponent},
-          {path: 'logs', component: LogsComponent}
         ]
       }
     ]
