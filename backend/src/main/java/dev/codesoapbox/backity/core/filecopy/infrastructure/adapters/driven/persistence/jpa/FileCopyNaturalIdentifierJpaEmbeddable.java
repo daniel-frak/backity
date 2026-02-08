@@ -17,7 +17,7 @@ public class FileCopyNaturalIdentifierJpaEmbeddable {
 
     @NotNull
     @Column(nullable = false)
-    private UUID gameFileId;
+    private UUID sourceFileId;
 
     @NotNull
     @Column(nullable = false)

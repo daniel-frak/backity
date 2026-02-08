@@ -5,7 +5,7 @@ import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedExc
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolver;
 import lombok.RequiredArgsConstructor;
@@ -23,38 +23,38 @@ public class FileBackupService {
     private final FileCopyReplicator fileCopyReplicator;
 
     public void backUpFile(FileBackupContext fileBackupContext) {
-        GameFile gameFile = fileBackupContext.gameFile();
-        if (!fileCopyReplicator.gameProviderIsConnected(gameFile)) {
-            log.debug("Game provider for game file (id={}) is not connected, skipping...", gameFile.getId());
+        SourceFile sourceFile = fileBackupContext.sourceFile();
+        if (!fileCopyReplicator.gameProviderIsConnected(sourceFile)) {
+            log.debug("Game provider for source file (id={}) is not connected, skipping...", sourceFile.getId());
             return;
         }
         FileCopy fileCopy = fileBackupContext.fileCopy();
-        log.info("Backing up game file (id={}, fileCopyId={}, url={})...", gameFile.getId(),
-                fileCopy.getId(), gameFile.getUrl());
+        log.info("Backing up source file (id={}, fileCopyId={}, url={})...", sourceFile.getId(),
+                fileCopy.getId(), sourceFile.getUrl());
 
         StorageSolution storageSolution = fileBackupContext.storageSolution();
         try {
             BackupTarget backupTarget = fileBackupContext.backupTarget();
-            tryToBackUp(fileCopy, gameFile, backupTarget, storageSolution);
+            tryToBackUp(fileCopy, sourceFile, backupTarget, storageSolution);
         } catch (RuntimeException e) {
             try {
                 deleteFileAndMarkFailed(fileCopy, storageSolution, e);
             } catch (RuntimeException e1) {
                 markFailedWithoutDeletingFile(fileCopy, e, e1);
             }
-            throw new FileBackupFailedException(gameFile, fileCopy, e);
+            throw new FileBackupFailedException(sourceFile, fileCopy, e);
         }
     }
 
     @SuppressWarnings("java:S1166") // Intentionally suppressing FileWriteWasCanceledException
-    private void tryToBackUp(FileCopy fileCopy, GameFile gameFile, BackupTarget backupTarget,
+    private void tryToBackUp(FileCopy fileCopy, SourceFile sourceFile, BackupTarget backupTarget,
                              StorageSolution storageSolution) {
         String filePath = uniqueFilePathResolver.resolve(
-                backupTarget.getPathTemplate(), gameFile, storageSolution);
+                backupTarget.getPathTemplate(), sourceFile, storageSolution);
         markInProgress(fileCopy, filePath);
 
         try {
-            fileCopyReplicator.replicate(storageSolution, gameFile, fileCopy);
+            fileCopyReplicator.replicate(storageSolution, sourceFile, fileCopy);
         } catch (FileWriteWasCanceledException _) {
             storageSolution.deleteIfExists(fileCopy.getFilePath());
             markCanceled(fileCopy);

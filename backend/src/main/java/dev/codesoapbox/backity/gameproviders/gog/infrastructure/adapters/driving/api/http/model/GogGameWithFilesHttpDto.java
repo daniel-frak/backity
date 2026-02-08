@@ -10,7 +10,7 @@ public record GogGameWithFilesHttpDto(
         String backgroundImage,
         String cdKey,
         String textInformation,
-        List<GogGameFileHttpDto> files,
+        List<GogFileHttpDto> files,
         String changelog
 ) {
 }

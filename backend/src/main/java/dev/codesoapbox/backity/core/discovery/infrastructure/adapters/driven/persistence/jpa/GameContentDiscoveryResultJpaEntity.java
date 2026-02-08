@@ -45,5 +45,5 @@ public class GameContentDiscoveryResultJpaEntity {
     private int gamesDiscovered;
 
     @NotNull
-    private int gameFilesDiscovered;
+    private int sourceFilesDiscovered;
 }

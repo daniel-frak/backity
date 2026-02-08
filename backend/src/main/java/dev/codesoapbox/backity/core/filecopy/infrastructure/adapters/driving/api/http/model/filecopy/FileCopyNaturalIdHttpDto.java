@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @Schema(name = "FileCopyNaturalId")
 public record FileCopyNaturalIdHttpDto(
-        @NotBlank String gameFileId,
+        @NotBlank String sourceFileId,
         @NotBlank String backupTargetId
 ) {
 }

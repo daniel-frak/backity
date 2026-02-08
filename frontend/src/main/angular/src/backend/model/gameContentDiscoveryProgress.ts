@@ -13,6 +13,6 @@ export interface GameContentDiscoveryProgress {
     percentage: number;
     timeLeftSeconds: number;
     gamesDiscovered: number;
-    gameFilesDiscovered: number;
+    sourceFilesDiscovered: number;
 }
 

@@ -5,10 +5,10 @@ import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyHttpDtoMapper;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesAndReplicationProgresses;
 import dev.codesoapbox.backity.core.game.application.readmodel.FileCopyReadModel;
-import dev.codesoapbox.backity.core.game.application.readmodel.GameFileWithCopiesReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.GameWithFileCopiesReadModel;
+import dev.codesoapbox.backity.core.game.application.readmodel.SourceFileWithCopiesReadModel;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.http.model.game.GameIdHttpDtoMapper;
-import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.GameFileHttpDtoMapper;
+import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driving.api.http.model.sourcefile.SourceFileHttpDtoMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.ProgressHttpDto;
 import org.mapstruct.*;
 
@@ -16,7 +16,7 @@ import java.util.List;
 
 @SuppressWarnings("java:S1694") // False positive
 @Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE,
-        uses = {GameFileHttpDtoMapper.class, GameIdHttpDtoMapper.class, FileCopyHttpDtoMapper.class})
+        uses = {SourceFileHttpDtoMapper.class, GameIdHttpDtoMapper.class, FileCopyHttpDtoMapper.class})
 public abstract class GameWithFileCopiesReadModelHttpDtoMapper {
 
     public GameWithFileCopiesHttpDto toDto(GameWithFileCopiesAndReplicationProgresses model) {
@@ -27,8 +27,8 @@ public abstract class GameWithFileCopiesReadModelHttpDtoMapper {
                                                     @Context List<FileCopyReplicationProgress> replicationProgresses);
 
     @Mapping(target = "fileCopiesWithProgress", source = "fileCopies")
-    protected abstract GameFileWithCopiesHttpDto toDto(
-            GameFileWithCopiesReadModel model, @Context List<FileCopyReplicationProgress> replicationProgresses);
+    protected abstract SourceFileWithCopiesHttpDto toDto(
+            SourceFileWithCopiesReadModel model, @Context List<FileCopyReplicationProgress> replicationProgresses);
 
     @Mapping(target = "fileCopy", source = ".")
     @Mapping(target = "progress", expression = "java( mapProgress(fileCopy, replicationProgresses) )")

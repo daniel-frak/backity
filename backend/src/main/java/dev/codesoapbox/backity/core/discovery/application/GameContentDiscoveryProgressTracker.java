@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.core.discovery.application;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
+import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryOutcome;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResult;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResultRepository;
-import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryOutcome;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStartedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStoppedEvent;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
@@ -86,8 +86,8 @@ public class GameContentDiscoveryProgressTracker {
         trackersByGameProviderId.get(gameProviderId).incrementGamesDiscovered(howMuch);
     }
 
-    public void incrementGameFilesDiscovered(GameProviderId gameProviderId, int howMuch) {
-        trackersByGameProviderId.get(gameProviderId).incrementGameFilesDiscovered(howMuch);
+    public void incrementSourceFilesDiscovered(GameProviderId gameProviderId, int howMuch) {
+        trackersByGameProviderId.get(gameProviderId).incrementSourceFilesDiscovered(howMuch);
     }
 
     public void initializeTracking(GameProviderId gameProviderId) {

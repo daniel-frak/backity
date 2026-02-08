@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.storagesolution.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.CouldNotResolveUniqueFilePathException;
 
 import java.util.List;
@@ -28,10 +28,10 @@ public class UniqueFilePathResolver {
                 .replace("\\", storageSolution.getSeparator());
     }
 
-    public String resolve(String pathTemplate, GameFile gameFile, StorageSolution storageSolution) {
+    public String resolve(String pathTemplate, SourceFile sourceFile, StorageSolution storageSolution) {
         String sanitizedPathTemplate = PATH_TEMPLATE_SANITIZER.sanitize(
                 replaceWithCorrectFileSeparator(pathTemplate, storageSolution));
-        RawPathData rawPathData = RawPathData.from(gameFile);
+        RawPathData rawPathData = RawPathData.from(sourceFile);
         return constructPathUntilUnique(sanitizedPathTemplate, rawPathData, storageSolution);
     }
 
@@ -77,14 +77,14 @@ public class UniqueFilePathResolver {
             String extensionWithDot
     ) {
 
-        public static RawPathData from(GameFile gameFile) {
-            String fileName = gameFile.getOriginalFileName();
+        public static RawPathData from(SourceFile sourceFile) {
+            String fileName = sourceFile.getOriginalFileName();
             String baseName = getBaseName(fileName);
             String extensionWithDot = fileName.substring(baseName.length());
 
             return new RawPathData(
-                    gameFile.getGameProviderId(),
-                    gameFile.getOriginalGameTitle(),
+                    sourceFile.getGameProviderId(),
+                    sourceFile.getOriginalGameTitle(),
                     baseName,
                     extensionWithDot
             );

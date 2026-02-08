@@ -36,7 +36,7 @@ class GameContentDiscoveryStoppedWsEventMapperTest {
                         GameContentDiscoveryOutcomeWsDto.SUCCESS,
                         domain.discoveryResult().getLastSuccessfulDiscoveryCompletedAt(),
                         domain.discoveryResult().getGamesDiscovered(),
-                        domain.discoveryResult().getGameFilesDiscovered()
+                        domain.discoveryResult().getSourceFilesDiscovered()
                 )
         );
     }

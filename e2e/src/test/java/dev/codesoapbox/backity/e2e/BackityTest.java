@@ -22,14 +22,13 @@ import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @UsePlaywright(CustomOptions.class)
 class BackityTest {
 
     private static final String FILE_TO_DOWNLOAD_TITLE = "Test Game 1 Installer (Part 1 of 3)";
     private static final String FILE_TO_DOWNLOAD_NAME = "test_game_1_installer_1.exe";
-    private static final String FILE_TO_DOWNLOAD_EXPECTED_CONTENTS = "Game file contents";
+    private static final String FILE_TO_DOWNLOAD_EXPECTED_CONTENTS = "Source file contents";
     private static final String LOCAL_FOLDER_BACKUP_TARGET_NAME = "Local folder";
 
     // The file backup scheduler runs once every N seconds; We must make sure to not fail the test before then.

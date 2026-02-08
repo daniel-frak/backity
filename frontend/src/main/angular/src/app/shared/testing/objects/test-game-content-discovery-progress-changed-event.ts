@@ -8,7 +8,7 @@ export namespace TestGameContentDiscoveryProgressChangedEvent {
       percentage: 25,
       timeLeftSeconds: 999,
       gamesDiscovered: 5,
-      gameFilesDiscovered: 70
+      sourceFilesDiscovered: 70
     };
   }
 }

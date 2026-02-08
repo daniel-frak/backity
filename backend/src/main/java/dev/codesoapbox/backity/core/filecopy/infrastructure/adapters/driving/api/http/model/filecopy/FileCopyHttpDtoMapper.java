@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.ap
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 
@@ -17,7 +17,7 @@ public abstract class FileCopyHttpDtoMapper {
         return id.value().toString();
     }
 
-    protected String getValue(GameFileId id) {
+    protected String getValue(SourceFileId id) {
         return id.value().toString();
     }
 

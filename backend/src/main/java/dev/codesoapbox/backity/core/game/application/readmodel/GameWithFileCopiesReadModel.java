@@ -5,6 +5,6 @@ import java.util.List;
 public record GameWithFileCopiesReadModel(
         String id,
         String title,
-        List<GameFileWithCopiesReadModel> gameFilesWithCopies
+        List<SourceFileWithCopiesReadModel> sourceFilesWithCopies
 ) {
 }

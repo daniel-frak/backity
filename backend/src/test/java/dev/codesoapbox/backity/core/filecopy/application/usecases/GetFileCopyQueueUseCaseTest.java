@@ -6,7 +6,7 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.shared.domain.TestPage;
@@ -62,7 +62,7 @@ class GetFileCopyQueueUseCaseTest {
         Page<FileCopyWithContext> fileCopyWithContextPagePage = TestPage.of(List.of(
                 new FileCopyWithContext(
                         TestFileCopy.enqueued(),
-                        TestGameFile.gog(),
+                        TestSourceFile.gog(),
                         TestGame.any(),
                         TestBackupTarget.localFolder(),
                         null

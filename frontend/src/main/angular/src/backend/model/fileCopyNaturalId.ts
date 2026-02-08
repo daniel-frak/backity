@@ -10,7 +10,7 @@
 
 
 export interface FileCopyNaturalId { 
-    gameFileId: string;
+    sourceFileId: string;
     backupTargetId: string;
 }
 

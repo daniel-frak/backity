@@ -14,6 +14,6 @@ export interface GameContentDiscoveryProgressChangedEvent {
     percentage: number;
     timeLeftSeconds: number;
     gamesDiscovered: number;
-    gameFilesDiscovered: number;
+    sourceFilesDiscovered: number;
 }
 

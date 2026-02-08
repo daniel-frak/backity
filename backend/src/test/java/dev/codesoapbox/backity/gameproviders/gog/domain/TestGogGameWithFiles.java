@@ -19,7 +19,7 @@ public class TestGogGameWithFiles {
     private String textInformation;
 
     @lombok.Builder.Default
-    private List<GogGameFile> files = emptyList();
+    private List<GogFile> files = emptyList();
     private String changelog;
 
     public static GogGameWithFiles minimal() {
@@ -36,7 +36,7 @@ public class TestGogGameWithFiles {
 
     public static TestGogGameWithFiles.Builder fullBuilder() {
         return minimalBuilder()
-                .withFiles(List.of(TestGogGameFile.minimalBuilder().build()))
+                .withFiles(List.of(TestGogFile.minimalBuilder().build()))
                 .withBackgroundImage("//images-4.gog.com/somePath")
                 .withCdKey("some-cd-key")
                 .withTextInformation("Some text information")
@@ -50,7 +50,7 @@ public class TestGogGameWithFiles {
                 null,
                 null,
                 List.of(
-                        new GogGameFile(
+                        new GogFile(
                                 discoveredFile.version(),
                                 discoveredFile.url(),
                                 discoveredFile.fileTitle(),

@@ -5,8 +5,8 @@ import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileRepository;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -17,19 +17,19 @@ import java.util.concurrent.ExecutorService;
 public class GameContentDiscoveryService {
 
     private final List<GameProviderFileDiscoveryService> gameProviderFileDiscoveryServices;
-    private final GameFileRepository gameFileRepository;
+    private final SourceFileRepository sourceFileRepository;
     private final GameRepository gameRepository;
     private final GameContentDiscoveryProgressTracker discoveryProgressTracker;
     private final ExecutorService discoveryExecutor;
 
     public GameContentDiscoveryService(List<GameProviderFileDiscoveryService> gameProviderFileDiscoveryServices,
                                        GameRepository gameRepository,
-                                       GameFileRepository gameFileRepository,
+                                       SourceFileRepository sourceFileRepository,
                                        GameContentDiscoveryProgressTracker discoveryProgressTracker,
                                        ExecutorService discoveryExecutor) {
         this.gameProviderFileDiscoveryServices = gameProviderFileDiscoveryServices.stream().toList();
         this.gameRepository = gameRepository;
-        this.gameFileRepository = gameFileRepository;
+        this.sourceFileRepository = sourceFileRepository;
         this.discoveryProgressTracker = discoveryProgressTracker;
         this.discoveryExecutor = discoveryExecutor;
     }
@@ -54,7 +54,7 @@ public class GameContentDiscoveryService {
                 discoveryProgressTracker.getGameDiscoveryTracker(
                         gameProviderDiscoveryService.getGameProviderId());
         CompletableFuture.runAsync(() -> gameProviderDiscoveryService.discoverAllFiles(
-                                discoveredFile -> saveGameFile(
+                                discoveredFile -> saveSourceFile(
                                         gameProviderDiscoveryService.getGameProviderId(), discoveredFile),
                                 gameDiscoveryProgressTracker),
                         discoveryExecutor)
@@ -73,16 +73,16 @@ public class GameContentDiscoveryService {
         discoveryProgressTracker.finalizeTracking(discoveryService.getGameProviderId());
     }
 
-    private void saveGameFile(GameProviderId gameProviderId, DiscoveredFile discoveredFile) {
+    private void saveSourceFile(GameProviderId gameProviderId, DiscoveredFile discoveredFile) {
         Game game = getGameOrAddNew(gameProviderId, discoveredFile);
-        GameFile gameFile = GameFile.createFor(game, discoveredFile);
+        SourceFile sourceFile = SourceFile.createFor(game, discoveredFile);
 
-        if (!gameFileRepository.existsByUrlAndVersion(gameFile.getUrl(),
-                gameFile.getVersion())) {
-            gameFileRepository.save(gameFile);
-            discoveryProgressTracker.incrementGameFilesDiscovered(gameProviderId, 1);
-            log.info("Discovered new file: {} (gameId: {})", gameFile.getUrl(),
-                    gameFile.getGameId().value());
+        if (!sourceFileRepository.existsByUrlAndVersion(sourceFile.getUrl(),
+                sourceFile.getVersion())) {
+            sourceFileRepository.save(sourceFile);
+            discoveryProgressTracker.incrementSourceFilesDiscovered(gameProviderId, 1);
+            log.info("Discovered new file: {} (gameId: {})", sourceFile.getUrl(),
+                    sourceFile.getGameId().value());
         }
     }
 

@@ -10,7 +10,7 @@ public record GameContentDiscoveryProgress(
         int percentage,
         Duration timeLeft,
         long gamesDiscovered,
-        int gameFilesDiscovered
+        int sourceFilesDiscovered
 ) {
 
     private static final int PERCENTAGE_MAX = 100;

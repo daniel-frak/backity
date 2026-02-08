@@ -12,6 +12,6 @@ public record GameContentDiscoveryResultHttpDto(
         @NotNull GameContentDiscoveryOutcomeHttpDto discoveryOutcome,
         LocalDateTime lastSuccessfulDiscoveryCompletedAt,
         @NotNull int gamesDiscovered,
-        @NotNull int gameFilesDiscovered
+        @NotNull int sourceFilesDiscovered
 ) {
 }

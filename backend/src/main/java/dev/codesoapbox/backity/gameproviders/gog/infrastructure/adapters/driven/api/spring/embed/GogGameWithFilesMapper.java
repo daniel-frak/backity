@@ -2,8 +2,8 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
-import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
-import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
+import dev.codesoapbox.backity.gameproviders.gog.domain.GogFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -18,18 +18,18 @@ public abstract class GogGameWithFilesMapper {
 
     public List<DiscoveredFile> toDiscoveredFiles(GogGameWithFiles gogGame) {
         return gogGame.files().stream()
-                .map(gameFile -> toFileSource(gogGame, gameFile))
+                .map(sourceFile -> toDiscoveredFile(gogGame, sourceFile))
                 .toList();
     }
 
     @Mapping(target = "gameProviderId", expression = "java(GAME_PROVIDER_ID)")
     @Mapping(target = "originalGameTitle", source = "gogGame.title")
-    @Mapping(target = "fileTitle", source = "gameFile.fileTitle")
-    @Mapping(target = "version", source = "gameFile.version")
-    @Mapping(target = "url", source = "gameFile.manualUrl")
-    @Mapping(target = "originalFileName", source = "gameFile.fileName")
-    @Mapping(target = "size", source = "gameFile.size")
-    protected abstract DiscoveredFile toFileSource(GogGameWithFiles gogGame, GogGameFile gameFile);
+    @Mapping(target = "fileTitle", source = "sourceFile.fileTitle")
+    @Mapping(target = "version", source = "sourceFile.version")
+    @Mapping(target = "url", source = "sourceFile.manualUrl")
+    @Mapping(target = "originalFileName", source = "sourceFile.fileName")
+    @Mapping(target = "size", source = "sourceFile.size")
+    protected abstract DiscoveredFile toDiscoveredFile(GogGameWithFiles gogGame, GogFile sourceFile);
 
     protected FileSize toFileSize(String value) {
         return FileSize.fromString(value);

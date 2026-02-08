@@ -27,8 +27,8 @@ import {
   FileCopyStatusBadgeComponent
 } from "@app/core/components/file-copy-status-badge/file-copy-status-badge.component";
 import {
-  GameFileVersionBadgeComponent
-} from "@app/core/components/game-file-version-badge/game-file-version-badge.component";
+  SourceFileVersionBadgeComponent
+} from "@app/core/components/game-file-version-badge/source-file-version-badge.component";
 import {ProgressBarComponent} from "@app/shared/components/progress-bar/progress-bar.component";
 import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
 import {
@@ -50,7 +50,7 @@ import {MessageService} from "@app/shared/backend/services/message.service";
     NamedValueComponent,
     StorageSolutionStatusBadgeComponent,
     FileCopyStatusBadgeComponent,
-    GameFileVersionBadgeComponent,
+    SourceFileVersionBadgeComponent,
     ProgressBarComponent,
     DatePipe,
     AutoLayoutComponent,

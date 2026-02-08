@@ -5,10 +5,10 @@ import ch.qos.logback.classic.Logger;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
 import dev.codesoapbox.backity.core.discovery.domain.exceptions.FileDiscoveryException;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
-import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameFile;
+import dev.codesoapbox.backity.gameproviders.gog.domain.GogFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.exceptions.GameBackupRequestFailedException;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.exceptions.GameListRequestFailedException;
@@ -158,7 +158,7 @@ class GogEmbedWebClientIT {
 
                 var expectedResult = new GogGameWithFiles("Unreal Tournament 2004 Editor's Choice Edition",
                         "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
-                        "some-cd-key", "someTextInformation", singletonList(new GogGameFile(
+                        "some-cd-key", "someTextInformation", singletonList(new GogFile(
                         "1.0.0", "/downlink/unreal_tournament_2004_ece/en1installer3",
                         "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)", "1 MB",
                         "en1installer3")),
@@ -189,7 +189,7 @@ class GogEmbedWebClientIT {
 
                 var expectedResult = new GogGameWithFiles("Unreal Tournament 2004 Editor's Choice Edition",
                         "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
-                        "some-cd-key", "someTextInformation", singletonList(new GogGameFile(
+                        "some-cd-key", "someTextInformation", singletonList(new GogFile(
                         "unknown", "/downlink/unreal_tournament_2004_ece/en1installer3",
                         "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)", "1 MB",
                         "en1installer3")),
@@ -339,8 +339,8 @@ class GogEmbedWebClientIT {
     @Nested
     class InitializeProgressAndStreamFile {
 
-        private GameFile aGogFile() {
-            return TestGameFile.gogBuilder()
+        private SourceFile aGogFile() {
+            return TestSourceFile.gogBuilder()
                     .url("/someUrl1")
                     .build();
         }
@@ -351,7 +351,7 @@ class GogEmbedWebClientIT {
             @Test
             void shouldStreamFile() {
                 var expectedFileContent = "abcd";
-                GameFile gogFile = mockAuthenticatedGogFileRetrievalWithoutRedirects(expectedFileContent);
+                SourceFile gogFile = mockAuthenticatedGogFileRetrievalWithoutRedirects(expectedFileContent);
                 OutputStreamProgressTracker progress = new OutputStreamProgressTracker();
 
                 DataBufferFluxTrackableFileStream trackableFileStream = gogEmbedClient
@@ -371,9 +371,9 @@ class GogEmbedWebClientIT {
                 return outputStream.toString();
             }
 
-            private GameFile mockAuthenticatedGogFileRetrievalWithoutRedirects(
+            private SourceFile mockAuthenticatedGogFileRetrievalWithoutRedirects(
                     String expectedFileContent) {
-                GameFile gogFile = aGogFile();
+                SourceFile gogFile = aGogFile();
                 wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.getUrl()))
                         .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                         .willReturn(aResponse()
@@ -385,7 +385,7 @@ class GogEmbedWebClientIT {
             @Test
             void shouldInitializeOutputStreamProgress() {
                 var expectedFileContent = "abcd";
-                GameFile gogFile = mockAuthenticatedGogFileRetrievalWithoutRedirects(expectedFileContent);
+                SourceFile gogFile = mockAuthenticatedGogFileRetrievalWithoutRedirects(expectedFileContent);
                 var progress = new OutputStreamProgressTracker();
                 List<ProgressInfo> progressHistory = trackProgressHistory(progress);
 
@@ -414,7 +414,7 @@ class GogEmbedWebClientIT {
             void shouldStreamFileGivenUrlRedirects() {
                 var expectedFileContent = "abcd";
                 var progress = new OutputStreamProgressTracker();
-                GameFile gogFile = mockAuthenticatedGogFileRetrievalWithRedirects(expectedFileContent);
+                SourceFile gogFile = mockAuthenticatedGogFileRetrievalWithRedirects(expectedFileContent);
 
                 DataBufferFluxTrackableFileStream fileStream = gogEmbedClient
                         .initializeProgressAndStreamFile(gogFile, progress);
@@ -423,9 +423,9 @@ class GogEmbedWebClientIT {
                 assertThat(fileContent).isEqualTo(expectedFileContent);
             }
 
-            private GameFile mockAuthenticatedGogFileRetrievalWithRedirects(
+            private SourceFile mockAuthenticatedGogFileRetrievalWithRedirects(
                     String expectedFileContent) {
-                GameFile gogFile = aGogFile();
+                SourceFile gogFile = aGogFile();
 
                 wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.getUrl()))
                         .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
@@ -448,7 +448,7 @@ class GogEmbedWebClientIT {
             void shouldStreamFileGivenUrlRedirectsAndHasQueryParams() {
                 var expectedFileContent = "abcd";
                 var progress = new OutputStreamProgressTracker();
-                GameFile gogFile = mockAuthenticatedGogFileRetrievalWithRedirectsAndQueryParams(expectedFileContent);
+                SourceFile gogFile = mockAuthenticatedGogFileRetrievalWithRedirectsAndQueryParams(expectedFileContent);
 
                 DataBufferFluxTrackableFileStream fileStream = gogEmbedClient
                         .initializeProgressAndStreamFile(gogFile, progress);
@@ -457,8 +457,8 @@ class GogEmbedWebClientIT {
                 assertThat(fileContent).isEqualTo(expectedFileContent);
             }
 
-            private GameFile mockAuthenticatedGogFileRetrievalWithRedirectsAndQueryParams(String expectedResult) {
-                GameFile gogFile = aGogFile();
+            private SourceFile mockAuthenticatedGogFileRetrievalWithRedirectsAndQueryParams(String expectedResult) {
+                SourceFile gogFile = aGogFile();
                 wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.getUrl()))
                         .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                         .willReturn(aResponse()
@@ -483,7 +483,7 @@ class GogEmbedWebClientIT {
 
             @Test
             void shouldThrowIfRequestFails() {
-                GameFile gogFile = aGogFile();
+                SourceFile gogFile = aGogFile();
                 var progress = new OutputStreamProgressTracker();
                 mockGogFileRetrievalFails(gogFile);
 
@@ -495,7 +495,7 @@ class GogEmbedWebClientIT {
                         .isInstanceOf(GameBackupRequestFailedException.class);
             }
 
-            private void mockGogFileRetrievalFails(GameFile gogFile) {
+            private void mockGogFileRetrievalFails(SourceFile gogFile) {
                 wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.getUrl()))
                         .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                         .willReturn(aResponse()

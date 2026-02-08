@@ -29,7 +29,7 @@ class GameContentDiscoveryProgressChangedEventWebSocketForwarderIT {
                     "percentage": 50,
                     "timeLeftSeconds": 999,
                     "gamesDiscovered": 5,
-                    "gameFilesDiscovered": 70
+                    "sourceFilesDiscovered": 70
                 }
                 """;
         messageChannel.assertPublishedWebSocketEvent(

@@ -5,7 +5,7 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.InvalidFileCopyStatusTransitionException;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import dev.codesoapbox.backity.shared.domain.DomainEvent;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class FileCopyTest {
         @Test
         void shouldCreate() {
             var result = new FileCopy(FileCopyId.newInstance(),
-                    new FileCopyNaturalId(GameFileId.newInstance(), BackupTargetId.newInstance()),
+                    new FileCopyNaturalId(SourceFileId.newInstance(), BackupTargetId.newInstance()),
                     FileCopyStatus.TRACKED,
                     null, null, null, null);
 
@@ -33,7 +33,7 @@ class FileCopyTest {
         @SuppressWarnings("DataFlowIssue")
         @Test
         void constructorShouldThrowGivenNullId() {
-            var naturalId = new FileCopyNaturalId(GameFileId.newInstance(), BackupTargetId.newInstance());
+            var naturalId = new FileCopyNaturalId(SourceFileId.newInstance(), BackupTargetId.newInstance());
 
             assertThatThrownBy(() -> new FileCopy(
                     null,
@@ -68,7 +68,7 @@ class FileCopyTest {
         @Test
         void constructorShouldThrowGivenNullStatus() {
             FileCopyId id = FileCopyId.newInstance();
-            var naturalId = new FileCopyNaturalId(GameFileId.newInstance(), BackupTargetId.newInstance());
+            var naturalId = new FileCopyNaturalId(SourceFileId.newInstance(), BackupTargetId.newInstance());
 
             assertThatThrownBy(() -> new FileCopy(
                     id,
@@ -85,7 +85,7 @@ class FileCopyTest {
         @Test
         void constructorShouldThrowGivenFailedWithoutReason() {
             FileCopyId id = FileCopyId.newInstance();
-            var naturalId = new FileCopyNaturalId(GameFileId.newInstance(), BackupTargetId.newInstance());
+            var naturalId = new FileCopyNaturalId(SourceFileId.newInstance(), BackupTargetId.newInstance());
 
             assertThatThrownBy(() -> new FileCopy(
                     id,
@@ -102,7 +102,7 @@ class FileCopyTest {
         @Test
         void constructorShouldThrowGivenInProgressWithoutFilePath() {
             FileCopyId id = FileCopyId.newInstance();
-            var naturalId = new FileCopyNaturalId(GameFileId.newInstance(), BackupTargetId.newInstance());
+            var naturalId = new FileCopyNaturalId(SourceFileId.newInstance(), BackupTargetId.newInstance());
 
             assertThatThrownBy(() -> new FileCopy(
                     id,
@@ -119,7 +119,7 @@ class FileCopyTest {
         @Test
         void constructorShouldThrowGivenStoredUnverifiedWithoutFilePath() {
             FileCopyId id = FileCopyId.newInstance();
-            var naturalId = new FileCopyNaturalId(GameFileId.newInstance(), BackupTargetId.newInstance());
+            var naturalId = new FileCopyNaturalId(SourceFileId.newInstance(), BackupTargetId.newInstance());
 
             assertThatThrownBy(() -> new FileCopy(
                     id,
@@ -136,7 +136,7 @@ class FileCopyTest {
         @Test
         void constructorShouldThrowGivenStoredVerifiedWithoutFilePath() {
             FileCopyId id = FileCopyId.newInstance();
-            var naturalId = new FileCopyNaturalId(GameFileId.newInstance(), BackupTargetId.newInstance());
+            var naturalId = new FileCopyNaturalId(SourceFileId.newInstance(), BackupTargetId.newInstance());
 
             assertThatThrownBy(() -> new FileCopy(
                     id,
@@ -153,7 +153,7 @@ class FileCopyTest {
         @Test
         void constructorShouldThrowGivenFailedReasonButNotFailed() {
             FileCopyId id = FileCopyId.newInstance();
-            var naturalId = new FileCopyNaturalId(GameFileId.newInstance(), BackupTargetId.newInstance());
+            var naturalId = new FileCopyNaturalId(SourceFileId.newInstance(), BackupTargetId.newInstance());
 
             assertThatThrownBy(() -> new FileCopy(
                     id,

@@ -10,10 +10,10 @@ import {
   FileCopyStatus,
   FileCopyStatusChangedEvent,
   FileCopyWithProgress,
-  GameFile,
-  GameFileWithCopies,
   GamesClient,
   GameWithFileCopies,
+  SourceFile,
+  SourceFileWithCopies,
   StorageSolutionsClient,
   StorageSolutionStatus,
   StorageSolutionStatusesResponse
@@ -41,8 +41,8 @@ import {SectionComponent} from "@app/shared/components/section/section.component
 import {ProgressBarComponent} from "@app/shared/components/progress-bar/progress-bar.component";
 import {IconItemComponent} from "@app/shared/components/icon-item/icon-item.component";
 import {
-  GameFileVersionBadgeComponent
-} from "@app/core/components/game-file-version-badge/game-file-version-badge.component";
+  SourceFileVersionBadgeComponent
+} from "@app/core/components/game-file-version-badge/source-file-version-badge.component";
 import {NamedValueComponent} from "@app/shared/components/named-value/named-value.component";
 import {
   StorageSolutionStatusBadgeComponent
@@ -72,7 +72,7 @@ interface SearchForm {
     SectionComponent,
     ProgressBarComponent,
     IconItemComponent,
-    GameFileVersionBadgeComponent,
+    SourceFileVersionBadgeComponent,
     NamedValueComponent,
     DatePipe,
     StorageSolutionStatusBadgeComponent,
@@ -167,9 +167,9 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
     return async () => this.enqueueFileCopy(potentialFileCopy);
   }
 
-  getPotentialFileCopyWithContext(gameFileId: string, backupTargetId: string):
+  getPotentialFileCopyWithContext(sourceFileId: string, backupTargetId: string):
     PotentialFileCopyWithContext | undefined {
-    const naturalIdKey: string = this.getNaturalIdKey({ gameFileId, backupTargetId });
+    const naturalIdKey: string = this.getNaturalIdKey({ sourceFileId: sourceFileId, backupTargetId });
     return this.potentialFileCopiesWithContext().get(naturalIdKey);
   }
 
@@ -280,8 +280,8 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
     return gameWithFileCopies.id;
   }
 
-  trackByGameFileId(index: number, gameFileWithCopies: GameFileWithCopies): string {
-    return gameFileWithCopies.gameFile.id;
+  trackBySourceFileId(index: number, sourceFileWithCopies: SourceFileWithCopies): string {
+    return sourceFileWithCopies.sourceFile.id;
   }
 
   private updatePotentialFileCopyWithContext(
@@ -300,7 +300,7 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
   }
 
   private getNaturalIdKey(fileCopyNaturalId: FileCopyNaturalId): string {
-    return `${fileCopyNaturalId.gameFileId}-${fileCopyNaturalId.backupTargetId}`;
+    return `${fileCopyNaturalId.sourceFileId}-${fileCopyNaturalId.backupTargetId}`;
   }
 
   private onStatusChanged(event: FileCopyStatusChangedEvent) {
@@ -352,11 +352,11 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
     : Map<string, PotentialFileCopyWithContext> {
     const resultMap = new Map<string, PotentialFileCopyWithContext>();
 
-    for (const {gameFilesWithCopies} of gamesWithFileCopies) {
-      for (const {gameFile, fileCopiesWithProgress} of gameFilesWithCopies) {
+    for (const {sourceFilesWithCopies} of gamesWithFileCopies) {
+      for (const {sourceFile, fileCopiesWithProgress} of sourceFilesWithCopies) {
         for (const backupTarget of this.backupTargets()) {
-          const potentialCopy = this.createPotentialFileCopyWithContext(
-            gameFile,
+          const potentialCopy: PotentialFileCopyWithContext = this.createPotentialFileCopyWithContext(
+            sourceFile,
             fileCopiesWithProgress,
             backupTarget
           );
@@ -369,15 +369,15 @@ export class GamesWithFileCopiesSectionComponent implements OnInit {
   }
 
   private createPotentialFileCopyWithContext(
-    gameFile: GameFile, fileCopiesWithProgress: FileCopyWithProgress[], backupTarget: BackupTarget
+    sourceFile: SourceFile, fileCopiesWithProgress: FileCopyWithProgress[], backupTarget: BackupTarget
   ): PotentialFileCopyWithContext {
     const match = fileCopiesWithProgress.find(
       (fcwp) => fcwp.fileCopy.naturalId.backupTargetId === backupTarget.id);
 
     const potentialFileCopy: PotentialFileCopy = (match?.fileCopy as PotentialFileCopy) ??
-      PotentialFileCopyFactory.missing(gameFile.id, backupTarget.id);
+      PotentialFileCopyFactory.missing(sourceFile.id, backupTarget.id);
     return {
-      gameFile,
+      sourceFile: sourceFile,
       potentialFileCopy: potentialFileCopy,
       progress: match?.progress,
       backupTarget: backupTarget,

@@ -28,7 +28,7 @@ public class TestGameContentDiscoveryResult {
     private int gamesDiscovered = 5;
 
     @lombok.Builder.Default
-    private int gameFilesDiscovered = 70;
+    private int sourceFilesDiscovered = 70;
 
     public static GameContentDiscoveryResult gog() {
         return gogBuilder().build();
@@ -44,7 +44,7 @@ public class TestGameContentDiscoveryResult {
             TestGameContentDiscoveryResult temp = internalBuilder();
             return new GameContentDiscoveryResult(temp.gameProviderId, temp.startedAt, temp.stoppedAt,
                     temp.discoveryOutcome, temp.lastSuccessfulDiscoveryCompletedAt, temp.gamesDiscovered,
-                    temp.gameFilesDiscovered);
+                    temp.sourceFilesDiscovered);
         }
     }
 }

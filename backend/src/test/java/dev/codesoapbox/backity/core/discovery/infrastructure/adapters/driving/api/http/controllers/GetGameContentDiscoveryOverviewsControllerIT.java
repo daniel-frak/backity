@@ -3,8 +3,8 @@ package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driving.a
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryOverview;
 import dev.codesoapbox.backity.core.discovery.application.usecases.GetGameContentDiscoveryOverviewsUseCase;
-import dev.codesoapbox.backity.core.discovery.domain.TestGameContentDiscoveryResult;
 import dev.codesoapbox.backity.core.discovery.domain.TestGameContentDiscoveryProgress;
+import dev.codesoapbox.backity.core.discovery.domain.TestGameContentDiscoveryResult;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ class GetGameContentDiscoveryOverviewsControllerIT {
                     "stoppedAt": "2022-04-29T16:00:00",
                     "lastSuccessfulDiscoveryCompletedAt": "2022-04-20T10:00:00",
                     "gamesDiscovered": 5,
-                    "gameFilesDiscovered": 70
+                    "sourceFilesDiscovered": 70
                   }
                 }]
                 """;

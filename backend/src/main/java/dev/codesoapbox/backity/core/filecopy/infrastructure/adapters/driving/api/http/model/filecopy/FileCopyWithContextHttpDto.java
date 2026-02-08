@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotNull;
 @Schema(name = "FileCopyWithContext")
 public record FileCopyWithContextHttpDto(
         @NotNull @Valid FileCopyHttpDto fileCopy,
-        @NotNull @Valid GameFileInFileCopyContextHttpDto gameFile,
+        @NotNull @Valid SourceFileInFileCopyContextHttpDto sourceFile,
         @NotNull @Valid GameInFileCopyContextHttpDto game,
         @NotNull @Valid BackupTargetInFileCopyContextHttpDto backupTarget,
         @Valid ProgressHttpDto progress

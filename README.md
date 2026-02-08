@@ -89,7 +89,7 @@ By default, Backity uses the local file system to store files.
 To enable S3 support, `backity.filesystem.s3.enabled` must be set to `true`.
 
 Further properties should also be configured:
-- `backity.filesystem.s3.bucket` - the bucket to use for storing game files
+- `backity.filesystem.s3.bucket` - the bucket to use for storing file copies
 - `spring.cloud.aws.s3.endpoint` - the S3 endpoint
 - `spring.cloud.aws.s3.region.static` - the S3 region
 - `spring.cloud.aws.credentials.access-key` - optionally, the access key
@@ -108,7 +108,7 @@ The following information is useful to know about the application's functionalit
 
 - If downloading a file would result in overwriting an existing file, an exception will be thrown.
   This helps to protect the existing file
-  and prevents multiple Game File aggregates from pointing to the same physical file.
+  and prevents multiple FileCopy aggregates from pointing to the same physical file.
 
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with

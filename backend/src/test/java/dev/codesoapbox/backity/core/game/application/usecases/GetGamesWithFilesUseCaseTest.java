@@ -10,7 +10,7 @@ import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesReadModel
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesSearchFilter;
 import dev.codesoapbox.backity.core.game.application.TestGameWithFileCopiesSearchFilter;
 import dev.codesoapbox.backity.core.game.application.readmodel.*;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.shared.domain.TestPage;
@@ -63,10 +63,10 @@ class GetGamesWithFilesUseCaseTest {
 
     private GameWithFileCopiesReadModel mockGameIsFound(FileCopy localCopy, Pagination pagination,
                                                         GameWithFileCopiesSearchFilter filter) {
-        GameWithFileCopiesReadModel game = TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
-                .withGameFilesWithCopies(List.of(
-                        new GameFileWithCopiesReadModel(
-                                TestGameFileReadModel.from(TestGameFile.gog()),
+        GameWithFileCopiesReadModel game = TestGameWithFileCopiesReadModel.withNoSourceFilesBuilder()
+                .withSourceFilesWithCopies(List.of(
+                        new SourceFileWithCopiesReadModel(
+                                TestSourceFileReadModel.from(TestSourceFile.gog()),
                                 List.of(TestFileCopyReadModel.from(localCopy))
                                 )
                 ))

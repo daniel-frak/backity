@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.application.FakeGameDiscoveryProgressTracker;
 import dev.codesoapbox.backity.core.discovery.application.GameDiscoveryProgressTracker;
 import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
-import dev.codesoapbox.backity.core.gamefile.domain.TestDiscoveredFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestDiscoveredFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import dev.codesoapbox.backity.gameproviders.gog.domain.TestGogGameWithFiles;
 import org.junit.jupiter.api.BeforeEach;
@@ -178,8 +178,8 @@ class GogFileDiscoveryServiceTest {
             List<DiscoveredFile> discoveredFiles = new ArrayList<>();
             GameDiscoveryProgressTracker progressTracker = aGameDiscoveryProgressTracker();
 
-            gogFileDiscoveryService.discoverAllFiles(fileSource -> {
-                discoveredFiles.add(fileSource);
+            gogFileDiscoveryService.discoverAllFiles(discoveredFile -> {
+                discoveredFiles.add(discoveredFile);
 
                 // Stop discovery immediately after processing the first game's file
                 gogFileDiscoveryService.stopFileDiscovery();
@@ -202,8 +202,8 @@ class GogFileDiscoveryServiceTest {
                     .withGame(TestDiscoveredFile.minimalGog());
             FakeGameDiscoveryProgressTracker progressTracker = aGameDiscoveryProgressTracker();
 
-            gogFileDiscoveryService.discoverAllFiles(fileSource -> {
-                // We don't care about the FileSources for this
+            gogFileDiscoveryService.discoverAllFiles(discoveredFile -> {
+                // We don't care about the DiscoveredFiles for this
             }, progressTracker);
 
             assertThat(progressTracker.getHistoricalDiscoveredGamesCount())
@@ -218,10 +218,10 @@ class GogFileDiscoveryServiceTest {
             FakeGameDiscoveryProgressTracker progressTracker = aGameDiscoveryProgressTracker();
 
             gogFileDiscoveryService.discoverAllFiles(_ -> {
-                // We don't care about the FileSources for this
+                // We don't care about the DiscoveredFiles for this
             }, progressTracker);
             gogFileDiscoveryService.discoverAllFiles(_ -> {
-                // We don't care about the FileSources for this
+                // We don't care about the DiscoveredFiles for this
             }, progressTracker);
 
             assertThat(progressTracker.getGamesDiscovered()).isEqualTo(2);

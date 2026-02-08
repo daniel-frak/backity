@@ -1,11 +1,11 @@
 package dev.codesoapbox.backity.core.discovery.application;
 
-import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
-import dev.codesoapbox.backity.shared.application.progress.ProgressInfo;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryOutcome;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryProgress;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResult;
+import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryProgressChangedEvent;
+import dev.codesoapbox.backity.shared.application.progress.ProgressInfo;
 import dev.codesoapbox.backity.shared.application.progress.ProgressTracker;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import lombok.Getter;
@@ -25,7 +25,7 @@ public class GameProviderContentDiscoveryTracker implements GameDiscoveryProgres
     private final GameProviderId gameProviderId;
     private final DomainEventPublisher domainEventPublisher;
     private final ProgressTracker gamesDiscoveredProgressTracker;
-    private int gameFilesDiscovered = 0;
+    private int sourceFilesDiscovered = 0;
 
     @Setter
     private boolean isInProgress;
@@ -54,8 +54,8 @@ public class GameProviderContentDiscoveryTracker implements GameDiscoveryProgres
         log.debug("Game Provider content discovery progress: {}", gamesDiscoveredProgressTracker.getProgressInfo());
     }
 
-    public void incrementGameFilesDiscovered(int howMuch) {
-        gameFilesDiscovered += howMuch;
+    public void incrementSourceFilesDiscovered(int howMuch) {
+        sourceFilesDiscovered += howMuch;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class GameProviderContentDiscoveryTracker implements GameDiscoveryProgres
         Duration timeLeft = progressInfo.timeLeft();
 
         return new GameContentDiscoveryProgressChangedEvent(gameProviderId, percentage, timeLeft,
-                gamesDiscoveredProgressTracker.getProcessedElementsCount(), gameFilesDiscovered);
+                gamesDiscoveredProgressTracker.getProcessedElementsCount(), sourceFilesDiscovered);
     }
 
     public GameContentDiscoveryProgress getProgress() {
@@ -81,7 +81,7 @@ public class GameProviderContentDiscoveryTracker implements GameDiscoveryProgres
         Long gamesDiscovered = gamesDiscoveredProgressTracker.getProcessedElementsCount();
         return new GameContentDiscoveryProgress(
                 gameProviderId, progressInfo.percentage(), progressInfo.timeLeft(),
-                gamesDiscovered, gameFilesDiscovered
+                gamesDiscovered, sourceFilesDiscovered
         );
     }
 
@@ -90,6 +90,6 @@ public class GameProviderContentDiscoveryTracker implements GameDiscoveryProgres
                 gameProviderId, startedAt, stoppedAt, discoveryOutcome,
                 lastSuccessfulDiscoveryCompletedAt,
                 gamesDiscoveredProgressTracker.getProcessedElementsCount(),
-                gameFilesDiscovered);
+                sourceFilesDiscovered);
     }
 }

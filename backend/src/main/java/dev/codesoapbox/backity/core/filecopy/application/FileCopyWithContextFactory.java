@@ -11,9 +11,9 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileRepository;
 import dev.codesoapbox.backity.shared.domain.Page;
 import lombok.RequiredArgsConstructor;
 
@@ -27,34 +27,34 @@ import static java.util.stream.Collectors.toSet;
 @RequiredArgsConstructor
 public class FileCopyWithContextFactory {
 
-    private final GameFileRepository gameFileRepository;
+    private final SourceFileRepository sourceFileRepository;
     private final GameRepository gameRepository;
     private final BackupTargetRepository backupTargetRepository;
     private final FileCopyReplicationProgressRepository fileCopyReplicationProgressRepository;
 
     public Page<FileCopyWithContext> createPageFrom(Page<FileCopy> fileCopyPage) {
-        Map<GameFileId, GameFile> gameFilesById = getGameFilesById(fileCopyPage);
-        Map<GameId, Game> gamesById = getGamesById(gameFilesById);
+        Map<SourceFileId, SourceFile> sourceFilesById = getSourceFilesById(fileCopyPage);
+        Map<GameId, Game> gamesById = getGamesById(sourceFilesById);
         Map<BackupTargetId, BackupTarget> backupTargetsById = getBackupTargetsById(fileCopyPage);
         Map<FileCopyId, FileCopyReplicationProgress> replicationProgressesByFileCopyId =
                 getReplicationProgressesByFileCopyId(fileCopyPage);
 
         return fileCopyPage.map(fileCopy -> toFileCopyWithContext(
-                fileCopy, gameFilesById, gamesById, backupTargetsById, replicationProgressesByFileCopyId));
+                fileCopy, sourceFilesById, gamesById, backupTargetsById, replicationProgressesByFileCopyId));
     }
 
-    private Map<GameFileId, GameFile> getGameFilesById(Page<FileCopy> fileCopyPage) {
-        Set<GameFileId> gameFileIds = fileCopyPage.content().stream()
-                .map(fileCopy -> fileCopy.getNaturalId().gameFileId())
+    private Map<SourceFileId, SourceFile> getSourceFilesById(Page<FileCopy> fileCopyPage) {
+        Set<SourceFileId> sourceFileIds = fileCopyPage.content().stream()
+                .map(fileCopy -> fileCopy.getNaturalId().sourceFileId())
                 .collect(toSet());
 
-        return gameFileRepository.findAllByIdIn(gameFileIds).stream()
-                .collect(toMap(GameFile::getId, identity()));
+        return sourceFileRepository.findAllByIdIn(sourceFileIds).stream()
+                .collect(toMap(SourceFile::getId, identity()));
     }
 
-    private Map<GameId, Game> getGamesById(Map<GameFileId, GameFile> gameFilesById) {
-        Set<GameId> gameIds = gameFilesById.values().stream()
-                .map(GameFile::getGameId)
+    private Map<GameId, Game> getGamesById(Map<SourceFileId, SourceFile> sourceFilesById) {
+        Set<GameId> gameIds = sourceFilesById.values().stream()
+                .map(SourceFile::getGameId)
                 .collect(toSet());
 
         return gameRepository.findAllByIdIn(gameIds).stream()
@@ -72,16 +72,16 @@ public class FileCopyWithContextFactory {
     }
 
     private FileCopyWithContext toFileCopyWithContext(
-            FileCopy fileCopy, Map<GameFileId, GameFile> gameFilesById,
+            FileCopy fileCopy, Map<SourceFileId, SourceFile> sourceFilesById,
             Map<GameId, Game> gamesById,
             Map<BackupTargetId, BackupTarget> backupTargetsById,
             Map<FileCopyId, FileCopyReplicationProgress> replicationProgressesByFileCopyId) {
-        GameFile gameFile = gameFilesById.get(fileCopy.getNaturalId().gameFileId());
-        Game game = gamesById.get(gameFile.getGameId());
+        SourceFile sourceFile = sourceFilesById.get(fileCopy.getNaturalId().sourceFileId());
+        Game game = gamesById.get(sourceFile.getGameId());
         BackupTarget backupTarget = backupTargetsById.get(fileCopy.getNaturalId().backupTargetId());
         FileCopyReplicationProgress replicationProgress = replicationProgressesByFileCopyId.get(fileCopy.getId());
 
-        return new FileCopyWithContext(fileCopy, gameFile, game, backupTarget, replicationProgress);
+        return new FileCopyWithContext(fileCopy, sourceFile, game, backupTarget, replicationProgress);
     }
 
     private Map<BackupTargetId, BackupTarget> getBackupTargetsById(Page<FileCopy> fileCopyPage) {

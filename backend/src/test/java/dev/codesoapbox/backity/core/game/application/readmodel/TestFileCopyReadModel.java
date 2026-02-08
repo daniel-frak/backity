@@ -8,7 +8,7 @@ public class TestFileCopyReadModel {
         return new FileCopyReadModel(
                 fileCopy.getId().value().toString(),
                 new FileCopyNaturalIdReadModel(
-                        fileCopy.getNaturalId().gameFileId().value().toString(),
+                        fileCopy.getNaturalId().sourceFileId().value().toString(),
                         fileCopy.getNaturalId().backupTargetId().value().toString()
                 ),
                 fileCopy.getStatus(),

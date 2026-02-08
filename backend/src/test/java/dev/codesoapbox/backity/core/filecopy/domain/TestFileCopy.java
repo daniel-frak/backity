@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.filecopy.domain;
 
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +16,7 @@ public class TestFileCopy {
 
     @lombok.Builder.Default
     private FileCopyNaturalId naturalId = new FileCopyNaturalId(
-            new GameFileId("acde26d7-33c7-42ee-be16-bca91a604b48"),
+            new SourceFileId("acde26d7-33c7-42ee-be16-bca91a604b48"),
             new BackupTargetId("eda52c13-ddf7-406f-97d9-d3ce2cab5a76")
     );
 

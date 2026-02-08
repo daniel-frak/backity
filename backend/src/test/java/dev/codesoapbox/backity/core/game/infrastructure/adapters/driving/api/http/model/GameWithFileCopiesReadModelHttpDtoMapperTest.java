@@ -6,14 +6,14 @@ import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyHttpDto;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyNaturalIdHttpDto;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesAndReplicationProgresses;
-import dev.codesoapbox.backity.core.game.application.readmodel.GameFileWithCopiesReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.GameWithFileCopiesReadModel;
+import dev.codesoapbox.backity.core.game.application.readmodel.SourceFileWithCopiesReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.TestFileCopyReadModel;
-import dev.codesoapbox.backity.core.game.application.readmodel.TestGameFileReadModel;
+import dev.codesoapbox.backity.core.game.application.readmodel.TestSourceFileReadModel;
 import dev.codesoapbox.backity.core.game.domain.GameId;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
-import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.FileCopyStatusHttpDto;
-import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.GameFileHttpDto;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
+import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driving.api.http.model.sourcefile.FileCopyStatusHttpDto;
+import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driving.api.http.model.sourcefile.SourceFileHttpDto;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.ProgressHttpDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -33,7 +33,7 @@ class GameWithFileCopiesReadModelHttpDtoMapperTest {
     private static final FileCopyId IN_PROGRESS_FILE_COPY_ID =
             new FileCopyId("d6c81f47-e2b6-424b-b997-0dad6aa372c7");
     private static final String GAME_ID = "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5";
-    private static final String GAME_FILE_ID = "acde26d7-33c7-42ee-be16-bca91a604b48";
+    private static final String SOURCE_FILE_ID = "acde26d7-33c7-42ee-be16-bca91a604b48";
     private static final String FILE_COPY_ID = "6df888e8-90b9-4df5-a237-0cba422c0310";
     private static final String BACKUP_TARGET_ID = "eda52c13-ddf7-406f-97d9-d3ce2cab5a76";
 
@@ -54,8 +54,8 @@ class GameWithFileCopiesReadModelHttpDtoMapperTest {
                         GAME_ID,
                         "Test Game",
                         List.of(
-                                new GameFileWithCopiesReadModel(
-                                        TestGameFileReadModel.from(TestGameFile.gogBuilder()
+                                new SourceFileWithCopiesReadModel(
+                                        TestSourceFileReadModel.from(TestSourceFile.gogBuilder()
                                                 .gameId(new GameId(
                                                         GAME_ID))
                                                 .build()),
@@ -83,9 +83,9 @@ class GameWithFileCopiesReadModelHttpDtoMapperTest {
                 GAME_ID,
                 "Test Game",
                 singletonList(
-                        new GameFileWithCopiesHttpDto(
-                                new GameFileHttpDto(
-                                        GAME_FILE_ID,
+                        new SourceFileWithCopiesHttpDto(
+                                new SourceFileHttpDto(
+                                        SOURCE_FILE_ID,
                                         GAME_ID,
                                         "GOG",
                                         "Game 1",
@@ -129,7 +129,7 @@ class GameWithFileCopiesReadModelHttpDtoMapperTest {
         return new FileCopyHttpDto(
                 id,
                 new FileCopyNaturalIdHttpDto(
-                        GAME_FILE_ID,
+                        SOURCE_FILE_ID,
                         BACKUP_TARGET_ID
                 ),
                 status,

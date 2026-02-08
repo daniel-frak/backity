@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.storagesolution.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.CouldNotResolveUniqueFilePathException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -36,13 +36,13 @@ class UniqueFilePathResolverTest {
 
         @Test
         void shouldResolveFilePath() {
-            GameFile gameFile = TestGameFile.gogBuilder()
+            SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle("someGameTitle")
                     .originalFileName("someFileName")
                     .build();
 
-            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, gameFile, fakeUnixFileManager);
+            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
 
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName";
 
@@ -51,13 +51,13 @@ class UniqueFilePathResolverTest {
 
         @Test
         void shouldResolveFilePathWhenNoSeparatorInPathTemplate() {
-            GameFile gameFile = TestGameFile.gogBuilder()
+            SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle("someGameTitle")
                     .originalFileName("someFileName")
                     .build();
 
-            String result = uniqueFilePathResolver.resolve("{FILENAME}", gameFile, fakeUnixFileManager);
+            String result = uniqueFilePathResolver.resolve("{FILENAME}", sourceFile, fakeUnixFileManager);
 
             String expectedPath = "someFileName";
             assertThat(result).doesNotContain(File.separator);
@@ -68,12 +68,12 @@ class UniqueFilePathResolverTest {
         void shouldResolveValidFilePathGivenWrongSeparatorInPathTemplate() {
             String wrongSeparator = getWrongSeparator();
             String wrongPathTemplate = "{TITLE}" + wrongSeparator + "{FILENAME}";
-            GameFile gameFile = TestGameFile.gogBuilder()
+            SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .originalGameTitle("someGameTitle")
                     .originalFileName("someFileName")
                     .build();
 
-            String result = uniqueFilePathResolver.resolve(wrongPathTemplate, gameFile, fakeUnixFileManager);
+            String result = uniqueFilePathResolver.resolve(wrongPathTemplate, sourceFile, fakeUnixFileManager);
 
             String expectedPath = "someGameTitle" + File.separator + "someFileName";
             assertThat(result).isEqualTo(expectedPath);
@@ -95,11 +95,11 @@ class UniqueFilePathResolverTest {
         void shouldRemoveIllegalCharactersFromPathTemplate() {
             var charactersToRemove = "<>\"|?\n`';!@#$%^&*[]~";
             var pathTemplate = "/test" + charactersToRemove + "/{FILENAME}";
-            GameFile gameFile = TestGameFile.gogBuilder()
+            SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .originalFileName("someFileName")
                     .build();
 
-            String result = uniqueFilePathResolver.resolve(pathTemplate, gameFile, fakeUnixFileManager);
+            String result = uniqueFilePathResolver.resolve(pathTemplate, sourceFile, fakeUnixFileManager);
 
             String expectedPath = "/test/someFileName";
 
@@ -110,11 +110,11 @@ class UniqueFilePathResolverTest {
         void shouldReplaceIllegalCharactersFromPathTemplate() {
             var pathTemplate = "/some:test\tfolder 1/{FILENAME}";
             uniqueFilePathResolver = new UniqueFilePathResolver();
-            GameFile gameFile = TestGameFile.gogBuilder()
+            SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .originalFileName("someFileName")
                     .build();
 
-            String result = uniqueFilePathResolver.resolve(pathTemplate, gameFile, fakeUnixFileManager);
+            String result = uniqueFilePathResolver.resolve(pathTemplate, sourceFile, fakeUnixFileManager);
 
             String expectedPath = "/some -test folder 1/someFileName";
 
@@ -124,13 +124,13 @@ class UniqueFilePathResolverTest {
         @Test
         void shouldRemoveIllegalCharactersEachPlaceholder() {
             String charactersToRemove = "<>\"|?\n`';!@#$%^&*[]~{}";
-            GameFile gameFile = TestGameFile.gogBuilder()
+            SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId" + charactersToRemove))
                     .originalGameTitle("someGameTitle" + charactersToRemove)
                     .originalFileName("someFileName" + charactersToRemove)
                     .build();
 
-            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, gameFile, fakeUnixFileManager);
+            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
 
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName";
 
@@ -139,13 +139,13 @@ class UniqueFilePathResolverTest {
 
         @Test
         void shouldReplaceIllegalCharactersEachPlaceholder() {
-            GameFile gameFile = TestGameFile.gogBuilder()
+            SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("some:Game\tProviderId 1"))
                     .originalGameTitle("some:Game\tTitle 1")
                     .originalFileName("some:File\tName 1")
                     .build();
 
-            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, gameFile, fakeUnixFileManager);
+            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
 
             String expectedPath = "/test/some -Game ProviderId 1/some -Game Title 1/some -File Name 1";
 
@@ -158,14 +158,14 @@ class UniqueFilePathResolverTest {
 
         @Test
         void shouldResolveUniqueFilePathGivenFileWithExtensionAlreadyExists() {
-            GameFile gameFile = TestGameFile.gogBuilder()
+            SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle("someGameTitle")
                     .originalFileName("someFileName.txt")
                     .build();
             fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName.txt");
 
-            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, gameFile, fakeUnixFileManager);
+            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
 
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_1.txt";
 
@@ -174,7 +174,7 @@ class UniqueFilePathResolverTest {
 
         @Test
         void shouldResolveUniqueFilePathGivenSeveralFilesWithExtensionAlreadyExist() {
-            GameFile gameFile = TestGameFile.gogBuilder()
+            SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle("someGameTitle")
                     .originalFileName("someFileName.txt")
@@ -182,7 +182,7 @@ class UniqueFilePathResolverTest {
             fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName.txt");
             fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName_1.txt");
 
-            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, gameFile, fakeUnixFileManager);
+            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
 
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_2.txt";
 
@@ -191,14 +191,14 @@ class UniqueFilePathResolverTest {
 
         @Test
         void shouldResolveUniqueFilePathGivenFileWithoutExtensionAlreadyExists() {
-            GameFile gameFile = TestGameFile.gogBuilder()
+            SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle("someGameTitle")
                     .originalFileName("someFileName")
                     .build();
             fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName");
 
-            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, gameFile, fakeUnixFileManager);
+            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
 
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_1";
 
@@ -207,7 +207,7 @@ class UniqueFilePathResolverTest {
 
         @Test
         void shouldResolveUniqueFilePathGivenSeveralFilesWithoutExtensionAlreadyExist() {
-            GameFile gameFile = TestGameFile.gogBuilder()
+            SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle("someGameTitle")
                     .originalFileName("someFileName")
@@ -215,7 +215,7 @@ class UniqueFilePathResolverTest {
             fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName");
             fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName_1");
 
-            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, gameFile, fakeUnixFileManager);
+            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
 
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_2";
 
@@ -224,7 +224,7 @@ class UniqueFilePathResolverTest {
 
         @Test
         void shouldThrowAfterFailingToFindUniqueFilePathTooManyTimes() {
-            GameFile gameFile = TestGameFile.gogBuilder()
+            SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle("someGameTitle")
                     .originalFileName("someFileName.exe")
@@ -235,7 +235,7 @@ class UniqueFilePathResolverTest {
                         "/test/someGameProviderId/someGameTitle/someFileName_" + i + ".exe");
             }
 
-            assertThatThrownBy(() -> uniqueFilePathResolver.resolve(PATH_TEMPLATE, gameFile, fakeUnixFileManager))
+            assertThatThrownBy(() -> uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager))
                     .isInstanceOf(CouldNotResolveUniqueFilePathException.class)
                     .hasMessageContaining("someGameTitle")
                     .hasMessageContaining("someFileName.exe");

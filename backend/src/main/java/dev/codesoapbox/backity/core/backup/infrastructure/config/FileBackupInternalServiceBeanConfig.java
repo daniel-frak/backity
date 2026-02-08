@@ -5,7 +5,7 @@ import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStrea
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProcess;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileRepository;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
 import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolver;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
@@ -39,10 +39,10 @@ public class FileBackupInternalServiceBeanConfig {
     }
 
     @Bean
-    FileBackupContextFactory fileBackupContextFactory(GameFileRepository gameFileRepository,
+    FileBackupContextFactory fileBackupContextFactory(SourceFileRepository sourceFileRepository,
                                                       BackupTargetRepository backupTargetRepository,
                                                       StorageSolutionRepository storageSolutionRepository) {
-        return new FileBackupContextFactory(gameFileRepository, backupTargetRepository, storageSolutionRepository);
+        return new FileBackupContextFactory(sourceFileRepository, backupTargetRepository, storageSolutionRepository);
     }
 
     @Bean

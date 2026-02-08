@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.core.discovery.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
-import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
-import dev.codesoapbox.backity.core.gamefile.domain.TestDiscoveredFile;
-import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileUrlEmptyException;
+import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestDiscoveredFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.exceptions.DiscoveredFileUrlEmptyException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -140,11 +140,11 @@ class DiscoveredFileTest {
 
         @Test
         void constructorShouldThrowGivenUrlIsEmpty() {
-            TestDiscoveredFile.Builder fileSourceBuilder = TestDiscoveredFile.minimalGogBuilder()
+            TestDiscoveredFile.Builder discoveredFileBuilder = TestDiscoveredFile.minimalGogBuilder()
                     .url("   ");
 
-            assertThatThrownBy(fileSourceBuilder::build)
-                    .isInstanceOf(GameFileUrlEmptyException.class);
+            assertThatThrownBy(discoveredFileBuilder::build)
+                    .isInstanceOf(DiscoveredFileUrlEmptyException.class);
         }
     }
 }

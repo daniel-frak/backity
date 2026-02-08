@@ -12,9 +12,9 @@ import {
   FileCopyStatus,
   FileCopyStatusChangedEvent,
   FileCopyWithProgress,
-  GameFile,
   GamesClient,
   GameWithFileCopies,
+  SourceFile,
   StorageSolutionsClient,
   StorageSolutionStatus,
   StorageSolutionStatusesResponse
@@ -41,7 +41,7 @@ import {AutoLayoutStubComponent} from "@app/shared/components/auto-layout/auto-l
 import {
   PotentialFileCopyWithContext
 } from "@app/core/pages/games/games-with-files-section/potential-file-copy-with-context";
-import {TestGameFile} from "@app/shared/testing/objects/test-game-file";
+import {TestSourceFile} from "@app/shared/testing/objects/test-source-file";
 import {PotentialFileCopyFactory} from "@app/core/pages/games/games-with-files-section/potential-file-copy";
 import {Page} from "@app/shared/components/table/page";
 import createSpyObj = jasmine.createSpyObj;
@@ -137,7 +137,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
 
   it('should refresh on init', fakeAsync(() => {
     const gameWithFileCopies: GameWithFileCopies = TestGameWithFileCopies.withInProgressFileCopy();
-    const fileCopyWithProgress = gameWithFileCopies.gameFilesWithCopies[0].fileCopiesWithProgress[0];
+    const fileCopyWithProgress = gameWithFileCopies.sourceFilesWithCopies[0].fileCopiesWithProgress[0];
     fileCopyWithProgress.fileCopy.naturalId.backupTargetId = localFolderBackupTarget.id;
     const gameWithFileCopiesPage: Page<GameWithFileCopies> = TestPage.of([gameWithFileCopies]);
     gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
@@ -155,7 +155,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
 
     const pageText = fixture.debugElement.nativeElement.textContent;
     expect(pageText).toContain(gameWithFileCopies.title);
-    expect(pageText).toContain(gameWithFileCopies.gameFilesWithCopies[0].gameFile.fileTitle);
+    expect(pageText).toContain(gameWithFileCopies.sourceFilesWithCopies[0].sourceFile.fileTitle);
     expect(pageText).toContain(localFolderBackupTarget.name);
     expect(pageText).toContain(s3BackupTarget.name);
     expect(pageText).toContain(fileCopyWithProgress.progress!.percentage + "%");
@@ -223,19 +223,19 @@ describe('GamesWithFileCopiesSectionComponent', () => {
 
     // seed component state with matching context to allow immutable update
     const ctx: PotentialFileCopyWithContext = {
-      gameFile: TestGameFile.any(),
+      sourceFile: TestSourceFile.any(),
       potentialFileCopy: fileCopy as any,
       progress: undefined,
       backupTarget: localFolderBackupTarget,
       storageSolutionStatus: StorageSolutionStatus.Connected
     };
-    const key = `${fileCopy.naturalId.gameFileId}-${fileCopy.naturalId.backupTargetId}`;
+    const key = `${fileCopy.naturalId.sourceFileId}-${fileCopy.naturalId.backupTargetId}`;
     component.potentialFileCopiesWithContext.set(new Map([[key, ctx]]));
 
     await component.enqueueFileCopy(fileCopy as any);
 
     const updated = component.getPotentialFileCopyWithContext(
-      fileCopy.naturalId.gameFileId, fileCopy.naturalId.backupTargetId)!;
+      fileCopy.naturalId.sourceFileId, fileCopy.naturalId.backupTargetId)!;
     expect(updated.potentialFileCopy.status).toBe(FileCopyStatus.Enqueued);
     const enqueueRequest = enqueueFileCopyRequestFrom(fileCopy);
     expect(fileCopiesClient.enqueueFileCopy).toHaveBeenCalledWith(enqueueRequest);
@@ -254,20 +254,20 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     fileCopy.naturalId.backupTargetId = localFolderBackupTarget.id;
     fileCopiesClient.cancelFileCopy.and.returnValue(of(null) as any);
     const potentialFileCopyWithContext: PotentialFileCopyWithContext = {
-      gameFile: TestGameFile.any(),
+      sourceFile: TestSourceFile.any(),
       potentialFileCopy: fileCopy as any,
       progress: TestProgress.twentyFivePercent(),
       backupTarget: localFolderBackupTarget,
       storageSolutionStatus: StorageSolutionStatus.Connected
     };
 
-    const key = `${fileCopy.naturalId.gameFileId}-${fileCopy.naturalId.backupTargetId}`;
+    const key = `${fileCopy.naturalId.sourceFileId}-${fileCopy.naturalId.backupTargetId}`;
     component.potentialFileCopiesWithContext.set(new Map([[key, potentialFileCopyWithContext]]));
 
     await component.cancelBackup(fileCopy as any);
 
     const updated = component.getPotentialFileCopyWithContext(
-      fileCopy.naturalId.gameFileId, fileCopy.naturalId.backupTargetId)!;
+      fileCopy.naturalId.sourceFileId, fileCopy.naturalId.backupTargetId)!;
     expect(updated.potentialFileCopy.status).toBe(FileCopyStatus.Tracked);
     expect(fileCopiesClient.cancelFileCopy).toHaveBeenCalledWith(fileCopy.id);
     expect(notificationService.showSuccess).toHaveBeenCalledWith(`Backup canceled`);
@@ -276,22 +276,22 @@ describe('GamesWithFileCopiesSectionComponent', () => {
 
   it('cancelBackup should do nothing if potentialFileCopy doesn\'t have id', async () => {
     const fileCopy =
-      PotentialFileCopyFactory.missing('someGameFileId', 'someBackupTargetId');
+      PotentialFileCopyFactory.missing('someSourceFileId', 'someBackupTargetId');
     const potentialFileCopyWithContext: PotentialFileCopyWithContext = {
-      gameFile: TestGameFile.any(),
+      sourceFile: TestSourceFile.any(),
       potentialFileCopy: fileCopy,
       progress: TestProgress.twentyFivePercent(),
       backupTarget: TestBackupTarget.localFolder(),
       storageSolutionStatus: StorageSolutionStatus.Connected
     };
 
-    const key = `${fileCopy.naturalId.gameFileId}-${fileCopy.naturalId.backupTargetId}`;
+    const key = `${fileCopy.naturalId.sourceFileId}-${fileCopy.naturalId.backupTargetId}`;
     component.potentialFileCopiesWithContext.set(new Map([[key, potentialFileCopyWithContext]]));
 
     await component.cancelBackup(fileCopy);
 
     const fileCopyInComponent: PotentialFileCopyWithContext = component.getPotentialFileCopyWithContext(
-      fileCopy.naturalId.gameFileId, fileCopy.naturalId.backupTargetId)!;
+      fileCopy.naturalId.sourceFileId, fileCopy.naturalId.backupTargetId)!;
     expect(fileCopyInComponent.potentialFileCopy.status).toBeUndefined();
     expect(fileCopyInComponent.progress).not.toBeUndefined();
     expect(fileCopiesClient.cancelFileCopy).not.toHaveBeenCalled();
@@ -341,18 +341,18 @@ describe('GamesWithFileCopiesSectionComponent', () => {
   });
 
   it('should delete file copy and refresh list', fakeAsync(() => {
-    const gameFileId = 'someGameFileId';
+    const sourceFileId = 'someSourceFileId';
     fileCopiesClient.deleteFileCopy.and.returnValue(of(null) as any);
     const gameWithFileCopies = TestGameWithFileCopies.withTrackedFileCopy();
-    gameWithFileCopies.gameFilesWithCopies[0].fileCopiesWithProgress[0].fileCopy.naturalId.backupTargetId =
+    gameWithFileCopies.sourceFilesWithCopies[0].fileCopiesWithProgress[0].fileCopy.naturalId.backupTargetId =
       localFolderBackupTarget.id;
     const gameWithFileCopiesPage: Page<GameWithFileCopies> = TestPage.of([gameWithFileCopies]);
     gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
 
-    component.deleteFileCopy(gameFileId);
+    component.deleteFileCopy(sourceFileId);
     tick();
 
-    expect(fileCopiesClient.deleteFileCopy).toHaveBeenCalledWith(gameFileId);
+    expect(fileCopiesClient.deleteFileCopy).toHaveBeenCalledWith(sourceFileId);
     expect(gamesClient.getGames).toHaveBeenCalled();
     expect(notificationService.showSuccess).toHaveBeenCalledWith('Deleted file copy');
   }));
@@ -364,15 +364,15 @@ describe('GamesWithFileCopiesSectionComponent', () => {
   });
 
   it('should log error when file copy could not be deleted', fakeAsync(() => {
-    const gameFileId = 'someGameFileId';
+    const sourceFileId = 'someSourceFileId';
     const mockError = new Error('Backup error');
     fileCopiesClient.deleteFileCopy.and.returnValue(throwError(() => mockError));
 
-    component.deleteFileCopy(gameFileId);
+    component.deleteFileCopy(sourceFileId);
     tick();
 
     expect(notificationService.showFailure).toHaveBeenCalledWith(
-      `An error occurred while trying to delete a file copy`, gameFileId, mockError);
+      `An error occurred while trying to delete a file copy`, sourceFileId, mockError);
   }));
 
   it('should update file copy status when status changed event is received', fakeAsync(() => {
@@ -385,10 +385,10 @@ describe('GamesWithFileCopiesSectionComponent', () => {
 
     simulateStatusChangedEventReceivedToInProgressForFirstFileCopy(gameWithFileCopies);
 
-    const gameFile: GameFile = gameWithFileCopies.gameFilesWithCopies[0].gameFile;
+    const sourceFile: SourceFile = gameWithFileCopies.sourceFilesWithCopies[0].sourceFile;
     const backupTargetId: string = localFolderBackupTarget.id;
     const fileCopyInComponent: PotentialFileCopyWithContext =
-      component.getPotentialFileCopyWithContext(gameFile.id, backupTargetId)!;
+      component.getPotentialFileCopyWithContext(sourceFile.id, backupTargetId)!;
     const gameList: DebugElement = getGameList();
     expect(fileCopyInComponent.potentialFileCopy.status)
       .toBe(FileCopyStatus.InProgress);
@@ -413,7 +413,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
   }
 
   function changeFirstFileCopyBackupTarget(gameWithFileCopies: GameWithFileCopies, backupTargetId: string) {
-    gameWithFileCopies.gameFilesWithCopies[0].fileCopiesWithProgress[0].fileCopy.naturalId.backupTargetId =
+    gameWithFileCopies.sourceFilesWithCopies[0].fileCopiesWithProgress[0].fileCopy.naturalId.backupTargetId =
       backupTargetId;
   }
 
@@ -424,7 +424,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
 
   function simulateStatusChangedEventReceivedToInProgressForFirstFileCopy(
     gameWithFileCopies: GameWithFileCopies) {
-    const fileCopy = (gameWithFileCopies.gameFilesWithCopies[0].fileCopiesWithProgress)[0]?.fileCopy;
+    const fileCopy = (gameWithFileCopies.sourceFilesWithCopies[0].fileCopiesWithProgress)[0]?.fileCopy;
     simulateFileCopyStatusChangedEventReceived(
       fileCopy.id, fileCopy.naturalId, FileCopyStatus.InProgress);
   }
@@ -434,7 +434,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     changeFirstFileCopyBackupTarget(gameWithFileCopies, localFolderBackupTarget.id);
 
     const fileCopyWithProgress: FileCopyWithProgress =
-      gameWithFileCopies.gameFilesWithCopies[0].fileCopiesWithProgress[0];
+      gameWithFileCopies.sourceFilesWithCopies[0].fileCopiesWithProgress[0];
     mockGameWithFileCopiesExists(gameWithFileCopies);
 
     fixture.detectChanges();
@@ -447,7 +447,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
     );
 
     expect(component.getPotentialFileCopyWithContext(
-      gameWithFileCopies.gameFilesWithCopies[0].gameFile.id, localFolderBackupTarget.id)!.progress).toBeUndefined();
+      gameWithFileCopies.sourceFilesWithCopies[0].sourceFile.id, localFolderBackupTarget.id)!.progress).toBeUndefined();
   }));
 
   it('should handle StatusChanged event when no matching fileCopy exists', fakeAsync(() => {
@@ -470,7 +470,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
   it('should update file copy progress when progress changed event is received' +
     ' and file copy is found in list', fakeAsync(() => {
     const gameWithFileCopies: GameWithFileCopies = TestGameWithFileCopies.withInProgressFileCopy();
-    const fileCopy = gameWithFileCopies.gameFilesWithCopies[0].fileCopiesWithProgress[0].fileCopy;
+    const fileCopy = gameWithFileCopies.sourceFilesWithCopies[0].fileCopiesWithProgress[0].fileCopy;
     fileCopy.naturalId.backupTargetId = localFolderBackupTarget.id;
     const gameWithFileCopiesPage: Page<GameWithFileCopies> = TestPage.of([gameWithFileCopies]);
     gamesClient.getGames.and.returnValue(of(gameWithFileCopiesPage) as any);
@@ -482,8 +482,8 @@ describe('GamesWithFileCopiesSectionComponent', () => {
       TestProgressUpdatedEvent.twentyFivePercent(fileCopy.id, fileCopy.naturalId);
     simulateFileCopyProgressChangedEventReceived(progressChangedEvent);
 
-    const gameFile: GameFile = gameWithFileCopies.gameFilesWithCopies[0].gameFile;
-    expect(component.getPotentialFileCopyWithContext(gameFile.id, localFolderBackupTarget.id)!.progress)
+    const sourceFile: SourceFile = gameWithFileCopies.sourceFilesWithCopies[0].sourceFile;
+    expect(component.getPotentialFileCopyWithContext(sourceFile.id, localFolderBackupTarget.id)!.progress)
       .toEqual(TestProgress.twentyFivePercent());
   }));
 
@@ -499,11 +499,11 @@ describe('GamesWithFileCopiesSectionComponent', () => {
 
       const progressChangedEvent: FileCopyReplicationProgressUpdatedEvent =
         TestProgressUpdatedEvent.twentyFivePercent(
-          'unknownFileCopyId', {gameFileId: 'unknownGameFileId', backupTargetId: 'unknownBackupTargetId'});
+          'unknownFileCopyId', {sourceFileId: 'unknownSourceFileId', backupTargetId: 'unknownBackupTargetId'});
       simulateFileCopyProgressChangedEventReceived(progressChangedEvent);
 
-      const gameFile: GameFile = gameWithFileCopies.gameFilesWithCopies[0].gameFile;
-      expect(component.getPotentialFileCopyWithContext(gameFile.id, localFolderBackupTarget.id)!.progress)
+      const sourceFile: SourceFile = gameWithFileCopies.sourceFilesWithCopies[0].sourceFile;
+      expect(component.getPotentialFileCopyWithContext(sourceFile.id, localFolderBackupTarget.id)!.progress)
         .toBeUndefined();
     }));
 

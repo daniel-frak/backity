@@ -15,15 +15,15 @@ public interface GameWithFileCopiesReadModelSpringRepository
         extends JpaRepository<GameWithFileCopiesReadModelJpaEntity, UUID>,
         JpaSpecificationExecutor<GameWithFileCopiesReadModelJpaEntity> {
 
-    @EntityGraph("gameFilesWithCopies")
+    @EntityGraph("sourceFilesWithCopies")
     Page<GameWithFileCopiesReadModelJpaEntity> findAll(
             Specification<GameWithFileCopiesReadModelJpaEntity> spec, Pageable pageable);
 
     // Necessary to solve MultipleBagFetchException
     @Query("""
-                SELECT gf FROM GameFileWithCopiesReadModelJpaEntity gf
-                JOIN FETCH gf.fileCopies
-                WHERE gf.id IN :gameFileIds
+                SELECT sf FROM SourceFileWithCopiesReadModelJpaEntity sf
+                JOIN FETCH sf.fileCopies
+                WHERE sf.id IN :sourceFileIds
             """)
-    List<GameFileWithCopiesReadModelJpaEntity> fetchFileCopies(List<UUID> gameFileIds);
+    List<SourceFileWithCopiesReadModelJpaEntity> fetchFileCopies(List<UUID> sourceFileIds);
 }

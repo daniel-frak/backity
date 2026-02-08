@@ -1,12 +1,12 @@
 import {FileCopy, FileCopyWithContext} from "@backend";
-import {TestGameFile} from "@app/shared/testing/objects/test-game-file";
+import {TestSourceFile} from "@app/shared/testing/objects/test-source-file";
 
 export namespace TestFileCopyWithContext {
 
   export function withFileCopy(fileCopy: FileCopy): FileCopyWithContext {
     return {
       fileCopy: fileCopy,
-      gameFile: TestGameFile.any(),
+      sourceFile: TestSourceFile.any(),
       game: {
         title: "Test Game"
       },

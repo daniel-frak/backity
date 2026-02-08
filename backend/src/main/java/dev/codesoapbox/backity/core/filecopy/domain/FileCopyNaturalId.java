@@ -1,19 +1,19 @@
 package dev.codesoapbox.backity.core.filecopy.domain;
 
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import lombok.NonNull;
 
 public record FileCopyNaturalId(
-        @NonNull GameFileId gameFileId,
+        @NonNull SourceFileId sourceFileId,
         @NonNull BackupTargetId backupTargetId
 ) implements Comparable<FileCopyNaturalId> {
 
     @Override
     public int compareTo(FileCopyNaturalId other) {
-        int gameFileComparison = this.gameFileId.compareTo(other.gameFileId);
-        return gameFileComparison != 0
-                ? gameFileComparison
+        int sourceFileComparison = this.sourceFileId.compareTo(other.sourceFileId);
+        return sourceFileComparison != 0
+                ? sourceFileComparison
                 : this.backupTargetId.compareTo(other.backupTargetId);
     }
 }

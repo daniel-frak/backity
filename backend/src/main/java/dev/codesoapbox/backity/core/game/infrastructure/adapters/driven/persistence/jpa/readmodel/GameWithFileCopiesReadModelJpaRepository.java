@@ -42,10 +42,10 @@ public class GameWithFileCopiesReadModelJpaRepository implements GameWithFileCop
 
     private void fetchFileCopies(
             org.springframework.data.domain.Page<GameWithFileCopiesReadModelJpaEntity> foundEntities) {
-        List<UUID> gameFileIds = foundEntities.stream()
-                .flatMap(e -> e.getGameFilesWithCopies().stream())
-                .map(GameFileWithCopiesReadModelJpaEntity::getId)
+        List<UUID> sourceFileIds = foundEntities.stream()
+                .flatMap(e -> e.getSourceFilesWithCopies().stream())
+                .map(SourceFileWithCopiesReadModelJpaEntity::getId)
                 .toList();
-        springRepository.fetchFileCopies(gameFileIds);
+        springRepository.fetchFileCopies(sourceFileIds);
     }
 }

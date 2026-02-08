@@ -8,6 +8,6 @@ public record GameContentDiscoveryProgressHttpDto(
         @NotNull int percentage,
         @NotNull long timeLeftSeconds,
         @NotNull long gamesDiscovered,
-        @NotNull int gameFilesDiscovered
+        @NotNull int sourceFilesDiscovered
 ) {
 }
