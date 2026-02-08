@@ -3,9 +3,13 @@
 
 $spacer-sm: map.get($spacers, 2);
 $spacer-md: map.get($spacers, 3);
-$icon-width-lg: 3.5rem;
-$icon-width-md: 3rem;
-$icon-width-sm: 2.75rem;
+
+$icon-sizes: (
+  lg: 3.5rem,
+  md: 3rem,
+  sm: 2.75rem
+);
+
 $lines-breakpoint: map.get($grid-breakpoints, sm);
 
 @mixin horizontal-line($width: 0) {
@@ -31,14 +35,13 @@ $lines-breakpoint: map.get($grid-breakpoints, sm);
       opacity: 0;
     }
 
-    &.icon-item-lg > .icon-text-and-buttons::after {
-      @include horizontal-line($icon-width-lg);
+    @each $size, $width in $icon-sizes {
+      &.icon-item-#{$size} > .icon-text-and-buttons::after {
+        @include horizontal-line($width);
+      }
     }
 
-    &.icon-item-md > .icon-text-and-buttons::after {
-      @include horizontal-line($icon-width-md);
-    }
-
+    // Width override for small size
     &.icon-item-sm > .icon-text-and-buttons::after {
       @include horizontal-line();
     }
@@ -46,7 +49,6 @@ $lines-breakpoint: map.get($grid-breakpoints, sm);
 }
 
 .icon-text-and-buttons {
-
   width: 100%;
   display: flex;
   flex-wrap: nowrap;
@@ -58,7 +60,6 @@ $lines-breakpoint: map.get($grid-breakpoints, sm);
   }
 
   .icon-and-text {
-
     display: flex;
     flex-grow: 1;
     align-items: center;
@@ -66,33 +67,27 @@ $lines-breakpoint: map.get($grid-breakpoints, sm);
 
     .icon-holder {
       position: relative;
-      background-color: $secondary;
       border-radius: 0.5rem;
+      background-color: $secondary;
 
-      &.icon-holder-lg {
-        width: $icon-width-lg;
-        height: $icon-width-lg;
-        min-width: $icon-width-lg;
-        min-height: $icon-width-lg;
-      }
+      @each $size, $width in $icon-sizes {
+        &.icon-holder-#{$size} {
+          width: $width;
+          height: $width;
+          min-width: $width;
+          min-height: $width;
 
-      &.icon-holder-md {
-        width: $icon-width-md;
-        height: $icon-width-md;
-        min-width: $icon-width-md;
-        min-height: $icon-width-md;
-        background-color: unset;
-        border: 1px solid $secondary;
-        color: $secondary-text-emphasis;
-      }
+          @if $size == md {
+            background-color: unset;
+            border: 1px solid $secondary;
+            color: $secondary-text-emphasis;
+          }
 
-      &.icon-holder-sm {
-        width: $icon-width-sm;
-        height: $icon-width-sm;
-        min-width: $icon-width-sm;
-        min-height: $icon-width-sm;
-        background-color: unset;
-        color: $secondary-text-emphasis;
+          @if $size == sm {
+            background-color: unset;
+            color: $secondary-text-emphasis;
+          }
+        }
       }
     }
 
@@ -141,19 +136,11 @@ $lines-breakpoint: map.get($grid-breakpoints, sm);
 
   @media (min-width: $lines-breakpoint) {
     border-left: 1px solid $secondary;
-  }
 
-  @media (min-width: $lines-breakpoint) {
-    &.details-lg {
-      margin-left: $icon-width-lg/2;
-    }
-
-    &.details-md {
-      margin-left: $icon-width-md/2;
-    }
-
-    &.details-sm {
-      margin-left: $icon-width-sm/2;
+    @each $size, $width in $icon-sizes {
+      &.details-#{$size} {
+        margin-left: $width / 2;
+      }
     }
   }
 }
@@ -162,18 +149,16 @@ $lines-breakpoint: map.get($grid-breakpoints, sm);
   height: 0;
   overflow: hidden;
   opacity: 0;
-  transition: opacity 0.2s ease,
-  padding 0.2s ease,
-  height 0.2s ease;
+  transition: opacity 0.2s ease, padding 0.2s ease, height 0.2s ease;
 
   // https://developer.chrome.com/blog/new-in-chrome-129#animate
   interpolate-size: allow-keywords;
 
-  margin-bottom: -($spacer-md);
-}
+  margin-bottom: -$spacer-md;
 
-.collapsible.open {
-  height: auto;
-  opacity: 1;
-  padding-bottom: $spacer-md;
+  &.open {
+    height: auto;
+    opacity: 1;
+    padding-bottom: $spacer-md;
+  }
 }
