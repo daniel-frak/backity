@@ -155,7 +155,7 @@ describe('GamesWithFileCopiesSectionComponent', () => {
 
     const pageText = fixture.debugElement.nativeElement.textContent;
     expect(pageText).toContain(gameWithFileCopies.title);
-    expect(pageText).toContain(gameWithFileCopies.gameFilesWithCopies[0].gameFile.fileSource.fileTitle);
+    expect(pageText).toContain(gameWithFileCopies.gameFilesWithCopies[0].gameFile.fileTitle);
     expect(pageText).toContain(localFolderBackupTarget.name);
     expect(pageText).toContain(s3BackupTarget.name);
     expect(pageText).toContain(fileCopyWithProgress.progress!.percentage + "%");

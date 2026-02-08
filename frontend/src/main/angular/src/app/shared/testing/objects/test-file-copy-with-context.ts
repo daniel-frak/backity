@@ -6,9 +6,7 @@ export namespace TestFileCopyWithContext {
   export function withFileCopy(fileCopy: FileCopy): FileCopyWithContext {
     return {
       fileCopy: fileCopy,
-      gameFile: {
-        fileSource: TestGameFile.any().fileSource
-      },
+      gameFile: TestGameFile.any(),
       game: {
         title: "Test Game"
       },

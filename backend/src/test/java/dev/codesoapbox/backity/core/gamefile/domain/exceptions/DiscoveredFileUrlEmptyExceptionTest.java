@@ -5,12 +5,12 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class FileSourceUrlEmptyExceptionTest {
+class DiscoveredFileUrlEmptyExceptionTest {
 
     @Test
     void shouldGetMessage() {
         var id = new GameProviderId("TestGameProviderId");
-        var exception = new FileSourceUrlEmptyException(id);
+        var exception = new GameFileUrlEmptyException(id);
 
         String result = exception.getMessage();
 

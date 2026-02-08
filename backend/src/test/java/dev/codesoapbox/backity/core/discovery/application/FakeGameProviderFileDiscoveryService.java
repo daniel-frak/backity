@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.discovery.application;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
-import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
+import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 class FakeGameProviderFileDiscoveryService implements GameProviderFileDiscoveryService {
 
     public final CountDownLatch finishLatch = new CountDownLatch(1);
-    private final AtomicReference<Consumer<FileSource>> fileSourceConsumerRef = new AtomicReference<>();
+    private final AtomicReference<Consumer<DiscoveredFile>> discoveredFileConsumerRef = new AtomicReference<>();
 
     @Getter
     private final AtomicInteger timesTriggered = new AtomicInteger();
@@ -30,8 +30,8 @@ class FakeGameProviderFileDiscoveryService implements GameProviderFileDiscoveryS
         return timesTriggered.get() > 0;
     }
 
-    public void simulateFileDiscovery(FileSource fileSource) {
-        fileSourceConsumerRef.get().accept(fileSource);
+    public void simulateFileDiscovery(DiscoveredFile discoveredFile) {
+        discoveredFileConsumerRef.get().accept(discoveredFile);
     }
 
     public void complete() {
@@ -45,12 +45,12 @@ class FakeGameProviderFileDiscoveryService implements GameProviderFileDiscoveryS
 
     @Override
     public void discoverAllFiles(
-            Consumer<FileSource> fileSourceConsumer, GameDiscoveryProgressTracker progressTracker) {
+            Consumer<DiscoveredFile> discoveredFileConsumer, GameDiscoveryProgressTracker progressTracker) {
         timesTriggered.incrementAndGet();
         if (exceptionToThrowDuringDiscovery != null) {
             throw exceptionToThrowDuringDiscovery;
         }
-        this.fileSourceConsumerRef.set(fileSourceConsumer);
+        this.discoveredFileConsumerRef.set(discoveredFileConsumer);
 
         try {
             finishLatch.await();

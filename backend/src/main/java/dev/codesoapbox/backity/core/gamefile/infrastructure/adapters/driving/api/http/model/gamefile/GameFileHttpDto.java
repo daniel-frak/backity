@@ -2,7 +2,6 @@ package dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.ap
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +9,13 @@ import java.time.LocalDateTime;
 public record GameFileHttpDto(
         @NotBlank String id,
         @NotBlank String gameId,
-        @NotNull FileSourceHttpDto fileSource,
+        @NotBlank String gameProviderId,
+        @NotBlank String originalGameTitle,
+        @NotBlank String fileTitle,
+        @NotBlank String version,
+        @NotBlank String url,
+        @NotBlank String originalFileName,
+        @NotBlank String size,
         LocalDateTime dateCreated,
         LocalDateTime dateModified
 ) {

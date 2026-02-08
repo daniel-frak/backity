@@ -33,7 +33,7 @@ class FileCopyReplicatorTest {
 
     private void gameProviderExistsFor(GameFile gameFile) {
         when(gameProviderFileBackupService.getGameProviderId())
-                .thenReturn(gameFile.getFileSource().gameProviderId());
+                .thenReturn(gameFile.getGameProviderId());
     }
 
     @Nested
@@ -95,7 +95,7 @@ class FileCopyReplicatorTest {
             assertThatThrownBy(() -> fileCopyReplicator.replicate(storageSolution, gameFile, fileCopy))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("File backup service for gameProviderId not found: "
-                            + gameFile.getFileSource().gameProviderId());
+                            + gameFile.getGameProviderId());
         }
     }
 

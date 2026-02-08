@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed;
 
+import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
-import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
-import dev.codesoapbox.backity.core.gamefile.domain.TestFileSource;
+import dev.codesoapbox.backity.core.gamefile.domain.TestDiscoveredFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import dev.codesoapbox.backity.gameproviders.gog.domain.TestGogGameFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.TestGogGameWithFiles;
@@ -24,10 +24,10 @@ class GogGameWithFileCopiesMapperTest {
                 .withFiles(List.of(TestGogGameFile.minimal()))
                 .build();
 
-        List<FileSource> result = MAPPER.toFileSources(gogGame);
+        List<DiscoveredFile> result = MAPPER.toDiscoveredFiles(gogGame);
 
-        List<FileSource> expectedResult = List.of(
-                TestFileSource.minimalGogBuilder()
+        List<DiscoveredFile> expectedResult = List.of(
+                TestDiscoveredFile.minimalGogBuilder()
                         .originalGameTitle("Test Game")
                         .fileTitle("Game 1 (Installer)")
                         .version("unknown")
@@ -44,7 +44,7 @@ class GogGameWithFileCopiesMapperTest {
     void shouldMapMinimalWithNoFilesToFileSourceList() {
         GogGameWithFiles gogGame = TestGogGameWithFiles.minimal();
 
-        List<FileSource> result = MAPPER.toFileSources(gogGame);
+        List<DiscoveredFile> result = MAPPER.toDiscoveredFiles(gogGame);
 
         assertThat(result).isEmpty();
     }

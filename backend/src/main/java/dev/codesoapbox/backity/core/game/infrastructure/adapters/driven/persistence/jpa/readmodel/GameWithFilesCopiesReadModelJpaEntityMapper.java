@@ -1,6 +1,9 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.readmodel;
 
-import dev.codesoapbox.backity.core.game.application.readmodel.*;
+import dev.codesoapbox.backity.core.game.application.readmodel.FileCopyReadModel;
+import dev.codesoapbox.backity.core.game.application.readmodel.GameFileReadModel;
+import dev.codesoapbox.backity.core.game.application.readmodel.GameFileWithCopiesReadModel;
+import dev.codesoapbox.backity.core.game.application.readmodel.GameWithFileCopiesReadModel;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
 import org.mapstruct.*;
 
@@ -15,14 +18,11 @@ public abstract class GameWithFilesCopiesReadModelJpaEntityMapper {
     @BeanMapping(unmappedSourcePolicy = ReportingPolicy.IGNORE)
     protected abstract GameFileWithCopiesReadModel toReadModel(GameFileWithCopiesReadModelJpaEntity entity);
 
+    @Mapping(target = "size", source = "sizeInBytes", qualifiedByName = "mapFileSize")
     @BeanMapping(unmappedSourcePolicy = ReportingPolicy.IGNORE)
     protected abstract GameFileReadModel toReadModelInternal(GameFileWithCopiesReadModelJpaEntity entity);
 
     protected abstract FileCopyReadModel toReadModel(FileCopyReadModelJpaEntity entity);
-
-    @Mapping(target = "size", source = "sizeInBytes", qualifiedByName = "mapFileSize")
-    @BeanMapping(ignoreUnmappedSourceProperties = "sizeInBytes")
-    protected abstract FileSourceReadModel toReadModel(FileSourceReadModelJpaEmbeddable entity);
 
     @Named("mapFileSize")
     protected String mapFileSize(Long sizeInBytes) {

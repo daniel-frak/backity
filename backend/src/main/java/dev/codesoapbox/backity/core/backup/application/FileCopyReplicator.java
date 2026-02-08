@@ -36,7 +36,7 @@ public class FileCopyReplicator {
                     "Cannot replicate file copy that is not in progress (id=" + fileCopy.getId() + ")");
         }
 
-        GameProviderId gameProviderId = gameFile.getFileSource().gameProviderId();
+        GameProviderId gameProviderId = gameFile.getGameProviderId();
         GameProviderFileBackupService gameProviderFileBackupService = getGameProviderFileBackupService(gameProviderId);
         OutputStreamProgressTracker outputStreamProgressTracker = outputStreamProgressTrackerFactory.create(fileCopy);
         TrackableFileStream fileStream = gameProviderFileBackupService.acquireTrackableFileStream(
@@ -55,6 +55,6 @@ public class FileCopyReplicator {
     }
 
     public boolean gameProviderIsConnected(GameFile gameFile) {
-        return getGameProviderFileBackupService(gameFile.getFileSource().gameProviderId()).isConnected();
+        return getGameProviderFileBackupService(gameFile.getGameProviderId()).isConnected();
     }
 }

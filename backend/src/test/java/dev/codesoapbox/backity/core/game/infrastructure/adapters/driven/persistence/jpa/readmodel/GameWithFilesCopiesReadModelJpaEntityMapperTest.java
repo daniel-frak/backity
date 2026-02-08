@@ -46,15 +46,13 @@ class GameWithFilesCopiesReadModelJpaEntityMapperTest {
                                 gameId,
                                 LocalDateTime.parse("2022-04-29T14:15:53"),
                                 LocalDateTime.parse("2023-04-29T14:15:53"),
-                                new FileSourceReadModelJpaEmbeddable(
-                                        "GOG",
-                                        "Game 1",
-                                        "Game 1 (Installer)",
-                                        "1.0.0",
-                                        "/downlink/some_game/some_file",
-                                        "game_1_installer.exe",
-                                        5120L
-                                ),
+                                "GOG",
+                                "Game 1",
+                                "Game 1 (Installer)",
+                                "1.0.0",
+                                "/downlink/some_game/some_file",
+                                "game_1_installer.exe",
+                                5120L,
                                 List.of(
                                         new FileCopyReadModelJpaEntity(
                                                 fileCopyId,

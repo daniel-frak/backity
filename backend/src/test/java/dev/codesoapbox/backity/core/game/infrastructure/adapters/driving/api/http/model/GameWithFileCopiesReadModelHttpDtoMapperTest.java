@@ -13,7 +13,6 @@ import dev.codesoapbox.backity.core.game.application.readmodel.TestGameFileReadM
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.FileCopyStatusHttpDto;
-import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.FileSourceHttpDto;
 import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.GameFileHttpDto;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.ProgressHttpDto;
 import org.junit.jupiter.api.Test;
@@ -88,15 +87,13 @@ class GameWithFileCopiesReadModelHttpDtoMapperTest {
                                 new GameFileHttpDto(
                                         GAME_FILE_ID,
                                         GAME_ID,
-                                        new FileSourceHttpDto(
-                                                "GOG",
-                                                "Game 1",
-                                                "Game 1 (Installer)",
-                                                "1.0.0",
-                                                "/downlink/some_game/some_file",
-                                                "game_1_installer.exe",
-                                                "5 KB"
-                                        ),
+                                        "GOG",
+                                        "Game 1",
+                                        "Game 1 (Installer)",
+                                        "1.0.0",
+                                        "/downlink/some_game/some_file",
+                                        "game_1_installer.exe",
+                                        "5 KB",
                                         LocalDateTime.parse("2022-04-29T14:15:53"),
                                         LocalDateTime.parse("2023-04-29T14:15:53")
                                 ),

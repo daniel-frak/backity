@@ -41,8 +41,33 @@ public class GameFileWithCopiesReadModelJpaEntity {
     @NotNull
     private LocalDateTime dateModified;
 
-    @Embedded
-    private FileSourceReadModelJpaEmbeddable fileSource;
+    @NotNull
+    @Column(nullable = false)
+    private String gameProviderId;
+
+    @NotNull
+    @Column(nullable = false)
+    private String originalGameTitle;
+
+    @NotNull
+    @Column(nullable = false)
+    private String fileTitle;
+
+    @NotNull
+    @Column(nullable = false)
+    private String version;
+
+    @NotNull
+    @Column(nullable = false)
+    private String url;
+
+    @NotNull
+    @Column(nullable = false)
+    private String originalFileName;
+
+    @NotNull
+    @Column(nullable = false)
+    private long sizeInBytes;
 
     @OneToMany(mappedBy = "naturalId.gameFileId")
     private List<FileCopyReadModelJpaEntity> fileCopies = new ArrayList<>();

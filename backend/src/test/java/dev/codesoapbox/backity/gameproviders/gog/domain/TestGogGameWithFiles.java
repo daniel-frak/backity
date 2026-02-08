@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.gameproviders.gog.domain;
 
-import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
+import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 import lombok.Builder;
 
 import java.util.List;
@@ -43,19 +43,19 @@ public class TestGogGameWithFiles {
                 .withChangelog("Some changelog");
     }
 
-    public static GogGameWithFiles fromSingleFile(FileSource fileSource) {
+    public static GogGameWithFiles fromSingleFile(DiscoveredFile discoveredFile) {
         return new GogGameWithFiles(
-                fileSource.originalGameTitle(),
+                discoveredFile.originalGameTitle(),
                 null,
                 null,
                 null,
                 List.of(
                         new GogGameFile(
-                                fileSource.version(),
-                                fileSource.url(),
-                                fileSource.fileTitle(),
-                                fileSource.size().toString(),
-                                fileSource.originalFileName()
+                                discoveredFile.version(),
+                                discoveredFile.url(),
+                                discoveredFile.fileTitle(),
+                                discoveredFile.size().toString(),
+                                discoveredFile.originalFileName()
                         )
                 ),
                 null

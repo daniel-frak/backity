@@ -1,10 +1,11 @@
 package dev.codesoapbox.backity.core.gamefile.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
+import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 
 @lombok.Builder(builderClassName = "Builder", buildMethodName = "internalBuild",
         builderMethodName = "minimalGogBuilder")
-public class TestFileSource {
+public class TestDiscoveredFile {
 
     @lombok.Builder.Default
     private GameProviderId gameProviderId = new GameProviderId("GOG");
@@ -27,16 +28,16 @@ public class TestFileSource {
     @lombok.Builder.Default
     private FileSize size = new FileSize(5120L);
 
-    public static FileSource minimalGog() {
+    public static DiscoveredFile minimalGog() {
         return minimalGogBuilder().build();
     }
 
     public static class Builder {
 
-        public FileSource build() {
-            TestFileSource temp = internalBuild();
+        public DiscoveredFile build() {
+            TestDiscoveredFile temp = internalBuild();
 
-            return new FileSource(
+            return new DiscoveredFile(
                     temp.gameProviderId,
                     temp.originalGameTitle,
                     temp.fileTitle,

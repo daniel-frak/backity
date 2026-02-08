@@ -8,7 +8,13 @@ public class TestGameFileReadModel {
         return new GameFileReadModel(
                 gameFile.getId().value().toString(),
                 gameFile.getGameId().value().toString(),
-                TestFileSourceReadModel.from(gameFile.getFileSource()),
+                gameFile.getGameProviderId().value(),
+                gameFile.getOriginalGameTitle(),
+                gameFile.getFileTitle(),
+                gameFile.getVersion(),
+                gameFile.getUrl(),
+                gameFile.getOriginalFileName(),
+                gameFile.getSize().toString(),
                 gameFile.getDateCreated(),
                 gameFile.getDateModified()
         );

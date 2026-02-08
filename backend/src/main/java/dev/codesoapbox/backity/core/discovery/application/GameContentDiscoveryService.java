@@ -2,9 +2,9 @@ package dev.codesoapbox.backity.core.discovery.application;
 
 import dev.codesoapbox.backity.DoNotMutate;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
+import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -54,8 +54,8 @@ public class GameContentDiscoveryService {
                 discoveryProgressTracker.getGameDiscoveryTracker(
                         gameProviderDiscoveryService.getGameProviderId());
         CompletableFuture.runAsync(() -> gameProviderDiscoveryService.discoverAllFiles(
-                                fileSource -> saveDiscoveredFileInfo(
-                                        gameProviderDiscoveryService.getGameProviderId(), fileSource),
+                                discoveredFile -> saveGameFile(
+                                        gameProviderDiscoveryService.getGameProviderId(), discoveredFile),
                                 gameDiscoveryProgressTracker),
                         discoveryExecutor)
                 .whenComplete((v, e) ->
@@ -73,26 +73,26 @@ public class GameContentDiscoveryService {
         discoveryProgressTracker.finalizeTracking(discoveryService.getGameProviderId());
     }
 
-    private void saveDiscoveredFileInfo(GameProviderId gameProviderId, FileSource fileSource) {
-        Game game = getGameOrAddNew(gameProviderId, fileSource);
-        GameFile gameFile = GameFile.createFor(game, fileSource);
+    private void saveGameFile(GameProviderId gameProviderId, DiscoveredFile discoveredFile) {
+        Game game = getGameOrAddNew(gameProviderId, discoveredFile);
+        GameFile gameFile = GameFile.createFor(game, discoveredFile);
 
-        if (!gameFileRepository.existsByUrlAndVersion(gameFile.getFileSource().url(),
-                gameFile.getFileSource().version())) {
+        if (!gameFileRepository.existsByUrlAndVersion(gameFile.getUrl(),
+                gameFile.getVersion())) {
             gameFileRepository.save(gameFile);
             discoveryProgressTracker.incrementGameFilesDiscovered(gameProviderId, 1);
-            log.info("Discovered new file: {} (gameId: {})", gameFile.getFileSource().url(),
+            log.info("Discovered new file: {} (gameId: {})", gameFile.getUrl(),
                     gameFile.getGameId().value());
         }
     }
 
-    private Game getGameOrAddNew(GameProviderId gameProviderId, FileSource fileSource) {
-        return gameRepository.findByTitle(fileSource.originalGameTitle())
-                .orElseGet(() -> addNewGame(gameProviderId, fileSource));
+    private Game getGameOrAddNew(GameProviderId gameProviderId, DiscoveredFile discoveredFile) {
+        return gameRepository.findByTitle(discoveredFile.originalGameTitle())
+                .orElseGet(() -> addNewGame(gameProviderId, discoveredFile));
     }
 
-    private Game addNewGame(GameProviderId gameProviderId, FileSource fileSource) {
-        Game newGame = Game.createNew(fileSource.originalGameTitle());
+    private Game addNewGame(GameProviderId gameProviderId, DiscoveredFile discoveredFile) {
+        Game newGame = Game.createNew(discoveredFile.originalGameTitle());
         gameRepository.save(newGame);
         discoveryProgressTracker.incrementGamesDiscovered(gameProviderId, 1);
         log.info("Discovered new game: {} (id: {})", newGame.getTitle(), newGame.getId().value());

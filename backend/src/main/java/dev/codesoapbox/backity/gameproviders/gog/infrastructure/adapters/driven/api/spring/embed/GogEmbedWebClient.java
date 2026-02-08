@@ -1,18 +1,18 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed;
 
-import dev.codesoapbox.backity.gameproviders.shared.infrastructure.adapters.driven.api.spring.DataBufferFluxTrackableFileStream;
-import dev.codesoapbox.backity.gameproviders.shared.infrastructure.adapters.driven.api.spring.DataBufferFluxTrackableFileStreamFactory;
 import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
+import dev.codesoapbox.backity.core.discovery.domain.exceptions.FileDiscoveryException;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
-import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
-import dev.codesoapbox.backity.core.discovery.domain.exceptions.FileDiscoveryException;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.exceptions.GameBackupRequestFailedException;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.exceptions.GameListRequestFailedException;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.model.remote.GogGameDetailsApiResponse;
+import dev.codesoapbox.backity.gameproviders.shared.infrastructure.adapters.driven.api.spring.DataBufferFluxTrackableFileStream;
+import dev.codesoapbox.backity.gameproviders.shared.infrastructure.adapters.driven.api.spring.DataBufferFluxTrackableFileStreamFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -196,8 +196,8 @@ public class GogEmbedWebClient implements GogLibraryService {
     }
 
     public DataBufferFluxTrackableFileStream initializeProgressAndStreamFile(
-            FileSource fileSource, OutputStreamProgressTracker progressTracker) {
-        String url = fileSource.url();
+            GameFile gameFile, OutputStreamProgressTracker progressTracker) {
+        String url = gameFile.getUrl();
         Flux<DataBuffer> dataBufferFlux = webClientEmbed.get()
                 .uri(url)
                 .header(HEADER_AUTHORIZATION, getBearerToken())

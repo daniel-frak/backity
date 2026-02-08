@@ -7,10 +7,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { FileSource } from './fileSource';
 
 
 export interface GameFileInFileCopyContext { 
-    fileSource: FileSource;
+    gameProviderId: string;
+    originalGameTitle: string;
+    fileTitle: string;
+    version: string;
+    url: string;
+    originalFileName: string;
+    size: string;
 }
 
