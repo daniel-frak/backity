@@ -7,29 +7,28 @@ $icon-width-lg: 3.5rem;
 $icon-width-md: 3rem;
 $icon-width-sm: 2.75rem;
 
+@mixin horizontal-line($width) {
+  content: "";
+  border-top: 1px dashed $secondary;
+  margin-left: $width / 2;
+  width: calc(100% - #{$width / 2});
+}
+
 :host {
   display: flex;
   flex-direction: column;
   gap: $spacer-md;
 
-  &:not(:first-of-type)::before {
-    content: "";
-    border-top: 1px dashed $secondary;
+  &.icon-item-lg::after{
+    @include horizontal-line($icon-width-lg);
   }
 
-  &.icon-item-lg:not(:first-of-type)::before {
-    margin-left: $icon-width-lg/2;
-    width: calc(100% - $icon-width-lg/2);
+  &.icon-item-md:not(:last-of-type)::after{
+    @include horizontal-line($icon-width-md);
   }
 
-  &.icon-item-md:not(:first-of-type)::before {
-    margin-left: $icon-width-md/2;
-    width: calc(100% - $icon-width-md/2);
-  }
-
-  &.icon-item-sm:not(:first-of-type)::before {
-    margin-left: $icon-width-sm/2;
-    width: calc(100% - $icon-width-sm/2);
+  &.icon-item-sm:not(:last-of-type)::after {
+    @include horizontal-line($icon-width-sm);
   }
 }
 
@@ -120,15 +119,24 @@ $icon-width-sm: 2.75rem;
 
   &.details-lg {
     margin-left: $icon-width-lg/2;
+
+    &::before {
+      @include horizontal-line(0);
+    }
   }
 
   &.details-md {
     margin-left: $icon-width-md/2;
+
+    &::before {
+      @include horizontal-line(0);
+    }
   }
 
   &.details-sm {
     margin-left: $icon-width-sm/2;
   }
+
 }
 
 .collapsible {
