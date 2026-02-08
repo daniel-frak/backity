@@ -29,9 +29,8 @@ export class IconItemComponent implements AfterViewInit {
   @ViewChild('detailsWrapper') detailsWrapper?: ElementRef;
 
   readonly showHideableDetails = signal(true);
-
-  hideableDetailsExist = false;
-  detailsExist = true;
+  readonly hideableDetailsExist = signal(false);
+  readonly detailsExist = signal(true);
 
   readonly toggleHideableDetails = () => {
     this.showHideableDetails.update(v => !v);
@@ -43,10 +42,10 @@ export class IconItemComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.hideableDetailsExist = !!this.hideableDetailsWrapper?.nativeElement.children.length;
-    this.detailsExist = this.detailsWrapper?.nativeElement.children.length > 1;
+    this.hideableDetailsExist.set(!!this.hideableDetailsWrapper?.nativeElement.children.length);
+    this.detailsExist.set(this.detailsWrapper?.nativeElement.children.length > 1);
 
-    this.showHideableDetails.set(this.hideableDetailsExist && this.showHideableDetailsOnInit());
+    this.showHideableDetails.set(this.hideableDetailsExist() && this.showHideableDetailsOnInit());
   }
 
   getIconSizeClass(): string {
