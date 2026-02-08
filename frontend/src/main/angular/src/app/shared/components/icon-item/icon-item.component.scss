@@ -6,6 +6,7 @@ $spacer-md: map.get($spacers, 3);
 $icon-width-lg: 3.5rem;
 $icon-width-md: 3rem;
 $icon-width-sm: 2.75rem;
+$lines-breakpoint: map.get($grid-breakpoints, sm);
 
 @mixin horizontal-line($width: 0) {
   content: "";
@@ -25,20 +26,22 @@ $icon-width-sm: 2.75rem;
   flex-direction: column;
   gap: $spacer-md;
 
-  .icon-text-and-buttons:not(:hover)::after{
-    opacity: 0;
-  }
+  @media (min-width: $lines-breakpoint) {
+    .icon-text-and-buttons:not(:hover)::after {
+      opacity: 0;
+    }
 
-  &.icon-item-lg > .icon-text-and-buttons::after{
-    @include horizontal-line($icon-width-lg);
-  }
+    &.icon-item-lg > .icon-text-and-buttons::after {
+      @include horizontal-line($icon-width-lg);
+    }
 
-  &.icon-item-md > .icon-text-and-buttons::after{
-    @include horizontal-line($icon-width-md);
-  }
+    &.icon-item-md > .icon-text-and-buttons::after {
+      @include horizontal-line($icon-width-md);
+    }
 
-  &.icon-item-sm > .icon-text-and-buttons::after {
-    @include horizontal-line();
+    &.icon-item-sm > .icon-text-and-buttons::after {
+      @include horizontal-line();
+    }
   }
 }
 
@@ -46,9 +49,13 @@ $icon-width-sm: 2.75rem;
 
   width: 100%;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: $spacer-md;
+
+  @media (min-width: $lines-breakpoint) {
+    flex-wrap: wrap;
+  }
 
   .icon-and-text {
 
@@ -65,11 +72,15 @@ $icon-width-sm: 2.75rem;
       &.icon-holder-lg {
         width: $icon-width-lg;
         height: $icon-width-lg;
+        min-width: $icon-width-lg;
+        min-height: $icon-width-lg;
       }
 
       &.icon-holder-md {
         width: $icon-width-md;
         height: $icon-width-md;
+        min-width: $icon-width-md;
+        min-height: $icon-width-md;
         background-color: unset;
         border: 1px solid $secondary;
         color: $secondary-text-emphasis;
@@ -78,6 +89,8 @@ $icon-width-sm: 2.75rem;
       &.icon-holder-sm {
         width: $icon-width-sm;
         height: $icon-width-sm;
+        min-width: $icon-width-sm;
+        min-height: $icon-width-sm;
         background-color: unset;
         color: $secondary-text-emphasis;
       }
@@ -104,6 +117,7 @@ $icon-width-sm: 2.75rem;
     display: flex;
     gap: $spacer-md;
     align-items: center;
+    justify-content: end;
   }
 
   &:hover {
@@ -125,20 +139,23 @@ $icon-width-sm: 2.75rem;
   flex-direction: column;
   gap: $spacer-md;
 
-  border-left: 1px solid $secondary;
-
-  &.details-lg {
-    margin-left: $icon-width-lg/2;
+  @media (min-width: $lines-breakpoint) {
+    border-left: 1px solid $secondary;
   }
 
-  &.details-md {
-    margin-left: $icon-width-md/2;
-  }
+  @media (min-width: $lines-breakpoint) {
+    &.details-lg {
+      margin-left: $icon-width-lg/2;
+    }
 
-  &.details-sm {
-    margin-left: $icon-width-sm/2;
-  }
+    &.details-md {
+      margin-left: $icon-width-md/2;
+    }
 
+    &.details-sm {
+      margin-left: $icon-width-sm/2;
+    }
+  }
 }
 
 .collapsible {
