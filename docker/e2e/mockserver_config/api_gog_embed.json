@@ -185,7 +185,7 @@
     },
     "httpResponse": {
       "body": {
-        "string": "Game file contents"
+        "string": "Source file contents"
       },
       "headers": {
         "Content-Type": [

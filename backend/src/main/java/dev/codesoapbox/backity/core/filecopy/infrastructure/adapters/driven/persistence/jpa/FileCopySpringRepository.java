@@ -12,10 +12,10 @@ import java.util.UUID;
 
 public interface FileCopySpringRepository extends JpaRepository<FileCopyJpaEntity, UUID> {
 
-    FileCopyJpaEntity getByNaturalIdGameFileIdAndNaturalIdBackupTargetId(UUID gameFileId, UUID backupTargetId);
+    FileCopyJpaEntity getByNaturalIdSourceFileIdAndNaturalIdBackupTargetId(UUID sourceFileId, UUID backupTargetId);
 
-    Optional<FileCopyJpaEntity> findByNaturalIdGameFileIdAndNaturalIdBackupTargetId(
-            UUID gameFileId, UUID backupTargetId);
+    Optional<FileCopyJpaEntity> findByNaturalIdSourceFileIdAndNaturalIdBackupTargetId(
+            UUID sourceFileId, UUID backupTargetId);
 
     Page<FileCopyJpaEntity> findAllByStatusIn(Pageable pageable, List<FileCopyStatus> status);
 
@@ -33,5 +33,5 @@ public interface FileCopySpringRepository extends JpaRepository<FileCopyJpaEntit
             """)
     Page<FileCopyJpaEntity> findAllInProgressOrEnqueuedOrderByStatusThenDateModified(Pageable pageable);
 
-    List<FileCopyJpaEntity> findAllByNaturalIdGameFileId(UUID gameFileId);
+    List<FileCopyJpaEntity> findAllByNaturalIdSourceFileId(UUID sourceFileId);
 }

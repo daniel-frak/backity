@@ -5,7 +5,7 @@ import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStrea
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,20 +30,20 @@ public class FileCopyReplicator {
         this.storageSolutionWriteService = storageSolutionWriteService;
     }
 
-    public void replicate(StorageSolution storageSolution, GameFile gameFile, FileCopy fileCopy) {
+    public void replicate(StorageSolution storageSolution, SourceFile sourceFile, FileCopy fileCopy) {
         if (fileCopy.getStatus() != FileCopyStatus.IN_PROGRESS) {
             throw new IllegalArgumentException(
                     "Cannot replicate file copy that is not in progress (id=" + fileCopy.getId() + ")");
         }
 
-        GameProviderId gameProviderId = gameFile.getGameProviderId();
+        GameProviderId gameProviderId = sourceFile.getGameProviderId();
         GameProviderFileBackupService gameProviderFileBackupService = getGameProviderFileBackupService(gameProviderId);
         OutputStreamProgressTracker outputStreamProgressTracker = outputStreamProgressTrackerFactory.create(fileCopy);
         TrackableFileStream fileStream = gameProviderFileBackupService.acquireTrackableFileStream(
-                gameFile, outputStreamProgressTracker);
+                sourceFile, outputStreamProgressTracker);
         String filePath = fileCopy.getFilePath();
         storageSolutionWriteService.writeFileToStorage(fileStream, storageSolution, filePath);
-        log.info("Replicated file {} to {}", gameFile, filePath);
+        log.info("Replicated file {} to {}", sourceFile, filePath);
     }
 
     private GameProviderFileBackupService getGameProviderFileBackupService(GameProviderId gameProviderId) {
@@ -54,7 +54,7 @@ public class FileCopyReplicator {
         return gameProviderFileBackupServices.get(gameProviderId);
     }
 
-    public boolean gameProviderIsConnected(GameFile gameFile) {
-        return getGameProviderFileBackupService(gameFile.getGameProviderId()).isConnected();
+    public boolean gameProviderIsConnected(SourceFile sourceFile) {
+        return getGameProviderFileBackupService(sourceFile.getGameProviderId()).isConnected();
     }
 }

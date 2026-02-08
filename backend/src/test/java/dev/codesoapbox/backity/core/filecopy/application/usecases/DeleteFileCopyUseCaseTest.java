@@ -37,7 +37,7 @@ class DeleteFileCopyUseCaseTest {
     }
 
     @Test
-    void shouldDeleteFileCopyGivenGameFileStatusIsStoredIntegrityUnknown() {
+    void shouldDeleteFileCopyGivenSourceFilestatusIsStoredIntegrityUnknown() {
         FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
         String filePath = fileCopy.getFilePath();
         FakeUnixStorageSolution storageSolution = mockStorageSolutionExists(fileCopy);
@@ -86,7 +86,7 @@ class DeleteFileCopyUseCaseTest {
     }
 
     @Test
-    void shouldNotChangeStatusOfGameFileGivenFileDeletionFailed() {
+    void shouldNotChangeStatusOfSourceFileGivenFileDeletionFailed() {
         FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
         FakeUnixStorageSolution storageSolution = mockStorageSolutionExists(fileCopy);
         var exception = new RuntimeException("test");
@@ -100,7 +100,7 @@ class DeleteFileCopyUseCaseTest {
     }
 
     @Test
-    void shouldThrowGivenGameFileStatusIsNotStored() {
+    void shouldThrowGivenSourceFilestatusIsNotStored() {
         FileCopy fileCopy = mockEnqueuedFileCopyExists();
         FileCopyId fileCopyId = fileCopy.getId();
 

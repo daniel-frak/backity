@@ -140,10 +140,10 @@ class GameContentDiscoveryProgressTrackerTest {
         }
 
         @Test
-        void incrementGameFilesDiscoveredShouldIncrementGameFilesDiscovered() {
-            tracker.incrementGameFilesDiscovered(gameProviderFileDiscoveryService.getGameProviderId(), 5);
+        void incrementSourceFilesDiscoveredShouldIncrementSourceFilesDiscovered() {
+            tracker.incrementSourceFilesDiscovered(gameProviderFileDiscoveryService.getGameProviderId(), 5);
 
-            verify(providerTracker).incrementGameFilesDiscovered(5);
+            verify(providerTracker).incrementSourceFilesDiscovered(5);
         }
     }
 

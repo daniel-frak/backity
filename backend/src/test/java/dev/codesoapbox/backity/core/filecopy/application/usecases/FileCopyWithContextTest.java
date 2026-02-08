@@ -6,8 +6,8 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -22,32 +22,32 @@ class FileCopyWithContextTest {
         @SuppressWarnings("DataFlowIssue")
         @Test
         void constructorShouldThrowGivenNullFileCopy() {
-            GameFile gameFile = TestGameFile.gog();
+            SourceFile sourceFile = TestSourceFile.gog();
             Game game = TestGame.any();
             BackupTarget backupTarget = TestBackupTarget.localFolder();
-            assertThatThrownBy(() -> new FileCopyWithContext(null, gameFile, game, backupTarget, null))
+            assertThatThrownBy(() -> new FileCopyWithContext(null, sourceFile, game, backupTarget, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessageContaining("fileCopy");
         }
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenNullGameFile() {
+        void constructorShouldThrowGivenNullSourceFile() {
             FileCopy fileCopy = TestFileCopy.tracked();
             Game game = TestGame.any();
             BackupTarget backupTarget = TestBackupTarget.localFolder();
             assertThatThrownBy(() -> new FileCopyWithContext(fileCopy, null, game, backupTarget, null))
                     .isInstanceOf(NullPointerException.class)
-                    .hasMessageContaining("gameFile");
+                    .hasMessageContaining("sourceFile");
         }
 
         @SuppressWarnings("DataFlowIssue")
         @Test
         void constructorShouldThrowGivenNullGame() {
             FileCopy fileCopy = TestFileCopy.tracked();
-            GameFile gameFile = TestGameFile.gog();
+            SourceFile sourceFile = TestSourceFile.gog();
             BackupTarget backupTarget = TestBackupTarget.localFolder();
-            assertThatThrownBy(() -> new FileCopyWithContext(fileCopy, gameFile, null, backupTarget, null))
+            assertThatThrownBy(() -> new FileCopyWithContext(fileCopy, sourceFile, null, backupTarget, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessageContaining("game");
         }
@@ -56,9 +56,9 @@ class FileCopyWithContextTest {
         @Test
         void constructorShouldThrowGivenNullBackupTarget() {
             FileCopy fileCopy = TestFileCopy.tracked();
-            GameFile gameFile = TestGameFile.gog();
+            SourceFile sourceFile = TestSourceFile.gog();
             Game game = TestGame.any();
-            assertThatThrownBy(() -> new FileCopyWithContext(fileCopy, gameFile, game, null, null))
+            assertThatThrownBy(() -> new FileCopyWithContext(fileCopy, sourceFile, game, null, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessageContaining("backupTarget");
         }
@@ -67,11 +67,11 @@ class FileCopyWithContextTest {
         @Test
         void shouldConstructWithNullProgress() {
             FileCopy fileCopy = TestFileCopy.tracked();
-            GameFile gameFile = TestGameFile.gog();
+            SourceFile sourceFile = TestSourceFile.gog();
             Game game = TestGame.any();
             BackupTarget backupTarget = TestBackupTarget.localFolder();
 
-            var result = new FileCopyWithContext(fileCopy, gameFile, game, backupTarget, null);
+            var result = new FileCopyWithContext(fileCopy, sourceFile, game, backupTarget, null);
 
             assertThat(result).isNotNull();
         }

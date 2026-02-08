@@ -118,7 +118,7 @@ export class GameProvidersComponent implements OnInit {
         percentage: event.percentage,
         timeLeftSeconds: event.timeLeftSeconds,
         gamesDiscovered: event.gamesDiscovered,
-        gameFilesDiscovered: event.gameFilesDiscovered
+        sourceFilesDiscovered: event.sourceFilesDiscovered
       }
     });
   }

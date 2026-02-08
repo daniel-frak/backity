@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.per
 import dev.codesoapbox.backity.DoNotMutate;
 import dev.codesoapbox.backity.core.filecopy.domain.*;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotFoundException;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import dev.codesoapbox.backity.shared.domain.DomainEvent;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.shared.domain.Page;
@@ -64,11 +64,11 @@ public class FileCopyJpaRepository implements FileCopyRepository {
 
     @Override
     public FileCopy getById(FileCopyId id) {
-        return findByGameFileId(id)
+        return findBySourceFileId(id)
                 .orElseThrow(() -> new FileCopyNotFoundException(id));
     }
 
-    private Optional<FileCopy> findByGameFileId(FileCopyId id) {
+    private Optional<FileCopy> findBySourceFileId(FileCopyId id) {
         return springRepository.findById(id.value())
                 .map(entityMapper::toDomain);
     }
@@ -76,8 +76,8 @@ public class FileCopyJpaRepository implements FileCopyRepository {
     @SuppressWarnings("java:S1166") // No reason to log or rethrow DataIntegrityViolationException
     @Override
     public FileCopy findByNaturalIdOrCreate(FileCopyNaturalId naturalId, Supplier<FileCopy> fileCopyFactory) {
-        return springRepository.findByNaturalIdGameFileIdAndNaturalIdBackupTargetId(
-                        naturalId.gameFileId().value(), naturalId.backupTargetId().value())
+        return springRepository.findByNaturalIdSourceFileIdAndNaturalIdBackupTargetId(
+                        naturalId.sourceFileId().value(), naturalId.backupTargetId().value())
                 .map(entityMapper::toDomain)
                 .orElseGet(() -> {
                     try {
@@ -85,8 +85,8 @@ public class FileCopyJpaRepository implements FileCopyRepository {
                     } catch (DataIntegrityViolationException _) {
                         // Someone else just inserted it – reload and return that
                         FileCopyJpaEntity entity =
-                                springRepository.getByNaturalIdGameFileIdAndNaturalIdBackupTargetId(
-                                        naturalId.gameFileId().value(), naturalId.backupTargetId().value());
+                                springRepository.getByNaturalIdSourceFileIdAndNaturalIdBackupTargetId(
+                                        naturalId.sourceFileId().value(), naturalId.backupTargetId().value());
                         return entityMapper.toDomain(entity);
                     }
                 });
@@ -126,8 +126,8 @@ public class FileCopyJpaRepository implements FileCopyRepository {
     }
 
     @Override
-    public List<FileCopy> findAllByGameFileId(GameFileId id) {
-        return springRepository.findAllByNaturalIdGameFileId(id.value()).stream()
+    public List<FileCopy> findAllBySourceFileId(SourceFileId id) {
+        return springRepository.findAllByNaturalIdSourceFileId(id.value()).stream()
                 .map(entityMapper::toDomain)
                 .toList();
     }

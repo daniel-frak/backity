@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.game.application.readmodel.*;
 import dev.codesoapbox.backity.core.game.domain.GameId;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -31,7 +31,7 @@ class GameWithFilesCopiesReadModelJpaEntityMapperTest {
     }
 
     private GameWithFileCopiesReadModelJpaEntity entity() {
-        UUID gameFileId = UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48");
+        UUID sourceFileId = UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48");
         UUID fileCopyId = UUID.fromString("6df888e8-90b9-4df5-a237-0cba422c0310");
         UUID backupTargetId = UUID.fromString("eda52c13-ddf7-406f-97d9-d3ce2cab5a76");
         UUID gameId = UUID.fromString("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5");
@@ -41,8 +41,8 @@ class GameWithFilesCopiesReadModelJpaEntityMapperTest {
                 LocalDateTime.parse("2022-04-29T14:15:53"),
                 LocalDateTime.parse("2023-04-29T14:15:53"),
                 List.of(
-                        new GameFileWithCopiesReadModelJpaEntity(
-                                gameFileId,
+                        new SourceFileWithCopiesReadModelJpaEntity(
+                                sourceFileId,
                                 gameId,
                                 LocalDateTime.parse("2022-04-29T14:15:53"),
                                 LocalDateTime.parse("2023-04-29T14:15:53"),
@@ -57,7 +57,7 @@ class GameWithFilesCopiesReadModelJpaEntityMapperTest {
                                         new FileCopyReadModelJpaEntity(
                                                 fileCopyId,
                                                 new FileCopyNaturalIdReadModelJpaEmbeddable(
-                                                        gameFileId,
+                                                        sourceFileId,
                                                         backupTargetId
                                                 ),
                                                 FileCopyStatus.STORED_INTEGRITY_UNKNOWN,
@@ -69,7 +69,7 @@ class GameWithFilesCopiesReadModelJpaEntityMapperTest {
                                         new FileCopyReadModelJpaEntity(
                                                 fileCopyId,
                                                 new FileCopyNaturalIdReadModelJpaEmbeddable(
-                                                        gameFileId,
+                                                        sourceFileId,
                                                         backupTargetId
                                                 ),
                                                 FileCopyStatus.FAILED,
@@ -86,11 +86,11 @@ class GameWithFilesCopiesReadModelJpaEntityMapperTest {
     }
 
     private GameWithFileCopiesReadModel readModel() {
-        return TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
+        return TestGameWithFileCopiesReadModel.withNoSourceFilesBuilder()
                 .withId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5")
-                .withGameFilesWithCopies(List.of(
-                        new GameFileWithCopiesReadModel(
-                                TestGameFileReadModel.from(TestGameFile.gogBuilder()
+                .withSourceFilesWithCopies(List.of(
+                        new SourceFileWithCopiesReadModel(
+                                TestSourceFileReadModel.from(TestSourceFile.gogBuilder()
                                         .gameId(new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"))
                                         .build()),
                                 List.of(

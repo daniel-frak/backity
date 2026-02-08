@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.discovery.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
-import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
-import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileUrlEmptyException;
+import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
+import dev.codesoapbox.backity.core.sourcefile.domain.exceptions.DiscoveredFileUrlEmptyException;
 import lombok.NonNull;
 import org.apache.logging.log4j.util.Strings;
 
@@ -18,7 +18,7 @@ public record DiscoveredFile(
 
     public DiscoveredFile {
         if (Strings.isBlank(url)) {
-            throw new GameFileUrlEmptyException(gameProviderId);
+            throw new DiscoveredFileUrlEmptyException(gameProviderId);
         }
     }
 }

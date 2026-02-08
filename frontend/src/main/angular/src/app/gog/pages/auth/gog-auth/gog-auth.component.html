@@ -108,10 +108,10 @@
             </ng-container>
           </app-named-value>
           <app-named-value>
-            <ng-container name>Last game files discovered</ng-container>
+            <ng-container name>Last source files discovered</ng-container>
             <ng-container value>
               @if (overview()?.lastDiscoveryResult) {
-                {{ overview()?.lastDiscoveryResult?.gameFilesDiscovered }}
+                {{ overview()?.lastDiscoveryResult?.sourceFilesDiscovered }}
               } @else {
                 N/A
               }
@@ -128,9 +128,9 @@
             </ng-container>
           </app-named-value>
           <app-named-value>
-            <ng-container name>Game files discovered</ng-container>
+            <ng-container name>Source files discovered</ng-container>
             <ng-container value>
-              {{ overview()?.progress?.gameFilesDiscovered }}
+              {{ overview()?.progress?.sourceFilesDiscovered }}
             </ng-container>
           </app-named-value>
           <app-named-value>

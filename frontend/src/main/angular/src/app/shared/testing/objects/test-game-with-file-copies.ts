@@ -1,5 +1,5 @@
 import {GameWithFileCopies} from "@backend";
-import {TestGameFile} from "@app/shared/testing/objects/test-game-file";
+import {TestSourceFile} from "@app/shared/testing/objects/test-source-file";
 import {TestFileCopy} from "@app/shared/testing/objects/test-file-copy";
 import {TestProgress} from "@app/shared/testing/objects/test-progress";
 
@@ -9,9 +9,9 @@ export namespace TestGameWithFileCopies {
     return {
       id: "someGameId",
       title: "someGameTitle",
-      gameFilesWithCopies: [
+      sourceFilesWithCopies: [
         {
-          gameFile: TestGameFile.any(),
+          sourceFile: TestSourceFile.any(),
           fileCopiesWithProgress: [
             {
               fileCopy: TestFileCopy.tracked(),
@@ -27,9 +27,9 @@ export namespace TestGameWithFileCopies {
     return {
       id: "someGameId",
       title: "someGameTitle",
-      gameFilesWithCopies: [
+      sourceFilesWithCopies: [
         {
-          gameFile: TestGameFile.any(),
+          sourceFile: TestSourceFile.any(),
           fileCopiesWithProgress: [
             {
               fileCopy: TestFileCopy.inProgress(),
@@ -45,9 +45,9 @@ export namespace TestGameWithFileCopies {
     return {
       id: "someGameId",
       title: "someGameTitle",
-      gameFilesWithCopies: [
+      sourceFilesWithCopies: [
         {
-          gameFile: TestGameFile.any(),
+          sourceFile: TestSourceFile.any(),
           fileCopiesWithProgress: [
             {
               fileCopy: TestFileCopy.storedIntegrityUnknown(),

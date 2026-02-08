@@ -5,8 +5,8 @@ import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.FileCopyWithContext;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
-import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.FileCopyStatusHttpDto;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
+import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driving.api.http.model.sourcefile.FileCopyStatusHttpDto;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.ProgressHttpDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -24,7 +24,7 @@ class FileCopyWithContextHttpDtoMapperTest {
     void shouldDomainToDto() {
         var domain = new FileCopyWithContext(
                 TestFileCopy.inProgress(),
-                TestGameFile.gog(),
+                TestSourceFile.gog(),
                 TestGame.any(),
                 TestBackupTarget.localFolder(),
                 TestFileCopyReplicationProgress.twentyFivePercent()
@@ -52,7 +52,7 @@ class FileCopyWithContextHttpDtoMapperTest {
                         LocalDateTime.parse("2022-04-29T14:15:53"),
                         LocalDateTime.parse("2023-04-29T14:15:53")
                 ),
-                new GameFileInFileCopyContextHttpDto(
+                new SourceFileInFileCopyContextHttpDto(
                         "GOG",
                         "Game 1",
                         "Game 1 (Installer)",

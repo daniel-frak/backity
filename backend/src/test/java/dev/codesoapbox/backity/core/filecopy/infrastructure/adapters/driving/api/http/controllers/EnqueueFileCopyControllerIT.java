@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.EnqueueFileCopyUseCase;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyNaturalId;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotFoundException;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,16 +33,16 @@ class EnqueueFileCopyControllerIT {
 
     @Test
     void shouldEnqueueFileCopy() throws Exception {
-        var gameFileId = new GameFileId("acde26d7-33c7-42ee-be16-bca91a604b48");
+        var sourceFileId = new SourceFileId("acde26d7-33c7-42ee-be16-bca91a604b48");
         var backupTargetId = new BackupTargetId("224440e2-6e5c-4f24-94ac-3222587652f7");
-        var fileCopyNaturalId = new FileCopyNaturalId(gameFileId, backupTargetId);
+        var fileCopyNaturalId = new FileCopyNaturalId(sourceFileId, backupTargetId);
 
         mockMvc.perform(post("/api/" + FileCopyQueueRestResource.RESOURCE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
                                     "fileCopyNaturalId": {
-                                        "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
+                                        "sourceFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
                                         "backupTargetId": "224440e2-6e5c-4f24-94ac-3222587652f7"
                                     }
                                 }
@@ -55,12 +55,12 @@ class EnqueueFileCopyControllerIT {
 
     @Test
     void shouldReturnBadRequestWhenFileNotFound(CapturedOutput capturedOutput) throws Exception {
-        var gameFileUuid = "acde26d7-33c7-42ee-be16-bca91a604b48";
+        var sourceFileUuid = "acde26d7-33c7-42ee-be16-bca91a604b48";
         var backupTargetUuid = "224440e2-6e5c-4f24-94ac-3222587652f7";
-        var gameFileId = new GameFileId(gameFileUuid);
+        var sourceFileId = new SourceFileId(sourceFileUuid);
         var backupTargetId = new BackupTargetId(backupTargetUuid);
-        var fileCopyNaturalId = new FileCopyNaturalId(gameFileId, backupTargetId);
-        doThrow(new FileCopyNotFoundException(gameFileId, backupTargetId))
+        var fileCopyNaturalId = new FileCopyNaturalId(sourceFileId, backupTargetId);
+        doThrow(new FileCopyNotFoundException(sourceFileId, backupTargetId))
                 .when(useCase).enqueue(fileCopyNaturalId);
 
         mockMvc.perform(post("/api/" + FileCopyQueueRestResource.RESOURCE_URL)
@@ -68,7 +68,7 @@ class EnqueueFileCopyControllerIT {
                         .content("""
                                 {
                                     "fileCopyNaturalId": {
-                                        "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
+                                        "sourceFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
                                         "backupTargetId": "224440e2-6e5c-4f24-94ac-3222587652f7"
                                     }
                                 }
@@ -78,7 +78,7 @@ class EnqueueFileCopyControllerIT {
 
         assertThat(capturedOutput.getOut())
                 .contains("Could not enqueue file copy.")
-                .contains(gameFileUuid)
+                .contains(sourceFileUuid)
                 .contains(backupTargetUuid);
     }
 }

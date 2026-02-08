@@ -4,9 +4,9 @@ import dev.codesoapbox.backity.BackityApplication;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileRepository;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.core.storagesolution.infrastructure.config.slices.LocalFileSystemStorageSolutionBeanConfiguration;
 import dev.codesoapbox.backity.shared.infrastructure.config.jpa.JpaAuditingConfig;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositoryBeanConfiguration;
@@ -68,7 +68,7 @@ class H2DbControllerIT {
     private GameRepository gameRepository;
 
     @Autowired
-    private GameFileRepository gameFileRepository;
+    private SourceFileRepository sourceFileRepository;
 
     @BeforeEach
     void setUp() throws IOException {
@@ -87,11 +87,11 @@ class H2DbControllerIT {
     @Test
     void shouldDumpSql() throws Exception {
         Game game = TestGame.any();
-        GameFile gameFile = TestGameFile.gogBuilder()
+        SourceFile sourceFile = TestSourceFile.gogBuilder()
                 .gameId(game.getId())
                 .build();
         gameRepository.save(game);
-        gameFileRepository.save(gameFile);
+        sourceFileRepository.save(sourceFile);
 
         mockMvc.perform(get("/api/h2/dump"))
                 .andDo(print())
@@ -101,7 +101,7 @@ class H2DbControllerIT {
 
         assertThat(dumpContents)
                 .contains("INSERT INTO \"PUBLIC\".\"GAME\" VALUES")
-                .contains("INSERT INTO \"PUBLIC\".\"GAME_FILE\" VALUES");
+                .contains("INSERT INTO \"PUBLIC\".\"SOURCE_FILE\" VALUES");
     }
 
     private String readTestDump() throws IOException {

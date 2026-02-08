@@ -22,8 +22,8 @@
         </createTable>
         <addUniqueConstraint columnNames="title" tableName="game"/>
     </changeSet>
-    <changeSet id="create_game_file" author="daniel_frak">
-        <createTable tableName="game_file">
+    <changeSet id="create_source_file" author="daniel_frak">
+        <createTable tableName="source_file">
             <column name="id" type="UUID">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
@@ -58,10 +58,10 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <addForeignKeyConstraint baseColumnNames="game_id" baseTableName="game_file"
-                                 constraintName="fk_game_on_game_file" referencedColumnNames="id"
+        <addForeignKeyConstraint baseColumnNames="game_id" baseTableName="source_file"
+                                 constraintName="fk_game_on_source_file" referencedColumnNames="id"
                                  referencedTableName="game"/>
-        <createIndex indexName="game_file_game_id_idx" tableName="game_file">
+        <createIndex indexName="source_file_game_id_idx" tableName="source_file">
             <column name="game_id"/>
         </createIndex>
     </changeSet>
@@ -70,7 +70,7 @@
             <column name="id" type="UUID">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="game_file_id" type="UUID">
+            <column name="source_file_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
             <column name="backup_target_id" type="UUID">
@@ -88,18 +88,18 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <addForeignKeyConstraint baseColumnNames="game_file_id" baseTableName="file_copy"
-                                 constraintName="fk_game_file_on_file_copy" referencedColumnNames="id"
-                                 referencedTableName="game_file"/>
-        <createIndex indexName="file_copy_game_file_id_idx" tableName="file_copy">
-            <column name="game_file_id"/>
+        <addForeignKeyConstraint baseColumnNames="source_file_id" baseTableName="file_copy"
+                                 constraintName="fk_source_file_on_file_copy" referencedColumnNames="id"
+                                 referencedTableName="source_file"/>
+        <createIndex indexName="file_copy_source_file_id_idx" tableName="file_copy">
+            <column name="source_file_id"/>
         </createIndex>
         <createIndex indexName="date_created_idx" tableName="file_copy">
             <column name="date_created"/>
         </createIndex>
-        <createIndex tableName="file_copy" indexName="file_copy_game_file_id_backup_target_id_unique_idx"
+        <createIndex tableName="file_copy" indexName="file_copy_source_file_id_backup_target_id_unique_idx"
                      unique="true">
-            <column name="game_file_id"/>
+            <column name="source_file_id"/>
             <column name="backup_target_id"/>
         </createIndex>
         <createIndex tableName="file_copy" indexName="file_copy_file_path_unique_idx" unique="true">
@@ -126,7 +126,7 @@
             <column name="games_discovered" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="game_files_discovered" type="INTEGER">
+            <column name="source_files_discovered" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
         </createTable>

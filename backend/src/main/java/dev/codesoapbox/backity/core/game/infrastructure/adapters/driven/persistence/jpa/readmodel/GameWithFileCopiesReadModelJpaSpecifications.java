@@ -46,14 +46,14 @@ public class GameWithFileCopiesReadModelJpaSpecifications {
 
         // Filter via EXISTS to avoid row multiplication (keeps pagination totals correct).
         Subquery<Integer> subquery = Objects.requireNonNull(query).subquery(Integer.class);
-        Root<GameFileWithCopiesReadModelJpaEntity> gameFile =
-                subquery.from(GameFileWithCopiesReadModelJpaEntity.class);
-        ListJoin<GameFileWithCopiesReadModelJpaEntity, FileCopyReadModelJpaEntity> fileCopy =
-                gameFile.join(GameFileWithCopiesReadModelJpaEntity_.fileCopies, JoinType.INNER);
+        Root<SourceFileWithCopiesReadModelJpaEntity> sourceFile =
+                subquery.from(SourceFileWithCopiesReadModelJpaEntity.class);
+        ListJoin<SourceFileWithCopiesReadModelJpaEntity, FileCopyReadModelJpaEntity> fileCopy =
+                sourceFile.join(SourceFileWithCopiesReadModelJpaEntity_.fileCopies, JoinType.INNER);
 
         subquery.select(builder.literal(1))
                 .where(
-                        builder.equal(gameFile.get(GameFileWithCopiesReadModelJpaEntity_.gameId),
+                        builder.equal(sourceFile.get(SourceFileWithCopiesReadModelJpaEntity_.gameId),
                                 game.get(GameWithFileCopiesReadModelJpaEntity_.id)),
                         builder.equal(fileCopy.get(FileCopyReadModelJpaEntity_.status), status)
                 );
@@ -88,19 +88,19 @@ public class GameWithFileCopiesReadModelJpaSpecifications {
         Expression<String> gameTitleLower = builder.lower(game.get(GameWithFileCopiesReadModelJpaEntity_.title));
         Predicate matchesAnyTokenInTitle = anyLike(builder, gameTitleLower, likePatternsLower);
 
-        // Match ANY token in ANY of file source fields using EXISTS (pagination-safe).
+        // Match ANY token in ANY of source file fields using EXISTS (pagination-safe).
         Subquery<Integer> fileMatchSubquery = query.subquery(Integer.class);
-        Root<GameFileWithCopiesReadModelJpaEntity> gameFile =
-                fileMatchSubquery.from(GameFileWithCopiesReadModelJpaEntity.class);
+        Root<SourceFileWithCopiesReadModelJpaEntity> sourceFile =
+                fileMatchSubquery.from(SourceFileWithCopiesReadModelJpaEntity.class);
 
         Expression<String> originalGameTitleLower =
-                builder.lower(gameFile.get(GameFileWithCopiesReadModelJpaEntity_.ORIGINAL_GAME_TITLE));
+                builder.lower(sourceFile.get(SourceFileWithCopiesReadModelJpaEntity_.ORIGINAL_GAME_TITLE));
         Expression<String> fileTitleLower =
-                builder.lower(gameFile.get(GameFileWithCopiesReadModelJpaEntity_.FILE_TITLE));
+                builder.lower(sourceFile.get(SourceFileWithCopiesReadModelJpaEntity_.FILE_TITLE));
         Expression<String> originalFileNameLower =
-                builder.lower(gameFile.get(GameFileWithCopiesReadModelJpaEntity_.ORIGINAL_FILE_NAME));
+                builder.lower(sourceFile.get(SourceFileWithCopiesReadModelJpaEntity_.ORIGINAL_FILE_NAME));
 
-        Predicate matchesAnyTokenInAnySearchableGameFileField = builder.or(
+        Predicate matchesAnyTokenInAnySearchableSourceFileField = builder.or(
                 anyLike(builder, originalGameTitleLower, likePatternsLower),
                 anyLike(builder, fileTitleLower, likePatternsLower),
                 anyLike(builder, originalFileNameLower, likePatternsLower)
@@ -109,10 +109,10 @@ public class GameWithFileCopiesReadModelJpaSpecifications {
         fileMatchSubquery.select(builder.literal(1))
                 .where(
                         builder.equal(
-                                gameFile.get(GameFileWithCopiesReadModelJpaEntity_.gameId),
+                                sourceFile.get(SourceFileWithCopiesReadModelJpaEntity_.gameId),
                                 game.get(GameWithFileCopiesReadModelJpaEntity_.id)
                         ),
-                        matchesAnyTokenInAnySearchableGameFileField
+                        matchesAnyTokenInAnySearchableSourceFileField
                 );
 
         return builder.or(matchesAnyTokenInTitle, builder.exists(fileMatchSubquery));

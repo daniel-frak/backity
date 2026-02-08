@@ -10,6 +10,6 @@ import java.util.List;
 public record GameWithFileCopiesHttpDto(
         @NotBlank String id,
         @NotBlank String title,
-        @NotNull List<GameFileWithCopiesHttpDto> gameFilesWithCopies
+        @NotNull List<SourceFileWithCopiesHttpDto> sourceFilesWithCopies
 ) {
 }

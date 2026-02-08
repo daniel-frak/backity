@@ -7,13 +7,13 @@ import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesAndReplicationProgresses;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesSearchFilter;
 import dev.codesoapbox.backity.core.game.application.TestGameWithFileCopiesSearchFilter;
-import dev.codesoapbox.backity.core.game.application.readmodel.GameFileWithCopiesReadModel;
+import dev.codesoapbox.backity.core.game.application.readmodel.SourceFileWithCopiesReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.TestFileCopyReadModel;
-import dev.codesoapbox.backity.core.game.application.readmodel.TestGameFileReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.TestGameWithFileCopiesReadModel;
+import dev.codesoapbox.backity.core.game.application.readmodel.TestSourceFileReadModel;
 import dev.codesoapbox.backity.core.game.application.usecases.GetGamesWithFilesUseCase;
 import dev.codesoapbox.backity.core.game.domain.GameId;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.shared.domain.TestPage;
@@ -48,12 +48,12 @@ class GetGamesControllerIT {
         GameWithFileCopiesSearchFilter expectedFilter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(null);
         Page<GameWithFileCopiesAndReplicationProgresses> gameWithFileCopiesPage = TestPage.of(List.of(
                 new GameWithFileCopiesAndReplicationProgresses(
-                        TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
+                        TestGameWithFileCopiesReadModel.withNoSourceFilesBuilder()
                                 .withId(gameId.toString())
                                 .withTitle("Test Game")
-                                .withGameFilesWithCopies(List.of(
-                                        new GameFileWithCopiesReadModel(
-                                                TestGameFileReadModel.from(TestGameFile.gog()),
+                                .withSourceFilesWithCopies(List.of(
+                                        new SourceFileWithCopiesReadModel(
+                                                TestSourceFileReadModel.from(TestSourceFile.gog()),
                                                 List.of(
                                                         TestFileCopyReadModel.from(TestFileCopy.tracked()),
                                                         TestFileCopyReadModel.from(TestFileCopy.inProgressBuilder()
@@ -84,9 +84,9 @@ class GetGamesControllerIT {
                     {
                         "id": "5bdd248a-c3aa-487a-8479-0bfdb32f7ae5",
                         "title": "Test Game",
-                        "gameFilesWithCopies": [
+                        "sourceFilesWithCopies": [
                                 {
-                                    "gameFile": {
+                                    "sourceFile": {
                                       "id": "acde26d7-33c7-42ee-be16-bca91a604b48",
                                       "gameId": "1eec1c19-25bf-4094-b926-84b5bb8fa281",
                                       "gameProviderId": "GOG",
@@ -104,7 +104,7 @@ class GetGamesControllerIT {
                                           fileCopy: {
                                             "id": "6df888e8-90b9-4df5-a237-0cba422c0310",
                                             "naturalId": {
-                                                "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
+                                                "sourceFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
                                                 "backupTargetId": "eda52c13-ddf7-406f-97d9-d3ce2cab5a76"
                                             },
                                             "status": "TRACKED",
@@ -119,7 +119,7 @@ class GetGamesControllerIT {
                                           fileCopy: {
                                             "id": "d6c81f47-e2b6-424b-b997-0dad6aa372c7",
                                             "naturalId": {
-                                                "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
+                                                "sourceFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
                                                 "backupTargetId": "eda52c13-ddf7-406f-97d9-d3ce2cab5a76"
                                             },
                                             "status": "IN_PROGRESS",
@@ -137,7 +137,7 @@ class GetGamesControllerIT {
                                           fileCopy: {
                                             "id": "6df888e8-90b9-4df5-a237-0cba422c0310",
                                             "naturalId": {
-                                                "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
+                                                "sourceFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
                                                 "backupTargetId": "eda52c13-ddf7-406f-97d9-d3ce2cab5a76"
                                             },
                                             "status": "FAILED",
@@ -165,12 +165,12 @@ class GetGamesControllerIT {
         var expectedFilter = new GameWithFileCopiesSearchFilter(searchQuery, FileCopyStatus.ENQUEUED);
         Page<GameWithFileCopiesAndReplicationProgresses> gameWithFileCopiesPage = TestPage.of(List.of(
                 new GameWithFileCopiesAndReplicationProgresses(
-                        TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
+                        TestGameWithFileCopiesReadModel.withNoSourceFilesBuilder()
                                 .withId(gameId.toString())
                                 .withTitle("Test Game")
-                                .withGameFilesWithCopies(List.of(
-                                        new GameFileWithCopiesReadModel(
-                                                TestGameFileReadModel.from(TestGameFile.gog()),
+                                .withSourceFilesWithCopies(List.of(
+                                        new SourceFileWithCopiesReadModel(
+                                                TestSourceFileReadModel.from(TestSourceFile.gog()),
                                                 List.of(
                                                         TestFileCopyReadModel.from(TestFileCopy.tracked()),
                                                         TestFileCopyReadModel.from(TestFileCopy.inProgressBuilder()

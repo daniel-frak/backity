@@ -5,7 +5,7 @@ import dev.codesoapbox.backity.core.filecopy.application.usecases.EnqueueFileCop
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyNaturalId;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotFoundException;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.EnqueueFileCopyRequestHttpDto;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +24,9 @@ public class EnqueueFileCopyController {
     @Operation(summary = "Enqueue file copy", description = "Adds a file copy to the backup queue")
     @PostMapping
     public ResponseEntity<Void> enqueueFileCopy(@Valid @RequestBody EnqueueFileCopyRequestHttpDto request) {
-        var gameFileId = new GameFileId(request.fileCopyNaturalId().gameFileId());
+        var sourceFileId = new SourceFileId(request.fileCopyNaturalId().sourceFileId());
         var backupTargetId = new BackupTargetId(request.fileCopyNaturalId().backupTargetId());
-        var fileCopyNaturalId = new FileCopyNaturalId(gameFileId, backupTargetId);
+        var fileCopyNaturalId = new FileCopyNaturalId(sourceFileId, backupTargetId);
 
         try {
             useCase.enqueue(fileCopyNaturalId);

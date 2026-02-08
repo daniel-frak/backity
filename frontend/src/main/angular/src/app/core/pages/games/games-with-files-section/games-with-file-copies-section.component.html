@@ -31,36 +31,36 @@
           <app-icon-item iconClass="bi bi-joystick">
             <ng-container title>{{ gameWithFileCopies.title }}</ng-container>
             <ng-container details>
-              @for (gameFileWithCopies of gameWithFileCopies.gameFilesWithCopies;
-                track trackByGameFileId($index, gameFileWithCopies)) {
+              @for (sourceFileWithCopies of gameWithFileCopies.sourceFilesWithCopies;
+                track trackBySourceFileId($index, sourceFileWithCopies)) {
                 <app-icon-item iconClass="bi bi-file-earmark" size="md" data-testid="game-file-item"
                                [showHideableDetailsOnInit]="false">
                   <ng-container title>
-                    {{ gameFileWithCopies.gameFile.fileTitle }}
-                    <app-game-file-version-badge [version]="gameFileWithCopies.gameFile.version"/>
+                    {{ sourceFileWithCopies.sourceFile.fileTitle }}
+                    <app-game-file-version-badge [version]="sourceFileWithCopies.sourceFile.version"/>
                   </ng-container>
                   <ng-container descriptor>
-                    {{ gameFileWithCopies.gameFile.gameProviderId }}
+                    {{ sourceFileWithCopies.sourceFile.gameProviderId }}
                   </ng-container>
                   <ng-container hideableDetails>
                     <app-named-value-container>
                       <app-named-value>
                         <ng-container name>Original file name</ng-container>
                         <ng-container value>
-                          {{ gameFileWithCopies.gameFile.originalFileName }}
+                          {{ sourceFileWithCopies.sourceFile.originalFileName }}
                         </ng-container>
                       </app-named-value>
                       <app-named-value>
                         <ng-container name>Size</ng-container>
                         <ng-container value>
-                          {{ gameFileWithCopies.gameFile.size }}
+                          {{ sourceFileWithCopies.sourceFile.size }}
                         </ng-container>
                       </app-named-value>
                     </app-named-value-container>
                   </ng-container>
                   <ng-container details>
                     @for (backupTarget of backupTargets(); track backupTarget.id) {
-                      @if (getPotentialFileCopyWithContext(gameFileWithCopies.gameFile.id, backupTarget.id);
+                      @if (getPotentialFileCopyWithContext(sourceFileWithCopies.sourceFile.id, backupTarget.id);
                         as potentialFileCopyWithContext) {
                         <app-icon-item iconClass="bi bi-copy" size="sm" data-testid="file-copy-item">
                           <ng-container title>
@@ -147,7 +147,7 @@
                   </ng-container>
                 </app-icon-item>
               } @empty {
-                No game files.
+                No source files.
               }
             </ng-container>
           </app-icon-item>

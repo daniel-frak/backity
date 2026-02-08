@@ -21,10 +21,10 @@ class GameContentDiscoveryProgressTest {
             var gameProviderId = new GameProviderId("GOG");
             Duration duration = Duration.ofSeconds(1);
             int gamesDiscovered = 5;
-            int gameFilesDiscovered = 70;
+            int sourceFilesDiscovered = 70;
 
             assertThatThrownBy(() -> new GameContentDiscoveryProgress(
-                    gameProviderId, invalidPercentage, duration, gamesDiscovered, gameFilesDiscovered))
+                    gameProviderId, invalidPercentage, duration, gamesDiscovered, sourceFilesDiscovered))
                     .isInstanceOf(InvalidGameContentDiscoveryProgressPercentageException.class)
                     .hasMessageContaining(String.valueOf(invalidPercentage));
         }

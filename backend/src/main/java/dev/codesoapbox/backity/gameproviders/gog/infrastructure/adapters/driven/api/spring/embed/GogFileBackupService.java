@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.backup.application.GameProviderFileBackupSer
 import dev.codesoapbox.backity.core.backup.application.TrackableFileStream;
 import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,8 +22,8 @@ public class GogFileBackupService implements GameProviderFileBackupService {
 
     @Override
     public TrackableFileStream acquireTrackableFileStream(
-            GameFile gameFile, OutputStreamProgressTracker outputStreamProgressTracker) {
-        return gogEmbedWebClient.initializeProgressAndStreamFile(gameFile, outputStreamProgressTracker);
+            SourceFile sourceFile, OutputStreamProgressTracker outputStreamProgressTracker) {
+        return gogEmbedWebClient.initializeProgressAndStreamFile(sourceFile, outputStreamProgressTracker);
     }
 
     @Override

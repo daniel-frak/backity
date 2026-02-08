@@ -6,7 +6,7 @@ import dev.codesoapbox.backity.core.discovery.application.GameProviderContentDis
 import dev.codesoapbox.backity.core.discovery.application.GameProviderFileDiscoveryService;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResultRepository;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileRepository;
 import dev.codesoapbox.backity.shared.application.progress.ProgressTracker;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.InternalApplicationServiceBeanConfiguration;
@@ -35,7 +35,7 @@ public class GameContentDiscoveryInternalServiceBeanConfig {
     GameContentDiscoveryService gameContentDiscoveryService(
             List<GameProviderFileDiscoveryService> discoveryServices,
             GameRepository gameRepository,
-            GameFileRepository fileRepository,
+            SourceFileRepository fileRepository,
             GameContentDiscoveryProgressTracker discoveryProgressTracker) {
         return new GameContentDiscoveryService(discoveryServices, gameRepository, fileRepository,
                 discoveryProgressTracker, Executors.newVirtualThreadPerTaskExecutor());

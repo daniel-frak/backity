@@ -13,6 +13,6 @@ public record GameContentDiscoveryProgressChangedWsEvent(
         @NotNull int percentage,
         @NotNull long timeLeftSeconds,
         @NotNull long gamesDiscovered,
-        @NotNull int gameFilesDiscovered
+        @NotNull int sourceFilesDiscovered
 ) {
 }

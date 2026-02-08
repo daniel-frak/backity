@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messa
 import dev.codesoapbox.backity.core.backup.domain.events.FileCopyReplicationProgressChangedEvent;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -18,7 +18,7 @@ public abstract class FileCopyReplicationProgressUpdatedWsEventMapper {
         return id.value().toString();
     }
 
-    protected String toString(GameFileId id) {
+    protected String toString(SourceFileId id) {
         return id.value().toString();
     }
 

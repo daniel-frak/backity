@@ -53,7 +53,7 @@ class GogGameWithFileCopiesHttpDtoMapperTest {
                 "//images-4.gog.com/somePath",
                 "some-cd-key",
                 "Some text information",
-                singletonList(new GogGameFileHttpDto(
+                singletonList(new GogFileHttpDto(
                         "unknown",
                         "/downlink/some_game/some_file",
                         "Game 1 (Installer)",

@@ -3,8 +3,8 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven
 import dev.codesoapbox.backity.core.backup.application.TrackableFileStream;
 import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import dev.codesoapbox.backity.gameproviders.shared.infrastructure.adapters.driven.api.spring.DataBufferFluxTrackableFileStream;
 import org.junit.jupiter.api.Nested;
@@ -35,21 +35,21 @@ class GogFileBackupServiceTest {
 
         @Test
         void acquireTrackableFileShouldReturnFileStream() {
-            GameFile gameFile = TestGameFile.gog();
+            SourceFile sourceFile = TestSourceFile.gog();
             OutputStreamProgressTracker outputStreamProgressTracker = mock(OutputStreamProgressTracker.class);
             TrackableFileStream trackableFileStream =
-                    mockOutputStreamProgressTrackerAwareFileStreamCreation(gameFile, outputStreamProgressTracker);
+                    mockOutputStreamProgressTrackerAwareFileStreamCreation(sourceFile, outputStreamProgressTracker);
 
             TrackableFileStream result =
-                    gogFileBackupService.acquireTrackableFileStream(gameFile, outputStreamProgressTracker);
+                    gogFileBackupService.acquireTrackableFileStream(sourceFile, outputStreamProgressTracker);
 
             assertThat(result).isEqualTo(trackableFileStream);
         }
 
         private TrackableFileStream mockOutputStreamProgressTrackerAwareFileStreamCreation(
-                GameFile gameFile, OutputStreamProgressTracker outputStreamProgressTracker) {
+                SourceFile sourceFile, OutputStreamProgressTracker outputStreamProgressTracker) {
             DataBufferFluxTrackableFileStream trackableFileStream = mock(DataBufferFluxTrackableFileStream.class);
-            when(gogFileProvider.initializeProgressAndStreamFile(gameFile, outputStreamProgressTracker))
+            when(gogFileProvider.initializeProgressAndStreamFile(sourceFile, outputStreamProgressTracker))
                     .thenReturn(trackableFileStream);
             return trackableFileStream;
         }

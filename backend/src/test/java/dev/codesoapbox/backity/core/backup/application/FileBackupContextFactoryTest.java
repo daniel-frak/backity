@@ -2,8 +2,8 @@ package dev.codesoapbox.backity.core.backup.application;
 
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileRepository;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +21,7 @@ class FileBackupContextFactoryTest {
     private FileBackupContextFactory fileBackupContextFactory;
 
     @Mock
-    private GameFileRepository gameFileRepository;
+    private SourceFileRepository sourceFileRepository;
 
     @Mock
     private BackupTargetRepository backupTargetRepository;
@@ -32,13 +32,13 @@ class FileBackupContextFactoryTest {
     @BeforeEach
     void setUp() {
         fileBackupContextFactory = new FileBackupContextFactory(
-                gameFileRepository, backupTargetRepository, storageSolutionRepository);
+                sourceFileRepository, backupTargetRepository, storageSolutionRepository);
     }
 
     @Test
     void shouldCreate() {
         FileBackupContext expectedResult = TestFileBackupContext.enqueuedLocalGog();
-        exists(expectedResult.gameFile());
+        exists(expectedResult.sourceFile());
         exists(expectedResult.backupTarget());
         exists(expectedResult.storageSolution());
 
@@ -48,9 +48,9 @@ class FileBackupContextFactoryTest {
                 .isEqualTo(expectedResult);
     }
 
-    private void exists(GameFile gameFile) {
-        when(gameFileRepository.getById(gameFile.getId()))
-                .thenReturn(gameFile);
+    private void exists(SourceFile sourceFile) {
+        when(sourceFileRepository.getById(sourceFile.getId()))
+                .thenReturn(sourceFile);
     }
 
     private void exists(BackupTarget backupTarget) {

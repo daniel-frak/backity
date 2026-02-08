@@ -49,7 +49,7 @@ class GameProviderContentDiscoveryTrackerTest {
             tracker.initializeGamesDiscovered(15);
             clock.moveForward(Duration.ofSeconds(1));
 
-            tracker.incrementGameFilesDiscovered(99);
+            tracker.incrementSourceFilesDiscovered(99);
             tracker.incrementGamesDiscovered(5);
             tracker.incrementGamesDiscovered(1);
 
@@ -80,7 +80,7 @@ class GameProviderContentDiscoveryTrackerTest {
         void shouldReturnProgress() {
             tracker.initializeGamesDiscovered(15);
             clock.moveForward(Duration.ofSeconds(1));
-            tracker.incrementGameFilesDiscovered(99);
+            tracker.incrementSourceFilesDiscovered(99);
             tracker.incrementGamesDiscovered(5);
 
             GameContentDiscoveryProgress result = tracker.getProgress();
@@ -107,7 +107,7 @@ class GameProviderContentDiscoveryTrackerTest {
             LocalDateTime stoppedAt = LocalDateTime.now(clock);
             tracker.initializeGamesDiscovered(5);
             tracker.incrementGamesDiscovered(5);
-            tracker.incrementGameFilesDiscovered(15);
+            tracker.incrementSourceFilesDiscovered(15);
             tracker.setDiscoveryOutcome(GameContentDiscoveryOutcome.SUCCESS, clock);
             tracker.setStartedAt(startedAt);
             tracker.setStoppedAt(stoppedAt);

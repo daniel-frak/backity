@@ -24,5 +24,5 @@ public final class GameContentDiscoveryResult {
     private GameContentDiscoveryOutcome discoveryOutcome;
     private LocalDateTime lastSuccessfulDiscoveryCompletedAt;
     private long gamesDiscovered;
-    private int gameFilesDiscovered;
+    private int sourceFilesDiscovered;
 }

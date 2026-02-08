@@ -4,8 +4,8 @@ import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 
@@ -20,7 +20,7 @@ public class TestFileBackupContext {
     FileCopy fileCopy = TestFileCopy.tracked();
 
     @lombok.Builder.Default
-    GameFile gameFile = TestGameFile.gog();
+    SourceFile sourceFile = TestSourceFile.gog();
 
     @lombok.Builder.Default
     BackupTarget backupTarget = TestBackupTarget.localFolderBuilder()
@@ -47,7 +47,7 @@ public class TestFileBackupContext {
 
         public FileBackupContext build() {
             TestFileBackupContext temp = internalBuild();
-            return new FileBackupContext(temp.fileCopy, temp.gameFile, temp.backupTarget, temp.storageSolution);
+            return new FileBackupContext(temp.fileCopy, temp.sourceFile, temp.backupTarget, temp.storageSolution);
         }
     }
 }

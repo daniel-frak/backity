@@ -40,14 +40,11 @@ model/gameContentDiscoveryResultWs.ts
 model/gameContentDiscoveryStartedEvent.ts
 model/gameContentDiscoveryStoppedEvent.ts
 model/gameContentDiscoveryWebSocketTopics.ts
-model/gameFile.ts
-model/gameFileInFileCopyContext.ts
-model/gameFileWithCopies.ts
 model/gameInFileCopyContext.ts
 model/gameWithFileCopies.ts
 model/gogAuthenticationRequest.ts
 model/gogConfig.ts
-model/gogGameFile.ts
+model/gogFile.ts
 model/gogGameWithFiles.ts
 model/models.ts
 model/pageFileCopyWithContext.ts
@@ -57,6 +54,9 @@ model/progress.ts
 model/refreshGogAccessTokenRequest.ts
 model/refreshTokenResponse.ts
 model/requestPagination.ts
+model/sourceFile.ts
+model/sourceFileInFileCopyContext.ts
+model/sourceFileWithCopies.ts
 model/storageSolutionStatus.ts
 model/storageSolutionStatusesResponse.ts
 model/validationError.ts

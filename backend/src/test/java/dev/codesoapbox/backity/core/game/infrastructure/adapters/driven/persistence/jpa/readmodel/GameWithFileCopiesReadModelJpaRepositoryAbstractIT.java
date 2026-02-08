@@ -10,10 +10,10 @@ import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntityMapper;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
-import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driven.persistence.jpa.GameFileJpaEntityMapper;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
+import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaEntityMapper;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
@@ -52,56 +52,56 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
     private static final Pagination EVERYTHING_ON_ONE_PAGE = new Pagination(0, 99);
 
     private static final GameWithFileCopiesReadModel GAME_1_READ_MODEL =
-            TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
+            TestGameWithFileCopiesReadModel.withNoSourceFilesBuilder()
                     .withValuesFrom(ExistingGames.GAME_1)
-                    .withGameFilesWithCopies(List.of(
-                            new GameFileWithCopiesReadModel(
-                                    TestGameFileReadModel.from(ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1),
+                    .withSourceFilesWithCopies(List.of(
+                            new SourceFileWithCopiesReadModel(
+                                    TestSourceFileReadModel.from(ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1),
                                     List.of(
                                             TestFileCopyReadModel.from(ExistingFileCopies
-                                                    .TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1_FOR_GAME_1),
+                                                    .TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1_FOR_GAME_1),
                                             // There used to be a bug where pagination would be incorrect due to
                                             // counting FileCopies instead of Games.
                                             // Adding the second FileCopy here helps to verify that the bug is fixed.
                                             TestFileCopyReadModel.from(ExistingFileCopies
-                                                    .TRACKED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_1_FOR_GAME_1)
+                                                    .TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1_FOR_GAME_1)
                                     )
                             ),
                             // There used to be a bug where pagination would be incorrect due to
-                            // counting GameFiles instead of Games.
-                            // Adding the second GameFile here helps to verify that the bug is fixed.
-                            new GameFileWithCopiesReadModel(
-                                    TestGameFileReadModel.from(ExistingGameFiles.GOG_GAME_FILE_2_FOR_GAME_1),
+                            // counting SourceFiles instead of Games.
+                            // Adding the second SourceFile here helps to verify that the bug is fixed.
+                            new SourceFileWithCopiesReadModel(
+                                    TestSourceFileReadModel.from(ExistingSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1),
                                     List.of(
                                             TestFileCopyReadModel.from(ExistingFileCopies
-                                                    .TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2_FOR_GAME_1)
+                                                    .TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2_FOR_GAME_1)
                                     )
                             )
                     ))
                     .build();
 
     private static final GameWithFileCopiesReadModel GAME_2_READ_MODEL =
-            TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
+            TestGameWithFileCopiesReadModel.withNoSourceFilesBuilder()
                     .withValuesFrom(ExistingGames.GAME_2)
-                    .withGameFilesWithCopies(List.of(
-                            new GameFileWithCopiesReadModel(
-                                    TestGameFileReadModel.from(ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_2),
+                    .withSourceFilesWithCopies(List.of(
+                            new SourceFileWithCopiesReadModel(
+                                    TestSourceFileReadModel.from(ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_2),
                                     List.of(
                                             TestFileCopyReadModel.from(ExistingFileCopies
-                                                    .ENQUEUED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_1_FOR_GAME_2)
+                                                    .ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1_FOR_GAME_2)
                                     )
                             )
                     ))
                     .build();
 
     private static final GameWithFileCopiesReadModel GAME_3_READ_MODEL =
-            TestGameWithFileCopiesReadModel.withNoGameFilesBuilder()
+            TestGameWithFileCopiesReadModel.withNoSourceFilesBuilder()
                     .withValuesFrom(ExistingGames.GAME_3)
-                    .withGameFilesWithCopies(List.of(
-                            // This game has a single GameFile with no FileCopies.
+                    .withSourceFilesWithCopies(List.of(
+                            // This game has a single SourceFile with no FileCopies.
                             // We want to make sure it's still returned from queries.
-                            new GameFileWithCopiesReadModel(
-                                    TestGameFileReadModel.from(ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_3),
+                            new SourceFileWithCopiesReadModel(
+                                    TestSourceFileReadModel.from(ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_3),
                                     emptyList()
                             )
                     ))
@@ -133,8 +133,8 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         for (Game game : ExistingGames.getAll()) {
             entityManager.persist(ExistingGames.MAPPER.toEntity(game));
         }
-        for (GameFile gameFile : ExistingGameFiles.getAll()) {
-            entityManager.persist(ExistingGameFiles.MAPPER.toEntity(gameFile));
+        for (SourceFile sourceFile : ExistingSourceFiles.getAll()) {
+            entityManager.persist(ExistingSourceFiles.MAPPER.toEntity(sourceFile));
         }
         for (FileCopy fileCopy : ExistingFileCopies.getAll()) {
             entityManager.persist(ExistingFileCopies.MAPPER.toEntity(fileCopy));
@@ -235,7 +235,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         entityManager.clear(); // Detach all entities to make sure there's no lazy loading
 
         GameWithFileCopiesReadModelJpaEntity firstGame = entities.getFirst();
-        assertFetchedGameFiles(firstGame);
+        assertFetchedSourceFiles(firstGame);
         assertFetchedFileCopies(firstGame);
     }
 
@@ -251,14 +251,14 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         return entities;
     }
 
-    private void assertFetchedGameFiles(GameWithFileCopiesReadModelJpaEntity firstGame) {
-        assertThatCode(() -> firstGame.getGameFilesWithCopies().getFirst())
+    private void assertFetchedSourceFiles(GameWithFileCopiesReadModelJpaEntity firstGame) {
+        assertThatCode(() -> firstGame.getSourceFilesWithCopies().getFirst())
                 .doesNotThrowAnyException();
     }
 
     private void assertFetchedFileCopies(GameWithFileCopiesReadModelJpaEntity firstGame) {
-        GameFileWithCopiesReadModelJpaEntity firstGameFile = firstGame.getGameFilesWithCopies().getFirst();
-        assertThatCode(() -> firstGameFile.getFileCopies().getFirst())
+        SourceFileWithCopiesReadModelJpaEntity firstSourceFile = firstGame.getSourceFilesWithCopies().getFirst();
+        assertThatCode(() -> firstSourceFile.getFileCopies().getFirst())
                 .doesNotThrowAnyException();
     }
 
@@ -309,7 +309,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
     @Test
     void findAllPaginatedShouldFilterByFullFileTitleCaseInsensitive() {
-        var searchQuery = "\"" + ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1.getFileTitle()
+        var searchQuery = "\"" + ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getFileTitle()
                 .toUpperCase() + "\"";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
@@ -333,7 +333,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
     @Test
     void findAllPaginatedShouldFilterByFullOriginalFileNameCaseInsensitive() {
-        var searchQuery = "\"" + ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1.getOriginalFileName()
+        var searchQuery = "\"" + ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getOriginalFileName()
                 .toUpperCase() + "\"";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
@@ -357,7 +357,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
     @Test
     void findAllPaginatedShouldFilterByFullOriginalGameTitleCaseInsensitive() {
-        var searchQuery = "\"" + ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1.getOriginalGameTitle()
+        var searchQuery = "\"" + ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getOriginalGameTitle()
                 .toUpperCase() + "\"";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
@@ -421,89 +421,89 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         }
     }
 
-    private static class ExistingGameFiles {
+    private static class ExistingSourceFiles {
 
-        public static final GameFile GOG_GAME_FILE_1_FOR_GAME_1 = TestGameFile.gogBuilder()
-                .id(new GameFileId("acde26d7-33c7-42ee-be16-bca91a604b48"))
+        public static final SourceFile GOG_SOURCE_FILE_1_FOR_GAME_1 = TestSourceFile.gogBuilder()
+                .id(new SourceFileId("acde26d7-33c7-42ee-be16-bca91a604b48"))
                 .gameId(ExistingGames.GAME_1.getId())
                 .originalGameTitle("Original Game 1 Title")
                 .fileTitle("Game 1 (Installer)")
                 .originalFileName("game_1_installer.exe")
                 .build();
 
-        public static final GameFile GOG_GAME_FILE_2_FOR_GAME_1 = TestGameFile.gogBuilder()
-                .id(new GameFileId("119c7d15-4d83-46d0-9fd2-511f3abae641"))
+        public static final SourceFile GOG_SOURCE_FILE_2_FOR_GAME_1 = TestSourceFile.gogBuilder()
+                .id(new SourceFileId("119c7d15-4d83-46d0-9fd2-511f3abae641"))
                 .gameId(ExistingGames.GAME_1.getId())
                 .originalGameTitle("Original Game 1 Title")
                 .fileTitle("Game 1 (Patch)")
                 .originalFileName("game_1_patch.exe")
                 .build();
 
-        public static final GameFile GOG_GAME_FILE_1_FOR_GAME_2 = TestGameFile.gogBuilder()
-                .id(new GameFileId("533f6571-d125-4a7e-a2f2-dc066e8ce538"))
+        public static final SourceFile GOG_SOURCE_FILE_1_FOR_GAME_2 = TestSourceFile.gogBuilder()
+                .id(new SourceFileId("533f6571-d125-4a7e-a2f2-dc066e8ce538"))
                 .gameId(ExistingGames.GAME_2.getId())
                 .originalGameTitle("Original Game 2 Title")
                 .fileTitle("Game 2 File")
                 .originalFileName("game_2.exe")
                 .build();
 
-        public static final GameFile GOG_GAME_FILE_1_FOR_GAME_3 = TestGameFile.gogBuilder()
-                .id(new GameFileId("a7e54ff1-74d9-4bb1-b7b4-7d4528f4c16e"))
+        public static final SourceFile GOG_SOURCE_FILE_1_FOR_GAME_3 = TestSourceFile.gogBuilder()
+                .id(new SourceFileId("a7e54ff1-74d9-4bb1-b7b4-7d4528f4c16e"))
                 .gameId(ExistingGames.GAME_3.getId())
                 .originalGameTitle("Original Game 3 Title")
                 .fileTitle("Game 3 File")
                 .originalFileName("game_3.exe")
                 .build();
 
-        private static final GameFileJpaEntityMapper MAPPER = Mappers.getMapper(GameFileJpaEntityMapper.class);
+        private static final SourceFileJpaEntityMapper MAPPER = Mappers.getMapper(SourceFileJpaEntityMapper.class);
 
-        public static List<GameFile> getAll() {
+        public static List<SourceFile> getAll() {
             return List.of(
-                    GOG_GAME_FILE_1_FOR_GAME_1,
-                    GOG_GAME_FILE_2_FOR_GAME_1,
-                    GOG_GAME_FILE_1_FOR_GAME_2,
-                    GOG_GAME_FILE_1_FOR_GAME_3
+                    GOG_SOURCE_FILE_1_FOR_GAME_1,
+                    GOG_SOURCE_FILE_2_FOR_GAME_1,
+                    GOG_SOURCE_FILE_1_FOR_GAME_2,
+                    GOG_SOURCE_FILE_1_FOR_GAME_3
             );
         }
     }
 
     private static class ExistingFileCopies {
 
-        public static final FileCopy TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1_FOR_GAME_1 =
+        public static final FileCopy TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1_FOR_GAME_1 =
                 TestFileCopy.trackedBuilder()
                         .id(new FileCopyId("9fdad52f-b4a6-46bc-af6d-bf27f9661eae"))
                         .naturalId(new FileCopyNaturalId(
-                                ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1.getId(),
+                                ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getId(),
                                 new BackupTargetId("f882cf23-35f9-4396-832d-bd08cd50e413")
                         ))
                         .dateModified(YESTERDAY.atStartOfDay())
                         .build();
 
-        public static final FileCopy TRACKED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_1_FOR_GAME_1 =
+        public static final FileCopy TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1_FOR_GAME_1 =
                 TestFileCopy.trackedBuilder()
                         .id(new FileCopyId("52ecf8c9-bfb0-4345-ae02-d069a3eb5267"))
                         .naturalId(new FileCopyNaturalId(
-                                ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1.getId(),
+                                ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getId(),
                                 new BackupTargetId("a9a91a74-8a57-4bb1-9a0c-e65bf8f449f0")
                         ))
                         .dateModified(TODAY.atStartOfDay())
                         .build();
 
-        public static final FileCopy TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2_FOR_GAME_1 =
+        public static final FileCopy TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2_FOR_GAME_1 =
                 TestFileCopy.trackedBuilder()
                         .id(new FileCopyId("d6a7ae5e-25d9-4410-8f08-bdc15324dd93"))
                         .naturalId(new FileCopyNaturalId(
-                                ExistingGameFiles.GOG_GAME_FILE_2_FOR_GAME_1.getId(),
+                                ExistingSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.getId(),
                                 new BackupTargetId("f882cf23-35f9-4396-832d-bd08cd50e413")
                         ))
                         .dateModified(YESTERDAY.atStartOfDay())
                         .build();
 
-        public static final FileCopy ENQUEUED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_1_FOR_GAME_2 =
+        public static final FileCopy ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1_FOR_GAME_2 =
                 TestFileCopy.enqueuedBuilder()
                         .id(new FileCopyId("0cfa21fe-dc8d-4a07-a570-7207f29b9f38"))
                         .naturalId(new FileCopyNaturalId(
-                                ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_2.getId(),
+                                ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_2.getId(),
                                 new BackupTargetId("8327a5e0-ea30-4af2-b5b5-06a232017d97")
                         ))
                         .dateModified(TODAY.atStartOfDay())
@@ -513,10 +513,10 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
         public static List<FileCopy> getAll() {
             return List.of(
-                    TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_1_FOR_GAME_1,
-                    TRACKED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_1_FOR_GAME_1,
-                    TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_GAME_FILE_2_FOR_GAME_1,
-                    ENQUEUED_FILE_COPY_FROM_TODAY_FOR_GAME_FILE_1_FOR_GAME_2
+                    TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1_FOR_GAME_1,
+                    TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1_FOR_GAME_1,
+                    TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2_FOR_GAME_1,
+                    ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1_FOR_GAME_2
             );
         }
     }

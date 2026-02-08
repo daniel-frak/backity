@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.core.filecopy.domain;
 
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 
@@ -20,7 +20,7 @@ public interface FileCopyRepository {
 
     Page<FileCopy> findAllInProgressOrEnqueued(Pagination pagination);
 
-    List<FileCopy> findAllByGameFileId(GameFileId id);
+    List<FileCopy> findAllBySourceFileId(SourceFileId id);
 
     List<FileCopy> findAllInProgress();
 }

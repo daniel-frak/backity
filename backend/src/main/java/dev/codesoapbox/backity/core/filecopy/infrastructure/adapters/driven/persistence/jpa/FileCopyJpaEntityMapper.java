@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.per
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -20,7 +20,7 @@ public abstract class FileCopyJpaEntityMapper {
         return id.value();
     }
 
-    protected UUID toUuid(GameFileId id) {
+    protected UUID toUuid(SourceFileId id) {
         return id.value();
     }
 
@@ -35,8 +35,8 @@ public abstract class FileCopyJpaEntityMapper {
         return new FileCopyId(uuid);
     }
 
-    protected GameFileId toGameFileId(UUID uuid) {
-        return new GameFileId(uuid);
+    protected SourceFileId toSourceFileId(UUID uuid) {
+        return new SourceFileId(uuid);
     }
 
     protected BackupTargetId toBackupTargetId(UUID uuid) {

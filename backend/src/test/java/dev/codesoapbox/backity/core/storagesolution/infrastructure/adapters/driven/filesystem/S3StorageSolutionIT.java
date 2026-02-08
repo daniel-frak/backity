@@ -44,19 +44,19 @@ class S3StorageSolutionIT {
     protected static final String BUCKET_NAME = "backity";
     protected static final String S3_FILE_PATH = "path/to/game/";
 
-    protected static final String S3_FILE_1_NAME = "existing_game_file_1.txt";
+    protected static final String S3_FILE_1_NAME = "existing_source_file_1.txt";
     protected static final String S3_FILE_1_KEY = S3_FILE_PATH + S3_FILE_1_NAME;
-    protected static final String S3_FILE_1_CONTENT = "This is a mock game file (1).";
+    protected static final String S3_FILE_1_CONTENT = "This is a mock source file (1).";
 
-    protected static final String S3_FILE_2_NAME_BASE = "existing_game_file_2";
+    protected static final String S3_FILE_2_NAME_BASE = "existing_source_file_2";
     protected static final String S3_FILE_2_NAME_EXTENSION = ".txt";
     protected static final String S3_FILE_2_NAME = S3_FILE_2_NAME_BASE + S3_FILE_2_NAME_EXTENSION;
     protected static final String S3_FILE_2_KEY = S3_FILE_PATH + S3_FILE_2_NAME;
-    protected static final String S3_FILE_2_CONTENT = "This is a mock game file (2).";
+    protected static final String S3_FILE_2_CONTENT = "This is a mock source file (2).";
 
-    protected static final String S3_FILE_WITHOUT_EXTENSION_NAME = "existing_game_file_without_extension";
+    protected static final String S3_FILE_WITHOUT_EXTENSION_NAME = "existing_source_file_without_extension";
     protected static final String S3_FILE_WITHOUT_EXTENSION_KEY = S3_FILE_PATH + S3_FILE_WITHOUT_EXTENSION_NAME;
-    protected static final String S3_FILE_WITHOUT_EXTENSION_CONTENT = "This is a mock game file (3).";
+    protected static final String S3_FILE_WITHOUT_EXTENSION_CONTENT = "This is a mock source file (3).";
 
     private static final int BUFFER_SIZE_IN_BYTES = 5_000;
 

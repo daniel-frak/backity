@@ -14,7 +14,7 @@ public class GamesPage {
     private static final String FILE_COPY_QUEUE_REQUEST_URL = "/file-copy-queue";
     private static final String DOWNLOAD_FILE_BACKUP_BTN_TEST_ID = "download-file-copy-btn";
     private static final String BACKUP_FILE_COPY_BTN_TEST_ID = "backup-file-btn";
-    private static final String GAME_FILE_TEST_ID = "game-file-item";
+    private static final String SOURCE_FILE_TEST_ID = "game-file-item";
     private static final String FILE_COPY_ITEM_TEST_ID = "file-copy-item";
     private static final String FILE_COPY_STATUS_TEST_ID = "file-copy-status";
 
@@ -95,7 +95,7 @@ public class GamesPage {
 
     private Locator getFileCopyItem(String fileTitle, String backupTargetName) {
         return gameList
-                .getByTestId(GAME_FILE_TEST_ID)
+                .getByTestId(SOURCE_FILE_TEST_ID)
                 .filter(new Locator.FilterOptions().setHasText(fileTitle))
                 .getByTestId(FILE_COPY_ITEM_TEST_ID)
                 .filter(new Locator.FilterOptions().setHasText(backupTargetName));

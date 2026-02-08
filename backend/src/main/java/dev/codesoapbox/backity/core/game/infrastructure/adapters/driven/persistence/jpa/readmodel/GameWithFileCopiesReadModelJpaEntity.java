@@ -38,5 +38,5 @@ public class GameWithFileCopiesReadModelJpaEntity {
     private LocalDateTime dateModified;
 
     @OneToMany(mappedBy = "gameId")
-    private List<GameFileWithCopiesReadModelJpaEntity> gameFilesWithCopies = new ArrayList<>();
+    private List<SourceFileWithCopiesReadModelJpaEntity> sourceFilesWithCopies = new ArrayList<>();
 }

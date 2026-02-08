@@ -6,7 +6,7 @@ import dev.codesoapbox.backity.core.filecopy.application.usecases.FileCopyWithCo
 import dev.codesoapbox.backity.core.filecopy.application.usecases.GetFileCopyQueueUseCase;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
@@ -44,14 +44,14 @@ class GetFileCopyQueueControllerIT {
                       fileCopy: {
                         "id": "6df888e8-90b9-4df5-a237-0cba422c0310",
                         "naturalId": {
-                            "gameFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
+                            "sourceFileId": "acde26d7-33c7-42ee-be16-bca91a604b48",
                             "backupTargetId": "eda52c13-ddf7-406f-97d9-d3ce2cab5a76"
                         },
                         "status": "ENQUEUED",
                         "failedReason": null,
                         "filePath": null
                       },
-                      gameFile: {
+                      sourceFile: {
                         "gameProviderId": "GOG",
                         "originalGameTitle": "Game 1",
                         "fileTitle": "Game 1 (Installer)",
@@ -91,7 +91,7 @@ class GetFileCopyQueueControllerIT {
     private void mockEnqueuedFileExists(Pagination expectedPagination) {
         var fileCopyWithContext = new FileCopyWithContext(
                 TestFileCopy.enqueued(),
-                TestGameFile.gog(),
+                TestSourceFile.gog(),
                 TestGame.any(),
                 TestBackupTarget.localFolder(),
                 TestFileCopyReplicationProgress.twentyFivePercent()

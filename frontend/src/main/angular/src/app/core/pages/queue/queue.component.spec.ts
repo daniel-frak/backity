@@ -156,7 +156,7 @@ describe('QueueComponent', () => {
   }))
 
   function assertQueueContains(fileCopyWithContext: FileCopyWithContext) {
-    expect(fixture.nativeElement.textContent).toContain(fileCopyWithContext.gameFile.fileTitle);
+    expect(fixture.nativeElement.textContent).toContain(fileCopyWithContext.sourceFile.fileTitle);
   }
 
   it('should retrieve file copies and storage solution statuses on init', fakeAsync(() => {
@@ -223,7 +223,7 @@ describe('QueueComponent', () => {
       component.fileCopyWithContextPage.set(undefined);
 
       emitFileCopyStatusChanged(TestFileCopyStatusChangedEvent.withContent(
-        'any', {gameFileId: 'any', backupTargetId: 'any'}, FileCopyStatus.StoredIntegrityVerified));
+        'any', {sourceFileId: 'any', backupTargetId: 'any'}, FileCopyStatus.StoredIntegrityVerified));
 
       expect(component.fileCopyWithContextPage()).toBeUndefined();
     });
@@ -291,7 +291,7 @@ describe('QueueComponent', () => {
   }
 
   function assertQueueDoesNotContain(fileCopyWithContext: FileCopyWithContext) {
-    expect(fixture.nativeElement.textContent).not.toContain(fileCopyWithContext.gameFile.fileTitle);
+    expect(fixture.nativeElement.textContent).not.toContain(fileCopyWithContext.sourceFile.fileTitle);
   }
 
   it('should not remove file copy from queue when status changed event is received but file copy not found',
@@ -302,7 +302,7 @@ describe('QueueComponent', () => {
       component.fileCopyWithContextPage.set(initialQueue);
       const notFoundFileCopy = TestFileCopy.inProgress();
       notFoundFileCopy.id = 'notFoundFileCopyId';
-      notFoundFileCopy.naturalId.gameFileId = 'notFoundFileCopyId';
+      notFoundFileCopy.naturalId.sourceFileId = 'notFoundFileCopyId';
 
       simulateFileCopyStatusChangedEventReceived(
         notFoundFileCopy.id, notFoundFileCopy.naturalId, FileCopyStatus.InProgress);
@@ -344,7 +344,7 @@ describe('QueueComponent', () => {
 
       component.fileCopyWithContextPage.set(initialQueue);
       simulateReplicationProgressUpdateEventReceived('unknownFileCopyId',
-        {gameFileId: 'unknownGameFileId', backupTargetId: 'unknownBackupTargetId'});
+        {sourceFileId: 'unknownSourceFileId', backupTargetId: 'unknownBackupTargetId'});
 
       expect(component.fileCopyWithContextPage()).toBe(initialQueue);
       expect(fixture.nativeElement.textContent).not.toContain('25%');
@@ -358,7 +358,7 @@ describe('QueueComponent', () => {
 
       component.fileCopyWithContextPage.set(undefined);
       simulateReplicationProgressUpdateEventReceived('unknownFileCopyId',
-        {gameFileId: 'unknownGameFileId', backupTargetId: 'unknownBackupTargetId'});
+        {sourceFileId: 'unknownSourceFileId', backupTargetId: 'unknownBackupTargetId'});
 
       expect(component.fileCopyWithContextPage()).toBe(undefined);
     }));
@@ -410,7 +410,7 @@ describe('QueueComponent', () => {
     component.fileCopyWithContextPage.set(undefined);
 
     emitFileCopyStatusChanged(TestFileCopyStatusChangedEvent.withContent(
-      'any', {gameFileId: 'any', backupTargetId: 'any'}, FileCopyStatus.InProgress));
+      'any', {sourceFileId: 'any', backupTargetId: 'any'}, FileCopyStatus.InProgress));
 
     expect(component.fileCopyWithContextPage()).toBeUndefined();
   });

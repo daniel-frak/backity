@@ -23,7 +23,7 @@ public class TestGameContentDiscoveryProgress {
     private int gamesDiscovered = 44;
 
     @lombok.Builder.Default
-    private int gameFilesDiscovered = 55;
+    private int sourceFilesDiscovered = 55;
 
     public static GameContentDiscoveryProgress twentyFivePercentGog() {
         return twentyFivePercentGogBuilder().build();
@@ -38,7 +38,7 @@ public class TestGameContentDiscoveryProgress {
         public GameContentDiscoveryProgress build() {
             TestGameContentDiscoveryProgress temp = internalBuilder();
             return new GameContentDiscoveryProgress(temp.gameProviderId, temp.percentage, temp.timeLeft,
-                    temp.gamesDiscovered, temp.gameFilesDiscovered);
+                    temp.gamesDiscovered, temp.sourceFilesDiscovered);
         }
     }
 }

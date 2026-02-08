@@ -25,13 +25,13 @@ sequenceDiagram
         GameProviderLibrary-->>User: Return list of Games
 
         loop For each Game
-            User->>GameProviderLibrary: Request list of Game Files
-            GameProviderLibrary-->>User: Return list of Game Files
+            User->>GameProviderLibrary: Request list of Source Files
+            GameProviderLibrary-->>User: Return list of Source Files
 
-            loop For each Game File
-                User->>FileSystem: Check if Game File is already backed up
-                FileSystem-->>User: Return whether Game File already backed up
-                alt if Game File not backed up
+            loop For each Source File
+                User->>FileSystem: Check if Source File is already backed up
+                FileSystem-->>User: Return whether Source File already backed up
+                alt if Source File not backed up
                     User->>GameProviderLibrary: Request file download
                     GameProviderLibrary->>FileSystem: Stream file data
                     FileSystem-->>User: Confirm storage
@@ -73,13 +73,13 @@ sequenceDiagram
             GameProviderLibrary-->>Backity: Return list of Games
 
             loop For each Game
-                Backity->>GameProviderLibrary: Request list of Game Files
-                GameProviderLibrary-->>Backity: Return list of Game Files
+                Backity->>GameProviderLibrary: Request list of Source Files
+                GameProviderLibrary-->>Backity: Return list of Source Files
 
-                loop For each Game File
-                    Backity->>FileSystem: Check if Game File is already backed up
-                    FileSystem-->>Backity: Return whether Game File already backed up
-                    alt if Game File not backed up
+                loop For each Source File
+                    Backity->>FileSystem: Check if Source File is already backed up
+                    FileSystem-->>Backity: Return whether Source File already backed up
+                    alt if Source File not backed up
                         Backity->>GameProviderLibrary: Request file download
                         GameProviderLibrary->>FileSystem: Stream file data
                         FileSystem-->>Backity: Confirm storage

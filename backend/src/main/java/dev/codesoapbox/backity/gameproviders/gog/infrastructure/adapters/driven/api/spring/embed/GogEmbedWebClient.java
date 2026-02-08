@@ -2,10 +2,10 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven
 
 import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
 import dev.codesoapbox.backity.core.discovery.domain.exceptions.FileDiscoveryException;
-import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
-import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameFile;
+import dev.codesoapbox.backity.gameproviders.gog.domain.GogFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.exceptions.GameBackupRequestFailedException;
@@ -64,7 +64,7 @@ public class GogEmbedWebClient implements GogLibraryService {
                 .map(this::getGameDetails)
                 .filter(Objects::nonNull)
                 .flatMap(details -> details.files().stream())
-                .map(GogGameFile::size)
+                .map(GogFile::size)
                 .map(FileSize::fromString)
                 .reduce(new FileSize(0L), FileSize::add);
     }
@@ -103,13 +103,13 @@ public class GogEmbedWebClient implements GogLibraryService {
                 response.backgroundImage(),
                 response.cdKey(),
                 response.textInformation(),
-                getGameFiles(response),
+                getFiles(response),
                 response.changelog()
         );
     }
 
     @SuppressWarnings("unchecked")
-    private List<GogGameFile> getGameFiles(GogGameDetailsApiResponse response) {
+    private List<GogFile> getFiles(GogGameDetailsApiResponse response) {
         if (response.downloads() == null) {
             return emptyList();
         }
@@ -119,20 +119,20 @@ public class GogEmbedWebClient implements GogLibraryService {
                 .map(d -> (Map<String, Object>) d.get((1)))
                 .flatMap(d -> ((List<Object>) d.get(WINDOWS_SYSTEM_VALUE)).stream())
                 .map(d -> (Map<String, Object>) d)
-                .map(this::toGameFileResponse)
+                .map(this::toSourceFileResponse)
                 .toList();
     }
 
 
-    @SuppressWarnings("java:S2637") // Nulls are handled GogGameFile
-    private GogGameFile toGameFileResponse(Map<String, Object> gameFileResponse) {
-        String version = getVersion((String) gameFileResponse.get("version"));
-        String manualUrl = (String) gameFileResponse.get("manualUrl");
-        String name = (String) gameFileResponse.get("name");
-        String size = (String) gameFileResponse.get("size");
+    @SuppressWarnings("java:S2637") // Nulls are handled GogFile
+    private GogFile toSourceFileResponse(Map<String, Object> sourceFileResponse) {
+        String version = getVersion((String) sourceFileResponse.get("version"));
+        String manualUrl = (String) sourceFileResponse.get("manualUrl");
+        String name = (String) sourceFileResponse.get("name");
+        String size = (String) sourceFileResponse.get("size");
         String fileTitle = getFileTitle(manualUrl);
 
-        return new GogGameFile(version, manualUrl, name, size, fileTitle);
+        return new GogFile(version, manualUrl, name, size, fileTitle);
     }
 
     private String getFileTitle(String fileUrl) {
@@ -196,8 +196,8 @@ public class GogEmbedWebClient implements GogLibraryService {
     }
 
     public DataBufferFluxTrackableFileStream initializeProgressAndStreamFile(
-            GameFile gameFile, OutputStreamProgressTracker progressTracker) {
-        String url = gameFile.getUrl();
+            SourceFile sourceFile, OutputStreamProgressTracker progressTracker) {
+        String url = sourceFile.getUrl();
         Flux<DataBuffer> dataBufferFlux = webClientEmbed.get()
                 .uri(url)
                 .header(HEADER_AUTHORIZATION, getBearerToken())

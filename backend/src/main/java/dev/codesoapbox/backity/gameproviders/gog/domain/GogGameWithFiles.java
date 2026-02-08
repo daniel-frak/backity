@@ -9,7 +9,7 @@ public record GogGameWithFiles(
         String backgroundImage,
         String cdKey,
         String textInformation,
-        @NonNull List<GogGameFile> files,
+        @NonNull List<GogFile> files,
         String changelog
 ) {
 }

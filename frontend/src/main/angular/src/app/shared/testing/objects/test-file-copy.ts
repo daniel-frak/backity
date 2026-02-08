@@ -6,7 +6,7 @@ export namespace TestFileCopy {
     return {
       id: "someFileCopyId",
       naturalId: {
-        gameFileId: "someGameFileId",
+        sourceFileId: "someSourceFileId",
         backupTargetId: "someBackupTargetId"
       },
       status: FileCopyStatus.Tracked,

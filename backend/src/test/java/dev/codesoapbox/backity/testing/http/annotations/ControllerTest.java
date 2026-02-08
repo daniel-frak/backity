@@ -8,7 +8,7 @@ import dev.codesoapbox.backity.core.discovery.application.usecases.StartGameCont
 import dev.codesoapbox.backity.core.discovery.application.usecases.StopGameContentDiscoveryUseCase;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.*;
 import dev.codesoapbox.backity.core.game.application.usecases.GetGamesWithFilesUseCase;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileRepository;
 import dev.codesoapbox.backity.core.storagesolution.application.GetStorageSolutionStatusesUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.application.usecases.*;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
@@ -63,7 +63,7 @@ import java.lang.annotation.*;
         EntityManager.class,
 
         // Specific
-        GameFileRepository.class,
+        SourceFileRepository.class,
         GameContentDiscoveryService.class,
         GogAuthService.class,
         GogLibraryService.class,

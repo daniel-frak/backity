@@ -9,7 +9,7 @@ export namespace TestGameContentDiscoveryResult {
       discoveryOutcome: GameContentDiscoveryOutcome.Success,
       lastSuccessfulDiscoveryCompletedAt: "2022-04-20T10:00:00",
       gamesDiscovered: 5,
-      gameFilesDiscovered: 70
+      sourceFilesDiscovered: 70
     };
   }
 }

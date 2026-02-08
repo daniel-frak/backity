@@ -10,7 +10,7 @@
 
 
 export interface FileCopyNaturalIdWsDto { 
-    gameFileId: string;
+    sourceFileId: string;
     backupTargetId: string;
 }
 

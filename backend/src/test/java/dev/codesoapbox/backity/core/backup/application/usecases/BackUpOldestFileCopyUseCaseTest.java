@@ -51,7 +51,7 @@ class BackUpOldestFileCopyUseCaseTest {
     }
 
     @Test
-    void shouldBackUpEnqueuedGameFileIfNotCurrentlyDownloading() {
+    void shouldBackUpEnqueuedSourceFileIfNotCurrentlyDownloading() {
         fileCopyReplicationProcessIsReady();
         FileBackupContext context = fileCopyHasContext();
         isNextInQueue(context.fileCopy());

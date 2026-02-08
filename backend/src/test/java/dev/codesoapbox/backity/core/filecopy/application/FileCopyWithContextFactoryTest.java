@@ -12,9 +12,9 @@ import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
-import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileRepository;
+import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.shared.domain.TestPage;
@@ -36,7 +36,7 @@ class FileCopyWithContextFactoryTest {
     private FileCopyWithContextFactory fileCopyWithContextFactory;
 
     @Mock
-    private GameFileRepository gameFileRepository;
+    private SourceFileRepository sourceFileRepository;
 
     @Mock
     private GameRepository gameRepository;
@@ -50,7 +50,7 @@ class FileCopyWithContextFactoryTest {
     @BeforeEach
     void setUp() {
         fileCopyWithContextFactory = new FileCopyWithContextFactory(
-                gameFileRepository, gameRepository, backupTargetRepository, replicationProgressRepository);
+                sourceFileRepository, gameRepository, backupTargetRepository, replicationProgressRepository);
     }
 
     @Test
@@ -58,35 +58,35 @@ class FileCopyWithContextFactoryTest {
         var pagination = new Pagination(0, 1);
         FileCopy fileCopy = TestFileCopy.enqueued();
         Page<FileCopy> fileCopyPage = TestPage.of(List.of(fileCopy), pagination);
-        GameFile gameFile = mockGameFileExists(fileCopy);
-        Game game = mockGameExists(gameFile);
+        SourceFile sourceFile = mockSourceFileExists(fileCopy);
+        Game game = mockGameExists(sourceFile);
         BackupTarget backupTarget = mockBackupTargetExists(fileCopy);
         FileCopyReplicationProgress replicationProgress = mockReplicationProgressExists(fileCopy);
 
         Page<FileCopyWithContext> result = fileCopyWithContextFactory.createPageFrom(fileCopyPage);
 
         Page<FileCopyWithContext> expectedResult = TestPage.of(
-                List.of(new FileCopyWithContext(fileCopy, gameFile, game, backupTarget, replicationProgress)),
+                List.of(new FileCopyWithContext(fileCopy, sourceFile, game, backupTarget, replicationProgress)),
                 pagination);
         assertThat(result).usingRecursiveComparison()
                 .isEqualTo(expectedResult);
     }
 
-    private GameFile mockGameFileExists(FileCopy fileCopy) {
-        GameFile gameFile = TestGameFile.gogBuilder()
-                .id(fileCopy.getNaturalId().gameFileId())
+    private SourceFile mockSourceFileExists(FileCopy fileCopy) {
+        SourceFile sourceFile = TestSourceFile.gogBuilder()
+                .id(fileCopy.getNaturalId().sourceFileId())
                 .build();
-        when(gameFileRepository.findAllByIdIn(Set.of(fileCopy.getNaturalId().gameFileId())))
-                .thenReturn(List.of(gameFile));
+        when(sourceFileRepository.findAllByIdIn(Set.of(fileCopy.getNaturalId().sourceFileId())))
+                .thenReturn(List.of(sourceFile));
 
-        return gameFile;
+        return sourceFile;
     }
 
-    private Game mockGameExists(GameFile gameFile) {
+    private Game mockGameExists(SourceFile sourceFile) {
         Game game = TestGame.anyBuilder()
-                .withId(gameFile.getGameId())
+                .withId(sourceFile.getGameId())
                 .build();
-        when(gameRepository.findAllByIdIn(Set.of(gameFile.getGameId())))
+        when(gameRepository.findAllByIdIn(Set.of(sourceFile.getGameId())))
                 .thenReturn(List.of(game));
 
         return game;

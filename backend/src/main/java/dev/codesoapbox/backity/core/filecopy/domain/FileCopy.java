@@ -17,7 +17,7 @@ import java.util.List;
 import static java.util.Collections.unmodifiableList;
 
 /**
- * Represents a backup copy of a Game File in a Backup Target.
+ * Represents a backup copy of a Source File in a Backup Target.
  */
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
