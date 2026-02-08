@@ -12,19 +12,4 @@ export class FileCopyStatusBadgeComponent {
 
   public readonly status = input<FileCopyStatus>();
   public readonly FileCopyStatus = FileCopyStatus;
-
-  getBadgeClass() {
-    switch (this.status()) {
-      case FileCopyStatus.StoredIntegrityUnknown:
-        return 'bg-success';
-      case FileCopyStatus.InProgress:
-        return 'bg-warning';
-      case FileCopyStatus.Failed:
-        return 'bg-danger';
-      case FileCopyStatus.Enqueued:
-        return 'bg-secondary';
-      default:
-        return 'bg-secondary'
-    }
-  }
 }
