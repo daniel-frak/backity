@@ -33,7 +33,6 @@ export class IconItemComponent implements AfterViewInit {
   hideableDetailsExist = false;
   detailsExist = true;
 
-  // Toggle action
   readonly toggleHideableDetails = () => {
     this.showHideableDetails.update(v => !v);
   };
