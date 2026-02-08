@@ -1,14 +1,11 @@
-import {Component, EventEmitter, input, Optional, Output, Self} from '@angular/core';
+import {Component, input, Optional, output, Self} from '@angular/core';
 import {ControlValueAccessor, FormsModule, NgControl, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-select',
-  imports: [
-    ReactiveFormsModule,
-    FormsModule
-  ],
+  imports: [ReactiveFormsModule, FormsModule],
   templateUrl: './select.component.html',
-  styleUrl: './select.component.scss'
+  styleUrls: ['./select.component.scss']
 })
 export class SelectComponent<T> implements ControlValueAccessor {
 
@@ -18,7 +15,8 @@ export class SelectComponent<T> implements ControlValueAccessor {
   readonly noValueText = input<string | undefined>(undefined);
 
   value!: T;
-  @Output() valueChange = new EventEmitter<T>();
+
+  readonly valueChange = output<T>();
 
   constructor(@Optional() @Self() public ngControl: NgControl) {
     if (this.ngControl != null) {
