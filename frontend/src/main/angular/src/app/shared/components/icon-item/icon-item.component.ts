@@ -1,66 +1,53 @@
-import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostBinding, input, ViewChild} from '@angular/core';
-import {NgClass} from "@angular/common";
-import {ButtonComponent} from "@app/shared/components/button/button.component";
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  HostBinding,
+  input,
+  signal,
+  ViewChild
+} from '@angular/core';
+import {NgClass} from '@angular/common';
+import {ButtonComponent} from '@app/shared/components/button/button.component';
 
 @Component({
   selector: 'app-icon-item',
-  imports: [
-    NgClass,
-    ButtonComponent
-  ],
+  standalone: true,
+  imports: [NgClass, ButtonComponent],
   templateUrl: './icon-item.component.html',
-  styleUrl: './icon-item.component.scss'
+  styleUrl: './icon-item.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IconItemComponent implements AfterViewInit {
-
-  readonly toggleHideableDetailsAction: () => void = () => this.toggleHideableDetails();
 
   readonly iconClass = input<string>('');
   readonly size = input<'lg' | 'md' | 'sm'>('lg');
   readonly showHideableDetailsOnInit = input<boolean>(true);
 
-  @ViewChild('descriptorWrapper') descriptorWrapper?: ElementRef;
-  descriptorExists = true;
-
-  @ViewChild('buttonsWrapper') buttonsWrapper?: ElementRef;
-  buttonsExist = true;
-
+  @ViewChild('hideableDetailsWrapper', { read: ElementRef }) hideableDetailsWrapper?: ElementRef;
   @ViewChild('detailsWrapper') detailsWrapper?: ElementRef;
+
+  readonly showHideableDetails = signal(true);
+
+  hideableDetailsExist = false;
   detailsExist = true;
 
-  @ViewChild('hideableDetailsWrapper', {read: ElementRef}) hideableDetailsWrapper?: ElementRef;
-  hideableDetailsExist = true;
-
-  showHideableDetails: boolean = true;
+  // Toggle action
+  readonly toggleHideableDetails = () => {
+    this.showHideableDetails.update(v => !v);
+  };
 
   @HostBinding('class')
   get hostClass(): string {
-    switch (this.size()) {
-      case 'lg':
-        return 'icon-item-lg';
-      case 'md':
-        return 'icon-item-md';
-      case 'sm':
-        return 'icon-item-sm';
-      default:
-        return '';
-    }
+    return `icon-item-${this.size()}`;
   }
 
-  constructor(private readonly cdRef: ChangeDetectorRef) {
-  }
-
-  ngAfterViewInit() {
-    this.descriptorExists = this.descriptorWrapper?.nativeElement.children.length > 0;
-    this.buttonsExist = this.buttonsWrapper?.nativeElement.children.length > 0;
-
-    // 1 instead of 0, because hideableDetails is in there as a div:
+  ngAfterViewInit(): void {
+    this.hideableDetailsExist = !!this.hideableDetailsWrapper?.nativeElement.children.length;
     this.detailsExist = this.detailsWrapper?.nativeElement.children.length > 1;
 
-    this.hideableDetailsExist = this.hideableDetailsWrapper?.nativeElement.children.length > 0;
-    this.showHideableDetails = this.hideableDetailsExist && this.showHideableDetailsOnInit();
-
-    this.cdRef.detectChanges();
+    this.showHideableDetails.set(this.hideableDetailsExist && this.showHideableDetailsOnInit());
   }
 
   getIconSizeClass(): string {
@@ -69,10 +56,5 @@ export class IconItemComponent implements AfterViewInit {
 
   getDetailsSizeClass(): string {
     return `details-${this.size()}`;
-  }
-
-  toggleHideableDetails() {
-    this.showHideableDetails = !this.showHideableDetails;
-    this.cdRef.markForCheck();
   }
 }

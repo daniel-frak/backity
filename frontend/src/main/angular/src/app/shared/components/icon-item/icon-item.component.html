@@ -7,18 +7,21 @@
       <div class="title">
         <ng-content select="[title]"/>
       </div>
-      <div class="descriptor" #descriptorWrapper>
+      <div class="descriptor">
         <ng-content select="[descriptor]"/>
       </div>
     </div>
   </div>
-  <div class="buttons" #buttonsWrapper>
+  <div class="buttons">
     @if (hideableDetailsExist) {
-      <app-button buttonType="button" [outline]="true" buttonClass="btn-icon-only btn-hide-outline"
+      <app-button
+        buttonType="button"
+        [outline]="true"
+        buttonClass="btn-icon-only btn-hide-outline"
         buttonStyle="secondary"
-        [title]="showHideableDetails ? 'Hide details' : 'Show details'"
-        [action]="toggleHideableDetailsAction">
-        <i [ngClass]="['bi', showHideableDetails ? 'bi-chevron-up' : 'bi-chevron-down']"></i>
+        [title]="showHideableDetails() ? 'Hide details' : 'Show details'"
+        [action]="toggleHideableDetails">
+        <i [ngClass]="['bi', showHideableDetails() ? 'bi-chevron-up' : 'bi-chevron-down']"></i>
       </app-button>
     }
     <ng-content select="[buttons]"/>
@@ -26,10 +29,9 @@
 </div>
 @if (detailsExist) {
   <div [ngClass]="['details', getDetailsSizeClass()]" #detailsWrapper>
-    <div #hideableDetailsWrapper class="collapsible" [class.open]="showHideableDetails">
+    <div #hideableDetailsWrapper class="collapsible" [class.open]="showHideableDetails()">
       <ng-content select="[hideableDetails]"/>
     </div>
     <ng-content select="[details]"/>
   </div>
 }
-

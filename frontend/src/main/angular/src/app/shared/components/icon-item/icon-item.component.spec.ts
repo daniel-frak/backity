@@ -45,7 +45,7 @@ describe('IconItemComponent', () => {
   });
 
   it('should toggle hideable details when toggleHideableDetails is called', () => {
-    component.showHideableDetails = true;
+    component.showHideableDetails.set(true);
 
     component.toggleHideableDetails();
     fixture.detectChanges();
