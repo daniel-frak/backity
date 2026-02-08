@@ -13,7 +13,7 @@
     </div>
   </div>
   <div class="buttons">
-    @if (hideableDetailsExist) {
+    @if (hideableDetailsExist()) {
       <app-button
         buttonType="button"
         [outline]="true"
@@ -27,7 +27,7 @@
     <ng-content select="[buttons]"/>
   </div>
 </div>
-@if (detailsExist) {
+@if (detailsExist()) {
   <div [ngClass]="['details', getDetailsSizeClass()]" #detailsWrapper>
     <div #hideableDetailsWrapper class="collapsible" [class.open]="showHideableDetails()">
       <ng-content select="[hideableDetails]"/>
