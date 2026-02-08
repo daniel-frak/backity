@@ -45,14 +45,14 @@
               <app-named-value>
                 <ng-container name>File title</ng-container>
                 <ng-container value>
-                  {{ fileCopyWithContext.gameFile.fileSource.fileTitle }}
-                  <app-game-file-version-badge [version]="fileCopyWithContext.gameFile.fileSource.version"/>
+                  {{ fileCopyWithContext.gameFile.fileTitle }}
+                  <app-game-file-version-badge [version]="fileCopyWithContext.gameFile.version"/>
                 </ng-container>
               </app-named-value>
               <app-named-value>
                 <ng-container name>Size</ng-container>
                 <ng-container value>
-                  {{ fileCopyWithContext.gameFile.fileSource.size }}
+                  {{ fileCopyWithContext.gameFile.size }}
                 </ng-container>
               </app-named-value>
               @if (fileCopyWithContext.progress) {

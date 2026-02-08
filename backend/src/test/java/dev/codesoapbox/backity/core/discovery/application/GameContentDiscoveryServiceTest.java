@@ -1,12 +1,12 @@
 package dev.codesoapbox.backity.core.discovery.application;
 
+import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
-import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileRepository;
-import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.TestDiscoveredFile;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -171,8 +171,8 @@ class GameContentDiscoveryServiceTest {
 
         @Test
         void startContentDiscoveryShouldNotSaveGameInformationGivenGameAlreadyExists() {
-            FileSource fileSource = TestGameFile.gog().getFileSource();
-            mockGameExists(fileSource.originalGameTitle());
+            DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
+            mockGameExists(discoveredFile.originalGameTitle());
 
             gameContentDiscoveryService =
                     new GameContentDiscoveryService(singletonList(gameProviderFileDiscoveryService),
@@ -182,7 +182,7 @@ class GameContentDiscoveryServiceTest {
             gameContentDiscoveryService.startContentDiscovery();
 
             waitForGameProviderFileDiscoveryToBeTriggered();
-            gameProviderFileDiscoveryService.simulateFileDiscovery(fileSource);
+            gameProviderFileDiscoveryService.simulateFileDiscovery(discoveredFile);
             verify(gameRepository, never()).save(any());
         }
 
@@ -198,15 +198,15 @@ class GameContentDiscoveryServiceTest {
 
         @Test
         void startContentDiscoveryShouldSaveGameInformationGivenItDoesNotYetExist() {
-            FileSource fileSource = TestGameFile.gog().getFileSource();
-            mockGameDoesNotExist(fileSource.originalGameTitle());
+            DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
+            mockGameDoesNotExist(discoveredFile.originalGameTitle());
 
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();
-            gameProviderFileDiscoveryService.simulateFileDiscovery(fileSource);
+            gameProviderFileDiscoveryService.simulateFileDiscovery(discoveredFile);
 
             Game savedGame = getSavedGame();
-            assertThat(savedGame.getTitle()).isEqualTo(fileSource.originalGameTitle());
+            assertThat(savedGame.getTitle()).isEqualTo(discoveredFile.originalGameTitle());
         }
 
         private void mockGameDoesNotExist(String gameTitle) {
@@ -222,22 +222,22 @@ class GameContentDiscoveryServiceTest {
 
         @Test
         void startContentDiscoveryShouldSaveGameFiles() {
-            FileSource fileSource = TestGameFile.gog().getFileSource();
-            Game game = mockGameExists(fileSource.originalGameTitle());
-            mockGameFileDoesNotExist(fileSource);
+            DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
+            Game game = mockGameExists(discoveredFile.originalGameTitle());
+            mockGameFileDoesNotExist(discoveredFile);
 
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();
-            gameProviderFileDiscoveryService.simulateFileDiscovery(fileSource);
+            gameProviderFileDiscoveryService.simulateFileDiscovery(discoveredFile);
 
             GameFile savedGameFile = getSavedGameFile();
-            GameFile expectedGameFile = getExpectedGameFile(game, fileSource, savedGameFile);
+            GameFile expectedGameFile = getExpectedGameFile(game, discoveredFile, savedGameFile);
             assertThat(savedGameFile).usingRecursiveComparison()
                     .isEqualTo(expectedGameFile);
         }
 
-        private GameFile getExpectedGameFile(Game game, FileSource fileSource, GameFile savedGameFile) {
-            GameFile expectedGameFile = GameFile.createFor(game, fileSource);
+        private GameFile getExpectedGameFile(Game game, DiscoveredFile discoveredFile, GameFile savedGameFile) {
+            GameFile expectedGameFile = GameFile.createFor(game, discoveredFile);
             expectedGameFile.setId(savedGameFile.getId());
             return expectedGameFile;
         }
@@ -248,20 +248,20 @@ class GameContentDiscoveryServiceTest {
             return gameFileArgumentCaptor.getValue();
         }
 
-        private void mockGameFileDoesNotExist(FileSource fileSource) {
-            when(fileRepository.existsByUrlAndVersion(fileSource.url(), fileSource.version()))
+        private void mockGameFileDoesNotExist(DiscoveredFile discoveredFile) {
+            when(fileRepository.existsByUrlAndVersion(discoveredFile.url(), discoveredFile.version()))
                     .thenReturn(false);
         }
 
         @Test
         void startContentDiscoveryShouldIncrementGameFilesDiscovered() {
-            FileSource fileSource = TestGameFile.gog().getFileSource();
-            mockGameExists(fileSource.originalGameTitle());
-            mockGameFileDoesNotExist(fileSource);
+            DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
+            mockGameExists(discoveredFile.originalGameTitle());
+            mockGameFileDoesNotExist(discoveredFile);
 
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();
-            gameProviderFileDiscoveryService.simulateFileDiscovery(fileSource);
+            gameProviderFileDiscoveryService.simulateFileDiscovery(discoveredFile);
 
             verify(discoveryProgressTracker).incrementGameFilesDiscovered(
                     gameProviderFileDiscoveryService.getGameProviderId(), 1);
@@ -269,12 +269,12 @@ class GameContentDiscoveryServiceTest {
 
         @Test
         void startContentDiscoveryShouldIncrementGamesDiscovered() {
-            FileSource fileSource = TestGameFile.gog().getFileSource();
-            mockGameDoesNotExist(fileSource.originalGameTitle());
+            DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
+            mockGameDoesNotExist(discoveredFile.originalGameTitle());
 
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();
-            gameProviderFileDiscoveryService.simulateFileDiscovery(fileSource);
+            gameProviderFileDiscoveryService.simulateFileDiscovery(discoveredFile);
 
             verify(discoveryProgressTracker).incrementGamesDiscovered(
                     gameProviderFileDiscoveryService.getGameProviderId(), 1);
@@ -282,20 +282,20 @@ class GameContentDiscoveryServiceTest {
 
         @Test
         void startContentDiscoveryShouldNotSaveGameFileIfAlreadyExists() {
-            FileSource fileSource = TestGameFile.gog().getFileSource();
-            mockGameFileExistsLocally(fileSource);
+            DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
+            mockGameFileExistsLocally(discoveredFile);
 
             gameContentDiscoveryService.startContentDiscovery();
 
             waitForGameProviderFileDiscoveryToBeTriggered();
-            gameProviderFileDiscoveryService.simulateFileDiscovery(fileSource);
+            gameProviderFileDiscoveryService.simulateFileDiscovery(discoveredFile);
 
             verify(fileRepository, never()).save(any());
             verify(discoveryProgressTracker, never()).incrementGameFilesDiscovered(any(), anyInt());
         }
 
-        private void mockGameFileExistsLocally(FileSource fileSource) {
-            when(fileRepository.existsByUrlAndVersion(fileSource.url(), fileSource.version()))
+        private void mockGameFileExistsLocally(DiscoveredFile discoveredFile) {
+            when(fileRepository.existsByUrlAndVersion(discoveredFile.url(), discoveredFile.version()))
                     .thenReturn(true);
         }
 

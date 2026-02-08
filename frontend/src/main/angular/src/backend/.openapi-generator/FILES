@@ -30,7 +30,6 @@ model/fileCopyStatus.ts
 model/fileCopyStatusChangedEvent.ts
 model/fileCopyWithContext.ts
 model/fileCopyWithProgress.ts
-model/fileSource.ts
 model/gameContentDiscoveryOutcome.ts
 model/gameContentDiscoveryOutcomeWs.ts
 model/gameContentDiscoveryOverview.ts

@@ -56,7 +56,7 @@ class FileBackupServiceTest {
             var filePath = "someFileDir/someFile";
             when(uniqueFilePathResolver.resolve(
                     fileBackupContext.backupTarget().getPathTemplate(),
-                    fileBackupContext.gameFile().getFileSource(),
+                    fileBackupContext.gameFile(),
                     fileBackupContext.storageSolution()))
                     .thenReturn(filePath);
 

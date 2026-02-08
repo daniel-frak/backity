@@ -1,5 +1,7 @@
 package dev.codesoapbox.backity.core.gamefile.domain;
 
+import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
+import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 
 import java.time.LocalDateTime;
@@ -14,7 +16,25 @@ public final class TestGameFile {
     private GameId gameId = new GameId("1eec1c19-25bf-4094-b926-84b5bb8fa281");
 
     @lombok.Builder.Default
-    private FileSource fileSource = TestFileSource.minimalGog();
+    private GameProviderId gameProviderId = new GameProviderId("GOG");
+
+    @lombok.Builder.Default
+    private String originalGameTitle = "Game 1";
+
+    @lombok.Builder.Default
+    private String fileTitle = "Game 1 (Installer)";
+
+    @lombok.Builder.Default
+    private String version = "1.0.0";
+
+    @lombok.Builder.Default
+    private String url = "/downlink/some_game/some_file";
+
+    @lombok.Builder.Default
+    private String originalFileName = "game_1_installer.exe";
+
+    @lombok.Builder.Default
+    private FileSize size = new FileSize(5120L);
 
     @lombok.Builder.Default
     private LocalDateTime dateCreated = LocalDateTime.parse("2022-04-29T14:15:53");
@@ -32,12 +52,28 @@ public final class TestGameFile {
 
     public static class Builder {
 
+        public Builder dataFrom(DiscoveredFile discoveredFile) {
+            return this.gameProviderId(discoveredFile.gameProviderId())
+                    .originalGameTitle(discoveredFile.originalGameTitle())
+                    .fileTitle(discoveredFile.fileTitle())
+                    .version(discoveredFile.version())
+                    .url(discoveredFile.url())
+                    .originalFileName(discoveredFile.originalFileName())
+                    .size(discoveredFile.size());
+        }
+
         public GameFile build() {
             var temp = internalBuild();
             return new GameFile(
                     temp.id,
                     temp.gameId,
-                    temp.fileSource,
+                    temp.gameProviderId,
+                    temp.originalGameTitle,
+                    temp.fileTitle,
+                    temp.version,
+                    temp.url,
+                    temp.originalFileName,
+                    temp.size,
                     temp.dateCreated,
                     temp.dateModified
             );

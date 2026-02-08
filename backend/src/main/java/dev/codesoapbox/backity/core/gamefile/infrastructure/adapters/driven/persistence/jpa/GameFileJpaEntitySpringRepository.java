@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface GameFileJpaEntitySpringRepository extends JpaRepository<GameFileJpaEntity, UUID> {
 
-    boolean existsByFileSourceUrlAndFileSourceVersion(String url, String version);
+    boolean existsByUrlAndVersion(String url, String version);
 
     List<GameFileJpaEntity> findAllByGameId(UUID gameId);
 

@@ -1,13 +1,15 @@
-package dev.codesoapbox.backity.core.gamefile.domain;
+package dev.codesoapbox.backity.core.discovery.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
-import dev.codesoapbox.backity.core.gamefile.domain.exceptions.FileSourceUrlEmptyException;
+import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
+import dev.codesoapbox.backity.core.gamefile.domain.TestDiscoveredFile;
+import dev.codesoapbox.backity.core.gamefile.domain.exceptions.GameFileUrlEmptyException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class FileSourceTest {
+class DiscoveredFileTest {
 
     @Nested
     class Creation {
@@ -16,7 +18,7 @@ class FileSourceTest {
         @Test
         void constructorShouldThrowGivenGameProviderIdIsNull() {
             var fileSize = new FileSize(5120L);
-            assertThatThrownBy(() -> new FileSource(
+            assertThatThrownBy(() -> new DiscoveredFile(
                     null,
                     "Game 1",
                     "Game 1 (Installer)",
@@ -34,7 +36,7 @@ class FileSourceTest {
         void constructorShouldThrowGivenOriginalGameTitleIsNull() {
             var gameProviderId = new GameProviderId("GOG");
             var fileSize = new FileSize(5120L);
-            assertThatThrownBy(() -> new FileSource(
+            assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
                     null,
                     "Game 1 (Installer)",
@@ -52,7 +54,7 @@ class FileSourceTest {
         void constructorShouldThrowGivenFileTitleIsNull() {
             var gameProviderId = new GameProviderId("GOG");
             var fileSize = new FileSize(5120L);
-            assertThatThrownBy(() -> new FileSource(
+            assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
                     "Game 1",
                     null,
@@ -70,7 +72,7 @@ class FileSourceTest {
         void constructorShouldThrowGivenVersionIsNull() {
             var gameProviderId = new GameProviderId("GOG");
             var fileSize = new FileSize(5120L);
-            assertThatThrownBy(() -> new FileSource(
+            assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
                     "Game 1",
                     "Game 1 (Installer)",
@@ -88,7 +90,7 @@ class FileSourceTest {
         void constructorShouldThrowGivenUrlIsNull() {
             var gameProviderId = new GameProviderId("GOG");
             var fileSize = new FileSize(5120L);
-            assertThatThrownBy(() -> new FileSource(
+            assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
                     "Game 1",
                     "Game 1 (Installer)",
@@ -106,7 +108,7 @@ class FileSourceTest {
         void constructorShouldThrowGivenOriginalFileNameIsNull() {
             var gameProviderId = new GameProviderId("GOG");
             var fileSize = new FileSize(5120L);
-            assertThatThrownBy(() -> new FileSource(
+            assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
                     "Game 1",
                     "Game 1 (Installer)",
@@ -121,9 +123,9 @@ class FileSourceTest {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenFileSourceIsNull() {
+        void constructorShouldThrowGivenSizeIsNull() {
             var gameProviderId = new GameProviderId("GOG");
-            assertThatThrownBy(() -> new FileSource(
+            assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
                     "Game 1",
                     "Game 1 (Installer)",
@@ -138,11 +140,11 @@ class FileSourceTest {
 
         @Test
         void constructorShouldThrowGivenUrlIsEmpty() {
-            TestFileSource.Builder fileSourceBuilder = TestFileSource.minimalGogBuilder()
+            TestDiscoveredFile.Builder fileSourceBuilder = TestDiscoveredFile.minimalGogBuilder()
                     .url("   ");
 
             assertThatThrownBy(fileSourceBuilder::build)
-                    .isInstanceOf(FileSourceUrlEmptyException.class);
+                    .isInstanceOf(GameFileUrlEmptyException.class);
         }
     }
 }

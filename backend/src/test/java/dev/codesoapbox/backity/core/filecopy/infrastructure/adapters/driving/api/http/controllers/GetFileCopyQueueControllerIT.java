@@ -52,15 +52,13 @@ class GetFileCopyQueueControllerIT {
                         "filePath": null
                       },
                       gameFile: {
-                          "fileSource": {
-                            "gameProviderId": "GOG",
-                            "originalGameTitle": "Game 1",
-                            "fileTitle": "Game 1 (Installer)",
-                            "version": "1.0.0",
-                            "url": "/downlink/some_game/some_file",
-                            "originalFileName": "game_1_installer.exe",
-                            "size": "5 KB"
-                          }
+                        "gameProviderId": "GOG",
+                        "originalGameTitle": "Game 1",
+                        "fileTitle": "Game 1 (Installer)",
+                        "version": "1.0.0",
+                        "url": "/downlink/some_game/some_file",
+                        "originalFileName": "game_1_installer.exe",
+                        "size": "5 KB"
                       },
                       game: {
                         title: "Test Game"

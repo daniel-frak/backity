@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
+import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 import dev.codesoapbox.backity.core.gamefile.domain.FileSize;
-import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import org.mapstruct.Mapper;
@@ -16,7 +16,7 @@ public abstract class GogGameWithFilesMapper {
 
     protected static final GameProviderId GAME_PROVIDER_ID = GogGameProviderId.get();
 
-    public List<FileSource> toFileSources(GogGameWithFiles gogGame) {
+    public List<DiscoveredFile> toDiscoveredFiles(GogGameWithFiles gogGame) {
         return gogGame.files().stream()
                 .map(gameFile -> toFileSource(gogGame, gameFile))
                 .toList();
@@ -29,7 +29,7 @@ public abstract class GogGameWithFilesMapper {
     @Mapping(target = "url", source = "gameFile.manualUrl")
     @Mapping(target = "originalFileName", source = "gameFile.fileName")
     @Mapping(target = "size", source = "gameFile.size")
-    protected abstract FileSource toFileSource(GogGameWithFiles gogGame, GogGameFile gameFile);
+    protected abstract DiscoveredFile toFileSource(GogGameWithFiles gogGame, GogGameFile gameFile);
 
     protected FileSize toFileSize(String value) {
         return FileSize.fromString(value);

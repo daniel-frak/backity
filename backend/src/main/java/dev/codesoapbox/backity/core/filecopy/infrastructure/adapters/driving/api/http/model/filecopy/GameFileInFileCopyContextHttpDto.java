@@ -1,11 +1,16 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy;
 
-import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driving.api.http.model.gamefile.FileSourceHttpDto;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 
 @Schema(name = "GameFileInFileCopyContext")
 public record GameFileInFileCopyContextHttpDto(
-        @NotNull FileSourceHttpDto fileSource
+        @NotBlank String gameProviderId,
+        @NotBlank String originalGameTitle,
+        @NotBlank String fileTitle,
+        @NotBlank String version,
+        @NotBlank String url,
+        @NotBlank String originalFileName,
+        @NotBlank String size
 ) {
 }

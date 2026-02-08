@@ -93,16 +93,14 @@ public class GameWithFileCopiesReadModelJpaSpecifications {
         Root<GameFileWithCopiesReadModelJpaEntity> gameFile =
                 fileMatchSubquery.from(GameFileWithCopiesReadModelJpaEntity.class);
 
-        Path<Object> fileSource = gameFile.get(GameFileWithCopiesReadModelJpaEntity_.FILE_SOURCE);
-
         Expression<String> originalGameTitleLower =
-                builder.lower(fileSource.get(FileSourceReadModelJpaEmbeddable_.ORIGINAL_GAME_TITLE));
+                builder.lower(gameFile.get(GameFileWithCopiesReadModelJpaEntity_.ORIGINAL_GAME_TITLE));
         Expression<String> fileTitleLower =
-                builder.lower(fileSource.get(FileSourceReadModelJpaEmbeddable_.FILE_TITLE));
+                builder.lower(gameFile.get(GameFileWithCopiesReadModelJpaEntity_.FILE_TITLE));
         Expression<String> originalFileNameLower =
-                builder.lower(fileSource.get(FileSourceReadModelJpaEmbeddable_.ORIGINAL_FILE_NAME));
+                builder.lower(gameFile.get(GameFileWithCopiesReadModelJpaEntity_.ORIGINAL_FILE_NAME));
 
-        Predicate matchesAnyTokenInAnyFileSourceField = builder.or(
+        Predicate matchesAnyTokenInAnySearchableGameFileField = builder.or(
                 anyLike(builder, originalGameTitleLower, likePatternsLower),
                 anyLike(builder, fileTitleLower, likePatternsLower),
                 anyLike(builder, originalFileNameLower, likePatternsLower)
@@ -114,7 +112,7 @@ public class GameWithFileCopiesReadModelJpaSpecifications {
                                 gameFile.get(GameFileWithCopiesReadModelJpaEntity_.gameId),
                                 game.get(GameWithFileCopiesReadModelJpaEntity_.id)
                         ),
-                        matchesAnyTokenInAnyFileSourceField
+                        matchesAnyTokenInAnySearchableGameFileField
                 );
 
         return builder.or(matchesAnyTokenInTitle, builder.exists(fileMatchSubquery));

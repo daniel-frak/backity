@@ -4,10 +4,9 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
-import dev.codesoapbox.backity.shared.application.progress.ProgressInfo;
 import dev.codesoapbox.backity.core.discovery.domain.exceptions.FileDiscoveryException;
-import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
-import dev.codesoapbox.backity.core.gamefile.domain.TestFileSource;
+import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
+import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
@@ -17,6 +16,7 @@ import dev.codesoapbox.backity.gameproviders.gog.infrastructure.config.GogProper
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.config.GogWebClientConfig;
 import dev.codesoapbox.backity.gameproviders.shared.infrastructure.adapters.driven.api.spring.DataBufferFluxTrackableFileStream;
 import dev.codesoapbox.backity.gameproviders.shared.infrastructure.adapters.driven.api.spring.DataBufferFluxTrackableFileStreamFactory;
+import dev.codesoapbox.backity.shared.application.progress.ProgressInfo;
 import dev.codesoapbox.backity.testing.wiremock.CustomWireMockExtension;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -339,8 +339,8 @@ class GogEmbedWebClientIT {
     @Nested
     class InitializeProgressAndStreamFile {
 
-        private FileSource aGogFile() {
-            return TestFileSource.minimalGogBuilder()
+        private GameFile aGogFile() {
+            return TestGameFile.gogBuilder()
                     .url("/someUrl1")
                     .build();
         }
@@ -351,7 +351,7 @@ class GogEmbedWebClientIT {
             @Test
             void shouldStreamFile() {
                 var expectedFileContent = "abcd";
-                FileSource gogFile = mockAuthenticatedGogFileRetrievalWithoutRedirects(expectedFileContent);
+                GameFile gogFile = mockAuthenticatedGogFileRetrievalWithoutRedirects(expectedFileContent);
                 OutputStreamProgressTracker progress = new OutputStreamProgressTracker();
 
                 DataBufferFluxTrackableFileStream trackableFileStream = gogEmbedClient
@@ -371,10 +371,10 @@ class GogEmbedWebClientIT {
                 return outputStream.toString();
             }
 
-            private FileSource mockAuthenticatedGogFileRetrievalWithoutRedirects(
+            private GameFile mockAuthenticatedGogFileRetrievalWithoutRedirects(
                     String expectedFileContent) {
-                FileSource gogFile = aGogFile();
-                wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.url()))
+                GameFile gogFile = aGogFile();
+                wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.getUrl()))
                         .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                         .willReturn(aResponse()
                                 .withBody(expectedFileContent.getBytes(StandardCharsets.UTF_8))
@@ -385,7 +385,7 @@ class GogEmbedWebClientIT {
             @Test
             void shouldInitializeOutputStreamProgress() {
                 var expectedFileContent = "abcd";
-                FileSource gogFile = mockAuthenticatedGogFileRetrievalWithoutRedirects(expectedFileContent);
+                GameFile gogFile = mockAuthenticatedGogFileRetrievalWithoutRedirects(expectedFileContent);
                 var progress = new OutputStreamProgressTracker();
                 List<ProgressInfo> progressHistory = trackProgressHistory(progress);
 
@@ -414,7 +414,7 @@ class GogEmbedWebClientIT {
             void shouldStreamFileGivenUrlRedirects() {
                 var expectedFileContent = "abcd";
                 var progress = new OutputStreamProgressTracker();
-                FileSource gogFile = mockAuthenticatedGogFileRetrievalWithRedirects(expectedFileContent);
+                GameFile gogFile = mockAuthenticatedGogFileRetrievalWithRedirects(expectedFileContent);
 
                 DataBufferFluxTrackableFileStream fileStream = gogEmbedClient
                         .initializeProgressAndStreamFile(gogFile, progress);
@@ -423,20 +423,20 @@ class GogEmbedWebClientIT {
                 assertThat(fileContent).isEqualTo(expectedFileContent);
             }
 
-            private FileSource mockAuthenticatedGogFileRetrievalWithRedirects(
+            private GameFile mockAuthenticatedGogFileRetrievalWithRedirects(
                     String expectedFileContent) {
-                FileSource gogFile = aGogFile();
+                GameFile gogFile = aGogFile();
 
-                wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.url()))
+                wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.getUrl()))
                         .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                         .willReturn(aResponse()
-                                .withHeader("Location", gogFile.url() + "-2")
+                                .withHeader("Location", gogFile.getUrl() + "-2")
                                 .withStatus(302)));
-                wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.url() + "-2"))
+                wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.getUrl() + "-2"))
                         .willReturn(aResponse()
-                                .withHeader("Location", gogFile.url() + "-3/")
+                                .withHeader("Location", gogFile.getUrl() + "-3/")
                                 .withStatus(302)));
-                wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.url() + "-3/"))
+                wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.getUrl() + "-3/"))
                         .willReturn(aResponse()
                                 .withBody(expectedFileContent.getBytes(StandardCharsets.UTF_8))
                                 .withStatus(200)));
@@ -448,7 +448,7 @@ class GogEmbedWebClientIT {
             void shouldStreamFileGivenUrlRedirectsAndHasQueryParams() {
                 var expectedFileContent = "abcd";
                 var progress = new OutputStreamProgressTracker();
-                FileSource gogFile = mockAuthenticatedGogFileRetrievalWithRedirectsAndQueryParams(expectedFileContent);
+                GameFile gogFile = mockAuthenticatedGogFileRetrievalWithRedirectsAndQueryParams(expectedFileContent);
 
                 DataBufferFluxTrackableFileStream fileStream = gogEmbedClient
                         .initializeProgressAndStreamFile(gogFile, progress);
@@ -457,18 +457,18 @@ class GogEmbedWebClientIT {
                 assertThat(fileContent).isEqualTo(expectedFileContent);
             }
 
-            private FileSource mockAuthenticatedGogFileRetrievalWithRedirectsAndQueryParams(String expectedResult) {
-                FileSource gogFile = aGogFile();
-                wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.url()))
+            private GameFile mockAuthenticatedGogFileRetrievalWithRedirectsAndQueryParams(String expectedResult) {
+                GameFile gogFile = aGogFile();
+                wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.getUrl()))
                         .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                         .willReturn(aResponse()
-                                .withHeader("Location", gogFile.url() + "-2")
+                                .withHeader("Location", gogFile.getUrl() + "-2")
                                 .withStatus(302)));
-                wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.url() + "-2"))
+                wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.getUrl() + "-2"))
                         .willReturn(aResponse()
-                                .withHeader("Location", gogFile.url() + "-3?param=true")
+                                .withHeader("Location", gogFile.getUrl() + "-3?param=true")
                                 .withStatus(302)));
-                wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.url() + "-3"))
+                wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.getUrl() + "-3"))
                         .withQueryParam("param", equalTo("true"))
                         .willReturn(aResponse()
                                 .withBody(expectedResult.getBytes(StandardCharsets.UTF_8))
@@ -483,7 +483,7 @@ class GogEmbedWebClientIT {
 
             @Test
             void shouldThrowIfRequestFails() {
-                FileSource gogFile = aGogFile();
+                GameFile gogFile = aGogFile();
                 var progress = new OutputStreamProgressTracker();
                 mockGogFileRetrievalFails(gogFile);
 
@@ -495,8 +495,8 @@ class GogEmbedWebClientIT {
                         .isInstanceOf(GameBackupRequestFailedException.class);
             }
 
-            private void mockGogFileRetrievalFails(FileSource gogFile) {
-                wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.url()))
+            private void mockGogFileRetrievalFails(GameFile gogFile) {
+                wireMockEmbed.stubFor(get(urlPathEqualTo(gogFile.getUrl()))
                         .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                         .willReturn(aResponse()
                                 .withStatus(500)));

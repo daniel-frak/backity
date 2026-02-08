@@ -1,8 +1,14 @@
 package dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driven.persistence.jpa;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -31,8 +37,33 @@ public class GameFileJpaEntity {
     @NotNull
     private UUID gameId;
 
-    @Embedded
-    private FileSourceJpaEmbeddable fileSource;
+    @NotNull
+    @Column(nullable = false)
+    private String gameProviderId;
+
+    @NotNull
+    @Column(nullable = false)
+    private String originalGameTitle;
+
+    @NotNull
+    @Column(nullable = false)
+    private String fileTitle;
+
+    @NotNull
+    @Column(nullable = false)
+    private String version;
+
+    @NotNull
+    @Column(nullable = false)
+    private String url;
+
+    @NotNull
+    @Column(nullable = false)
+    private String originalFileName;
+
+    @NotNull
+    @Column(nullable = false)
+    private long sizeInBytes;
 
     @NotNull
     @CreatedDate

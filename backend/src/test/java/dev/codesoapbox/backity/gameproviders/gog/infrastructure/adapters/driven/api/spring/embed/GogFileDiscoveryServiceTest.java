@@ -3,8 +3,8 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.application.FakeGameDiscoveryProgressTracker;
 import dev.codesoapbox.backity.core.discovery.application.GameDiscoveryProgressTracker;
-import dev.codesoapbox.backity.core.gamefile.domain.FileSource;
-import dev.codesoapbox.backity.core.gamefile.domain.TestFileSource;
+import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
+import dev.codesoapbox.backity.core.gamefile.domain.TestDiscoveredFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import dev.codesoapbox.backity.gameproviders.gog.domain.TestGogGameWithFiles;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,7 +68,7 @@ class GogFileDiscoveryServiceTest {
                     });
         }
 
-        public GogLibraryTestSetup withGame(FileSource file) {
+        public GogLibraryTestSetup withGame(DiscoveredFile file) {
             gogGamesById.put("gameId" + gogGamesById.size() + 1, TestGogGameWithFiles.fromSingleFile(file));
             return this;
         }
@@ -105,28 +105,28 @@ class GogFileDiscoveryServiceTest {
 
         @Test
         void shouldEmitEachDiscoveredFile() {
-            FileSource gogFileSource = TestFileSource.minimalGog();
+            DiscoveredFile gogDiscoveredFile = TestDiscoveredFile.minimalGog();
             mockGogGameLibrary()
-                    .withGame(gogFileSource);
-            List<FileSource> discoveredFileSources = new ArrayList<>();
+                    .withGame(gogDiscoveredFile);
+            List<DiscoveredFile> discoveredFiles = new ArrayList<>();
             GameDiscoveryProgressTracker progressTracker = aGameDiscoveryProgressTracker();
 
-            gogFileDiscoveryService.discoverAllFiles(discoveredFileSources::add, progressTracker);
+            gogFileDiscoveryService.discoverAllFiles(discoveredFiles::add, progressTracker);
 
-            List<FileSource> expectedFileSources = List.of(gogFileSource);
-            assertThat(discoveredFileSources).isEqualTo(expectedFileSources);
+            List<DiscoveredFile> expectedDiscoveredFiles = List.of(gogDiscoveredFile);
+            assertThat(discoveredFiles).isEqualTo(expectedDiscoveredFiles);
         }
 
         @Test
         void shouldSkipGamesWithoutDetails() {
             mockGogGameLibrary()
                     .withGameMissingDetails();
-            List<FileSource> discoveredFileSources = new ArrayList<>();
+            List<DiscoveredFile> discoveredFiles = new ArrayList<>();
             GameDiscoveryProgressTracker progressTracker = aGameDiscoveryProgressTracker();
 
-            gogFileDiscoveryService.discoverAllFiles(discoveredFileSources::add, progressTracker);
+            gogFileDiscoveryService.discoverAllFiles(discoveredFiles::add, progressTracker);
 
-            assertThat(discoveredFileSources).isEmpty();
+            assertThat(discoveredFiles).isEmpty();
         }
     }
 
@@ -136,33 +136,33 @@ class GogFileDiscoveryServiceTest {
         @Test
         void shouldStopFileDiscoveryBeforeProcessingFiles() {
             mockGogGameLibrary()
-                    .withGame(TestFileSource.minimalGog())
+                    .withGame(TestDiscoveredFile.minimalGog())
                     .onInteraction(() -> gogFileDiscoveryService.stopFileDiscovery());
-            List<FileSource> discoveredFileSources = new ArrayList<>();
+            List<DiscoveredFile> discoveredFiles = new ArrayList<>();
             GameDiscoveryProgressTracker progressTracker = aGameDiscoveryProgressTracker();
 
-            gogFileDiscoveryService.discoverAllFiles(discoveredFileSources::add, progressTracker);
+            gogFileDiscoveryService.discoverAllFiles(discoveredFiles::add, progressTracker);
 
-            assertThat(discoveredFileSources).isEmpty();
+            assertThat(discoveredFiles).isEmpty();
             verify(gogEmbedWebClient, never()).getGameDetails(any());
         }
 
         @Test
         void shouldStopFileDiscoveryAfterSomeFilesAlreadyDiscovered() {
             mockGogGameLibrary()
-                    .withGame(TestFileSource.minimalGog())
-                    .withGame(TestFileSource.minimalGog());
-            List<FileSource> discoveredFileSources = new ArrayList<>();
+                    .withGame(TestDiscoveredFile.minimalGog())
+                    .withGame(TestDiscoveredFile.minimalGog());
+            List<DiscoveredFile> discoveredFiles = new ArrayList<>();
             GameDiscoveryProgressTracker progressTracker = aGameDiscoveryProgressTracker();
 
-            gogFileDiscoveryService.discoverAllFiles(fileSource -> {
-                discoveredFileSources.add(fileSource);
+            gogFileDiscoveryService.discoverAllFiles(discoveredFile -> {
+                discoveredFiles.add(discoveredFile);
 
                 // Stop discovery immediately after processing the first game's file
                 gogFileDiscoveryService.stopFileDiscovery();
             }, progressTracker);
 
-            assertThat(discoveredFileSources).hasSize(1);
+            assertThat(discoveredFiles).hasSize(1);
             verify(gogEmbedWebClient, times(1)).getGameDetails(any());
         }
     }
@@ -173,20 +173,20 @@ class GogFileDiscoveryServiceTest {
         @Test
         void shouldRestartDiscoveryFromBeginningAfterStop() {
             mockGogGameLibrary()
-                    .withGame(TestFileSource.minimalGog())
-                    .withGame(TestFileSource.minimalGog());
-            List<FileSource> discoveredFileSources = new ArrayList<>();
+                    .withGame(TestDiscoveredFile.minimalGog())
+                    .withGame(TestDiscoveredFile.minimalGog());
+            List<DiscoveredFile> discoveredFiles = new ArrayList<>();
             GameDiscoveryProgressTracker progressTracker = aGameDiscoveryProgressTracker();
 
             gogFileDiscoveryService.discoverAllFiles(fileSource -> {
-                discoveredFileSources.add(fileSource);
+                discoveredFiles.add(fileSource);
 
                 // Stop discovery immediately after processing the first game's file
                 gogFileDiscoveryService.stopFileDiscovery();
             }, progressTracker);
-            gogFileDiscoveryService.discoverAllFiles(discoveredFileSources::add, progressTracker);
+            gogFileDiscoveryService.discoverAllFiles(discoveredFiles::add, progressTracker);
 
-            assertThat(discoveredFileSources).hasSize(3);
+            assertThat(discoveredFiles).hasSize(3);
             verify(gogEmbedWebClient, times(3)).getGameDetails(any());
         }
     }
@@ -197,9 +197,9 @@ class GogFileDiscoveryServiceTest {
         @Test
         void shouldEmitProgressUpdatesAsEachGameIsProcessed() {
             mockGogGameLibrary()
-                    .withGame(TestFileSource.minimalGog())
-                    .withGame(TestFileSource.minimalGog())
-                    .withGame(TestFileSource.minimalGog());
+                    .withGame(TestDiscoveredFile.minimalGog())
+                    .withGame(TestDiscoveredFile.minimalGog())
+                    .withGame(TestDiscoveredFile.minimalGog());
             FakeGameDiscoveryProgressTracker progressTracker = aGameDiscoveryProgressTracker();
 
             gogFileDiscoveryService.discoverAllFiles(fileSource -> {
@@ -213,8 +213,8 @@ class GogFileDiscoveryServiceTest {
         @Test
         void shouldResetProgressBetweenEachRun() {
             mockGogGameLibrary()
-                    .withGame(TestFileSource.minimalGog())
-                    .withGame(TestFileSource.minimalGog());
+                    .withGame(TestDiscoveredFile.minimalGog())
+                    .withGame(TestDiscoveredFile.minimalGog());
             FakeGameDiscoveryProgressTracker progressTracker = aGameDiscoveryProgressTracker();
 
             gogFileDiscoveryService.discoverAllFiles(_ -> {

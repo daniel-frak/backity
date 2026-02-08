@@ -12,7 +12,6 @@ import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntityMapper;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFile;
 import dev.codesoapbox.backity.core.gamefile.domain.GameFileId;
-import dev.codesoapbox.backity.core.gamefile.domain.TestFileSource;
 import dev.codesoapbox.backity.core.gamefile.domain.TestGameFile;
 import dev.codesoapbox.backity.core.gamefile.infrastructure.adapters.driven.persistence.jpa.GameFileJpaEntityMapper;
 import dev.codesoapbox.backity.shared.domain.Page;
@@ -310,7 +309,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
     @Test
     void findAllPaginatedShouldFilterByFullFileTitleCaseInsensitive() {
-        var searchQuery = "\"" + ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1.getFileSource().fileTitle()
+        var searchQuery = "\"" + ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1.getFileTitle()
                 .toUpperCase() + "\"";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
@@ -334,7 +333,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
     @Test
     void findAllPaginatedShouldFilterByFullOriginalFileNameCaseInsensitive() {
-        var searchQuery = "\"" + ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1.getFileSource().originalFileName()
+        var searchQuery = "\"" + ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1.getOriginalFileName()
                 .toUpperCase() + "\"";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
@@ -358,7 +357,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
 
     @Test
     void findAllPaginatedShouldFilterByFullOriginalGameTitleCaseInsensitive() {
-        var searchQuery = "\"" + ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1.getFileSource().originalGameTitle()
+        var searchQuery = "\"" + ExistingGameFiles.GOG_GAME_FILE_1_FOR_GAME_1.getOriginalGameTitle()
                 .toUpperCase() + "\"";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
@@ -427,41 +426,33 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         public static final GameFile GOG_GAME_FILE_1_FOR_GAME_1 = TestGameFile.gogBuilder()
                 .id(new GameFileId("acde26d7-33c7-42ee-be16-bca91a604b48"))
                 .gameId(ExistingGames.GAME_1.getId())
-                .fileSource(TestFileSource.minimalGogBuilder()
-                        .originalGameTitle("Original Game 1 Title")
-                        .fileTitle("Game 1 (Installer)")
-                        .originalFileName("game_1_installer.exe")
-                        .build())
+                .originalGameTitle("Original Game 1 Title")
+                .fileTitle("Game 1 (Installer)")
+                .originalFileName("game_1_installer.exe")
                 .build();
 
         public static final GameFile GOG_GAME_FILE_2_FOR_GAME_1 = TestGameFile.gogBuilder()
                 .id(new GameFileId("119c7d15-4d83-46d0-9fd2-511f3abae641"))
                 .gameId(ExistingGames.GAME_1.getId())
-                .fileSource(TestFileSource.minimalGogBuilder()
-                        .originalGameTitle("Original Game 1 Title")
-                        .fileTitle("Game 1 (Patch)")
-                        .originalFileName("game_1_patch.exe")
-                        .build())
+                .originalGameTitle("Original Game 1 Title")
+                .fileTitle("Game 1 (Patch)")
+                .originalFileName("game_1_patch.exe")
                 .build();
 
         public static final GameFile GOG_GAME_FILE_1_FOR_GAME_2 = TestGameFile.gogBuilder()
                 .id(new GameFileId("533f6571-d125-4a7e-a2f2-dc066e8ce538"))
                 .gameId(ExistingGames.GAME_2.getId())
-                .fileSource(TestFileSource.minimalGogBuilder()
-                        .originalGameTitle("Original Game 2 Title")
-                        .fileTitle("Game 2 File")
-                        .originalFileName("game_2.exe")
-                        .build())
+                .originalGameTitle("Original Game 2 Title")
+                .fileTitle("Game 2 File")
+                .originalFileName("game_2.exe")
                 .build();
 
         public static final GameFile GOG_GAME_FILE_1_FOR_GAME_3 = TestGameFile.gogBuilder()
                 .id(new GameFileId("a7e54ff1-74d9-4bb1-b7b4-7d4528f4c16e"))
                 .gameId(ExistingGames.GAME_3.getId())
-                .fileSource(TestFileSource.minimalGogBuilder()
-                        .originalGameTitle("Original Game 3 Title")
-                        .fileTitle("Game 3 File")
-                        .originalFileName("game_3.exe")
-                        .build())
+                .originalGameTitle("Original Game 3 Title")
+                .fileTitle("Game 3 File")
+                .originalFileName("game_3.exe")
                 .build();
 
         private static final GameFileJpaEntityMapper MAPPER = Mappers.getMapper(GameFileJpaEntityMapper.class);

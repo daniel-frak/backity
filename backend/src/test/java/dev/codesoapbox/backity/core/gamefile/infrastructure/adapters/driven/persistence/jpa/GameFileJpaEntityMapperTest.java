@@ -33,15 +33,13 @@ class GameFileJpaEntityMapperTest {
         return new GameFileJpaEntity(
                 UUID.fromString("acde26d7-33c7-42ee-be16-bca91a604b48"),
                 UUID.fromString("1eec1c19-25bf-4094-b926-84b5bb8fa281"),
-                new FileSourceJpaEmbeddable(
-                        "GOG",
-                        "Game 1",
-                        "Game 1 (Installer)",
-                        "1.0.0",
-                        "/downlink/some_game/some_file",
-                        "game_1_installer.exe",
-                        5120L
-                ),
+                "GOG",
+                "Game 1",
+                "Game 1 (Installer)",
+                "1.0.0",
+                "/downlink/some_game/some_file",
+                "game_1_installer.exe",
+                5120L,
                 LocalDateTime.parse("2022-04-29T14:15:53"),
                 LocalDateTime.parse("2023-04-29T14:15:53")
         );

@@ -5,7 +5,13 @@ import java.time.LocalDateTime;
 public record GameFileReadModel(
         String id,
         String gameId,
-        FileSourceReadModel fileSource,
+        String gameProviderId,
+        String originalGameTitle,
+        String fileTitle,
+        String version,
+        String url,
+        String originalFileName,
+        String size,
         LocalDateTime dateCreated,
         LocalDateTime dateModified
 ) {

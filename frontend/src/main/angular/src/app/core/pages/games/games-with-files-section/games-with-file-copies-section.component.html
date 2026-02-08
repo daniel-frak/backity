@@ -36,24 +36,24 @@
                 <app-icon-item iconClass="bi bi-file-earmark" size="md" data-testid="game-file-item"
                                [showHideableDetailsOnInit]="false">
                   <ng-container title>
-                    {{ gameFileWithCopies.gameFile.fileSource.fileTitle }}
-                    <app-game-file-version-badge [version]="gameFileWithCopies.gameFile.fileSource.version"/>
+                    {{ gameFileWithCopies.gameFile.fileTitle }}
+                    <app-game-file-version-badge [version]="gameFileWithCopies.gameFile.version"/>
                   </ng-container>
                   <ng-container descriptor>
-                    {{ gameFileWithCopies.gameFile.fileSource.gameProviderId }}
+                    {{ gameFileWithCopies.gameFile.gameProviderId }}
                   </ng-container>
                   <ng-container hideableDetails>
                     <app-named-value-container>
                       <app-named-value>
                         <ng-container name>Original file name</ng-container>
                         <ng-container value>
-                          {{ gameFileWithCopies.gameFile.fileSource.originalFileName }}
+                          {{ gameFileWithCopies.gameFile.originalFileName }}
                         </ng-container>
                       </app-named-value>
                       <app-named-value>
                         <ng-container name>Size</ng-container>
                         <ng-container value>
-                          {{ gameFileWithCopies.gameFile.fileSource.size }}
+                          {{ gameFileWithCopies.gameFile.size }}
                         </ng-container>
                       </app-named-value>
                     </app-named-value-container>

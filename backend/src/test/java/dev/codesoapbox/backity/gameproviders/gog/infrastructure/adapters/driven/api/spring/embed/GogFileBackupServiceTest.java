@@ -49,7 +49,7 @@ class GogFileBackupServiceTest {
         private TrackableFileStream mockOutputStreamProgressTrackerAwareFileStreamCreation(
                 GameFile gameFile, OutputStreamProgressTracker outputStreamProgressTracker) {
             DataBufferFluxTrackableFileStream trackableFileStream = mock(DataBufferFluxTrackableFileStream.class);
-            when(gogFileProvider.initializeProgressAndStreamFile(gameFile.getFileSource(), outputStreamProgressTracker))
+            when(gogFileProvider.initializeProgressAndStreamFile(gameFile, outputStreamProgressTracker))
                     .thenReturn(trackableFileStream);
             return trackableFileStream;
         }

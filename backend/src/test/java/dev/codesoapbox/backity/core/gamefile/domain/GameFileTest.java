@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.gamefile.domain;
 
+import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import org.junit.jupiter.api.Test;
@@ -9,16 +10,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GameFileTest {
 
     @Test
-    void shouldCreateForGameAndFileSource() {
+    void shouldCreateForGameAndDiscoveredFile() {
         Game game = TestGame.any();
-        FileSource fileSource = TestFileSource.minimalGog();
+        DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
 
-        GameFile result = GameFile.createFor(game, fileSource);
+        GameFile result = GameFile.createFor(game, discoveredFile);
 
         GameFile expectedResult = TestGameFile.gogBuilder()
                 .id(result.getId())
                 .gameId(game.getId())
-                .fileSource(fileSource)
+                .dataFrom(discoveredFile)
                 .dateCreated(null)
                 .dateModified(null)
                 .build();

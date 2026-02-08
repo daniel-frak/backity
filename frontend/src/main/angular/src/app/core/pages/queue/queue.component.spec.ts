@@ -156,7 +156,7 @@ describe('QueueComponent', () => {
   }))
 
   function assertQueueContains(fileCopyWithContext: FileCopyWithContext) {
-    expect(fixture.nativeElement.textContent).toContain(fileCopyWithContext.gameFile.fileSource.fileTitle);
+    expect(fixture.nativeElement.textContent).toContain(fileCopyWithContext.gameFile.fileTitle);
   }
 
   it('should retrieve file copies and storage solution statuses on init', fakeAsync(() => {
@@ -291,7 +291,7 @@ describe('QueueComponent', () => {
   }
 
   function assertQueueDoesNotContain(fileCopyWithContext: FileCopyWithContext) {
-    expect(fixture.nativeElement.textContent).not.toContain(fileCopyWithContext.gameFile.fileSource.fileTitle);
+    expect(fixture.nativeElement.textContent).not.toContain(fileCopyWithContext.gameFile.fileTitle);
   }
 
   it('should not remove file copy from queue when status changed event is received but file copy not found',

@@ -6,15 +6,13 @@ export namespace TestGameFile {
     return {
       id: "someGameFileId",
       gameId: "someGameId",
-      fileSource: {
-        gameProviderId: "someGameProviderId",
-        originalGameTitle: "Some game",
-        originalFileName: "Some original file name",
-        version: "Some version",
-        url: "some.url",
-        size: "3 GB",
-        fileTitle: "currentGame.exe"
-      }
+      gameProviderId: "someGameProviderId",
+      originalGameTitle: "Some game",
+      originalFileName: "Some original file name",
+      version: "Some version",
+      url: "some.url",
+      size: "3 GB",
+      fileTitle: "currentGame.exe"
     };
   }
 }

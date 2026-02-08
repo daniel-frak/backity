@@ -30,7 +30,7 @@ public class FileBackupService {
         }
         FileCopy fileCopy = fileBackupContext.fileCopy();
         log.info("Backing up game file (id={}, fileCopyId={}, url={})...", gameFile.getId(),
-                fileCopy.getId(), gameFile.getFileSource().url());
+                fileCopy.getId(), gameFile.getUrl());
 
         StorageSolution storageSolution = fileBackupContext.storageSolution();
         try {
@@ -50,7 +50,7 @@ public class FileBackupService {
     private void tryToBackUp(FileCopy fileCopy, GameFile gameFile, BackupTarget backupTarget,
                              StorageSolution storageSolution) {
         String filePath = uniqueFilePathResolver.resolve(
-                backupTarget.getPathTemplate(), gameFile.getFileSource(), storageSolution);
+                backupTarget.getPathTemplate(), gameFile, storageSolution);
         markInProgress(fileCopy, filePath);
 
         try {
