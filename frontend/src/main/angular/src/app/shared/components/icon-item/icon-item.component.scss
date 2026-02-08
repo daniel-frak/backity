@@ -7,11 +7,17 @@ $icon-width-lg: 3.5rem;
 $icon-width-md: 3rem;
 $icon-width-sm: 2.75rem;
 
-@mixin horizontal-line($width) {
+@mixin horizontal-line($width: 0) {
   content: "";
   border-top: 1px dashed $secondary;
-  margin-left: $width / 2;
-  width: calc(100% - #{$width / 2});
+
+  // Ensure width and margin never break if $width is 0
+  $safe-width: if($width == 0, 0, $width / 2);
+
+  margin-left: $safe-width;
+  width: if($width == 0, 100%, calc(100% - #{$safe-width}));
+
+  transition: opacity 0.2s ease;
 }
 
 :host {
@@ -19,16 +25,20 @@ $icon-width-sm: 2.75rem;
   flex-direction: column;
   gap: $spacer-md;
 
-  &.icon-item-lg::after{
+  .icon-text-and-buttons:not(:hover)::after{
+    opacity: 0;
+  }
+
+  &.icon-item-lg > .icon-text-and-buttons::after{
     @include horizontal-line($icon-width-lg);
   }
 
-  &.icon-item-md:not(:last-of-type)::after{
+  &.icon-item-md > .icon-text-and-buttons::after{
     @include horizontal-line($icon-width-md);
   }
 
-  &.icon-item-sm:not(:last-of-type)::after {
-    @include horizontal-line($icon-width-sm);
+  &.icon-item-sm > .icon-text-and-buttons::after {
+    @include horizontal-line();
   }
 }
 
@@ -119,18 +129,10 @@ $icon-width-sm: 2.75rem;
 
   &.details-lg {
     margin-left: $icon-width-lg/2;
-
-    &::before {
-      @include horizontal-line(0);
-    }
   }
 
   &.details-md {
     margin-left: $icon-width-md/2;
-
-    &::before {
-      @include horizontal-line(0);
-    }
   }
 
   &.details-sm {
@@ -143,10 +145,9 @@ $icon-width-sm: 2.75rem;
   height: 0;
   overflow: hidden;
   opacity: 0;
-  transition:
-    opacity 0.2s ease,
-    padding 0.2s ease,
-    height 0.2s ease;
+  transition: opacity 0.2s ease,
+  padding 0.2s ease,
+  height 0.2s ease;
 
   // https://developer.chrome.com/blog/new-in-chrome-129#animate
   interpolate-size: allow-keywords;
