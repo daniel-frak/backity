@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -55,7 +56,7 @@ class GogFileDiscoveryServiceTest {
 
         public GogLibraryTestSetup() {
             when(gogEmbedWebClient.getLibraryGameIds())
-                    .thenAnswer(inv -> {
+                    .thenAnswer(_ -> {
                         if (this.onInteractionRunnable != null) {
                             this.onInteractionRunnable.run();
                         }
@@ -75,7 +76,7 @@ class GogFileDiscoveryServiceTest {
 
         public void withGameMissingDetails() {
             when(gogEmbedWebClient.getLibraryGameIds())
-                    .thenAnswer(inv -> {
+                    .thenAnswer(_ -> {
                         if (this.onInteractionRunnable != null) {
                             this.onInteractionRunnable.run();
                         }
@@ -202,12 +203,26 @@ class GogFileDiscoveryServiceTest {
                     .withGame(TestDiscoveredFile.minimalGog());
             FakeGameDiscoveryProgressTracker progressTracker = aGameDiscoveryProgressTracker();
 
-            gogFileDiscoveryService.discoverAllFiles(discoveredFile -> {
+            gogFileDiscoveryService.discoverAllFiles(_ -> {
                 // We don't care about the DiscoveredFiles for this
             }, progressTracker);
 
             assertThat(progressTracker.getHistoricalDiscoveredGamesCount())
                     .isEqualTo(List.of(1, 1, 1));
+        }
+
+        @Test
+        void shouldNotEmitProgressUpdatesForGamesWithoutDetails() {
+            mockGogGameLibrary()
+                    .withGameMissingDetails();
+            FakeGameDiscoveryProgressTracker progressTracker = aGameDiscoveryProgressTracker();
+
+            gogFileDiscoveryService.discoverAllFiles(_ -> {
+                // We don't care about the DiscoveredFiles for this
+            }, progressTracker);
+
+            assertThat(progressTracker.getHistoricalDiscoveredGamesCount())
+                    .isEqualTo(emptyList());
         }
 
         @Test
