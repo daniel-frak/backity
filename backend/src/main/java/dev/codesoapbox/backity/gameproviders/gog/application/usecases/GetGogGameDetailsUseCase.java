@@ -4,12 +4,14 @@ import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Optional;
+
 @RequiredArgsConstructor
 public class GetGogGameDetailsUseCase {
 
     private final GogLibraryService gogLibraryService;
 
-    public GogGameWithFiles getGameDetails(String gameId) {
+    public Optional<GogGameWithFiles> getGameDetails(String gameId) {
         return gogLibraryService.getGameDetails(gameId);
     }
 }

@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Optional;
+
 import static java.util.Collections.singletonList;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -61,11 +63,23 @@ class GetGogGameWithFilesControllerIT {
         );
 
         when(useCase.getGameDetails(gameId))
-                .thenReturn(gogGameDetails);
+                .thenReturn(Optional.of(gogGameDetails));
 
         mockMvc.perform(get("/api/gog/games/" + gameId))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedResponse));
+    }
+
+    @Test
+    void shouldReturnHttp404GivenGameDetailsNotFound() throws Exception {
+        var gameId = "someGameId";
+
+        when(useCase.getGameDetails(gameId))
+                .thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/gog/games/" + gameId))
+                .andDo(print())
+                .andExpect(status().isNotFound());
     }
 }

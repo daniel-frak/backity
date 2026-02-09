@@ -31,6 +31,7 @@ import java.time.Clock;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.Collections.emptyList;
@@ -67,6 +68,8 @@ public class GogEmbedWebClient implements GogLibraryService {
         return libraryGameIds.stream()
                 .map(this::getGameDetails)
                 .filter(Objects::nonNull)
+                .filter(Optional::isPresent)
+                .flatMap(Optional::stream)
                 .flatMap(details -> details.files().stream())
                 .map(GogFile::size)
                 .map(FileSize::fromString)
@@ -74,7 +77,7 @@ public class GogEmbedWebClient implements GogLibraryService {
     }
 
     @Override
-    public GogGameWithFiles getGameDetails(String gameId) {
+    public Optional<GogGameWithFiles> getGameDetails(String gameId) {
         log.debug("Retrieving game details for game #" + gameId + "...");
 
         var loggedError = new AtomicBoolean();
@@ -94,13 +97,13 @@ public class GogEmbedWebClient implements GogLibraryService {
         if (detailsResponse != null) {
             GogGameWithFiles details = extractGameDetails(detailsResponse);
             log.debug("Retrieved game details for game: {} (#{})", details.title(), gameId);
-            return details;
+            return Optional.of(details);
         } else if (!loggedError.get()) {
             log.info("Could not retrieve game details for game id: {}. Response was empty. This may happen if " +
                     "this is actually a bundle or if the game was migrated to a different id.", gameId);
         }
 
-        return null;
+        return Optional.empty();
     }
 
     private Mono<GogGameDetailsApiResponse> safelyMapToResponseObject(JsonNode body) {

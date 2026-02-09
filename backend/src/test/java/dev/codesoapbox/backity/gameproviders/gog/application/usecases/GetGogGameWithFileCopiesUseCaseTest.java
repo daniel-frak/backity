@@ -9,6 +9,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -30,16 +32,16 @@ class GetGogGameWithFileCopiesUseCaseTest {
         String id = "someGameId";
         GogGameWithFiles gogGameWithFiles = mockGameDetailsExist(id);
 
-        GogGameWithFiles result = useCase.getGameDetails(id);
+        Optional<GogGameWithFiles> result = useCase.getGameDetails(id);
 
-        assertThat(result).usingRecursiveComparison()
+        assertThat(result).get().usingRecursiveComparison()
                 .isEqualTo(gogGameWithFiles);
     }
 
     private GogGameWithFiles mockGameDetailsExist(String id) {
         GogGameWithFiles gogGameWithFiles = TestGogGameWithFiles.minimal();
         when(gogLibraryService.getGameDetails(id))
-                .thenReturn(gogGameWithFiles);
+                .thenReturn(Optional.of(gogGameWithFiles));
         return gogGameWithFiles;
     }
 }
