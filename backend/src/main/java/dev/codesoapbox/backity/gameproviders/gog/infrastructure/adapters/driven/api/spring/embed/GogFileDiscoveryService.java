@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -37,19 +38,16 @@ public class GogFileDiscoveryService implements GameProviderFileDiscoveryService
         libraryGameIds.stream()
                 .takeWhile(_ -> !shouldStopFileDiscovery.get())
                 .forEach(id -> {
-                    GogGameWithFiles details = gogEmbedWebClient.getGameDetails(id);
-                    if (details == null) {
+                    Optional<GogGameWithFiles> details = gogEmbedWebClient.getGameDetails(id);
+                    if (details.isEmpty()) {
                         return;
                     }
-                    processFiles(discoveredFileConsumer, details);
+                    processFiles(discoveredFileConsumer, details.get());
                     progressTracker.incrementGamesDiscovered(1);
                 });
     }
 
     private void processFiles(Consumer<DiscoveredFile> discoveredFileConsumer, GogGameWithFiles gogGame) {
-        if (gogGame == null) {
-            return;
-        }
         List<DiscoveredFile> discoveredFiles = gogGameWithFilesMapper.toDiscoveredFiles(gogGame);
         for (DiscoveredFile discoveredFile : discoveredFiles) {
             discoveredFileConsumer.accept(discoveredFile);

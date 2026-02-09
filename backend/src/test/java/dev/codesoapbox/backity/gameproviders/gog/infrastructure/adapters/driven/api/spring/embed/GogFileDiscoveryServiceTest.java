@@ -15,10 +15,7 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,7 +62,7 @@ class GogFileDiscoveryServiceTest {
             lenient().when(gogEmbedWebClient.getGameDetails(any()))
                     .thenAnswer(inv -> {
                         String gameId = inv.getArgument(0);
-                        return gogGamesById.get(gameId);
+                        return Optional.ofNullable(gogGamesById.get(gameId));
                     });
         }
 
@@ -83,7 +80,7 @@ class GogFileDiscoveryServiceTest {
                         return List.of("gameId1");
                     });
             when(gogEmbedWebClient.getGameDetails(any()))
-                    .thenReturn(null);
+                    .thenReturn(Optional.empty());
         }
 
         public GogLibraryTestSetup onInteraction(Runnable runnable) {

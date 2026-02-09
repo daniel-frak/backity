@@ -1,8 +1,10 @@
 package dev.codesoapbox.backity.gameproviders.gog.domain;
 
+import java.util.Optional;
+
 public interface GogLibraryService {
 
     String getLibrarySize();
 
-    GogGameWithFiles getGameDetails(String gameId);
+    Optional<GogGameWithFiles> getGameDetails(String gameId);
 }

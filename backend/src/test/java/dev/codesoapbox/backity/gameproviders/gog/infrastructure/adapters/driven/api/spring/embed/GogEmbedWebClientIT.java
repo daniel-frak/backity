@@ -37,6 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static java.util.Collections.emptyList;
@@ -157,7 +158,7 @@ class GogEmbedWebClientIT {
                 stubGameEndpoint("example_gog_game_details_response.json");
                 stubFileEndpoint("/downlink/unreal_tournament_2004_ece/en1installer3");
 
-                GogGameWithFiles result = gogEmbedClient.getGameDetails("someGameId");
+                Optional<GogGameWithFiles> result = gogEmbedClient.getGameDetails("someGameId");
 
                 var expectedResult = new GogGameWithFiles("Unreal Tournament 2004 Editor's Choice Edition",
                         "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
@@ -166,7 +167,7 @@ class GogEmbedWebClientIT {
                         "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)", "1 MB",
                         "en1installer3")),
                         "someChangelog");
-                assertThat(result).isEqualTo(expectedResult);
+                assertThat(result).get().isEqualTo(expectedResult);
                 assertThat(capturedOutput.getOut()).contains(
                         "Retrieved game details for game: Unreal Tournament 2004 Editor's" +
                                 " Choice Edition (#someGameId)");
@@ -177,9 +178,10 @@ class GogEmbedWebClientIT {
                 stubGameEndpoint("example_gog_game_details_response_manual_url_with_query_params.json");
                 stubFileEndpoint("/downlink/unreal_tournament_2004_ece/en1installer3?some-query-param=true");
 
-                GogGameWithFiles result = gogEmbedClient.getGameDetails("someGameId");
+                Optional<GogGameWithFiles> result = gogEmbedClient.getGameDetails("someGameId");
 
-                assertThat(result.files().getFirst().fileName()).isEqualTo("en1installer3");
+                assertThat(result).get().extracting(r -> r.files().getFirst().fileName())
+                        .isEqualTo("en1installer3");
             }
 
             @Test
@@ -188,7 +190,7 @@ class GogEmbedWebClientIT {
                 stubGameEndpoint("example_gog_game_details_response_null_version.json");
                 stubFileEndpoint("/downlink/unreal_tournament_2004_ece/en1installer3");
 
-                GogGameWithFiles result = gogEmbedClient.getGameDetails("someGameId");
+                Optional<GogGameWithFiles> result = gogEmbedClient.getGameDetails("someGameId");
 
                 var expectedResult = new GogGameWithFiles("Unreal Tournament 2004 Editor's Choice Edition",
                         "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
@@ -197,7 +199,7 @@ class GogEmbedWebClientIT {
                         "Unreal Tournament 2004 Editor's Choice Edition (Part 1 of 3)", "1 MB",
                         "en1installer3")),
                         "someChangelog");
-                assertThat(result).isEqualTo(expectedResult);
+                assertThat(result).get().isEqualTo(expectedResult);
             }
 
             @Test
@@ -208,12 +210,12 @@ class GogEmbedWebClientIT {
                                 .withHeader("Content-Type", "application/json")
                                 .withBodyFile("example_gog_game_details_response_null_downloads.json")));
 
-                GogGameWithFiles result = gogEmbedClient.getGameDetails("someGameId");
+                Optional<GogGameWithFiles> result = gogEmbedClient.getGameDetails("someGameId");
 
                 var expectedResult = new GogGameWithFiles("Unreal Tournament 2004 Editor's Choice Edition",
                         "//images-4.gog.com/ebed1d5546a4fa382d7d36db8aee7f298eac7db3a8dc2f4389120b5b7b3155a9",
                         "some-cd-key", "someTextInformation", emptyList(), "someChangelog");
-                assertThat(result).isEqualTo(expectedResult);
+                assertThat(result).get().isEqualTo(expectedResult);
             }
         }
 
@@ -242,9 +244,9 @@ class GogEmbedWebClientIT {
                         .willReturn(aResponse()
                                 .withStatus(500)));
 
-                GogGameWithFiles result = gogEmbedClient.getGameDetails("someGameId");
+                Optional<GogGameWithFiles> result = gogEmbedClient.getGameDetails("someGameId");
 
-                assertThat(result).isNull();
+                assertThat(result).isEmpty();
                 assertThat(capturedOutput.getOut()).contains("Could not retrieve game details for game id");
             }
 
@@ -255,9 +257,9 @@ class GogEmbedWebClientIT {
                         .willReturn(aResponse()
                                 .withHeader("Content-Type", "application/json")));
 
-                GogGameWithFiles result = gogEmbedClient.getGameDetails("someGameId");
+                Optional<GogGameWithFiles> result = gogEmbedClient.getGameDetails("someGameId");
 
-                assertThat(result).isNull();
+                assertThat(result).isEmpty();
                 assertThat(capturedOutput.getOut()).contains("Response was empty");
             }
 
@@ -273,9 +275,9 @@ class GogEmbedWebClientIT {
                                 .withHeader("Content-Type", "application/json")
                                 .withBody("[ ]")));
 
-                GogGameWithFiles result = gogEmbedClient.getGameDetails("someGameId");
+                Optional<GogGameWithFiles> result = gogEmbedClient.getGameDetails("someGameId");
 
-                assertThat(result).isNull();
+                assertThat(result).isEmpty();
                 assertThat(capturedOutput.getOut()).contains("Response was empty");
             }
         }
