@@ -21,6 +21,9 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -43,6 +46,7 @@ public class GogEmbedWebClient implements GogLibraryService {
     private static final String WINDOWS_SYSTEM_VALUE = "windows";
 
     private final WebClient webClientEmbed;
+    private final JsonMapper jsonMapper;
     private final GogAuthService authService;
     private final DataBufferFluxTrackableFileStreamFactory dataBufferFluxTrackableFileStreamFactory;
     private final Clock clock;
@@ -78,7 +82,8 @@ public class GogEmbedWebClient implements GogLibraryService {
                 .uri("/account/gameDetails/" + gameId + ".json")
                 .header(HEADER_AUTHORIZATION, getBearerToken())
                 .retrieve()
-                .bodyToMono(GogGameDetailsApiResponse.class)
+                .bodyToMono(JsonNode.class)
+                .flatMap(this::safelyMapToResponseObject)
                 .onErrorResume(e -> {
                     log.error("Could not retrieve game details for game id: {}", gameId, e);
                     loggedError.set(true);
@@ -91,10 +96,24 @@ public class GogEmbedWebClient implements GogLibraryService {
             log.debug("Retrieved game details for game: {} (#{})", details.title(), gameId);
             return details;
         } else if (!loggedError.get()) {
-            log.error("Could not retrieve game details for game id: {}. Response was empty.", gameId);
+            log.info("Could not retrieve game details for game id: {}. Response was empty. This may happen if " +
+                    "this is actually a bundle or if the game was migrated to a different id.", gameId);
         }
 
         return null;
+    }
+
+    private Mono<GogGameDetailsApiResponse> safelyMapToResponseObject(JsonNode body) {
+        // GOG sometimes returns an empty array instead of an object
+        if (body.isArray() && body.isEmpty()) {
+            return Mono.empty();
+        }
+
+        try {
+            return Mono.just(jsonMapper.treeToValue(body, GogGameDetailsApiResponse.class));
+        } catch (JacksonException e) {
+            return Mono.error(e);
+        }
     }
 
     private GogGameWithFiles extractGameDetails(GogGameDetailsApiResponse response) {

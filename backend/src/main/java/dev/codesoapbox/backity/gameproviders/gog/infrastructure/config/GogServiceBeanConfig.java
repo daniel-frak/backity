@@ -14,6 +14,7 @@ import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.reactive.function.client.WebClient;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.time.Clock;
 
@@ -37,10 +38,15 @@ public class GogServiceBeanConfig {
     }
 
     @Bean
-    GogEmbedWebClient gogEmbedClient(@Qualifier("gogEmbed") WebClient webClientEmbed, GogAuthService authService,
-                                     DataBufferFluxTrackableFileStreamFactory dataBufferFluxTrackableFileStreamFactory,
-                                     Clock clock) {
-        return new GogEmbedWebClient(webClientEmbed, authService, dataBufferFluxTrackableFileStreamFactory, clock);
+    GogEmbedWebClient gogEmbedClient(
+            @Qualifier("gogEmbed") WebClient webClientEmbed,
+            JsonMapper jsonMapper,
+            GogAuthService authService,
+            DataBufferFluxTrackableFileStreamFactory dataBufferFluxTrackableFileStreamFactory,
+            Clock clock
+    ) {
+        return new GogEmbedWebClient(webClientEmbed, jsonMapper, authService, dataBufferFluxTrackableFileStreamFactory,
+                clock);
     }
 
     @Bean

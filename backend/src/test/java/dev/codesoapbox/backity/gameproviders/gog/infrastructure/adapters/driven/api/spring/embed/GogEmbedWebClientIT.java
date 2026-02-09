@@ -30,6 +30,7 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -54,6 +55,8 @@ class GogEmbedWebClientIT {
 
     private static final String ACCESS_TOKEN = "someAccessToken";
     private static Level defaultLogLevel;
+
+    private final JsonMapper jsonMapper = new JsonMapper();
 
     private GogEmbedWebClient gogEmbedClient;
 
@@ -82,7 +85,7 @@ class GogEmbedWebClientIT {
     void setUp() {
         WebClient webClientEmbed = buildWebClient();
         gogEmbedClient = new GogEmbedWebClient(
-                webClientEmbed, authService, trackableFileStreamFactory, clock);
+                webClientEmbed, jsonMapper, authService, trackableFileStreamFactory, clock);
 
         authServiceProvidesAccessToken();
         trackableFileStreamFactoryReturnsTrackableFileStream();
@@ -251,6 +254,24 @@ class GogEmbedWebClientIT {
                         .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                         .willReturn(aResponse()
                                 .withHeader("Content-Type", "application/json")));
+
+                GogGameWithFiles result = gogEmbedClient.getGameDetails("someGameId");
+
+                assertThat(result).isNull();
+                assertThat(capturedOutput.getOut()).contains("Response was empty");
+            }
+
+            /**
+             * GOG sometimes returns `[]` from this endpoint.
+             * It seems to happen when the 'game' is a bundle (product type: package).
+             */
+            @Test
+            void shouldNotThrowGivenRequestReturnsEmptyArrayWithWhitespace(CapturedOutput capturedOutput) {
+                wireMockEmbed.stubFor(get(urlPathEqualTo("/account/gameDetails/someGameId.json"))
+                        .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
+                        .willReturn(aResponse()
+                                .withHeader("Content-Type", "application/json")
+                                .withBody("[ ]")));
 
                 GogGameWithFiles result = gogEmbedClient.getGameDetails("someGameId");
 
