@@ -21,6 +21,9 @@ import dev.codesoapbox.backity.testing.wiremock.CustomWireMockExtension;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
@@ -38,6 +41,7 @@ import java.time.Clock;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static java.util.Collections.emptyList;
@@ -222,6 +226,37 @@ class GogEmbedWebClientIT {
         @Nested
         class Throwing {
 
+            private static Stream<Arguments> invalidResponses() {
+                return Stream.of(
+                        Arguments.of(
+                                Named.of(
+                                        "unprocessable",
+                                        "{\"extras\": 123}"
+                                ),
+                                "Could not retrieve game details for game id"
+                        ),
+                        Arguments.of(
+                                /*
+                                 * GOG sometimes returns `[]` from this endpoint.
+                                 * It seems to happen when the 'game' is a bundle (product type: package).
+                                 */
+                                Named.of(
+                                        "empty array with whitespace",
+                                        "[ ]"
+                                ),
+                                "Response was empty"
+                        ),
+                        Arguments.of(
+                                // Not currently returned by GOG, but feels prudent to guard against.
+                                Named.of(
+                                        "whitespace",
+                                        " "
+                                ),
+                                "Response was empty"
+                        )
+                );
+            }
+
             @Test
             void shouldThrowGivenResponseFinalLocationHeaderIsBlank() {
                 setLogLevelToDebug();
@@ -263,22 +298,21 @@ class GogEmbedWebClientIT {
                 assertThat(capturedOutput.getOut()).contains("Response was empty");
             }
 
-            /**
-             * GOG sometimes returns `[]` from this endpoint.
-             * It seems to happen when the 'game' is a bundle (product type: package).
-             */
-            @Test
-            void shouldNotThrowGivenRequestReturnsEmptyArrayWithWhitespace(CapturedOutput capturedOutput) {
+            @ParameterizedTest(name = "response is {0}")
+            @MethodSource("invalidResponses")
+            void shouldNotThrowGiven(String responseBody,
+                                     String expectedLogMessage,
+                                     CapturedOutput capturedOutput) {
                 wireMockEmbed.stubFor(get(urlPathEqualTo("/account/gameDetails/someGameId.json"))
                         .withHeader(GogEmbedWebClient.HEADER_AUTHORIZATION, equalTo("Bearer " + ACCESS_TOKEN))
                         .willReturn(aResponse()
                                 .withHeader("Content-Type", "application/json")
-                                .withBody("[ ]")));
+                                .withBody(responseBody)));
 
                 Optional<GogGameWithFiles> result = gogEmbedClient.getGameDetails("someGameId");
 
                 assertThat(result).isEmpty();
-                assertThat(capturedOutput.getOut()).contains("Response was empty");
+                assertThat(capturedOutput.getOut()).contains(expectedLogMessage);
             }
         }
     }
