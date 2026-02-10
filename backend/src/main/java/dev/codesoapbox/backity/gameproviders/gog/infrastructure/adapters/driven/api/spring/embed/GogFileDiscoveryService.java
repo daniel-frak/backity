@@ -38,11 +38,8 @@ public class GogFileDiscoveryService implements GameProviderFileDiscoveryService
         libraryGameIds.stream()
                 .takeWhile(_ -> !shouldStopFileDiscovery.get())
                 .forEach(id -> {
-                    Optional<GogGameWithFiles> details = gogEmbedWebClient.getGameDetails(id);
-                    if (details.isEmpty()) {
-                        return;
-                    }
-                    processFiles(discoveredFileConsumer, details.get());
+                    Optional<GogGameWithFiles> maybeDetails = gogEmbedWebClient.getGameDetails(id);
+                    maybeDetails.ifPresent(details -> processFiles(discoveredFileConsumer, details));
                     progressTracker.incrementGamesDiscovered(1);
                 });
     }

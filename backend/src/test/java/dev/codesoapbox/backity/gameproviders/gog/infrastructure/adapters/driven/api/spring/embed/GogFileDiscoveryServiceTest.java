@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -208,8 +207,13 @@ class GogFileDiscoveryServiceTest {
                     .isEqualTo(List.of(1, 1, 1));
         }
 
+        /*
+         * While skipping file processing suggests we haven't really discovered a new game,
+         * the progress tracker depends on the processed elements count eventually reaching total count.
+         * Not updating the progress tracker in this case would make it never reach 100%.
+         */
         @Test
-        void shouldNotEmitProgressUpdatesForGamesWithoutDetails() {
+        void shouldEmitProgressUpdatesForGamesWithoutDetails() {
             mockGogGameLibrary()
                     .withGameMissingDetails();
             FakeGameDiscoveryProgressTracker progressTracker = aGameDiscoveryProgressTracker();
@@ -219,7 +223,7 @@ class GogFileDiscoveryServiceTest {
             }, progressTracker);
 
             assertThat(progressTracker.getHistoricalDiscoveredGamesCount())
-                    .isEqualTo(emptyList());
+                    .isEqualTo(List.of(1));
         }
 
         @Test
