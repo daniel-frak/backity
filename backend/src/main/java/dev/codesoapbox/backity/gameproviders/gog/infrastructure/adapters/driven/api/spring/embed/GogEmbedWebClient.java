@@ -21,7 +21,6 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import tools.jackson.core.JacksonException;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -85,7 +84,8 @@ public class GogEmbedWebClient implements GogLibraryService {
                 .uri("/account/gameDetails/" + gameId + ".json")
                 .header(HEADER_AUTHORIZATION, getBearerToken())
                 .retrieve()
-                .bodyToMono(JsonNode.class)
+                .bodyToMono(String.class)
+                .filter(body -> !body.isBlank())
                 .flatMap(this::safelyMapToResponseObject)
                 .onErrorResume(e -> {
                     log.error("Could not retrieve game details for game id: {}", gameId, e);
@@ -106,17 +106,15 @@ public class GogEmbedWebClient implements GogLibraryService {
         return Optional.empty();
     }
 
-    private Mono<GogGameDetailsApiResponse> safelyMapToResponseObject(JsonNode body) {
+    private Mono<GogGameDetailsApiResponse> safelyMapToResponseObject(String bodyString) {
+        JsonNode body = jsonMapper.readTree(bodyString);
+
         // GOG sometimes returns an empty array instead of an object
-        if (body.isArray() && body.isEmpty()) {
+        if (body.isArray()) {
             return Mono.empty();
         }
 
-        try {
-            return Mono.just(jsonMapper.treeToValue(body, GogGameDetailsApiResponse.class));
-        } catch (JacksonException e) {
-            return Mono.error(e);
-        }
+        return Mono.just(jsonMapper.treeToValue(body, GogGameDetailsApiResponse.class));
     }
 
     private GogGameWithFiles extractGameDetails(GogGameDetailsApiResponse response) {
