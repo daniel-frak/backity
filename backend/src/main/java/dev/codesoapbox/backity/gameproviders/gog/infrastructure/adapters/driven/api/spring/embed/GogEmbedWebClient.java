@@ -29,7 +29,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -66,7 +65,6 @@ public class GogEmbedWebClient implements GogLibraryService {
     private FileSize sumFileSizes(List<String> libraryGameIds) {
         return libraryGameIds.stream()
                 .map(this::getGameDetails)
-                .filter(Objects::nonNull)
                 .filter(Optional::isPresent)
                 .flatMap(Optional::stream)
                 .flatMap(details -> details.files().stream())
