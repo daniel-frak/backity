@@ -1,6 +1,9 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.readmodel;
 
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
+import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
+import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driven.persistence.jpa.BackupTargetJpaEntityMapper;
 import dev.codesoapbox.backity.core.filecopy.domain.*;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.persistence.jpa.FileCopyJpaEntityMapper;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesSearchFilter;
@@ -33,6 +36,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -135,6 +139,9 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         }
         for (SourceFile sourceFile : ExistingSourceFiles.getAll()) {
             entityManager.persist(ExistingSourceFiles.MAPPER.toEntity(sourceFile));
+        }
+        for (BackupTarget backupTarget : ExistingBackupTargets.getAll()) {
+            entityManager.persist(ExistingBackupTargets.MAPPER.toEntity(backupTarget));
         }
         for (FileCopy fileCopy : ExistingFileCopies.getAll()) {
             entityManager.persist(ExistingFileCopies.MAPPER.toEntity(fileCopy));
@@ -467,6 +474,36 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
         }
     }
 
+    private static class ExistingBackupTargets {
+
+        public static final BackupTargetJpaEntityMapper MAPPER = Mappers.getMapper(BackupTargetJpaEntityMapper.class);
+
+        public static final Supplier<BackupTarget> LOCAL_FOLDER_1 = () -> TestBackupTarget.localFolderBuilder()
+                .withId(new BackupTargetId("eda52c13-ddf7-406f-97d9-d3ce2cab5a76"))
+                .build();
+
+        public static final Supplier<BackupTarget> LOCAL_FOLDER_2 = () -> TestBackupTarget.localFolderBuilder()
+                .withId(new BackupTargetId("16744bc6-6e7e-4ef8-b009-bd77c839d914"))
+                .build();
+
+        public static final Supplier<BackupTarget> LOCAL_FOLDER_3 = () -> TestBackupTarget.localFolderBuilder()
+                .withId(new BackupTargetId("3db4150a-9b80-42f8-9979-7db22de58502"))
+                .build();
+
+        public static final Supplier<BackupTarget> LOCAL_FOLDER_4 = () -> TestBackupTarget.localFolderBuilder()
+                .withId(new BackupTargetId("fd69b069-bba1-4163-ad42-65e1574aacb3"))
+                .build();
+
+        public static List<BackupTarget> getAll() {
+            return List.of(
+                    LOCAL_FOLDER_1.get(),
+                    LOCAL_FOLDER_2.get(),
+                    LOCAL_FOLDER_3.get(),
+                    LOCAL_FOLDER_4.get()
+            );
+        }
+    }
+
     private static class ExistingFileCopies {
 
         public static final FileCopy TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1_FOR_GAME_1 =
@@ -474,7 +511,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                         .id(new FileCopyId("9fdad52f-b4a6-46bc-af6d-bf27f9661eae"))
                         .naturalId(new FileCopyNaturalId(
                                 ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getId(),
-                                new BackupTargetId("f882cf23-35f9-4396-832d-bd08cd50e413")
+                                ExistingBackupTargets.LOCAL_FOLDER_1.get().getId()
                         ))
                         .dateModified(YESTERDAY.atStartOfDay())
                         .build();
@@ -484,7 +521,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                         .id(new FileCopyId("52ecf8c9-bfb0-4345-ae02-d069a3eb5267"))
                         .naturalId(new FileCopyNaturalId(
                                 ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getId(),
-                                new BackupTargetId("a9a91a74-8a57-4bb1-9a0c-e65bf8f449f0")
+                                ExistingBackupTargets.LOCAL_FOLDER_2.get().getId()
                         ))
                         .dateModified(TODAY.atStartOfDay())
                         .build();
@@ -494,7 +531,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                         .id(new FileCopyId("d6a7ae5e-25d9-4410-8f08-bdc15324dd93"))
                         .naturalId(new FileCopyNaturalId(
                                 ExistingSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.getId(),
-                                new BackupTargetId("f882cf23-35f9-4396-832d-bd08cd50e413")
+                                ExistingBackupTargets.LOCAL_FOLDER_3.get().getId()
                         ))
                         .dateModified(YESTERDAY.atStartOfDay())
                         .build();
@@ -504,7 +541,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
                         .id(new FileCopyId("0cfa21fe-dc8d-4a07-a570-7207f29b9f38"))
                         .naturalId(new FileCopyNaturalId(
                                 ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_2.getId(),
-                                new BackupTargetId("8327a5e0-ea30-4af2-b5b5-06a232017d97")
+                                ExistingBackupTargets.LOCAL_FOLDER_4.get().getId()
                         ))
                         .dateModified(TODAY.atStartOfDay())
                         .build();

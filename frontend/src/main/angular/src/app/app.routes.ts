@@ -5,8 +5,9 @@ import {GameProvidersComponent} from "@app/core/pages/game-providers/game-provid
 import {GamesComponent} from "@app/core/pages/games/games.component";
 import {ThemeComponent} from "@app/core/pages/theme/theme.component";
 import {SettingsLayoutComponent} from "@app/core/pages/settings/settings-layout/settings-layout.component";
-import {FilesComponent} from "@app/core/pages/settings/files/files.component";
 import {QueueComponent} from "@app/core/pages/queue/queue.component";
+import {BackupTargetsComponent} from "@app/core/pages/settings/backup-targets/backup-targets.component";
+import {StorageSolutionsComponent} from "@app/core/pages/settings/storage-solutions/storage-solutions.component";
 
 export const routes: Routes = [
   {
@@ -31,7 +32,8 @@ export const routes: Routes = [
         path: 'settings',
         component: SettingsLayoutComponent,
         children: [
-          {path: '', component: FilesComponent},
+          {path: '', component: BackupTargetsComponent},
+          {path: 'storage-solutions', component: StorageSolutionsComponent},
         ]
       }
     ]

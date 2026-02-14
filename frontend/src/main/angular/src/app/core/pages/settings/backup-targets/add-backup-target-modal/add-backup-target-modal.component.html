@@ -1,0 +1,48 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-title">
+    Add new backup target
+  </h4>
+  <button type="button" class="btn-close" aria-label="Close" data-testid="close-add-backup-target-modal-btn"
+          (click)="modal.dismiss('Cross click')"></button>
+</div>
+
+<form [formGroup]="addBackupTargetForm" data-testid="add-backup-target-form" (ngSubmit)="submit()">
+  <div class="modal-body">
+    <app-loaded-content [isLoading]="isLoading()">
+      <app-auto-layout>
+        <app-input formControlName="name" testId="name-input" type="text">
+          Name
+        </app-input>
+        <app-select [elements]="storageSolutions()" label="Storage solution" data-testId="storage-solution-id-input"
+                    formControlName="storageSolutionId"/>
+        <app-input formControlName="pathTemplate" testId="path-template-input" type="text">
+          Path template
+        </app-input>
+        <div class="alert alert-primary mb-0">
+          Available placeholders:
+          <ul class="small mb-0">
+            <li class="mb-0">
+              <code>{{ '{' }}GAME_PROVIDER_ID{{ '}' }}</code>:
+              The ID of the game provider (e.g. GOG).
+            </li>
+            <li class="mb-0">
+              <code>{{ '{' }}GAME_TITLE{{ '}' }}</code>:
+              The title of the game.
+            </li>
+            <li class="mb-0">
+              <code>{{ '{' }}FILENAME{{ '}' }}</code>:
+              The name of the file being backed up, without the extension
+              (optional, use if you want to add a prefix or suffix).
+            </li>
+          </ul>
+        </div>
+      </app-auto-layout>
+    </app-loaded-content>
+  </div>
+  <div class="modal-footer">
+    <app-button buttonType="submit" testId="submit-new-backup-target-btn" buttonStyle="primary"
+                [disabled]="isLoading()">
+      Add
+    </app-button>
+  </div>
+</form>

@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.testing.http.annotations;
 
 import dev.codesoapbox.backity.BackityApplication;
-import dev.codesoapbox.backity.core.backuptarget.application.GetBackupTargetsUseCase;
+import dev.codesoapbox.backity.core.backuptarget.application.*;
 import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryService;
 import dev.codesoapbox.backity.core.discovery.application.usecases.GetGameContentDiscoveryOverviewsUseCase;
 import dev.codesoapbox.backity.core.discovery.application.usecases.StartGameContentDiscoveryUseCase;
@@ -86,6 +86,10 @@ import java.lang.annotation.*;
         GetGogLibrarySizeUseCase.class,
         GetGogGameDetailsUseCase.class,
         GetBackupTargetsUseCase.class,
+        GetLockedBackupTargetIdsUseCase.class,
+        AddBackupTargetUseCase.class,
+        EditBackupTargetUseCase.class,
+        DeleteBackupTargetUseCase.class,
         GetStorageSolutionStatusesUseCase.class
 })
 public @interface ControllerTest {

@@ -7,6 +7,7 @@ import com.microsoft.playwright.assertions.LocatorAssertions;
 import com.microsoft.playwright.junit.UsePlaywright;
 import dev.codesoapbox.backity.e2e.pages.GameProvidersPage;
 import dev.codesoapbox.backity.e2e.pages.GamesPage;
+import dev.codesoapbox.backity.e2e.pages.SettingsPage;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,17 +37,20 @@ class BackityTest {
 
     private GameProvidersPage gameProvidersPage;
     private GamesPage gamesPage;
+    private SettingsPage settingsPage;
 
     @BeforeEach
     void setUp(Page page) {
         this.gameProvidersPage = new GameProvidersPage(page);
         this.gamesPage = new GamesPage(page);
+        this.settingsPage = new SettingsPage(page);
         resetState();
     }
 
     private void resetState() {
         tryToLogOutOfGog();
         deleteAllFileBackups();
+        deleteAllBackupTargets();
     }
 
     private void tryToLogOutOfGog() {
@@ -68,6 +72,11 @@ class BackityTest {
         gamesPage.deleteAllFileCopies();
     }
 
+    private void deleteAllBackupTargets() {
+        settingsPage.navigate();
+        settingsPage.deleteAllBackupTargets();
+    }
+
     @AfterEach
     void tearDown() {
         resetState();
@@ -75,6 +84,9 @@ class BackityTest {
 
     @Test
     void shouldBackupGogFiles() {
+        settingsPage.navigate();
+        settingsPage.createBackupTarget(LOCAL_FOLDER_BACKUP_TARGET_NAME);
+
         gameProvidersPage.navigate();
 
         gameProvidersPage.authenticateGog();

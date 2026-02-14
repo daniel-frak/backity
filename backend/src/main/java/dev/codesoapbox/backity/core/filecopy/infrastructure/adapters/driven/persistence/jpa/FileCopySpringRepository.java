@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.persistence.jpa;
 
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,4 +35,11 @@ public interface FileCopySpringRepository extends JpaRepository<FileCopyJpaEntit
     Page<FileCopyJpaEntity> findAllInProgressOrEnqueuedOrderByStatusThenDateModified(Pageable pageable);
 
     List<FileCopyJpaEntity> findAllByNaturalIdSourceFileId(UUID sourceFileId);
+
+    boolean existsByNaturalIdBackupTargetIdAndStatusNotIn(UUID backupTargetId, List<FileCopyStatus> statuses);
+
+    @Query("SELECT DISTINCT fc.naturalId.backupTargetId FROM FileCopy fc WHERE fc.status NOT IN :statuses")
+    List<BackupTargetId> getUniqueBackupTargetIdsByStatusNotIn(List<FileCopyStatus> statuses);
+
+    void deleteByNaturalIdBackupTargetIdAndStatusIn(UUID backupTargetId, List<FileCopyStatus> statuses);
 }

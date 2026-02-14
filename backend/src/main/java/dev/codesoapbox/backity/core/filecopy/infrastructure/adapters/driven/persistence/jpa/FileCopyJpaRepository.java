@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.persistence.jpa;
 
 import dev.codesoapbox.backity.DoNotMutate;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.filecopy.domain.*;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotFoundException;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
@@ -130,6 +131,22 @@ public class FileCopyJpaRepository implements FileCopyRepository {
         return springRepository.findAllByNaturalIdSourceFileId(id.value()).stream()
                 .map(entityMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public boolean existByBackupTargetIdAndStatusNotIn(BackupTargetId id, List<FileCopyStatus> statuses) {
+        return springRepository.existsByNaturalIdBackupTargetIdAndStatusNotIn(id.value(), statuses);
+    }
+
+    @Override
+    public List<BackupTargetId> getUniqueBackupTargetIdsByStatusNotIn(List<FileCopyStatus> statuses) {
+        return springRepository.getUniqueBackupTargetIdsByStatusNotIn(statuses);
+    }
+
+    @Transactional
+    @Override
+    public void deleteByBackupTargetIdAndStatusIn(BackupTargetId id, List<FileCopyStatus> statuses) {
+        springRepository.deleteByNaturalIdBackupTargetIdAndStatusIn(id.value(), statuses);
     }
 
     @DoNotMutate // Not covered by unit tests

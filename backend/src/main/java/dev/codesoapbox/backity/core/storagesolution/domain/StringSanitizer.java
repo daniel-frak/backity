@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-class StringSanitizer {
+public class StringSanitizer {
 
     private final Set<Character> charactersToRemove;
     private final List<StringReplacement> charactersToReplace;

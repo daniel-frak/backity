@@ -65,16 +65,6 @@ cd backend
 mvn spring-boot:run -Dspring-boot.run.arguments="--some-property-1=value1 --some-property-2=value2"
 ```
 
-### Basic configuration
-
-The following basic properties can be customized:
-
-- `backity.default-path-template` - the template to use when constructing the file download path
-  (e.g., `games/{GAME_PROVIDER_ID}/{TITLE}/{FILENAME}`). Available placeholders:
-  - `{GAME_PROVIDER_ID}` - the ID of the game provider, e.g., "GOG"
-  - `{TITLE}` - the game title
-  - `{FILENAME}` - the full name of the file being downloaded
-
 ### Advanced configuration
 
 The following advanced properties can be customized:

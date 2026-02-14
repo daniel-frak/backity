@@ -17,8 +17,11 @@ configuration.ts
 encoder.ts
 git_push.sh
 index.ts
+model/addBackupTargetRequest.ts
+model/addBackupTargetResponse.ts
 model/backupTarget.ts
 model/backupTargetInFileCopyContext.ts
+model/editBackupTargetRequest.ts
 model/enqueueFileCopyRequest.ts
 model/errorMessage.ts
 model/fileBackupMessageTopics.ts

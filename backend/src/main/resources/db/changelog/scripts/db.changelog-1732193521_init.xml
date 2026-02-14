@@ -65,6 +65,53 @@
             <column name="game_id"/>
         </createIndex>
     </changeSet>
+    <changeSet id="create_game_content_discovery_result" author="daniel_frak">
+        <createTable tableName="game_content_discovery_result">
+            <column name="game_provider_id" type="VARCHAR">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="started_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stopped_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="discovery_outcome" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_successful_discovery_completed_at" type="DATETIME">
+                <constraints nullable="true"/>
+            </column>
+            <column name="games_discovered" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="source_files_discovered" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="create_backup_target" author="daniel_frak">
+        <createTable tableName="backup_target">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="date_created" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_modified" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="storage_solution_id" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="path_template" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
     <changeSet id="create_file_copy" author="daniel_frak">
         <createTable tableName="file_copy">
             <column name="id" type="UUID">
@@ -91,6 +138,16 @@
         <addForeignKeyConstraint baseColumnNames="source_file_id" baseTableName="file_copy"
                                  constraintName="fk_source_file_on_file_copy" referencedColumnNames="id"
                                  referencedTableName="source_file"/>
+        <addForeignKeyConstraint
+                baseTableName="file_copy"
+                baseColumnNames="backup_target_id"
+                constraintName="fk_backup_target_on_file_copy"
+                referencedTableName="backup_target"
+                referencedColumnNames="id"/>
+        <createIndex indexName="idx_file_copy_backup_target_id_status" tableName="file_copy">
+            <column name="backup_target_id"/>
+            <column name="status"/>
+        </createIndex>
         <createIndex indexName="file_copy_source_file_id_idx" tableName="file_copy">
             <column name="source_file_id"/>
         </createIndex>
@@ -105,36 +162,6 @@
         <createIndex tableName="file_copy" indexName="file_copy_file_path_unique_idx" unique="true">
             <column name="file_path"/>
         </createIndex>
-    </changeSet>
-    <changeSet id="create_game_content_discovery_result" author="daniel_frak">
-        <createTable tableName="game_content_discovery_result">
-            <column name="game_provider_id" type="VARCHAR">
-                <constraints nullable="false" primaryKey="true"/>
-            </column>
-            <column name="started_at" type="DATETIME">
-                <constraints nullable="false"/>
-            </column>
-            <column name="stopped_at" type="DATETIME">
-                <constraints nullable="false"/>
-            </column>
-            <column name="discovery_outcome" type="VARCHAR">
-                <constraints nullable="false"/>
-            </column>
-            <column name="last_successful_discovery_completed_at" type="DATETIME">
-                <constraints nullable="false"/>
-            </column>
-            <column name="games_discovered" type="INTEGER">
-                <constraints nullable="false"/>
-            </column>
-            <column name="source_files_discovered" type="INTEGER">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
-    <changeSet id="make_last_successful_discovery_completed_at_nullable" author="daniel_frak">
-        <dropNotNullConstraint tableName="game_content_discovery_result"
-                               columnName="last_successful_discovery_completed_at"
-                               columnDataType="DATETIME"/>
     </changeSet>
 
 </databaseChangeLog>

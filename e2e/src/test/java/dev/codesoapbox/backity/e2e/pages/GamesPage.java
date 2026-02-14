@@ -14,6 +14,7 @@ public class GamesPage {
     private static final String FILE_COPY_QUEUE_REQUEST_URL = "/file-copy-queue";
     private static final String DOWNLOAD_FILE_BACKUP_BTN_TEST_ID = "download-file-copy-btn";
     private static final String BACKUP_FILE_COPY_BTN_TEST_ID = "backup-file-btn";
+    private static final String CANCEL_FILE_BACKUP_BTN_TEST_ID = "cancel-file-backup-btn";
     private static final String SOURCE_FILE_TEST_ID = "game-file-item";
     private static final String FILE_COPY_ITEM_TEST_ID = "file-copy-item";
     private static final String FILE_COPY_STATUS_TEST_ID = "file-copy-status";
@@ -22,6 +23,7 @@ public class GamesPage {
     private final Locator loader;
     private final Locator searchButton;
     private final Locator deleteFileCopyButtons;
+    private final Locator cancelFileCopyButtons;
     private final Locator confirmFileCopyDeleteButton;
     private final Locator gameList;
 
@@ -30,6 +32,7 @@ public class GamesPage {
         this.loader = page.getByTestId("loader");
         this.searchButton = page.getByTestId("search-btn");
         this.deleteFileCopyButtons = page.getByTestId("delete-file-copy-btn");
+        this.cancelFileCopyButtons = page.getByTestId(CANCEL_FILE_BACKUP_BTN_TEST_ID);
         this.confirmFileCopyDeleteButton = page.getByTestId("confirmation-modal-yes-btn");
         this.gameList = page.getByTestId("game-list");
     }
@@ -41,6 +44,7 @@ public class GamesPage {
     public void deleteAllFileCopies() {
         refreshGames();
         deleteAllFileCopiesOneByOne();
+        cancelAllBackupsOneByOne();
     }
 
     private void refreshGames() {
@@ -70,6 +74,24 @@ public class GamesPage {
         return response.url().contains(FILE_COPY_REQUEST_URL)
                 && response.request().method().equals("DELETE")
                 && response.status() == 204;
+    }
+
+    private void cancelAllBackupsOneByOne() {
+        Repeat.on(page)
+                .action(() -> {
+                    Locator currentCancelButton = cancelFileCopyButtons.first();
+                    currentCancelButton.click();
+                    loader.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
+                    currentCancelButton.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
+                })
+                .expectingResponse(this::cancelApiResponseIsSuccessful)
+                .until(() -> cancelFileCopyButtons.count() == 0);
+    }
+
+    private boolean cancelApiResponseIsSuccessful(Response response) {
+        return response.url().contains(FILE_COPY_QUEUE_REQUEST_URL)
+                && response.request().method().equals("DELETE")
+                && isSuccessful(response);
     }
 
     public void backUpFile(String fileTitle, String backupTargetName) {

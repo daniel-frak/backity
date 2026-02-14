@@ -4,13 +4,14 @@ import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {
   ConfirmationModalComponent
 } from '@app/shared/components/modals/confirmation-modal/confirmation-modal.component';
+import {ModalRef} from "@app/shared/services/modal-service/modal-ref";
 import SpyObj = jasmine.SpyObj;
 import createSpyObj = jasmine.createSpyObj;
 import createSpy = jasmine.createSpy;
 
 describe('ModalService', () => {
   let service: ModalService;
-  let modalService: SpyObj<NgbModal>;
+  let ngbModal: SpyObj<NgbModal>;
 
   beforeEach(() => {
     const modalServiceMock = createSpyObj('NgbModal', ['open']);
@@ -23,91 +24,107 @@ describe('ModalService', () => {
     });
 
     service = TestBed.inject(ModalService);
-    modalService = TestBed.inject(NgbModal) as SpyObj<NgbModal>;
+    ngbModal = TestBed.inject(NgbModal) as SpyObj<NgbModal>;
   });
 
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should open the confirmation modal with the correct message', async () => {
-    const mockModalRef: NgbModalRef = mockNgbModalConfirmationAfterOpening();
-    const callback = createSpy('callback');
+  describe('open()', () => {
 
-    await service.withConfirmationModal('Test message', callback);
+    it('should return a ModalRef', () => {
+      const ngbModalRef: NgbModalRef = createSpyObj('NgbModalRef', ['result']);
+      ngbModal.open.and.returnValue(ngbModalRef as any);
+      const content = {} as any;
 
-    expect(modalService.open).toHaveBeenCalledWith(ConfirmationModalComponent);
-    expect((mockModalRef.componentInstance as any).message.set).toHaveBeenCalledWith('Test message');
+      const result: ModalRef = service.open(content);
+
+      expect(result).toEqual(ngbModalRef);
+    })
   });
 
-  function mockNgbModalConfirmationAfterOpening(): NgbModalRef {
-    const mockMessage = {
-      set: createSpy('set')
-    };
-    const mockModalRef = {
-      componentInstance: {
-        message: mockMessage
-      },
-      result: Promise.resolve(true)
-    } as any;
+  describe('withConfirmationModal()', () => {
 
-    modalService.open.and.returnValue(mockModalRef);
+    it('should open the confirmation modal with the correct message', async () => {
+      const mockModalRef: NgbModalRef = mockNgbModalConfirmationAfterOpening();
+      const callback = createSpy('callback');
 
-    return mockModalRef;
-  }
+      await service.withConfirmationModal('Test message', callback);
 
-  it('should execute the callback if modal is confirmed', async () => {
-    mockNgbModalConfirmationAfterOpening();
-    const callback = createSpy('callback').and.returnValue(Promise.resolve());
+      expect(ngbModal.open).toHaveBeenCalledWith(ConfirmationModalComponent);
+      expect((mockModalRef.componentInstance as any).message.set).toHaveBeenCalledWith('Test message');
+    });
 
-    await service.withConfirmationModal('Test message', callback);
+    function mockNgbModalConfirmationAfterOpening(): NgbModalRef {
+      const mockMessage = {
+        set: createSpy('set')
+      };
+      const mockModalRef = {
+        componentInstance: {
+          message: mockMessage
+        },
+        result: Promise.resolve(true)
+      } as any;
 
-    expect(callback).toHaveBeenCalled();
+      ngbModal.open.and.returnValue(mockModalRef);
+
+      return mockModalRef;
+    }
+
+    it('should execute the callback if modal is confirmed', async () => {
+      mockNgbModalConfirmationAfterOpening();
+      const callback = createSpy('callback').and.returnValue(Promise.resolve());
+
+      await service.withConfirmationModal('Test message', callback);
+
+      expect(callback).toHaveBeenCalled();
+    });
+
+    it('should not execute the callback if the modal is dismissed', async () => {
+      mockNgbModalCancellationAfterOpening();
+      const callback = createSpy('callback').and.returnValue(Promise.resolve());
+
+      await service.withConfirmationModal('Test message', callback);
+
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    function mockNgbModalCancellationAfterOpening(): NgbModalRef {
+      const mockModalRef = {
+        componentInstance: {
+          message: {
+            set: createSpy('set')
+          }
+        },
+        result: Promise.resolve(false)
+      } as any;
+      ngbModal.open.and.returnValue(mockModalRef);
+
+      return mockModalRef;
+    }
+
+    it('should not call the callback on modal dismissal (rejected promise)', async () => {
+      mockNgbModalDismissalAfterOpening();
+      const callback = createSpy('callback').and.returnValue(Promise.resolve());
+
+      await (service.withConfirmationModal('Test message', callback));
+
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    function mockNgbModalDismissalAfterOpening(): NgbModalRef {
+      const mockModalRef = {
+        componentInstance: {
+          message: {
+            set: createSpy('set')
+          }
+        },
+        result: Promise.reject('dismiss')
+      } as any;
+      ngbModal.open.and.returnValue(mockModalRef);
+
+      return mockModalRef;
+    }
   });
-
-  it('should not execute the callback if the modal is dismissed', async () => {
-    mockNgbModalCancellationAfterOpening();
-    const callback = createSpy('callback').and.returnValue(Promise.resolve());
-
-    await service.withConfirmationModal('Test message', callback);
-
-    expect(callback).not.toHaveBeenCalled();
-  });
-
-  function mockNgbModalCancellationAfterOpening(): NgbModalRef {
-    const mockModalRef = {
-      componentInstance: {
-        message: {
-          set: createSpy('set')
-        }
-      },
-      result: Promise.resolve(false)
-    } as any;
-    modalService.open.and.returnValue(mockModalRef);
-
-    return mockModalRef;
-  }
-
-  it('should not call the callback on modal dismissal (rejected promise)', async () => {
-    mockNgbModalDismissalAfterOpening();
-    const callback = createSpy('callback').and.returnValue(Promise.resolve());
-
-    await (service.withConfirmationModal('Test message', callback));
-
-    expect(callback).not.toHaveBeenCalled();
-  });
-
-  function mockNgbModalDismissalAfterOpening(): NgbModalRef {
-    const mockModalRef = {
-      componentInstance: {
-        message: {
-          set: createSpy('set')
-        }
-      },
-      result: Promise.reject('dismiss')
-    } as any;
-    modalService.open.and.returnValue(mockModalRef);
-
-    return mockModalRef;
-  }
 });
