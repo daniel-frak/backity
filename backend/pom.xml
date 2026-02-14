@@ -384,7 +384,8 @@
                         <excludedClass>**.config.**</excludedClass>
 
                         <!-- The classes below are tested using integration tests -->
-                        <excludedClass>**.adapters.driving.**.http.**.*Controller</excludedClass>
+                        <excludedClass>**.adapters.driving.**.api.http.**.*Controller</excludedClass>
+                        <excludedClass>*ApplicationListener</excludedClass>
                         <excludedClass>**jpa.**.*Repository</excludedClass>
                         <excludedClass>*JpaSpecifications</excludedClass>
                         <excludedClass>*StartupListener</excludedClass>

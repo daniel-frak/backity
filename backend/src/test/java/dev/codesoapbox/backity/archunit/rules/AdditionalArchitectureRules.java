@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.repository.Repository;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -283,6 +284,7 @@ public class AdditionalArchitectureRules {
     static final ArchRule CONTROLLER_METHODS_SHOULD_NOT_RETURN_DOMAIN_CLASSES = methods()
             .that().areDeclaredInClassesThat().haveSimpleNameEndingWith("Controller")
             .and().arePublic()
+            .and().areNotStatic()
             .should(new ArchCondition<>("not return domain classes") {
                 @Override
                 public void check(JavaMethod javaMethod, ConditionEvents events) {
@@ -302,14 +304,32 @@ public class AdditionalArchitectureRules {
                 }
 
                 private boolean isDomainClass(JavaClass clazz) {
-                    return clazz.getPackageName().
-                            contains(PortsAndAdaptersArchitectureRules.Constants.DOMAIN_PACKAGE);
+                    return clazz.getPackageName()
+                            .contains(PortsAndAdaptersArchitectureRules.Constants.DOMAIN_PACKAGE);
                 }
 
                 private Set<JavaClass> getAllTransitiveDependenciesInMethodReturn(JavaClass returnType) {
-                    return returnType.getTransitiveDependenciesFromSelf().stream()
+                    Set<JavaClass> visited = new HashSet<>();
+                    walkNonStaticDependencies(returnType, visited);
+                    visited.remove(returnType);
+                    return visited;
+                }
+
+                private void walkNonStaticDependencies(JavaClass clazz, Set<JavaClass> visited) {
+                    if (!visited.add(clazz)) {
+                        return;
+                    }
+                    clazz.getDirectDependenciesFromSelf().stream()
+                            .filter(this::isNotFromStaticMember)
                             .map(Dependency::getTargetClass)
-                            .collect(Collectors.toSet());
+                            .forEach(target -> walkNonStaticDependencies(target, visited));
+                }
+
+                private boolean isNotFromStaticMember(Dependency dependency) {
+                    return dependency.getOriginClass()
+                            .getAccessesFromSelf().stream()
+                            .filter(access -> access.getTargetOwner().equals(dependency.getTargetClass()))
+                            .anyMatch(access -> !access.getOrigin().getModifiers().contains(JavaModifier.STATIC));
                 }
 
                 private void addDependencyInMethodReturnViolation(

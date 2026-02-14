@@ -1,0 +1,53 @@
+<app-section>
+  <app-loaded-content [isLoading]="backupTargetsAreLoading()">
+    <app-auto-layout data-testid="backup-targets">
+      <app-button
+        [actionAsync]="onClickShowAddModal()"
+        testId="add-backup-target-btn">
+        <i class="bi bi-plus" aria-hidden="true"></i>
+        Add
+      </app-button>
+
+      @if (backupTargets().length == 0) {
+        No backup targets.
+      }
+      @for (backupTarget of backupTargets(); track backupTarget.id) {
+        <app-icon-item iconClass="bi bi-bullseye">
+          <ng-container title>{{ backupTarget.name }}</ng-container>
+
+          <ng-container descriptor>
+            {{ backupTarget.storageSolutionId }}
+          </ng-container>
+          <ng-container buttons>
+            <app-button
+              [actionAsync]="onClickShowEditModal(backupTarget)"
+              [outline]="true"
+              [testId]="'edit-backup-target-btn-' + backupTarget.id">
+              <i class="bi bi-pen" aria-hidden="true"></i>
+              Edit
+            </app-button>
+            <app-button
+              [actionAsync]="onClickDelete(backupTarget)"
+              [disabled]="isLocked(backupTarget)"
+              [outline]="true"
+              buttonStyle="danger"
+              [testId]="'delete-backup-target-btn-' + backupTarget.id">
+              <i class="bi bi-trash" aria-hidden="true"></i>
+              Delete
+            </app-button>
+          </ng-container>
+          <ng-container details>
+            <app-named-value-container>
+              <app-named-value>
+                <ng-container name>Path template</ng-container>
+                <ng-container value>
+                  {{ backupTarget.pathTemplate }}
+                </ng-container>
+              </app-named-value>
+            </app-named-value-container>
+          </ng-container>
+        </app-icon-item>
+      }
+    </app-auto-layout>
+  </app-loaded-content>
+</app-section>

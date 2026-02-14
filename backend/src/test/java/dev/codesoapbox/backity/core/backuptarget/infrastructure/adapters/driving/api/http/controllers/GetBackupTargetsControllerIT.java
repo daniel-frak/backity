@@ -1,9 +1,8 @@
-package dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driving.api.http;
+package dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driving.api.http.controllers;
 
 import dev.codesoapbox.backity.core.backuptarget.application.GetBackupTargetsUseCase;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
-import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driving.api.http.controllers.BackupTargetsRestResource;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +37,7 @@ class GetBackupTargetsControllerIT {
                       "id": "eda52c13-ddf7-406f-97d9-d3ce2cab5a76",
                       "name": "Local folder",
                       "storageSolutionId": "storageSolution1",
-                      "pathTemplate": "games/{GAME_PROVIDER_ID}/{TITLE}/{FILENAME}"
+                      "pathTemplate": "games/{GAME_PROVIDER_ID}/{GAME_TITLE}/{FILENAME}"
                     }
                 ]
                 """;

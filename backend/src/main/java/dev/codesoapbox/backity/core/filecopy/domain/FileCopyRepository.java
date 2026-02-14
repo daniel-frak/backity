@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.filecopy.domain;
 
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
@@ -23,4 +24,10 @@ public interface FileCopyRepository {
     List<FileCopy> findAllBySourceFileId(SourceFileId id);
 
     List<FileCopy> findAllInProgress();
+
+    boolean existByBackupTargetIdAndStatusNotIn(BackupTargetId id, List<FileCopyStatus> statuses);
+
+    List<BackupTargetId> getUniqueBackupTargetIdsByStatusNotIn(List<FileCopyStatus> statuses);
+
+    void deleteByBackupTargetIdAndStatusIn(BackupTargetId id, List<FileCopyStatus> statuses);
 }

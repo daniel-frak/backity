@@ -1,11 +1,11 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.persistence.jpa;
 
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopyNaturalId;
-import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
+import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
+import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driven.persistence.jpa.BackupTargetJpaEntityMapper;
+import dev.codesoapbox.backity.core.filecopy.domain.*;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotFoundException;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
@@ -21,7 +21,6 @@ import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageableMapper;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import org.hibernate.exception.ConstraintViolationException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,19 +62,37 @@ abstract class FileCopyJpaRepositoryAbstractIT {
     @Autowired
     protected DomainEventPublisher domainEventPublisher;
 
-    @BeforeEach
-    void setUp() {
-        persistExistingDependencies();
+    private void persistSampleData() {
+        persistSampleDependencies();
+        persistFileCopies(SampleFileCopies.getAll());
     }
 
-    private void persistExistingDependencies() {
-        for (Game game : EXISTING_GAMES.getAll()) {
-            entityManager.persist(EXISTING_GAMES.MAPPER.toEntity(game));
+    private void persistSampleDependencies() {
+        persistGames(SampleGames.getAll());
+        persistSourceFiles(SampleSourceFiles.getAll());
+        persistBackupTargets(SampleBackupTargets.getAll());
+    }
+
+    private void persistGames(List<Game> games) {
+        for (Game game : games) {
+            entityManager.persist(SampleGames.MAPPER.toEntity(game));
         }
-        for (SourceFile sourceFile : EXISTING_SOURCE_FILES.getAll()) {
-            entityManager.persist(EXISTING_SOURCE_FILES.MAPPER.toEntity(sourceFile));
+    }
+
+    private void persistSourceFiles(List<SourceFile> sourceFiles) {
+        for (SourceFile sourceFile : sourceFiles) {
+            entityManager.persist(SampleSourceFiles.MAPPER.toEntity(sourceFile));
         }
-        for (FileCopy fileCopy : EXISTING_FILE_COPIES.getAll()) {
+    }
+
+    private void persistBackupTargets(List<BackupTarget> backupTargets) {
+        for (BackupTarget backupTarget : backupTargets) {
+            entityManager.persist(SampleBackupTargets.MAPPER.toEntity(backupTarget));
+        }
+    }
+
+    private void persistFileCopies(List<FileCopy> fileCopies) {
+        for (FileCopy fileCopy : fileCopies) {
             entityManager.persist(entityMapper.toEntity(fileCopy));
             updateDateModified(fileCopy);
         }
@@ -94,10 +111,11 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void saveShouldPersistNew() {
+        persistSampleDependencies();
         FileCopy fileCopy = TestFileCopy.trackedBuilder()
                 .naturalId(new FileCopyNaturalId(
-                        EXISTING_SOURCE_FILES.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId(),
-                        new BackupTargetId("290035b5-388c-4705-b89c-73950eb61b75")
+                        SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId(),
+                        SampleBackupTargets.LOCAL_FOLDER_1.get().getId()
                 ))
                 .build();
 
@@ -127,7 +145,8 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void saveShouldModifyExisting() {
-        FileCopy fileCopy = EXISTING_FILE_COPIES.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get();
+        persistSampleData();
+        FileCopy fileCopy = SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get();
         fileCopy.toInProgress("someFilePath");
 
         FileCopy result = repository.save(fileCopy);
@@ -139,6 +158,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void saveShouldPublishEventsAfterCommitting() {
+        persistSampleData();
         FileCopy fileCopy = TestFileCopy.enqueued();
         fileCopy.toInProgress("someFilePath");
         repository.save(fileCopy);
@@ -150,6 +170,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void saveShouldClearEvents() {
+        persistSampleData();
         FileCopy fileCopy = TestFileCopy.enqueued();
         fileCopy.toInProgress("someFilePath");
         repository.save(fileCopy);
@@ -161,6 +182,7 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void saveShouldThrowGivenNaturalIdIsNotUnique() {
+        persistSampleData();
         FileCopy fileCopy1 = TestFileCopy.trackedBuilder()
                 .id(new FileCopyId("7bf408f7-9b6e-4ee7-a2f2-27a454a4f5ba"))
                 .build();
@@ -177,14 +199,16 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void shouldGetById() {
+        persistSampleData();
         FileCopy result = repository.getById(
-                EXISTING_FILE_COPIES.DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get().getId());
+                SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get().getId());
 
-        assertSame(result, EXISTING_FILE_COPIES.DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get());
+        assertSame(result, SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get());
     }
 
     @Test
     void getByIdShouldThrowGivenNotFound() {
+        persistSampleData();
         var nonExistentId = new FileCopyId("247900d6-8829-47cd-a068-4f35f37d8eb8");
 
         assertThatThrownBy(() -> repository.getById(nonExistentId))
@@ -194,7 +218,8 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void findByNaturalIdOrCreateShouldFindGivenExists() {
-        FileCopy expectedFileCopy = EXISTING_FILE_COPIES.DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
+        persistSampleData();
+        FileCopy expectedFileCopy = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
         FileCopy result = repository.findByNaturalIdOrCreate(expectedFileCopy.getNaturalId(), () -> null);
 
         assertSame(result, expectedFileCopy);
@@ -202,8 +227,13 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void findByNaturalIdOrCreateShouldFindGivenNotExists() {
+        persistSampleDependencies();
         FileCopy expectedFileCopy = TestFileCopy.trackedBuilder()
                 .id(new FileCopyId("7bf408f7-9b6e-4ee7-a2f2-27a454a4f5ba"))
+                .naturalId(new FileCopyNaturalId(
+                        SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
+                        SampleBackupTargets.LOCAL_FOLDER_1.get().getId()
+                ))
                 .build();
         FileCopy result = repository.findByNaturalIdOrCreate(expectedFileCopy.getNaturalId(), () -> expectedFileCopy);
 
@@ -212,10 +242,11 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void findByNaturalIdOrCreateShouldFindGivenCreatedInParallel() {
+        persistSampleData();
         FileCopySpringRepository mockSpringRepository = mock(FileCopySpringRepository.class);
         repository = new FileCopyJpaRepository(mockSpringRepository, entityMapper,
                 mock(SpringPageMapper.class), mock(SpringPageableMapper.class), domainEventPublisher);
-        FileCopy expectedExisting = EXISTING_FILE_COPIES.DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
+        FileCopy expectedExisting = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
         FileCopyNaturalId naturalId = expectedExisting.getNaturalId();
         FileCopy newFileCopy = TestFileCopy.trackedBuilder()
                 .naturalId(naturalId)
@@ -239,23 +270,25 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindOldestEnqueued() {
+        persistSampleData();
         Optional<FileCopy> result = repository.findOldestEnqueued();
 
-        FileCopy expectedResult = EXISTING_FILE_COPIES.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get();
+        FileCopy expectedResult = SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get();
         assertThat(result).isPresent();
         assertSame(result.get(), expectedResult);
     }
 
     @Test
     void shouldFindAllInProgressOrEnqueuedInOrderOfStatusThenDateModifiedAscending() {
+        persistSampleData();
         var pagination = new Pagination(0, 3);
 
         Page<FileCopy> result = repository.findAllInProgressOrEnqueued(pagination);
 
         List<FileCopy> expectedItems = List.of(
-                EXISTING_FILE_COPIES.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
-                EXISTING_FILE_COPIES.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
-                EXISTING_FILE_COPIES.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get()
+                SampleFileCopies.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
+                SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
+                SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get()
         );
         int totalPages = 1;
         int totalElements = 3;
@@ -288,10 +321,11 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindAllInProgress() {
+        persistSampleData();
         List<FileCopy> result = repository.findAllInProgress();
 
         List<FileCopy> expectedResult = List.of(
-                EXISTING_FILE_COPIES.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get()
+                SampleFileCopies.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get()
         );
         assertSame(result, expectedResult);
     }
@@ -306,19 +340,104 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
     @Test
     void shouldFindAllBySourceFileId() {
+        persistSampleData();
         List<FileCopy> result =
-                repository.findAllBySourceFileId(EXISTING_SOURCE_FILES.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId());
+                repository.findAllBySourceFileId(SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId());
 
         List<FileCopy> expectedResult = List.of(
-                EXISTING_FILE_COPIES.DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get(),
-                EXISTING_FILE_COPIES.DISCOVERED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get()
+                SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get(),
+                SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get()
         );
         assertThat(result)
                 .usingRecursiveFieldByFieldElementComparatorIgnoringFields("dateCreated", "dateModified")
                 .containsExactlyElementsOf(expectedResult);
     }
 
-    private static class EXISTING_GAMES {
+    @Test
+    void existByBackupTargetIdAndStatusNotInShouldReturnTrueGivenFileCopyExists() {
+        persistSampleData();
+        BackupTargetId existingBackupTargetId =
+                SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get().getNaturalId()
+                        .backupTargetId();
+
+        boolean result = repository.existByBackupTargetIdAndStatusNotIn(
+                existingBackupTargetId, List.of(FileCopyStatus.IN_PROGRESS));
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void existByBackupTargetIdAndStatusNotInShouldReturnFalseGivenFileCopyNotFoundWithCorrectStatusNot() {
+        persistSampleData();
+        BackupTargetId existingBackupTargetId =
+                SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get().getNaturalId()
+                        .backupTargetId();
+
+        boolean result = repository.existByBackupTargetIdAndStatusNotIn(
+                existingBackupTargetId, List.of(FileCopyStatus.values()));
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void existByBackupTargetIdAndStatusNotInShouldReturnFalseGivenFileCopyNotFoundWithCorrectIdNot() {
+        persistSampleData();
+        BackupTargetId existingBackupTargetId =
+                SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get().getNaturalId()
+                        .backupTargetId();
+
+        boolean result =
+                repository.existByBackupTargetIdAndStatusNotIn(existingBackupTargetId, List.of(FileCopyStatus.TRACKED));
+
+        assertThat(result).isFalse();
+    }
+
+    @Test
+    void getUniqueBackupTargetIdsForStatusOtherThanShouldReturnIds() {
+        persistSampleData();
+        List<BackupTargetId> result =
+                repository.getUniqueBackupTargetIdsByStatusNotIn(
+                        List.of(FileCopyStatus.TRACKED, FileCopyStatus.FAILED));
+
+        assertThat(result).containsOnly(
+                SampleFileCopies.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get()
+                        .getNaturalId().backupTargetId(),
+                SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get()
+                        .getNaturalId().backupTargetId(),
+                SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get()
+                        .getNaturalId().backupTargetId(),
+                SampleFileCopies.STORED_UNVERIFIED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get()
+                        .getNaturalId().backupTargetId(),
+                SampleFileCopies.STORED_VERIFIED_FILE_COPY_FROM_BEFORE_YESTERDAY_FOR_SOURCE_FILE_2.get()
+                        .getNaturalId().backupTargetId()
+        );
+    }
+
+    @Test
+    void deleteTrackedWithBackupTargetIdShouldDeleteFileCopies() {
+        persistSampleData();
+        FileCopy fileCopy = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
+        FileCopy unaffectedFileCopy = SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get();
+
+        repository.deleteByBackupTargetIdAndStatusIn(
+                fileCopy.getNaturalId().backupTargetId(), List.of(fileCopy.getStatus()));
+
+        assertThat(entityManager.find(FileCopyJpaEntity.class, fileCopy.getId().value())).isNull();
+        assertThat(entityManager.find(FileCopyJpaEntity.class, unaffectedFileCopy.getId().value())).isNotNull();
+    }
+
+    @Test
+    void deleteTrackedWithBackupTargetIdShouldNotDeleteFileCopiesWithoutMatchingStatus() {
+        persistSampleData();
+        FileCopy fileCopy = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
+
+        repository.deleteByBackupTargetIdAndStatusIn(
+                fileCopy.getNaturalId().backupTargetId(), List.of(FileCopyStatus.FAILED));
+
+        assertThat(entityManager.find(FileCopyJpaEntity.class, fileCopy.getId().value())).isNotNull();
+    }
+
+    private static class SampleGames {
 
         public static final GameJpaEntityMapper MAPPER = Mappers.getMapper(GameJpaEntityMapper.class);
 
@@ -332,18 +451,18 @@ abstract class FileCopyJpaRepositoryAbstractIT {
         }
     }
 
-    private static class EXISTING_SOURCE_FILES {
+    private static class SampleSourceFiles {
 
         public static final SourceFileJpaEntityMapper MAPPER = Mappers.getMapper(SourceFileJpaEntityMapper.class);
 
         public static final Supplier<SourceFile> GOG_SOURCE_FILE_1_FOR_GAME_1 = () -> TestSourceFile.gogBuilder()
                 .id(new SourceFileId("acde26d7-33c7-42ee-be16-bca91a604b48"))
-                .gameId(EXISTING_GAMES.GAME_1.getId())
+                .gameId(SampleGames.GAME_1.getId())
                 .build();
 
         public static final Supplier<SourceFile> GOG_SOURCE_FILE_2_FOR_GAME_1 = () -> TestSourceFile.gogBuilder()
                 .id(new SourceFileId("a6adc122-df20-4e2c-a975-7d4af7104704"))
-                .gameId(EXISTING_GAMES.GAME_1.getId())
+                .gameId(SampleGames.GAME_1.getId())
                 .build();
 
         public static List<SourceFile> getAll() {
@@ -353,25 +472,75 @@ abstract class FileCopyJpaRepositoryAbstractIT {
         }
     }
 
-    private static class EXISTING_FILE_COPIES {
+    private static class SampleBackupTargets {
 
-        public static final Supplier<FileCopy> DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1 =
+        private static final BackupTargetJpaEntityMapper MAPPER = Mappers.getMapper(BackupTargetJpaEntityMapper.class);
+
+        public static final Supplier<BackupTarget> LOCAL_FOLDER_1 = () -> TestBackupTarget.localFolderBuilder()
+                .withId(new BackupTargetId("eda52c13-ddf7-406f-97d9-d3ce2cab5a76"))
+                .build();
+
+        public static final Supplier<BackupTarget> LOCAL_FOLDER_2 = () -> TestBackupTarget.localFolderBuilder()
+                .withId(new BackupTargetId("16744bc6-6e7e-4ef8-b009-bd77c839d914"))
+                .build();
+
+        public static final Supplier<BackupTarget> LOCAL_FOLDER_3 = () -> TestBackupTarget.localFolderBuilder()
+                .withId(new BackupTargetId("3db4150a-9b80-42f8-9979-7db22de58502"))
+                .build();
+
+        public static final Supplier<BackupTarget> LOCAL_FOLDER_4 = () -> TestBackupTarget.localFolderBuilder()
+                .withId(new BackupTargetId("fd69b069-bba1-4163-ad42-65e1574aacb3"))
+                .build();
+
+        public static final Supplier<BackupTarget> LOCAL_FOLDER_5 = () -> TestBackupTarget.localFolderBuilder()
+                .withId(new BackupTargetId("c2c701a4-db6d-4ee8-ba54-0bd9b3064304"))
+                .build();
+
+        public static final Supplier<BackupTarget> LOCAL_FOLDER_6 = () -> TestBackupTarget.localFolderBuilder()
+                .withId(new BackupTargetId("3c7e9c77-35fe-413c-867b-1429efc5baf6"))
+                .build();
+
+        public static final Supplier<BackupTarget> LOCAL_FOLDER_7 = () -> TestBackupTarget.localFolderBuilder()
+                .withId(new BackupTargetId("cd4a7b14-9a8b-4af0-9529-cfcb43372154"))
+                .build();
+
+        public static final Supplier<BackupTarget> LOCAL_FOLDER_8 = () -> TestBackupTarget.localFolderBuilder()
+                .withId(new BackupTargetId("03468b45-7152-4026-b416-6a2602bf0c1c"))
+                .build();
+
+        public static List<BackupTarget> getAll() {
+            return List.of(
+                    LOCAL_FOLDER_1.get(),
+                    LOCAL_FOLDER_2.get(),
+                    LOCAL_FOLDER_3.get(),
+                    LOCAL_FOLDER_4.get(),
+                    LOCAL_FOLDER_5.get(),
+                    LOCAL_FOLDER_6.get(),
+                    LOCAL_FOLDER_7.get(),
+                    LOCAL_FOLDER_8.get()
+            );
+        }
+    }
+
+    private static class SampleFileCopies {
+
+        public static final Supplier<FileCopy> TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1 =
                 () -> TestFileCopy.trackedBuilder()
                         .id(new FileCopyId("9fdad52f-b4a6-46bc-af6d-bf27f9661eae"))
                         .naturalId(new FileCopyNaturalId(
-                                EXISTING_SOURCE_FILES.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId(),
-                                new BackupTargetId("f882cf23-35f9-4396-832d-bd08cd50e413")
+                                SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId(),
+                                SampleBackupTargets.LOCAL_FOLDER_1.get().getId()
                         ))
                         .filePath("filePath1")
                         .dateModified(YESTERDAY.atStartOfDay())
                         .build();
 
-        public static final Supplier<FileCopy> DISCOVERED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1 =
+        public static final Supplier<FileCopy> TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1 =
                 () -> TestFileCopy.trackedBuilder()
                         .id(new FileCopyId("773a79ae-6cfa-4264-b76e-7accffdb9f34"))
                         .naturalId(new FileCopyNaturalId(
-                                EXISTING_SOURCE_FILES.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId(),
-                                new BackupTargetId("ab150d94-c56c-4bd5-9a73-4c0427b48ede")
+                                SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId(),
+                                SampleBackupTargets.LOCAL_FOLDER_2.get().getId()
                         ))
                         .filePath("filePath2")
                         .dateModified(TODAY.atStartOfDay())
@@ -381,8 +550,8 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                 () -> TestFileCopy.inProgressBuilder()
                         .id(new FileCopyId("279baabb-f301-441b-a312-edf9babc84b2"))
                         .naturalId(new FileCopyNaturalId(
-                                EXISTING_SOURCE_FILES.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
-                                new BackupTargetId("17b72fc0-4f2b-41da-b4d4-9b33be11f990")
+                                SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
+                                SampleBackupTargets.LOCAL_FOLDER_3.get().getId()
                         ))
                         .filePath("filePath3")
                         .dateModified(YESTERDAY.atStartOfDay())
@@ -392,8 +561,8 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                 () -> TestFileCopy.enqueuedBuilder()
                         .id(new FileCopyId("70fc9396-c7e1-4fe3-8718-7c79bac1cbb2"))
                         .naturalId(new FileCopyNaturalId(
-                                EXISTING_SOURCE_FILES.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
-                                new BackupTargetId("75653edd-f557-4262-a378-ae3877143fc6")
+                                SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
+                                SampleBackupTargets.LOCAL_FOLDER_4.get().getId()
                         ))
                         .filePath("filePath4")
                         .dateModified(YESTERDAY.atStartOfDay())
@@ -403,8 +572,8 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                 () -> TestFileCopy.enqueuedBuilder()
                         .id(new FileCopyId("4557eaf0-a603-4003-8a35-5ab588d24f88"))
                         .naturalId(new FileCopyNaturalId(
-                                EXISTING_SOURCE_FILES.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
-                                new BackupTargetId("a7380842-7f49-4499-96b7-93f75de60c8b")
+                                SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
+                                SampleBackupTargets.LOCAL_FOLDER_5.get().getId()
                         ))
                         .filePath("filePath5")
                         .dateModified(TODAY.atStartOfDay())
@@ -414,8 +583,8 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                 () -> TestFileCopy.storedIntegrityUnknownBuilder()
                         .id(new FileCopyId("e3e5636d-bb13-4506-87eb-c22d238defce"))
                         .naturalId(new FileCopyNaturalId(
-                                EXISTING_SOURCE_FILES.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
-                                new BackupTargetId("9a22c5d8-7540-4bd3-8cd3-e56c97fe6550")
+                                SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
+                                SampleBackupTargets.LOCAL_FOLDER_6.get().getId()
                         ))
                         .filePath("filePath6")
                         .dateModified(YESTERDAY.atStartOfDay())
@@ -425,8 +594,8 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                 () -> TestFileCopy.storedIntegrityVerifiedBuilder()
                         .id(new FileCopyId("3ff35991-86a4-4225-8d80-d157bd60193c"))
                         .naturalId(new FileCopyNaturalId(
-                                EXISTING_SOURCE_FILES.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
-                                new BackupTargetId("9f8b7374-0041-4cdf-9003-c3c3b08f32ac")
+                                SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
+                                SampleBackupTargets.LOCAL_FOLDER_7.get().getId()
                         ))
                         .filePath("filePath7")
                         .dateModified(BEFORE_YESTERDAY.atStartOfDay())
@@ -436,8 +605,8 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                 () -> TestFileCopy.failedWithoutFilePathBuilder()
                         .id(new FileCopyId("5bac0242-14bc-435f-a187-387026cc8245"))
                         .naturalId(new FileCopyNaturalId(
-                                EXISTING_SOURCE_FILES.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
-                                new BackupTargetId("ac548b50-104c-41a5-97b0-8857eb743a71")
+                                SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
+                                SampleBackupTargets.LOCAL_FOLDER_8.get().getId()
                         ))
                         .filePath("filePath8")
                         .dateModified(TODAY.atStartOfDay())
@@ -445,8 +614,8 @@ abstract class FileCopyJpaRepositoryAbstractIT {
 
         public static List<FileCopy> getAll() {
             return List.of(
-                    DISCOVERED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get(),
-                    DISCOVERED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get(),
+                    TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get(),
+                    TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get(),
                     IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
                     ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
                     ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get(),
