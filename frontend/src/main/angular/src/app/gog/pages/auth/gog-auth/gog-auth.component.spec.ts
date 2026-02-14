@@ -22,7 +22,7 @@ describe('GogAuthComponent', () => {
   let gogConfigClientMock: SpyObj<GOGConfigurationClient>;
   let gogAuthClientMock: SpyObj<GOGAuthenticationClient>;
   let notificationService: NotificationService;
-  let modalService: SpyObj<NgbModal>;
+  let ngbModal: SpyObj<NgbModal>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -50,7 +50,7 @@ describe('GogAuthComponent', () => {
     gogConfigClientMock = TestBed.inject(GOGConfigurationClient) as SpyObj<GOGConfigurationClient>;
     gogAuthClientMock = TestBed.inject(GOGAuthenticationClient) as SpyObj<GOGAuthenticationClient>;
     notificationService = TestBed.inject(NotificationService);
-    modalService = TestBed.inject(NgbModal) as SpyObj<NgbModal>;
+    ngbModal = TestBed.inject(NgbModal) as SpyObj<NgbModal>;
 
     gogAuthClientMock.getGogAuthenticationStatus.and.returnValue(of(false) as any);
     gogConfigClientMock.getGogConfig.and.returnValue(of(GOG_CONFIG_RESPONSE) as any);
@@ -100,12 +100,12 @@ describe('GogAuthComponent', () => {
 
     const mockModalRef = mockAuthModalImmediatelyReturnsTrue();
 
-    modalService.open.and.returnValue(mockModalRef as any);
+    ngbModal.open.and.returnValue(mockModalRef as any);
 
     const authenticateButton: DebugElement = getAuthenticateButton();
     await authenticateButton.nativeElement.click();
 
-    expect(modalService.open).toHaveBeenCalledWith(GogAuthModalComponent);
+    expect(ngbModal.open).toHaveBeenCalledWith(GogAuthModalComponent);
   });
 
   function mockAuthModalImmediatelyReturnsTrue(): NgbModalRef {
@@ -113,7 +113,7 @@ describe('GogAuthComponent', () => {
       componentInstance: {},
       result: Promise.resolve(true) // Simulates modal closing behavior
     } as NgbModalRef;
-    modalService.open.and.returnValue(mockModalRef as any);
+    ngbModal.open.and.returnValue(mockModalRef as any);
     return mockModalRef;
   }
 
@@ -129,7 +129,7 @@ describe('GogAuthComponent', () => {
     await authenticateButton.nativeElement.click(); // First modal opens
     await authenticateButton.nativeElement.click(); // Second modal opens
 
-    expect(modalService.open).toHaveBeenCalledTimes(1);
+    expect(ngbModal.open).toHaveBeenCalledTimes(1);
   });
 
   function mockAuthModalNeverCloses() {
@@ -138,7 +138,7 @@ describe('GogAuthComponent', () => {
       result: new Promise(() => {
       }) // Never closes
     } as NgbModalRef;
-    modalService.open.and.returnValue(mockModalRef as any);
+    ngbModal.open.and.returnValue(mockModalRef as any);
   }
 
   it('should open authentication modal after authentication succeeded', async () => {
@@ -149,7 +149,7 @@ describe('GogAuthComponent', () => {
     await authenticateButton.nativeElement.click(); // First modal opens and succeeds
     await authenticateButton.nativeElement.click(); // Second modal opens and succeeds
 
-    expect(modalService.open).toHaveBeenCalledTimes(2);
+    expect(ngbModal.open).toHaveBeenCalledTimes(2);
   });
 
   it('should open authentication modal after authentication failed', async () => {
@@ -160,7 +160,7 @@ describe('GogAuthComponent', () => {
     await authenticateButton.nativeElement.click(); // First modal opens and fails
     await authenticateButton.nativeElement.click(); // Second modal opens and fails
 
-    expect(modalService.open).toHaveBeenCalledTimes(2);
+    expect(ngbModal.open).toHaveBeenCalledTimes(2);
   });
 
   function mockAuthModalImmediatelyRejects() {
@@ -168,7 +168,7 @@ describe('GogAuthComponent', () => {
       componentInstance: {},
       result: Promise.reject("some rejection reason") // Simulates modal closing behavior
     } as NgbModalRef;
-    modalService.open.and.returnValue(mockModalRef as any);
+    ngbModal.open.and.returnValue(mockModalRef as any);
   }
 
   it('should log out given logged in', async () => {

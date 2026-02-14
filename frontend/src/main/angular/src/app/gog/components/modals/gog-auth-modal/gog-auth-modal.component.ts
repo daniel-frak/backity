@@ -7,6 +7,7 @@ import {GOGAuthenticationClient, RefreshTokenResponse} from "@backend";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {LoadedContentComponent} from "@app/shared/components/loaded-content/loaded-content.component";
 import {finalize} from "rxjs";
+import {FormValidatorService} from "@app/shared/services/form-validator-service/form-validator.service";
 
 const SOMETHING_WENT_WRONG_TEXT = "Something went wrong during GOG authentication";
 
@@ -41,7 +42,8 @@ export class GogAuthModalComponent {
 
   constructor(public readonly modal: NgbActiveModal,
               private readonly gogAuthClient: GOGAuthenticationClient,
-              private readonly notificationService: NotificationService) {
+              private readonly notificationService: NotificationService,
+              private readonly formValidatorService: FormValidatorService) {
   }
 
   get gogCodeUrlInput(): AbstractControl<string, string> {
@@ -55,8 +57,7 @@ export class GogAuthModalComponent {
   authenticateGog() {
     try {
       this.isLoading = true;
-      if (!this.gogAuthForm.valid) {
-        this.handleInvalidForm();
+      if (this.formValidatorService.formIsInvalid(this.gogAuthForm)) {
         this.isLoading = false;
         return;
       }
@@ -81,15 +82,6 @@ export class GogAuthModalComponent {
     }
   }
 
-  getFormErrors(form: FormGroup): Record<string, any> {
-    return Object.entries(form.controls)
-      .filter(([_, control]) => control.errors)
-      .reduce((errorMap, [controlName, control]) => {
-        errorMap[controlName] = control.errors;
-        return errorMap;
-      }, {} as Record<string, any>);
-  }
-
   private handleAuthenticationResponse(response: RefreshTokenResponse) {
     if (response.refresh_token) {
       this.notificationService.showSuccess("GOG authentication successful");
@@ -98,12 +90,6 @@ export class GogAuthModalComponent {
     } else {
       this.notificationService.showFailure(SOMETHING_WENT_WRONG_TEXT);
     }
-  }
-
-  private handleInvalidForm() {
-    this.gogAuthForm.markAllAsTouched();
-    this.notificationService.showFailure("Please check the form for errors and try again.",
-      this.getFormErrors(this.gogAuthForm));
   }
 
   private extractCodeFromUrl(): string | null {

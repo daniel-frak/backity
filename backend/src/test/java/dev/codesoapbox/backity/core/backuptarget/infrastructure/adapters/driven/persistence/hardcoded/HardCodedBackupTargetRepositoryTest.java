@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backuptarget.adapters.driven.persistence.hardcoded;
+package dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driven.persistence.hardcoded;
 
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
@@ -8,6 +8,7 @@ import dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.driv
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,6 +41,8 @@ class HardCodedBackupTargetRepositoryTest {
 
             List<BackupTarget> expectedResult = List.of(new BackupTarget(
                     new BackupTargetId("d46dde81-e519-4300-9a54-6f9e7d637926"),
+                    LocalDateTime.MIN,
+                    LocalDateTime.MIN,
                     S3StorageSolution.ID,
                     "S3 bucket",
                     pathTemplate
@@ -57,6 +60,8 @@ class HardCodedBackupTargetRepositoryTest {
 
             List<BackupTarget> expectedResult = List.of(new BackupTarget(
                     new BackupTargetId("224440e2-6e5c-4f24-94ac-3222587652f7"),
+                    LocalDateTime.MIN,
+                    LocalDateTime.MIN,
                     LocalFileSystemStorageSolution.ID,
                     "Local folder",
                     pathTemplate
@@ -74,6 +79,8 @@ class HardCodedBackupTargetRepositoryTest {
 
             BackupTarget expectedResult = new BackupTarget(
                     new BackupTargetId("224440e2-6e5c-4f24-94ac-3222587652f7"),
+                    LocalDateTime.MIN,
+                    LocalDateTime.MIN,
                     LocalFileSystemStorageSolution.ID,
                     "Local folder",
                     pathTemplate
@@ -103,6 +110,8 @@ class HardCodedBackupTargetRepositoryTest {
 
             List<BackupTarget> expectedResult = List.of(new BackupTarget(
                     new BackupTargetId("224440e2-6e5c-4f24-94ac-3222587652f7"),
+                    LocalDateTime.MIN,
+                    LocalDateTime.MIN,
                     LocalFileSystemStorageSolution.ID,
                     "Local folder",
                     pathTemplate

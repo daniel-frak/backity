@@ -1,0 +1,29 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-title">
+    Edit backup target
+  </h4>
+  <button type="button" class="btn-close" aria-label="Close" data-testid="close-edit-backup-target-modal-btn"
+          (click)="modal.dismiss('Cross click')"></button>
+</div>
+
+<form [formGroup]="editBackupTargetForm" data-testid="edit-backup-target-form" (ngSubmit)="submit()">
+  <div class="modal-body">
+    <app-loaded-content [isLoading]="isLoading()">
+      <app-auto-layout>
+        <app-input formControlName="name" testId="name-input" type="text">
+          Name
+        </app-input>
+        <app-input formControlName="pathTemplate" testId="path-template-input" type="text">
+          Path template
+        </app-input>
+        <span>// @TODO Add path template information</span>
+      </app-auto-layout>
+    </app-loaded-content>
+  </div>
+  <div class="modal-footer">
+    <app-button buttonType="submit" testId="submit-edit-backup-target-btn" buttonStyle="primary"
+                [disabled]="isLoading()">
+      Edit
+    </app-button>
+  </div>
+</form>

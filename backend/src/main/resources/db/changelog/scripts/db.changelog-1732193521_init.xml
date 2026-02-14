@@ -121,7 +121,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="last_successful_discovery_completed_at" type="DATETIME">
-                <constraints nullable="false"/>
+                <constraints nullable="true"/>
             </column>
             <column name="games_discovered" type="INTEGER">
                 <constraints nullable="false"/>
@@ -131,10 +131,27 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="make_last_successful_discovery_completed_at_nullable" author="daniel_frak">
-        <dropNotNullConstraint tableName="game_content_discovery_result"
-                               columnName="last_successful_discovery_completed_at"
-                               columnDataType="DATETIME"/>
+    <changeSet id="create_backup_target" author="daniel_frak">
+        <createTable tableName="backup_target">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="date_created" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_modified" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="storage_solution_id" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+            <column name="path_template" type="VARCHAR">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
     </changeSet>
 
 </databaseChangeLog>

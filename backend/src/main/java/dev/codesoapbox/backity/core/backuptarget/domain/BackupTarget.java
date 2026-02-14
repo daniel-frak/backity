@@ -3,14 +3,20 @@ package dev.codesoapbox.backity.core.backuptarget.domain;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @Getter
+@ToString
 public class BackupTarget {
 
     @EqualsAndHashCode.Include
     @NonNull
     private final BackupTargetId id;
+
+    private final LocalDateTime dateCreated; // Provided by DB
+    private final LocalDateTime dateModified; // Provided by DB
 
     @NonNull
     private final StorageSolutionId storageSolutionId;

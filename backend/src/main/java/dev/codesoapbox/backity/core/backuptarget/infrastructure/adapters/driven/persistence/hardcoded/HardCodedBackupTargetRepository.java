@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.backuptarget.adapters.driven.persistence.hardcoded;
+package dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driven.persistence.hardcoded;
 
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
@@ -8,6 +8,7 @@ import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,6 +18,7 @@ import static java.util.Collections.unmodifiableList;
 /**
  * A temporary solution until BackupTarget CRUD is implemented.
  */
+// @TODO Remove
 @RequiredArgsConstructor
 public class HardCodedBackupTargetRepository implements BackupTargetRepository {
 
@@ -26,6 +28,8 @@ public class HardCodedBackupTargetRepository implements BackupTargetRepository {
         if (s3Enabled) {
             availableBackupTargets.add(new BackupTarget(
                     new BackupTargetId("d46dde81-e519-4300-9a54-6f9e7d637926"),
+                    LocalDateTime.MIN,
+                    LocalDateTime.MIN,
                     new StorageSolutionId("S3"),
                     "S3 bucket",
                     pathTemplate
@@ -34,6 +38,8 @@ public class HardCodedBackupTargetRepository implements BackupTargetRepository {
         if (localEnabled) {
             availableBackupTargets.add(new BackupTarget(
                     new BackupTargetId("224440e2-6e5c-4f24-94ac-3222587652f7"),
+                    LocalDateTime.MIN,
+                    LocalDateTime.MIN,
                     new StorageSolutionId("LOCAL_FILE_SYSTEM"),
                     "Local folder",
                     pathTemplate
@@ -44,6 +50,11 @@ public class HardCodedBackupTargetRepository implements BackupTargetRepository {
     @Override
     public List<BackupTarget> findAll() {
         return unmodifiableList(availableBackupTargets);
+    }
+
+    @Override
+    public void save(BackupTarget backupTarget) {
+        // Do nothing
     }
 
     @Override

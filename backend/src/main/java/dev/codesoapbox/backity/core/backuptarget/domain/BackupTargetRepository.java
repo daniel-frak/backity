@@ -5,9 +5,11 @@ import java.util.List;
 
 public interface BackupTargetRepository {
 
-    List<BackupTarget> findAll();
+    void save(BackupTarget backupTarget);
 
     BackupTarget getById(BackupTargetId backupTargetId);
+
+    List<BackupTarget> findAll();
 
     List<BackupTarget> findAllByIdIn(Collection<BackupTargetId> ids);
 }
