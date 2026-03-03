@@ -1,7 +1,6 @@
 package dev.codesoapbox.backity.testing.jpa.annotations;
 
 import dev.codesoapbox.backity.buildtools.MultiAnnotationTest;
-import jakarta.transaction.Transactional;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -17,6 +16,5 @@ import java.lang.annotation.Target;
         },
         stripFromClassNameRegex = "Abstract|RepositoryTest"
 )
-@Transactional
 public @interface MultiDatabaseRepositoryTest {
 }

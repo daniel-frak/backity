@@ -7,7 +7,7 @@ public interface BackupTargetRepository {
 
     void save(BackupTarget backupTarget);
 
-    BackupTarget getById(BackupTargetId backupTargetId);
+    BackupTarget getById(BackupTargetId id);
 
     List<BackupTarget> findAll();
 

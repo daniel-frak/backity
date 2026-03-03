@@ -6,9 +6,13 @@ import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.exceptions.BackupTargetNotFoundException;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
+import org.springframework.data.auditing.AuditingHandler;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,8 +20,11 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 
 @MultiDatabaseRepositoryTest
+@Transactional
 abstract class BackupTargetJpaRepositoryAbstractIT {
 
     private final Persist persist = new Persist();
@@ -31,6 +38,17 @@ abstract class BackupTargetJpaRepositoryAbstractIT {
 
     @Autowired
     protected BackupTargetJpaEntityMapper entityMapper;
+
+    @Autowired
+    private AuditingHandler auditingHandlerSpy;
+
+    @BeforeEach
+    void setUp() {
+        // Prevent Spring Data JPA auditing from overwriting preset @CreatedDate/@LastModifiedDate values
+        // during test data setup:
+        doAnswer(inv -> inv)
+                .when(auditingHandlerSpy).markCreated(any());
+    }
 
     @Test
     void saveShouldPersistNew() {
@@ -52,6 +70,17 @@ abstract class BackupTargetJpaRepositoryAbstractIT {
         entityManager.flush();
 
         assertThat.wasPersistedWithAllData(backupTarget);
+    }
+
+    @Test
+    void saveShouldUpdateDates() {
+        Mockito.reset(auditingHandlerSpy);
+        BackupTarget backupTarget = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
+
+        repository.save(backupTarget);
+        entityManager.flush();
+
+        assertThat.datesWereUpdatedByAuditingHandler(backupTarget);
     }
 
     @Test
@@ -163,11 +192,20 @@ abstract class BackupTargetJpaRepositoryAbstractIT {
 
         private static final String[] ENTITY_FIELDS_TO_IGNORE = {"dateCreated", "dateModified"};
 
+        void datesWereUpdatedByAuditingHandler(BackupTarget backupTarget) {
+            BackupTargetJpaEntity persistedEntity = getPersistedEntity(backupTarget.getId());
+            assertThat(persistedEntity.getDateCreated()).isNotEqualTo(backupTarget.getDateCreated());
+            assertThat(persistedEntity.getDateModified()).isNotEqualTo(backupTarget.getDateModified());
+        }
+
         void wasPersistedWithAllData(BackupTarget expected) {
-            BackupTargetJpaEntity persistedEntity =
-                    entityManager.find(BackupTargetJpaEntity.class, expected.getId().value());
+            BackupTargetJpaEntity persistedEntity = getPersistedEntity(expected.getId());
             BackupTarget persisted = entityMapper.toDomain(persistedEntity);
             allDataIsSame(persisted, expected);
+        }
+
+        private BackupTargetJpaEntity getPersistedEntity(BackupTargetId id) {
+            return entityManager.find(BackupTargetJpaEntity.class, id.value());
         }
 
         void allDataIsSame(BackupTarget actual, BackupTarget expected) {
