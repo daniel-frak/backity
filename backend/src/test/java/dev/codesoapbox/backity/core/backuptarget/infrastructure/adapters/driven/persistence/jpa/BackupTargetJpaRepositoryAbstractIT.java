@@ -165,6 +165,16 @@ abstract class BackupTargetJpaRepositoryAbstractIT {
         );
     }
 
+    @Test
+    void deleteByIdShouldDeleteAggregate() {
+        BackupTarget aggregateToDelete = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
+        persist.backupTargets(aggregateToDelete);
+
+        repository.deleteById(aggregateToDelete.getId());
+
+        assertThat.doesNotExist(aggregateToDelete);
+    }
+
     private static class Time {
 
         private static final LocalDateTime NOW = FakeTimeBeanConfig.DEFAULT_NOW;
@@ -229,6 +239,11 @@ abstract class BackupTargetJpaRepositoryAbstractIT {
         void containsInOrder(List<BackupTarget> actual, BackupTarget... expected) {
             assertThat(actual)
                     .containsExactly(expected);
+        }
+
+        public void doesNotExist(BackupTarget aggregate) {
+            BackupTargetJpaEntity entity = entityManager.find(BackupTargetJpaEntity.class, aggregate.getId().value());
+            assertThat(entity).isNull();
         }
     }
 

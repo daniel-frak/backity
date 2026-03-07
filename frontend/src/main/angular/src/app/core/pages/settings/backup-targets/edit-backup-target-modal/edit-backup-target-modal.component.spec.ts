@@ -5,6 +5,11 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {By} from "@angular/platform-browser";
 import {DebugElement} from "@angular/core";
+import {BackupTarget, BackupTargetsClient} from "@backend";
+import {TestBackupTarget} from "@app/shared/testing/objects/test-backup-target";
+import {of, throwError} from "rxjs";
+import {NgbActiveModalMock} from "@app/shared/testing/modals/ngb-active-modal-mock";
+import {EditBackupTargetRequest} from "@backend/model/editBackupTargetRequest";
 import SpyObj = jasmine.SpyObj;
 import createSpyObj = jasmine.createSpyObj;
 
@@ -13,7 +18,8 @@ describe('EditBackupTargetModalComponent', () => {
   let fixture: ComponentFixture<EditBackupTargetModalComponent>;
 
   let notificationService: SpyObj<NotificationService>;
-  let modal: SpyObj<NgbActiveModal>;
+  let modal: NgbActiveModalMock;
+  let backupTargetsClient: SpyObj<BackupTargetsClient>;
 
   class Page {
 
@@ -63,8 +69,6 @@ describe('EditBackupTargetModalComponent', () => {
   let page: Page;
 
   beforeEach(async () => {
-    const modalMock = createSpyObj('NgbActiveModal', ['close', 'dismiss']);
-
     await TestBed.configureTestingModule({
       imports: [EditBackupTargetModalComponent],
       providers: [
@@ -72,19 +76,24 @@ describe('EditBackupTargetModalComponent', () => {
           provide: NotificationService,
           useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])
         },
-        {provide: NgbActiveModal, useValue: modalMock},
+        {provide: NgbActiveModal, useExisting: NgbActiveModalMock},
+        NgbActiveModalMock,
+        {
+          provide: BackupTargetsClient,
+          useValue: createSpyObj('BackupTargetsClient', ['editBackupTarget'])
+        }
       ]
     })
-    .compileComponents();
+      .compileComponents();
 
     notificationService = TestBed.inject(NotificationService) as SpyObj<NotificationService>;
-    modal = TestBed.inject(NgbActiveModal) as SpyObj<NgbActiveModal>;
+    modal = TestBed.inject(NgbActiveModalMock);
+    backupTargetsClient = TestBed.inject(BackupTargetsClient) as SpyObj<BackupTargetsClient>;
 
     page = new Page();
 
     fixture = TestBed.createComponent(EditBackupTargetModalComponent);
     component = fixture.componentInstance;
-    await fixture.whenStable();
   });
 
   it('should create', () => {
@@ -94,7 +103,7 @@ describe('EditBackupTargetModalComponent', () => {
   it('should close modal on close button click', () => {
     page.closeButton.click();
 
-    expect(modal.dismiss).toHaveBeenCalled();
+    expect(modal.timesDismissed).toBe(1);
   })
 
   it('should enable submit button given not loading', () => {
@@ -133,18 +142,56 @@ describe('EditBackupTargetModalComponent', () => {
 
     expect(notificationService.showFailure)
       .not.toHaveBeenCalledWith("Editing backup targets is not yet implemented.");
-    expect(modal.close).not.toHaveBeenCalled();
+    expect(modal.timesClosed).toBe(0);
+    expect(component.isLoading()).toBeFalse();
   });
 
-  it('should fail to edit backup target on submit given form validation succeeds', async () => {
+  function editingBackupTargetSucceeds() {
+    backupTargetsClient.editBackupTarget.and.returnValue(of({}) as any);
+  }
+
+  it('should edit backup target on submit given form validation succeeds', async () => {
     await fixture.whenStable();
-    page.setInput(page.nameInput, 'Backup target name');
-    page.setInput(page.pathTemplateInput, 'somePathTemplate');
+    const backupTarget: BackupTarget = TestBackupTarget.localFolder();
+    component.backupTarget.set(backupTarget);
+    const expectedRequest: EditBackupTargetRequest = {
+      name: backupTarget.name,
+      pathTemplate: backupTarget.pathTemplate,
+    };
+    editingBackupTargetSucceeds();
+
+    page.setInput(page.nameInput, backupTarget.name);
+    page.setInput(page.pathTemplateInput, backupTarget.pathTemplate);
 
     page.submitForm();
 
-    expect(notificationService.showFailure)
-      .toHaveBeenCalledWith("Editing backup targets is not yet implemented.");
-    expect(modal.close).toHaveBeenCalled();
+    expect(backupTargetsClient.editBackupTarget)
+      .toHaveBeenCalledWith(backupTarget.id, expectedRequest);
+    expect(notificationService.showSuccess)
+      .toHaveBeenCalledWith("Backup target edited successfully");
+    expect(modal.timesClosed).toBe(1);
+    expect(component.isLoading()).toBeFalse();
   });
+
+  it('should gracefully handle errors when editing backup target fails', async () => {
+    const backupTarget: BackupTarget = TestBackupTarget.localFolder();
+    component.backupTarget.set(backupTarget);
+    const error = new Error('Test error');
+    editingBackupTargetThrows(error);
+    await fixture.whenStable();
+
+    page.setInput(page.nameInput, backupTarget.name);
+    page.setInput(page.pathTemplateInput, backupTarget.pathTemplate);
+
+    page.submitForm();
+
+    expect(notificationService.showFailure).toHaveBeenCalledWith(
+      "Something went wrong when editing a Backup Target.", error);
+    expect(modal.timesClosed).toBe(0);
+    expect(component.isLoading()).toBeFalse();
+  });
+
+  function editingBackupTargetThrows(error: Error) {
+    backupTargetsClient.editBackupTarget.and.returnValue(throwError(() => error));
+  }
 });

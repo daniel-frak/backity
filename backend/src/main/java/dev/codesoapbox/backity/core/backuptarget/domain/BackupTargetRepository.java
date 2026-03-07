@@ -12,4 +12,6 @@ public interface BackupTargetRepository {
     List<BackupTarget> findAll();
 
     List<BackupTarget> findAllByIdIn(Collection<BackupTargetId> ids);
+
+    void deleteById(BackupTargetId id);
 }

@@ -6,6 +6,11 @@ import {DebugElement} from "@angular/core";
 import {By} from "@angular/platform-browser";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {NgbActiveModalMock} from "@app/shared/testing/modals/ngb-active-modal-mock";
+import {BackupTarget, BackupTargetsClient} from "@backend";
+import {AddBackupTargetResponse} from "@backend/model/addBackupTargetResponse";
+import {AddBackupTargetRequest} from "@backend/model/addBackupTargetRequest";
+import {TestBackupTarget} from "@app/shared/testing/objects/test-backup-target";
+import {of, throwError} from "rxjs";
 import SpyObj = jasmine.SpyObj;
 import createSpyObj = jasmine.createSpyObj;
 
@@ -15,6 +20,7 @@ describe('AddBackupTargetModalComponent', () => {
 
   let notificationService: SpyObj<NotificationService>;
   let modal: NgbActiveModalMock;
+  let backupTargetsClient: SpyObj<BackupTargetsClient>;
 
   class Page {
 
@@ -75,13 +81,18 @@ describe('AddBackupTargetModalComponent', () => {
           useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])
         },
         {provide: NgbActiveModal, useExisting: NgbActiveModalMock},
-        NgbActiveModalMock
+        NgbActiveModalMock,
+        {
+          provide: BackupTargetsClient,
+          useValue: createSpyObj('BackupTargetsClient', ['addBackupTarget'])
+        }
       ]
     })
       .compileComponents();
 
     notificationService = TestBed.inject(NotificationService) as SpyObj<NotificationService>;
     modal = TestBed.inject(NgbActiveModalMock);
+    backupTargetsClient = TestBed.inject(BackupTargetsClient) as SpyObj<BackupTargetsClient>;
 
     page = new Page();
 
@@ -136,18 +147,58 @@ describe('AddBackupTargetModalComponent', () => {
     expect(notificationService.showFailure)
       .not.toHaveBeenCalledWith("Adding backup targets is not yet implemented.");
     expect(modal.timesClosed).toBe(0);
+    expect(component.isLoading()).toBeFalse();
   });
 
-  it('should fail to add backup target on submit given form validation succeeds', async () => {
+  it('should add backup target on submit given form validation succeeds', async () => {
     await fixture.whenStable();
-    page.setInput(page.nameInput, 'Backup target name');
-    page.setInput(page.storageSolutionIdInput, 'someStorageSolutionId');
-    page.setInput(page.pathTemplateInput, 'somePathTemplate');
+    const backupTarget: BackupTarget = TestBackupTarget.localFolder();
+    const expectedRequest: AddBackupTargetRequest = {
+      name: backupTarget.name,
+      storageSolutionId: backupTarget.storageSolutionId,
+      pathTemplate: backupTarget.pathTemplate,
+    };
+    addingBackupTargetSucceeds(backupTarget);
+
+    page.setInput(page.nameInput, backupTarget.name);
+    page.setInput(page.storageSolutionIdInput, backupTarget.storageSolutionId);
+    page.setInput(page.pathTemplateInput, backupTarget.pathTemplate);
 
     page.submitForm();
 
-    expect(notificationService.showFailure)
-      .toHaveBeenCalledWith("Adding backup targets is not yet implemented.");
+    expect(backupTargetsClient.addBackupTarget)
+      .toHaveBeenCalledWith(expectedRequest);
+    expect(notificationService.showSuccess)
+      .toHaveBeenCalledWith("Backup target added successfully");
     expect(modal.timesClosed).toBe(1);
+    expect(component.isLoading()).toBeFalse();
   });
+
+  function addingBackupTargetSucceeds(backupTarget: BackupTarget) {
+    backupTargetsClient.addBackupTarget.and.returnValue(of({
+      backupTarget: backupTarget,
+    } as AddBackupTargetResponse) as any);
+  }
+
+  it('should gracefully handle errors when adding backup target fails', async () => {
+    await fixture.whenStable();
+    const backupTarget: BackupTarget = TestBackupTarget.localFolder();
+    const error = new Error('Test error');
+    addingBackupTargetThrows(error);
+
+    page.setInput(page.nameInput, backupTarget.name);
+    page.setInput(page.storageSolutionIdInput, backupTarget.storageSolutionId);
+    page.setInput(page.pathTemplateInput, backupTarget.pathTemplate);
+
+    page.submitForm();
+
+    expect(notificationService.showFailure).toHaveBeenCalledWith(
+      "Something went wrong when adding a Backup Target.", error);
+    expect(modal.timesClosed).toBe(0);
+    expect(component.isLoading()).toBeFalse();
+  });
+
+  function addingBackupTargetThrows(error: Error) {
+    backupTargetsClient.addBackupTarget.and.returnValue(throwError(() => error));
+  }
 });

@@ -7,7 +7,6 @@ import org.mapstruct.Mapper;
 
 import java.util.UUID;
 
-// @TODO Test
 @Mapper
 public abstract class BackupTargetJpaEntityMapper {
 

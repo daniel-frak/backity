@@ -51,4 +51,10 @@ public class BackupTargetJpaRepository implements BackupTargetRepository {
                 .map(entityMapper::toDomain)
                 .toList();
     }
+
+    @Transactional
+    @Override
+    public void deleteById(BackupTargetId id) {
+        springRepository.deleteById(id.value());
+    }
 }

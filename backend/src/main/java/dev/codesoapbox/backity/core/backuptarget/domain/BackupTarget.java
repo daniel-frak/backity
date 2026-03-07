@@ -27,4 +27,15 @@ public class BackupTarget {
 
     @NonNull
     private String pathTemplate;
+
+    public static BackupTarget create(String name, StorageSolutionId storageSolutionId, String pathTemplate) {
+        return new BackupTarget(
+                BackupTargetId.newInstance(),
+                null,
+                null,
+                storageSolutionId,
+                name,
+                pathTemplate
+        );
+    }
 }

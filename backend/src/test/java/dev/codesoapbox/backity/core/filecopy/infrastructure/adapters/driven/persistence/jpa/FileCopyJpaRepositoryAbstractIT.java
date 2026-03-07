@@ -318,6 +318,26 @@ abstract class FileCopyJpaRepositoryAbstractIT {
                 .containsExactlyElementsOf(expectedResult);
     }
 
+    @Test
+    void existByBackupTargetIdShouldReturnTrueGivenFileCopyExists() {
+        BackupTargetId existingBackupTargetId =
+                EXISTING_FILE_COPIES.DISCOVERED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get().getNaturalId()
+                        .backupTargetId();
+
+        boolean result = repository.existByBackupTargetId(existingBackupTargetId);
+
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void existByBackupTargetIdShouldReturnTrueGivenFileCopyNotFound() {
+        var nonExistentBackupTargetId = new BackupTargetId("6ae4529b-a961-47d6-aa17-2ed526861f5f");
+
+        boolean result = repository.existByBackupTargetId(nonExistentBackupTargetId);
+
+        assertThat(result).isFalse();
+    }
+
     private static class EXISTING_GAMES {
 
         public static final GameJpaEntityMapper MAPPER = Mappers.getMapper(GameJpaEntityMapper.class);

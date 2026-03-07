@@ -1,6 +1,9 @@
 package dev.codesoapbox.backity.core.backuptarget.application;
 
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
+
 public record EditBackupTargetCommand(
-        // @TODO
+        BackupTargetId id,
+        String name
 ) {
 }

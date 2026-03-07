@@ -1,6 +1,6 @@
 import {Component, OnInit, signal} from '@angular/core';
 import {BackupTarget, BackupTargetsClient} from "@backend";
-import {firstValueFrom} from "rxjs";
+import {finalize, firstValueFrom} from "rxjs";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
 import {LoadedContentComponent} from "@app/shared/components/loaded-content/loaded-content.component";
@@ -110,16 +110,24 @@ export class BackupTargetsComponent implements OnInit {
   onClickDelete(backupTarget: BackupTarget): () => Promise<void> {
     return async () => {
       try {
-        await this.modalService.withConfirmationModal("Are you sure you want to delete the backup target?",
+        await this.modalService.withConfirmationModal(
+          "Are you sure you want to delete the backup target?",
           async () => {
-            // @TODO Delete from backend
-            this.notificationService.showFailure('Backup target deletion not yet implemented.');
-            return this.refresh();
-          });
+            await firstValueFrom(
+              this.backupTargetsClient.deleteBackupTarget(backupTarget.id)
+                .pipe(finalize(() => this.backupTargetsAreLoading.set(false)))
+            );
+
+            this.notificationService.showSuccess("Backup target deleted successfully");
+            await this.refresh();
+          }
+        );
       } catch (error) {
         this.notificationService.showFailure(
-          'An error occurred while trying to delete a backup target', backupTarget.id, error);
+          'An error occurred while trying to delete a backup target', backupTarget.id, error
+        );
+        this.backupTargetsAreLoading.set(false);
       }
-    }
+    };
   }
 }

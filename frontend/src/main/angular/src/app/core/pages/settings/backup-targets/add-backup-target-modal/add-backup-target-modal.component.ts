@@ -7,6 +7,9 @@ import {InputComponent} from "@app/shared/components/form/input/input.component"
 import {LoadedContentComponent} from "@app/shared/components/loaded-content/loaded-content.component";
 import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
 import {FormValidatorService} from "@app/shared/services/form-validator-service/form-validator.service";
+import {BackupTargetsClient} from "@backend";
+import {finalize} from "rxjs";
+import {AddBackupTargetResponse} from "@backend/model/addBackupTargetResponse";
 
 interface AddBackupTargetForm {
   name: FormControl<string>;
@@ -42,7 +45,8 @@ export class AddBackupTargetModalComponent {
 
   constructor(public readonly modal: NgbActiveModal,
               private readonly notificationService: NotificationService,
-              private readonly formValidatorService: FormValidatorService) {
+              private readonly formValidatorService: FormValidatorService,
+              private readonly backupTargetsClient: BackupTargetsClient) {
   }
 
   submit(): void {
@@ -51,8 +55,21 @@ export class AddBackupTargetModalComponent {
       this.isLoading.set(false);
       return;
     }
-    // @TODO Add on backend
-    this.notificationService.showFailure("Adding backup targets is not yet implemented.")
-    this.modal.close(false);
+    this.backupTargetsClient.addBackupTarget({
+      name: this.addBackupTargetForm.controls.name.value,
+      storageSolutionId: this.addBackupTargetForm.controls.storageSolutionId.value,
+      pathTemplate: this.addBackupTargetForm.controls.pathTemplate.value
+    })
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: response => this.handleAddBackupTargetResponse(response),
+        error: error => this.notificationService.showFailure(
+          "Something went wrong when adding a Backup Target.", error)
+      });
+  }
+
+  private handleAddBackupTargetResponse(_: AddBackupTargetResponse) {
+    this.notificationService.showSuccess("Backup target added successfully");
+    this.modal.close(true);
   }
 }

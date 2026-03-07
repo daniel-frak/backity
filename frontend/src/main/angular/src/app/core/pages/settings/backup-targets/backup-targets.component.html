@@ -8,6 +8,9 @@
         Add
       </app-button>
 
+      @if (backupTargets().length == 0) {
+        No backup targets.
+      }
       @for (backupTarget of backupTargets(); track backupTarget.id) {
         <app-icon-item iconClass="bi bi-bullseye">
           <ng-container title>{{ backupTarget.name }}</ng-container>

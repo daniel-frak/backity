@@ -55,7 +55,7 @@ describe('BackupTargetsComponent', () => {
       providers: [
         {
           provide: BackupTargetsClient,
-          useValue: createSpyObj('BackupTargetsClient', ['getBackupTargets'])
+          useValue: createSpyObj('BackupTargetsClient', ['getBackupTargets', 'deleteBackupTarget'])
         },
         {
           provide: NotificationService,
@@ -92,6 +92,14 @@ describe('BackupTargetsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should show "No backup targets" when list is empty', async () => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('No backup targets');
   });
 
   describe('init', () => {
@@ -250,16 +258,28 @@ describe('BackupTargetsComponent', () => {
 
   describe('Deleting Backup Targets', () => {
 
-    it('should fail to delete backup target when user clicks delete button', async () => {
+    it('should delete backup target then refresh when user clicks delete button', async () => {
       const backupTarget: BackupTarget = TestBackupTarget.localFolder();
       exists(backupTarget);
       await fixture.whenStable();
       fixture.detectChanges();
+      deletingBackupTargetSucceeds();
 
       page.deleteBackupTargetBtn(backupTarget.id).click();
+      await fixture.whenStable();
 
-      expect(notificationService.showFailure).toHaveBeenCalledWith('Backup target deletion not yet implemented.');
+      expect(backupTargetsClient.deleteBackupTarget)
+        .toHaveBeenCalledWith(backupTarget.id);
+      expect(notificationService.showSuccess)
+        .toHaveBeenCalledWith("Backup target deleted successfully");
+      expect(backupTargetsClient.getBackupTargets)
+        .toHaveBeenCalled();
+      expect(component.backupTargetsAreLoading()).toBeFalse();
     });
+
+    function deletingBackupTargetSucceeds() {
+      backupTargetsClient.deleteBackupTarget.and.returnValue(of({}) as any);
+    }
 
     it('should show notification given backup target deletion fails', async () => {
       const backupTarget: BackupTarget = TestBackupTarget.localFolder();
@@ -267,15 +287,20 @@ describe('BackupTargetsComponent', () => {
       await fixture.whenStable();
       fixture.detectChanges();
       const error = new Error('Test error');
-      notificationService.showFailure.and.stub();
-      notificationService.showFailure.withArgs('Backup target deletion not yet implemented.')
-        .and.throwError(error);
+      deletingBackupTargetThrows(error);
 
       page.deleteBackupTargetBtn(backupTarget.id).click();
       await fixture.whenStable();
 
       expect(notificationService.showFailure).toHaveBeenCalledWith(
         'An error occurred while trying to delete a backup target', backupTarget.id, error);
+      expect(component.backupTargetsAreLoading()).toBeFalse();
     });
+
+    function deletingBackupTargetThrows(error: Error) {
+      backupTargetsClient.deleteBackupTarget.and.returnValue(throwError(() => error));
+    }
+
+    // @TODO TEST AND IMPLEMENT DELETE NOT AVAILABLE WHEN BACKUP TARGET IS IN USE BY FILE COPIES!
   });
 });
