@@ -34,4 +34,6 @@ public interface FileCopySpringRepository extends JpaRepository<FileCopyJpaEntit
     Page<FileCopyJpaEntity> findAllInProgressOrEnqueuedOrderByStatusThenDateModified(Pageable pageable);
 
     List<FileCopyJpaEntity> findAllByNaturalIdSourceFileId(UUID sourceFileId);
+
+    boolean existsByNaturalIdBackupTargetId(UUID backupTargetId);
 }

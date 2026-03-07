@@ -34,10 +34,17 @@
 
     <dependencies>
         <dependency>
-            <groupId>dev.codesoapbox</groupId>
+            <groupId>dev.codesoapbox.backity</groupId>
             <artifactId>frontend</artifactId>
             <version>${revision}</version>
             <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>dev.codesoapbox.backity</groupId>
+            <artifactId>build-tools-test-annotations</artifactId>
+            <version>${revision}</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- Spring Boot Misc. -->
@@ -285,17 +292,34 @@
                             <artifactId>lombok-mapstruct-binding</artifactId>
                             <version>${lombok-mapstruct-binding.version}</version>
                         </path>
-                        <!-- other annotation processors -->
                     </annotationProcessorPaths>
                     <compilerArgs>
                         <compilerArg>
                             -Amapstruct.unmappedSourcePolicy=ERROR
                         </compilerArg>
                         <compilerArg>
-                            -Amapstruct.unmappedTargetPolicy=ERROR
+                            -Amapstruct.unmappedSourcePolicy=ERROR
                         </compilerArg>
                     </compilerArgs>
                 </configuration>
+
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <annotationProcessorPaths combine.children="append">
+                                <path>
+                                    <groupId>dev.codesoapbox.backity</groupId>
+                                    <artifactId>build-tools-test-processors</artifactId>
+                                    <version>${revision}</version>
+                                </path>
+                            </annotationProcessorPaths>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- Test configuration -->

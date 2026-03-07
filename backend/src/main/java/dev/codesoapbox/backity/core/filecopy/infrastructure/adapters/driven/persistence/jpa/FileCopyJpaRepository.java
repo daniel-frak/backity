@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.persistence.jpa;
 
 import dev.codesoapbox.backity.DoNotMutate;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.filecopy.domain.*;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotFoundException;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
@@ -123,6 +124,11 @@ public class FileCopyJpaRepository implements FileCopyRepository {
         return foundPage.getContent().stream()
                 .map(entityMapper::toDomain)
                 .toList();
+    }
+
+    @Override
+    public boolean existByBackupTargetId(BackupTargetId id) {
+        return springRepository.existsByNaturalIdBackupTargetId(id.value());
     }
 
     @Override

@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @UsePlaywright(CustomOptions.class)
 class BackityTest {
 
+    // TODO Fix E2E tests to include creating Backup Targets
+
     private static final String FILE_TO_DOWNLOAD_TITLE = "Test Game 1 Installer (Part 1 of 3)";
     private static final String FILE_TO_DOWNLOAD_NAME = "test_game_1_installer_1.exe";
     private static final String FILE_TO_DOWNLOAD_EXPECTED_CONTENTS = "Source file contents";
