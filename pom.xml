@@ -32,6 +32,7 @@
         <!-- END of Project version info -->
 
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+        <jacoco.version>0.8.14</jacoco.version>
 
         <!-- Sonar -->
         <sonar.projectKey>backity</sonar.projectKey>
@@ -73,6 +74,26 @@
                         <phase>clean</phase>
                         <goals>
                             <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- Sonarqube code coverage -->
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report</goal>
                         </goals>
                     </execution>
                 </executions>
