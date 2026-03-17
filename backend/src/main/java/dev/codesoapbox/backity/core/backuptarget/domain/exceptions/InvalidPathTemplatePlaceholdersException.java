@@ -12,7 +12,7 @@ public class InvalidPathTemplatePlaceholdersException extends DomainInvariantVio
     private final String pathTemplate;
 
     public InvalidPathTemplatePlaceholdersException(List<String> invalidPlaceholders, String pathTemplate) {
-        this.invalidPlaceholders = invalidPlaceholders;
+        this.invalidPlaceholders = List.copyOf(invalidPlaceholders);
         this.pathTemplate = pathTemplate;
 
         super("The PathTemplate ('%s') contains invalid placeholders (%s)"

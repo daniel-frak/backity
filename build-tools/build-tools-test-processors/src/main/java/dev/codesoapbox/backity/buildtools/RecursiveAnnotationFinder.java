@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-public class RecursiveAnnotationFinder {
+public final class RecursiveAnnotationFinder {
 
     private RecursiveAnnotationFinder() {
     }
