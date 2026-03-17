@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.e2e.pages;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.microsoft.playwright.assertions.LocatorAssertions;
 import lombok.Getter;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
@@ -18,6 +19,7 @@ public class GameProvidersPage {
     private final Locator gogAuthStatus;
     private final Locator gogLogOutButton;
     private final Locator startDiscoveryBtn;
+    private final Locator lastDiscoveryTimestamp;
 
     @Getter
     private final Locator discoveredFilesTable;
@@ -31,6 +33,7 @@ public class GameProvidersPage {
         gogAuthStatus = page.getByTestId("gog-auth-status");
         gogLogOutButton = page.getByTestId("log-out-gog-btn");
         startDiscoveryBtn = page.getByTestId("start-game-content-discovery-btn");
+        lastDiscoveryTimestamp = page.getByTestId("last-discovery-timestamp");
         discoveredFilesTable = page.getByTestId("discovered-file-copies-table");
     }
 
@@ -69,12 +72,17 @@ public class GameProvidersPage {
     }
 
     public void discoverAllFiles() {
+        String previousTimestamp = lastDiscoveryTimestamp.textContent();
+
         startDiscoveryBtn.click();
-        waitUntilDiscoveryIsFinished();
+
+        waitUntilDiscoveryIsFinished(previousTimestamp);
     }
 
-    private void waitUntilDiscoveryIsFinished() {
-        assertThat(startDiscoveryBtn).isDisabled();
+    private void waitUntilDiscoveryIsFinished(String previousTimestamp) {
+        assertThat(lastDiscoveryTimestamp)
+                .not()
+                .containsText(previousTimestamp, new LocatorAssertions.ContainsTextOptions());
         assertThat(startDiscoveryBtn).isEnabled();
     }
 }

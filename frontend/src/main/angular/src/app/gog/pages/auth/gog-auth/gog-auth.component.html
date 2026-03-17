@@ -84,11 +84,13 @@
           <app-named-value>
             <ng-container name>Last attempted discovery stopped at</ng-container>
             <ng-container value>
-              @if (overview()?.lastDiscoveryResult) {
-                {{ overview()?.lastDiscoveryResult?.stoppedAt | date:'dd.MM.yyyy HH:mm:ss' }}
-              } @else {
-                N/A
-              }
+              <span data-testid="last-discovery-timestamp">
+                @if (overview()?.lastDiscoveryResult) {
+                  {{ overview()?.lastDiscoveryResult?.stoppedAt | date:'dd.MM.yyyy HH:mm:ss' }}
+                } @else {
+                  N/A
+                }
+              </span>
             </ng-container>
           </app-named-value>
           <app-named-value>

@@ -44,6 +44,15 @@ public class SettingsPage {
     public void deleteAllBackupTargets() {
         Repeat.on(page)
                 .action(() -> {
+                    /*
+                    The frontend might not have the latest state of Backup Targets by the time we navigate here.
+                    We must navigate (refresh) to pull the latest state from the backend.
+                     */
+                    navigate();
+                    if (deleteBackupTargetBtns.count() <= 0) {
+                        return;
+                    }
+
                     Locator currentDeleteButton = deleteBackupTargetBtns.first();
                     currentDeleteButton.click();
                     confirmDeleteBtn.click();
