@@ -49,8 +49,8 @@ export class PaginationComponent<T> implements OnInit {
     });
   }
 
-  restrictToNumbers(input: HTMLInputElement) {
-    input.value = input.value.replace(NOT_NUMBERS_REGEX, '')
+  restrictToNumbers(inputElement: HTMLInputElement) {
+    inputElement.value = inputElement.value.replaceAll(NOT_NUMBERS_REGEX, '')
       .replace(LEADING_ZEROES_REGEX, '');
   }
 
