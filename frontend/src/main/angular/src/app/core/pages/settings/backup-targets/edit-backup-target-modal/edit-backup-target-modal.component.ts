@@ -55,7 +55,7 @@ export class EditBackupTargetModalComponent {
       this.isLoading.set(false);
       return;
     }
-    this.backupTargetsClient.editBackupTarget(this.backupTarget()!.id, {
+    this.backupTargetsClient.editBackupTarget(this.backupTarget()!.id, { // NOSONAR
       name: this.editBackupTargetForm.controls.name.value
     })
       .pipe(finalize(() => this.isLoading.set(false)))

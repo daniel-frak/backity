@@ -5,7 +5,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, uses = BackupTargetHttpDtoMapper.class)
-public abstract class AddBackupTargetHttpDtoMapper {
+public interface AddBackupTargetHttpDtoMapper {
 
-    public abstract AddBackupTargetHttpResponse toDto(BackupTarget backupTarget);
+    AddBackupTargetHttpResponse toDto(BackupTarget backupTarget);
 }

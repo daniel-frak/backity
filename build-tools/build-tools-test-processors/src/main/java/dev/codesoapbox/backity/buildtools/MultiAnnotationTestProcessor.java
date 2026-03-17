@@ -36,6 +36,10 @@ public class MultiAnnotationTestProcessor extends AbstractProcessor {
     private Elements elements;
     private Types types;
 
+    public MultiAnnotationTestProcessor() {
+        // Properties are initialized in init()
+    }
+
     @Override
     public SourceVersion getSupportedSourceVersion() {
         return SourceVersion.latestSupported();
@@ -49,6 +53,7 @@ public class MultiAnnotationTestProcessor extends AbstractProcessor {
         types = env.getTypeUtils();
     }
 
+    @SuppressWarnings("java:S3516")
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         if (roundEnv.processingOver()) {
@@ -84,6 +89,7 @@ public class MultiAnnotationTestProcessor extends AbstractProcessor {
         }
     }
 
+    @SuppressWarnings("java:S1166") // No way to log the exception
     private void generateClass(GeneratedClassInfo generatedClassInfo) {
         String fullClassName = generatedClassInfo.getFullClassName();
 
