@@ -119,6 +119,7 @@
             ],
             "scripts": [],
             "codeCoverageExclude": [
+              "**/test-*.ts",
               "**/*.factory.ts",
               "**/*.stub.ts",
               "src/backend/**",
