@@ -27,6 +27,7 @@
         <sonar.coverage.exclusions>
             src/main/angular/src/environments/environment*.ts,
             src/main/angular/src/**/*.module.ts,
+            src/main/angular/src/**/test-*.ts,
             src/main/angular/src/**/*.stub.ts,
         </sonar.coverage.exclusions>
         <sonar.exclusions>
