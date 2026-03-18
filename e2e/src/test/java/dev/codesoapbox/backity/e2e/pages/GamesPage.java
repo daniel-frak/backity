@@ -49,8 +49,7 @@ public class GamesPage {
 
     private void refreshGames() {
         page.waitForResponse(this::isSuccessfulGetGamesResponse, searchButton::click);
-        loader.first().waitFor(new Locator.WaitForOptions()
-                .setState(WaitForSelectorState.HIDDEN));
+        waitUntilLoaderDisappears();
     }
 
     private boolean isSuccessfulGetGamesResponse(Response response) {
@@ -63,8 +62,8 @@ public class GamesPage {
                     Locator currentDeleteButton = deleteFileCopyButtons.first();
                     currentDeleteButton.click();
                     confirmFileCopyDeleteButton.click();
-                    loader.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
-                    currentDeleteButton.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
+                    waitUntilLoaderDisappears();
+                    currentDeleteButton.waitFor(isHidden());
                 })
                 .expectingResponse(this::deleteApiResponseIsSuccessful)
                 .until(() -> deleteFileCopyButtons.count() == 0);
@@ -77,21 +76,33 @@ public class GamesPage {
     }
 
     private void cancelAllBackupsOneByOne() {
+        this.deleteFileCopyButtons.count();
         Repeat.on(page)
                 .action(() -> {
                     Locator currentCancelButton = cancelFileCopyButtons.first();
                     currentCancelButton.click();
-                    loader.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
-                    currentCancelButton.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN));
+                    waitUntilLoaderDisappears();
+                    currentCancelButton.waitFor(isHidden());
                 })
                 .expectingResponse(this::cancelApiResponseIsSuccessful)
-                .until(() -> cancelFileCopyButtons.count() == 0);
+                .until(() -> {
+                    waitUntilLoaderDisappears();
+                    return cancelFileCopyButtons.count() == 0;
+                });
     }
 
     private boolean cancelApiResponseIsSuccessful(Response response) {
         return response.url().contains(FILE_COPY_QUEUE_REQUEST_URL)
                 && response.request().method().equals("DELETE")
                 && isSuccessful(response);
+    }
+
+    private void waitUntilLoaderDisappears() {
+        loader.first().waitFor(isHidden());
+    }
+
+    private Locator.WaitForOptions isHidden() {
+        return new Locator.WaitForOptions().setState(WaitForSelectorState.HIDDEN);
     }
 
     public void backUpFile(String fileTitle, String backupTargetName) {
