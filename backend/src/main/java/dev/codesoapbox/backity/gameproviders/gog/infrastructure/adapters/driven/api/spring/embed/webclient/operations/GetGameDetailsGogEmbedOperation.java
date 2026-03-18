@@ -121,7 +121,8 @@ public class GetGameDetailsGogEmbedOperation {
         return webClientEmbed.head()
                 .uri(fileUrl)
                 .header(GogEmbedHeaders.AUTHORIZATION, getBearerToken())
-                .exchangeToMono(response -> Mono.just(extractFileTitleFromResponse(response))).block();
+                .exchangeToMono(response -> Mono.just(extractFileTitleFromResponse(response)))
+                .block();
     }
 
     private String extractFileTitleFromResponse(ClientResponse response) {
