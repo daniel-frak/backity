@@ -76,7 +76,6 @@ public class GamesPage {
     }
 
     private void cancelAllBackupsOneByOne() {
-        this.deleteFileCopyButtons.count();
         Repeat.on(page)
                 .action(() -> {
                     Locator currentCancelButton = cancelFileCopyButtons.first();
