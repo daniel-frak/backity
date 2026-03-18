@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStrea
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.webclient.GogEmbedWebClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
