@@ -29,7 +29,10 @@ public class InitializeProgressAndStreamFileGogEmbedOperation {
                 .uri(url)
                 .header(GogEmbedHeaders.AUTHORIZATION, getBearerToken())
                 .exchangeToFlux(response -> {
-                    verifyResponseIsSuccessful(response, url);
+                    if (!response.statusCode().is2xxSuccessful()) {
+                        return Flux.error(new GameBackupRequestFailedException(
+                                url, "Http status code was: " + response.statusCode().value()));
+                    }
                     progressTracker.initializeTracking(extractSizeInBytes(response), clock);
                     return response.bodyToFlux(DataBuffer.class);
                 });
@@ -39,13 +42,6 @@ public class InitializeProgressAndStreamFileGogEmbedOperation {
 
     private String getBearerToken() {
         return "Bearer " + authService.getAccessToken();
-    }
-
-    private void verifyResponseIsSuccessful(ClientResponse response, String fileUrl) {
-        if (!response.statusCode().is2xxSuccessful()) {
-            throw new GameBackupRequestFailedException(fileUrl,
-                    "Http status code was: " + response.statusCode().value());
-        }
     }
 
     private long extractSizeInBytes(ClientResponse response) {

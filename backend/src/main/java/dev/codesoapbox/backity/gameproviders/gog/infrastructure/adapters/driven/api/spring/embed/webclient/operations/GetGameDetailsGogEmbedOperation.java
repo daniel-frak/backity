@@ -35,7 +35,7 @@ public class GetGameDetailsGogEmbedOperation {
     private final JsonMapper jsonMapper;
 
     public Optional<GogGameWithFiles> execute(String gameId) {
-        log.debug("Retrieving game details for game #{}}...", gameId);
+        log.debug("Retrieving game details for game #{}...", gameId);
 
         var loggedError = new AtomicBoolean();
         GogGameDetailsApiResponse detailsResponse = webClientEmbed.get()
