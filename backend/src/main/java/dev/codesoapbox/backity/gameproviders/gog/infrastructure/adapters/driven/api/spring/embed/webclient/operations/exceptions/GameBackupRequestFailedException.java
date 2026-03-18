@@ -1,4 +1,5 @@
-package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.webclient.operations.exceptions;
+package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.webclient.operations
+        .exceptions;
 
 public class GameBackupRequestFailedException extends RuntimeException {
 
