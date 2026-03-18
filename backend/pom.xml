@@ -398,7 +398,7 @@
                         <excludedClass>*WebSocketForwarder</excludedClass>
                         <excludedClass>*LogbackLogService</excludedClass>
                         <excludedClass>*StorageSolution</excludedClass>
-                        <excludedClass>*GogEmbedWebClient</excludedClass>
+                        <excludedClass>*GogEmbedOperation</excludedClass>
                         <excludedClass>*GogAuthClient</excludedClass>
                     </excludedClasses>
                     <excludedTestClasses>

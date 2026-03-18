@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.exceptions;
+package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.webclient.operations.exceptions;
 
 public class GameListRequestFailedException extends RuntimeException {
 

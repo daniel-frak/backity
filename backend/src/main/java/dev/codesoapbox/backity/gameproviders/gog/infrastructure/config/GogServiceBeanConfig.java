@@ -3,10 +3,14 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.config;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.auth.GogAuthClient;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.auth.GogAuthSpringService;
-import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.GogEmbedWebClient;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.GogFileBackupService;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.GogFileDiscoveryService;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.GogGameWithFilesMapper;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.webclient.GogEmbedWebClient;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.webclient.operations.GetGameDetailsGogEmbedOperation;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.webclient.operations.GetLibraryGameIdsGogEmbedOperation;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.webclient.operations.GetLibrarySizeGogEmbedOperation;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.webclient.operations.InitializeProgressAndStreamFileGogEmbedOperation;
 import dev.codesoapbox.backity.gameproviders.shared.infrastructure.adapters.driven.api.spring.DataBufferFluxTrackableFileStreamFactory;
 import dev.codesoapbox.backity.gameproviders.shared.infrastructure.config.slices.GameProviderServiceConfiguration;
 import lombok.RequiredArgsConstructor;
@@ -45,8 +49,17 @@ public class GogServiceBeanConfig {
             DataBufferFluxTrackableFileStreamFactory dataBufferFluxTrackableFileStreamFactory,
             Clock clock
     ) {
-        return new GogEmbedWebClient(webClientEmbed, jsonMapper, authService, dataBufferFluxTrackableFileStreamFactory,
-                clock);
+        var getLibraryGameIdsOperation = new GetLibraryGameIdsGogEmbedOperation(
+                webClientEmbed, authService);
+        var getGameDetailsOperation = new GetGameDetailsGogEmbedOperation(
+                webClientEmbed, authService, jsonMapper);
+        var getLibrarySizeOperation = new GetLibrarySizeGogEmbedOperation(
+                getLibraryGameIdsOperation, getGameDetailsOperation);
+        var initializeProgressAndStreamFileOperation = new InitializeProgressAndStreamFileGogEmbedOperation(
+                webClientEmbed, authService, dataBufferFluxTrackableFileStreamFactory, clock);
+
+        return new GogEmbedWebClient(getLibrarySizeOperation, getGameDetailsOperation,
+                getLibraryGameIdsOperation, initializeProgressAndStreamFileOperation);
     }
 
     @Bean
