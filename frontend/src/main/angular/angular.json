@@ -31,8 +31,17 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "favicon.svg",
+                "input": "../../../../branding",
+                "output": "/assets"
+              },
+              {
+                "glob": "logo-color-on-dark.svg",
+                "input": "../../../../branding",
+                "output": "/assets"
+              }
             ],
             "styles": [
               "src/styles.scss"
@@ -111,8 +120,17 @@
             },
             "inlineStyleLanguage": "scss",
             "assets": [
-              "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "favicon.svg",
+                "input": "../../../../branding",
+                "output": "/assets"
+              },
+              {
+                "glob": "logo-color-on-dark.svg",
+                "input": "../../../../branding",
+                "output": "/assets"
+              }
             ],
             "styles": [
               "src/styles.scss"
