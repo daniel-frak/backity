@@ -19,6 +19,7 @@ import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageableMapper;
+import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
@@ -42,8 +43,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@Transactional
-abstract class FileCopyJpaRepositoryAbstractIT {
+@MultiDatabaseRepositoryTest
+@Transactional // Required by @JpaRepositoryTest
+abstract class FileCopyJpaRepositoryIT {
 
     private static final LocalDateTime NOW = FakeTimeBeanConfig.DEFAULT_NOW;
     private static final LocalDate TODAY = NOW.toLocalDate();

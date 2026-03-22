@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.game.domain.exceptions.GameNotFoundException;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
+import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,9 @@ import java.util.function.Supplier;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@Transactional
-abstract class GameJpaRepositoryAbstractIT {
+@MultiDatabaseRepositoryTest
+@Transactional // Required by @JpaRepositoryTest
+abstract class GameJpaRepositoryIT {
 
     @Autowired
     private GameJpaRepository repository;

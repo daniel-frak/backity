@@ -19,6 +19,7 @@ import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaEntityMapper;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
+import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,8 +46,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
-@Transactional
-abstract class GameWithFileCopiesReadModelJpaRepositoryAbstractIT {
+@MultiDatabaseRepositoryTest
+@Transactional // Required by @JpaRepositoryTest
+abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
 
     private static final LocalDateTime NOW = FakeTimeBeanConfig.DEFAULT_NOW;
     private static final LocalDate TODAY = NOW.toLocalDate();
