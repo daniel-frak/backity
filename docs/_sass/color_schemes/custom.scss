@@ -21,18 +21,21 @@ $statuses: (
         )
 );
 
+.nav-list .nav-list-item > .nav-list .nav-list-item .nav-list-link {
+  color: $yellow-300 !important;
+}
+
 @each $status, $props in $statuses {
   $color: map-get($props, color);
 
-  .nav-list .nav-list-item > .nav-list .nav-list-item .nav-list-link {
-    &[href*="/statuses/#{$status}"],
-    &[href*="/statuses/#{$status}"] ~ ul li a {
-      color: #{$color} !important;
+  .nav-list .nav-list-item > .nav-list .nav-list-item:has(> .nav-list-link[href*="/statuses/#{$status}"]) {
+
+    > .nav-list-link {
+      color: $color !important;
+    }
+
+    .nav-list-link {
+      color: $color !important;
     }
   }
-}
-
-.nav-list .nav-list-item > .nav-list .nav-list-item .nav-list-link {
-  // Make sub-pages yellow instead of grey by default
-  color: $yellow-300!important;
 }
