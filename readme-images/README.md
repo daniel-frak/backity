@@ -1,0 +1,1 @@
+This folder contains images only used in the repository README page.

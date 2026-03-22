@@ -1,0 +1,1 @@
+This folder contains assets related to the project branding.
