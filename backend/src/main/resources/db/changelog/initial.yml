@@ -1,0 +1,304 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_game
+      author: daniel_frak
+      changes:
+        - createTable:
+            tableName: game
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_game
+              - column:
+                  name: title
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_created
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_modified
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+
+        - addUniqueConstraint:
+            tableName: game
+            columnNames: title
+            constraintName: uq_game_title
+
+  - changeSet:
+      id: create_source_file
+      author: daniel_frak
+      changes:
+        - createTable:
+            tableName: source_file
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_source_file
+              - column:
+                  name: game_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_created
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_modified
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: game_provider_id
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: original_game_title
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_title
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: url
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: original_file_name
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: size_in_bytes
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: source_file
+            baseColumnNames: game_id
+            referencedTableName: game
+            referencedColumnNames: id
+            constraintName: fk_source_file_game
+
+        - createIndex:
+            tableName: source_file
+            indexName: idx_source_file_game_id
+            columns:
+              - column:
+                  name: game_id
+
+  - changeSet:
+      id: create_game_content_discovery_result
+      author: daniel_frak
+      changes:
+        - createTable:
+            tableName: game_content_discovery_result
+            columns:
+              - column:
+                  name: game_provider_id
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_game_content_discovery_result
+              - column:
+                  name: started_at
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: stopped_at
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: discovery_outcome
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_successful_discovery_completed_at
+                  type: DATETIME
+                  constraints:
+                    nullable: true
+              - column:
+                  name: games_discovered
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+              - column:
+                  name: source_files_discovered
+                  type: INTEGER
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: create_backup_target
+      author: daniel_frak
+      changes:
+        - createTable:
+            tableName: backup_target
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_backup_target
+              - column:
+                  name: date_created
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_modified
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: storage_solution_id
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: path_template
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: create_file_copy
+      author: daniel_frak
+      changes:
+        - createTable:
+            tableName: file_copy
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_file_copy
+              - column:
+                  name: source_file_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: backup_target_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR
+                  constraints:
+                    nullable: false
+              - column:
+                  name: failed_reason
+                  type: VARCHAR
+                  constraints:
+                    nullable: true
+              - column:
+                  name: file_path
+                  type: VARCHAR
+                  constraints:
+                    nullable: true
+              - column:
+                  name: date_created
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_modified
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: file_copy
+            baseColumnNames: source_file_id
+            referencedTableName: source_file
+            referencedColumnNames: id
+            constraintName: fk_file_copy_source_file
+
+        - addForeignKeyConstraint:
+            baseTableName: file_copy
+            baseColumnNames: backup_target_id
+            referencedTableName: backup_target
+            referencedColumnNames: id
+            constraintName: fk_file_copy_backup_target
+
+        - createIndex:
+            tableName: file_copy
+            indexName: idx_file_copy_backup_target_id_status
+            columns:
+              - column:
+                  name: backup_target_id
+              - column:
+                  name: status
+
+        - createIndex:
+            tableName: file_copy
+            indexName: idx_file_copy_source_file_id
+            columns:
+              - column:
+                  name: source_file_id
+
+        - createIndex:
+            tableName: file_copy
+            indexName: idx_file_copy_date_created
+            columns:
+              - column:
+                  name: date_created
+
+        - createIndex:
+            tableName: file_copy
+            indexName: uq_file_copy_source_file_backup_target
+            unique: true
+            columns:
+              - column:
+                  name: source_file_id
+              - column:
+                  name: backup_target_id
+
+        - createIndex:
+            tableName: file_copy
+            indexName: uq_file_copy_file_path
+            unique: true
+            columns:
+              - column:
+                  name: file_path
