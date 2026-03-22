@@ -33,7 +33,7 @@ jobs:
       - name: Copy favicon
         run: |
           mkdir -p docs/assets
-          cp branding/favicon.svg docs/assets/docs_favicon.svg
+          cp branding/favicon.svg docs/assets/favicon.svg
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
