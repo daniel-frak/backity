@@ -3,7 +3,7 @@ remote_theme: pmarsceill/just-the-docs
 color_scheme: custom
 markdown: kramdown
 search_enabled: true
-favicon_ico: "/assets/images/docs_favicon.svg"
+favicon_ico: "/assets/docs_favicon.svg"
 aux_links:
   "Backity on GitHub":
     - "//github.com/daniel-frak/backity"
