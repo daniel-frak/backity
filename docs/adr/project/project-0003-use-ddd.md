@@ -1,12 +1,8 @@
 ---
 title: 0003 - Use Domain-Driven Design
-parent: Architecture Decision Records (project-wide)
+parent: Accepted
+grand_parent: Architecture Decision Records (project-wide)
 ---
-
-## Status
-
-Accepted
-{: .label .label-green}
 
 ## Context
 

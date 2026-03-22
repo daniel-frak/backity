@@ -1,12 +1,8 @@
 ---
 title: 0007 - Decouple event listeners from handlers
-parent: Architecture Decision Records (backend)
+parent: Accepted
+grand_parent: Architecture Decision Records (backend)
 ---
-
-## Status
-
-Accepted
-{: .label .label-green}
 
 ## Context
 

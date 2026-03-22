@@ -1,12 +1,8 @@
 ---
 title: 0002 - Use consistent naming conventions for Liquibase migrations
-parent: Architecture Decision Records (backend)
+parent: Accepted
+grand_parent: Architecture Decision Records (backend)
 ---
-
-## Status
-
-Accepted
-{: .label .label-green}
 
 ## Context
 

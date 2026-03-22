@@ -1,12 +1,8 @@
 ---
 title: 0005 - Use Pitest for mutation testing
-parent: Architecture Decision Records (backend)
+parent: Accepted
+grand_parent: Architecture Decision Records (backend)
 ---
-
-## Status
-
-Accepted
-{: .label .label-green}
 
 ## Context
 

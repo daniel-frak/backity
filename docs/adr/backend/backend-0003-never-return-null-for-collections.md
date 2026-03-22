@@ -1,12 +1,8 @@
 ---
 title: 0003 - Never Return NULL for Collection Types
-parent: Architecture Decision Records (backend)
+parent: Accepted
+grand_parent: Architecture Decision Records (backend)
 ---
-
-## Status
-
-Accepted
-{: .label .label-green}
 
 ## Context
 

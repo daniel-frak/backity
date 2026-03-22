@@ -1,12 +1,8 @@
 ---
 title: 0006 - Prefer to treat a single class as a unit for testing
-parent: Architecture Decision Records (backend)
+parent: Accepted
+grand_parent: Architecture Decision Records (backend)
 ---
-
-## Status
-
-Accepted
-{: .label .label-green}
 
 ## Context
 

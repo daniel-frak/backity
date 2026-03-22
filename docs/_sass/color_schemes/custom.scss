@@ -7,3 +7,32 @@ $yellow-300: #ffc107ff;
 
 $link-color: $yellow-200;
 $btn-primary-color: $yellow-300;
+
+// Sidebar status colors and icons for ADRs
+$statuses: (
+        accepted: (
+                color: $green-100
+        ),
+        superseded: (
+                color: $yellow-300
+        ),
+        deprecated: (
+                color: $red-300
+        )
+);
+
+@each $status, $props in $statuses {
+  $color: map-get($props, color);
+
+  .nav-list .nav-list-item > .nav-list .nav-list-item .nav-list-link {
+    &[href*="/statuses/#{$status}"],
+    &[href*="/statuses/#{$status}"] ~ ul li a {
+      color: #{$color} !important;
+    }
+  }
+}
+
+.nav-list .nav-list-item > .nav-list .nav-list-item .nav-list-link {
+  // Make sub-pages yellow instead of grey by default
+  color: $yellow-300!important;
+}

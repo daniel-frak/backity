@@ -1,11 +1,8 @@
 ---
 title: 0001 - Prefer ArchUnit as an Architectural Decision Record store
-parent: Architecture Decision Records (backend)
+parent: Accepted
+grand_parent: Architecture Decision Records (backend)
 ---
-
-## Status
-Accepted
-{: .label .label-green}
 
 ## Context
 

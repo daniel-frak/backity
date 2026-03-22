@@ -13,6 +13,13 @@ aux_links_new_tab: true
 back_to_top: true
 back_to_top_text: "Back to top"
 
+defaults:
+  - scope:
+      path: "adr"
+      type: "pages"
+    values:
+      layout: "adr"
+
 # Diagrams
 mermaid:
   version: "11.6.0" # https://cdn.jsdelivr.net/npm/mermaid/

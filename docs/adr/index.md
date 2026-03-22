@@ -1,5 +1,6 @@
 ---
-title: Architecture Decision Records 
+title: Architecture Decision Records
+layout: default
 ---
 
 This section documents key architectural decisions made during the project's development.

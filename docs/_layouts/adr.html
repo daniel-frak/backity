@@ -1,0 +1,22 @@
+---
+layout: default
+---
+
+{% assign status = page.parent %}
+
+{% case status %}
+    {% when "Accepted" %}
+        {% assign color = "green" %}
+    {% when "Superseded" %}
+        {% assign color = "yellow" %}
+    {% when "Deprecated" %}
+        {% assign color = "red" %}
+{% else %}
+    {% assign color = "" %}
+{% endcase %}
+
+<h2>Status</h2>
+
+<span class="label label-{{ color }}">{{ status }}</span>
+
+{{ content }}
