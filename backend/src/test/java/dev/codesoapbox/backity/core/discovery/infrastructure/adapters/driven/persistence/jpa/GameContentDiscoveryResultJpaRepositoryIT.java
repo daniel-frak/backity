@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.pe
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResult;
 import dev.codesoapbox.backity.core.discovery.domain.TestGameContentDiscoveryResult;
+import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,9 @@ import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Transactional
-abstract class GameContentDiscoveryResultJpaRepositoryAbstractIT {
+@MultiDatabaseRepositoryTest
+@Transactional // Required by @JpaRepositoryTest
+abstract class GameContentDiscoveryResultJpaRepositoryIT {
 
     @Autowired
     protected GameContentDiscoveryResultJpaRepository repository;

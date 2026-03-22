@@ -11,6 +11,7 @@ import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.pe
 import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaEntityMapper;
 import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaRepository;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
+import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,8 +29,9 @@ import static dev.codesoapbox.backity.core.game.domain.TestGame.anyBuilder;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@Transactional
-abstract class SourceFileJpaRepositoryAbstractIT {
+@MultiDatabaseRepositoryTest
+@Transactional // Required by @JpaRepositoryTest
+abstract class SourceFileJpaRepositoryIT {
 
     @Autowired
     protected SourceFileJpaRepository sourceFileJpaRepository;

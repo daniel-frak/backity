@@ -6,13 +6,13 @@ import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.exceptions.BackupTargetNotFoundException;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.data.auditing.AuditingHandler;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,8 +24,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 
 @MultiDatabaseRepositoryTest
-@Transactional
-abstract class BackupTargetJpaRepositoryAbstractIT {
+@Transactional // Required by @JpaRepositoryTest
+abstract class BackupTargetJpaRepositoryIT {
 
     private final Persist persist = new Persist();
     private final Assertions assertThat = new Assertions();
