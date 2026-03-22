@@ -47,7 +47,7 @@ spring:
       ddl-auto: validate
     database-platform: org.hibernate.dialect.H2Dialect
   liquibase:
-    change-log: classpath:db/changelog/db.changelog-root.xml
+    change-log: classpath:db/changelog/changelog-root.yml
 
   cloud: # S3
     aws:
