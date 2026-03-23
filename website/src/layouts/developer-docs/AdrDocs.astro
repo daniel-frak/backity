@@ -1,0 +1,55 @@
+---
+import DeveloperDocs from "./DeveloperDocs.astro";
+import {statuses} from "./config";
+import {getAdrPath} from './services/adrService.ts'
+import {withBase} from "../../url.ts";
+
+const {frontmatter} = Astro.props;
+---
+
+<DeveloperDocs {frontmatter}>
+    {frontmatter.tags && frontmatter.tags.length > 0 && (
+            <div class="tags">
+                Tags:&nbsp;
+                {frontmatter.tags.map((tag: string, index: number) => (
+                        <>
+                            <a href={withBase(`${getAdrPath()}/tags/${encodeURIComponent(tag)}`)} class="tag">
+                                {tag}
+                            </a>
+                            {index < frontmatter.tags.length - 1 && ', '}
+                        </>
+                ))}
+            </div>
+    )}
+
+    <span class={`label ${statuses[frontmatter.status].class}`}>
+        {statuses[frontmatter.status].label}
+    </span>
+    <slot/>
+</DeveloperDocs>
+
+<style>
+    .tags {
+        padding-bottom: var(--spacer);
+    }
+
+    .label {
+        text-transform: uppercase;
+        border-radius: var(--border-radius);
+        color: var(--bg-color);
+        padding: 0.25rem 0.5rem;
+
+        &.status-accepted {
+            background-color: var(--accepted-color);
+        }
+
+        &.status-superseded {
+            background-color: var(--superseded-color);
+        }
+
+        &.status-deprecated {
+            background-color: var(--deprecated-color);
+        }
+    }
+
+</style>

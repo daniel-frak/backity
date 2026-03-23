@@ -1,0 +1,214 @@
+---
+import BaseLayout from "../BaseLayout.astro";
+import Search from "astro-pagefind/components/Search";
+import DevDocNav from "./components/DevDocNav.astro";
+import type {DevDocNode} from "./domain";
+import {createAdrNodes, getDevDocsPath} from "./services/adrService";
+import {buildTree, sortTree} from "./services/treeService";
+import {adrPath, scopeOrder, statusOrder, scopeLabels, statuses} from "./config";
+import {getCollection} from "astro:content";
+import {isSameUrl, withBase} from "../../url.ts";
+
+const {frontmatter} = Astro.props;
+const {url} = Astro;
+const currentPath: string = url.pathname;
+
+const devDocs: DevDocNode[] = (await getCollection('devDocs'))
+    .map((doc: any) => ({
+        id: doc.id,
+        title: doc.data.title,
+        url: `${getDevDocsPath()}/${doc.id}`,
+        parent: doc.data.parent,
+        order: doc.data.order,
+    }));
+
+const additionalDevDocs: DevDocNode[] =
+    Object.values(import.meta.glob('/src/pages/developer-documentation/*.md', {eager: true}))
+        .map((doc: any) => ({
+            id: doc.frontmatter.id!,
+            title: doc.frontmatter.title,
+            url: doc.url,
+            parent: doc.frontmatter.parent,
+            order: doc.frontmatter.order,
+        }));
+
+const adrDocs: DevDocNode[] = (await getCollection('adrs'))
+    .map((adr: any) => ({
+        ...adr,
+        id: adr.id.split('/').pop(),
+    }));
+
+const adrRoot: DevDocNode | undefined = [...devDocs, ...additionalDevDocs]
+    .find((d: DevDocNode): boolean => d.id === adrPath);
+const adrNodes: DevDocNode[] = adrRoot ? createAdrNodes(adrDocs, adrRoot.id) : [];
+
+const allDocs: DevDocNode[] = [...devDocs, ...additionalDevDocs, ...adrNodes];
+const allDocsTree: DevDocNode[] = buildTree(allDocs);
+
+const getOrder = (doc: DevDocNode) => {
+    const DEFAULT_ORDER_LAST: number = 999;
+    const docTitleLower: string = doc.title.toLowerCase();
+
+    const scopeKey: string | undefined =
+        Object.keys(scopeLabels).find(key => scopeLabels[key].toLowerCase() === docTitleLower);
+    if (scopeKey && scopeOrder.includes(scopeKey)) {
+        return scopeOrder.indexOf(scopeKey);
+    }
+
+    const statusKey: string | undefined =
+        Object.keys(statuses).find(key => statuses[key].label.toLowerCase() === docTitleLower);
+    if (statusKey && statusOrder.includes(statusKey)) {
+        return statusOrder.indexOf(statusKey);
+    }
+
+    return doc.order ?? DEFAULT_ORDER_LAST;
+};
+
+const topLevelDocs: DevDocNode[] = sortTree(allDocsTree.filter(d => !d.parent), getOrder);
+
+const firstTopLevelDoc: DevDocNode = topLevelDocs[0];
+const firstTopLevelDocUrl: string = firstTopLevelDoc?.url;
+const docsRootUrl: string = firstTopLevelDocUrl?.substring(0, firstTopLevelDocUrl.lastIndexOf('/'));
+
+const isActive = (item: DevDocNode) => {
+    const currentUrl: string = getCurrentPageUrl(item);
+    return isSameUrl(currentUrl, item.url) || (item.items?.some(isActive) ?? false);
+};
+
+function getCurrentPageUrl(item: DevDocNode) {
+    const current: string = isDevDocsRootAndActive(item)
+        ? firstTopLevelDocUrl
+        : currentPath;
+
+    return stripSlashSuffix(current);
+}
+
+function isDevDocsRootAndActive(item: DevDocNode) {
+    return isSameUrl(item.url, firstTopLevelDocUrl) && isSameUrl(currentPath, docsRootUrl);
+}
+
+function stripSlashSuffix(currentPath: string) {
+    return currentPath.replace(/\/$/, "");
+}
+
+const isCurrentPage = (item: DevDocNode) => {
+    return isSameUrl(getCurrentPageUrl(item), item.url);
+};
+---
+
+<BaseLayout>
+    <Search id="dev-docs-search" className="search-bar" uiOptions={{showImages: false}}/>
+    <div id="dev-docs-container">
+        <details id="sidenav">
+            <summary class="menu-btn" aria-label="Toggle developer documentation navigation"/>
+            <nav>
+                <DevDocNav items={topLevelDocs} isActive={isActive} isCurrentPage={isCurrentPage}/>
+            </nav>
+        </details>
+
+        <main data-pagefind-body>
+            <h1>{frontmatter.title}</h1>
+            <slot/>
+        </main>
+    </div>
+</BaseLayout>
+
+<style lang="scss">
+  @use "../../styles/scss_vars" as *;
+  @use "../../styles/mixins" as *;
+
+  :root {
+    // https://pagefind.app/docs/ui-usage/?utm_source=chatgpt.com#customising-the-styles
+    --pagefind-ui-primary: var(--primary-color);
+    --pagefind-ui-text: var(--text-color);
+    --pagefind-ui-background: var(--bg-color);
+    --pagefind-ui-border: var(--secondary-color);
+    --pagefind-ui-border-radius: 8px;
+    --pagefind-ui-font: var(--font-family);
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+
+    &::marker, &::-webkit-details-marker {
+      content: '';
+    }
+
+    &.menu-btn {
+      @include btn();
+      display: none;
+      @media(max-width: $breakpoint-nav) {
+        display: flex;
+      }
+      width: 2rem;
+      height: 2rem;
+      align-self: end;
+
+      &:after {
+        background-color: currentColor;
+        width: 1.5rem;
+        height: 1.5rem;
+
+        mask: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>\
+<path d='M7.4 8.6L12 13.2l4.6-4.6 1.4 1.4L12 16 6 10z'/>\
+</svg>") no-repeat center;
+
+        mask-size: contain;
+        content: '';
+      }
+    }
+  }
+
+  details:not([open]):has(>summary.menu-btn) {
+    &::details-content {
+      content-visibility: visible;
+      @media(max-width: $breakpoint-nav) {
+        content-visibility: hidden;
+      }
+    }
+  }
+
+  details[open] > summary.menu-btn::after {
+    transform: rotate(180deg);
+  }
+
+  #dev-docs-container {
+    --gap: var(--spacer);
+
+    display: flex;
+    align-items: stretch;
+    gap: var(--gap);
+
+    & > * {
+      min-width: 0;
+      word-break: break-word;
+    }
+
+    #sidenav {
+      min-width: calc(var(--spacer) * 18);
+      max-width: calc(var(--spacer) * 18);
+      padding-right: var(--gap);
+      border-right: 1px solid var(--secondary-color);
+      display: flex;
+      align-items: stretch;
+      flex-direction: column;
+
+      @media(max-width: $breakpoint-nav) {
+        min-width: unset;
+        max-width: unset;
+        width: 100%;
+        border: 0;
+        padding: 0 0 var(--gap);
+        border-bottom: 1px solid var(--secondary-color);
+      }
+    }
+
+    @media(max-width: $breakpoint-nav) {
+      flex-direction: column;
+    }
+  }
+</style>

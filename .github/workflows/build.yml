@@ -6,12 +6,20 @@ on:
       - main
     paths-ignore:
       - 'docs/**'
+      - 'website'
+      - 'branding'
+      - 'readme-images'
       - '**.md'
+      - '.run'
   pull_request:
     types: [opened, synchronize, reopened]
     paths-ignore:
       - 'docs/**'
+      - 'website'
+      - 'branding'
+      - 'readme-images'
       - '**.md'
+      - '.run'
 
 env:
   JAVA_VERSION: '25-ea'

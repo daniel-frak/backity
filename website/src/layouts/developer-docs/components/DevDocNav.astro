@@ -1,0 +1,114 @@
+---
+import type {DevDocNode} from "../domain";
+import {withBase} from "../../../url.ts";
+
+const {items, isActive, isCurrentPage} = Astro.props as {
+    items?: DevDocNode[];
+    isActive: (doc: DevDocNode) => boolean;
+    isCurrentPage: (doc: DevDocNode) => boolean;
+};
+---
+
+<ul>
+    {items?.map((item) => (
+            <li class={item.class ?? ""}>
+                {item.items?.length ? (
+                        <details open={isActive(item)}>
+                            <summary>
+                                {item.url === "#" ? (
+                                        <span>{item.title}</span>
+                                ) : (
+                                        <a href={withBase(item.url)} aria-current={
+                                            isCurrentPage(item)
+                                                ? "page"
+                                                : undefined
+                                        }>
+                                            {item.title}
+                                        </a>
+                                )}
+                            </summary>
+                            <Astro.self
+                                    items={item.items}
+                                    isActive={isActive}
+                                    isCurrentPage={isCurrentPage}
+                            />
+                        </details>
+                ) : item.url === "#" ? (
+                        <span>{item.title}</span>
+                ) : (
+                        <a href={withBase(item.url)} aria-current={isCurrentPage(item) ? "page" : undefined}>
+                            {item.title}
+                        </a>
+                )}
+            </li>
+    ))}
+</ul>
+
+<style lang="scss">
+  @use "../../../styles/scss_vars" as *;
+  @use "../../../styles/mixins" as *;
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+
+    &::marker, &::-webkit-details-marker {
+      content: '';
+    }
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+
+    summary {
+      @media(max-width: $breakpoint-nav) {
+        padding-right: .75em;
+      }
+    }
+
+    summary::after {
+      content: "";
+      width: 0.4em;
+      height: 0.4em;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(45deg);
+    }
+
+    /* Rotate when open */
+    details[open] > summary::after {
+      transform: rotate(225deg);
+    }
+  }
+
+  ul ul {
+    padding-left: var(--spacer);
+  }
+
+  li {
+    display: inline-block;
+    text-align: left;
+  }
+
+  a {
+    color: var(--text-color);
+    display: block;
+    padding: calc(var(--spacer) * .25) 0;
+  }
+
+  a:hover {
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+
+  a[aria-current="page"] {
+    color: var(--primary-color);
+    font-weight: bold;
+  }
+</style>

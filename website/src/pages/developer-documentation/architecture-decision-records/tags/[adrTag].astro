@@ -1,0 +1,50 @@
+---
+import {getCollection} from "astro:content";
+import DeveloperDocs from "../../../../layouts/developer-docs/DeveloperDocs.astro";
+import {formatAdrTitleWithScope, getAdrPath} from "../../../../layouts/developer-docs/services/adrService"
+import {withBase} from "../../../../url.ts";
+
+export async function getStaticPaths() {
+    const tagsSet = new Set<string>();
+    (await getCollection('adrs'))
+        .forEach((adr: any) => adr.data.tags
+            ?.forEach((tag: string) => tagsSet.add(tag)));
+
+    return Array.from(tagsSet).map(tag => ({
+        params: {adrTag: tag},
+    }));
+}
+
+const {adrTag} = Astro.params;
+
+const filteredAdrs: any = (await getCollection('adrs'))
+    .filter((adr: any) => adr.data.tags?.includes(adrTag))
+    .map((adr: any) => {
+        const filename = adr.id.split('/').pop();
+
+        return {
+            ...adr,
+            id: filename,
+            data: {
+                ...adr.data,
+                title: formatAdrTitleWithScope(adr)
+            }
+        };
+    });
+
+const frontmatter: any = {
+    title: `ADRs tagged with "${adrTag}"`
+}
+---
+
+<DeveloperDocs {frontmatter}>
+    <ul>
+        {
+            filteredAdrs.map((adr: any) => (
+                    <li><a href={withBase(`${getAdrPath()}/${adr.id}`)}>{adr.data.title}</a></li>
+            ))
+        }
+    </ul>
+
+    <a href=`${withBase(getAdrPath())}/tags`>View all tags</a>
+</DeveloperDocs>

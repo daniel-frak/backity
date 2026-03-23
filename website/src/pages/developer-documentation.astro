@@ -1,0 +1,15 @@
+---
+const firstDoc = Object.values(
+    import.meta.glob('./developer-documentation/*.md', {eager: true})
+)
+    .filter((doc: any) => !doc.frontmatter.parent)
+    .sort((a: any, b: any) => (a.frontmatter.order ?? 0) - (b.frontmatter.order ?? 0))
+    [0];
+
+const {default: Content} = firstDoc as { default: any };
+
+export const frontmatter = {
+    order: Infinity
+};
+---
+<Content/>

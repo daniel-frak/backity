@@ -18,6 +18,8 @@
 
 </div>
 
+<!-- START_WEBSITE -->
+
 Backity is a web service for automatically downloading backups of your games from external clients such as GOG.
 
 **For instructions on how to use Backity, [consult the Wiki](https://github.com/daniel-frak/backity/wiki).**
@@ -100,6 +102,7 @@ The following information is useful to know about the application's functionalit
   This helps to protect the existing file
   and prevents multiple FileCopy aggregates from pointing to the same physical file.
 
+<!-- END_WEBSITE -->
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with
 markdown-toc</a></i></small>
