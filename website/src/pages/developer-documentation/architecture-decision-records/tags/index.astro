@@ -1,0 +1,26 @@
+---
+import {getCollection} from "astro:content";
+import {getAdrPath} from "../../../../layouts/developer-docs/services/adrService";
+import DeveloperDocs from "../../../../layouts/developer-docs/DeveloperDocs.astro";
+import {withBase} from "../../../../url.ts";
+
+const adrs = await getCollection("adrs");
+
+const allTags = Array.from(
+    new Set(adrs.flatMap(adr => adr.data.tags ?? []))
+).sort();
+
+const frontmatter = {
+    title: `All ADR tags`
+}
+---
+
+<DeveloperDocs {frontmatter}>
+<ul>
+    {allTags.map(tag => (
+            <li>
+                <a href={withBase(`${getAdrPath()}/tags/${tag}`)}>{tag}</a>
+            </li>
+    ))}
+</ul>
+</DeveloperDocs>

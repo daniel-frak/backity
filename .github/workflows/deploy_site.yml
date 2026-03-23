@@ -1,0 +1,38 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # Minimal permissions required for building and uploading Pages artifact
+    permissions:
+      contents: read # required by actions/checkout
+      pages: write # required by actions/configure-pages
+
+    steps:
+      - name: Checkout your repository using git
+        uses: actions/checkout@v5
+      - name: Install, build, and upload your site
+        # https://github.com/withastro/action
+        uses: withastro/action@1e076bab663bb208f3de12556795ae51b3885b0e # v6
+        with:
+          path: ./website
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write # required to deploy to GitHub Pages
+      id-token: write # required for OIDC authentication
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

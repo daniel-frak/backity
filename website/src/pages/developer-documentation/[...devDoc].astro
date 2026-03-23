@@ -1,0 +1,21 @@
+---
+import { getCollection, render } from 'astro:content';
+import DeveloperDocs from "../../layouts/developer-docs/DeveloperDocs.astro";
+
+export async function getStaticPaths() {
+    const devDocs = await getCollection('devDocs');
+
+    return devDocs.map((devDoc) => ({
+        params: { devDoc: devDoc.id }, // string, matches [devDoc]
+        props: { adr: devDoc },
+    }));
+}
+
+const { adr: devDoc } = Astro.props;
+const frontmatter = { ...devDoc.data };
+const { Content } = await render(devDoc);
+---
+
+<DeveloperDocs {frontmatter}>
+    <Content/>
+</DeveloperDocs>

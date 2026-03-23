@@ -1,0 +1,149 @@
+---
+import logo from '@branding/logo-color-on-dark.svg';
+import {isSameUrl, urlStartsWith, withBase} from "../url.ts";
+
+const {url} = Astro;
+const currentPath: string = url.pathname;
+
+const navItems: any = Object.entries(
+    import.meta.glob('/src/pages/*.{astro,md}', {eager: true})
+).map(([filePath, module]: [string, any]) => {
+    const filenameTitle = filePath
+        .replace('/src/pages/', '')
+        .replace(/\.(astro|md)$/, '')
+        .replace(/[-_]/g, ' ')
+        .replace(/^\w/, c => c.toUpperCase()); // e.g., "my-page" → "My page"
+
+    return {
+        ...module,
+        frontmatter: {
+            title: filenameTitle,
+            ...module.frontmatter,
+        },
+    };
+}).sort((a, b) => {
+    const aOrder = a.frontmatter?.order ?? 999;
+    const bOrder = b.frontmatter?.order ?? 999;
+    return aOrder - bOrder;
+});
+---
+
+<header class="navbar">
+    <div id="top-nav-logo-and-toggle">
+        <img class="logo" src={logo.src} alt="Logo"/>
+        <input type="checkbox" id="top-nav-toggle">
+        <label for="top-nav-toggle" aria-label="Toggle navigation menu"/>
+    </div>
+
+    <nav id="top-nav">
+        <ul>
+            {navItems.map(item => (
+                    <li>
+                        <a
+                                href={withBase(item.url)}
+                                aria-current={
+                                    isSameUrl(item.url, '/')
+                                        ? isSameUrl(currentPath, '/')
+                                            ? 'page'
+                                            : undefined
+                                        : urlStartsWith(currentPath, item.url)
+                                            ? 'page'
+                                            : undefined
+                                }
+                        >
+                            {item.frontmatter.title}
+                        </a>
+                    </li>
+            ))}
+        </ul>
+    </nav>
+</header>
+
+<style lang="scss">
+  @use "../styles/scss_vars.scss" as *;
+  @use "../styles/mixins.scss" as *;
+
+  #top-nav-logo-and-toggle {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--spacer);
+  }
+
+  #top-nav-toggle {
+    display: none;
+  }
+
+  label[for="top-nav-toggle"] {
+    display: none;
+  }
+
+  @media(max-width: $breakpoint-nav) {
+    label[for="top-nav-toggle"] {
+      @include btn();
+      width: 2rem;
+      height: 2rem;
+      align-self: end;
+
+      &:after {
+        content: '☰';
+      }
+    }
+    #top-nav {
+      display: none;
+    }
+    header:has(#top-nav-toggle:checked) #top-nav {
+      display: inline-block;
+    }
+    #top-nav-toggle:checked + label[for="top-nav-toggle"]:after {
+      content: '×'
+    }
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: calc(var(--spacer) * 0.5) 0;
+
+    @media(max-width: $breakpoint-nav) {
+      flex-direction: column;
+      padding-bottom: 0;
+      align-items: stretch;
+    }
+  }
+
+  .logo {
+    height: 4rem;
+    padding: calc(var(--spacer) * 0.3125) 0;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--spacer);
+    @media(max-width: $breakpoint-nav) {
+      flex-direction: column;
+      align-items: flex-end;
+    }
+  }
+
+  li {
+    display: inline-block;
+  }
+
+  a {
+    color: var(--text-color);
+  }
+
+  a:hover {
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+
+  a[aria-current="page"] {
+    color: var(--primary-color);
+    font-weight: bold;
+  }
+</style>

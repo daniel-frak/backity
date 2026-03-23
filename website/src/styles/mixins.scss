@@ -1,0 +1,26 @@
+@use "../styles/scss_vars.scss" as *;
+
+@mixin btn {
+  display: flex;
+  cursor: pointer;
+  color: var(--primary-color);
+  justify-content: center;
+  align-items: center;
+  align-self: end;
+  border-radius: var(--border-radius);
+  margin: var(--spacer) 0;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--primary-color);
+    color: var(--bg-color);
+  }
+
+  @media(max-width: $breakpoint-nav) {
+    &:hover,
+    &:focus-visible {
+      background-color: unset;
+      color: var(--primary-color);
+    }
+  }
+}

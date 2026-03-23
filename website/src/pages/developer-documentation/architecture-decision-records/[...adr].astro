@@ -1,0 +1,30 @@
+---
+import {getCollection, render} from 'astro:content';
+import AdrDocs from "../../../layouts/developer-docs/AdrDocs.astro";
+import {formatAdrTitleWithScope} from "../../../layouts/developer-docs/services/adrService"
+
+export async function getStaticPaths() {
+    const adrs = await getCollection('adrs');
+
+    return adrs.map((adr) => {
+        const filename = adr.id.split('/').pop();
+
+        return {
+            params: {adr: filename},
+            props: {adr},
+        };
+    });
+}
+
+const {adr} = Astro.props;
+const frontmatter = {
+    ...adr.data,
+    title: formatAdrTitleWithScope(adr),
+};
+
+const {Content} = await render(adr);
+---
+
+<AdrDocs {frontmatter}>
+    <Content/>
+</AdrDocs>
