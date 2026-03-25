@@ -1,5 +1,3 @@
-@import "bootstrap/scss/mixins";
-@import "bootstrap/scss/functions";
-@import "./variables";
-@import "./mixins";
-@import "bootstrap/scss/variables";
+@forward "bootstrap/scss/functions";
+@forward "./variables";
+@forward "./mixins";

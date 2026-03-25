@@ -1,8 +1,8 @@
 @use "sass:map";
-@import "bootstrap/basics";
+@use "bootstrap/basics" as basics;
 
-$spacer-sm: map.get($spacers, 2);
-$spacer-md: map.get($spacers, 3);
+$spacer-sm: map.get(basics.$spacers, 2);
+$spacer-md: map.get(basics.$spacers, 3);
 
 $icon-sizes: (
   lg: 3.5rem,
@@ -10,17 +10,20 @@ $icon-sizes: (
   sm: 2.75rem
 );
 
-$lines-breakpoint: map.get($grid-breakpoints, sm);
+$lines-breakpoint: map.get(basics.$grid-breakpoints, sm);
 
 @mixin horizontal-line($width: 0) {
   content: "";
-  border-top: 1px dashed $secondary;
+  border-top: 1px dashed basics.$secondary;
 
   // Ensure width and margin never break if $width is 0
-  $safe-width: if($width == 0, 0, $width / 2);
-
-  margin-left: $safe-width;
-  width: if($width == 0, 100%, calc(100% - #{$safe-width}));
+  @if $width == 0 {
+    margin-left: 0;
+    width: 100%;
+  } @else {
+    margin-left: calc($width / 2);
+    width: calc(100% - $width / 2);
+  }
 
   transition: opacity 0.2s ease;
 }
@@ -68,7 +71,7 @@ $lines-breakpoint: map.get($grid-breakpoints, sm);
     .icon-holder {
       position: relative;
       border-radius: 0.5rem;
-      background-color: $secondary;
+      background-color: basics.$secondary;
 
       @each $size, $width in $icon-sizes {
         &.icon-holder-#{$size} {
@@ -79,13 +82,13 @@ $lines-breakpoint: map.get($grid-breakpoints, sm);
 
           @if $size == md {
             background-color: unset;
-            border: 1px solid $secondary;
-            color: $secondary-text-emphasis;
+            border: 1px solid basics.$secondary;
+            color: basics.$secondary-text-emphasis;
           }
 
           @if $size == sm {
             background-color: unset;
-            color: $secondary-text-emphasis;
+            color: basics.$secondary-text-emphasis;
           }
         }
       }
@@ -101,7 +104,7 @@ $lines-breakpoint: map.get($grid-breakpoints, sm);
     }
 
     .title {
-      font-weight: $font-weight-medium;
+      font-weight: basics.$font-weight-medium;
       display: flex;
       align-items: center;
       gap: $spacer-sm;
@@ -117,14 +120,14 @@ $lines-breakpoint: map.get($grid-breakpoints, sm);
 
   &:hover {
     .icon {
-      color: $primary;
+      color: basics.$primary;
     }
   }
 }
 
 .text-holder {
   .descriptor {
-    color: $text-secondary;
+    color: basics.$text-secondary;
   }
 }
 
@@ -135,11 +138,11 @@ $lines-breakpoint: map.get($grid-breakpoints, sm);
   gap: $spacer-md;
 
   @media (min-width: $lines-breakpoint) {
-    border-left: 1px solid $secondary;
+    border-left: 1px solid basics.$secondary;
 
     @each $size, $width in $icon-sizes {
       &.details-#{$size} {
-        margin-left: $width / 2;
+        margin-left: calc($width / 2);
       }
     }
   }

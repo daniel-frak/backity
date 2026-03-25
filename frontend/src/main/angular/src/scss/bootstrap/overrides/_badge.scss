@@ -1,22 +1,37 @@
-@import "../basics";
+@use "sass:color" as sass-color;
+@use "../basics" as basics;
 
-@mixin badge-variant(
-  $background,
-  $color: color-contrast($background),
-  $hover-background: if($color == $color-contrast-light, shade-color($background, $btn-hover-bg-shade-amount),
-    tint-color($background, $btn-hover-bg-tint-amount)),
-  $hover-color: color-contrast($hover-background),
-) {
-  color: $color;
-  @include box-shadow($btn-box-shadow);
-
-  &.badge-clickable:hover {
-    color: $hover-color;
-    @include gradient-bg($hover-background!important);
+@function _contrast($color) {
+  @if sass-color.channel($color, "lightness", $space: hsl) > 50% {
+    @return #000;
+  } @else {
+    @return #fff;
   }
 }
 
-@each $color, $value in $theme-colors {
+@function _hover-bg($background, $color) {
+  @if $color == basics.$color-contrast-light {
+    @return basics.shade-color($background, 15%);
+  } @else {
+    @return basics.tint-color($background, 15%);
+  }
+}
+
+@mixin badge-variant(
+  $background,
+  $color: _contrast($background),
+  $hover-background: _hover-bg($background, $color),
+  $hover-color: _contrast($hover-background),
+) {
+  color: $color;
+
+  &.badge-clickable:hover {
+    color: $hover-color;
+    @include basics.gradient-bg($hover-background !important);
+  }
+}
+
+@each $color, $value in basics.$theme-colors {
   .badge.bg-#{$color} {
     @include badge-variant($value);
   }

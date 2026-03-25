@@ -1,4 +1,4 @@
-@import "bootstrap/basics";
+@use "bootstrap/basics" as basics;
 
 @mixin gutters-variant($gutter-size) {
   display: flex;
@@ -10,7 +10,7 @@
   }
 }
 
-@each $index, $value in $spacers {
+@each $index, $value in basics.$spacers {
   .gutters-#{$index} {
     @include gutters-variant($value);
   }

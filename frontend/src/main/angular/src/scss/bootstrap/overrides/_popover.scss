@@ -1,5 +1,5 @@
-@import "../basics";
+@use "../basics" as basics;
 
 .popover-static-width {
-  min-width: $popover-max-width;
+  min-width: basics.$popover-max-width;
 }

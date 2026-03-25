@@ -1,5 +1,5 @@
 @use "sass:map";
-@import "bootstrap/basics";
+@use "bootstrap/basics" as basics;
 
 :host {
   display: flex;
@@ -9,6 +9,6 @@
 .value {
   display: flex;
   align-items: center;
-  gap: map.get($spacers, 2);
-  color: $text-secondary;
+  gap: map.get(basics.$spacers, 2);
+  color: basics.$text-secondary;
 }

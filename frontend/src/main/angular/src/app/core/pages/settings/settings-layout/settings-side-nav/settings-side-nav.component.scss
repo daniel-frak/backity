@@ -1,14 +1,14 @@
 @use "sass:map";
-@import "bootstrap/basics";
+@use "bootstrap/basics" as basics;
 
 $sidebar-width: 200px;
 $sidebar-width-minimized: 47px;
 $animation-time: 0.3s;
-$link-padding: map.get($spacers, 3);
-$hover-background: tint-color($dark, $btn-hover-bg-tint-amount);
+$link-padding: map.get(basics.$spacers, 3);
+$hover-background: basics.tint-color(basics.$dark, 15%);
 
 :host {
-  background: $dark;
+  background: basics.$dark;
 }
 
 .sidebar-wrapper {
@@ -38,7 +38,7 @@ $hover-background: tint-color($dark, $btn-hover-bg-tint-amount);
       }
 
       .bi {
-        margin-right: map.get($spacers, 2);
+        margin-right: map.get(basics.$spacers, 2);
       }
     }
   }

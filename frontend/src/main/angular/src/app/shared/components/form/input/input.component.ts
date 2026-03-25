@@ -23,7 +23,7 @@ export class InputComponent implements ControlValueAccessor {
 
   value: any = '';
 
-  constructor(@Optional() @Self() public ngControl: NgControl) {
+  constructor(@Optional() @Self() public ngControl: NgControl | null) {
     if (this.ngControl != null) {
       this.ngControl.valueAccessor = this;
     }

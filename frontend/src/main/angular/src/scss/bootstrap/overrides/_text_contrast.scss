@@ -1,7 +1,16 @@
-@import "../basics";
+@use "../basics" as basics;
+@use "sass:color" as sass-color;
 
-@each $color, $value in $theme-colors {
+@each $color, $value in basics.$theme-colors {
   .bg-#{$color} {
-    color: color-contrast($value) if($enable-important-utilities, !important, null);
+    $contrast: #fff;
+    @if sass-color.channel($value, "lightness", $space: hsl) > 50% {
+      $contrast: #000;
+    }
+    @if basics.$enable-important-utilities {
+      color: $contrast !important;
+    } @else {
+      color: $contrast;
+    }
   }
 }

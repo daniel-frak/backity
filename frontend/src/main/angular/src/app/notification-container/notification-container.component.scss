@@ -1,5 +1,5 @@
-@import "bootstrap/basics";
+@use "bootstrap/basics" as basics;
 
 .toast-container {
-  padding: $toast-spacing;
+  padding: basics.$toast-spacing;
 }

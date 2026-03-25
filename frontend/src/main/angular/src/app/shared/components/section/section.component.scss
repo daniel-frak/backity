@@ -1,6 +1,6 @@
 @use "sass:map";
-@import "bootstrap/basics";
+@use "bootstrap/basics" as basics;
 
 section {
-  margin-bottom: map.get($spacers, 5);
+  margin-bottom: map.get(basics.$spacers, 5);
 }

@@ -1,9 +1,10 @@
 @use "sass:map";
-@import "bootstrap/basics";
+@use "bootstrap/basics" as basics;
+@use "./gutters" as custom-gutters;
 
 @mixin responsive-container($child-element) {
-  @extend .gutters-1;
-  @media (max-width: map.get($grid-breakpoints, sm) - 1) {
+  @include custom-gutters.gutters-variant(map.get(basics.$spacers, 1));
+  @media (max-width: map.get(basics.$grid-breakpoints, sm) - 1) {
     flex-direction: column;
     > * {
       flex-grow: 1;

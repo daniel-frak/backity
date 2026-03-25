@@ -1,4 +1,4 @@
-@import "../basics";
+@use "../basics" as basics;
 
 .btn-help-icon {
   padding: 0;
@@ -29,13 +29,13 @@
 }
 
 .btn-outline-secondary {
-  color: $white;
-  border-color: $white;
+  color: basics.$white;
+  border-color: basics.$white;
 }
 
 .btn-outline-danger {
-  color: $white;
-  border-color: $white;
+  color: basics.$white;
+  border-color: basics.$white;
 }
 
 .btn-hide-outline {

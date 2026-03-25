@@ -1,5 +1,5 @@
 @use "sass:map";
-@use "bootstrap/basics" as *;
+@use "bootstrap/basics" as basics;
 
 .input-icon-wrapper {
   position: relative;
@@ -10,7 +10,7 @@
   left: .875rem;
   top: 50%;
   transform: translateY(-50%);
-  color: $input-placeholder-color;
+  color: basics.$input-placeholder-color;
   pointer-events: none;
 }
 

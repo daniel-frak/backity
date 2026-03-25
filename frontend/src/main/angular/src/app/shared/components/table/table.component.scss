@@ -1,6 +1,6 @@
-@import "bootstrap/basics";
+@use "bootstrap/basics" as basics;
 
 .group-caption {
-  color: $table-caption-color;
+  color: var(--bs-secondary-color);
   padding-left: 0;
 }

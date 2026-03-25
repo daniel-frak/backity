@@ -1,8 +1,8 @@
 @use "sass:map";
-@import "bootstrap/basics";
+@use "bootstrap/basics" as basics;
 
 :host {
   display: flex;
   flex-direction: column;
-  gap: map.get($spacers, 3);
+  gap: map.get(basics.$spacers, 3);
 }

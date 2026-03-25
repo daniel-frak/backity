@@ -1,13 +1,13 @@
 @use "sass:map";
-@import "scss/bootstrap/bootstrap";
-@import "scss/custom/gutters";
-@import "scss/custom/layout";
-@import "scss/custom/lists";
+@use "scss/bootstrap/bootstrap" as bootstrap;
+@use "scss/custom/gutters";
+@use "scss/custom/layout";
+@use "scss/custom/lists";
 
 html, body {
   height: 100%;
 }
 
 h1 {
-  margin-bottom: map.get($spacers, 5);
+  margin-bottom: map.get(bootstrap.$spacers, 5);
 }

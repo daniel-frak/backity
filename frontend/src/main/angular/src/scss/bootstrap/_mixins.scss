@@ -1,1 +1,35 @@
-// No mixins
+@forward "bootstrap/scss/mixins" show
+  breakpoint-next, breakpoint-min, breakpoint-max, breakpoint-infix,
+  media-breakpoint-up, media-breakpoint-down, media-breakpoint-between, media-breakpoint-only;
+
+// Thin wrappers for Bootstrap mixins whose bodies reference internal Bootstrap variables
+// that are inaccessible under the @use module system (Bootstrap 5.3 uses @import globally).
+// Bootstrap 6 migrates to @use and will not need these wrappers.
+
+$-enable-shadows: false;
+$-enable-gradients: false;
+$-prefix: "bs-";
+
+@mixin box-shadow($shadow...) {
+  @if $-enable-shadows {
+    $result: ();
+
+    @each $value in $shadow {
+      @if $value != null {
+        $result: append($result, $value, "comma");
+      }
+    }
+
+    @if length($result) > 0 {
+      box-shadow: $result;
+    }
+  }
+}
+
+@mixin gradient-bg($color: null) {
+  background-color: $color;
+
+  @if $-enable-gradients {
+    background-image: var(--#{$-prefix}gradient);
+  }
+}

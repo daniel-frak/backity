@@ -1,5 +1,5 @@
 @use "sass:color";
-@import "bootstrap/scss/functions";
+@use "bootstrap/scss/functions" as bootstrap-functions;
 
 $enable-important-utilities: true;
 
@@ -81,7 +81,12 @@ $input-placeholder-color: $text-secondary;
 $form-invalid-color: $red-300;
 $form-invalid-border-color: $red-300;
 $form-feedback-icon-invalid-color: $red-300;
-$component-active-color: color-contrast($component-active-bg) if($enable-important-utilities, !important, null);
+$component-active-color: null;
+@if $enable-important-utilities {
+  $component-active-color: $black !important !global;
+} @else {
+  $component-active-color: $black !global;
+}
 
 $btn-close-color: $white;
 
@@ -91,12 +96,12 @@ $navbar-dark-active-color: $primary;
 $btn-close-white-filter: null !important;
 $progress-bar-color: $black;
 
-$primary-text-emphasis: shade-color($primary, 60%);
+$primary-text-emphasis: bootstrap-functions.shade-color($primary, 60%);
 $secondary-text-emphasis: $text-secondary;
-$success-text-emphasis: shade-color($success, 60%);
-$info-text-emphasis: shade-color($info, 60%);
-$warning-text-emphasis: shade-color($warning, 60%);
-$danger-text-emphasis: tint-color(red, 50%);
+$success-text-emphasis: bootstrap-functions.shade-color($success, 60%);
+$info-text-emphasis: bootstrap-functions.shade-color($info, 60%);
+$warning-text-emphasis: bootstrap-functions.shade-color($warning, 60%);
+$danger-text-emphasis: bootstrap-functions.tint-color(red, 50%);
 $light-text-emphasis: $gray-700;
 $dark-text-emphasis: $gray-700;
 $theme-colors-text: (
@@ -156,3 +161,22 @@ $input-btn-padding-x-sm: .75rem;
 $pagination-disabled-bg: transparent;
 
 $btn-link-color: $body-color;
+
+$theme-colors: (
+  "primary":   $primary,
+  "secondary": $secondary,
+  "success":   $success,
+  "info":      $info,
+  "warning":   $warning,
+  "danger":    $danger,
+  "light":     $light,
+  "dark":      $dark,
+);
+$grid-breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px,
+);
