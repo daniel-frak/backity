@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout your repository using git
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - name: Install, build, and upload your site
         # https://github.com/withastro/action
         uses: withastro/action@1e076bab663bb208f3de12556795ae51b3885b0e # v6
