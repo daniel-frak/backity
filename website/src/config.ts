@@ -1,0 +1,1 @@
+export const REPOSITORY_URL = "//github.com/daniel-frak/backity";

@@ -2,8 +2,7 @@
 import '../styles/global.scss';
 import favicon from '@branding/favicon.svg';
 import TopMenu from "../components/TopMenu.astro";
-
-const repositoryUrl = import.meta.env.REPOSITORY_URL;
+import {REPOSITORY_URL} from "../config";
 ---
 
 <!-- data-theme currently only used by Mermaid -->
@@ -30,7 +29,7 @@ const repositoryUrl = import.meta.env.REPOSITORY_URL;
 
 <footer>
     This site uses <a href="https://astro.build/" target="_blank">Astro JS</a> via GitHub Pages
-    and is stored in the <a href={repositoryUrl}>project repository</a> under the <code>website</code> folder.
+    and is stored in the <a href={REPOSITORY_URL}>project repository</a> under the <code>website</code> folder.
     <br>
     You can contribute to it by creating a Pull Request, just like you would with any other part of this project.
 </footer>
