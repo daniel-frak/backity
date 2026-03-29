@@ -3,7 +3,7 @@ import {defineConfig} from 'astro/config';
 import path from 'node:path';
 import remarkToc from 'remark-toc';
 import rehypeShiftHeading from "rehype-shift-heading";
-import rehypeMermaid from "rehype-mermaid";
+import mermaid from 'astro-mermaid';
 import pagefind from "astro-pagefind";
 import remarkCalloutPlugin from "./remark-plugins/remark-callout-plugin.js";
 
@@ -22,8 +22,14 @@ export default defineConfig({
     },
 
     integrations: [
+        // https://github.com/joesaby/astro-mermaid
+        mermaid({
+            theme: 'dark',
+            autoTheme: true
+        }),
+
         // https://github.com/shishkin/astro-pagefind
-        pagefind()
+        pagefind(),
     ],
 
     markdown: {
@@ -41,7 +47,6 @@ export default defineConfig({
         // https://github.com/rehypejs/rehype-shift-heading
         rehypePlugins: [
             [rehypeShiftHeading, {shift: 1}],
-            [rehypeMermaid, {strategy: "img-svg", dark: true}]
         ]
     }
 });
