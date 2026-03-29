@@ -5,7 +5,7 @@ import {isSameUrl, urlStartsWith, withBase} from "../url.ts";
 const {url} = Astro;
 const currentPath: string = url.pathname;
 
-const navItems: any = Object.entries(
+const navItems: any[] = Object.entries(
     import.meta.glob('/src/pages/*.{astro,md}', {eager: true})
 ).map(([filePath, module]: [string, any]) => {
     const filenameTitle = filePath

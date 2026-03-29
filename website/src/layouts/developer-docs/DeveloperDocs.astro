@@ -97,19 +97,24 @@ const isCurrentPage = (item: DevDocNode) => {
 ---
 
 <BaseLayout>
-    <Search id="dev-docs-search" className="search-bar" uiOptions={{showImages: false}}/>
-    <div id="dev-docs-container">
-        <details id="sidenav">
-            <summary class="menu-btn" aria-label="Toggle developer documentation navigation"/>
-            <nav>
+    <div id="dev-docs-wrapper">
+        <input type="checkbox" id="sidenav-toggle">
+        <div id="dev-docs-search-row">
+            <div id="dev-docs-search-wrap">
+                <Search id="dev-docs-search" className="search-bar" uiOptions={{showImages: false}}/>
+            </div>
+            <label for="sidenav-toggle" class="menu-btn" aria-label="Toggle developer documentation navigation"/>
+        </div>
+        <div id="dev-docs-container">
+            <nav id="sidenav">
                 <DevDocNav items={topLevelDocs} isActive={isActive} isCurrentPage={isCurrentPage}/>
             </nav>
-        </details>
 
-        <main data-pagefind-body>
-            <h1>{frontmatter.title}</h1>
-            <slot/>
-        </main>
+            <main data-pagefind-body>
+                <h1>{frontmatter.title}</h1>
+                <slot/>
+            </main>
+        </div>
     </div>
 </BaseLayout>
 
@@ -118,7 +123,6 @@ const isCurrentPage = (item: DevDocNode) => {
   @use "../../styles/mixins" as *;
 
   :root {
-    // https://pagefind.app/docs/ui-usage/?utm_source=chatgpt.com#customising-the-styles
     --pagefind-ui-primary: var(--primary-color);
     --pagefind-ui-text: var(--text-color);
     --pagefind-ui-background: var(--bg-color);
@@ -127,25 +131,34 @@ const isCurrentPage = (item: DevDocNode) => {
     --pagefind-ui-font: var(--font-family);
   }
 
-  summary {
+  #sidenav-toggle {
+    display: none;
+  }
+
+  #dev-docs-search-row {
     display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
+    gap: var(--spacer);
+  }
 
-    &::marker, &::-webkit-details-marker {
-      content: '';
-    }
+  #dev-docs-search-wrap {
+    flex: 1 1 0;
+    min-width: 0;
+  }
 
-    &.menu-btn {
+  label[for="sidenav-toggle"] {
+    display: none;
+  }
+
+  @media(max-width: $breakpoint-nav) {
+    label[for="sidenav-toggle"] {
       @include btn();
-      display: none;
-      @media(max-width: $breakpoint-nav) {
-        display: flex;
-      }
+      display: flex;
+      flex: 0 0 auto;
       width: 2rem;
       height: 2rem;
-      align-self: end;
 
       &:after {
         background-color: currentColor;
@@ -161,19 +174,18 @@ const isCurrentPage = (item: DevDocNode) => {
         content: '';
       }
     }
-  }
 
-  details:not([open]):has(>summary.menu-btn) {
-    &::details-content {
-      content-visibility: visible;
-      @media(max-width: $breakpoint-nav) {
-        content-visibility: hidden;
-      }
+    #sidenav {
+      display: none;
     }
-  }
 
-  details[open] > summary.menu-btn::after {
-    transform: rotate(180deg);
+    #sidenav-toggle:checked ~ #dev-docs-container #sidenav {
+      display: block;
+    }
+
+    #sidenav-toggle:checked ~ #dev-docs-search-row label[for="sidenav-toggle"]:after {
+      transform: rotate(180deg);
+    }
   }
 
   #dev-docs-container {
@@ -193,9 +205,6 @@ const isCurrentPage = (item: DevDocNode) => {
       max-width: calc(var(--spacer) * 18);
       padding-right: var(--gap);
       border-right: 1px solid var(--secondary-color);
-      display: flex;
-      align-items: stretch;
-      flex-direction: column;
 
       @media(max-width: $breakpoint-nav) {
         min-width: unset;
