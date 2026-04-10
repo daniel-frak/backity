@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.e2e.pages;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.assertions.LocatorAssertions;
+import com.microsoft.playwright.options.WaitForSelectorState;
 import lombok.Getter;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
@@ -64,6 +65,7 @@ public class GameProvidersPage {
     }
 
     public boolean isGogAuthenticated() {
+        gogAuthStatus.waitFor(new Locator.WaitForOptions().setState(WaitForSelectorState.VISIBLE));
         return !gogAuthStatus.textContent().toLowerCase().contains(NOT_AUTHENTICATED_LOWERCASE);
     }
 
