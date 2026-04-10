@@ -59,6 +59,7 @@ public class GamesPage {
     private void deleteAllFileCopiesOneByOne() {
         Repeat.on(page)
                 .action(() -> {
+                    waitUntilLoaderDisappears();
                     Locator currentDeleteButton = deleteFileCopyButtons.first();
                     currentDeleteButton.click();
                     confirmFileCopyDeleteButton.click();
@@ -78,6 +79,7 @@ public class GamesPage {
     private void cancelAllBackupsOneByOne() {
         Repeat.on(page)
                 .action(() -> {
+                    waitUntilLoaderDisappears();
                     Locator currentCancelButton = cancelFileCopyButtons.first();
                     currentCancelButton.click();
                     waitUntilLoaderDisappears();
