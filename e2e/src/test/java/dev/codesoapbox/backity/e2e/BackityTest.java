@@ -100,7 +100,7 @@ class BackityTest {
         Download download = gamesPage.startFileDownload(FILE_TO_DOWNLOAD_TITLE, LOCAL_FOLDER_BACKUP_TARGET_NAME);
         try {
             assertEquals(FILE_TO_DOWNLOAD_NAME, download.suggestedFilename());
-            String fileContent = downloadFileAndReadContent(download.url());
+            String fileContent = downloadFileAndReadContent(download);
             assertEquals(FILE_TO_DOWNLOAD_EXPECTED_CONTENTS, fileContent);
         } finally {
             download.delete();
@@ -108,10 +108,8 @@ class BackityTest {
     }
 
     @SneakyThrows
-    private String downloadFileAndReadContent(String downloadUrl) {
-        URL url = new URI(downloadUrl).toURL();
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        try (InputStream inputStream = connection.getInputStream();
+    private String downloadFileAndReadContent(Download download) {
+        try (InputStream inputStream = download.createReadStream();
              var reader = new BufferedReader(new InputStreamReader(inputStream))) {
             return reader.lines().collect(Collectors.joining("\n"));
         }
