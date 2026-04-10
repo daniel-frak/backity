@@ -49,7 +49,6 @@ public class SettingsPage {
                     We must navigate (refresh) to pull the latest state from the backend.
                      */
                     navigate();
-                    waitUntilLoaderDisappears();
                     if (deleteBackupTargetBtns.count() <= 0) {
                         return;
                     }
