@@ -66,6 +66,10 @@ public class Repeat {
                             action
                     );
                 } catch (PlaywrightException e) {
+                    // Response may have arrived just before the timeout; verify before retrying or failing
+                    if (exitCondition.getAsBoolean()) {
+                        return;
+                    }
                     if (isLastAttempt) {
                         throw new AssertionError("The expected response was not received or action timed out", e);
                     }
