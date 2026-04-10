@@ -46,9 +46,11 @@ public class SettingsPage {
                 .action(() -> {
                     /*
                     The frontend might not have the latest state of Backup Targets by the time we navigate here.
-                    We must navigate (refresh) to pull the latest state from the backend.
+                    We must refresh to pull the latest state from the backend.
                      */
-                    navigate();
+                    page.reload();
+                    waitUntilLoaderDisappears();
+
                     if (deleteBackupTargetBtns.count() <= 0) {
                         return;
                     }
