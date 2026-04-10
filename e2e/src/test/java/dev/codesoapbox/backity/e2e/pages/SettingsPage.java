@@ -49,6 +49,7 @@ public class SettingsPage {
                     We must navigate (refresh) to pull the latest state from the backend.
                      */
                     navigate();
+                    waitUntilLoaderDisappears();
                     if (deleteBackupTargetBtns.count() <= 0) {
                         return;
                     }
@@ -60,7 +61,10 @@ public class SettingsPage {
                     currentDeleteButton.waitFor(isHidden());
                 })
                 .expectingResponse(this::deleteApiResponseIsSuccessful)
-                .until(() -> deleteBackupTargetBtns.count() == 0);
+                .until(() -> {
+                    waitUntilLoaderDisappears();
+                    return deleteBackupTargetBtns.count() == 0;
+                });
     }
 
     private boolean deleteApiResponseIsSuccessful(Response response) {
