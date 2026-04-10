@@ -46,10 +46,13 @@ runs:
 
     - name: 'Package build output files'
       if: github.event_name != 'workflow_run'
+      # Untrusted inputs are passed via an env var to prevent script injection (RSPEC-7630).
+      env:
+        ADDITIONAL_FOLDERS: ${{ inputs.additional-folders }}
       shell: bash
       run: |
         folders_to_archive=(*target)
-        additional_folders="${{ inputs.additional-folders }}"
+        additional_folders="$ADDITIONAL_FOLDERS"
         if [ -n "$additional_folders" ]; then
           for folder in $(echo $additional_folders | tr ',' ' '); do
             folders_to_archive+=("$folder")
@@ -159,12 +162,16 @@ runs:
 
     - name: 'Sonar analysis - Maven'
       if: github.event_name == 'workflow_run'
+      # Untrusted inputs are passed via env vars to prevent script injection (RSPEC-7630).
+      env:
+        SONAR_TOKEN: ${{ inputs.sonar-token }}
+        ADDITIONAL_FLAGS: ${{ inputs.additional-flags }}
       shell: bash
       run: >
         mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-        -Dsonar.token=${{ inputs.sonar-token }}
+        -Dsonar.token="$SONAR_TOKEN"
         ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.scm.revision=', github.event.workflow_run.head_sha) || '' }}
         ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.pullrequest.key=', env.pr_number) || '' }}
         ${{ github.event.workflow_run.event == 'pull_request' && '-Dsonar.pullrequest.branch=tmp_sonar_pr_branch' || '' }}
         ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.pullrequest.base=', env.pr_base_ref) || '' }}
-        ${{ inputs.additional-flags }}
+        $ADDITIONAL_FLAGS
