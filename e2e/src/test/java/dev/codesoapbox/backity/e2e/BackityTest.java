@@ -16,9 +16,7 @@ import org.junit.jupiter.api.Test;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
@@ -109,8 +107,10 @@ class BackityTest {
 
     @SneakyThrows
     private String downloadFileAndReadContent(Download download) {
-        try (InputStream inputStream = download.createReadStream();
-             var reader = new BufferedReader(new InputStreamReader(inputStream))) {
+        try (
+                InputStream inputStream = download.createReadStream();
+                var reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+        ) {
             return reader.lines().collect(Collectors.joining("\n"));
         }
     }
