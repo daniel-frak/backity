@@ -102,3 +102,11 @@ jobs:
       - name: Run E2E tests
         working-directory: e2e
         run: mvn test -Dheadless=true
+
+      - name: Upload Playwright Trace
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-trace
+          path: e2e/playwright-trace.zip
+          retention-days: 30

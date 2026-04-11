@@ -1,8 +1,6 @@
 package dev.codesoapbox.backity.e2e;
 
-import com.microsoft.playwright.Download;
-import com.microsoft.playwright.Locator;
-import com.microsoft.playwright.Page;
+import com.microsoft.playwright.*;
 import com.microsoft.playwright.assertions.LocatorAssertions;
 import com.microsoft.playwright.junit.UsePlaywright;
 import dev.codesoapbox.backity.e2e.pages.GameProvidersPage;
@@ -17,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
@@ -38,7 +37,12 @@ class BackityTest {
     private SettingsPage settingsPage;
 
     @BeforeEach
-    void setUp(Page page) {
+    void setUp(Page page, BrowserContext context) {
+        context.tracing().start(new Tracing.StartOptions()
+                .setScreenshots(true)
+                .setSnapshots(true)
+                .setSources(true));
+
         this.gameProvidersPage = new GameProvidersPage(page);
         this.gamesPage = new GamesPage(page);
         this.settingsPage = new SettingsPage(page);
@@ -76,8 +80,15 @@ class BackityTest {
     }
 
     @AfterEach
-    void tearDown() {
-        resetState();
+    void tearDown(BrowserContext context) {
+        try {
+            resetState();
+        } finally {
+            context.tracing().stop(
+                    new Tracing.StopOptions()
+                            .setPath(Paths.get("playwright-trace.zip"))
+            );
+        }
     }
 
     @Test

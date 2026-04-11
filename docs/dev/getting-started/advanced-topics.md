@@ -116,3 +116,15 @@ This will only analyze code that has been changed compared to the `main` Git bra
 :::note
 > Pitest is also used as part of Continuous Integration, using the `pitest-strict` Maven profile,
 which will fail the build if the mutation threshold is below a certain value.
+
+# Debugging E2E tests
+
+Playwright tests save a trace file that can be used to debug the test.
+You can open the trace file with the following command:
+
+```shell
+# From the /e2e directory:
+mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="show-trace playwright-trace.zip"
+```
+
+Alternatively, you can view the trace file on https://trace.playwright.dev.
