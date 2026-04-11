@@ -110,7 +110,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: playwright-traces
-          path: e2e/traces/**/*.zip
+          path: e2e/target/playwright-traces/**/*.zip
           retention-days: 30
 
       - name: Show Playwright trace link
