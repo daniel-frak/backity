@@ -119,19 +119,26 @@ which will fail the build if the mutation threshold is below a certain value.
 
 # Debugging E2E tests
 
+## Playwright trace files
+
 Playwright tests are configured to save trace files to `e2e/traces`.
 They are also uploaded as CI artifacts when the E2E test step fails. 
 You can open a trace file with the following command:
 
 ```shell
 # From the /e2e directory:
-mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="show-trace traces/trace_file_name.zip"
+mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -Dexec.args="show-trace traces/trace_file_name.zip"
 ```
 
 Alternatively, you can open the trace viewer and select the trace file manually:
 ```shell
 # From the /e2e directory:
-mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="show-trace"
+mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -Dexec.args="show-trace"
 ```
 
 Alternatively, you can view the trace file on https://trace.playwright.dev.
+
+## Debugging test flakiness
+
+A useful way to debug test flakiness locally is to 
+replace `@Test` with `@RepeatedTest(value = 100, failureThreshold = 1)` on the test method which is flaky.

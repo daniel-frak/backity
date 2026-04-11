@@ -100,13 +100,24 @@ jobs:
           echo "Application is up and running!"
 
       - name: Run E2E tests
+        id: e2e_tests
         working-directory: e2e
         run: mvn test -Dheadless=true
 
       - name: Upload Playwright Trace
-        if: ${{ failure() }}
+        id: upload_traces
+        if: ${{ failure() && steps.e2e_tests.outcome == 'failure' }}
         uses: actions/upload-artifact@v7
         with:
           name: playwright-traces
           path: e2e/traces/**/*.zip
           retention-days: 30
+
+      - name: Show Playwright trace link
+        if: ${{ failure() && steps.upload_traces.outcome == 'success' }}
+        run: |
+          echo "❌ E2E tests failed"
+          echo "📎 Download Playwright traces here:"
+          echo "${{ steps.upload_traces.outputs.artifact-url }}"
+          echo "Remember that the artifact needs to be unzipped before you can access the trace files."
+          echo "Examine them using Playwright Trace Viewer: https://trace.playwright.dev"
