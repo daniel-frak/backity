@@ -3,17 +3,16 @@ package dev.codesoapbox.backity.e2e.pages;
 import com.microsoft.playwright.Download;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Response;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import dev.codesoapbox.backity.e2e.actions.Repeat;
+import dev.codesoapbox.backity.e2e.backend.FileCopiesApi;
+import dev.codesoapbox.backity.e2e.backend.FileCopyQueueApi;
+import dev.codesoapbox.backity.e2e.backend.GamesApi;
 
 public class GamesPage {
 
     private static final Locator.ClickOptions SHORT_TIMEOUT_CLICK = new Locator.ClickOptions().setTimeout(2000);
 
-    private static final String GAMES_REQUEST_URL = "/api/games";
-    private static final String FILE_COPY_REQUEST_URL = "/api/file-copies";
-    private static final String FILE_COPY_QUEUE_REQUEST_URL = "/api/file-copy-queue";
     private static final String DOWNLOAD_FILE_BACKUP_BTN_TEST_ID = "download-file-copy-btn";
     private static final String BACKUP_FILE_COPY_BTN_TEST_ID = "backup-file-btn";
     private static final String CANCEL_FILE_BACKUP_BTN_TEST_ID = "cancel-file-backup-btn";
@@ -22,6 +21,9 @@ public class GamesPage {
     private static final String FILE_COPY_STATUS_TEST_ID = "file-copy-status";
 
     private final Page page;
+    private final GamesApi gamesApi;
+    private final FileCopiesApi fileCopiesApi;
+    private final FileCopyQueueApi fileCopyQueueApi;
     private final Locator loader;
     private final Locator searchButton;
     private final Locator deleteFileCopyButtons;
@@ -29,8 +31,12 @@ public class GamesPage {
     private final Locator confirmFileCopyDeleteButton;
     private final Locator gameList;
 
-    public GamesPage(final Page page) {
+    public GamesPage(final Page page, final GamesApi gamesApi, final FileCopiesApi fileCopiesApi,
+                     final FileCopyQueueApi fileCopyQueueApi) {
         this.page = page;
+        this.gamesApi = gamesApi;
+        this.fileCopiesApi = fileCopiesApi;
+        this.fileCopyQueueApi = fileCopyQueueApi;
         this.loader = page.getByTestId("loader");
         this.searchButton = page.getByTestId("search-btn");
         this.deleteFileCopyButtons = page.getByTestId("delete-file-copy-btn");
@@ -50,12 +56,8 @@ public class GamesPage {
     }
 
     private void refreshGames() {
-        page.waitForResponse(this::isSuccessfulGetGamesResponse, searchButton::click);
+        page.waitForResponse(gamesApi::retrievedGames, searchButton::click);
         waitUntilLoaderDisappears();
-    }
-
-    private boolean isSuccessfulGetGamesResponse(Response response) {
-        return response.url().contains(GAMES_REQUEST_URL) && isSuccessful(response);
     }
 
     private void deleteAllFileCopiesOneByOne() {
@@ -66,17 +68,11 @@ public class GamesPage {
                     currentDeleteButton.click(SHORT_TIMEOUT_CLICK);
                     confirmFileCopyDeleteButton.click(SHORT_TIMEOUT_CLICK);
                 })
-                .expectingResponse(this::deleteApiResponseIsSuccessful)
+                .expectingResponse(fileCopiesApi::isDeleted)
                 .until(() -> {
                     waitUntilLoaderDisappears();
                     return deleteFileCopyButtons.count() == 0;
                 });
-    }
-
-    private boolean deleteApiResponseIsSuccessful(Response response) {
-        return response.url().contains(FILE_COPY_REQUEST_URL)
-                && response.request().method().equals("DELETE")
-                && response.status() == 204;
     }
 
     private void cancelAllBackupsOneByOne() {
@@ -88,17 +84,11 @@ public class GamesPage {
                     waitUntilLoaderDisappears();
                     currentCancelButton.waitFor(isHidden());
                 })
-                .expectingResponse(this::cancelApiResponseIsSuccessful)
+                .expectingResponse(fileCopyQueueApi::isCanceled)
                 .until(() -> {
                     waitUntilLoaderDisappears();
                     return cancelFileCopyButtons.count() == 0;
                 });
-    }
-
-    private boolean cancelApiResponseIsSuccessful(Response response) {
-        return response.url().contains(FILE_COPY_QUEUE_REQUEST_URL)
-                && response.request().method().equals("DELETE")
-                && isSuccessful(response);
     }
 
     private void waitUntilLoaderDisappears() {
@@ -111,18 +101,7 @@ public class GamesPage {
 
     public void backUpFile(String fileTitle, String backupTargetName) {
         Locator fileCopyBackupBtn = getFileCopyBackupButton(fileTitle, backupTargetName);
-        page.waitForResponse(this::isSuccessfulFileCopyEnqueueResponse,
-                fileCopyBackupBtn::click);
-    }
-
-    private boolean isSuccessfulFileCopyEnqueueResponse(Response response) {
-        return response.url().contains(FILE_COPY_QUEUE_REQUEST_URL)
-                && response.request().method().equals("POST")
-                && isSuccessful(response);
-    }
-
-    private boolean isSuccessful(Response response) {
-        return response.status() >= 200 && response.status() < 300;
+        page.waitForResponse(fileCopyQueueApi::isEnqueued, fileCopyBackupBtn::click);
     }
 
     private Locator getFileCopyBackupButton(String fileTitle, String backupTargetName) {

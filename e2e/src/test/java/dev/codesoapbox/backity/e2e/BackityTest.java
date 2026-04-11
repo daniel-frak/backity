@@ -5,6 +5,10 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.assertions.LocatorAssertions;
 import com.microsoft.playwright.junit.UsePlaywright;
+import dev.codesoapbox.backity.e2e.backend.BackupTargetsApi;
+import dev.codesoapbox.backity.e2e.backend.FileCopiesApi;
+import dev.codesoapbox.backity.e2e.backend.FileCopyQueueApi;
+import dev.codesoapbox.backity.e2e.backend.GamesApi;
 import dev.codesoapbox.backity.e2e.pages.GameProvidersPage;
 import dev.codesoapbox.backity.e2e.pages.GamesPage;
 import dev.codesoapbox.backity.e2e.pages.SettingsPage;
@@ -40,8 +44,8 @@ class BackityTest {
     @BeforeEach
     void setUp(Page page) {
         this.gameProvidersPage = new GameProvidersPage(page);
-        this.gamesPage = new GamesPage(page);
-        this.settingsPage = new SettingsPage(page);
+        this.gamesPage = new GamesPage(page, new GamesApi(), new FileCopiesApi(), new FileCopyQueueApi());
+        this.settingsPage = new SettingsPage(page, new BackupTargetsApi());
         resetState();
     }
 
