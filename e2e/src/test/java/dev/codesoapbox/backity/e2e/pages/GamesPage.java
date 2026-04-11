@@ -9,9 +9,11 @@ import dev.codesoapbox.backity.e2e.actions.Repeat;
 
 public class GamesPage {
 
-    private static final String GAMES_REQUEST_URL = "/games";
-    private static final String FILE_COPY_REQUEST_URL = "/file-copies";
-    private static final String FILE_COPY_QUEUE_REQUEST_URL = "/file-copy-queue";
+    private static final Locator.ClickOptions SHORT_TIMEOUT_CLICK = new Locator.ClickOptions().setTimeout(2000);
+
+    private static final String GAMES_REQUEST_URL = "/api/games";
+    private static final String FILE_COPY_REQUEST_URL = "/api/file-copies";
+    private static final String FILE_COPY_QUEUE_REQUEST_URL = "/api/file-copy-queue";
     private static final String DOWNLOAD_FILE_BACKUP_BTN_TEST_ID = "download-file-copy-btn";
     private static final String BACKUP_FILE_COPY_BTN_TEST_ID = "backup-file-btn";
     private static final String CANCEL_FILE_BACKUP_BTN_TEST_ID = "cancel-file-backup-btn";
@@ -61,13 +63,14 @@ public class GamesPage {
                 .action(() -> {
                     waitUntilLoaderDisappears();
                     Locator currentDeleteButton = deleteFileCopyButtons.first();
-                    currentDeleteButton.click();
-                    confirmFileCopyDeleteButton.click();
-                    waitUntilLoaderDisappears();
-                    currentDeleteButton.waitFor(isHidden());
+                    currentDeleteButton.click(SHORT_TIMEOUT_CLICK);
+                    confirmFileCopyDeleteButton.click(SHORT_TIMEOUT_CLICK);
                 })
                 .expectingResponse(this::deleteApiResponseIsSuccessful)
-                .until(() -> deleteFileCopyButtons.count() == 0);
+                .until(() -> {
+                    waitUntilLoaderDisappears();
+                    return deleteFileCopyButtons.count() == 0;
+                });
     }
 
     private boolean deleteApiResponseIsSuccessful(Response response) {
