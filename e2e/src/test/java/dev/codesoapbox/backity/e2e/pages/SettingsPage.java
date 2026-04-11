@@ -2,15 +2,14 @@ package dev.codesoapbox.backity.e2e.pages;
 
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Response;
 import com.microsoft.playwright.options.WaitForSelectorState;
 import dev.codesoapbox.backity.e2e.actions.Repeat;
+import dev.codesoapbox.backity.e2e.backend.BackupTargetsApi;
 
 public class SettingsPage {
 
-    private static final String BACKUP_TARGET_REQUEST_URL = "/api/backup-targets";
-
     private final Page page;
+    private final BackupTargetsApi backupTargetsApi;
     private final Locator addBackupTargetBtn;
     private final Locator deleteBackupTargetBtns;
     private final Locator confirmDeleteBtn;
@@ -18,8 +17,9 @@ public class SettingsPage {
     private final Locator submitNewBackupTargetBtn;
     private final Locator loader;
 
-    public SettingsPage(Page page) {
+    public SettingsPage(Page page, BackupTargetsApi backupTargetsApi) {
         this.page = page;
+        this.backupTargetsApi = backupTargetsApi;
         this.addBackupTargetBtn = page.getByTestId("add-backup-target-btn");
         this.deleteBackupTargetBtns = page.locator("[data-testid^='delete-backup-target-btn-']");
         this.confirmDeleteBtn = page.getByTestId("confirmation-modal-yes-btn");
@@ -61,32 +61,16 @@ public class SettingsPage {
                     waitUntilLoaderDisappears();
                     currentDeleteButton.waitFor(isHidden());
                 })
-                .expectingResponse(this::deleteApiResponseIsSuccessful)
+                .expectingResponse(backupTargetsApi::isDeleted)
                 .until(() -> {
                     waitUntilLoaderDisappears();
                     return deleteBackupTargetBtns.count() == 0;
                 });
     }
 
-    private boolean deleteApiResponseIsSuccessful(Response response) {
-        return response.url().contains(BACKUP_TARGET_REQUEST_URL)
-                && response.request().method().equals("DELETE")
-                && isSuccessful(response);
-    }
-
-    private boolean isSuccessful(Response response) {
-        return response.status() >= 200 && response.status() < 300;
-    }
-
     public void createBackupTarget(String name) {
         addBackupTargetBtn.click();
         backupTargetNameInput.fill(name);
-        page.waitForResponse(this::createApiResponseIsSuccessful, submitNewBackupTargetBtn::click);
-    }
-
-    private boolean createApiResponseIsSuccessful(Response response) {
-        return response.url().contains(BACKUP_TARGET_REQUEST_URL)
-                && response.request().method().equals("POST")
-                && isSuccessful(response);
+        page.waitForResponse(backupTargetsApi::isCreated, submitNewBackupTargetBtn::click);
     }
 }
