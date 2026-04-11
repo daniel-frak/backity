@@ -27,4 +27,4 @@
 ### Custom ###
 /games/
 /app.log
-playwright-trace.zip
+/traces
