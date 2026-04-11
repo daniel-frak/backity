@@ -12,7 +12,7 @@ public class CustomOptions implements OptionsFactory {
 
     @Override
     public Options getOptions() {
-        boolean isHeadless = Boolean.parseBoolean(System.getProperty("headless", "false"));
+        boolean isHeadless = Boolean.parseBoolean(System.getProperty("headless", "true"));
 
         return new Options()
                 .setHeadless(isHeadless)

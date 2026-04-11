@@ -9,7 +9,12 @@ import dev.codesoapbox.backity.e2e.backend.FileCopiesApi;
 import dev.codesoapbox.backity.e2e.backend.FileCopyQueueApi;
 import dev.codesoapbox.backity.e2e.backend.GamesApi;
 
+import java.util.Set;
+
 public class GamesPage {
+
+    // The file backup scheduler runs once every N seconds; We must make sure to not fail the test before then.
+    private static final long EXPECTED_FILE_BACKUP_SCHEDULER_DELAY = 60_000L;
 
     private static final Locator.ClickOptions SHORT_TIMEOUT_CLICK = new Locator.ClickOptions().setTimeout(2000);
 
@@ -19,6 +24,13 @@ public class GamesPage {
     private static final String SOURCE_FILE_TEST_ID = "game-file-item";
     private static final String FILE_COPY_ITEM_TEST_ID = "file-copy-item";
     private static final String FILE_COPY_STATUS_TEST_ID = "file-copy-status";
+
+    private static final String STORED_INTEGRITY_UNKNOWN_STATUS = "STORED_INTEGRITY_UNKNOWN";
+    private static final Set<String> TERMINAL_STATUSES = Set.of(
+            STORED_INTEGRITY_UNKNOWN_STATUS,
+            "STORED_INTEGRITY_VERIFIED",
+            "FAILED"
+    );
 
     private final Page page;
     private final GamesApi gamesApi;
@@ -100,8 +112,21 @@ public class GamesPage {
     }
 
     public void backUpFile(String fileTitle, String backupTargetName) {
+        startFileBackup(fileTitle, backupTargetName);
+        waitForFileBackupToFinish(fileTitle, backupTargetName);
+    }
+
+    private void startFileBackup(String fileTitle, String backupTargetName) {
         Locator fileCopyBackupBtn = getFileCopyBackupButton(fileTitle, backupTargetName);
         page.waitForResponse(fileCopyQueueApi::isEnqueued, fileCopyBackupBtn::click);
+    }
+
+    private void waitForFileBackupToFinish(String fileTitle, String backupTargetName) {
+        Locator statusLocator = getFileCopyStatus(fileTitle, backupTargetName);
+        page.waitForCondition(
+                () -> TERMINAL_STATUSES.contains(statusLocator.textContent().strip().toUpperCase()),
+                new Page.WaitForConditionOptions().setTimeout(EXPECTED_FILE_BACKUP_SCHEDULER_DELAY + 3000L)
+        );
     }
 
     private Locator getFileCopyBackupButton(String fileTitle, String backupTargetName) {
@@ -117,9 +142,17 @@ public class GamesPage {
                 .filter(new Locator.FilterOptions().setHasText(backupTargetName));
     }
 
-    public Locator getFileCopyStatus(String fileTitle, String backupTargetName) {
+    private Locator getFileCopyStatus(String fileTitle, String backupTargetName) {
         return getFileCopyItem(fileTitle, backupTargetName)
                 .getByTestId(FILE_COPY_STATUS_TEST_ID);
+    }
+
+    public boolean fileCopyStatusIsStoredIntegrityUnknown(String fileTitle, String backupTargetName) {
+        return getFileCopyStatusText(fileTitle, backupTargetName).contains(STORED_INTEGRITY_UNKNOWN_STATUS);
+    }
+
+    public String getFileCopyStatusText(String fileTitle, String backupTargetName) {
+        return getFileCopyStatus(fileTitle, backupTargetName).textContent().strip();
     }
 
     public Download startFileDownload(String fileTitle, String backupTargetName) {

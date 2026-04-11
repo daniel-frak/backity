@@ -28,7 +28,7 @@ public class SettingsPage {
         this.loader = page.getByTestId("loader");
     }
 
-    public void navigate() {
+    public void visit() {
         page.navigate("/settings");
         waitUntilLoaderDisappears();
     }

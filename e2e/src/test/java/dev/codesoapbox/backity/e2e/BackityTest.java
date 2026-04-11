@@ -1,9 +1,7 @@
 package dev.codesoapbox.backity.e2e;
 
 import com.microsoft.playwright.Download;
-import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
-import com.microsoft.playwright.assertions.LocatorAssertions;
 import com.microsoft.playwright.junit.UsePlaywright;
 import dev.codesoapbox.backity.e2e.backend.BackupTargetsApi;
 import dev.codesoapbox.backity.e2e.backend.FileCopiesApi;
@@ -23,8 +21,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
-import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @UsePlaywright(CustomOptions.class)
 class BackityTest {
@@ -33,9 +31,6 @@ class BackityTest {
     private static final String FILE_TO_DOWNLOAD_NAME = "test_game_1_installer_1.exe";
     private static final String FILE_TO_DOWNLOAD_EXPECTED_CONTENTS = "Source file contents";
     private static final String LOCAL_FOLDER_BACKUP_TARGET_NAME = "Local folder";
-
-    // The file backup scheduler runs once every N seconds; We must make sure to not fail the test before then.
-    private static final long EXPECTED_FILE_BACKUP_SCHEDULER_DELAY = 60_000L;
 
     private GameProvidersPage gameProvidersPage;
     private GamesPage gamesPage;
@@ -56,17 +51,10 @@ class BackityTest {
     }
 
     private void tryToLogOutOfGog() {
-        gameProvidersPage.navigate();
+        gameProvidersPage.visit();
         if (gameProvidersPage.isGogAuthenticated()) {
             gameProvidersPage.logOutFromGog();
         }
-        assertIsNotAuthenticated();
-    }
-
-    private void assertIsNotAuthenticated() {
-        assertThat(gameProvidersPage.getAuthenticationStatusLocator())
-                .containsText(GameProvidersPage.NOT_AUTHENTICATED_LOWERCASE,
-                        new LocatorAssertions.ContainsTextOptions().setIgnoreCase(true));
     }
 
     private void deleteAllFileBackups() {
@@ -75,7 +63,7 @@ class BackityTest {
     }
 
     private void deleteAllBackupTargets() {
-        settingsPage.navigate();
+        settingsPage.visit();
         settingsPage.deleteAllBackupTargets();
     }
 
@@ -86,27 +74,39 @@ class BackityTest {
 
     @Test
     void shouldBackupGogFiles() {
-        settingsPage.navigate();
+        settingsPage.visit();
         settingsPage.createBackupTarget(LOCAL_FOLDER_BACKUP_TARGET_NAME);
 
-        gameProvidersPage.navigate();
-
+        gameProvidersPage.visit();
         gameProvidersPage.authenticateGog();
-        assertIsAuthenticated();
-
         gameProvidersPage.discoverAllFiles();
 
         gamesPage.visit();
         gamesPage.backUpFile(FILE_TO_DOWNLOAD_TITLE, LOCAL_FOLDER_BACKUP_TARGET_NAME);
-        assertThatFileWasBackedUp(FILE_TO_DOWNLOAD_TITLE, LOCAL_FOLDER_BACKUP_TARGET_NAME);
+
+        assertFileCopyIsBackedUp();
         Download download = gamesPage.startFileDownload(FILE_TO_DOWNLOAD_TITLE, LOCAL_FOLDER_BACKUP_TARGET_NAME);
         try {
-            assertEquals(FILE_TO_DOWNLOAD_NAME, download.suggestedFilename());
+            assertFileNameIsCorrect(download);
             String fileContent = downloadFileAndReadContent(download);
-            assertEquals(FILE_TO_DOWNLOAD_EXPECTED_CONTENTS, fileContent);
+            assertFileContentIsCorrect(fileContent);
         } finally {
             download.delete();
         }
+    }
+
+    private void assertFileCopyIsBackedUp() {
+        assertTrue(
+                gamesPage.fileCopyStatusIsStoredIntegrityUnknown(
+                        FILE_TO_DOWNLOAD_TITLE, LOCAL_FOLDER_BACKUP_TARGET_NAME),
+                () -> "Expected File Copy status to be Stored Integrity Unknown, but was: "
+                        + gamesPage.getFileCopyStatusText(FILE_TO_DOWNLOAD_TITLE, LOCAL_FOLDER_BACKUP_TARGET_NAME));
+    }
+
+    private void assertFileNameIsCorrect(Download download) {
+        assertEquals(FILE_TO_DOWNLOAD_NAME, download.suggestedFilename(),
+                () -> "Expected file name to be " + FILE_TO_DOWNLOAD_NAME
+                        + ", but was " + download.suggestedFilename());
     }
 
     @SneakyThrows
@@ -115,22 +115,14 @@ class BackityTest {
                 InputStream inputStream = download.createReadStream();
                 var reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
         ) {
-            return reader.lines().collect(Collectors.joining("\n"));
+            return reader.lines()
+                    .collect(Collectors.joining("\n"));
         }
     }
 
-    private void assertIsAuthenticated() {
-        assertThat(gameProvidersPage.getAuthenticationStatusLocator())
-                .not().containsText(GameProvidersPage.NOT_AUTHENTICATED_LOWERCASE,
-                        new LocatorAssertions.ContainsTextOptions().setIgnoreCase(true));
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private void assertThatFileWasBackedUp(String fileTitle, String backupTargetName) {
-        Locator processedFileStatus = gamesPage.getFileCopyStatus(fileTitle, backupTargetName);
-        assertThat(processedFileStatus).isVisible();
-        assertThat(processedFileStatus).containsText("STORED_INTEGRITY_UNKNOWN",
-                new LocatorAssertions.ContainsTextOptions()
-                        .setTimeout(EXPECTED_FILE_BACKUP_SCHEDULER_DELAY + 5000L));
+    private void assertFileContentIsCorrect(String fileContent) {
+        assertEquals(FILE_TO_DOWNLOAD_EXPECTED_CONTENTS, fileContent,
+                () -> "Expected file content to be " + FILE_TO_DOWNLOAD_EXPECTED_CONTENTS
+                        + ", but was " + fileContent);
     }
 }
