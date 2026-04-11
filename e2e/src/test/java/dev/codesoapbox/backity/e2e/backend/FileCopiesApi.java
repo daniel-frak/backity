@@ -2,15 +2,13 @@ package dev.codesoapbox.backity.e2e.backend;
 
 import com.microsoft.playwright.Response;
 
-public class FileCopiesApi extends BackendApi {
+public class FileCopiesApi {
 
-    public FileCopiesApi() {
-        super("/file-copies");
-    }
+    private static final String URL = "/file-copies";
 
     public boolean isDeleted(Response response) {
-        return response.url().contains(url)
-                && response.request().method().equals("DELETE")
-                && response.status() == 204;
+        return BackendApiAssertion.forResource(URL, response)
+                .isDelete()
+                .isNoContent();
     }
 }

@@ -2,13 +2,13 @@ package dev.codesoapbox.backity.e2e.backend;
 
 import com.microsoft.playwright.Response;
 
-public class GamesApi extends BackendApi {
+public class GamesApi {
 
-    public GamesApi() {
-        super("/games");
-    }
+    private static final String URL = "/games";
 
     public boolean retrievedGames(Response response) {
-        return response.url().contains(url) && isSuccessful(response);
+        return BackendApiAssertion.forResource(URL, response)
+                .isGet()
+                .isSuccessful();
     }
 }
