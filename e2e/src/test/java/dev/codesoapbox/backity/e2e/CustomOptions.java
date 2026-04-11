@@ -17,6 +17,6 @@ public class CustomOptions implements OptionsFactory {
                 .setContextOptions(new Browser.NewContextOptions()
                         .setBaseURL("http://localhost:8080"))
                 .setTrace(Options.Trace.RETAIN_ON_FAILURE)
-                .setOutputDir(Paths.get("traces"));
+                .setOutputDir(Paths.get("target/playwright-traces"));
     }
 }

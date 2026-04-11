@@ -121,13 +121,14 @@ which will fail the build if the mutation threshold is below a certain value.
 
 ## Playwright trace files
 
-Playwright tests are configured to save trace files to `e2e/traces`.
+Playwright tests are configured to save trace files to `e2e/target/playwright-traces`.
 They are also uploaded as CI artifacts when the E2E test step fails. 
 You can open a trace file with the following command:
 
 ```shell
 # From the /e2e directory:
-mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -Dexec.args="show-trace traces/trace_file_name.zip"
+mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI \
+-Dexec.args="show-trace target/playwright-traces/trace_file_name.zip"
 ```
 
 Alternatively, you can open the trace viewer and select the trace file manually:
