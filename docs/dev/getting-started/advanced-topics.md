@@ -128,4 +128,10 @@ You can open a trace file with the following command:
 mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="show-trace traces/trace_file_name.zip"
 ```
 
+Alternatively, you can open the trace viewer and select the trace file manually:
+```shell
+# From the /e2e directory:
+mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="show-trace"
+```
+
 Alternatively, you can view the trace file on https://trace.playwright.dev.
