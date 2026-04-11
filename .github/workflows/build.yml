@@ -104,9 +104,9 @@ jobs:
         run: mvn test -Dheadless=true
 
       - name: Upload Playwright Trace
-        if: ${{ !cancelled() }}
+        if: ${{ failure() }}
         uses: actions/upload-artifact@v7
         with:
-          name: playwright-trace
-          path: e2e/playwright-trace.zip
+          name: playwright-traces
+          path: e2e/traces/*.zip
           retention-days: 30

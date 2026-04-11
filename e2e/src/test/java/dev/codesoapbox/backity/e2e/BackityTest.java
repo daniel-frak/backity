@@ -10,6 +10,7 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -80,13 +81,14 @@ class BackityTest {
     }
 
     @AfterEach
-    void tearDown(BrowserContext context) {
+    void tearDown(BrowserContext context, TestInfo testInfo) {
         try {
             resetState();
         } finally {
+            String traceName = testInfo.getDisplayName().replaceAll("[^a-zA-Z0-9_-]", "_");
             context.tracing().stop(
                     new Tracing.StopOptions()
-                            .setPath(Paths.get("playwright-trace.zip"))
+                            .setPath(Paths.get("traces/" + traceName + ".zip"))
             );
         }
     }
