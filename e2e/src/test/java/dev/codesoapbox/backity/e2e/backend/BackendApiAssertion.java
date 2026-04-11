@@ -2,6 +2,8 @@ package dev.codesoapbox.backity.e2e.backend;
 
 import com.microsoft.playwright.Response;
 import dev.codesoapbox.backity.e2e.CustomOptions;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,7 @@ public class BackendApiAssertion {
         return new Dsl(prefixedUrl, response).new Method();
     }
 
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Dsl {
 
         private static final String URL_PREFIX = CustomOptions.BASE_URL + "/api";
@@ -22,11 +25,6 @@ public class BackendApiAssertion {
         private final String url;
         private final Response response;
         private final List<Supplier<Boolean>> assertions = new ArrayList<>();
-
-        private Dsl(String url, Response response) {
-            this.url = url;
-            this.response = response;
-        }
 
         public class Method {
 
