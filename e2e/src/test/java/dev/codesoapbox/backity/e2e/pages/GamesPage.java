@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.e2e.pages;
 
-import com.microsoft.playwright.Download;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.WaitForSelectorState;
+import dev.codesoapbox.backity.e2e.actions.InMemoryDownload;
 import dev.codesoapbox.backity.e2e.actions.Repeat;
 import dev.codesoapbox.backity.e2e.backend.FileCopiesApi;
 import dev.codesoapbox.backity.e2e.backend.FileCopyQueueApi;
@@ -155,9 +155,9 @@ public class GamesPage {
         return getFileCopyStatus(fileTitle, backupTargetName).textContent().strip();
     }
 
-    public Download startFileDownload(String fileTitle, String backupTargetName) {
+    public InMemoryDownload startFileDownload(String fileTitle, String backupTargetName) {
         Locator fileCopyDownloadButton = getFileCopyDownloadButton(fileTitle, backupTargetName);
-        return page.waitForDownload(fileCopyDownloadButton::click);
+        return new InMemoryDownload(page.waitForDownload(fileCopyDownloadButton::click));
     }
 
     private Locator getFileCopyDownloadButton(String fileTitle, String backupTargetName) {
