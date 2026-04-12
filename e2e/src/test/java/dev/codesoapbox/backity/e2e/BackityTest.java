@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.e2e;
 
-import com.microsoft.playwright.Download;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.junit.UsePlaywright;
+import dev.codesoapbox.backity.e2e.actions.InMemoryDownload;
 import dev.codesoapbox.backity.e2e.backend.BackupTargetsApi;
 import dev.codesoapbox.backity.e2e.backend.FileCopiesApi;
 import dev.codesoapbox.backity.e2e.backend.FileCopyQueueApi;
@@ -10,16 +10,9 @@ import dev.codesoapbox.backity.e2e.backend.GamesApi;
 import dev.codesoapbox.backity.e2e.pages.GameProvidersPage;
 import dev.codesoapbox.backity.e2e.pages.GamesPage;
 import dev.codesoapbox.backity.e2e.pages.SettingsPage;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,7 +22,7 @@ class BackityTest {
 
     private static final String FILE_TO_DOWNLOAD_TITLE = "Test Game 1 Installer (Part 1 of 3)";
     private static final String FILE_TO_DOWNLOAD_NAME = "test_game_1_installer_1.exe";
-    private static final String FILE_TO_DOWNLOAD_EXPECTED_CONTENTS = "Source file contents";
+    private static final String FILE_TO_DOWNLOAD_EXPECTED_CONTENT = "Source file contents";
     private static final String LOCAL_FOLDER_BACKUP_TARGET_NAME = "Local folder";
 
     private GameProvidersPage gameProvidersPage;
@@ -74,25 +67,33 @@ class BackityTest {
 
     @Test
     void shouldBackupGogFiles() {
-        settingsPage.visit();
-        settingsPage.createBackupTarget(LOCAL_FOLDER_BACKUP_TARGET_NAME);
+        createBackupTarget();
+        performInitialFileDiscovery();
 
+        backupFile(FILE_TO_DOWNLOAD_TITLE, LOCAL_FOLDER_BACKUP_TARGET_NAME);
+
+        assertFileCopyIsBackedUp();
+        InMemoryDownload download =
+                gamesPage.startFileDownload(FILE_TO_DOWNLOAD_TITLE, LOCAL_FOLDER_BACKUP_TARGET_NAME);
+        assertFileNameIs(download, FILE_TO_DOWNLOAD_NAME);
+        assertFileContentIs(download, FILE_TO_DOWNLOAD_EXPECTED_CONTENT);
+    }
+
+    private void createBackupTarget() {
+        settingsPage.visit();
+        settingsPage.createBackupTarget(BackityTest.LOCAL_FOLDER_BACKUP_TARGET_NAME);
+    }
+
+    private void performInitialFileDiscovery() {
         gameProvidersPage.visit();
         gameProvidersPage.authenticateGog();
         gameProvidersPage.discoverAllFiles();
+    }
 
+    @SuppressWarnings("SameParameterValue")
+    private void backupFile(String fileTitle, String backupTargetName) {
         gamesPage.visit();
-        gamesPage.backUpFile(FILE_TO_DOWNLOAD_TITLE, LOCAL_FOLDER_BACKUP_TARGET_NAME);
-
-        assertFileCopyIsBackedUp();
-        Download download = gamesPage.startFileDownload(FILE_TO_DOWNLOAD_TITLE, LOCAL_FOLDER_BACKUP_TARGET_NAME);
-        try {
-            assertFileNameIsCorrect(download);
-            String fileContent = downloadFileAndReadContent(download);
-            assertFileContentIsCorrect(fileContent);
-        } finally {
-            download.delete();
-        }
+        gamesPage.backUpFile(fileTitle, backupTargetName);
     }
 
     private void assertFileCopyIsBackedUp() {
@@ -103,26 +104,25 @@ class BackityTest {
                         + gamesPage.getFileCopyStatusText(FILE_TO_DOWNLOAD_TITLE, LOCAL_FOLDER_BACKUP_TARGET_NAME));
     }
 
-    private void assertFileNameIsCorrect(Download download) {
-        assertEquals(FILE_TO_DOWNLOAD_NAME, download.suggestedFilename(),
-                () -> "Expected file name to be " + FILE_TO_DOWNLOAD_NAME
-                        + ", but was " + download.suggestedFilename());
+    @SuppressWarnings("SameParameterValue")
+    private void assertFileNameIs(InMemoryDownload download, String expectedFileName) {
+        String actualFileName = download.suggestedFilename();
+
+        assertEquals(
+                expectedFileName,
+                actualFileName,
+                () -> "Expected file name to be %s, but was %s".formatted(expectedFileName, actualFileName)
+        );
     }
 
-    @SneakyThrows
-    private String downloadFileAndReadContent(Download download) {
-        try (
-                InputStream inputStream = download.createReadStream();
-                var reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
-        ) {
-            return reader.lines()
-                    .collect(Collectors.joining("\n"));
-        }
-    }
+    @SuppressWarnings("SameParameterValue")
+    private void assertFileContentIs(InMemoryDownload download, String expectedFileContent) {
+        String fileContent = download.downloadFileAndReadContent();
 
-    private void assertFileContentIsCorrect(String fileContent) {
-        assertEquals(FILE_TO_DOWNLOAD_EXPECTED_CONTENTS, fileContent,
-                () -> "Expected file content to be " + FILE_TO_DOWNLOAD_EXPECTED_CONTENTS
-                        + ", but was " + fileContent);
+        assertEquals(
+                expectedFileContent,
+                fileContent,
+                () -> "Expected file content to be %s, but was %s".formatted(expectedFileContent, fileContent)
+        );
     }
 }
