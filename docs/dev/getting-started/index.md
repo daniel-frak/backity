@@ -89,8 +89,8 @@ When applicable, they are written as ArchUnit tests. Otherwise, they are documen
 and can be found [in the developer documentation](backity/developer-documentation/architecture-decision-records).
 
 ArchUnit rules will be verified when you run tests.
-Take a moment to review the documented ADRs before contributing any larger features to ensure your contributions
-align with the established design principles.
+Take a moment to review the "Decision" sections of documented ADRs before contributing any larger features to ensure
+your contributions align with the established design principles.
 
 # Profiles overview
 
@@ -167,7 +167,7 @@ cd e2e
 
 # Feedback
 
-If anything in this guide is unclear or missing, 
+If anything in this guide is unclear or missing,
 feel free to [open an issue](https://github.com/daniel-frak/backity/issues/new).
 
 Improvements to the documentation are also welcome via pull requests.
