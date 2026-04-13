@@ -46,7 +46,7 @@ At integration points, where unit tests are not practical, focused integration s
 needed to validate edge cases in isolation from irrelevant parts of the system.
 
 Writing a small number of happy-path E2E tests can help verify that entire user journeys are working correctly,
-providing increased confidence in the application.
+catching complex workflow issues (e.g., an item failing to delete because of a dependency on something else).  
 
 ## Decision
 
