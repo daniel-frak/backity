@@ -54,6 +54,10 @@ spring:
       s3:
         enabled: ${backity.filesystem.s3.enabled}
 
+  modulith:
+    events:
+      republish-outstanding-events-on-restart: true
+
 openapi:
   project-description: '@project.description@'
   project-title: '@project.name@'

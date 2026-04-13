@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: create_game
-      author: daniel_frak
+      author: Daniel frąk
       changes:
         - createTable:
             tableName: game
@@ -36,7 +36,7 @@ databaseChangeLog:
 
   - changeSet:
       id: create_source_file
-      author: daniel_frak
+      author: Daniel frąk
       changes:
         - createTable:
             tableName: source_file
@@ -115,7 +115,7 @@ databaseChangeLog:
 
   - changeSet:
       id: create_game_content_discovery_result
-      author: daniel_frak
+      author: Daniel frąk
       changes:
         - createTable:
             tableName: game_content_discovery_result
@@ -160,7 +160,7 @@ databaseChangeLog:
 
   - changeSet:
       id: create_backup_target
-      author: daniel_frak
+      author: Daniel frąk
       changes:
         - createTable:
             tableName: backup_target
@@ -200,7 +200,7 @@ databaseChangeLog:
 
   - changeSet:
       id: create_file_copy
-      author: daniel_frak
+      author: Daniel frąk
       changes:
         - createTable:
             tableName: file_copy
@@ -302,3 +302,54 @@ databaseChangeLog:
             columns:
               - column:
                   name: file_path
+  - changeSet:
+      id: add-outbox-table
+      author: Daniel frąk
+      changes:
+        - createTable:
+            tableName: event_publication
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+              - column:
+                  name: listener_id
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: event_type
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: serialized_event
+                  type: TEXT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: publication_date
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: completion_date
+                  type: TIMESTAMP WITH TIME ZONE
+
+        - createIndex:
+            indexName: event_publication_serialized_event_hash_idx
+            tableName: event_publication
+            using: hash
+            columns:
+              - column:
+                  name: serialized_event
+
+        - createIndex:
+            indexName: event_publication_by_completion_date_idx
+            tableName: event_publication
+            columns:
+              - column:
+                  name: completion_date

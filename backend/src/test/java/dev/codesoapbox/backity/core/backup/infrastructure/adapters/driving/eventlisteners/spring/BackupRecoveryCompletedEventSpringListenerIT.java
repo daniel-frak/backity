@@ -6,9 +6,13 @@ import dev.codesoapbox.backity.testing.messaging.annotations.SpringEventListener
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
+import static org.awaitility.Awaitility.await;
 import static org.mockito.Mockito.verify;
 
+// @TODO More event listeners must be converted (and tests updated)
 @SpringEventListenerTest
 class BackupRecoveryCompletedEventSpringListenerIT {
 
@@ -18,12 +22,17 @@ class BackupRecoveryCompletedEventSpringListenerIT {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+
     @Test
     void shouldHandleEvent() {
         var event = new BackupRecoveryCompletedEvent();
 
-        applicationEventPublisher.publishEvent(event);
+        new TransactionTemplate(transactionManager)
+                .executeWithoutResult(_ -> applicationEventPublisher.publishEvent(event));
 
-        verify(eventHandler).handle();
+        await()
+                .untilAsserted(() -> verify(eventHandler).handle());
     }
 }
