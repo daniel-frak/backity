@@ -7,7 +7,7 @@ tags: ['architecture']
 
 ## Context
 
-Event handling is the responsibility of the application layer, 
+Event handling is the responsibility of the application layer,
 as only that layer has the context to orchestrate and aggregate events into meaningful behavior.
 However, the only officially supported way to handle events in Spring Boot is through the `@EventListener` annotation.
 Using this annotation would couple the application layer to the Spring framework.
@@ -16,12 +16,12 @@ A custom application-layer annotation like `@DomainEventHandler` could be writte
 from the Spring framework. An infrastructure-layer inbound adapter could then dynamically register event listeners
 based on the presence of this annotation.
 However, Spring currently does not provide an easy way to programmatically register
-event listeners, while writing a custom equivalent of `@EventListenerMethodProcessor` would be a significant maintenance
+event listeners, while writing a custom equivalent of `EventListenerMethodProcessor` would be a significant maintenance
 burden.
 
 Until Spring provides a better way to programmatically register event listeners, the most straightforward solution is to
 write Spring-based event listeners as inbound adapters, with separate event handlers kept in the application layer.
-While this increases the probability of forgetting to register an event listener, 
+While this increases the probability of forgetting to register an event listener,
 that can be mitigated by writing an ArchUnit rule.
 
 ## Decision
