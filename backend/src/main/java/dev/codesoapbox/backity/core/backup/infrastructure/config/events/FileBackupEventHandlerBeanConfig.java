@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.config.events;
 
-import dev.codesoapbox.backity.core.backup.application.eventhandlers.BackupRecoveryCompletedEventHandler;
-import dev.codesoapbox.backity.core.backup.application.eventhandlers.FileBackupFinishedEventHandler;
-import dev.codesoapbox.backity.core.backup.application.eventhandlers.FileCopyReplicationProgressChangedEventHandler;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.ClearProgressOnFileBackupFinishedEventHandler;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.MarkBackupRecoveryCompletedOnBackupRecoveryCompletedEventHandler;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventHandler;
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProcess;
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.DomainEventHandlerBeanConfiguration;
@@ -12,20 +12,23 @@ import org.springframework.context.annotation.Bean;
 public class FileBackupEventHandlerBeanConfig {
 
     @Bean
-    FileCopyReplicationProgressChangedEventHandler fileCopyReplicationProgressChangedEventHandler(
+    SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventHandler
+    saveProgressToRepositoryOnFileCopyReplicationProgressChangedEventHandler(
             FileCopyReplicationProgressRepository replicationProgressRepository) {
-        return new FileCopyReplicationProgressChangedEventHandler(replicationProgressRepository);
+        return new SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventHandler(
+                replicationProgressRepository);
     }
 
     @Bean
-    FileBackupFinishedEventHandler fileBackupFinishedEventHandler(
+    ClearProgressOnFileBackupFinishedEventHandler clearProgressOnFileBackupFinishedEventHandler(
             FileCopyReplicationProgressRepository fileCopyReplicationProgressRepository) {
-        return new FileBackupFinishedEventHandler(fileCopyReplicationProgressRepository);
+        return new ClearProgressOnFileBackupFinishedEventHandler(fileCopyReplicationProgressRepository);
     }
 
     @Bean
-    BackupRecoveryCompletedEventHandler backupRecoveryCompletedEventHandler(
+    MarkBackupRecoveryCompletedOnBackupRecoveryCompletedEventHandler
+    markBackupRecoveryCompletedOnBackupRecoveryCompletedEventHandler(
             FileCopyReplicationProcess fileCopyReplicationProcess) {
-        return new BackupRecoveryCompletedEventHandler(fileCopyReplicationProcess);
+        return new MarkBackupRecoveryCompletedOnBackupRecoveryCompletedEventHandler(fileCopyReplicationProcess);
     }
 }

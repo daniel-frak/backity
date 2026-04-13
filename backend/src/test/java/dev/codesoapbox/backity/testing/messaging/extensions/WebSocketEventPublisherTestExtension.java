@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.testing.messaging.extensions;
 
-import dev.codesoapbox.backity.testing.messaging.TestMessageChannel;
+import dev.codesoapbox.backity.testing.messaging.websockets.TestMessageChannel;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;

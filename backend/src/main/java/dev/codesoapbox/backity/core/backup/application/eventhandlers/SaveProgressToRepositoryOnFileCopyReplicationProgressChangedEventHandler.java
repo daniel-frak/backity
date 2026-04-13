@@ -6,7 +6,7 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileCopyReplicationProg
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class FileCopyReplicationProgressChangedEventHandler {
+public class SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventHandler {
 
     private final FileCopyReplicationProgressRepository fileCopyReplicationProgressRepository;
 

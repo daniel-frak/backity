@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProcess;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class BackupRecoveryCompletedEventHandler {
+public class MarkBackupRecoveryCompletedOnBackupRecoveryCompletedEventHandler {
 
     private final FileCopyReplicationProcess fileCopyReplicationProcess;
 

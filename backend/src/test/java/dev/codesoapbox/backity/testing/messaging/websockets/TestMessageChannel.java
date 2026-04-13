@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.testing.messaging;
+package dev.codesoapbox.backity.testing.messaging.websockets;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;

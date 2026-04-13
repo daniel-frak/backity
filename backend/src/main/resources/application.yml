@@ -54,6 +54,19 @@ spring:
       s3:
         enabled: ${backity.filesystem.s3.enabled}
 
+  modulith:
+    events:
+      completion-mode: delete
+
+      # Note that Spring does not provide a locking mechanism for this feature.
+      # Therefore, multiple instances of the application may attempt to invoke a listener
+      # for the same event publication, unless custom locking mechanisms are used.
+      # This is not currently considered a problem,
+      # as only one instance of this application is expected to run at any time.
+      #
+      # This also changes publishing guarantees to at-least-once.
+      republish-outstanding-events-on-restart: true
+
 openapi:
   project-description: '@project.description@'
   project-title: '@project.name@'

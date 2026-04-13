@@ -3,8 +3,8 @@ package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.me
 import dev.codesoapbox.backity.core.discovery.domain.events.GameContentDiscoveryStoppedEvent;
 import dev.codesoapbox.backity.core.discovery.domain.events.TestGameContentDiscoveryEvent;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.GameContentDiscoveryWebSocketTopics;
-import dev.codesoapbox.backity.testing.messaging.TestMessageChannel;
 import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketEventForwarderTest;
+import dev.codesoapbox.backity.testing.messaging.websockets.TestMessageChannel;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

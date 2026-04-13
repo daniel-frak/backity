@@ -22,7 +22,10 @@
 
         <sonar.projectKey>backity-backend</sonar.projectKey>
         <sonar.projectName>Backity (backend)</sonar.projectName>
-        <sonar.coverage.exclusions>**/BackityApplication.java,**/**Config.java</sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>
+            **/BackityApplication.java,
+            **/infrastructure/config/**/*.java
+        </sonar.coverage.exclusions>
     </properties>
 
     <scm>
@@ -167,6 +170,21 @@
             <scope>test</scope>
         </dependency>
         <!-- END of Persistence -->
+
+        <!-- Spring Modulith (for event outbox) -->
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-starter-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-starter-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.modulith</groupId>
+            <artifactId>spring-modulith-events-core</artifactId>
+        </dependency>
+        <!-- END of Spring Modulith (for event outbox) -->
 
         <!-- S3 -->
         <dependency>

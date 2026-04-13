@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws;
 
 import dev.codesoapbox.backity.shared.infrastructure.config.WebSocketBrokerConfig;
-import dev.codesoapbox.backity.testing.messaging.TestWebSocketMessaging;
 import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketPublisherTest;
+import dev.codesoapbox.backity.testing.messaging.websockets.TestWebSocketMessaging;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

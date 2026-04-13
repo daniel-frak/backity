@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.testing.messaging;
+package dev.codesoapbox.backity.testing.messaging.websockets;
 
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;

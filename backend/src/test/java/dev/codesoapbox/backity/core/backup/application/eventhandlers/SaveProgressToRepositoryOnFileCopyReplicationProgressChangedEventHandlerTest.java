@@ -13,16 +13,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class FileCopyReplicationProgressChangedEventHandlerTest {
+class SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventHandlerTest {
 
     @Mock
     private FileCopyReplicationProgressRepository replicationProgressRepository;
 
-    private FileCopyReplicationProgressChangedEventHandler eventHandler;
+    private SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventHandler eventHandler;
 
     @BeforeEach
     void setUp() {
-        eventHandler = new FileCopyReplicationProgressChangedEventHandler(
+        eventHandler = new SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventHandler(
                 replicationProgressRepository);
     }
 
