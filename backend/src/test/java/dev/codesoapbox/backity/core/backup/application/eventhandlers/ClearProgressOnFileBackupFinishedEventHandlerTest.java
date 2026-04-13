@@ -12,16 +12,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class FileBackupFinishedEventHandlerTest {
+class ClearProgressOnFileBackupFinishedEventHandlerTest {
 
     @Mock
     private FileCopyReplicationProgressRepository fileCopyReplicationProgressRepository;
 
-    private FileBackupFinishedEventHandler eventHandler;
+    private ClearProgressOnFileBackupFinishedEventHandler eventHandler;
 
     @BeforeEach
     void setUp() {
-        eventHandler = new FileBackupFinishedEventHandler(fileCopyReplicationProgressRepository);
+        eventHandler = new ClearProgressOnFileBackupFinishedEventHandler(fileCopyReplicationProgressRepository);
     }
 
     @Test

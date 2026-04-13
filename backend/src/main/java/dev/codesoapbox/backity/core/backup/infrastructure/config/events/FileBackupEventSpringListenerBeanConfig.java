@@ -1,7 +1,11 @@
 package dev.codesoapbox.backity.core.backup.infrastructure.config.events;
 
-import dev.codesoapbox.backity.core.backup.application.eventhandlers.*;
-import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.eventlisteners.spring.*;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.ClearProgressOnFileBackupFinishedEventHandler;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.MarkBackupRecoveryCompletedOnBackupRecoveryCompletedEventHandler;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventHandler;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.eventlisteners.spring.ClearProgressOnFileBackupFinishedEventSpringListener;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.eventlisteners.spring.MarkBackupRecoveryCompletedOnBackupRecoveryCompletedEventSpringListener;
+import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.eventlisteners.spring.SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventSpringListener;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringEventListenerBeanConfiguration;
 import org.springframework.context.annotation.Bean;
 
@@ -9,20 +13,22 @@ import org.springframework.context.annotation.Bean;
 public class FileBackupEventSpringListenerBeanConfig {
 
     @Bean
-    FileCopyReplicationProgressChangedEventSpringListener fileCopyReplicationProgressChangedEventSpringListener(
-            FileCopyReplicationProgressChangedEventHandler eventHandler) {
-        return new FileCopyReplicationProgressChangedEventSpringListener(eventHandler);
+    SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventSpringListener
+    saveProgressToRepositoryOnFileCopyReplicationProgressChangedEventSpringListener(
+            SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventHandler eventHandler) {
+        return new SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventSpringListener(eventHandler);
     }
 
     @Bean
-    FileBackupFinishedEventSpringListener fileBackupFinishedEventSpringListener(
-            FileBackupFinishedEventHandler eventHandler) {
-        return new FileBackupFinishedEventSpringListener(eventHandler);
+    ClearProgressOnFileBackupFinishedEventSpringListener clearProgressOnFileBackupFinishedEventSpringListener(
+            ClearProgressOnFileBackupFinishedEventHandler eventHandler) {
+        return new ClearProgressOnFileBackupFinishedEventSpringListener(eventHandler);
     }
 
     @Bean
-    BackupRecoveryCompletedEventSpringListener backupRecoveryCompletedEventSpringListener(
-            BackupRecoveryCompletedEventHandler eventHandler) {
-        return new BackupRecoveryCompletedEventSpringListener(eventHandler);
+    MarkBackupRecoveryCompletedOnBackupRecoveryCompletedEventSpringListener
+    markBackupRecoveryCompletedOnBackupRecoveryCompletedEventSpringListener(
+            MarkBackupRecoveryCompletedOnBackupRecoveryCompletedEventHandler eventHandler) {
+        return new MarkBackupRecoveryCompletedOnBackupRecoveryCompletedEventSpringListener(eventHandler);
     }
 }

@@ -3,8 +3,8 @@ package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messa
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.TestFileBackupEvent;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messaging.ws.FileBackupWebSocketTopics;
-import dev.codesoapbox.backity.testing.messaging.TestMessageChannel;
 import dev.codesoapbox.backity.testing.messaging.annotations.WebSocketEventForwarderTest;
+import dev.codesoapbox.backity.testing.messaging.websockets.TestMessageChannel;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -28,4 +28,7 @@ public class ArchUnitProductionCodeTest {
 
     @ArchTest
     static final ArchTests CONTROLLER_RULES = ArchTests.in(ControllerRules.class);
+
+    @ArchTest
+    static final ArchTests EVENT_LISTENER_RULES = ArchTests.in(EventListenerRules.class);
 }
