@@ -18,7 +18,7 @@
         <angular-openapi.version>19.0.0</angular-openapi.version>
         <mapstruct.version>1.6.3</mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
-        <archunit.version>1.4.1</archunit.version>
+        <archunit.version>1.4.2</archunit.version>
 
         <sonar.projectKey>backity-backend</sonar.projectKey>
         <sonar.projectName>Backity (backend)</sonar.projectName>
