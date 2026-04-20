@@ -19,7 +19,7 @@ jobs:
         uses: actions/checkout@v6
       - name: Install, build, and upload your site
         # https://github.com/withastro/action
-        uses: withastro/action@44706356b4eb735f8b9035699eb4796241a040c4 # v6
+        uses: withastro/action@b7d53628f8b666036b0238aadb0b984a2a489f26 # v6
         with:
           path: ./website
 
