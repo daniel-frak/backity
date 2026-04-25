@@ -1,15 +1,29 @@
 ---
-const firstDoc = Object.values(
+import {getCollection} from 'astro:content';
+import {devDocsRoot} from "../layouts/developer-docs/config.ts";
+
+const urlBase: string = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const pagesDocs = Object.values(
     import.meta.glob('./developer-documentation/*.md', {eager: true})
-)
-    .filter((doc: any) => !doc.frontmatter.parent)
-    .sort((a: any, b: any) => (a.frontmatter.order ?? 0) - (b.frontmatter.order ?? 0))
+).map((doc: any) => ({
+    url: doc.url,
+    order: doc.frontmatter.order ?? 0,
+    parent: doc.frontmatter.parent,
+}));
+
+const collectionDocs = (await getCollection('devDocs')).map((doc: any) => ({
+    url: `${urlBase}/${devDocsRoot}/${doc.id}`,
+    order: doc.data.order ?? 0,
+    parent: doc.data.parent,
+}));
+
+const firstDoc = [...pagesDocs, ...collectionDocs]
+    .filter(doc => !doc.parent)
+    .sort((a, b) => a.order - b.order)
     [0];
 
-const {default: Content} = firstDoc as { default: any };
+export const frontmatter = {order: Infinity};
 
-export const frontmatter = {
-    order: Infinity
-};
+return Astro.redirect(firstDoc.url);
 ---
-<Content/>
