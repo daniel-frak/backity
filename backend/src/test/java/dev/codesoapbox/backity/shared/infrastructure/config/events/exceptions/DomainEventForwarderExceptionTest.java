@@ -1,6 +1,5 @@
-package dev.codesoapbox.backity.shared.infrastructure.config.events;
+package dev.codesoapbox.backity.shared.infrastructure.config.events.exceptions;
 
-import dev.codesoapbox.backity.shared.infrastructure.config.events.exceptions.DomainEventForwarderException;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

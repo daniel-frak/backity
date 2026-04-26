@@ -42,7 +42,7 @@ class FileCopyIdTest {
     class Comparable {
 
         @Test
-        void shouldReturnZeroWhenComparingSameInstance() {
+        void shouldReturnZeroGivenComparingSameInstance() {
             var id1 = new FileCopyId("9fdad52f-b4a6-46bc-af6d-bf27f9661eae");
 
             assertThat(id1).isEqualByComparingTo(id1);

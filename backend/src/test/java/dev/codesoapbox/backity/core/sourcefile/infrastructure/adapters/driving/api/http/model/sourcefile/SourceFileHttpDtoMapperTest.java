@@ -1,9 +1,7 @@
-package dev.codesoapbox.backity.core.sourcefile.adapters.driving.api.http.model.sourcefile;
+package dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driving.api.http.model.sourcefile;
 
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
-import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driving.api.http.model.sourcefile.SourceFileHttpDto;
-import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driving.api.http.model.sourcefile.SourceFileHttpDtoMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 

@@ -300,7 +300,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void startContentDiscoveryShouldSetGameProviderIdServiceAsNotInProgressWhenDone() {
+        void startContentDiscoveryShouldSetGameProviderIdServiceAsNotInProgressGivenDone() {
             gameContentDiscoveryService.startContentDiscovery();
 
             gameProviderFileDiscoveryService.complete();

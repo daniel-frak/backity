@@ -30,7 +30,7 @@ class StorageSolutionIdTest {
     class Comparable {
 
         @Test
-        void shouldReturnZeroWhenComparingSameInstance() {
+        void shouldReturnZeroGivenComparingSameInstance() {
             var id1 = new StorageSolutionId("S3");
 
             assertThat(id1).isEqualByComparingTo(id1);

@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.sourcefile.adapters.driven.persistence.jpa;
+package dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa;
 
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
@@ -7,9 +7,6 @@ import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.exceptions.SourceFileNotFoundException;
-import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaEntity;
-import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaEntityMapper;
-import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaRepository;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import org.junit.jupiter.api.BeforeEach;

@@ -149,7 +149,7 @@ class PathTemplateTest {
             }
 
             @Test
-            void shouldResolveFilePathWhenNoSeparatorInPathTemplate() {
+            void shouldResolveFilePathGivenNoSeparatorInPathTemplate() {
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
                         .gameProviderId(new GameProviderId("someGameProviderId"))
                         .originalGameTitle("someGameTitle")

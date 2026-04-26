@@ -115,7 +115,7 @@ class SwaggerEnumLowerCaseModelConverterTest {
     }
 
     @Test
-    void shouldDelegateResolutionWhenNotEnum() {
+    void shouldDelegateResolutionGivenNotEnum() {
         AnnotatedType annotatedType = getAnnotatedTypeFromArgumentAsSimpleType(
                 "testMethodWithoutEnumWithAnnotation", TestRecord.class);
 
@@ -130,7 +130,7 @@ class SwaggerEnumLowerCaseModelConverterTest {
     }
 
     @Test
-    void shouldReturnNullWhenIteratorEmpty() {
+    void shouldReturnNullGivenIteratorEmpty() {
         AnnotatedType annotatedType = getAnnotatedTypeFromArgumentAsSimpleType(
                 "testMethodWithoutEnumWithoutAnnotation", Object.class);
 

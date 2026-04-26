@@ -1,8 +1,7 @@
-package dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws;
+package dev.codesoapbox.backity.shared.infrastructure.config.events;
 
 import dev.codesoapbox.backity.shared.application.eventhandlers.DomainEventForwarder;
 import dev.codesoapbox.backity.shared.application.eventhandlers.DomainEventForwardingHandler;
-import dev.codesoapbox.backity.shared.infrastructure.config.events.DomainEventForwarderFinder;
 import dev.codesoapbox.backity.shared.infrastructure.config.events.exceptions.DomainEventForwarderException;
 import lombok.Getter;
 import lombok.Setter;

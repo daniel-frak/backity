@@ -185,7 +185,7 @@ class S3OutputStreamTest {
     }
 
     @Test
-    void writeShouldFlushBufferAndUploadPartsWithCorrectNumbersWhenFull() {
+    void writeShouldFlushBufferAndUploadPartsWithCorrectNumbersGivenFull() {
         mockMultipartUploadCreationAndPartUpload();
         var fullBufferData = new byte[BUFFER_SIZE_BYTES];
         s3OutputStream.write(fullBufferData); // Triggers multipart upload creation and first part upload
@@ -222,7 +222,7 @@ class S3OutputStreamTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenWritingToClosedStream() {
+    void shouldThrowExceptionGivenWritingToClosedStream() {
         s3OutputStream.close();
 
         assertThatWritingToStreamCausesException();

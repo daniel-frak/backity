@@ -42,7 +42,7 @@ class GameIdTest {
     class Comparable {
 
         @Test
-        void shouldReturnZeroWhenComparingSameInstance() {
+        void shouldReturnZeroGivenComparingSameInstance() {
             var id1 = new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5");
 
             assertThat(id1).isEqualByComparingTo(id1);

@@ -42,7 +42,7 @@ class BackupTargetIdTest {
     class Comparable {
 
         @Test
-        void shouldReturnZeroWhenComparingSameInstance() {
+        void shouldReturnZeroGivenComparingSameInstance() {
             var id1 = new BackupTargetId("d46dde81-e519-4300-9a54-6f9e7d637926");
 
             assertThat(id1).isEqualByComparingTo(id1);

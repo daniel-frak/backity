@@ -1,14 +1,14 @@
 package dev.codesoapbox.backity.gameproviders.shared.infrastructure.adapters.driven.api.spring;
 
 import dev.codesoapbox.backity.core.backup.application.WriteDestination;
-import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
-import dev.codesoapbox.backity.shared.application.progress.ProgressInfo;
 import dev.codesoapbox.backity.core.backup.application.exceptions.ConcurrentFileWriteException;
-import dev.codesoapbox.backity.core.backup.application.exceptions.StorageSolutionWriteFailedException;
 import dev.codesoapbox.backity.core.backup.application.exceptions.FileWriteWasCanceledException;
+import dev.codesoapbox.backity.core.backup.application.exceptions.StorageSolutionWriteFailedException;
+import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.testing.TestDataBufferFlux;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.testing.TestFlux;
+import dev.codesoapbox.backity.shared.application.progress.ProgressInfo;
 import dev.codesoapbox.backity.testing.time.FakeClock;
 import io.netty.handler.codec.dns.DefaultDnsQuestion;
 import io.netty.handler.codec.dns.DnsRecordType;
@@ -220,9 +220,9 @@ class DataBufferFluxTrackableFileStreamTest {
                 );
             }
 
-            @ParameterizedTest(name = "should throw when canceled {0}")
+            @ParameterizedTest(name = "should throw given canceled {0}")
             @MethodSource("cancelScenarios")
-            void shouldThrowWhenCanceled(String scenarioName, Flux<Boolean> cancelFlux) {
+            void shouldThrowGivenCanceled(String scenarioName, Flux<Boolean> cancelFlux) {
                 TestFlux<DataBuffer> dataBufferFlux = TestDataBufferFlux.succeeding();
                 OutputStreamProgressTracker progress = initializedOutputStreamProgressTrackerFor(dataBufferFlux.data());
                 var fileStream =
