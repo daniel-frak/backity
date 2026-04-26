@@ -30,7 +30,7 @@ class LowercaseEnumFinderTest {
     }
 
     @Test
-    void testGetAnnotatedControllerEnums() {
+    void getAnnotatedControllerEnumsShouldReturnEnumsAnnotatedWithLowercaseApiEnum() {
         when(applicationContext.getBeanNamesForAnnotation(RestController.class))
                 .thenReturn(new String[]{"testController"});
         doReturn(TestController.class)

@@ -1,9 +1,7 @@
-package dev.codesoapbox.backity.core.sourcefile.adapters.driven.persistence.jpa;
+package dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa;
 
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
-import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaEntity;
-import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaEntityMapper;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 

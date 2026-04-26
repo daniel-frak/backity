@@ -54,7 +54,7 @@ class EnqueueFileCopyControllerIT {
     }
 
     @Test
-    void shouldReturnBadRequestWhenFileNotFound(CapturedOutput capturedOutput) throws Exception {
+    void shouldReturnBadRequestGivenFileNotFound(CapturedOutput capturedOutput) throws Exception {
         var sourceFileUuid = "acde26d7-33c7-42ee-be16-bca91a604b48";
         var backupTargetUuid = "224440e2-6e5c-4f24-94ac-3222587652f7";
         var sourceFileId = new SourceFileId(sourceFileUuid);

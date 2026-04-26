@@ -105,7 +105,7 @@ class ProgressTrackerTest {
             );
         }
 
-        @ParameterizedTest(name = "when {0}")
+        @ParameterizedTest(name = "given {0}")
         @MethodSource("progressArguments")
         void getProgressInfoShouldShowCorrectProgress(Integer trackerIncrement, Integer timeOffset,
                                                       Integer expectedPercentage, Long expectedSecondsLeft) {
@@ -119,7 +119,7 @@ class ProgressTrackerTest {
         }
 
         @Test
-        void getProgressInfoShouldShowNoProgressWhenNeverIncremented() {
+        void getProgressInfoShouldShowNoProgressGivenNeverIncremented() {
             var tracker = new ProgressTracker(10L, clock);
             ProgressInfo progressInfo = tracker.getProgressInfo();
 

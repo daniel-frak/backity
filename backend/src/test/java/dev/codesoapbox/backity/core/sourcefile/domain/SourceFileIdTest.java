@@ -42,7 +42,7 @@ class SourceFileIdTest {
     class Comparable {
 
         @Test
-        void shouldReturnZeroWhenComparingSameInstance() {
+        void shouldReturnZeroGivenComparingSameInstance() {
             var id1 = new SourceFileId("3b21cc23-54c6-48f3-914d-188b790128b4");
 
             assertThat(id1).isEqualByComparingTo(id1);

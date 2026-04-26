@@ -48,7 +48,7 @@ abstract class GameJpaRepositoryIT {
     }
 
     @Test
-    void shouldNotSaveWhenGameWithTitleAlreadyExists() {
+    void shouldNotSaveGivenGameWithTitleAlreadyExists() {
         populateDatabase(List.of(GAMES.GAME_1.get()));
         String existingTitle = GAMES.GAME_1.get().getTitle();
         Game game = TestGame.anyBuilder()

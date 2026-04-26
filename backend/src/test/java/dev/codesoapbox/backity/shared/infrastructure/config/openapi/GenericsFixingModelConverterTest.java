@@ -75,7 +75,7 @@ class GenericsFixingModelConverterTest {
     }
 
     @Test
-    void shouldDoNothingWhenResolvedSchemaIsNull() {
+    void shouldDoNothingGivenResolvedSchemaIsNull() {
         modelConverters.addConverter((annotatedType, modelConverterContext, iterator) -> null);
         registerModelConverter();
         AnnotatedType annotatedType = constructAnnotatedType(TestRecordWithoutAnnotation.class);
@@ -86,7 +86,7 @@ class GenericsFixingModelConverterTest {
     }
 
     @Test
-    void shouldDoNothingWhenResolvedSchemaTypeIsNotNull() {
+    void shouldDoNothingGivenResolvedSchemaTypeIsNotNull() {
         var schema = new io.swagger.v3.oas.models.media.Schema<>();
         schema.type("object");
         modelConverters.addConverter((annotatedType, modelConverterContext, iterator) -> schema);
@@ -99,7 +99,7 @@ class GenericsFixingModelConverterTest {
     }
 
     @Test
-    void shouldDoNothingWhenJavaTypeIsNull() {
+    void shouldDoNothingGivenJavaTypeIsNull() {
         io.swagger.v3.oas.models.media.Schema<Object> schema = new io.swagger.v3.oas.models.media.Schema<>();
         modelConverters.addConverter((annotatedType, modelConverterContext, iterator) -> schema);
         registerModelConverterWithMockObjectMapperProvider();
@@ -121,7 +121,7 @@ class GenericsFixingModelConverterTest {
     }
 
     @Test
-    void shouldDoNothingWhenClassHasNoGenericTypes() {
+    void shouldDoNothingGivenClassHasNoGenericTypes() {
         io.swagger.v3.oas.models.media.Schema<Object> schema = new io.swagger.v3.oas.models.media.Schema<>();
         modelConverters.addConverter((annotatedType, modelConverterContext, iterator) -> schema);
         registerModelConverter();
@@ -134,7 +134,7 @@ class GenericsFixingModelConverterTest {
     }
 
     @Test
-    void shouldDoNothingWhenRefIsEmpty() {
+    void shouldDoNothingGivenRefIsEmpty() {
         io.swagger.v3.oas.models.media.Schema<Object> schema = new io.swagger.v3.oas.models.media.Schema<>();
         modelConverters.addConverter((annotatedType, modelConverterContext, iterator) -> schema);
         registerModelConverter();

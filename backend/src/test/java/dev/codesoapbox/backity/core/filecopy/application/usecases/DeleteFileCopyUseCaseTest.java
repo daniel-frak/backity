@@ -75,7 +75,7 @@ class DeleteFileCopyUseCaseTest {
     }
 
     @Test
-    void shouldChangeStatusOfFileCopyWhenDeletingFile() {
+    void shouldChangeStatusOfFileCopyGivenDeletingFile() {
         FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
         mockStorageSolutionExists(fileCopy);
 
