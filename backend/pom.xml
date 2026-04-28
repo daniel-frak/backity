@@ -13,7 +13,7 @@
 
     <properties>
         <springdoc.version>3.0.3</springdoc.version>
-        <openapi-generator.version>7.21.0</openapi-generator.version>
+        <openapi-generator.version>7.22.0</openapi-generator.version>
         <maven-clean.version>3.5.0</maven-clean.version>
         <angular-openapi.version>19.0.0</angular-openapi.version>
         <mapstruct.version>1.6.3</mapstruct.version>
