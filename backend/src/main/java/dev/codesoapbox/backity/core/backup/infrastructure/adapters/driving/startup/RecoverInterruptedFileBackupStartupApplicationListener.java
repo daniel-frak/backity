@@ -6,7 +6,8 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 
 @RequiredArgsConstructor
-public class FileBackupRecoveryStartupApplicationListener implements ApplicationListener<ApplicationReadyEvent> {
+public class RecoverInterruptedFileBackupStartupApplicationListener
+        implements ApplicationListener<ApplicationReadyEvent> {
 
     private final RecoverInterruptedFileBackupUseCase useCase;
 

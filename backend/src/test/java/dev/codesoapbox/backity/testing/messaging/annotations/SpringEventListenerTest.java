@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.testing.messaging.annotations;
 import dev.codesoapbox.backity.BackityApplication;
 import dev.codesoapbox.backity.core.backup.application.eventhandlers.ClearProgressOnFileBackupFinishedEventHandler;
 import dev.codesoapbox.backity.core.backup.application.eventhandlers.MarkBackupRecoveryCompletedOnBackupRecoveryCompletedEventHandler;
+import dev.codesoapbox.backity.core.backup.application.eventhandlers.ProcessFileCopyQueueOnFileCopyEnqueuedEventHandler;
 import dev.codesoapbox.backity.core.backup.application.eventhandlers.SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventHandler;
 import dev.codesoapbox.backity.shared.application.eventhandlers.DomainEventForwardingHandler;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringApplicationEventPublisherBeanConfiguration;
@@ -75,6 +76,7 @@ import java.lang.annotation.*;
         ClearProgressOnFileBackupFinishedEventHandler.class,
         MarkBackupRecoveryCompletedOnBackupRecoveryCompletedEventHandler.class,
         SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventHandler.class,
+        ProcessFileCopyQueueOnFileCopyEnqueuedEventHandler.class,
         DomainEventForwardingHandler.class
 })
 @ExtendWith(OutboxEventScenarioExtension.class)

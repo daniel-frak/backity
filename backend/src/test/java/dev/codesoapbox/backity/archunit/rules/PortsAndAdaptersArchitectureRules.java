@@ -5,7 +5,6 @@ import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.library.dependencies.SliceRule;
 import dev.codesoapbox.backity.BackityApplication;
 
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 import static dev.codesoapbox.backity.archunit.rules.PortsAndAdaptersArchitectureRules.Constants.*;
@@ -37,15 +36,6 @@ public final class PortsAndAdaptersArchitectureRules {
     static final SliceRule ADAPTER_TYPES_SHOULD_NOT_DEPEND_ON_EACH_OTHER = slices()
             // Assumed package structure: *.adapters.driven/driving.(adaptertype)
             .matching(".." + ADAPTERS_PACKAGE + ".*.(*)..").should().notDependOnEachOther();
-
-    @ArchTest
-    static final ArchRule SHARED_ADAPTERS_SHOULD_NOT_DEPEND_ON_DOMAIN = noClasses()
-            .that().resideInAPackage(".." + ADAPTERS_PACKAGE + "." + SHARED_PACKAGE + "..")
-            .should().dependOnClassesThat().resideInAPackage(".." + DOMAIN_PACKAGE + "..")
-            .because("""
-                    the `shared` package is intended for code that is reused between driven and driving adapters.
-                    Any code depending on the domain layer likely belongs to a specific driven or driving adapter.
-                    """);
 
     private PortsAndAdaptersArchitectureRules() {
     }

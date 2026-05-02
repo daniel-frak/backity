@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.filecopy.domain;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
+import dev.codesoapbox.backity.core.backup.domain.events.FileCopyEnqueuedEvent;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.InvalidFileCopyStatusTransitionException;
 import dev.codesoapbox.backity.shared.domain.DomainEvent;
 import lombok.EqualsAndHashCode;
@@ -88,12 +89,22 @@ public class FileCopy {
         domainEvents.add(event);
     }
 
-    public void toEnqueued() {
+    public void enqueue() {
+        if(this.status == FileCopyStatus.ENQUEUED) {
+            return;
+        }
+
         this.status = FileCopyStatus.ENQUEUED;
         this.failedReason = null;
+
+        var event = new FileCopyEnqueuedEvent(id);
+        domainEvents.add(event);
     }
 
     public void toInProgress(@NonNull String filePath) {
+        if(this.status == FileCopyStatus.IN_PROGRESS) {
+            return;
+        }
         if (this.status != FileCopyStatus.ENQUEUED) {
             throw new InvalidFileCopyStatusTransitionException(id, this.status, FileCopyStatus.IN_PROGRESS);
         }

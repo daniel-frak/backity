@@ -18,7 +18,7 @@ public class EnqueueFileCopyUseCase {
         FileCopy fileCopy = fileCopyRepository.findByNaturalIdOrCreate(fileCopyNaturalId,
                         () -> fileCopyFactory.create(fileCopyNaturalId));
 
-        fileCopy.toEnqueued();
+        fileCopy.enqueue();
         fileCopyRepository.save(fileCopy);
     }
 }
