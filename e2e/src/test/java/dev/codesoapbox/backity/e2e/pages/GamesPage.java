@@ -13,9 +13,6 @@ import java.util.Set;
 
 public class GamesPage {
 
-    // The file backup scheduler runs once every N seconds; We must make sure to not fail the test before then.
-    private static final long EXPECTED_FILE_BACKUP_SCHEDULER_DELAY = 60_000L;
-
     private static final Locator.ClickOptions SHORT_TIMEOUT_CLICK = new Locator.ClickOptions().setTimeout(2000);
 
     private static final String DOWNLOAD_FILE_BACKUP_BTN_TEST_ID = "download-file-copy-btn";
@@ -124,8 +121,7 @@ public class GamesPage {
     private void waitForFileBackupToFinish(String fileTitle, String backupTargetName) {
         Locator statusLocator = getFileCopyStatus(fileTitle, backupTargetName);
         page.waitForCondition(
-                () -> TERMINAL_STATUSES.contains(statusLocator.textContent().strip().toUpperCase()),
-                new Page.WaitForConditionOptions().setTimeout(EXPECTED_FILE_BACKUP_SCHEDULER_DELAY + 3000L)
+                () -> TERMINAL_STATUSES.contains(statusLocator.textContent().strip().toUpperCase())
         );
     }
 

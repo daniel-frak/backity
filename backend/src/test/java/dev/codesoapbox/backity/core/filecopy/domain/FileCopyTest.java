@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.filecopy.domain;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
+import dev.codesoapbox.backity.core.backup.domain.events.FileCopyEnqueuedEvent;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.InvalidFileCopyStatusTransitionException;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
@@ -171,237 +172,314 @@ class FileCopyTest {
     @Nested
     class Transitions {
 
-        @Test
-        void toCanceledShouldThrowGivenTransitionNotFromInProgress() {
-            FileCopy fileCopy = TestFileCopy.enqueued();
-
-            assertThatThrownBy(fileCopy::toCanceled)
-                    .isInstanceOf(InvalidFileCopyStatusTransitionException.class)
-                    .hasMessageContaining(fileCopy.getId().toString())
-                    .hasMessageContaining(FileCopyStatus.ENQUEUED.toString())
-                    .hasMessageContaining(FileCopyStatus.TRACKED.toString());
-        }
-
-        @Test
-        void toCanceledShouldTransitionFromInProgressAndLoseFilePath() {
-            FileCopy fileCopy = TestFileCopy.inProgress();
-
-            fileCopy.toCanceled();
-
-            assertThat(fileCopy.getStatus()).isEqualTo(FileCopyStatus.TRACKED);
-            assertThat(fileCopy.getFilePath()).isNull();
-        }
-
-        @Test
-        void toCanceledShouldAddEvent() {
-            FileCopy fileCopy = TestFileCopy.inProgress();
-            FileBackupFinishedEvent expectedEvent = fileBackupFinishedEvent(fileCopy, FileCopyStatus.TRACKED);
-
-            fileCopy.toCanceled();
-
-            assertThat(fileCopy.getDomainEvents()).containsExactly(expectedEvent);
-        }
-
-        @Test
-        void toTrackedShouldThrowGivenTransitionFromInProgress() {
-            FileCopy fileCopy = TestFileCopy.inProgress();
-
-            assertThatThrownBy(fileCopy::toTracked)
-                    .isInstanceOf(InvalidFileCopyStatusTransitionException.class)
-                    .hasMessageContaining(fileCopy.getId().toString())
-                    .hasMessageContaining(FileCopyStatus.IN_PROGRESS.toString())
-                    .hasMessageContaining(FileCopyStatus.TRACKED.toString());
-        }
-
-        @Test
-        void toTrackedShouldTransitionFromFailedAndLoseFailedReason() {
-            FileCopy fileCopy = TestFileCopy.failedWithoutFilePath();
-
-            fileCopy.toTracked();
-
-            FileCopy expectedResult = TestFileCopy.trackedBuilder()
-                    .failedReason(null)
-                    .build();
-            assertThat(fileCopy).usingRecursiveComparison()
-                    .isEqualTo(expectedResult);
-        }
-
-        @Test
-        void toTrackedShouldTransitionFromStoredUnverifiedAndKeepFilePath() {
-            FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
-
-            fileCopy.toTracked();
-
-            FileCopy expectedResult = TestFileCopy.trackedBuilder()
-                    .filePath(fileCopy.getFilePath())
-                    .build();
-            assertThat(fileCopy).usingRecursiveComparison()
-                    .isEqualTo(expectedResult);
-        }
-
-        @Test
-        void toTrackedShouldTransitionFromStoredVerifiedAndKeepFilePath() {
-            FileCopy fileCopy = TestFileCopy.storedIntegrityVerified();
-
-            fileCopy.toTracked();
-
-            FileCopy expectedResult = TestFileCopy.trackedBuilder()
-                    .filePath(fileCopy.getFilePath())
-                    .build();
-            assertThat(fileCopy).usingRecursiveComparison()
-                    .isEqualTo(expectedResult);
-        }
-
-        @Test
-        void toEnqueuedShouldTransitionFromFailedAndLoseFailedReason() {
-            FileCopy fileCopy = TestFileCopy.failedWithoutFilePath();
-
-            fileCopy.toEnqueued();
-
-            FileCopy expectedResult = TestFileCopy.enqueuedBuilder()
-                    .failedReason(null)
-                    .build();
-            assertThat(fileCopy).usingRecursiveComparison()
-                    .isEqualTo(expectedResult);
-        }
-
-        @Test
-        void toEnqueuedShouldTransitionFromStoredUnverifiedAndKeepFilePath() {
-            FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
-
-            fileCopy.toEnqueued();
-
-            FileCopy expectedResult = TestFileCopy.enqueuedBuilder()
-                    .filePath(fileCopy.getFilePath())
-                    .build();
-            assertThat(fileCopy).usingRecursiveComparison()
-                    .isEqualTo(expectedResult);
-        }
-
-        @Test
-        void toEnqueuedShouldTransitionFromStoredVerifiedAndKeepFilePath() {
-            FileCopy fileCopy = TestFileCopy.storedIntegrityVerified();
-
-            fileCopy.toEnqueued();
-
-            FileCopy expectedResult = TestFileCopy.enqueuedBuilder()
-                    .filePath(fileCopy.getFilePath())
-                    .build();
-            assertThat(fileCopy).usingRecursiveComparison()
-                    .isEqualTo(expectedResult);
-        }
-
-        @SuppressWarnings("DataFlowIssue")
-        @Test
-        void toInProgressShouldThrowGivenNullFilePath() {
-            FileCopy fileCopy = TestFileCopy.enqueued();
-
-            assertThatThrownBy(() -> fileCopy.toInProgress(null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessageContaining("filePath");
-        }
-
-        @Test
-        void toInProgressShouldThrowGivenNotTransitionNotFromEnqueued() {
-            FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
-
-            assertThatThrownBy(() -> fileCopy.toInProgress("someFilePath"))
-                    .isInstanceOf(InvalidFileCopyStatusTransitionException.class)
-                    .hasMessageContaining(fileCopy.getId().toString())
-                    .hasMessageContaining(FileCopyStatus.STORED_INTEGRITY_UNKNOWN.toString())
-                    .hasMessageContaining(FileCopyStatus.IN_PROGRESS.toString());
-        }
-
-        @Test
-        void toInProgressShouldAddEvent() {
-            FileCopy fileCopy = TestFileCopy.enqueued();
-
-            fileCopy.toInProgress("someFilePath");
-
-            var expectedEvent = new FileBackupStartedEvent(
-                    fileCopy.getId(),
-                    fileCopy.getNaturalId(),
-                    "someFilePath"
-            );
-            assertThat(fileCopy.getStatus()).isEqualTo(FileCopyStatus.IN_PROGRESS);
-            assertThat(fileCopy.getDomainEvents()).containsExactly(expectedEvent);
-        }
-
-        @Test
-        void toStoredIntegrityUnknownShouldThrowGivenTransitionNotFromInProgress() {
-            FileCopy fileCopy = TestFileCopy.failedWithoutFilePath();
-
-            assertThatThrownBy(fileCopy::toStoredIntegrityUnknown)
-                    .isInstanceOf(InvalidFileCopyStatusTransitionException.class)
-                    .hasMessageContaining(fileCopy.getId().toString())
-                    .hasMessageContaining(FileCopyStatus.FAILED.toString())
-                    .hasMessageContaining(FileCopyStatus.STORED_INTEGRITY_UNKNOWN.toString());
-        }
-
-        @Test
-        void toStoredIntegrityUnknownShouldAddEvent() {
-            FileCopy fileCopy = TestFileCopy.inProgress();
-            FileBackupFinishedEvent expectedEvent = fileBackupFinishedEvent(
-                    fileCopy, FileCopyStatus.STORED_INTEGRITY_UNKNOWN);
-
-            fileCopy.toStoredIntegrityUnknown();
-
-            assertThat(fileCopy.getDomainEvents()).containsExactly(expectedEvent);
-        }
-
         private FileBackupFinishedEvent fileBackupFinishedEvent(FileCopy fileCopy, FileCopyStatus newStatus) {
             return new FileBackupFinishedEvent(fileCopy.getId(), fileCopy.getNaturalId(), newStatus);
         }
 
-        @SuppressWarnings("DataFlowIssue")
-        @Test
-        void toFailedShouldThrowGivenNullFailedReason() {
-            FileCopy fileCopy = TestFileCopy.inProgress();
+        @Nested
+        class ToCanceled {
 
-            assertThatThrownBy(() -> fileCopy.toFailed(null, "someFilePath"))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessageContaining("failedReason");
+            @Test
+            void toCanceledShouldThrowGivenTransitionNotFromInProgress() {
+                FileCopy fileCopy = TestFileCopy.enqueued();
+
+                assertThatThrownBy(fileCopy::toCanceled)
+                        .isInstanceOf(InvalidFileCopyStatusTransitionException.class)
+                        .hasMessageContaining(fileCopy.getId().toString())
+                        .hasMessageContaining(FileCopyStatus.ENQUEUED.toString())
+                        .hasMessageContaining(FileCopyStatus.TRACKED.toString());
+            }
+
+            @Test
+            void toCanceledShouldTransitionFromInProgressAndLoseFilePath() {
+                FileCopy fileCopy = TestFileCopy.inProgress();
+
+                fileCopy.toCanceled();
+
+                assertThat(fileCopy.getStatus()).isEqualTo(FileCopyStatus.TRACKED);
+                assertThat(fileCopy.getFilePath()).isNull();
+            }
+
+            @Test
+            void toCanceledShouldAddEvent() {
+                FileCopy fileCopy = TestFileCopy.inProgress();
+                FileBackupFinishedEvent expectedEvent = fileBackupFinishedEvent(fileCopy, FileCopyStatus.TRACKED);
+
+                fileCopy.toCanceled();
+
+                assertThat(fileCopy.getDomainEvents()).containsExactly(expectedEvent);
+            }
         }
 
-        @Test
-        void toFailedShouldTransitionFromStoredUnverifiedAndUpdateFilePath() {
-            FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
+        @Nested
+        class ToTracked {
 
-            fileCopy.toFailed("someFailedReason", "updatedFilePath");
+            @Test
+            void toTrackedShouldThrowGivenTransitionFromInProgress() {
+                FileCopy fileCopy = TestFileCopy.inProgress();
 
-            FileCopy expectedResult = TestFileCopy.failedWithFilePathBuilder()
-                    .filePath("updatedFilePath")
-                    .build();
-            assertThat(fileCopy).usingRecursiveComparison()
-                    .ignoringFields("domainEvents")
-                    .isEqualTo(expectedResult);
+                assertThatThrownBy(fileCopy::toTracked)
+                        .isInstanceOf(InvalidFileCopyStatusTransitionException.class)
+                        .hasMessageContaining(fileCopy.getId().toString())
+                        .hasMessageContaining(FileCopyStatus.IN_PROGRESS.toString())
+                        .hasMessageContaining(FileCopyStatus.TRACKED.toString());
+            }
+
+            @Test
+            void toTrackedShouldTransitionFromFailedAndLoseFailedReason() {
+                FileCopy fileCopy = TestFileCopy.failedWithoutFilePath();
+
+                fileCopy.toTracked();
+
+                FileCopy expectedResult = TestFileCopy.trackedBuilder()
+                        .failedReason(null)
+                        .build();
+                assertThat(fileCopy).usingRecursiveComparison()
+                        .isEqualTo(expectedResult);
+            }
+
+            @Test
+            void toTrackedShouldTransitionFromStoredUnverifiedAndKeepFilePath() {
+                FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
+
+                fileCopy.toTracked();
+
+                FileCopy expectedResult = TestFileCopy.trackedBuilder()
+                        .filePath(fileCopy.getFilePath())
+                        .build();
+                assertThat(fileCopy).usingRecursiveComparison()
+                        .isEqualTo(expectedResult);
+            }
+
+            @Test
+            void toTrackedShouldTransitionFromStoredVerifiedAndKeepFilePath() {
+                FileCopy fileCopy = TestFileCopy.storedIntegrityVerified();
+
+                fileCopy.toTracked();
+
+                FileCopy expectedResult = TestFileCopy.trackedBuilder()
+                        .filePath(fileCopy.getFilePath())
+                        .build();
+                assertThat(fileCopy).usingRecursiveComparison()
+                        .isEqualTo(expectedResult);
+            }
         }
 
-        @Test
-        void toFailedShouldClearFilePathGivenNullWasPassed() {
-            FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
+        @Nested
+        class Enqueue {
 
-            fileCopy.toFailed("someFailedReason", null);
+            @Test
+            void enqueueShouldAddEventGivenNotAlreadyEnqueued() {
+                FileCopy fileCopy = TestFileCopy.tracked();
+                var expectedEvent = new FileCopyEnqueuedEvent(
+                        fileCopy.getId()
+                );
 
-            FileCopy expectedResult = TestFileCopy.failedWithoutFilePath();
-            assertThat(fileCopy).usingRecursiveComparison()
-                    .ignoringFields("domainEvents")
-                    .isEqualTo(expectedResult);
+                fileCopy.enqueue();
+
+                assertThat(fileCopy.getDomainEvents())
+                        .containsExactly(expectedEvent);
+            }
+
+            @Test
+            void enqueueShouldDoNothingGivenAlreadyEnqueued() {
+                FileCopy fileCopy = TestFileCopy.enqueued();
+                FileCopyStatus initialStatus = fileCopy.getStatus();
+
+                fileCopy.enqueue();
+
+                assertThat(fileCopy.getStatus())
+                        .isEqualTo(initialStatus);
+                assertThat(fileCopy.getDomainEvents())
+                        .isEmpty();
+            }
+
+            @Test
+            void enqueueShouldTransitionFromFailedAndLoseFailedReason() {
+                FileCopy fileCopy = TestFileCopy.failedWithoutFilePath();
+
+                fileCopy.enqueue();
+
+                fileCopy.clearDomainEvents();
+                FileCopy expectedResult = TestFileCopy.enqueuedBuilder()
+                        .failedReason(null)
+                        .build();
+                assertThat(fileCopy).usingRecursiveComparison()
+                        .isEqualTo(expectedResult);
+            }
+
+            @Test
+            void enqueueShouldTransitionFromStoredUnverifiedAndKeepFilePath() {
+                FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
+
+                fileCopy.enqueue();
+
+                fileCopy.clearDomainEvents();
+                FileCopy expectedResult = TestFileCopy.enqueuedBuilder()
+                        .filePath(fileCopy.getFilePath())
+                        .build();
+                assertThat(fileCopy).usingRecursiveComparison()
+                        .isEqualTo(expectedResult);
+            }
+
+            @Test
+            void enqueueShouldTransitionFromStoredVerifiedAndKeepFilePath() {
+                FileCopy fileCopy = TestFileCopy.storedIntegrityVerified();
+
+                fileCopy.enqueue();
+
+                fileCopy.clearDomainEvents();
+                FileCopy expectedResult = TestFileCopy.enqueuedBuilder()
+                        .filePath(fileCopy.getFilePath())
+                        .build();
+                assertThat(fileCopy).usingRecursiveComparison()
+                        .isEqualTo(expectedResult);
+            }
         }
 
-        @Test
-        void toFailedShouldAddEvent() {
-            FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
-            String failedReason = "someFailedReason";
-            FileBackupFailedEvent expectedEvent = fileBackupFailedEvent(fileCopy, failedReason);
+        @Nested
+        class ToInProgress {
 
-            fileCopy.toFailed(failedReason, "someFilePath");
+            @SuppressWarnings("DataFlowIssue")
+            @Test
+            void toInProgressShouldThrowGivenNullFilePath() {
+                FileCopy fileCopy = TestFileCopy.enqueued();
 
-            assertThat(fileCopy.getDomainEvents()).containsExactly(expectedEvent);
+                assertThatThrownBy(() -> fileCopy.toInProgress(null))
+                        .isInstanceOf(NullPointerException.class)
+                        .hasMessageContaining("filePath");
+            }
+
+            @Test
+            void toInProgressShouldThrowGivenNotTransitioningFromEnqueued() {
+                FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
+
+                assertThatThrownBy(() -> fileCopy.toInProgress("someFilePath"))
+                        .isInstanceOf(InvalidFileCopyStatusTransitionException.class)
+                        .hasMessageContaining(fileCopy.getId().toString())
+                        .hasMessageContaining(FileCopyStatus.STORED_INTEGRITY_UNKNOWN.toString())
+                        .hasMessageContaining(FileCopyStatus.IN_PROGRESS.toString());
+            }
+
+            @Test
+            void toInProgressShouldChangeFileCopyStatus() {
+                FileCopy fileCopy = TestFileCopy.enqueued();
+
+                fileCopy.toInProgress("someFilePath");
+
+                assertThat(fileCopy.getStatus()).isEqualTo(FileCopyStatus.IN_PROGRESS);
+            }
+
+            @Test
+            void toInProgressShouldAddEvent() {
+                FileCopy fileCopy = TestFileCopy.enqueued();
+                var expectedEvent = new FileBackupStartedEvent(
+                        fileCopy.getId(),
+                        fileCopy.getNaturalId(),
+                        "someFilePath"
+                );
+
+                fileCopy.toInProgress(expectedEvent.filePath());
+
+                assertThat(fileCopy.getDomainEvents()).containsExactly(expectedEvent);
+            }
+
+            @Test
+            void toInProgressShouldDoNothingGivenAlreadyInProgress() {
+                FileCopy fileCopy = TestFileCopy.inProgress();
+                FileCopyStatus initialStatus = fileCopy.getStatus();
+                String initialFilePath = fileCopy.getFilePath();
+
+                fileCopy.toInProgress(initialFilePath + "/changed");
+
+                assertThat(fileCopy.getStatus())
+                        .isEqualTo(initialStatus);
+                assertThat(fileCopy.getFilePath())
+                        .isEqualTo(initialFilePath);
+                assertThat(fileCopy.getDomainEvents())
+                        .isEmpty();
+            }
         }
 
-        private FileBackupFailedEvent fileBackupFailedEvent(FileCopy fileCopy, String failedReason) {
-            return new FileBackupFailedEvent(fileCopy.getId(), fileCopy.getNaturalId(), failedReason);
+        @Nested
+        class ToStored {
+
+            @Test
+            void toStoredIntegrityUnknownShouldThrowGivenTransitionNotFromInProgress() {
+                FileCopy fileCopy = TestFileCopy.failedWithoutFilePath();
+
+                assertThatThrownBy(fileCopy::toStoredIntegrityUnknown)
+                        .isInstanceOf(InvalidFileCopyStatusTransitionException.class)
+                        .hasMessageContaining(fileCopy.getId().toString())
+                        .hasMessageContaining(FileCopyStatus.FAILED.toString())
+                        .hasMessageContaining(FileCopyStatus.STORED_INTEGRITY_UNKNOWN.toString());
+            }
+
+            @Test
+            void toStoredIntegrityUnknownShouldAddEvent() {
+                FileCopy fileCopy = TestFileCopy.inProgress();
+                FileBackupFinishedEvent expectedEvent = fileBackupFinishedEvent(
+                        fileCopy, FileCopyStatus.STORED_INTEGRITY_UNKNOWN);
+
+                fileCopy.toStoredIntegrityUnknown();
+
+                assertThat(fileCopy.getDomainEvents()).containsExactly(expectedEvent);
+            }
+        }
+
+        @Nested
+        class ToFailed {
+
+            @SuppressWarnings("DataFlowIssue")
+            @Test
+            void toFailedShouldThrowGivenNullFailedReason() {
+                FileCopy fileCopy = TestFileCopy.inProgress();
+
+                assertThatThrownBy(() -> fileCopy.toFailed(null, "someFilePath"))
+                        .isInstanceOf(NullPointerException.class)
+                        .hasMessageContaining("failedReason");
+            }
+
+            @Test
+            void toFailedShouldTransitionFromStoredUnverifiedAndUpdateFilePath() {
+                FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
+
+                fileCopy.toFailed("someFailedReason", "updatedFilePath");
+
+                FileCopy expectedResult = TestFileCopy.failedWithFilePathBuilder()
+                        .filePath("updatedFilePath")
+                        .build();
+                assertThat(fileCopy).usingRecursiveComparison()
+                        .ignoringFields("domainEvents")
+                        .isEqualTo(expectedResult);
+            }
+
+            @Test
+            void toFailedShouldClearFilePathGivenNullWasPassed() {
+                FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
+
+                fileCopy.toFailed("someFailedReason", null);
+
+                FileCopy expectedResult = TestFileCopy.failedWithoutFilePath();
+                assertThat(fileCopy).usingRecursiveComparison()
+                        .ignoringFields("domainEvents")
+                        .isEqualTo(expectedResult);
+            }
+
+            @Test
+            void toFailedShouldAddEvent() {
+                FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
+                String failedReason = "someFailedReason";
+                FileBackupFailedEvent expectedEvent = fileBackupFailedEvent(fileCopy, failedReason);
+
+                fileCopy.toFailed(failedReason, "someFilePath");
+
+                assertThat(fileCopy.getDomainEvents()).containsExactly(expectedEvent);
+            }
+
+            private FileBackupFailedEvent fileBackupFailedEvent(FileCopy fileCopy, String failedReason) {
+                return new FileBackupFailedEvent(fileCopy.getId(), fileCopy.getNaturalId(), failedReason);
+            }
         }
     }
 
