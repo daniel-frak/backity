@@ -25,7 +25,7 @@ public class TestRules {
 
     static final List<String> TEST_SUFFIXES = List.of("Test", "IT");
     static final String SHOULD_GIVEN_PATTERN = "(?i)(?=.*should)(?!.*given.*should).*";
-    static final String WHEN_PATTERN = ".*(?:^|[_\\W])when(?![a-z]).*|.*When(?![a-z]).*";
+    static final String WHEN_OR_IF_PATTERN = ".*(?:^|[_\\W]|)[sS]hould(?:[_\\W]|[A-Z]).*?(?:[Ww]hen|[Ii]f)(?![a-z]).*";
 
     @ArchTest
     static final ArchRule ASSERTJ_SHOULD_BE_USED_INSTEAD_OF_JUNIT_ASSERTIONS =
@@ -69,18 +69,18 @@ public class TestRules {
                             """);
 
     @ArchTest
-    static final ArchRule TEST_METHOD_NAMES_SHOULD_USE_GIVEN_INSTEAD_OF_WHEN =
+    static final ArchRule TEST_METHOD_NAMES_SHOULD_USE_GIVEN_INSTEAD_OF_WHEN_OR_IF =
             methods()
                     .that().areAnnotatedWith(Test.class)
                     .or().areAnnotatedWith(ParameterizedTest.class)
                     .or().areAnnotatedWith(RepeatedTest.class)
                     .or().areAnnotatedWith(TestFactory.class)
                     .or().areAnnotatedWith(TestTemplate.class)
-                    .should(notContainWhen())
+                    .should(notContainWhenOrIf())
                     .because("""
                             consistency across the test suite reduces cognitive overhead when \
                             navigating tests and helps quickly identify intended behavior. \
-                            Use 'given' to describe context instead of 'when'.
+                            Use 'given' to describe context instead of 'when' or 'if'.
                             """);
 
     private static ArchCondition<JavaMethod> followShouldGivenConvention() {
@@ -104,19 +104,19 @@ public class TestRules {
         };
     }
 
-    private static ArchCondition<JavaMethod> notContainWhen() {
-        return new ArchCondition<>("not contain 'When' in name or display name") {
+    private static ArchCondition<JavaMethod> notContainWhenOrIf() {
+        return new ArchCondition<>("not contain 'When' or 'If' in name or display name") {
 
             @Override
             public void check(JavaMethod method, ConditionEvents events) {
                 Optional<String> displayName = resolveTestDisplayName(method);
-                boolean methodContainsWhen = method.getName().matches(WHEN_PATTERN);
-                boolean displayContainsWhen = displayName.map(n -> n.matches(WHEN_PATTERN))
+                boolean methodContainsWhen = method.getName().matches(WHEN_OR_IF_PATTERN);
+                boolean displayContainsWhen = displayName.map(n -> n.matches(WHEN_OR_IF_PATTERN))
                         .orElse(false);
 
                 if (methodContainsWhen || displayContainsWhen) {
                     events.add(SimpleConditionEvent.violated(method, String.format(
-                            "Method '%s'%s should use 'Given' instead of 'When' in %s",
+                            "Method '%s'%s should use 'Given' instead of 'When' or 'If' in %s",
                             method.getOwner().getFullName() + "#" + method.getName(),
                             displayName.map(n -> " (display name: '" + n + "')").orElse(""),
                             method.getSourceCodeLocation()

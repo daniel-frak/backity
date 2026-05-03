@@ -60,7 +60,7 @@ class GogFileBackupServiceTest {
     class IsConnected {
 
         @Test
-        void isConnectedShouldReturnTrueIfConnected() {
+        void shouldReturnTrueGivenConnected() {
             when(authService.isAuthenticated())
                     .thenReturn(false)
                     .thenReturn(true);

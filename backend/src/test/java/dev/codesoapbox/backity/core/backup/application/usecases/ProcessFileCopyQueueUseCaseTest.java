@@ -61,7 +61,7 @@ class ProcessFileCopyQueueUseCaseTest {
         }
 
         @Test
-        void shouldBackUpEnqueuedFileCopyIfNotCurrentlyDownloading() {
+        void shouldBackUpEnqueuedFileCopyGivenNotCurrentlyDownloading() {
             fileCopyReplicationProcessIsReady();
             FileBackupContext context = TestFileBackupContext.trackedLocalGog();
             exists(context);

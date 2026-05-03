@@ -240,7 +240,7 @@ class InitializeProgressAndStreamFileGogEmbedOperationIT {
     class Throwing {
 
         @Test
-        void shouldThrowIfRequestFails() {
+        void shouldThrowGivenRequestFails() {
             SourceFile gogFile = aGogFile();
             var progress = new OutputStreamProgressTracker();
             mockGogFileRetrievalFails(gogFile);

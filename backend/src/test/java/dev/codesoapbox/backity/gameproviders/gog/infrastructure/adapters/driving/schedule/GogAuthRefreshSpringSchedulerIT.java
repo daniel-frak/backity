@@ -23,7 +23,7 @@ class GogAuthRefreshSpringSchedulerIT {
     private GogAuthSpringService gogAuthSpringService;
 
     @Test
-    void shouldRefreshAccessTokenIfNeeded() {
+    void shouldRefreshAccessTokenGivenNeeded() {
         await()
                 .pollInterval(Duration.ofMillis(5))
                 .atMost(Duration.ofSeconds(5))

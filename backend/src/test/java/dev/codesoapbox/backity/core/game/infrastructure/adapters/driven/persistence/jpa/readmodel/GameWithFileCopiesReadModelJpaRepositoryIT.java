@@ -272,7 +272,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
     }
 
     @Test
-    void findAllPaginatedShouldTokenizeEveryWordIfNotQuoted() {
+    void findAllPaginatedShouldTokenizeEveryWordGivenNotQuoted() {
         var searchQuery = "Test Game";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
