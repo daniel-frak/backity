@@ -96,14 +96,14 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void startContentDiscoveryShouldInitializeTrackingOnStart() {
+        void shouldInitializeTrackingOnStart() {
             gameContentDiscoveryService.startContentDiscovery();
 
             verify(discoveryProgressTracker).initializeTracking(gameProviderFileDiscoveryService.getGameProviderId());
         }
 
         @Test
-        void startContentDiscoveryShouldSetStoppedAtNowOnFinish() {
+        void shouldSetStoppedAtNowOnFinish() {
             gameContentDiscoveryService.startContentDiscovery();
             finishFileDiscovery();
 
@@ -111,7 +111,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void startContentDiscoveryShouldChangeStatusToNotInProgressOnSuccess() {
+        void shouldChangeStatusToNotInProgressOnSuccess() {
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();
             finishFileDiscovery();
@@ -125,7 +125,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void startContentDiscoveryShouldChangeStatusToNotInProgressOnFailure() {
+        void shouldChangeStatusToNotInProgressOnFailure() {
             gameProviderFileDiscoveryService.setExceptionToThrowDuringDiscovery(new RuntimeException("Test exception"));
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();
@@ -134,7 +134,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void startContentDiscoveryShouldFinalizeTrackingOnSuccess() {
+        void shouldFinalizeTrackingOnSuccess() {
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();
             finishFileDiscovery();
@@ -143,7 +143,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void startContentDiscoveryShouldFinalizeTrackingOnFailure() {
+        void shouldFinalizeTrackingOnFailure() {
             gameProviderFileDiscoveryService.setExceptionToThrowDuringDiscovery(new RuntimeException("Test exception"));
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();
@@ -152,7 +152,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void startContentDiscoveryShouldMarkSuccessfulOnSuccess() {
+        void shouldMarkSuccessfulOnSuccess() {
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();
             finishFileDiscovery();
@@ -161,7 +161,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void startContentDiscoveryShouldNotMarkSuccessfulOnFailure() {
+        void shouldNotMarkSuccessfulOnFailure() {
             gameProviderFileDiscoveryService.setExceptionToThrowDuringDiscovery(new RuntimeException("Test exception"));
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();
@@ -170,7 +170,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void startContentDiscoveryShouldNotSaveGameInformationGivenGameAlreadyExists() {
+        void shouldNotSaveGameInformationGivenGameAlreadyExists() {
             DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
             mockGameExists(discoveredFile.originalGameTitle());
 
@@ -197,7 +197,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void startContentDiscoveryShouldSaveGameInformationGivenItDoesNotYetExist() {
+        void shouldSaveGameInformationGivenItDoesNotYetExist() {
             DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
             mockGameDoesNotExist(discoveredFile.originalGameTitle());
 
@@ -221,7 +221,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void startContentDiscoveryShouldSaveSourceFiles() {
+        void shouldSaveSourceFiles() {
             DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
             Game game = mockGameExists(discoveredFile.originalGameTitle());
             mockSourceFileDoesNotExist(discoveredFile);
@@ -254,7 +254,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void startContentDiscoveryShouldIncrementSourceFilesDiscovered() {
+        void shouldIncrementSourceFilesDiscovered() {
             DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
             mockGameExists(discoveredFile.originalGameTitle());
             mockSourceFileDoesNotExist(discoveredFile);
@@ -268,7 +268,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void startContentDiscoveryShouldIncrementGamesDiscovered() {
+        void shouldIncrementGamesDiscovered() {
             DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
             mockGameDoesNotExist(discoveredFile.originalGameTitle());
 
@@ -281,7 +281,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void startContentDiscoveryShouldNotSaveSourceFileIfAlreadyExists() {
+        void shouldNotSaveSourceFileGivenAlreadyExists() {
             DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
             mockSourceFileExistsLocally(discoveredFile);
 
@@ -300,7 +300,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void startContentDiscoveryShouldSetGameProviderIdServiceAsNotInProgressGivenDone() {
+        void shouldSetGameProviderIdServiceAsNotInProgressGivenDone() {
             gameContentDiscoveryService.startContentDiscovery();
 
             gameProviderFileDiscoveryService.complete();
@@ -310,7 +310,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void startContentDiscoveryServiceShouldNotTriggerDiscoveryGivenAlreadyInProgress() {
+        void shouldNotTriggerDiscoveryGivenAlreadyInProgress() {
             gameContentDiscoveryService.startContentDiscovery();
             gameContentDiscoveryService.startContentDiscovery();
             gameProviderFileDiscoveryService.complete();
@@ -333,7 +333,7 @@ class GameContentDiscoveryServiceTest {
         }
 
         @Test
-        void shouldNotStopContentDiscoveryIfAlreadyStopped() {
+        void shouldNotStopContentDiscoveryGivenAlreadyStopped() {
             gameContentDiscoveryService.stopContentDiscovery();
             assertThat(gameProviderFileDiscoveryService.getStoppedTimes()).isZero();
         }
