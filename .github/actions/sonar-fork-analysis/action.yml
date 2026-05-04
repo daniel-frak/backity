@@ -81,7 +81,7 @@ runs:
 
     - name: 'Upload Sonar artifact'
       if: github.event_name != 'workflow_run'
-      uses: actions/upload-artifact@v7
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
       with:
         name: sonar-artifact
         path: |
@@ -98,7 +98,7 @@ runs:
     # See: https://github.com/daniel-frak/keycloak-user-migration/issues/411
     - name: 'Checkout project'
       if: github.event_name == 'workflow_run'
-      uses: actions/checkout@v6
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       with:
         repository: ${{ github.event.workflow_run.base_repository.full_name }}
         ref: ${{ env.pr_base_ref }}
@@ -117,7 +117,7 @@ runs:
 
     - name: 'Set up Java'
       if: github.event_name == 'workflow_run'
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
       with:
         java-version: ${{ inputs.java-version }}
         distribution: ${{ inputs.distribution }}
@@ -125,7 +125,7 @@ runs:
 
     - name: 'Cache SonarCloud packages'
       if: github.event_name == 'workflow_run'
-      uses: actions/cache@v5
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5
       with:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-sonar
@@ -133,7 +133,7 @@ runs:
 
     - name: 'Download sonar artifact'
       if: github.event_name == 'workflow_run'
-      uses: actions/download-artifact@v8
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
       with:
         name: sonar-artifact
         run-id: ${{ github.event.workflow_run.id }}
