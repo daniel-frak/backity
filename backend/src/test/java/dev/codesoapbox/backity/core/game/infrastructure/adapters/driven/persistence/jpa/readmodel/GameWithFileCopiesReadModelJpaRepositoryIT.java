@@ -14,6 +14,7 @@ import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntityMapper;
+import dev.codesoapbox.backity.core.sourcefile.domain.FileTitle;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
@@ -319,7 +320,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
 
     @Test
     void findAllPaginatedShouldFilterByFullFileTitleCaseInsensitive() {
-        var searchQuery = "\"" + ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getFileTitle()
+        var searchQuery = "\"" + ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getFileTitle().value()
                 .toUpperCase() + "\"";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
@@ -367,7 +368,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
 
     @Test
     void findAllPaginatedShouldFilterByFullOriginalGameTitleCaseInsensitive() {
-        var searchQuery = "\"" + ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getOriginalGameTitle()
+        var searchQuery = "\"" + ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getOriginalGameTitle().value()
                 .toUpperCase() + "\"";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
@@ -437,32 +438,32 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
         public static final SourceFile GOG_SOURCE_FILE_1_FOR_GAME_1 = TestSourceFile.gogBuilder()
                 .id(new SourceFileId("acde26d7-33c7-42ee-be16-bca91a604b48"))
                 .gameId(ExistingGames.GAME_1.getId())
-                .originalGameTitle("Original Game 1 Title")
-                .fileTitle("Game 1 (Installer)")
+                .originalGameTitle(new GameTitle("Original Game 1 Title"))
+                .fileTitle(new FileTitle("Game 1 (Installer)"))
                 .originalFileName("game_1_installer.exe")
                 .build();
 
         public static final SourceFile GOG_SOURCE_FILE_2_FOR_GAME_1 = TestSourceFile.gogBuilder()
                 .id(new SourceFileId("119c7d15-4d83-46d0-9fd2-511f3abae641"))
                 .gameId(ExistingGames.GAME_1.getId())
-                .originalGameTitle("Original Game 1 Title")
-                .fileTitle("Game 1 (Patch)")
+                .originalGameTitle(new GameTitle("Original Game 1 Title"))
+                .fileTitle(new FileTitle("Game 1 (Patch)"))
                 .originalFileName("game_1_patch.exe")
                 .build();
 
         public static final SourceFile GOG_SOURCE_FILE_1_FOR_GAME_2 = TestSourceFile.gogBuilder()
                 .id(new SourceFileId("533f6571-d125-4a7e-a2f2-dc066e8ce538"))
                 .gameId(ExistingGames.GAME_2.getId())
-                .originalGameTitle("Original Game 2 Title")
-                .fileTitle("Game 2 File")
+                .originalGameTitle(new GameTitle("Original Game 2 Title"))
+                .fileTitle(new FileTitle("Game 2 File"))
                 .originalFileName("game_2.exe")
                 .build();
 
         public static final SourceFile GOG_SOURCE_FILE_1_FOR_GAME_3 = TestSourceFile.gogBuilder()
                 .id(new SourceFileId("a7e54ff1-74d9-4bb1-b7b4-7d4528f4c16e"))
                 .gameId(ExistingGames.GAME_3.getId())
-                .originalGameTitle("Original Game 3 Title")
-                .fileTitle("Game 3 File")
+                .originalGameTitle(new GameTitle("Original Game 3 Title"))
+                .fileTitle(new FileTitle("Game 3 File"))
                 .originalFileName("game_3.exe")
                 .build();
 

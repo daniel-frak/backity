@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.backuptarget.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backuptarget.domain.exceptions.InvalidPathTemplatePlaceholdersException;
+import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
@@ -91,7 +92,7 @@ class PathTemplateTest {
             void shouldResolveAllPlaceholders() {
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
                         .gameProviderId(new GameProviderId("someGameProviderId"))
-                        .originalGameTitle("someGameTitle")
+                        .originalGameTitle(new GameTitle("someGameTitle"))
                         .originalFileName("someFileName")
                         .build();
 
@@ -153,7 +154,7 @@ class PathTemplateTest {
             void shouldResolveFilePathGivenNoSeparatorInPathTemplate() {
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
                         .gameProviderId(new GameProviderId("someGameProviderId"))
-                        .originalGameTitle("someGameTitle")
+                        .originalGameTitle(new GameTitle("someGameTitle"))
                         .originalFileName("someFileName")
                         .build();
                 var pathTemplate = new PathTemplate("{FILENAME}");
@@ -168,7 +169,7 @@ class PathTemplateTest {
             void shouldResolveValidFilePathGivenWrongSeparatorInPathTemplate() {
                 var wrongPathTemplate = new PathTemplate("{GAME_TITLE}\\{FILENAME}");
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
-                        .originalGameTitle("someGameTitle")
+                        .originalGameTitle(new GameTitle("someGameTitle"))
                         .originalFileName("someFileName")
                         .build();
 
@@ -182,7 +183,7 @@ class PathTemplateTest {
             void shouldAddSuffixGivenSuffixIndexGreaterThanZero() {
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
                         .gameProviderId(new GameProviderId("someGameProviderId"))
-                        .originalGameTitle("someGameTitle")
+                        .originalGameTitle(new GameTitle("someGameTitle"))
                         .originalFileName("someFileName.exe")
                         .build();
                 var pathTemplate = new PathTemplate("{FILENAME}");
@@ -229,7 +230,7 @@ class PathTemplateTest {
                 String charactersToRemove = CHARACTERS_TO_REMOVE + "{}\\/";
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
                         .gameProviderId(new GameProviderId("someGameProviderId" + charactersToRemove))
-                        .originalGameTitle("someGameTitle" + charactersToRemove)
+                        .originalGameTitle(new GameTitle("someGameTitle" + charactersToRemove))
                         .originalFileName("someFileName" + charactersToRemove)
                         .build();
 
@@ -245,7 +246,7 @@ class PathTemplateTest {
             void shouldReplaceIllegalCharactersFromEachPlaceholderValue() {
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
                         .gameProviderId(new GameProviderId("some:Game\tProviderId 1"))
-                        .originalGameTitle("some:Game\tTitle 1")
+                        .originalGameTitle(new GameTitle("some:Game\tTitle 1"))
                         .originalFileName("some:File\tName 1")
                         .build();
 

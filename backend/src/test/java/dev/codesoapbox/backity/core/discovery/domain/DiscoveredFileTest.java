@@ -1,7 +1,9 @@
 package dev.codesoapbox.backity.core.discovery.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
+import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
+import dev.codesoapbox.backity.core.sourcefile.domain.FileTitle;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestDiscoveredFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.exceptions.DiscoveredFileUrlEmptyException;
 import org.junit.jupiter.api.Nested;
@@ -20,8 +22,8 @@ class DiscoveredFileTest {
             var fileSize = new FileSize(5120L);
             assertThatThrownBy(() -> new DiscoveredFile(
                     null,
-                    "Game 1",
-                    "Game 1 (Installer)",
+                    new GameTitle("Game 1"),
+                    new FileTitle("Game 1 (Installer)"),
                     "1.0.0",
                     "/downlink/some_game/some_file",
                     "game_1_installer.exe",
@@ -39,7 +41,7 @@ class DiscoveredFileTest {
             assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
                     null,
-                    "Game 1 (Installer)",
+                    new FileTitle("Game 1 (Installer)"),
                     "1.0.0",
                     "/downlink/some_game/some_file",
                     "game_1_installer.exe",
@@ -56,7 +58,7 @@ class DiscoveredFileTest {
             var fileSize = new FileSize(5120L);
             assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
-                    "Game 1",
+                    new GameTitle("Game 1"),
                     null,
                     "1.0.0",
                     "/downlink/some_game/some_file",
@@ -74,8 +76,8 @@ class DiscoveredFileTest {
             var fileSize = new FileSize(5120L);
             assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
-                    "Game 1",
-                    "Game 1 (Installer)",
+                    new GameTitle("Game 1"),
+                    new FileTitle("Game 1 (Installer)"),
                     null,
                     "/downlink/some_game/some_file",
                     "game_1_installer.exe",
@@ -92,8 +94,8 @@ class DiscoveredFileTest {
             var fileSize = new FileSize(5120L);
             assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
-                    "Game 1",
-                    "Game 1 (Installer)",
+                    new GameTitle("Game 1"),
+                    new FileTitle("Game 1 (Installer)"),
                     "1.0.0",
                     null,
                     "game_1_installer.exe",
@@ -110,8 +112,8 @@ class DiscoveredFileTest {
             var fileSize = new FileSize(5120L);
             assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
-                    "Game 1",
-                    "Game 1 (Installer)",
+                    new GameTitle("Game 1"),
+                    new FileTitle("Game 1 (Installer)"),
                     "1.0.0",
                     "/downlink/some_game/some_file",
                     null,
@@ -127,8 +129,8 @@ class DiscoveredFileTest {
             var gameProviderId = new GameProviderId("GOG");
             assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
-                    "Game 1",
-                    "Game 1 (Installer)",
+                    new GameTitle("Game 1"),
+                    new FileTitle("Game 1 (Installer)"),
                     "1.0.0",
                     "/downlink/some_game/some_file",
                     "/downlink/some_game/some_file",

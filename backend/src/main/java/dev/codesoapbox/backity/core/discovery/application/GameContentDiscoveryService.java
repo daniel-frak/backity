@@ -88,13 +88,13 @@ public class GameContentDiscoveryService {
     }
 
     private Game getGameOrAddNew(GameProviderId gameProviderId, DiscoveredFile discoveredFile) {
-        GameTitle title = new GameTitle(discoveredFile.originalGameTitle());
+        GameTitle title = discoveredFile.originalGameTitle();
         return gameRepository.findByTitle(title)
                 .orElseGet(() -> addNewGame(gameProviderId, discoveredFile));
     }
 
     private Game addNewGame(GameProviderId gameProviderId, DiscoveredFile discoveredFile) {
-        Game newGame = Game.createNew(new GameTitle(discoveredFile.originalGameTitle()));
+        Game newGame = Game.createNew(discoveredFile.originalGameTitle());
         gameRepository.save(newGame);
         discoveryProgressTracker.incrementGamesDiscovered(gameProviderId, 1);
         log.info("Discovered new game: {} (id: {})", newGame.getTitle(), newGame.getId().value());

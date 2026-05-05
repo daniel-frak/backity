@@ -173,7 +173,7 @@ class GameContentDiscoveryServiceTest {
         @Test
         void shouldNotSaveGameInformationGivenGameAlreadyExists() {
             DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
-            mockGameExists(new GameTitle(discoveredFile.originalGameTitle()));
+            mockGameExists(discoveredFile.originalGameTitle());
 
             gameContentDiscoveryService =
                     new GameContentDiscoveryService(singletonList(gameProviderFileDiscoveryService),
@@ -200,14 +200,14 @@ class GameContentDiscoveryServiceTest {
         @Test
         void shouldSaveGameInformationGivenItDoesNotYetExist() {
             DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
-            mockGameDoesNotExist(new GameTitle(discoveredFile.originalGameTitle()));
+            mockGameDoesNotExist(discoveredFile.originalGameTitle());
 
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();
             gameProviderFileDiscoveryService.simulateFileDiscovery(discoveredFile);
 
             Game savedGame = getSavedGame();
-            assertThat(savedGame.getTitle().value()).isEqualTo(discoveredFile.originalGameTitle());
+            assertThat(savedGame.getTitle()).isEqualTo(discoveredFile.originalGameTitle());
         }
 
         private void mockGameDoesNotExist(GameTitle gameTitle) {
@@ -224,7 +224,7 @@ class GameContentDiscoveryServiceTest {
         @Test
         void shouldSaveSourceFiles() {
             DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
-            Game game = mockGameExists(new GameTitle(discoveredFile.originalGameTitle()));
+            Game game = mockGameExists(discoveredFile.originalGameTitle());
             mockSourceFileDoesNotExist(discoveredFile);
 
             gameContentDiscoveryService.startContentDiscovery();
@@ -257,7 +257,7 @@ class GameContentDiscoveryServiceTest {
         @Test
         void shouldIncrementSourceFilesDiscovered() {
             DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
-            mockGameExists(new GameTitle(discoveredFile.originalGameTitle()));
+            mockGameExists(discoveredFile.originalGameTitle());
             mockSourceFileDoesNotExist(discoveredFile);
 
             gameContentDiscoveryService.startContentDiscovery();
@@ -271,7 +271,7 @@ class GameContentDiscoveryServiceTest {
         @Test
         void shouldIncrementGamesDiscovered() {
             DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
-            mockGameDoesNotExist(new GameTitle(discoveredFile.originalGameTitle()));
+            mockGameDoesNotExist(discoveredFile.originalGameTitle());
 
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();

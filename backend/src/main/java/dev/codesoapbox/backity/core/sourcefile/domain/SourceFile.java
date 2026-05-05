@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
+import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,10 +31,10 @@ public class SourceFile {
     private GameProviderId gameProviderId;
 
     @NonNull
-    private String originalGameTitle;
+    private GameTitle originalGameTitle;
 
     @NonNull
-    private String fileTitle;
+    private FileTitle fileTitle;
 
     @NonNull
     private String version;

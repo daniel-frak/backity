@@ -45,7 +45,7 @@ public class TestGogGameWithFiles {
 
     public static GogGameWithFiles fromSingleFile(DiscoveredFile discoveredFile) {
         return new GogGameWithFiles(
-                discoveredFile.originalGameTitle(),
+                discoveredFile.originalGameTitle().value(),
                 null,
                 null,
                 null,
@@ -53,7 +53,7 @@ public class TestGogGameWithFiles {
                         new GogFile(
                                 discoveredFile.version(),
                                 discoveredFile.url(),
-                                discoveredFile.fileTitle(),
+                                discoveredFile.fileTitle().value(),
                                 discoveredFile.size().toString(),
                                 discoveredFile.originalFileName()
                         )

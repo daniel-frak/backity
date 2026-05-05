@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.storagesolution.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backuptarget.domain.PathTemplate;
+import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.CouldNotResolveUniqueFilePathException;
@@ -38,7 +39,7 @@ class UniqueFilePathResolverTest {
         void shouldResolveUniqueFilePathGivenFileWithExtensionAlreadyExists() {
             SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
-                    .originalGameTitle("someGameTitle")
+                    .originalGameTitle(new GameTitle("someGameTitle"))
                     .originalFileName("someFileName.txt")
                     .build();
             var filePath = new FilePath("/test/someGameProviderId/someGameTitle/someFileName.txt");
@@ -55,7 +56,7 @@ class UniqueFilePathResolverTest {
         void shouldResolveUniqueFilePathGivenSeveralFilesWithExtensionAlreadyExist() {
             SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
-                    .originalGameTitle("someGameTitle")
+                    .originalGameTitle(new GameTitle("someGameTitle"))
                     .originalFileName("someFileName.txt")
                     .build();
             fakeUnixFileManager.createFile(new FilePath(
@@ -74,7 +75,7 @@ class UniqueFilePathResolverTest {
         void shouldResolveUniqueFilePathGivenFileWithoutExtensionAlreadyExists() {
             SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
-                    .originalGameTitle("someGameTitle")
+                    .originalGameTitle(new GameTitle("someGameTitle"))
                     .originalFileName("someFileName")
                     .build();
             fakeUnixFileManager.createFile(new FilePath("/test/someGameProviderId/someGameTitle/someFileName"));
@@ -90,7 +91,7 @@ class UniqueFilePathResolverTest {
         void shouldResolveUniqueFilePathGivenSeveralFilesWithoutExtensionAlreadyExist() {
             SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
-                    .originalGameTitle("someGameTitle")
+                    .originalGameTitle(new GameTitle("someGameTitle"))
                     .originalFileName("someFileName.exe")
                     .build();
             createFileSeveralTimes(999,
@@ -116,7 +117,7 @@ class UniqueFilePathResolverTest {
         void shouldThrowAfterFailingToFindUniqueFilePathTooManyTimes() {
             SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
-                    .originalGameTitle("someGameTitle")
+                    .originalGameTitle(new GameTitle("someGameTitle"))
                     .originalFileName("someFileName.exe")
                     .build();
             createFileSeveralTimes(1000,
