@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven
 
 import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileUrl;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.webclient.operations.exceptions.GameBackupRequestFailedException;
 import dev.codesoapbox.backity.gameproviders.shared.infrastructure.adapters.driven.api.spring.DataBufferFluxTrackableFileStream;
@@ -24,9 +25,9 @@ public class InitializeProgressAndStreamFileGogEmbedOperation {
 
     public DataBufferFluxTrackableFileStream execute(
             SourceFile sourceFile, OutputStreamProgressTracker progressTracker) {
-        String url = sourceFile.getUrl();
+        SourceFileUrl url = sourceFile.getUrl();
         Flux<DataBuffer> dataBufferFlux = webClientEmbed.get()
-                .uri(url)
+                .uri(url.value())
                 .header(GogEmbedHeaders.AUTHORIZATION, getBearerToken())
                 .exchangeToFlux(response -> {
                     if (!response.statusCode().is2xxSuccessful()) {

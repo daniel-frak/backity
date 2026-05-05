@@ -40,7 +40,7 @@ public class SourceFile {
     private FileVersion version;
 
     @NonNull
-    private String url;
+    private SourceFileUrl url;
 
     @NonNull
     private String originalFileName;

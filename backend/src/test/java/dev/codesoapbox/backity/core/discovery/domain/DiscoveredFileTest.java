@@ -5,8 +5,7 @@ import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileTitle;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileVersion;
-import dev.codesoapbox.backity.core.sourcefile.domain.TestDiscoveredFile;
-import dev.codesoapbox.backity.core.sourcefile.domain.exceptions.DiscoveredFileUrlEmptyException;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileUrl;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +25,7 @@ class DiscoveredFileTest {
                     new GameTitle("Game 1"),
                     new FileTitle("Game 1 (Installer)"),
                     new FileVersion("1.0.0"),
-                    "/downlink/some_game/some_file",
+                    new SourceFileUrl("/downlink/some_game/some_file"),
                     "game_1_installer.exe",
                     fileSize
             ))
@@ -44,7 +43,7 @@ class DiscoveredFileTest {
                     null,
                     new FileTitle("Game 1 (Installer)"),
                     new FileVersion("1.0.0"),
-                    "/downlink/some_game/some_file",
+                    new SourceFileUrl("/downlink/some_game/some_file"),
                     "game_1_installer.exe",
                     fileSize
             ))
@@ -62,7 +61,7 @@ class DiscoveredFileTest {
                     new GameTitle("Game 1"),
                     null,
                     new FileVersion("1.0.0"),
-                    "/downlink/some_game/some_file",
+                    new SourceFileUrl("/downlink/some_game/some_file"),
                     "game_1_installer.exe",
                     fileSize
             ))
@@ -80,7 +79,7 @@ class DiscoveredFileTest {
                     new GameTitle("Game 1"),
                     new FileTitle("Game 1 (Installer)"),
                     null,
-                    "/downlink/some_game/some_file",
+                    new SourceFileUrl("/downlink/some_game/some_file"),
                     "game_1_installer.exe",
                     fileSize
             ))
@@ -116,7 +115,7 @@ class DiscoveredFileTest {
                     new GameTitle("Game 1"),
                     new FileTitle("Game 1 (Installer)"),
                     new FileVersion("1.0.0"),
-                    "/downlink/some_game/some_file",
+                    new SourceFileUrl("/downlink/some_game/some_file"),
                     null,
                     fileSize
             ))
@@ -133,21 +132,12 @@ class DiscoveredFileTest {
                     new GameTitle("Game 1"),
                     new FileTitle("Game 1 (Installer)"),
                     new FileVersion("1.0.0"),
-                    "/downlink/some_game/some_file",
+                    new SourceFileUrl("/downlink/some_game/some_file"),
                     "/downlink/some_game/some_file",
                     null
             ))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessageContaining("size");
-        }
-
-        @Test
-        void constructorShouldThrowGivenUrlIsEmpty() {
-            TestDiscoveredFile.Builder discoveredFileBuilder = TestDiscoveredFile.minimalGogBuilder()
-                    .url("   ");
-
-            assertThatThrownBy(discoveredFileBuilder::build)
-                    .isInstanceOf(DiscoveredFileUrlEmptyException.class);
         }
     }
 }

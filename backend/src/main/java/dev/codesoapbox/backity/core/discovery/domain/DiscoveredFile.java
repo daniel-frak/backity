@@ -5,23 +5,16 @@ import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileTitle;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileVersion;
-import dev.codesoapbox.backity.core.sourcefile.domain.exceptions.DiscoveredFileUrlEmptyException;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileUrl;
 import lombok.NonNull;
-import org.apache.logging.log4j.util.Strings;
 
 public record DiscoveredFile(
         @NonNull GameProviderId gameProviderId,
         @NonNull GameTitle originalGameTitle,
         @NonNull FileTitle fileTitle,
         @NonNull FileVersion version,
-        @NonNull String url,
+        @NonNull SourceFileUrl url,
         @NonNull String originalFileName,
         @NonNull FileSize size
 ) {
-
-    public DiscoveredFile {
-        if (Strings.isBlank(url)) {
-            throw new DiscoveredFileUrlEmptyException(gameProviderId);
-        }
-    }
 }

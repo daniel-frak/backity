@@ -29,7 +29,7 @@ public final class TestSourceFile {
     private FileVersion version = new FileVersion("1.0.0");
 
     @lombok.Builder.Default
-    private String url = "/downlink/some_game/some_file";
+    private SourceFileUrl url = new SourceFileUrl("/downlink/some_game/some_file");
 
     @lombok.Builder.Default
     private String originalFileName = "game_1_installer.exe";

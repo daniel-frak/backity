@@ -1,9 +1,6 @@
 package dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa;
 
-import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
-import dev.codesoapbox.backity.core.sourcefile.domain.FileTitle;
-import dev.codesoapbox.backity.core.sourcefile.domain.FileVersion;
-import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
+import dev.codesoapbox.backity.core.sourcefile.domain.*;
 
 import java.util.UUID;
 
@@ -39,5 +36,13 @@ public class SourceFileValueObjectJpaDtoMapper {
 
     public FileVersion toFileVersion(String value) {
         return new FileVersion(value);
+    }
+
+    public String getValue(SourceFileUrl sourceFileUrl) {
+        return sourceFileUrl.value();
+    }
+
+    public SourceFileUrl toSourceFileUrl(String value) {
+        return new SourceFileUrl(value);
     }
 }
