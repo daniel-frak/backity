@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.backuptarget.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backuptarget.domain.exceptions.InvalidPathTemplatePlaceholdersException;
+import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StringSanitizer;
@@ -23,7 +24,7 @@ public record PathTemplate(@NonNull String value) {
     private static final Map<String, Function<Context, String>> PATH_TEMPLATE_PARSERS = Map.of(
             "GAME_PROVIDER_ID",
             pathTemplateContext -> pathTemplateContext.gameProviderId().value(),
-            "GAME_TITLE", Context::gameTitle,
+            "GAME_TITLE", context -> context.gameTitle().value(),
 
             /*
             This is useful for adding prefixes or suffixes to the filename, e.g.,
@@ -121,7 +122,7 @@ public record PathTemplate(@NonNull String value) {
     private record Context(
             PathTemplate pathTemplate,
             GameProviderId gameProviderId,
-            String gameTitle,
+            GameTitle gameTitle,
             String baseName,
             String extensionWithDot,
             int suffixIndex

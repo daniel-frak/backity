@@ -2,7 +2,9 @@ package dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.p
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.game.domain.GameId;
+import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
+import dev.codesoapbox.backity.core.sourcefile.domain.FileTitle;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import org.mapstruct.Mapper;
@@ -18,12 +20,20 @@ public abstract class SourceFileJpaEntityMapper {
     @Mapping(target = "sizeInBytes", source = "size")
     public abstract SourceFileJpaEntity toEntity(SourceFile model);
 
-    protected UUID toUuid(GameId id) {
+    protected UUID getValue(GameId id) {
         return id.value();
     }
 
-    protected UUID toUuid(SourceFileId id) {
+    protected UUID getValue(SourceFileId id) {
         return id.value();
+    }
+
+    protected String getValue(GameTitle gameTitle) {
+        return gameTitle.value();
+    }
+
+    protected String getValue(FileTitle fileTitle) {
+        return fileTitle.value();
     }
 
     protected String getValue(GameProviderId gameProviderId) {
@@ -43,6 +53,14 @@ public abstract class SourceFileJpaEntityMapper {
 
     protected GameId toGameId(UUID uuid) {
         return new GameId(uuid);
+    }
+
+    protected GameTitle toGameTitle(String value) {
+        return new GameTitle(value);
+    }
+
+    protected FileTitle toFileTitle(String value) {
+        return new FileTitle(value);
     }
 
     protected GameProviderId toFileGameProviderId(String value) {

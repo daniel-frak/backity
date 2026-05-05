@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.sourcefile.domain;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 import dev.codesoapbox.backity.core.game.domain.GameId;
+import dev.codesoapbox.backity.core.game.domain.GameTitle;
 
 import java.time.LocalDateTime;
 
@@ -19,10 +20,10 @@ public final class TestSourceFile {
     private GameProviderId gameProviderId = new GameProviderId("GOG");
 
     @lombok.Builder.Default
-    private String originalGameTitle = "Game 1";
+    private GameTitle originalGameTitle = new GameTitle("Game 1");
 
     @lombok.Builder.Default
-    private String fileTitle = "Game 1 (Installer)";
+    private FileTitle fileTitle = new FileTitle("Game 1 (Installer)");
 
     @lombok.Builder.Default
     private String version = "1.0.0";
