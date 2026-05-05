@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.gameproviders.gog.application.usecases.GetGogConfigUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.application.GogConfigInfo;
+import dev.codesoapbox.backity.gameproviders.gog.application.usecases.GetGogConfigUseCase;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ class GetGogConfigControllerIT {
                   "userAuthUrl": "someUserAuthUrl"
                 }
                 """;
-        mockMvc.perform(get("/api/gog/config"))
+        mockMvc.perform(get("/api/" + GogConfigRestResource.RESOURCE_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedResponseJson));

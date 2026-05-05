@@ -19,5 +19,5 @@ import static dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.
 @Validated
 public @interface GogConfigRestResource {
 
-    String RESOURCE_URL = "gog/config";
+    String RESOURCE_URL = "providers/gog/config";
 }
