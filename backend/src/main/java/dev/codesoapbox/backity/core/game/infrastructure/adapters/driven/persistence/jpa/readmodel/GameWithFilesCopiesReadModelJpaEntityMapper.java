@@ -1,15 +1,20 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.readmodel;
 
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
+import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.persistence.jpa.filecopy.FileCopyValueObjectJpaDtoMapper;
 import dev.codesoapbox.backity.core.game.application.readmodel.FileCopyReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.GameWithFileCopiesReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.SourceFileReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.SourceFileWithCopiesReadModel;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
-import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
+import dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.driven.persistence.jpa.StorageSolutionValueObjectJpaDtoMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SharedJpaDtoMapperConfig;
 import org.mapstruct.*;
 
-@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+@Mapper(config = SharedJpaDtoMapperConfig.class,
+        uses = {
+                FileCopyValueObjectJpaDtoMapper.class,
+                StorageSolutionValueObjectJpaDtoMapper.class
+        })
 public abstract class GameWithFilesCopiesReadModelJpaEntityMapper {
 
     @BeanMapping(ignoreUnmappedSourceProperties = {"dateCreated", "dateModified"})
@@ -25,14 +30,6 @@ public abstract class GameWithFilesCopiesReadModelJpaEntityMapper {
     protected abstract SourceFileReadModel toReadModelInternal(SourceFileWithCopiesReadModelJpaEntity entity);
 
     protected abstract FileCopyReadModel toReadModel(FileCopyReadModelJpaEntity entity);
-
-    protected FilePath toFilePath(String value) {
-        return new FilePath(value);
-    }
-
-    protected FileCopyFailureReason toFileCopyFailureReason(String reason) {
-        return new FileCopyFailureReason(reason);
-    }
 
     @Named("mapFileSize")
     protected String mapFileSize(Long sizeInBytes) {
