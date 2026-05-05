@@ -3,8 +3,9 @@ package dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.
 import dev.codesoapbox.backity.shared.domain.Pagination;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface RequestPaginationHttpDtoMapper {
 
     @Mapping(target = "pageSize", source = "size", defaultValue = "20")
