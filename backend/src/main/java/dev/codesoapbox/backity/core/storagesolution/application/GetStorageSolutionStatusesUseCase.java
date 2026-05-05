@@ -15,7 +15,7 @@ public class GetStorageSolutionStatusesUseCase {
 
     private final StorageSolutionRepository storageSolutionRepository;
 
-    public Map<StorageSolutionId, StorageSolutionStatus> getStorageSolutionStatuses() {
+    public Map<StorageSolutionId, StorageSolutionStatus> execute() {
         return storageSolutionRepository.findAll().stream()
                 .collect(toMap(StorageSolution::getId, StorageSolution::getStatus));
     }

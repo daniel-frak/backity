@@ -17,7 +17,7 @@ public class DeleteFileCopyUseCase {
     private final BackupTargetRepository backupTargetRepository;
     private final StorageSolutionRepository storageSolutionRepository;
 
-    public void deleteFileCopy(FileCopyId fileCopyId) {
+    public void execute(FileCopyId fileCopyId) {
         FileCopy fileCopy = fileCopyRepository.getById(fileCopyId);
         if(!fileCopy.isStored()) {
             throw new FileCopyNotBackedUpException(fileCopyId);

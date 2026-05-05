@@ -50,7 +50,7 @@ class EnqueueFileCopyControllerIT {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        verify(useCase).enqueue(fileCopyNaturalId);
+        verify(useCase).execute(fileCopyNaturalId);
     }
 
     @Test
@@ -61,7 +61,7 @@ class EnqueueFileCopyControllerIT {
         var backupTargetId = new BackupTargetId(backupTargetUuid);
         var fileCopyNaturalId = new FileCopyNaturalId(sourceFileId, backupTargetId);
         doThrow(new FileCopyNotFoundException(sourceFileId, backupTargetId))
-                .when(useCase).enqueue(fileCopyNaturalId);
+                .when(useCase).execute(fileCopyNaturalId);
 
         mockMvc.perform(post("/api/" + FileCopyQueueRestResource.RESOURCE_URL)
                         .contentType(MediaType.APPLICATION_JSON)

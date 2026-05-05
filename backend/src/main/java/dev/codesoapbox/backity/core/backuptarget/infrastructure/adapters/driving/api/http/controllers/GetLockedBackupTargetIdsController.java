@@ -14,7 +14,7 @@ public class GetLockedBackupTargetIdsController {
 
     @GetMapping
     public List<String> getLockedBackupTargetIds() {
-        return getLockedBackupTargetIdsUseCase.getLockedBackupTargetIds().stream()
+        return getLockedBackupTargetIdsUseCase.execute().stream()
                 .map(id -> id.value().toString())
                 .toList();
     }

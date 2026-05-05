@@ -24,7 +24,7 @@ class StartGameContentDiscoveryUseCaseTest {
 
     @Test
     void shouldStartContentDiscovery() {
-        useCase.startContentDiscovery();
+        useCase.execute();
 
         verify(gameContentDiscoveryService).startContentDiscovery();
     }

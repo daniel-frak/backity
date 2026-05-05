@@ -11,7 +11,7 @@ public class GetGameContentDiscoveryOverviewsUseCase {
 
     private final GameContentDiscoveryProgressTracker discoveryProgressTracker;
 
-    public List<GameContentDiscoveryOverview> getDiscoveryOverviews() {
+    public List<GameContentDiscoveryOverview> execute() {
         return discoveryProgressTracker.getDiscoveryOverviews();
     }
 }

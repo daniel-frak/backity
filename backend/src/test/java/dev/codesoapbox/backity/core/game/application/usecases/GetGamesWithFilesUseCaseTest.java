@@ -52,7 +52,7 @@ class GetGamesWithFilesUseCaseTest {
         GameWithFileCopiesReadModel game = mockGameIsFound(localCopy, pagination, filter);
         FileCopyReplicationProgress replicationProgress = mockReplicationProgressExists(localCopy);
 
-        Page<GameWithFileCopiesAndReplicationProgresses> result = useCase.getGamesWithFiles(pagination, filter);
+        Page<GameWithFileCopiesAndReplicationProgresses> result = useCase.execute(pagination, filter);
 
         var gameWithProgresses = new GameWithFileCopiesAndReplicationProgresses(game, List.of(replicationProgress));
         Page<GameWithFileCopiesAndReplicationProgresses> expectedResult =
@@ -92,7 +92,7 @@ class GetGamesWithFilesUseCaseTest {
         FileCopy localCopy = TestFileCopy.storedIntegrityUnknown();
         GameWithFileCopiesReadModel game = mockGameIsFound(localCopy, pagination, filter);
 
-        Page<GameWithFileCopiesAndReplicationProgresses> result = useCase.getGamesWithFiles(pagination, filter);
+        Page<GameWithFileCopiesAndReplicationProgresses> result = useCase.execute(pagination, filter);
 
         var gameWithProgresses = new GameWithFileCopiesAndReplicationProgresses(game, emptyList());
         Page<GameWithFileCopiesAndReplicationProgresses> expectedResult =

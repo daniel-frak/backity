@@ -31,4 +31,7 @@ public class ArchUnitProductionCodeTest {
 
     @ArchTest
     static final ArchTests EVENT_LISTENER_RULES = ArchTests.in(EventListenerRules.class);
+
+    @ArchTest
+    static final ArchTests USE_CASE_RULES = ArchTests.in(UseCaseRules.class);
 }

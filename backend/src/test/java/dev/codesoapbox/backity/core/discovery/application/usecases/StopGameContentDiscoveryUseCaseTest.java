@@ -24,7 +24,7 @@ class StopGameContentDiscoveryUseCaseTest {
 
     @Test
     void shouldStopContentDiscovery() {
-        useCase.stopContentDiscovery();
+        useCase.execute();
 
         verify(gameContentDiscoveryService).stopContentDiscovery();
     }

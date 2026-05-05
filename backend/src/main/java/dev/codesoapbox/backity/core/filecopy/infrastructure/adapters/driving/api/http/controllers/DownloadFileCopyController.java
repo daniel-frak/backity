@@ -31,7 +31,7 @@ public class DownloadFileCopyController {
 
         FileResource fileResource = null;
         try {
-            fileResource = useCase.downloadFileCopy(fileCopyId);
+            fileResource = useCase.execute(fileCopyId);
             var inputStreamResource = new InputStreamResource(fileResource.inputStream());
             return ResponseEntity.ok()
                     .contentLength(fileResource.sizeInBytes())

@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driving.api.http.controllers;
 
+import dev.codesoapbox.backity.gameproviders.gog.application.GogConfigInfo;
+import dev.codesoapbox.backity.gameproviders.gog.application.usecases.GetGogConfigUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driving.api.http.model.GogConfigHttpDto;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driving.api.http.model.GogConfigHttpDtoMapper;
-import dev.codesoapbox.backity.gameproviders.gog.application.usecases.GetGogConfigUseCase;
-import dev.codesoapbox.backity.gameproviders.gog.application.GogConfigInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +19,7 @@ public class GetGogConfigController {
             description = "Returns GOG configuration information")
     @GetMapping
     public GogConfigHttpDto getGogConfig() {
-        GogConfigInfo gogConfig = useCase.getGogConfig();
+        GogConfigInfo gogConfig = useCase.execute();
         return mapper.toDto(gogConfig);
     }
 }

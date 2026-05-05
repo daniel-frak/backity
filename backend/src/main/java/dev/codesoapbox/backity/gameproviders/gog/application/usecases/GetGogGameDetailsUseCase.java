@@ -11,7 +11,7 @@ public class GetGogGameDetailsUseCase {
 
     private final GogLibraryService gogLibraryService;
 
-    public Optional<GogGameWithFiles> getGameDetails(String gameId) {
+    public Optional<GogGameWithFiles> execute(String gameId) {
         return gogLibraryService.getGameDetails(gameId);
     }
 }

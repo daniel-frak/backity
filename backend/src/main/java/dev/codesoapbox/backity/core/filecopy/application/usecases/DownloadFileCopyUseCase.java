@@ -19,7 +19,7 @@ public class DownloadFileCopyUseCase {
     private final BackupTargetRepository backupTargetRepository;
     private final StorageSolutionRepository storageSolutionRepository;
 
-    public FileResource downloadFileCopy(FileCopyId fileCopyId) throws FileNotFoundException {
+    public FileResource execute(FileCopyId fileCopyId) throws FileNotFoundException {
         FileCopy fileCopy = fileCopyRepository.getById(fileCopyId);
         String filePath = fileCopy.getFilePath();
         StorageSolution storageSolution = getStorageSolution(fileCopy);

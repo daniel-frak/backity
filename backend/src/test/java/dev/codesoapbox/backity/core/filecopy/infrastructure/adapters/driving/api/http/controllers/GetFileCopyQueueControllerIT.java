@@ -96,7 +96,7 @@ class GetFileCopyQueueControllerIT {
                 TestBackupTarget.localFolder(),
                 TestFileCopyReplicationProgress.twentyFivePercent()
         );
-        when(getFileCopyQueueUseCase.getFileCopyQueue(expectedPagination))
+        when(getFileCopyQueueUseCase.execute(expectedPagination))
                 .thenReturn(pageWith(fileCopyWithContext));
     }
 

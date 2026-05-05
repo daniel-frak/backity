@@ -41,7 +41,7 @@ class DeleteBackupTargetControllerIT {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        verify(useCase).deleteBackupTarget(backupTargetId);
+        verify(useCase).execute(backupTargetId);
     }
 
     private BackupTargetId aBackupTargetId() {

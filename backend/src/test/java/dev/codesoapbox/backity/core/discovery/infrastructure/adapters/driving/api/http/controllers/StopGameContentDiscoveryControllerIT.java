@@ -26,6 +26,6 @@ class StopGameContentDiscoveryControllerIT {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        verify(useCase).stopContentDiscovery();
+        verify(useCase).execute();
     }
 }

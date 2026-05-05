@@ -43,7 +43,7 @@ public class GetGamesController {
                 .orElse(null);
         var filter = new GameWithFileCopiesSearchFilter(searchQuery, fileCopyStatus);
         Page<GameWithFileCopiesAndReplicationProgresses> gamesWithFiles =
-                getGamesWithFilesUseCase.getGamesWithFiles(pagination, filter);
+                getGamesWithFilesUseCase.execute(pagination, filter);
 
         return pageHttpDtoMapper.toDto(gamesWithFiles, mapper::toDto);
     }

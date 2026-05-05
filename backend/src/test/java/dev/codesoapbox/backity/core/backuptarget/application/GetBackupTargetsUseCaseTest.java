@@ -31,7 +31,7 @@ class GetBackupTargetsUseCaseTest {
     void shouldGetBackupTargets() {
         List<BackupTarget> backupTargets = mockBackupTargetsExist();
 
-        List<BackupTarget> result = useCase.getBackupTargets();
+        List<BackupTarget> result = useCase.execute();
 
         assertThat(result).isEqualTo(backupTargets);
     }

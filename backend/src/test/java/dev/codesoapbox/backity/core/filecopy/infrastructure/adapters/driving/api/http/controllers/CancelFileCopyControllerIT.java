@@ -31,7 +31,7 @@ class CancelFileCopyControllerIT {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        verify(useCase).cancelFileCopy(new FileCopyId(stringUuid));
+        verify(useCase).execute(new FileCopyId(stringUuid));
     }
 
     @Test
@@ -40,7 +40,7 @@ class CancelFileCopyControllerIT {
         var fileCopyId = new FileCopyId(stringUuid);
 
         doThrow(new FileCopyNotFoundException(fileCopyId))
-                .when(useCase).cancelFileCopy(fileCopyId);
+                .when(useCase).execute(fileCopyId);
 
         mockMvc.perform(delete("/api/" + FileCopyQueueRestResource.RESOURCE_URL + "/" + stringUuid))
                 .andExpect(status().isNotFound());

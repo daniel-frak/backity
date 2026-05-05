@@ -14,6 +14,6 @@ public class StopGameContentDiscoveryController {
     @Operation(summary = "Stop game content discovery", description = "Stops the process of game content discovery")
     @PostMapping("stop")
     public void stopGameContentDiscovery() {
-        useCase.stopContentDiscovery();
+        useCase.execute();
     }
 }

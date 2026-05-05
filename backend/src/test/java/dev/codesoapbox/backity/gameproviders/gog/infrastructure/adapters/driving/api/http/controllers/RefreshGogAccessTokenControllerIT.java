@@ -31,7 +31,7 @@ class RefreshGogAccessTokenControllerIT {
                     "refresh_token": "%s"
                 }
                 """.formatted(accessToken);
-        when(useCase.refreshAccessToken(refreshToken))
+        when(useCase.execute(refreshToken))
                 .thenReturn(accessToken);
 
         mockMvc.perform(put("/api/" + GogAuthRestResource.RESOURCE_URL)

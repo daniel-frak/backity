@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers;
 
+import dev.codesoapbox.backity.core.filecopy.application.usecases.DownloadFileCopyUseCase;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
-import dev.codesoapbox.backity.core.filecopy.application.usecases.DownloadFileCopyUseCase;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +52,7 @@ class DownloadFileCopyControllerIT {
         InputStream inputStream = new ByteArrayInputStream(fileContent);
         FileResource fileResource = new FileResource(inputStream, fileContent.length, "test_file.exe");
 
-        when(useCase.downloadFileCopy(fileCopyId))
+        when(useCase.execute(fileCopyId))
                 .thenReturn(fileResource);
 
         return fileResource;
@@ -63,7 +63,7 @@ class DownloadFileCopyControllerIT {
         var stringUuid = "6df888e8-90b9-4df5-a237-0cba422c0310";
         var fileCopyId = new FileCopyId(stringUuid);
 
-        when(useCase.downloadFileCopy(fileCopyId))
+        when(useCase.execute(fileCopyId))
                 .thenThrow(new FileNotFoundException("File not found"));
 
         mockMvc.perform(get("/api/" + FileCopiesRestResource.RESOURCE_URL + "/" + stringUuid))
@@ -75,7 +75,7 @@ class DownloadFileCopyControllerIT {
         var stringUuid = "6df888e8-90b9-4df5-a237-0cba422c0310";
         var fileCopyId = new FileCopyId(stringUuid);
 
-        when(useCase.downloadFileCopy(fileCopyId))
+        when(useCase.execute(fileCopyId))
                 .thenThrow(new RuntimeException("Something went wrong"));
 
         mockMvc.perform(get("/api/" + FileCopiesRestResource.RESOURCE_URL + "/" + stringUuid))
@@ -95,7 +95,7 @@ class DownloadFileCopyControllerIT {
 
     private FileResource mockThrowingFileResourceExists(FileCopyId fileCopyId) throws FileNotFoundException {
         FileResource fileResource = mock(FileResource.class);
-        when(useCase.downloadFileCopy(fileCopyId))
+        when(useCase.execute(fileCopyId))
                 .thenReturn(fileResource);
         when(fileResource.inputStream())
                 .thenThrow(new RuntimeException("Test exception"));
@@ -107,7 +107,7 @@ class DownloadFileCopyControllerIT {
     void shouldRethrowGivenRuntimeExceptionDuringAcquiringResource() throws Exception {
         var stringUuid = "6df888e8-90b9-4df5-a237-0cba422c0310";
         var fileCopyId = new FileCopyId(stringUuid);
-        when(useCase.downloadFileCopy(fileCopyId))
+        when(useCase.execute(fileCopyId))
                 .thenThrow(new RuntimeException("Test exception"));
 
         mockMvc.perform(get("/api/" + FileCopiesRestResource.RESOURCE_URL + "/" + stringUuid))

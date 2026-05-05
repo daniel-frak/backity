@@ -8,7 +8,7 @@ public class GetGogLibrarySizeUseCase {
 
     private final GogLibraryService gogLibraryService;
 
-    public String getLibrarySize() {
+    public String execute() {
         return gogLibraryService.getLibrarySize();
     }
 }

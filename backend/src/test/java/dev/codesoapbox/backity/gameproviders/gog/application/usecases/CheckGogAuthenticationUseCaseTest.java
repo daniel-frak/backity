@@ -24,10 +24,10 @@ class CheckGogAuthenticationUseCaseTest {
     }
 
     @Test
-    void isAuthenticatedShouldReturnTrueGivenIsAuthenticated() {
+    void shouldReturnTrueGivenIsAuthenticated() {
         mockIsAuthenticated(true);
 
-        boolean result = useCase.isAuthenticated();
+        boolean result = useCase.execute();
 
         assertThat(result).isTrue();
     }
@@ -38,10 +38,10 @@ class CheckGogAuthenticationUseCaseTest {
     }
 
     @Test
-    void isAuthenticatedShouldReturnFalseGivenIsNotAuthenticated() {
+    void shouldReturnFalseGivenIsNotAuthenticated() {
         mockIsAuthenticated(false);
 
-        boolean result = useCase.isAuthenticated();
+        boolean result = useCase.execute();
 
         assertThat(result).isFalse();
     }

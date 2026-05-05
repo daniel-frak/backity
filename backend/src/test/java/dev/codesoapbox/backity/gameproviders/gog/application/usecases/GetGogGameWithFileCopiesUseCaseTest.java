@@ -32,7 +32,7 @@ class GetGogGameWithFileCopiesUseCaseTest {
         String id = "someGameId";
         GogGameWithFiles gogGameWithFiles = mockGameDetailsExist(id);
 
-        Optional<GogGameWithFiles> result = useCase.getGameDetails(id);
+        Optional<GogGameWithFiles> result = useCase.execute(id);
 
         assertThat(result).get().usingRecursiveComparison()
                 .isEqualTo(gogGameWithFiles);

@@ -30,6 +30,6 @@ class ProcessFileCopyQueueOnFileCopyEnqueuedEventHandlerTest {
 
         eventHandler.handle(event);
 
-        verify(useCase).processFileCopyQueue();
+        verify(useCase).execute();
     }
 }

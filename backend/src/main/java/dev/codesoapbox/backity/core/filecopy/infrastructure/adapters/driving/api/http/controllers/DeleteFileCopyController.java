@@ -24,6 +24,6 @@ public class DeleteFileCopyController {
             @SuppressWarnings("java:S6856")
             @PathVariable("id") String idValue) {
         var id = new FileCopyId(idValue);
-        useCase.deleteFileCopy(id);
+        useCase.execute(id);
     }
 }

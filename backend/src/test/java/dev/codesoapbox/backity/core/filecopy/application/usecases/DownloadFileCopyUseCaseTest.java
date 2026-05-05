@@ -48,7 +48,7 @@ class DownloadFileCopyUseCaseTest {
         StorageSolution storageSolution = mockStorageSolutionExists(fileCopy);
         FileResource fileResource = mockFileResourceExists(fileCopy, storageSolution);
 
-        FileResource result = downloadFileCopyUseCase.downloadFileCopy(fileCopy.getId());
+        FileResource result = downloadFileCopyUseCase.execute(fileCopy.getId());
 
         assertThat(result).isEqualTo(fileResource);
     }

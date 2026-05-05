@@ -27,7 +27,7 @@ class GetStorageSolutionStatusesControllerIT {
 
     @Test
     void shouldGetStorageSolutionStatuses() throws Exception {
-        when(useCase.getStorageSolutionStatuses())
+        when(useCase.execute())
                 .thenReturn(Map.of(
                         new StorageSolutionId("LOCAL_FILE_SYSTEM"), StorageSolutionStatus.CONNECTED,
                         new StorageSolutionId("S3"), StorageSolutionStatus.NOT_CONNECTED

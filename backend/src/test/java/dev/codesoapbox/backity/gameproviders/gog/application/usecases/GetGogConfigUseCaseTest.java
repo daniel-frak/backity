@@ -19,7 +19,7 @@ class GetGogConfigUseCaseTest {
 
     @Test
     void shouldGetGogConfig() {
-        GogConfigInfo result = useCase.getGogConfig();
+        GogConfigInfo result = useCase.execute();
 
         assertThat(result).isEqualTo(GOG_CONFIG_INFO);
     }

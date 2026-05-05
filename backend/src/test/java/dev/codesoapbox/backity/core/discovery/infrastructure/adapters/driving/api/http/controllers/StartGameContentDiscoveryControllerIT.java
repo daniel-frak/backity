@@ -26,6 +26,6 @@ class StartGameContentDiscoveryControllerIT {
                 .andDo(print())
                 .andExpect(status().isAccepted());
 
-        verify(useCase).startContentDiscovery();
+        verify(useCase).execute();
     }
 }

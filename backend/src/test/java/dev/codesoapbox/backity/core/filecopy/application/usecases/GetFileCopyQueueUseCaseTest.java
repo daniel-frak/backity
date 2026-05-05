@@ -44,7 +44,7 @@ class GetFileCopyQueueUseCaseTest {
         var pagination = new Pagination(0, 10);
         Page<FileCopyWithContext> fileCopyWithContextPage = mockFileCopyPageExists(pagination);
 
-        Page<FileCopyWithContext> result = useCase.getFileCopyQueue(pagination);
+        Page<FileCopyWithContext> result = useCase.execute(pagination);
 
         assertThat(result).isEqualTo(fileCopyWithContextPage);
     }
@@ -80,7 +80,7 @@ class GetFileCopyQueueUseCaseTest {
         when(fileCopyRepository.findAllInProgressOrEnqueued(pagination))
                 .thenReturn(TestPage.of(emptyList(), pagination));
 
-        Page<FileCopyWithContext> result = useCase.getFileCopyQueue(pagination);
+        Page<FileCopyWithContext> result = useCase.execute(pagination);
 
         assertThat(result).isNotNull();
         verifyNoInteractions(fileCopyWithContextFactory);

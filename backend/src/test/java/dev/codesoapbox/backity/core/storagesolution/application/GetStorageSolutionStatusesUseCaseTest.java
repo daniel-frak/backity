@@ -34,7 +34,7 @@ class GetStorageSolutionStatusesUseCaseTest {
         when(storageSolutionRepository.findAll())
                 .thenReturn(List.of(new FakeUnixStorageSolution()));
 
-        Map<StorageSolutionId, StorageSolutionStatus> result = useCase.getStorageSolutionStatuses();
+        Map<StorageSolutionId, StorageSolutionStatus> result = useCase.execute();
 
         Map<StorageSolutionId, StorageSolutionStatus> expectedResult = Map.of(
                 FakeUnixStorageSolution.DEFAULT_ID, StorageSolutionStatus.CONNECTED

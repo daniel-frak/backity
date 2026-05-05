@@ -34,7 +34,7 @@ public class GetFileCopyQueueController {
             @Valid @Parameter(name = "pagination") RequestPaginationHttpDto paginationHttpDto) {
         Pagination pagination = paginationMapper.toDomain(paginationHttpDto);
 
-        Page<FileCopyWithContext> foundPage = getFileCopyQueueUseCase.getFileCopyQueue(pagination);
+        Page<FileCopyWithContext> foundPage = getFileCopyQueueUseCase.execute(pagination);
 
         return pageMapper.toDto(foundPage, fileCopyWithContextMapper::toDto);
     }

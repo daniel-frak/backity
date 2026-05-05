@@ -69,7 +69,7 @@ class GetGamesControllerIT {
                                 .build())
                 )
         ), pagination);
-        when(getGamesWithFilesUseCase.getGamesWithFiles(pagination, expectedFilter))
+        when(getGamesWithFilesUseCase.execute(pagination, expectedFilter))
                 .thenReturn(gameWithFileCopiesPage);
 
         mockMvc.perform(get("/api/games?page=0&size=2"))
@@ -186,7 +186,7 @@ class GetGamesControllerIT {
                                 .build())
                 )
         ), pagination);
-        when(getGamesWithFilesUseCase.getGamesWithFiles(pagination, expectedFilter))
+        when(getGamesWithFilesUseCase.execute(pagination, expectedFilter))
                 .thenReturn(gameWithFileCopiesPage);
 
         mockMvc.perform(get("/api/games?page=0&size=2&query=someSearchQuery&file-copy-status=ENQUEUED"))

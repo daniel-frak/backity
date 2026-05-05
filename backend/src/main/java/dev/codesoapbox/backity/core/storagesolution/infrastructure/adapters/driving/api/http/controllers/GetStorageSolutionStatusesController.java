@@ -20,7 +20,7 @@ public class GetStorageSolutionStatusesController {
     @GetMapping
     public StorageSolutionStatusesResponseHttpDto getStorageSolutionStatuses() {
         Map<StorageSolutionId, StorageSolutionStatus> storageSolutionStatuses =
-                getStorageSolutionStatusesUseCase.getStorageSolutionStatuses();
+                getStorageSolutionStatusesUseCase.execute();
 
         return mapper.toDto(storageSolutionStatuses);
     }

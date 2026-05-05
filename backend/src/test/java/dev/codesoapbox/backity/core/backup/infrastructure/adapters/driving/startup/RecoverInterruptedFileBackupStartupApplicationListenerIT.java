@@ -16,6 +16,6 @@ class RecoverInterruptedFileBackupStartupApplicationListenerIT {
 
     @Test
     void shouldTriggerOnApplicationStartup(ApplicationEventScenario scenario) {
-        scenario.verifyAfterStartup(() -> verify(useCase).recoverInterruptedFileBackup());
+        scenario.verifyAfterStartup(() -> verify(useCase).execute());
     }
 }

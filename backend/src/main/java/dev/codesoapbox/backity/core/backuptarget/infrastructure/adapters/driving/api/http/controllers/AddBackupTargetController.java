@@ -31,7 +31,7 @@ public class AddBackupTargetController {
     public AddBackupTargetHttpResponse addBackupTarget(@Valid @RequestBody AddBackupTargetHttpRequest requestBody) {
         AddBackupTargetCommand command = toCommand(requestBody);
 
-        BackupTarget backupTarget = useCase.addBackupTarget(command);
+        BackupTarget backupTarget = useCase.execute(command);
 
         return dtoMapper.toDto(backupTarget);
     }

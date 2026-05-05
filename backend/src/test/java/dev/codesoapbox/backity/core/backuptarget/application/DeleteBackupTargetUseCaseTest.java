@@ -38,7 +38,7 @@ class DeleteBackupTargetUseCaseTest {
     void shouldDeleteBackupTargetAndTrackedFileCopiesGivenItIsNotLocked() {
         BackupTarget backupTarget = TestBackupTarget.localFolder();
 
-        useCase.deleteBackupTarget(backupTarget.getId());
+        useCase.execute(backupTarget.getId());
 
         InOrder inOrder = inOrder(backupTargetRepository, fileCopyRepository);
         inOrder.verify(fileCopyRepository)
@@ -52,7 +52,7 @@ class DeleteBackupTargetUseCaseTest {
         fileCopiesExistFor(backupTarget);
         BackupTargetId backupTargetId = backupTarget.getId();
 
-        assertThatThrownBy(() -> useCase.deleteBackupTarget(backupTargetId))
+        assertThatThrownBy(() -> useCase.execute(backupTargetId))
                 .isInstanceOf(BackupTargetIsInUseException.class)
                 .hasMessageContaining(backupTargetId.value().toString());
     }

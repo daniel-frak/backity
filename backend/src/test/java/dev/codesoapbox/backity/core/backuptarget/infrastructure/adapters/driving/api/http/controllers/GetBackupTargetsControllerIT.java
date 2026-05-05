@@ -28,7 +28,7 @@ class GetBackupTargetsControllerIT {
     @Test
     void shouldGetBackupTargets() throws Exception {
         BackupTarget backupTarget = TestBackupTarget.localFolder();
-        when(useCase.getBackupTargets())
+        when(useCase.execute())
                 .thenReturn(List.of(backupTarget));
 
         var expectedJson = """

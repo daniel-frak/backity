@@ -13,7 +13,7 @@ public class DeleteBackupTargetUseCase {
     private final BackupTargetRepository backupTargetRepository;
     private final FileCopyRepository fileCopyRepository;
 
-    public void deleteBackupTarget(BackupTargetId id) {
+    public void execute(BackupTargetId id) {
         if (fileCopyRepository.existByBackupTargetIdAndStatusNotIn(id, FileCopyStatus.NON_LOCKING_STATUSES)) {
             throw new BackupTargetIsInUseException(id);
         }

@@ -57,7 +57,7 @@ class RecoverInterruptedFileBackupUseCaseTest {
         mockBackupTargetExists(fileCopy, storageSolution);
         String filePathToDelete = fileCopy.getFilePath();
 
-        useCase.recoverInterruptedFileBackup();
+        useCase.execute();
 
         assertThat(storageSolution.fileExists(filePathToDelete)).isFalse();
         FileCopy savedFileCopy = getSavedFileCopy();
@@ -103,7 +103,7 @@ class RecoverInterruptedFileBackupUseCaseTest {
         FakeUnixStorageSolution storageSolution = mockStorageSolutionExists();
         mockBackupTargetExists(fileCopy, storageSolution);
 
-        useCase.recoverInterruptedFileBackup();
+        useCase.execute();
 
         verify(domainEventPublisher).publish(new BackupRecoveryCompletedEvent());
     }

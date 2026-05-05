@@ -13,6 +13,6 @@ public class RecoverInterruptedFileBackupStartupApplicationListener
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        useCase.recoverInterruptedFileBackup();
+        useCase.execute();
     }
 }

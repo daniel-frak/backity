@@ -29,7 +29,7 @@ public class EditBackupTargetController {
             @Valid @RequestBody EditBackupTargetHttpRequest requestBody) {
         EditBackupTargetCommand command = toCommand(idValue, requestBody);
 
-        useCase.editBackupTarget(command);
+        useCase.execute(command);
     }
 
     private EditBackupTargetCommand toCommand(String idValue, EditBackupTargetHttpRequest requestBody) {

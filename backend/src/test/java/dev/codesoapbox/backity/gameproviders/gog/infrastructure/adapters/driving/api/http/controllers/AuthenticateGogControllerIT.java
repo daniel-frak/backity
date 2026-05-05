@@ -32,7 +32,7 @@ class AuthenticateGogControllerIT {
                 }
                 """.formatted(refreshToken);
 
-        when(useCase.authenticateAndGetRefreshToken(code))
+        when(useCase.execute(code))
                 .thenReturn(refreshToken);
 
         mockMvc.perform(post("/api/" + GogAuthRestResource.RESOURCE_URL)

@@ -85,6 +85,6 @@ class EditBackupTargetControllerIT {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        verify(useCase).editBackupTarget(command);
+        verify(useCase).execute(command);
     }
 }

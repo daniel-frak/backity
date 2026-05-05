@@ -8,7 +8,7 @@ public class GetGogConfigUseCase {
 
     private final GogConfigInfo gogConfigInfo;
 
-    public GogConfigInfo getGogConfig() {
+    public GogConfigInfo execute() {
         return gogConfigInfo;
     }
 }

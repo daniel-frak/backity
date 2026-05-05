@@ -24,7 +24,7 @@ public class ProcessFileCopyQueueUseCase {
             // I was not able to come up with an implementation with less nesting which would preserve readability:
             "java:S134"
     )
-    public void processFileCopyQueue() {
+    public void execute() {
         /*
          After markAsCompleted(), tryStart() is called again to catch any items
          enqueued while the previous run was in progress.

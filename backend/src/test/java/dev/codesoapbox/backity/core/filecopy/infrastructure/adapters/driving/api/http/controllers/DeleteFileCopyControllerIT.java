@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.DeleteFileCopyUseCase;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +29,6 @@ class DeleteFileCopyControllerIT {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        verify(useCase).deleteFileCopy(new FileCopyId(stringUuid));
+        verify(useCase).execute(new FileCopyId(stringUuid));
     }
 }

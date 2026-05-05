@@ -39,7 +39,7 @@ class EnqueueFileCopyUseCaseTest {
     void shouldSetFileCopyStatusToEnqueuedAndPersistIt() {
         FileCopy fileCopy = mockTrackedFileCopyExists();
 
-        useCase.enqueue(fileCopy.getNaturalId());
+        useCase.execute(fileCopy.getNaturalId());
 
         assertThat(fileCopy.getStatus()).isEqualTo(FileCopyStatus.ENQUEUED);
         verify(fileCopyRepository).save(fileCopy);
@@ -65,7 +65,7 @@ class EnqueueFileCopyUseCaseTest {
         FileCopy fileCopy = mockTrackedFileCopyExists();
         AtomicBoolean factoryWasPassed = trackFactoryWasPassed(fileCopy);
 
-        useCase.enqueue(fileCopy.getNaturalId());
+        useCase.execute(fileCopy.getNaturalId());
 
         assertThat(factoryWasPassed).isTrue();
     }
