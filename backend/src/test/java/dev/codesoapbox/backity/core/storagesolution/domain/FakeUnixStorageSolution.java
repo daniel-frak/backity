@@ -16,9 +16,9 @@ public class FakeUnixStorageSolution implements StorageSolution {
 
     public static final StorageSolutionId DEFAULT_ID = new StorageSolutionId("FakeUnixStorageSolution");
 
-    private final Map<String, Integer> openStreamCountByFilePath = new HashMap<>();
-    private final Map<String, ByteArrayOutputStream> outputStreamsByPath = new HashMap<>();
-    private final Map<String, Long> overriddenSizesByPath = new HashMap<>();
+    private final Map<FilePath, Integer> openStreamCountByFilePath = new HashMap<>();
+    private final Map<FilePath, ByteArrayOutputStream> outputStreamsByFilePath = new HashMap<>();
+    private final Map<FilePath, Long> overriddenSizesByFilePath = new HashMap<>();
 
     @Setter
     private RuntimeException shouldThrowOnFileDeletion;
@@ -30,8 +30,9 @@ public class FakeUnixStorageSolution implements StorageSolution {
     @Setter
     private StorageSolutionId id = DEFAULT_ID;
 
-    private static String asUnixPath(String path) {
-        return path.replace('\\', '/');
+    private static FilePath asUnixPath(FilePath path) {
+        String value = path.toString().replace('\\', '/');
+        return new FilePath(value);
     }
 
     public boolean allOutputStreamsWereClosed() {
@@ -40,16 +41,16 @@ public class FakeUnixStorageSolution implements StorageSolution {
     }
 
     @Override
-    public ByteArrayOutputStream getOutputStream(String path) {
+    public ByteArrayOutputStream getOutputStream(FilePath filePath) {
         if (shouldThrowOnGetOutputStream != null) {
             throw shouldThrowOnGetOutputStream;
         }
-        String unixPath = asUnixPath(path);
+        FilePath unixPath = asUnixPath(filePath);
         return newTrackedOutputStream(unixPath);
     }
 
-    private ByteArrayOutputStream newTrackedOutputStream(String unixPath) {
-        var outputStream = outputStreamsByPath.computeIfAbsent(unixPath, _ -> new ByteArrayOutputStream() {
+    private ByteArrayOutputStream newTrackedOutputStream(FilePath unixPath) {
+        var outputStream = outputStreamsByFilePath.computeIfAbsent(unixPath, _ -> new ByteArrayOutputStream() {
 
             @Override
             public void close() {
@@ -62,12 +63,12 @@ public class FakeUnixStorageSolution implements StorageSolution {
     }
 
     @Override
-    public void deleteIfExists(String path) {
+    public void deleteIfExists(FilePath filePath) {
         if (shouldThrowOnFileDeletion != null) {
             throw shouldThrowOnFileDeletion;
         }
-        String unixPath = asUnixPath(path);
-        outputStreamsByPath.remove(unixPath);
+        FilePath unixPath = asUnixPath(filePath);
+        outputStreamsByFilePath.remove(unixPath);
         openStreamCountByFilePath.remove(unixPath);
     }
 
@@ -77,9 +78,9 @@ public class FakeUnixStorageSolution implements StorageSolution {
     }
 
     @Override
-    public long getSizeInBytes(String filePath) {
-        String unixPath = asUnixPath(filePath);
-        Long overridden = overriddenSizesByPath.get(unixPath);
+    public long getSizeInBytes(FilePath filePath) {
+        FilePath unixPath = asUnixPath(filePath);
+        Long overridden = overriddenSizesByFilePath.get(unixPath);
         if (overridden != null) {
             return overridden;
         }
@@ -87,8 +88,8 @@ public class FakeUnixStorageSolution implements StorageSolution {
         return outputStream.size();
     }
 
-    private ByteArrayOutputStream getExistingOutputStream(String unixPath) {
-        ByteArrayOutputStream outputStream = outputStreamsByPath.get(unixPath);
+    private ByteArrayOutputStream getExistingOutputStream(FilePath unixPath) {
+        ByteArrayOutputStream outputStream = outputStreamsByFilePath.get(unixPath);
         if (outputStream == null) {
             throw new IllegalArgumentException("File '" + unixPath + "' does not exist");
         }
@@ -96,23 +97,23 @@ public class FakeUnixStorageSolution implements StorageSolution {
     }
 
     @Override
-    public FileResource getFileResource(String filePath) {
-        String unixPath = asUnixPath(filePath);
+    public FileResource getFileResource(FilePath filePath) {
+        FilePath unixPath = asUnixPath(filePath);
         ByteArrayOutputStream outputStream = getExistingOutputStream(unixPath);
         byte[] content = outputStream.toByteArray();
 
-        return new FileResource(new ByteArrayInputStream(content), content.length, unixPath);
+        return new FileResource(new ByteArrayInputStream(content), content.length, unixPath.toString());
     }
 
-    public void overrideWrittenSizeFor(String filePath, long sizeInBytes) {
-        String unixPath = asUnixPath(filePath);
-        overriddenSizesByPath.put(unixPath, sizeInBytes);
+    public void overrideWrittenSizeFor(FilePath filePath, long sizeInBytes) {
+        FilePath unixPath = asUnixPath(filePath);
+        overriddenSizesByFilePath.put(unixPath, sizeInBytes);
     }
 
     @Override
-    public boolean fileExists(String filePath) {
-        String unixPath = asUnixPath(filePath);
-        return outputStreamsByPath.containsKey(unixPath);
+    public boolean fileExists(FilePath filePath) {
+        FilePath unixPath = asUnixPath(filePath);
+        return outputStreamsByFilePath.containsKey(unixPath);
     }
 
     @Override
@@ -121,15 +122,15 @@ public class FakeUnixStorageSolution implements StorageSolution {
     }
 
     @SneakyThrows
-    public void createFile(String filePath) {
-        String unixPath = asUnixPath(filePath);
+    public void createFile(FilePath filePath) {
+        FilePath unixPath = asUnixPath(filePath);
         ByteArrayOutputStream stream = newTrackedOutputStream(unixPath);
         stream.write("Existing data".getBytes());
         stream.close();
     }
 
-    public String getFileContent(String filePath) {
-        String unixPath = asUnixPath(filePath);
+    public String getFileContent(FilePath filePath) {
+        FilePath unixPath = asUnixPath(filePath);
         return getExistingOutputStream(unixPath).toString();
     }
 }

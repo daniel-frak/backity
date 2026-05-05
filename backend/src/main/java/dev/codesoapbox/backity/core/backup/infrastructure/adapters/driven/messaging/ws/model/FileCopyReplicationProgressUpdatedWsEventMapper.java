@@ -6,9 +6,10 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class FileCopyReplicationProgressUpdatedWsEventMapper {
 
     @Mapping(target = "timeLeftSeconds", source = "timeLeft.seconds")

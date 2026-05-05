@@ -9,6 +9,7 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -83,7 +84,7 @@ class CancelFileCopyUseCaseTest {
     void shouldCancelInProgressFileCopy() {
         FileCopy fileCopy = mockInProgressFileCopyExists();
         BackupTarget backupTarget = mockBackupTargetExistsFor(fileCopy);
-        String filePath = fileCopy.getFilePath();
+        FilePath filePath = fileCopy.getFilePath();
 
         useCase.execute(fileCopy.getId());
 

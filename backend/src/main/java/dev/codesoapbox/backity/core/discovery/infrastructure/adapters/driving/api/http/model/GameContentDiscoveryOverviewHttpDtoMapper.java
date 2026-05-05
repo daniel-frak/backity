@@ -5,9 +5,10 @@ import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryOv
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryProgress;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class GameContentDiscoveryOverviewHttpDtoMapper {
 
     public abstract GameContentDiscoveryOverviewHttpDto toDto(GameContentDiscoveryOverview domain);

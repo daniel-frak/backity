@@ -7,6 +7,7 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolver;
 import org.junit.jupiter.api.BeforeEach;
@@ -52,8 +53,8 @@ class FileBackupServiceTest {
                     .thenReturn(true);
         }
 
-        private String aUniqueFilePathIsResolvedFor(FileBackupContext fileBackupContext) {
-            var filePath = "someFileDir/someFile";
+        private FilePath aUniqueFilePathIsResolvedFor(FileBackupContext fileBackupContext) {
+            var filePath = new FilePath("someFileDir/someFile");
             when(uniqueFilePathResolver.resolve(
                     fileBackupContext.backupTarget().getPathTemplate(),
                     fileBackupContext.sourceFile(),
@@ -90,7 +91,7 @@ class FileBackupServiceTest {
 
         private record PersistedChangesToFileCopy(
                 List<FileCopyStatus> savedFileCopyStatuses,
-                List<String> savedFilePaths
+                List<FilePath> savedFilePaths
         ) {
 
             private PersistedChangesToFileCopy() {
@@ -130,7 +131,7 @@ class FileBackupServiceTest {
                 FileBackupContext fileBackupContext = TestFileBackupContext.enqueuedLocalGog();
                 gameProviderIsConnectedFor(fileBackupContext.sourceFile());
                 PersistedChangesToFileCopy persistedChangesToFileCopy = trackPersistedChangesToFileCopy();
-                String expectedFilePath = aUniqueFilePathIsResolvedFor(fileBackupContext);
+                FilePath expectedFilePath = aUniqueFilePathIsResolvedFor(fileBackupContext);
 
                 fileBackupService.backUpFile(fileBackupContext);
 
@@ -144,7 +145,7 @@ class FileBackupServiceTest {
             }
 
             private void assertFilePathWasPersisted(
-                    PersistedChangesToFileCopy persistedChangesToFileCopy, String expectedFilePath) {
+                    PersistedChangesToFileCopy persistedChangesToFileCopy, FilePath expectedFilePath) {
                 assertThat(persistedChangesToFileCopy.savedFilePaths())
                         .isEqualTo(Arrays.asList(
                                 expectedFilePath, // Mark 'in progress'
@@ -159,13 +160,14 @@ class FileBackupServiceTest {
             @Test
             void shouldMarkFileCopyAsTracked() {
                 var storageSolution = new FakeUnixStorageSolution();
+                var aFilePath = new FilePath("someFilePath");
                 FileBackupContext fileBackupContext = TestFileBackupContext.enqueuedLocalGogBuilder()
                         .storageSolution(storageSolution)
                         .build();
                 gameProviderIsConnectedFor(fileBackupContext.sourceFile());
                 PersistedChangesToFileCopy persistedChangesToFileCopy = trackPersistedChangesToFileCopy();
                 aUniqueFilePathIsResolvedFor(fileBackupContext);
-                doThrow(new FileWriteWasCanceledException("someFilePath", storageSolution))
+                doThrow(new FileWriteWasCanceledException(aFilePath, storageSolution))
                         .when(fileCopyReplicator).replicate(storageSolution, fileBackupContext.sourceFile(),
                                 fileBackupContext.fileCopy());
 
@@ -180,10 +182,10 @@ class FileBackupServiceTest {
                 FileBackupContext fileBackupContext = TestFileBackupContext.enqueuedLocalGogBuilder()
                         .storageSolution(storageSolution)
                         .build();
-                String filePath = aUniqueFilePathIsResolvedFor(fileBackupContext);
+                FilePath filePath = aUniqueFilePathIsResolvedFor(fileBackupContext);
                 storageSolution.createFile(filePath);
                 gameProviderIsConnectedFor(fileBackupContext.sourceFile());
-                doThrow(new FileWriteWasCanceledException(fileBackupContext.fileCopy().getFilePath(), storageSolution))
+                doThrow(new FileWriteWasCanceledException(filePath, storageSolution))
                         .when(fileCopyReplicator).replicate(storageSolution, fileBackupContext.sourceFile(),
                                 fileBackupContext.fileCopy());
 
@@ -198,9 +200,9 @@ class FileBackupServiceTest {
                 FileBackupContext fileBackupContext = TestFileBackupContext.enqueuedLocalGogBuilder()
                         .storageSolution(storageSolution)
                         .build();
-                aUniqueFilePathIsResolvedFor(fileBackupContext);
+                FilePath filePath = aUniqueFilePathIsResolvedFor(fileBackupContext);
                 gameProviderIsConnectedFor(fileBackupContext.sourceFile());
-                doThrow(new FileWriteWasCanceledException(fileBackupContext.fileCopy().getFilePath(), storageSolution))
+                doThrow(new FileWriteWasCanceledException(filePath, storageSolution))
                         .when(fileCopyReplicator).replicate(storageSolution, fileBackupContext.sourceFile(),
                                 fileBackupContext.fileCopy());
 
@@ -222,7 +224,7 @@ class FileBackupServiceTest {
             }
 
             private RuntimeException fileCopyReplicatorThrowsAfterCreatingFile(
-                    FakeUnixStorageSolution storageSolution, String filePath) {
+                    FakeUnixStorageSolution storageSolution, FilePath filePath) {
                 var coreException = new RuntimeException("someMessage");
                 doAnswer(_ -> {
                     storageSolution.createFile(filePath);
@@ -242,7 +244,7 @@ class FileBackupServiceTest {
                             .storageSolution(storageSolution)
                             .build();
                     gameProviderIsConnectedFor(fileBackupContext.sourceFile());
-                    String filePath = aUniqueFilePathIsResolvedFor(fileBackupContext);
+                    FilePath filePath = aUniqueFilePathIsResolvedFor(fileBackupContext);
                     RuntimeException coreException = fileCopyReplicatorThrowsAfterCreatingFile(
                             storageSolution, filePath);
 
@@ -259,7 +261,7 @@ class FileBackupServiceTest {
                             .storageSolution(storageSolution)
                             .build();
                     gameProviderIsConnectedFor(fileBackupContext.sourceFile());
-                    String filePath = aUniqueFilePathIsResolvedFor(fileBackupContext);
+                    FilePath filePath = aUniqueFilePathIsResolvedFor(fileBackupContext);
                     RuntimeException coreException = fileCopyReplicatorThrowsAfterCreatingFile(
                             storageSolution, filePath);
 
@@ -278,7 +280,7 @@ class FileBackupServiceTest {
                             .storageSolution(storageSolution)
                             .build();
                     gameProviderIsConnectedFor(fileBackupContext.sourceFile());
-                    String filePath = aUniqueFilePathIsResolvedFor(fileBackupContext);
+                    FilePath filePath = aUniqueFilePathIsResolvedFor(fileBackupContext);
                     fileCopyReplicatorThrowsAfterCreatingFile(storageSolution, filePath);
 
                     assertThatThrownBy(() -> fileBackupService.backUpFile(fileBackupContext))
@@ -372,13 +374,14 @@ class FileBackupServiceTest {
                 @Test
                 void shouldWrapException() {
                     FakeUnixStorageSolution storageSolution = storageSolutionFailingOnFileDeletion();
+                    var aFilePath = new FilePath("filePath");
                     FileBackupContext fileBackupContext = TestFileBackupContext.enqueuedLocalGogBuilder()
                             .storageSolution(storageSolution)
                             .build();
                     gameProviderIsConnectedFor(fileBackupContext.sourceFile());
                     aUniqueFilePathIsResolvedFor(fileBackupContext);
                     RuntimeException coreException =
-                            fileCopyReplicatorThrowsAfterCreatingFile(storageSolution, "filePath");
+                            fileCopyReplicatorThrowsAfterCreatingFile(storageSolution, aFilePath);
 
                     assertThatThrownBy(() ->
                             fileBackupService.backUpFile(fileBackupContext))
@@ -396,13 +399,14 @@ class FileBackupServiceTest {
                 @Test
                 void shouldMarkFileCopyAsFailedWithReason() {
                     FakeUnixStorageSolution storageSolution = storageSolutionFailingOnFileDeletion();
+                    var aFilePath = new FilePath("filePath");
                     FileBackupContext fileBackupContext = TestFileBackupContext.enqueuedLocalGogBuilder()
                             .storageSolution(storageSolution)
                             .build();
                     gameProviderIsConnectedFor(fileBackupContext.sourceFile());
                     aUniqueFilePathIsResolvedFor(fileBackupContext);
                     RuntimeException coreException =
-                            fileCopyReplicatorThrowsAfterCreatingFile(storageSolution, "filePath");
+                            fileCopyReplicatorThrowsAfterCreatingFile(storageSolution, aFilePath);
 
                     assertThatThrownBy(() -> fileBackupService.backUpFile(fileBackupContext))
                             .isInstanceOf(Throwable.class);
@@ -415,12 +419,13 @@ class FileBackupServiceTest {
                 @Test
                 void shouldNotUnsetFileCopyFilePath() {
                     FakeUnixStorageSolution storageSolution = storageSolutionFailingOnFileDeletion();
+                    var aFilePath = new FilePath("filePath");
                     FileBackupContext fileBackupContext = TestFileBackupContext.enqueuedLocalGogBuilder()
                             .storageSolution(storageSolution)
                             .build();
                     gameProviderIsConnectedFor(fileBackupContext.sourceFile());
                     aUniqueFilePathIsResolvedFor(fileBackupContext);
-                    fileCopyReplicatorThrowsAfterCreatingFile(storageSolution, "filePath");
+                    fileCopyReplicatorThrowsAfterCreatingFile(storageSolution, aFilePath);
 
                     assertThatThrownBy(() -> fileBackupService.backUpFile(fileBackupContext))
                             .isInstanceOf(Throwable.class);

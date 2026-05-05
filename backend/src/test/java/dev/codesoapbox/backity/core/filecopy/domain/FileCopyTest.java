@@ -7,6 +7,7 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileCopyEnqueuedEvent;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.InvalidFileCopyStatusTransitionException;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.shared.domain.DomainEvent;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -353,8 +354,9 @@ class FileCopyTest {
             @Test
             void toInProgressShouldThrowGivenNotTransitioningFromEnqueued() {
                 FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
+                var aFilePath = new FilePath("someFilePath");
 
-                assertThatThrownBy(() -> fileCopy.toInProgress("someFilePath"))
+                assertThatThrownBy(() -> fileCopy.toInProgress(aFilePath))
                         .isInstanceOf(InvalidFileCopyStatusTransitionException.class)
                         .hasMessageContaining(fileCopy.getId().toString())
                         .hasMessageContaining(FileCopyStatus.STORED_INTEGRITY_UNKNOWN.toString())
@@ -364,8 +366,9 @@ class FileCopyTest {
             @Test
             void toInProgressShouldChangeFileCopyStatus() {
                 FileCopy fileCopy = TestFileCopy.enqueued();
+                var aFilePath = new FilePath("someFilePath");
 
-                fileCopy.toInProgress("someFilePath");
+                fileCopy.toInProgress(aFilePath);
 
                 assertThat(fileCopy.getStatus()).isEqualTo(FileCopyStatus.IN_PROGRESS);
             }
@@ -376,7 +379,7 @@ class FileCopyTest {
                 var expectedEvent = new FileBackupStartedEvent(
                         fileCopy.getId(),
                         fileCopy.getNaturalId(),
-                        "someFilePath"
+                        new FilePath("someFilePath")
                 );
 
                 fileCopy.toInProgress(expectedEvent.filePath());
@@ -388,9 +391,10 @@ class FileCopyTest {
             void toInProgressShouldDoNothingGivenAlreadyInProgress() {
                 FileCopy fileCopy = TestFileCopy.inProgress();
                 FileCopyStatus initialStatus = fileCopy.getStatus();
-                String initialFilePath = fileCopy.getFilePath();
+                FilePath initialFilePath = fileCopy.getFilePath();
+                var changedFilePath = new FilePath(initialFilePath.toString() + "/changed");
 
-                fileCopy.toInProgress(initialFilePath + "/changed");
+                fileCopy.toInProgress(changedFilePath);
 
                 assertThat(fileCopy.getStatus())
                         .isEqualTo(initialStatus);
@@ -434,20 +438,26 @@ class FileCopyTest {
             @Test
             void toFailedShouldThrowGivenNullFailedReason() {
                 FileCopy fileCopy = TestFileCopy.inProgress();
+                FilePath filePath = aFilePath();
 
-                assertThatThrownBy(() -> fileCopy.toFailed(null, "someFilePath"))
+                assertThatThrownBy(() -> fileCopy.toFailed(null, filePath))
                         .isInstanceOf(NullPointerException.class)
                         .hasMessageContaining("failedReason");
+            }
+
+            private FilePath aFilePath() {
+                return new FilePath("someFilePath");
             }
 
             @Test
             void toFailedShouldTransitionFromStoredUnverifiedAndUpdateFilePath() {
                 FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
+                var expectedFilePath = new FilePath("updatedFilePath");
 
-                fileCopy.toFailed("someFailedReason", "updatedFilePath");
+                fileCopy.toFailed("someFailedReason", expectedFilePath);
 
                 FileCopy expectedResult = TestFileCopy.failedWithFilePathBuilder()
-                        .filePath("updatedFilePath")
+                        .filePath(expectedFilePath)
                         .build();
                 assertThat(fileCopy).usingRecursiveComparison()
                         .ignoringFields("domainEvents")
@@ -472,7 +482,7 @@ class FileCopyTest {
                 String failedReason = "someFailedReason";
                 FileBackupFailedEvent expectedEvent = fileBackupFailedEvent(fileCopy, failedReason);
 
-                fileCopy.toFailed(failedReason, "someFilePath");
+                fileCopy.toFailed(failedReason, aFilePath());
 
                 assertThat(fileCopy.getDomainEvents()).containsExactly(expectedEvent);
             }
@@ -514,7 +524,8 @@ class FileCopyTest {
         @Test
         void shouldClearDomainEvents() {
             FileCopy fileCopy = TestFileCopy.enqueued();
-            fileCopy.toInProgress("someFilePath");
+            var aFilePath = new FilePath("someFilePath");
+            fileCopy.toInProgress(aFilePath);
 
             fileCopy.clearDomainEvents();
 

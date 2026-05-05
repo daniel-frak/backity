@@ -1,9 +1,6 @@
 package dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.driven.filesystem;
 
-import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
-import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
-import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
-import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionStatus;
+import dev.codesoapbox.backity.core.storagesolution.domain.*;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.FileCouldNotBeDeletedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -43,18 +40,18 @@ public class S3StorageSolution implements StorageSolution {
     }
 
     @Override
-    public OutputStream getOutputStream(String stringPath) throws FileAlreadyExistsException {
-        if (fileExists(stringPath)) {
-            throw new FileAlreadyExistsException(stringPath);
+    public OutputStream getOutputStream(FilePath filePath) throws FileAlreadyExistsException {
+        if (fileExists(filePath)) {
+            throw new FileAlreadyExistsException(filePath.toString());
         }
-        return new S3OutputStream(s3Client, bucketName, stringPath, bufferSizeInBytes);
+        return new S3OutputStream(s3Client, bucketName, filePath.toString(), bufferSizeInBytes);
     }
 
     @Override
     @SuppressWarnings("java:S1166")
-    public boolean fileExists(String key) {
+    public boolean fileExists(FilePath filePath) {
         try {
-            s3Client.headObject(request -> request.bucket(bucketName).key(key));
+            s3Client.headObject(request -> request.bucket(bucketName).key(filePath.toString()));
             return true;
         } catch (NoSuchKeyException _) {
             return false;
@@ -62,19 +59,20 @@ public class S3StorageSolution implements StorageSolution {
     }
 
     @Override
-    public void deleteIfExists(String path) {
+    public void deleteIfExists(FilePath filePath) {
         try {
-            s3Client.deleteObject(request -> request.bucket(bucketName).key(path));
+            s3Client.deleteObject(request -> request.bucket(bucketName).key(filePath.toString()));
         } catch (RuntimeException e) {
-            throw new FileCouldNotBeDeletedException(path, e);
+            throw new FileCouldNotBeDeletedException(filePath, e);
         }
     }
 
     @SuppressWarnings("java:S1166")
     @Override
-    public long getSizeInBytes(String filePath) {
+    public long getSizeInBytes(FilePath filePath) {
         try {
-            return s3Client.headObject(request -> request.bucket(bucketName).key(filePath)).contentLength();
+            return s3Client.headObject(request -> request.bucket(bucketName).key(filePath.toString()))
+                    .contentLength();
         } catch (NoSuchKeyException _) {
             return 0L;
         }
@@ -82,23 +80,23 @@ public class S3StorageSolution implements StorageSolution {
 
     @SuppressWarnings("java:S1166")
     @Override
-    public FileResource getFileResource(String filePath) throws FileNotFoundException {
+    public FileResource getFileResource(FilePath filePath) throws FileNotFoundException {
         try {
             return tryToGetFileResource(filePath);
         } catch (NoSuchKeyException _) {
-            throw new FileNotFoundException("File not found: " + filePath);
+            throw new FileNotFoundException("File not found: " + filePath.toString());
         }
     }
 
-    private FileResource tryToGetFileResource(String filePath) {
+    private FileResource tryToGetFileResource(FilePath filePath) {
         ResponseInputStream<GetObjectResponse> responseInputStream = s3Client.getObject(
-                request -> request.bucket(bucketName).key(filePath)
+                request -> request.bucket(bucketName).key(filePath.toString())
         );
 
         return new FileResource(
                 responseInputStream,
                 responseInputStream.response().contentLength(),
-                filePath.substring(filePath.lastIndexOf(getSeparator()) + 1)
+                filePath.toString().substring(filePath.toString().lastIndexOf(getSeparator()) + 1)
         );
     }
 

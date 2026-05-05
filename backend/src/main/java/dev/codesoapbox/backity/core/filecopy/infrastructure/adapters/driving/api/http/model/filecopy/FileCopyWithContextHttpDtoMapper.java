@@ -7,13 +7,15 @@ import dev.codesoapbox.backity.core.filecopy.application.usecases.FileCopyWithCo
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.ProgressHttpDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class FileCopyWithContextHttpDtoMapper {
 
     public abstract FileCopyWithContextHttpDto toDto(FileCopyWithContext fileCopyWithContext);
@@ -43,5 +45,9 @@ public abstract class FileCopyWithContextHttpDtoMapper {
 
     protected String getValue(StorageSolutionId id) {
         return id.value();
+    }
+
+    protected String getValue(FilePath path) {
+        return path.toString();
     }
 }

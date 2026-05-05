@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotBackedUpException;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class DeleteFileCopyUseCase {
     }
 
     private void deleteFileCopy(FileCopy fileCopy) {
-        String filePath = fileCopy.getFilePath();
+        FilePath filePath = fileCopy.getFilePath();
         StorageSolution storageSolution = getStorageSolution(fileCopy);
         storageSolution.deleteIfExists(filePath);
     }

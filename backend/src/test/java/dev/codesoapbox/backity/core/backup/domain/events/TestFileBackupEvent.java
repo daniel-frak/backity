@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyNaturalId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 
 import java.time.Duration;
 
@@ -20,7 +21,7 @@ public final class TestFileBackupEvent {
         return new FileBackupStartedEvent(
                 FILE_COPY_ID,
                 FILE_COPY_NATURAL_ID,
-                "file/path"
+                new FilePath("file/path")
         );
     }
 

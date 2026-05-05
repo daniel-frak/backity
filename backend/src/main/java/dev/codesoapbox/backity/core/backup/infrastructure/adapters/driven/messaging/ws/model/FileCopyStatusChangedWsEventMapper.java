@@ -8,12 +8,9 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyNaturalId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 
-@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class FileCopyStatusChangedWsEventMapper {
 
     @Mapping(target = "failedReason", ignore = true)

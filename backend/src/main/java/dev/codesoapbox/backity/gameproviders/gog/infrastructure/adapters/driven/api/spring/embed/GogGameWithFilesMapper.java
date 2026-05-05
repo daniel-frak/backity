@@ -7,11 +7,12 @@ import dev.codesoapbox.backity.gameproviders.gog.domain.GogFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.List;
 
-@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class GogGameWithFilesMapper {
 
     protected static final GameProviderId GAME_PROVIDER_ID = GogGameProviderId.get();

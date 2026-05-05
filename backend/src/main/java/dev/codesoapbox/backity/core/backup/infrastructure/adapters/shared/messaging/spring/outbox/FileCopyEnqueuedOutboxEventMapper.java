@@ -5,13 +5,14 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.shared.messaging.spring.outbox.OutboxEventMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.ReportingPolicy;
 
 @OutboxEventMapper(
         domain = FileCopyEnqueuedEvent.class,
         outbox = FileCopyEnqueuedOutboxEvent.class
 )
-@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class FileCopyEnqueuedOutboxEventMapper {
 
     @Mapping(target = "fileCopyId", source = "fileCopyId.value")

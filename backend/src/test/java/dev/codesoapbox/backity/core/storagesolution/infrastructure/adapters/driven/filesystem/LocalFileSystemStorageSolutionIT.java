@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.driven.filesystem;
 
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionStatus;
@@ -42,13 +43,13 @@ class LocalFileSystemStorageSolutionIT {
 
         @Test
         void shouldDeleteGivenExists(@TempDir Path tempDir) throws IOException {
-            String filePath = tempDir + File.separator + "someFile";
+            var filePath = new FilePath(tempDir + File.separator + "someFile");
 
-            var existingFileCreated = new File(filePath).createNewFile();
+            var existingFileCreated = new File(filePath.toString()).createNewFile();
 
             localFileSystem.deleteIfExists(filePath);
 
-            var fileExists = Files.exists(Path.of(filePath));
+            var fileExists = Files.exists(Path.of(filePath.toString()));
 
             assertThat(existingFileCreated).isTrue();
             assertThat(fileExists).isFalse();
@@ -57,8 +58,8 @@ class LocalFileSystemStorageSolutionIT {
         @SuppressWarnings("ResultOfMethodCallIgnored")
         @Test
         void shouldThrowGivenException(@TempDir Path tempDir) throws IOException {
-            String filePath = tempDir + File.separator + "someFile";
-            var existingFile = new File(filePath);
+            var filePath = new FilePath(tempDir + File.separator + "someFile");
+            var existingFile = new File(filePath.toString());
             existingFile.createNewFile();
             tempDir.toFile().setWritable(false); // This will cause an IOException
             Files.setAttribute(existingFile.toPath(), "dos:readonly", true); // Workaround for Windows
@@ -66,7 +67,7 @@ class LocalFileSystemStorageSolutionIT {
             try {
                 assertThatThrownBy(() -> localFileSystem.deleteIfExists(filePath))
                         .isInstanceOf(FileCouldNotBeDeletedException.class)
-                        .hasMessageContaining(filePath)
+                        .hasMessageContaining(filePath.toString())
                         .hasCauseInstanceOf(IOException.class);
             } finally {
                 tempDir.toFile().setWritable(true);
@@ -75,7 +76,7 @@ class LocalFileSystemStorageSolutionIT {
 
         @Test
         void shouldNotDeleteGivenDoesNotExist(@TempDir Path tempDir) {
-            String filePath = tempDir + File.separator + "someFile";
+            var filePath = new FilePath(tempDir + File.separator + "someFile");
 
             assertThatCode(() -> localFileSystem.deleteIfExists(filePath))
                     .doesNotThrowAnyException();
@@ -87,7 +88,7 @@ class LocalFileSystemStorageSolutionIT {
 
         @Test
         void shouldReturnValidOutputStream(@TempDir Path tempDir) throws IOException {
-            var filePath = tempDir + File.separator + "someFile";
+            var filePath = new FilePath(tempDir + File.separator + "someFile");
             var fileContent = "Test Data";
 
             try (OutputStream outputStream = localFileSystem.getOutputStream(filePath)) {
@@ -97,15 +98,15 @@ class LocalFileSystemStorageSolutionIT {
             assertThatDataWasWrittenToDisk(filePath, fileContent);
         }
 
-        private void assertThatDataWasWrittenToDisk(String filePath, String fileContent) throws IOException {
-            byte[] readBytes = Files.readAllBytes(Path.of(filePath));
+        private void assertThatDataWasWrittenToDisk(FilePath filePath, String fileContent) throws IOException {
+            byte[] readBytes = Files.readAllBytes(Path.of(filePath.toString()));
             String readData = new String(readBytes);
             assertThat(readData).isEqualTo(fileContent);
         }
 
         @Test
         void shouldReturnValidOutputStreamWithSubfolders(@TempDir Path tempDir) throws IOException {
-            var filePath = tempDir + File.separator + "subfolder" + File.separator + "someFile";
+            var filePath = new FilePath(tempDir + File.separator + "subfolder" + File.separator + "someFile");
             var fileContent = "Test Data";
 
             try (OutputStream outputStream = localFileSystem.getOutputStream(filePath)) {
@@ -118,8 +119,8 @@ class LocalFileSystemStorageSolutionIT {
         @SuppressWarnings("ResultOfMethodCallIgnored")
         @Test
         void shouldFailGivenFileAlreadyExists(@TempDir Path tempDir) throws IOException {
-            String filePath = tempDir + File.separator + "someFile";
-            new File(filePath).createNewFile();
+            var filePath = new FilePath(tempDir + File.separator + "someFile");
+            new File(filePath.toString()).createNewFile();
 
             assertThatThrownBy(() -> localFileSystem.getOutputStream(filePath))
                     .isInstanceOf(FileAlreadyExistsException.class);
@@ -142,9 +143,9 @@ class LocalFileSystemStorageSolutionIT {
 
         @Test
         void shouldReturnCorrectSize(@TempDir Path tempDir) throws IOException {
-            String filePath = tempDir + File.separator + "someFile";
+            var filePath = new FilePath(tempDir + File.separator + "someFile");
             String testData = "Test Data";
-            try (var writer = new BufferedWriter(new FileWriter(filePath))) {
+            try (var writer = new BufferedWriter(new FileWriter(filePath.toString()))) {
                 writer.write(testData);
             }
 
@@ -162,8 +163,9 @@ class LocalFileSystemStorageSolutionIT {
             String fileName = "testfile.txt";
             Path tempFile = tempDir.resolve(fileName);
             Files.write(tempFile, "Test content".getBytes());
+            var filePath = new FilePath(tempFile.toString());
 
-            try (FileResource fileResource = localFileSystem.getFileResource(tempFile.toString())) {
+            try (FileResource fileResource = localFileSystem.getFileResource(filePath)) {
                 assertThat(fileResource).isNotNull();
                 assertThat(fileResource.sizeInBytes()).isPositive();
                 assertThat(fileResource.fileName()).isEqualTo(fileName);
@@ -174,7 +176,7 @@ class LocalFileSystemStorageSolutionIT {
 
         @Test
         void shouldThrowGivenFileNotFound() {
-            String filePath = "nonexistentfile.txt";
+            var filePath = new FilePath("nonexistentfile.txt");
 
             assertThatThrownBy(() -> localFileSystem.getFileResource(filePath).close())
                     .isInstanceOf(FileNotFoundException.class)
@@ -185,8 +187,9 @@ class LocalFileSystemStorageSolutionIT {
         void shouldThrowGivenFileIsDirectory(@TempDir Path tempDir) throws IOException {
             Path tempDirectory = tempDir.resolve("tempDirectory");
             Files.createDirectory(tempDirectory);
+            var filePath = new FilePath(tempDirectory.toString());
 
-            assertThatThrownBy(() -> localFileSystem.getFileResource(tempDirectory.toString()).close())
+            assertThatThrownBy(() -> localFileSystem.getFileResource(filePath).close())
                     .isInstanceOf(FileNotFoundException.class)
                     .hasMessage("File not found: " + tempDirectory);
         }
@@ -198,8 +201,8 @@ class LocalFileSystemStorageSolutionIT {
         @SuppressWarnings("ResultOfMethodCallIgnored")
         @Test
         void shouldReturnTrueGivenFileExists(@TempDir Path tempDir) throws IOException {
-            String filePath = tempDir + File.separator + "someFile";
-            new File(filePath).createNewFile();
+            var filePath = new FilePath(tempDir + File.separator + "someFile");
+            new File(filePath.toString()).createNewFile();
 
             boolean result = localFileSystem.fileExists(filePath);
 
@@ -208,7 +211,7 @@ class LocalFileSystemStorageSolutionIT {
 
         @Test
         void shouldReturnFalseGivenFileDoesNotExist(@TempDir Path tempDir) {
-            String nonExistentFilePath = tempDir + File.separator + "someFile";
+            var nonExistentFilePath = new FilePath(tempDir + File.separator + "someFile");
 
             boolean result = localFileSystem.fileExists(nonExistentFilePath);
 

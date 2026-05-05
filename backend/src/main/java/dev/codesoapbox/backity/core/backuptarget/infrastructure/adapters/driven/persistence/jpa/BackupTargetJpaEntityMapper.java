@@ -5,11 +5,12 @@ import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.backuptarget.domain.PathTemplate;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import org.mapstruct.Mapper;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.UUID;
 
-@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class BackupTargetJpaEntityMapper {
 
     public abstract BackupTargetJpaEntity toEntity(BackupTarget model);

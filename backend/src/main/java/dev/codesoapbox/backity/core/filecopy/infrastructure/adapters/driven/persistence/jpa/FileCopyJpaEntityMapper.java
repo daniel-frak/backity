@@ -4,29 +4,31 @@ import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
+import org.mapstruct.*;
 
 import java.util.UUID;
 
-@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class FileCopyJpaEntityMapper {
 
     @BeanMapping(ignoreUnmappedSourceProperties = {"domainEvents", "stored"})
     public abstract FileCopyJpaEntity toEntity(FileCopy model);
 
-    protected UUID toUuid(FileCopyId id) {
+    protected UUID getValue(FileCopyId id) {
         return id.value();
     }
 
-    protected UUID toUuid(SourceFileId id) {
+    protected UUID getValue(SourceFileId id) {
         return id.value();
     }
 
-    protected UUID toUuid(BackupTargetId id) {
+    protected UUID getValue(BackupTargetId id) {
         return id.value();
+    }
+
+    protected String getValue(FilePath path) {
+        return path.toString();
     }
 
     @Mapping(target = "domainEvents", ignore = true)
@@ -42,5 +44,9 @@ public abstract class FileCopyJpaEntityMapper {
 
     protected BackupTargetId toBackupTargetId(UUID uuid) {
         return new BackupTargetId(uuid);
+    }
+
+    protected FilePath toFilePath(String value) {
+        return new FilePath(value);
     }
 }

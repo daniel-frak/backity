@@ -1,9 +1,6 @@
 package dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.driven.filesystem;
 
-import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
-import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
-import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
-import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionStatus;
+import dev.codesoapbox.backity.core.storagesolution.domain.*;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.FileCouldNotBeDeletedException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,30 +23,30 @@ public class LocalFileSystemStorageSolution implements StorageSolution {
     }
 
     @Override
-    public OutputStream getOutputStream(String stringPath) throws IOException {
-        Path path = FileSystems.getDefault().getPath(stringPath);
+    public OutputStream getOutputStream(FilePath filePath) throws IOException {
+        Path path = FileSystems.getDefault().getPath(filePath.toString());
         Files.createDirectories(path.getParent());
         return Files.newOutputStream(path, StandardOpenOption.CREATE_NEW);
     }
 
     @Override
-    public void deleteIfExists(String path) {
+    public void deleteIfExists(FilePath filePath) {
         try {
-            Files.deleteIfExists(Path.of(path));
+            Files.deleteIfExists(Path.of(filePath.toString()));
         } catch (RuntimeException | IOException e) {
-            throw new FileCouldNotBeDeletedException(path, e);
+            throw new FileCouldNotBeDeletedException(filePath, e);
         }
     }
 
     @Override
-    public long getSizeInBytes(String filePath) {
-        var file = new File(filePath);
+    public long getSizeInBytes(FilePath filePath) {
+        var file = new File(filePath.toString());
         return file.length();
     }
 
     @Override
-    public FileResource getFileResource(String filePath) throws FileNotFoundException {
-        File file = new File(filePath);
+    public FileResource getFileResource(FilePath filePath) throws FileNotFoundException {
+        File file = new File(filePath.toString());
 
         if (!file.isFile()) {
             throw new FileNotFoundException("File not found: " + filePath);
@@ -62,8 +59,8 @@ public class LocalFileSystemStorageSolution implements StorageSolution {
     }
 
     @Override
-    public boolean fileExists(String filePath) {
-        return Files.exists(Paths.get(filePath));
+    public boolean fileExists(FilePath filePath) {
+        return Files.exists(Paths.get(filePath.toString()));
     }
 
     @Override

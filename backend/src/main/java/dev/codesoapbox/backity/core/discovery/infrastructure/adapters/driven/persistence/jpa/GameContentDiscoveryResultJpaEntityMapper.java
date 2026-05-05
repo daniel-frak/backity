@@ -3,9 +3,10 @@ package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.pe
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResult;
 import org.mapstruct.Mapper;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class GameContentDiscoveryResultJpaEntityMapper {
 
     public abstract GameContentDiscoveryResultJpaEntity toEntity(GameContentDiscoveryResult domain);

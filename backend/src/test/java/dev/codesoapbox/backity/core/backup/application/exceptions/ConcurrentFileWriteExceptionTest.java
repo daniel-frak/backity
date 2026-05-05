@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.backup.application.exceptions;
 
 import dev.codesoapbox.backity.core.backup.application.WriteDestination;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +12,7 @@ class ConcurrentFileWriteExceptionTest {
     @Test
     void shouldGetMessage() {
         var writeDestination = new WriteDestination(new StorageSolutionId("STORAGE_SOLUTION_ID"),
-                "testPath");
+                new FilePath("testPath"));
         var exception = new ConcurrentFileWriteException(writeDestination);
 
         assertThat(exception)

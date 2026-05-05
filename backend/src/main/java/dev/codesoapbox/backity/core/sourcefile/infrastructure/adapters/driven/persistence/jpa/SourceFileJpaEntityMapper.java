@@ -7,11 +7,12 @@ import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.ReportingPolicy;
 
 import java.util.UUID;
 
-@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class SourceFileJpaEntityMapper {
 
     @Mapping(target = "sizeInBytes", source = "size")

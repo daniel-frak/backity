@@ -1,8 +1,9 @@
 package dev.codesoapbox.backity.core.backup.application;
 
-import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
 import dev.codesoapbox.backity.core.backup.application.exceptions.ConcurrentFileWriteException;
 import dev.codesoapbox.backity.core.backup.application.exceptions.StorageSolutionWriteFailedException;
+import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import lombok.Getter;
 import lombok.NonNull;
@@ -21,7 +22,7 @@ public class StorageSolutionWriteService {
             new ConcurrentHashMap<>();
 
     public void writeFileToStorage(
-            TrackableFileStream trackableFileStream, StorageSolution storageSolution, String filePath) {
+            TrackableFileStream trackableFileStream, StorageSolution storageSolution, FilePath filePath) {
         var writeDestination = new WriteDestination(storageSolution.getId(), filePath);
         initializeCancellationTracker(writeDestination);
         try {
@@ -48,7 +49,7 @@ public class StorageSolutionWriteService {
     }
 
     private void validateWrittenFileSize(
-            StorageSolution storageSolution, String filePath, long expectedSizeInBytes) {
+            StorageSolution storageSolution, FilePath filePath, long expectedSizeInBytes) {
         long sizeInBytesOnDisk = storageSolution.getSizeInBytes(filePath);
         if (sizeInBytesOnDisk != expectedSizeInBytes) {
             throw new StorageSolutionWriteFailedException(
