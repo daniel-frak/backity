@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.drivin
 
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetName;
 import dev.codesoapbox.backity.core.backuptarget.domain.PathTemplate;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import org.mapstruct.Mapper;
@@ -15,6 +16,10 @@ public abstract class BackupTargetHttpDtoMapper {
 
     protected String getValue(BackupTargetId id) {
         return id.value().toString();
+    }
+
+    protected String getValue(BackupTargetName name) {
+        return name.value();
     }
 
     protected String getValue(StorageSolutionId id) {

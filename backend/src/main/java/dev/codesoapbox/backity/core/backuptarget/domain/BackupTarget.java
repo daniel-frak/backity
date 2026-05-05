@@ -23,12 +23,13 @@ public class BackupTarget {
 
     @NonNull
     @Setter
-    private String name;
+    private BackupTargetName name;
 
     @NonNull
     private PathTemplate pathTemplate;
 
-    public static BackupTarget create(String name, StorageSolutionId storageSolutionId, PathTemplate pathTemplate) {
+    public static BackupTarget create(
+            BackupTargetName name, StorageSolutionId storageSolutionId, PathTemplate pathTemplate) {
         return new BackupTarget(
                 BackupTargetId.newInstance(),
                 null,

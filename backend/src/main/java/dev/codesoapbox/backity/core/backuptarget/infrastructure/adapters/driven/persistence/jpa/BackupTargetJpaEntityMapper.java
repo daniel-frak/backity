@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driven
 
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetName;
 import dev.codesoapbox.backity.core.backuptarget.domain.PathTemplate;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import org.mapstruct.Mapper;
@@ -21,12 +22,20 @@ public abstract class BackupTargetJpaEntityMapper {
         return id.value();
     }
 
+    protected String getValue(BackupTargetName name) {
+        return name.value();
+    }
+
     protected String getValue(PathTemplate pathTemplate) {
         return pathTemplate.value();
     }
 
     protected BackupTargetId toBackupTargetId(UUID value) {
         return new BackupTargetId(value);
+    }
+
+    protected BackupTargetName toBackupTargetName(String value) {
+        return new BackupTargetName(value);
     }
 
     protected String getValue(StorageSolutionId id) {

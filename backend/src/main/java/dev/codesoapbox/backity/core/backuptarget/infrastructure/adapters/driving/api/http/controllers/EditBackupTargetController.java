@@ -4,6 +4,7 @@ package dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.drivin
 import dev.codesoapbox.backity.core.backuptarget.application.EditBackupTargetCommand;
 import dev.codesoapbox.backity.core.backuptarget.application.EditBackupTargetUseCase;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetName;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
@@ -35,7 +36,7 @@ public class EditBackupTargetController {
     private EditBackupTargetCommand toCommand(String idValue, EditBackupTargetHttpRequest requestBody) {
         return new EditBackupTargetCommand(
                 new BackupTargetId(idValue),
-                requestBody.name()
+                new BackupTargetName(requestBody.name())
         );
     }
 

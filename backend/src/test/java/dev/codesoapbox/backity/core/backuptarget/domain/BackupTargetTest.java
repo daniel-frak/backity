@@ -13,7 +13,7 @@ class BackupTargetTest {
 
         @Test
         void shouldReturnBackupTarget() {
-            String expectedName = "Local folder";
+            var expectedName = new BackupTargetName("Local folder");
             var expectedStorageSolution = new StorageSolutionId("storageSolution1");
             var expectedPathTemplate = new PathTemplate("games/{GAME_PROVIDER_ID}/{GAME_TITLE}/{FILENAME}");
 
