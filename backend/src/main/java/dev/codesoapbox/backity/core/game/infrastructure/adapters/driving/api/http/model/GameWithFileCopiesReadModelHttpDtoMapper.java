@@ -1,14 +1,13 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.http.model;
 
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgress;
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyHttpDto;
+import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyValueObjectHttpDtoMapper;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesAndReplicationProgresses;
 import dev.codesoapbox.backity.core.game.application.readmodel.FileCopyReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.GameWithFileCopiesReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.SourceFileWithCopiesReadModel;
 import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driving.api.http.model.sourcefile.SourceFileValueObjectHttpDtoMapper;
-import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.SharedHttpDtoMapperConfig;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.ProgressHttpDto;
 import org.mapstruct.Context;
@@ -19,7 +18,11 @@ import org.mapstruct.Named;
 import java.util.List;
 
 @SuppressWarnings("java:S1694") // False positive
-@Mapper(config = SharedHttpDtoMapperConfig.class, uses = SourceFileValueObjectHttpDtoMapper.class)
+@Mapper(config = SharedHttpDtoMapperConfig.class,
+        uses = {
+                SourceFileValueObjectHttpDtoMapper.class,
+                FileCopyValueObjectHttpDtoMapper.class
+        })
 public abstract class GameWithFileCopiesReadModelHttpDtoMapper {
 
     public GameWithFileCopiesHttpDto toDto(GameWithFileCopiesAndReplicationProgresses model) {
@@ -37,14 +40,6 @@ public abstract class GameWithFileCopiesReadModelHttpDtoMapper {
     @Mapping(target = "progress", expression = "java( mapProgress(fileCopy, replicationProgresses) )")
     protected abstract FileCopyWithProgressHttpDto toDto(
             FileCopyReadModel model, @Context List<FileCopyReplicationProgress> replicationProgresses);
-
-    protected String getValue(FilePath filePath) {
-        return filePath.toString();
-    }
-
-    protected String getValue(FileCopyFailureReason reason) {
-        return reason.value();
-    }
 
     @Mapping(target = "timeLeftSeconds", source = "timeLeft.seconds")
     protected abstract ProgressHttpDto toDto(FileCopyReplicationProgress domain);
