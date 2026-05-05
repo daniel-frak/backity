@@ -1,10 +1,10 @@
-package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy;
+package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.messaging.ws.model.filecopy;
 
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 
-public class FileCopyValueObjectHttpDtoMapper {
+public class FileCopyValueObjectWsDtoMapper {
 
     public String getValue(FileCopyId id) {
         return id.value().toString();
