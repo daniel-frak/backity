@@ -7,10 +7,11 @@ import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 import java.util.UUID;
 
-@Mapper
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public abstract class FileCopyJpaEntityMapper {
 
     @BeanMapping(ignoreUnmappedSourceProperties = {"domainEvents", "stored"})

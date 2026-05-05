@@ -6,8 +6,9 @@ import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper(uses = GameIdHttpDtoMapper.class)
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, uses = GameIdHttpDtoMapper.class)
 public abstract class SourceFileHttpDtoMapper {
 
     public abstract SourceFileHttpDto toDto(SourceFile domain);

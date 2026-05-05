@@ -6,8 +6,9 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
-@Mapper
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public abstract class FileCopyHttpDtoMapper {
 
     @BeanMapping(ignoreUnmappedSourceProperties = {"domainEvents", "stored"})

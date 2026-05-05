@@ -7,7 +7,7 @@ import dev.codesoapbox.backity.core.game.application.readmodel.SourceFileWithCop
 import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
 import org.mapstruct.*;
 
-@Mapper(nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public abstract class GameWithFilesCopiesReadModelJpaEntityMapper {
 
     @BeanMapping(ignoreUnmappedSourceProperties = {"dateCreated", "dateModified"})
