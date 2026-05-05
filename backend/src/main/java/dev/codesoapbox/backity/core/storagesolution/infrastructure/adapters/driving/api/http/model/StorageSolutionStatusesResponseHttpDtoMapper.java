@@ -2,21 +2,19 @@ package dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.dri
 
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionStatus;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.SharedHttpDtoMapperConfig;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.NullValueCheckStrategy;
-import org.mapstruct.ReportingPolicy;
 
 import java.util.Map;
 
-@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+@Mapper(config = SharedHttpDtoMapperConfig.class,
+        uses = {
+                StorageSolutionValueObjectHttpDtoMapper.class
+        })
 public abstract class StorageSolutionStatusesResponseHttpDtoMapper {
 
     @Mapping(target = "statuses", source = "statusesById")
     public abstract StorageSolutionStatusesResponseHttpDto toDto(
             Map<StorageSolutionId, StorageSolutionStatus> statusesById);
-
-    protected String getValue(StorageSolutionId id) {
-        return id.value();
-    }
 }

@@ -1,39 +1,20 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy;
 
-import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
+import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driving.api.http.model.BackupTargetValueObjectHttpDtoMapper;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
-import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
-import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
+import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driving.api.http.model.sourcefile.SourceFileValueObjectHttpDtoMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.SharedHttpDtoMapperConfig;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
-import org.mapstruct.NullValueCheckStrategy;
-import org.mapstruct.ReportingPolicy;
 
-@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+@Mapper(config = SharedHttpDtoMapperConfig.class,
+        uses = {
+                FileCopyValueObjectHttpDtoMapper.class,
+                SourceFileValueObjectHttpDtoMapper.class,
+                BackupTargetValueObjectHttpDtoMapper.class
+        })
 public abstract class FileCopyHttpDtoMapper {
 
     @BeanMapping(ignoreUnmappedSourceProperties = {"domainEvents", "stored"})
     public abstract FileCopyHttpDto toDto(FileCopy fileCopy);
-
-    protected String getValue(FileCopyId id) {
-        return id.value().toString();
-    }
-
-    protected String getValue(SourceFileId id) {
-        return id.value().toString();
-    }
-
-    protected String getValue(BackupTargetId id) {
-        return id.value().toString();
-    }
-
-    protected String getValue(FilePath path) {
-        return path.toString();
-    }
-
-    protected String getValue(FileCopyFailureReason reason) {
-        return reason.value();
-    }
 }

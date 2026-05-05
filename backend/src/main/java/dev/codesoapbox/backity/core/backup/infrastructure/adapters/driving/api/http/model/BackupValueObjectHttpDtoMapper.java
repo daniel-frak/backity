@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.api.
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 
-public class BackupHttpDtoMapper {
+public class BackupValueObjectHttpDtoMapper {
 
     public String getValue(GameProviderId gameProviderId) {
         return gameProviderId.value().toString();
