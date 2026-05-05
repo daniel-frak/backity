@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.game.application.readmodel;
 
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 
@@ -9,7 +10,7 @@ public record FileCopyReadModel(
         String id,
         FileCopyNaturalIdReadModel naturalId,
         FileCopyStatus status,
-        String failedReason,
+        FileCopyFailureReason failedReason,
         FilePath filePath,
         LocalDateTime dateCreated,
         LocalDateTime dateModified

@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.readmodel;
 
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
 import dev.codesoapbox.backity.core.game.application.readmodel.FileCopyReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.GameWithFileCopiesReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.SourceFileReadModel;
@@ -27,6 +28,10 @@ public abstract class GameWithFilesCopiesReadModelJpaEntityMapper {
 
     protected FilePath toFilePath(String value) {
         return new FilePath(value);
+    }
+
+    protected FileCopyFailureReason toFileCopyFailureReason(String reason) {
+        return new FileCopyFailureReason(reason);
     }
 
     @Named("mapFileSize")

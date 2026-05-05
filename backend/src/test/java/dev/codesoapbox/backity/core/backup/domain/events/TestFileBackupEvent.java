@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.backup.domain.events;
 
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyNaturalId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
@@ -29,7 +30,7 @@ public final class TestFileBackupEvent {
         return new FileBackupFailedEvent(
                 FILE_COPY_ID,
                 FILE_COPY_NATURAL_ID,
-                "some failed reason"
+                new FileCopyFailureReason("some failed reason")
         );
     }
 

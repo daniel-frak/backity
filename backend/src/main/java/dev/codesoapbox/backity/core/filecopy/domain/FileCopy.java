@@ -35,11 +35,11 @@ public class FileCopy {
     private final List<DomainEvent> domainEvents;
 
     private FileCopyStatus status;
-    private String failedReason;
+    private FileCopyFailureReason failedReason;
     private FilePath filePath;
 
     public FileCopy(@NonNull FileCopyId id, @NonNull FileCopyNaturalId naturalId,
-                    @NonNull FileCopyStatus status, String failedReason, FilePath filePath,
+                    @NonNull FileCopyStatus status, FileCopyFailureReason failedReason, FilePath filePath,
                     LocalDateTime dateCreated, LocalDateTime dateModified) {
         this.id = id;
         this.naturalId = naturalId;
@@ -129,7 +129,7 @@ public class FileCopy {
         domainEvents.add(event);
     }
 
-    public void toFailed(@NonNull String failedReason, FilePath filePath) {
+    public void toFailed(@NonNull FileCopyFailureReason failedReason, FilePath filePath) {
         this.status = FileCopyStatus.FAILED;
         this.failedReason = failedReason;
         this.filePath = filePath;

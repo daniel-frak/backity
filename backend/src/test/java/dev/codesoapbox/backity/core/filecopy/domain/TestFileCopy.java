@@ -25,7 +25,7 @@ public class TestFileCopy {
     private FileCopyStatus status = FileCopyStatus.TRACKED;
 
     @lombok.Builder.Default
-    private String failedReason = null;
+    private FileCopyFailureReason failedReason = null;
 
     @lombok.Builder.Default
     private FilePath filePath = null;
@@ -89,7 +89,7 @@ public class TestFileCopy {
     public static Builder failedWithoutFilePathBuilder() {
         return trackedBuilder()
                 .status(FileCopyStatus.FAILED)
-                .failedReason("someFailedReason")
+                .failedReason(new FileCopyFailureReason("someFailedReason"))
                 .filePath(null);
     }
 

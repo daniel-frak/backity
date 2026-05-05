@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.backup.application;
 import dev.codesoapbox.backity.core.backup.application.exceptions.FileWriteWasCanceledException;
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
@@ -219,7 +220,7 @@ class FileBackupServiceTest {
                 assertThat(fileCopy)
                         .satisfies(it -> assertSoftly(softly -> {
                             softly.assertThat(it.getStatus()).isEqualTo(FileCopyStatus.FAILED);
-                            softly.assertThat(it.getFailedReason()).isEqualTo(coreException.getMessage());
+                            softly.assertThat(it.getFailedReason().value()).isEqualTo(coreException.getMessage());
                         }));
             }
 
@@ -341,7 +342,8 @@ class FileBackupServiceTest {
                             fileBackupService.backUpFile(fileBackupContext))
                             .isInstanceOf(FileBackupFailedException.class)
                             .hasCause(coreException);
-                    assertThat(fileBackupContext.fileCopy().getFailedReason()).isEqualTo("Unknown error");
+                    assertThat(fileBackupContext.fileCopy().getFailedReason())
+                            .isEqualTo(new FileCopyFailureReason("Unknown error"));
                 }
 
                 private RuntimeException pathResolverThrowsWithNullMessage() {

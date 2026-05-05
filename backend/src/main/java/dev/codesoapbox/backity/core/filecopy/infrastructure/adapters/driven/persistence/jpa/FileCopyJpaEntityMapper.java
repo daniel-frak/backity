@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.per
 
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
@@ -31,6 +32,10 @@ public abstract class FileCopyJpaEntityMapper {
         return path.toString();
     }
 
+    protected String getValue(FileCopyFailureReason reason) {
+        return reason.value();
+    }
+
     @Mapping(target = "domainEvents", ignore = true)
     public abstract FileCopy toDomain(FileCopyJpaEntity entity);
 
@@ -48,5 +53,9 @@ public abstract class FileCopyJpaEntityMapper {
 
     protected FilePath toFilePath(String value) {
         return new FilePath(value);
+    }
+
+    protected FileCopyFailureReason toFileCopyFailureReason(String reason) {
+        return new FileCopyFailureReason(reason);
     }
 }

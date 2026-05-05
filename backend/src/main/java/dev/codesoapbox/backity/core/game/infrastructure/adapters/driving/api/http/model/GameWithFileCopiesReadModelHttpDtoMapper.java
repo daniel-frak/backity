@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.http.model;
 
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgress;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyHttpDto;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyHttpDtoMapper;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesAndReplicationProgresses;
@@ -39,6 +40,10 @@ public abstract class GameWithFileCopiesReadModelHttpDtoMapper {
 
     protected String getValue(FilePath filePath) {
         return filePath.toString();
+    }
+
+    protected String getValue(FileCopyFailureReason reason) {
+        return reason.value();
     }
 
     @Mapping(target = "timeLeftSeconds", source = "timeLeft.seconds")
