@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
@@ -42,7 +43,8 @@ public class RecoverInterruptedFileBackupUseCase {
             BackupTarget backupTarget = backupTargets.get(fileCopy.getNaturalId().backupTargetId());
             StorageSolution storageSolution = storageSolutionsById.get(backupTarget.getStorageSolutionId());
             storageSolution.deleteIfExists(fileCopy.getFilePath());
-            fileCopy.toFailed("Backup was interrupted before completion", null);
+            var failedReason = new FileCopyFailureReason("Backup was interrupted before completion");
+            fileCopy.toFailed(failedReason, null);
             fileCopyRepository.save(fileCopy);
         }
 

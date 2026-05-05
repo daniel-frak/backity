@@ -9,6 +9,7 @@ import dev.codesoapbox.backity.core.filecopy.domain.exceptions.InvalidFileCopySt
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.shared.domain.DomainEvent;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -18,6 +19,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class FileCopyTest {
+
+    private @NonNull FileCopyFailureReason aFailedReason() {
+        return new FileCopyFailureReason("someFailedReason");
+    }
 
     @Nested
     class Creation {
@@ -154,14 +159,15 @@ class FileCopyTest {
 
         @Test
         void constructorShouldThrowGivenFailedReasonButNotFailed() {
-            FileCopyId id = FileCopyId.newInstance();
-            var naturalId = new FileCopyNaturalId(SourceFileId.newInstance(), BackupTargetId.newInstance());
+            FileCopyId anId = FileCopyId.newInstance();
+            var aNaturalId = new FileCopyNaturalId(SourceFileId.newInstance(), BackupTargetId.newInstance());
+            FileCopyFailureReason aFailedReason = aFailedReason();
 
             assertThatThrownBy(() -> new FileCopy(
-                    id,
-                    naturalId,
+                    anId,
+                    aNaturalId,
                     FileCopyStatus.TRACKED,
-                    "someFailedReason",
+                    aFailedReason,
                     null,
                     null,
                     null
@@ -453,8 +459,9 @@ class FileCopyTest {
             void toFailedShouldTransitionFromStoredUnverifiedAndUpdateFilePath() {
                 FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
                 var expectedFilePath = new FilePath("updatedFilePath");
+                FileCopyFailureReason aFailedReason = aFailedReason();
 
-                fileCopy.toFailed("someFailedReason", expectedFilePath);
+                fileCopy.toFailed(aFailedReason, expectedFilePath);
 
                 FileCopy expectedResult = TestFileCopy.failedWithFilePathBuilder()
                         .filePath(expectedFilePath)
@@ -467,8 +474,9 @@ class FileCopyTest {
             @Test
             void toFailedShouldClearFilePathGivenNullWasPassed() {
                 FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
+                FileCopyFailureReason aFailedReason = aFailedReason();
 
-                fileCopy.toFailed("someFailedReason", null);
+                fileCopy.toFailed(aFailedReason, null);
 
                 FileCopy expectedResult = TestFileCopy.failedWithoutFilePath();
                 assertThat(fileCopy).usingRecursiveComparison()
@@ -479,7 +487,7 @@ class FileCopyTest {
             @Test
             void toFailedShouldAddEvent() {
                 FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
-                String failedReason = "someFailedReason";
+                var failedReason = aFailedReason();
                 FileBackupFailedEvent expectedEvent = fileBackupFailedEvent(fileCopy, failedReason);
 
                 fileCopy.toFailed(failedReason, aFilePath());
@@ -487,7 +495,7 @@ class FileCopyTest {
                 assertThat(fileCopy.getDomainEvents()).containsExactly(expectedEvent);
             }
 
-            private FileBackupFailedEvent fileBackupFailedEvent(FileCopy fileCopy, String failedReason) {
+            private FileBackupFailedEvent fileBackupFailedEvent(FileCopy fileCopy, FileCopyFailureReason failedReason) {
                 return new FileBackupFailedEvent(fileCopy.getId(), fileCopy.getNaturalId(), failedReason);
             }
         }

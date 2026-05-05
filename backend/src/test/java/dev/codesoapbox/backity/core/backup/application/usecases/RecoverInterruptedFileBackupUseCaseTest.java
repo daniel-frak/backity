@@ -4,10 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.events.BackupRecoveryCompleted
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
-import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
+import dev.codesoapbox.backity.core.filecopy.domain.*;
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
@@ -64,7 +61,8 @@ class RecoverInterruptedFileBackupUseCaseTest {
         FileCopy savedFileCopy = getSavedFileCopy();
         assertThat(savedFileCopy.getId()).isEqualTo(fileCopy.getId());
         assertThat(savedFileCopy.getStatus()).isEqualTo(FileCopyStatus.FAILED);
-        assertThat(savedFileCopy.getFailedReason()).isEqualTo("Backup was interrupted before completion");
+        assertThat(savedFileCopy.getFailedReason())
+                .isEqualTo(new FileCopyFailureReason("Backup was interrupted before completion"));
         assertThat(savedFileCopy.getFilePath()).isNull();
     }
 

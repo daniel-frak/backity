@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.backup.application.exceptions.FileWriteWasCa
 import dev.codesoapbox.backity.core.backup.domain.exceptions.FileBackupFailedException;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
@@ -91,7 +92,9 @@ public class FileBackupService {
         if (message == null) {
             message = "Unknown error";
         }
-        fileCopy.toFailed(message, filePath);
+        var failedReason = new FileCopyFailureReason(message);
+
+        fileCopy.toFailed(failedReason, filePath);
         fileCopyRepository.save(fileCopy);
     }
 

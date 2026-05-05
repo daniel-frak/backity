@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
+import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyNaturalId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
@@ -16,16 +17,20 @@ public abstract class FileCopyStatusChangedWsEventMapper {
     @Mapping(target = "failedReason", ignore = true)
     public abstract FileCopyStatusChangedWsEvent toWsEvent(FileBackupFinishedEvent event);
 
-    protected String toString(FileCopyId id) {
+    protected String getValue(FileCopyId id) {
         return id.value().toString();
     }
 
-    protected String toString(SourceFileId id) {
+    protected String getValue(SourceFileId id) {
         return id.value().toString();
     }
 
-    protected String toString(BackupTargetId id) {
+    protected String getValue(BackupTargetId id) {
         return id.value().toString();
+    }
+
+    protected String getValue(FileCopyFailureReason reason) {
+        return reason.value();
     }
 
     @Mapping(target = "newStatus", expression = "java( statusFailed() )")
