@@ -4,10 +4,7 @@ import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntityMapper;
-import dev.codesoapbox.backity.core.sourcefile.domain.FileVersion;
-import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
-import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
-import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.*;
 import dev.codesoapbox.backity.core.sourcefile.domain.exceptions.SourceFileNotFoundException;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
@@ -101,7 +98,8 @@ abstract class SourceFileJpaRepositoryIT {
     void existsByUrlAndVersion(String versionValue, boolean shouldFind) {
         populateDatabase(SOURCE_FILES.getAll());
         var version = new FileVersion(versionValue);
-        boolean exists = sourceFileJpaRepository.existsByUrlAndVersion("/downlink/some_game/some_file", version);
+        var url = new SourceFileUrl("/downlink/some_game/some_file");
+        boolean exists = sourceFileJpaRepository.existsByUrlAndVersion(url, version);
 
         assertThat(exists).isEqualTo(shouldFind);
     }

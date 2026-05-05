@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileUrl;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.embed.webclient.operations.exceptions.GameBackupRequestFailedException;
@@ -96,7 +97,7 @@ class InitializeProgressAndStreamFileGogEmbedOperationIT {
 
     private SourceFile aGogFile() {
         return TestSourceFile.gogBuilder()
-                .url("/someUrl1")
+                .url(new SourceFileUrl("/someUrl1"))
                 .build();
     }
 
@@ -129,7 +130,7 @@ class InitializeProgressAndStreamFileGogEmbedOperationIT {
         private SourceFile mockAuthenticatedGogFileRetrievalWithoutRedirects(
                 String expectedFileContent) {
             SourceFile gogFile = aGogFile();
-            wireMock.stubFor(get(urlPathEqualTo(gogFile.getUrl()))
+            wireMock.stubFor(get(urlPathEqualTo(gogFile.getUrl().value()))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION,
                             equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()
@@ -183,7 +184,7 @@ class InitializeProgressAndStreamFileGogEmbedOperationIT {
                 String expectedFileContent) {
             SourceFile gogFile = aGogFile();
 
-            wireMock.stubFor(get(urlPathEqualTo(gogFile.getUrl()))
+            wireMock.stubFor(get(urlPathEqualTo(gogFile.getUrl().value()))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION,
                             equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()
@@ -216,7 +217,7 @@ class InitializeProgressAndStreamFileGogEmbedOperationIT {
 
         private SourceFile mockAuthenticatedGogFileRetrievalWithRedirectsAndQueryParams(String expectedResult) {
             SourceFile gogFile = aGogFile();
-            wireMock.stubFor(get(urlPathEqualTo(gogFile.getUrl()))
+            wireMock.stubFor(get(urlPathEqualTo(gogFile.getUrl().value()))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION,
                             equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()
@@ -254,7 +255,7 @@ class InitializeProgressAndStreamFileGogEmbedOperationIT {
         }
 
         private void mockGogFileRetrievalFails(SourceFile gogFile) {
-            wireMock.stubFor(get(urlPathEqualTo(gogFile.getUrl()))
+            wireMock.stubFor(get(urlPathEqualTo(gogFile.getUrl().value()))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION,
                             equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()

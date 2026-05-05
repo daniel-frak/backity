@@ -12,7 +12,7 @@ public class TestSourceFileReadModel {
                 sourceFile.getOriginalGameTitle().value(),
                 sourceFile.getFileTitle().value(),
                 sourceFile.getVersion().value(),
-                sourceFile.getUrl(),
+                sourceFile.getUrl().value(),
                 sourceFile.getOriginalFileName(),
                 sourceFile.getSize().toString(),
                 sourceFile.getDateCreated(),
