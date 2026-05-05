@@ -19,7 +19,7 @@ public class TestBackupTarget {
     private LocalDateTime dateModified = LocalDateTime.parse("2023-04-29T14:15:53");
 
     @lombok.Builder.Default
-    private String name = "Local folder";
+    private BackupTargetName name = new BackupTargetName("Local folder");
 
     @lombok.Builder.Default
     private StorageSolutionId storageSolutionId = new StorageSolutionId("storageSolution1");
@@ -39,7 +39,7 @@ public class TestBackupTarget {
     public static Builder s3BucketBuilder() {
         return localFolderBuilder()
                 .withId(new BackupTargetId("ac74de14-ee63-446d-b97d-d152ab846cad"))
-                .withName("S3 bucket")
+                .withName(new BackupTargetName("S3 bucket"))
                 .withStorageSolutionId(new StorageSolutionId("storageSolution2"));
     }
 

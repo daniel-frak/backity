@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.backuptarget.application.EditBackupTargetCom
 import dev.codesoapbox.backity.core.backuptarget.application.EditBackupTargetUseCase;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetName;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
@@ -72,7 +73,7 @@ class EditBackupTargetControllerIT {
         BackupTargetId backupTargetId = aBackupTargetId();
         var command = new EditBackupTargetCommand(
                 backupTargetId,
-                "Local folder"
+                new BackupTargetName("Local folder")
         );
 
         mockMvc.perform(put("/api/" + BackupTargetsRestResource.RESOURCE_URL + "/" + backupTargetId.value())

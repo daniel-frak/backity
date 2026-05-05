@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driven
 
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetName;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.exceptions.BackupTargetNotFoundException;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
@@ -64,7 +65,7 @@ abstract class BackupTargetJpaRepositoryIT {
     void saveShouldModifyExisting() {
         BackupTarget backupTarget = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
         persist.backupTarget(backupTarget);
-        backupTarget.setName("Changed name");
+        backupTarget.setName(new BackupTargetName("Changed name"));
 
         repository.save(backupTarget);
         entityManager.flush();

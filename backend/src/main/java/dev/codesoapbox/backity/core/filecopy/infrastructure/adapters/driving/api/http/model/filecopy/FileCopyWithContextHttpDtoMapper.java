@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.ap
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgress;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetName;
 import dev.codesoapbox.backity.core.filecopy.application.usecases.FileCopyWithContext;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
@@ -26,6 +27,10 @@ public abstract class FileCopyWithContextHttpDtoMapper {
 
     protected String getValue(FileCopyId id) {
         return id.value().toString();
+    }
+
+    protected String getValue(BackupTargetName name) {
+        return name.value();
     }
 
     protected String getValue(SourceFileId id) {

@@ -4,6 +4,7 @@ package dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.drivin
 import dev.codesoapbox.backity.core.backuptarget.application.AddBackupTargetCommand;
 import dev.codesoapbox.backity.core.backuptarget.application.AddBackupTargetUseCase;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetName;
 import dev.codesoapbox.backity.core.backuptarget.domain.PathTemplate;
 import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driving.api.http.model.AddBackupTargetHttpDtoMapper;
 import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driving.api.http.model.AddBackupTargetHttpResponse;
@@ -38,7 +39,7 @@ public class AddBackupTargetController {
 
     private AddBackupTargetCommand toCommand(AddBackupTargetHttpRequest requestBody) {
         return new AddBackupTargetCommand(
-                requestBody.name(),
+                new BackupTargetName(requestBody.name()),
                 new StorageSolutionId(requestBody.storageSolutionId()),
                 new PathTemplate(requestBody.pathTemplate())
         );

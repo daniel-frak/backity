@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.backuptarget.application;
 
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetName;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,11 +31,11 @@ class EditBackupTargetUseCaseTest {
     @Test
     void shouldEditBackupTarget() {
         BackupTarget initialBackupTarget = TestBackupTarget.localFolderBuilder()
-                .withName("Original name")
+                .withName(new BackupTargetName("Original name"))
                 .build();
         exists(initialBackupTarget);
         BackupTarget expectedBackupTarget = TestBackupTarget.localFolderBuilder()
-                .withName("New name")
+                .withName(new BackupTargetName("New name"))
                 .build();
         EditBackupTargetCommand command = toCommand(expectedBackupTarget);
 

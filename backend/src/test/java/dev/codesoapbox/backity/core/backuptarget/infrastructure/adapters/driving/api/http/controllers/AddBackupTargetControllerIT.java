@@ -2,10 +2,7 @@ package dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.drivin
 
 import dev.codesoapbox.backity.core.backuptarget.application.AddBackupTargetCommand;
 import dev.codesoapbox.backity.core.backuptarget.application.AddBackupTargetUseCase;
-import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
-import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
-import dev.codesoapbox.backity.core.backuptarget.domain.PathTemplate;
-import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
+import dev.codesoapbox.backity.core.backuptarget.domain.*;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
@@ -72,7 +69,7 @@ class AddBackupTargetControllerIT {
     void shouldAddBackupTarget() throws Exception {
         BackupTarget expectedBackupTarget = TestBackupTarget.localFolderBuilder()
                 .withId(new BackupTargetId("eda52c13-ddf7-406f-97d9-d3ce2cab5a76"))
-                .withName("Local folder")
+                .withName(new BackupTargetName("Local folder"))
                 .withStorageSolutionId(new StorageSolutionId("storageSolution1"))
                 .withPathTemplate(new PathTemplate("games/{GAME_PROVIDER_ID}/{GAME_TITLE}/{FILENAME}"))
                 .build();
