@@ -3,35 +3,26 @@ package dev.codesoapbox.backity.core.backup.infrastructure.adapters.driven.messa
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFailedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
-import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
+import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driven.messaging.ws.model.BackupTargetValueObjectWsDtoMapper;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyNaturalId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
-import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
-import org.mapstruct.*;
+import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.messaging.ws.model.filecopy.FileCopyValueObjectWsDtoMapper;
+import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.messaging.ws.model.sourcefile.SourceFileValueObjectWsDtoMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.model.SharedWsDtoMapperConfig;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+@Mapper(config = SharedWsDtoMapperConfig.class,
+        uses = {
+                FileCopyValueObjectWsDtoMapper.class,
+                BackupTargetValueObjectWsDtoMapper.class,
+                SourceFileValueObjectWsDtoMapper.class,
+        })
 public abstract class FileCopyStatusChangedWsEventMapper {
 
     @Mapping(target = "failedReason", ignore = true)
     public abstract FileCopyStatusChangedWsEvent toWsEvent(FileBackupFinishedEvent event);
-
-    protected String getValue(FileCopyId id) {
-        return id.value().toString();
-    }
-
-    protected String getValue(SourceFileId id) {
-        return id.value().toString();
-    }
-
-    protected String getValue(BackupTargetId id) {
-        return id.value().toString();
-    }
-
-    protected String getValue(FileCopyFailureReason reason) {
-        return reason.value();
-    }
 
     @Mapping(target = "newStatus", expression = "java( statusFailed() )")
     public abstract FileCopyStatusChangedWsEvent toWsEvent(FileBackupFailedEvent event);
