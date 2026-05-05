@@ -6,7 +6,10 @@ import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyWithContextHttpDtoMapper;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
-import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.*;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.PageHttpDto;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.PageHttpDtoMapper;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.RequestPaginationHttpDto;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.RequestPaginationHttpDtoMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -29,7 +32,7 @@ public class GetFileCopyQueueController {
     @GetMapping
     public PageHttpDto<FileCopyWithContextHttpDto> getFileCopyQueue(
             @Valid @Parameter(name = "pagination") RequestPaginationHttpDto paginationHttpDto) {
-        Pagination pagination = paginationMapper.toModel(paginationHttpDto);
+        Pagination pagination = paginationMapper.toDomain(paginationHttpDto);
 
         Page<FileCopyWithContext> foundPage = getFileCopyQueueUseCase.getFileCopyQueue(pagination);
 
