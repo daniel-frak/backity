@@ -24,7 +24,7 @@ public class TestDiscoveredFile {
     private SourceFileUrl url = new SourceFileUrl("/downlink/some_game/some_file");
 
     @lombok.Builder.Default
-    private String originalFileName = "game_1_installer.exe";
+    private FileName originalFileName = new FileName("game_1_installer.exe");
 
     @lombok.Builder.Default
     private FileSize size = new FileSize(5120L);

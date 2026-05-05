@@ -32,7 +32,7 @@ class GogGameWithFileCopiesMapperTest {
                         .fileTitle(new FileTitle("Game 1 (Installer)"))
                         .version(new FileVersion("unknown"))
                         .url(new SourceFileUrl("/downlink/some_game/some_file"))
-                        .originalFileName("game_1_installer.exe")
+                        .originalFileName(new FileName("game_1_installer.exe"))
                         .size(new FileSize(1_048_576L))
                         .build()
         );

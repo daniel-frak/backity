@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.backuptarget.domain;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backuptarget.domain.exceptions.InvalidPathTemplatePlaceholdersException;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
+import dev.codesoapbox.backity.core.sourcefile.domain.FileName;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StringSanitizer;
@@ -129,9 +130,9 @@ public record PathTemplate(@NonNull String value) {
     ) {
 
         static Context from(PathTemplate pathTemplate, SourceFile sourceFile, int suffixIndex) {
-            String fileName = sourceFile.getOriginalFileName();
+            FileName fileName = sourceFile.getOriginalFileName();
             String baseName = getBaseName(fileName);
-            String extensionWithDot = fileName.substring(baseName.length());
+            String extensionWithDot = fileName.value().substring(baseName.length());
 
             return new Context(
                     pathTemplate,
@@ -143,12 +144,12 @@ public record PathTemplate(@NonNull String value) {
             );
         }
 
-        private static String getBaseName(String fileName) {
-            int dotIndex = fileName.lastIndexOf(".");
+        private static String getBaseName(FileName fileName) {
+            int dotIndex = fileName.value().lastIndexOf(".");
             if (dotIndex != -1) {
-                return fileName.substring(0, dotIndex);
+                return fileName.value().substring(0, dotIndex);
             }
-            return fileName;
+            return fileName.value();
         }
 
         public String targetFileNameWithoutExtension() {

@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.storagesolution.domain;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backuptarget.domain.PathTemplate;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
+import dev.codesoapbox.backity.core.sourcefile.domain.FileName;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.CouldNotResolveUniqueFilePathException;
@@ -40,7 +41,7 @@ class UniqueFilePathResolverTest {
             SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle(new GameTitle("someGameTitle"))
-                    .originalFileName("someFileName.txt")
+                    .originalFileName(new FileName("someFileName.txt"))
                     .build();
             var filePath = new FilePath("/test/someGameProviderId/someGameTitle/someFileName.txt");
             fakeUnixFileManager.createFile(filePath);
@@ -57,7 +58,7 @@ class UniqueFilePathResolverTest {
             SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle(new GameTitle("someGameTitle"))
-                    .originalFileName("someFileName.txt")
+                    .originalFileName(new FileName("someFileName.txt"))
                     .build();
             fakeUnixFileManager.createFile(new FilePath(
                     "/test/someGameProviderId/someGameTitle/someFileName.txt"));
@@ -76,7 +77,7 @@ class UniqueFilePathResolverTest {
             SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle(new GameTitle("someGameTitle"))
-                    .originalFileName("someFileName")
+                    .originalFileName(new FileName("someFileName"))
                     .build();
             fakeUnixFileManager.createFile(new FilePath("/test/someGameProviderId/someGameTitle/someFileName"));
 
@@ -92,7 +93,7 @@ class UniqueFilePathResolverTest {
             SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle(new GameTitle("someGameTitle"))
-                    .originalFileName("someFileName.exe")
+                    .originalFileName(new FileName("someFileName.exe"))
                     .build();
             createFileSeveralTimes(999,
                     "/test/someGameProviderId/someGameTitle/someFileName", ".exe");
@@ -118,7 +119,7 @@ class UniqueFilePathResolverTest {
             SourceFile sourceFile = TestSourceFile.gogBuilder()
                     .gameProviderId(new GameProviderId("someGameProviderId"))
                     .originalGameTitle(new GameTitle("someGameTitle"))
-                    .originalFileName("someFileName.exe")
+                    .originalFileName(new FileName("someFileName.exe"))
                     .build();
             createFileSeveralTimes(1000,
                     "/test/someGameProviderId/someGameTitle/someFileName", ".exe");

@@ -13,7 +13,7 @@ public class TestSourceFileReadModel {
                 sourceFile.getFileTitle().value(),
                 sourceFile.getVersion().value(),
                 sourceFile.getUrl().value(),
-                sourceFile.getOriginalFileName(),
+                sourceFile.getOriginalFileName().value(),
                 sourceFile.getSize().toString(),
                 sourceFile.getDateCreated(),
                 sourceFile.getDateModified()

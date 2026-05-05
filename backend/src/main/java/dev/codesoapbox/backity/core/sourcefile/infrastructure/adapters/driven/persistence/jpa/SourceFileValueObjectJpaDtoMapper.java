@@ -45,4 +45,12 @@ public class SourceFileValueObjectJpaDtoMapper {
     public SourceFileUrl toSourceFileUrl(String value) {
         return new SourceFileUrl(value);
     }
+
+    public String getValue(FileName fileName) {
+        return fileName.value();
+    }
+
+    public FileName toFileName(String value) {
+        return new FileName(value);
+    }
 }

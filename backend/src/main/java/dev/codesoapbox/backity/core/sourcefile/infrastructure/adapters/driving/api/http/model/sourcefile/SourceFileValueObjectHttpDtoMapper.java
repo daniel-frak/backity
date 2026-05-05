@@ -23,4 +23,8 @@ public class SourceFileValueObjectHttpDtoMapper {
     public String getValue(SourceFileUrl sourceFileUrl) {
         return sourceFileUrl.value();
     }
+
+    public String getValue(FileName fileName) {
+        return fileName.value();
+    }
 }

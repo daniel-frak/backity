@@ -3,10 +3,7 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
-import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
-import dev.codesoapbox.backity.core.sourcefile.domain.FileTitle;
-import dev.codesoapbox.backity.core.sourcefile.domain.FileVersion;
-import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileUrl;
+import dev.codesoapbox.backity.core.sourcefile.domain.*;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import org.mapstruct.Mapper;
@@ -54,5 +51,9 @@ public abstract class GogGameWithFilesMapper {
 
     protected SourceFileUrl toSourceFileUrl(String value) {
         return new SourceFileUrl(value);
+    }
+
+    protected FileName toFileName(String value) {
+        return new FileName(value);
     }
 }
