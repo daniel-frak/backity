@@ -15,7 +15,7 @@ class RequestPaginationHttpDtoMapperTest {
     void shouldMapToDomainGivenPageIsNotNull() {
         var dto = new RequestPaginationHttpDto(0, 1);
 
-        Pagination result = MAPPER.toModel(dto);
+        Pagination result = MAPPER.toDomain(dto);
 
         Pagination expectedResult = new Pagination(0, 1);
         assertThat(result).usingRecursiveComparison()
@@ -26,7 +26,7 @@ class RequestPaginationHttpDtoMapperTest {
     void shouldMapToDomainGivenValuesAreNull() {
         var dto = new RequestPaginationHttpDto(null, null);
 
-        Pagination result = MAPPER.toModel(dto);
+        Pagination result = MAPPER.toDomain(dto);
 
         Pagination expectedResult = new Pagination(0, 20);
         assertThat(result).usingRecursiveComparison()

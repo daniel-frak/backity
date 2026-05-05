@@ -9,5 +9,5 @@ public interface RequestPaginationHttpDtoMapper {
 
     @Mapping(target = "pageSize", source = "size", defaultValue = "20")
     @Mapping(target = "pageNumber", source = "page")
-    Pagination toModel(RequestPaginationHttpDto pagination);
+    Pagination toDomain(RequestPaginationHttpDto pagination);
 }

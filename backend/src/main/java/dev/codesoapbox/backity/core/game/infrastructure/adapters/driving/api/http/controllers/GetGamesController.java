@@ -37,7 +37,7 @@ public class GetGamesController {
             @Valid @Parameter(name = "pagination") RequestPaginationHttpDto paginationHttpDto,
             @RequestParam(name = "query", required = false) String searchQuery,
             @RequestParam(name = "file-copy-status", required = false) FileCopyStatusHttpDto fileCopyStatusDto) {
-        Pagination pagination = paginationMapper.toModel(paginationHttpDto);
+        Pagination pagination = paginationMapper.toDomain(paginationHttpDto);
         FileCopyStatus fileCopyStatus = Optional.ofNullable(fileCopyStatusDto)
                 .map(dto -> FileCopyStatus.valueOf(dto.name()))
                 .orElse(null);
