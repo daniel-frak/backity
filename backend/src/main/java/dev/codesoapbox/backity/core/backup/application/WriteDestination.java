@@ -1,11 +1,12 @@
 package dev.codesoapbox.backity.core.backup.application;
 
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import lombok.NonNull;
 
 public record WriteDestination(
         @NonNull StorageSolutionId storageSolutionId,
-        @NonNull String filePath
+        @NonNull FilePath filePath
 ) implements Comparable<WriteDestination> {
 
     @Override
@@ -14,6 +15,6 @@ public record WriteDestination(
         if (storageSolutionCompare != 0) {
             return storageSolutionCompare;
         }
-        return this.filePath.compareTo(other.filePath);
+        return this.filePath.toString().compareTo(other.filePath.toString());
     }
 }

@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.backup.application.exceptions.FileWriteWasCa
 import dev.codesoapbox.backity.core.backup.application.exceptions.StorageSolutionWriteFailedException;
 import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.testing.TestDataBufferFlux;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.testing.TestFlux;
 import dev.codesoapbox.backity.shared.application.progress.ProgressInfo;
@@ -47,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class DataBufferFluxTrackableFileStreamTest {
 
-    private static final String A_FILE_PATH = "test/file.txt";
+    private static final FilePath A_FILE_PATH = new FilePath("test/file.txt");
     private static final int NEVER_RETRY = 0;
     private static final Duration NO_RETRY_BACKOFF = Duration.ofSeconds(0);
     private static final Flux<Boolean> NEVER_CANCEL = Flux.never();
@@ -230,7 +231,7 @@ class DataBufferFluxTrackableFileStreamTest {
 
                 assertThatThrownBy(() -> fileStream.writeToStorageSolution(storage, A_FILE_PATH, cancelFlux))
                         .isInstanceOf(FileWriteWasCanceledException.class)
-                        .hasMessageContaining(A_FILE_PATH);
+                        .hasMessageContaining(A_FILE_PATH.toString());
                 assertThat(storage.allOutputStreamsWereClosed()).isTrue();
             }
         }

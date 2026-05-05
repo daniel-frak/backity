@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileBackupFinishedEvent
 import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.backup.domain.events.FileCopyEnqueuedEvent;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.InvalidFileCopyStatusTransitionException;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.shared.domain.DomainEvent;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -35,10 +36,10 @@ public class FileCopy {
 
     private FileCopyStatus status;
     private String failedReason;
-    private String filePath;
+    private FilePath filePath;
 
     public FileCopy(@NonNull FileCopyId id, @NonNull FileCopyNaturalId naturalId,
-                    @NonNull FileCopyStatus status, String failedReason, String filePath,
+                    @NonNull FileCopyStatus status, String failedReason, FilePath filePath,
                     LocalDateTime dateCreated, LocalDateTime dateModified) {
         this.id = id;
         this.naturalId = naturalId;
@@ -101,7 +102,7 @@ public class FileCopy {
         domainEvents.add(event);
     }
 
-    public void toInProgress(@NonNull String filePath) {
+    public void toInProgress(@NonNull FilePath filePath) {
         if(this.status == FileCopyStatus.IN_PROGRESS) {
             return;
         }
@@ -128,7 +129,7 @@ public class FileCopy {
         domainEvents.add(event);
     }
 
-    public void toFailed(@NonNull String failedReason, String filePath) {
+    public void toFailed(@NonNull String failedReason, FilePath filePath) {
         this.status = FileCopyStatus.FAILED;
         this.failedReason = failedReason;
         this.filePath = filePath;

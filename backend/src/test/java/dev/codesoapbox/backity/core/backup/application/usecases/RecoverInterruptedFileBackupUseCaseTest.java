@@ -9,6 +9,7 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
@@ -55,7 +56,7 @@ class RecoverInterruptedFileBackupUseCaseTest {
         FakeUnixStorageSolution storageSolution = mockStorageSolutionExists();
         storageSolution.createFile(fileCopy.getFilePath());
         mockBackupTargetExists(fileCopy, storageSolution);
-        String filePathToDelete = fileCopy.getFilePath();
+        FilePath filePathToDelete = fileCopy.getFilePath();
 
         useCase.execute();
 

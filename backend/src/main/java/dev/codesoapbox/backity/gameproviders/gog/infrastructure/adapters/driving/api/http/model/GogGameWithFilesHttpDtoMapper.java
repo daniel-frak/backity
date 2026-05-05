@@ -2,9 +2,10 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.drivin
 
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import org.mapstruct.Mapper;
+import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
+@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 public interface GogGameWithFilesHttpDtoMapper {
 
     GogGameWithFilesHttpDto toDto(GogGameWithFiles domain);

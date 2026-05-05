@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.backuptarget.domain;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backuptarget.domain.exceptions.InvalidPathTemplatePlaceholdersException;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StringSanitizer;
 import lombok.NonNull;
 
@@ -65,7 +66,7 @@ public record PathTemplate(@NonNull String value) {
         }
     }
 
-    public String constructPath(SourceFile sourceFile, String targetSeparator, int suffixIndex) {
+    public FilePath constructPath(SourceFile sourceFile, String targetSeparator, int suffixIndex) {
         String pathTemplateValue = replaceWithCorrectFileSeparator(value, targetSeparator);
         String sanitizedPathTemplateValue = sanitize(pathTemplateValue);
         sanitizedPathTemplateValue = addFileNamePlaceholderIfMissing(sanitizedPathTemplateValue, targetSeparator);
@@ -83,12 +84,12 @@ public record PathTemplate(@NonNull String value) {
         return sanitizedPathTemplateValue;
     }
 
-    private String resolvePathVariables(String sanitizedPathTemplateValue, SourceFile sourceFile, int suffixIndex) {
+    private FilePath resolvePathVariables(String sanitizedPathTemplateValue, SourceFile sourceFile, int suffixIndex) {
         Context context = Context.from(this, sourceFile, suffixIndex);
         String pathWithResolvedVariables = PLACEHOLDER_PATTERN.matcher(sanitizedPathTemplateValue)
                 .replaceAll(match -> resolvePathVariable(match, context));
 
-        return pathWithResolvedVariables + context.extensionWithDot();
+        return new FilePath(pathWithResolvedVariables + context.extensionWithDot());
     }
 
     private String resolvePathVariable(MatchResult match, Context context) {

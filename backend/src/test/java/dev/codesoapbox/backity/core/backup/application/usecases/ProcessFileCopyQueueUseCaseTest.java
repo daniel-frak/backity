@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.backup.application.FileBackupService;
 import dev.codesoapbox.backity.core.backup.application.TestFileBackupContext;
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProcess;
 import dev.codesoapbox.backity.core.filecopy.domain.*;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
@@ -178,7 +179,7 @@ class ProcessFileCopyQueueUseCaseTest {
         private void fileBackupServiceSuccessfullyBacksUpFile() {
             doAnswer(inv -> {
                 FileCopy fileCopy = ((FileBackupContext) inv.getArgument(0)).fileCopy();
-                fileCopy.toInProgress("testFilePath");
+                fileCopy.toInProgress(new FilePath("testFilePath"));
                 fileCopy.toStoredIntegrityUnknown();
                 return null;
             }).when(fileBackupService).backUpFile(any());

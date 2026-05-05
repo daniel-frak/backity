@@ -8,17 +8,17 @@ public interface StorageSolution {
 
     StorageSolutionId getId();
 
-    OutputStream getOutputStream(String path) throws IOException;
+    OutputStream getOutputStream(FilePath filePath) throws IOException;
 
-    void deleteIfExists(String path);
+    void deleteIfExists(FilePath filePath);
 
     String getSeparator();
 
-    long getSizeInBytes(String filePath);
+    long getSizeInBytes(FilePath filePath);
 
-    FileResource getFileResource(String filePath) throws FileNotFoundException;
+    FileResource getFileResource(FilePath filePath) throws FileNotFoundException;
 
-    boolean fileExists(String filePath);
+    boolean fileExists(FilePath filePath);
 
     StorageSolutionStatus getStatus();
 }

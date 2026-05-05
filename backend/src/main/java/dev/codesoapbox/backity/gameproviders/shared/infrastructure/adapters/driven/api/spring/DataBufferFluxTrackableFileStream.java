@@ -2,10 +2,11 @@ package dev.codesoapbox.backity.gameproviders.shared.infrastructure.adapters.dri
 
 import dev.codesoapbox.backity.DoNotMutate;
 import dev.codesoapbox.backity.core.backup.application.TrackableFileStream;
-import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
 import dev.codesoapbox.backity.core.backup.application.exceptions.ConcurrentFileWriteException;
-import dev.codesoapbox.backity.core.backup.application.exceptions.StorageSolutionWriteFailedException;
 import dev.codesoapbox.backity.core.backup.application.exceptions.FileWriteWasCanceledException;
+import dev.codesoapbox.backity.core.backup.application.exceptions.StorageSolutionWriteFailedException;
+import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import io.netty.handler.timeout.TimeoutException;
 import io.netty.resolver.dns.DnsNameResolverTimeoutException;
@@ -49,7 +50,8 @@ public record DataBufferFluxTrackableFileStream(
     );
 
     @Override
-    public void writeToStorageSolution(StorageSolution storageSolution, String filePath, Flux<Boolean> cancelTrigger) {
+    public void writeToStorageSolution(
+            StorageSolution storageSolution, FilePath filePath, Flux<Boolean> cancelTrigger) {
         try {
             tryToWriteToDisk(storageSolution, filePath, cancelTrigger);
         } catch (FileWriteWasCanceledException | ConcurrentFileWriteException e) {
@@ -60,7 +62,7 @@ public record DataBufferFluxTrackableFileStream(
         }
     }
 
-    private void tryToWriteToDisk(StorageSolution storageSolution, String filePath, Flux<Boolean> cancelTrigger) {
+    private void tryToWriteToDisk(StorageSolution storageSolution, FilePath filePath, Flux<Boolean> cancelTrigger) {
         Mono<Boolean> writeWasCancelledMono = Mono.firstWithSignal(
                 cancelTrigger.next().thenReturn(true),
                 Flux.using(() -> deleteExistingThenGetOutputStream(storageSolution, filePath),
@@ -80,7 +82,7 @@ public record DataBufferFluxTrackableFileStream(
     }
 
     @DoNotMutate // Logging is not tested so `.doBeforeRetry` fails mutation
-    private RetryBackoffSpec failureIsRecoverable(String filePath) {
+    private RetryBackoffSpec failureIsRecoverable(FilePath filePath) {
         return Retry.backoff(maxRetryAttempts, retryBackoff)
                 .filter(this::isRecoverable)
                 .doBeforeRetry(retrySignal -> logRetryAttempt(filePath, retrySignal));
@@ -99,16 +101,16 @@ public record DataBufferFluxTrackableFileStream(
     }
 
     @DoNotMutate // Logging is not tested so `.doBeforeRetry` fails mutation
-    private void logRetryAttempt(String filePath, Retry.RetrySignal retrySignal) {
+    private void logRetryAttempt(FilePath filePath, Retry.RetrySignal retrySignal) {
         log.warn("Retrying write of {} [attempt {}/{}] after error: {}",
-                filePath,
+                filePath.toString(),
                 retrySignal.totalRetries() + 1,
                 maxRetryAttempts,
                 retrySignal.failure().getClass() + "(" + retrySignal.failure().getMessage() + ")"
         );
     }
 
-    private OutputStream deleteExistingThenGetOutputStream(StorageSolution storageSolution, String filePath)
+    private OutputStream deleteExistingThenGetOutputStream(StorageSolution storageSolution, FilePath filePath)
             throws IOException {
         storageSolution.deleteIfExists(filePath);
         return storageSolution.getOutputStream(filePath);

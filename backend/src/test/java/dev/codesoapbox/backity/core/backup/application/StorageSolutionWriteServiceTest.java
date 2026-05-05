@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.backup.application;
 
 import dev.codesoapbox.backity.core.backup.application.exceptions.ConcurrentFileWriteException;
-import dev.codesoapbox.backity.core.backup.application.exceptions.StorageSolutionWriteFailedException;
 import dev.codesoapbox.backity.core.backup.application.exceptions.FileWriteWasCanceledException;
+import dev.codesoapbox.backity.core.backup.application.exceptions.StorageSolutionWriteFailedException;
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
-import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -13,7 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class StorageSolutionWriteServiceTest {
@@ -39,7 +38,7 @@ class StorageSolutionWriteServiceTest {
 
             @Test
             void shouldWriteFileToStorageSolution() {
-                var filePath = "testFilePath";
+                var filePath = new FilePath("testFilePath");
                 var fileStream = new FakeTrackableFileStream();
 
                 storageSolutionWriteService.writeFileToStorage(fileStream, storageSolution, filePath);
@@ -53,7 +52,7 @@ class StorageSolutionWriteServiceTest {
 
             @Test
             void shouldThrowGivenFileSizeDoesNotMatch() {
-                var filePath = "someFilePath";
+                var filePath = new FilePath("someFilePath");
                 var fileStream = new FakeTrackableFileStream();
                 long writtenSizeInBytes = smallerThanExpectedSizeInBytes(fileStream);
                 storageSolution.overrideWrittenSizeFor(filePath, writtenSizeInBytes);
@@ -69,7 +68,7 @@ class StorageSolutionWriteServiceTest {
 
             @Test
             void shouldThrowGivenAlreadyWritingToSameFile() {
-                var filePath = "testFilePath";
+                var filePath = new FilePath("testFilePath");
                 var fileStream = new FakeTrackableFileStream();
                 fileStream.triggerOnWrite(
                         () -> storageSolutionWriteService.writeFileToStorage(fileStream, storageSolution, filePath));
@@ -83,7 +82,7 @@ class StorageSolutionWriteServiceTest {
             void shouldNotThrowGivenWritingToSameFilePathButDifferentStorageSolution() {
                 var differentStorageSolution = new FakeUnixStorageSolution();
                 differentStorageSolution.setId(new StorageSolutionId("DifferentStorageSolutionId"));
-                var filePath = "testFilePath";
+                var filePath = new FilePath("testFilePath");
                 var firstFileStream = new FakeTrackableFileStream();
                 var secondFileStream = new FakeTrackableFileStream();
                 firstFileStream.triggerOnWrite(
@@ -102,7 +101,7 @@ class StorageSolutionWriteServiceTest {
 
         @Test
         void shouldThrow() {
-            var filePath = "testFilePath";
+            var filePath = new FilePath("testFilePath");
             var writeDestination = new WriteDestination(storageSolution.getId(), filePath);
             var fileStream = new FakeTrackableFileStream();
             fileStream.triggerOnWrite(() -> storageSolutionWriteService.cancelWrite(writeDestination));
@@ -114,7 +113,7 @@ class StorageSolutionWriteServiceTest {
 
         @Test
         void shouldNotValidateSizeGivenWriteWasCanceled() {
-            var filePath = "testFilePath";
+            var filePath = new FilePath("testFilePath");
             var writeDestination = new WriteDestination(storageSolution.getId(), filePath);
             var fileStream = new FakeTrackableFileStream();
             fileStream.triggerOnWrite(() -> storageSolutionWriteService.cancelWrite(writeDestination));
@@ -128,7 +127,8 @@ class StorageSolutionWriteServiceTest {
 
         @Test
         void cancelWriteShouldNotThrowGivenFileIsNotCurrentlyBeingWritten() {
-            var writeDestination = new WriteDestination(storageSolution.getId(), "nonExistentFilePath");
+            var nonExistentFilePath = new FilePath("nonExistentFilePath");
+            var writeDestination = new WriteDestination(storageSolution.getId(), nonExistentFilePath);
             assertThatCode(() -> storageSolutionWriteService.cancelWrite(writeDestination))
                     .doesNotThrowAnyException();
         }

@@ -1,5 +1,6 @@
 package dev.codesoapbox.backity.core.backup.application;
 
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import org.junit.jupiter.api.Test;
 
@@ -14,8 +15,8 @@ class WriteDestinationTest {
     void shouldCompareWriteDestinationsWithDifferentIdsAndPaths() {
         var id1 = new StorageSolutionId("1");
         var id2 = new StorageSolutionId("2");
-        var filePath1 = "testFilePath1";
-        var filePath2 = "testFilePath2";
+        var filePath1 = new FilePath("testFilePath1");
+        var filePath2 = new FilePath("testFilePath2");
 
         var destination1 = new WriteDestination(id1, filePath1);
         var destination2 = new WriteDestination(id1, filePath2);

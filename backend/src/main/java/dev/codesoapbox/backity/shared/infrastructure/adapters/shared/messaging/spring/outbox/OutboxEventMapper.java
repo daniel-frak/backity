@@ -20,7 +20,7 @@ import java.lang.annotation.*;
 ///         domain = YourEvent.class,
 ///         outbox = YourOutboxEvent.class
 /// )
-/// @Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE)
+/// @Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
 /// public interface YourOutboxEventMapper {
 ///
 ///     YourOutboxEvent toOutbox(YourEvent domain);

@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.game.application.readmodel.GameWithFileCopie
 import dev.codesoapbox.backity.core.game.application.readmodel.SourceFileReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.SourceFileWithCopiesReadModel;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import org.mapstruct.*;
 
 @Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE, nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
@@ -23,6 +24,10 @@ public abstract class GameWithFilesCopiesReadModelJpaEntityMapper {
     protected abstract SourceFileReadModel toReadModelInternal(SourceFileWithCopiesReadModelJpaEntity entity);
 
     protected abstract FileCopyReadModel toReadModel(FileCopyReadModelJpaEntity entity);
+
+    protected FilePath toFilePath(String value) {
+        return new FilePath(value);
+    }
 
     @Named("mapFileSize")
     protected String mapFileSize(Long sizeInBytes) {

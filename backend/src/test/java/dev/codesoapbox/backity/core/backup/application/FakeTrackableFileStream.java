@@ -1,7 +1,8 @@
 package dev.codesoapbox.backity.core.backup.application;
 
-import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
 import dev.codesoapbox.backity.core.backup.application.exceptions.FileWriteWasCanceledException;
+import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,7 +32,7 @@ class FakeTrackableFileStream implements TrackableFileStream {
 
     @SneakyThrows
     @Override
-    public void writeToStorageSolution(StorageSolution storageSolution, String filePath, Flux<Boolean> cancelTrigger) {
+    public void writeToStorageSolution(StorageSolution storageSolution, FilePath filePath, Flux<Boolean> cancelTrigger) {
         Mono<Boolean> writeWasCancelledMono = Mono.firstWithSignal(
                 cancelTrigger.next().thenReturn(true),
                 Mono.defer(() -> {
@@ -46,7 +47,7 @@ class FakeTrackableFileStream implements TrackableFileStream {
     }
 
     @SneakyThrows
-    private void writeToDisk(StorageSolution storageSolution, String filePath) {
+    private void writeToDisk(StorageSolution storageSolution, FilePath filePath) {
         if(triggerOnWrite != null) {
             triggerOnWrite.run();
         }

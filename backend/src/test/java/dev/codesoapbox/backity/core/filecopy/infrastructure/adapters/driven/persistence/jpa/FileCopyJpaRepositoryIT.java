@@ -14,6 +14,7 @@ import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaEntityMapper;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
@@ -149,7 +150,8 @@ abstract class FileCopyJpaRepositoryIT {
     void saveShouldModifyExisting() {
         persistSampleData();
         FileCopy fileCopy = SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get();
-        fileCopy.toInProgress("someFilePath");
+        var aFilePath = new FilePath("someFilePath");
+        fileCopy.toInProgress(aFilePath);
 
         FileCopy result = repository.save(fileCopy);
         entityManager.flush();
@@ -162,7 +164,8 @@ abstract class FileCopyJpaRepositoryIT {
     void saveShouldPublishEventsAfterCommitting() {
         persistSampleData();
         FileCopy fileCopy = TestFileCopy.enqueued();
-        fileCopy.toInProgress("someFilePath");
+        var aFilePath = new FilePath("someFilePath");
+        fileCopy.toInProgress(aFilePath);
         repository.save(fileCopy);
 
         TransactionSynchronizationManager.getSynchronizations().forEach(TransactionSynchronization::afterCommit);
@@ -174,7 +177,8 @@ abstract class FileCopyJpaRepositoryIT {
     void saveShouldClearEvents() {
         persistSampleData();
         FileCopy fileCopy = TestFileCopy.enqueued();
-        fileCopy.toInProgress("someFilePath");
+        var aFilePath = new FilePath("someFilePath");
+        fileCopy.toInProgress(aFilePath);
         repository.save(fileCopy);
 
         TransactionSynchronizationManager.getSynchronizations().forEach(TransactionSynchronization::afterCommit);
@@ -533,7 +537,7 @@ abstract class FileCopyJpaRepositoryIT {
                                 SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId(),
                                 SampleBackupTargets.LOCAL_FOLDER_1.get().getId()
                         ))
-                        .filePath("filePath1")
+                        .filePath(new FilePath("filePath1"))
                         .dateModified(YESTERDAY.atStartOfDay())
                         .build();
 
@@ -544,7 +548,7 @@ abstract class FileCopyJpaRepositoryIT {
                                 SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId(),
                                 SampleBackupTargets.LOCAL_FOLDER_2.get().getId()
                         ))
-                        .filePath("filePath2")
+                        .filePath(new FilePath("filePath2"))
                         .dateModified(TODAY.atStartOfDay())
                         .build();
 
@@ -555,7 +559,7 @@ abstract class FileCopyJpaRepositoryIT {
                                 SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
                                 SampleBackupTargets.LOCAL_FOLDER_3.get().getId()
                         ))
-                        .filePath("filePath3")
+                        .filePath(new FilePath("filePath3"))
                         .dateModified(YESTERDAY.atStartOfDay())
                         .build();
 
@@ -566,7 +570,7 @@ abstract class FileCopyJpaRepositoryIT {
                                 SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
                                 SampleBackupTargets.LOCAL_FOLDER_4.get().getId()
                         ))
-                        .filePath("filePath4")
+                        .filePath(new FilePath("filePath4"))
                         .dateModified(YESTERDAY.atStartOfDay())
                         .build();
 
@@ -577,7 +581,7 @@ abstract class FileCopyJpaRepositoryIT {
                                 SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
                                 SampleBackupTargets.LOCAL_FOLDER_5.get().getId()
                         ))
-                        .filePath("filePath5")
+                        .filePath(new FilePath("filePath5"))
                         .dateModified(TODAY.atStartOfDay())
                         .build();
 
@@ -588,7 +592,7 @@ abstract class FileCopyJpaRepositoryIT {
                                 SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
                                 SampleBackupTargets.LOCAL_FOLDER_6.get().getId()
                         ))
-                        .filePath("filePath6")
+                        .filePath(new FilePath("filePath6"))
                         .dateModified(YESTERDAY.atStartOfDay())
                         .build();
 
@@ -599,7 +603,7 @@ abstract class FileCopyJpaRepositoryIT {
                                 SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
                                 SampleBackupTargets.LOCAL_FOLDER_7.get().getId()
                         ))
-                        .filePath("filePath7")
+                        .filePath(new FilePath("filePath7"))
                         .dateModified(BEFORE_YESTERDAY.atStartOfDay())
                         .build();
 
@@ -610,7 +614,7 @@ abstract class FileCopyJpaRepositoryIT {
                                 SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
                                 SampleBackupTargets.LOCAL_FOLDER_8.get().getId()
                         ))
-                        .filePath("filePath8")
+                        .filePath(new FilePath("filePath8"))
                         .dateModified(TODAY.atStartOfDay())
                         .build();
 

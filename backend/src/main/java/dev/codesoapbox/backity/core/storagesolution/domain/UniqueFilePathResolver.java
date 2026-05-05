@@ -8,13 +8,13 @@ public class UniqueFilePathResolver {
 
     private static final int MAX_ATTEMPTS = 1000;
 
-    public String resolve(PathTemplate pathTemplate, SourceFile sourceFile, StorageSolution storageSolution) {
+    public FilePath resolve(PathTemplate pathTemplate, SourceFile sourceFile, StorageSolution storageSolution) {
         return constructPathUntilUnique(pathTemplate, sourceFile, storageSolution);
     }
 
-    private String constructPathUntilUnique(PathTemplate pathTemplate, SourceFile sourceFile,
-                                            StorageSolution storageSolution) {
-        String filePath;
+    private FilePath constructPathUntilUnique(PathTemplate pathTemplate, SourceFile sourceFile,
+                                              StorageSolution storageSolution) {
+        FilePath filePath;
         int attemptNumber = -1;
         do {
             attemptNumber++;

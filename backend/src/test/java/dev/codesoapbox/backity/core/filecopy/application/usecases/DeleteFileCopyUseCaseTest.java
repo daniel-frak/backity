@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import dev.codesoapbox.backity.core.filecopy.domain.*;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotBackedUpException;
 import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,9 +38,9 @@ class DeleteFileCopyUseCaseTest {
     }
 
     @Test
-    void shouldDeleteFileCopyGivenSourceFilestatusIsStoredIntegrityUnknown() {
+    void shouldDeleteFileCopyGivenSourceFileStatusIsStoredIntegrityUnknown() {
         FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
-        String filePath = fileCopy.getFilePath();
+        FilePath filePath = fileCopy.getFilePath();
         FakeUnixStorageSolution storageSolution = mockStorageSolutionExists(fileCopy);
         storageSolution.createFile(filePath);
 

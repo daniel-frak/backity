@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.filecopy.domain;
 
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 
 import java.time.LocalDateTime;
 
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
         builderMethodName = "trackedBuilder")
 public class TestFileCopy {
 
-    private static final String DEFAULT_FILE_PATH = "someFilePath";
+    private static final FilePath DEFAULT_FILE_PATH = new FilePath("someFilePath");
 
     @lombok.Builder.Default
     private FileCopyId id = new FileCopyId("6df888e8-90b9-4df5-a237-0cba422c0310");
@@ -27,7 +28,7 @@ public class TestFileCopy {
     private String failedReason = null;
 
     @lombok.Builder.Default
-    private String filePath = null;
+    private FilePath filePath = null;
 
     @lombok.Builder.Default
     private LocalDateTime dateCreated = LocalDateTime.parse("2022-04-29T14:15:53");

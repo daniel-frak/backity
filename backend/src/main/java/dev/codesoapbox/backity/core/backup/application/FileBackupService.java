@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolver;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +50,7 @@ public class FileBackupService {
     @SuppressWarnings("java:S1166") // Intentionally suppressing FileWriteWasCanceledException
     private void tryToBackUp(FileCopy fileCopy, SourceFile sourceFile, BackupTarget backupTarget,
                              StorageSolution storageSolution) {
-        String filePath = uniqueFilePathResolver.resolve(
+        FilePath filePath = uniqueFilePathResolver.resolve(
                 backupTarget.getPathTemplate(), sourceFile, storageSolution);
         markInProgress(fileCopy, filePath);
 
@@ -63,7 +64,7 @@ public class FileBackupService {
         markStored(fileCopy);
     }
 
-    public void markInProgress(FileCopy fileCopy, String filePath) {
+    public void markInProgress(FileCopy fileCopy, FilePath filePath) {
         fileCopy.toInProgress(filePath);
         fileCopyRepository.save(fileCopy);
     }
@@ -85,7 +86,7 @@ public class FileBackupService {
         markFailed(fileCopy, null, e);
     }
 
-    public void markFailed(FileCopy fileCopy, String filePath, Exception exception) {
+    public void markFailed(FileCopy fileCopy, FilePath filePath, Exception exception) {
         String message = exception.getMessage();
         if (message == null) {
             message = "Unknown error";

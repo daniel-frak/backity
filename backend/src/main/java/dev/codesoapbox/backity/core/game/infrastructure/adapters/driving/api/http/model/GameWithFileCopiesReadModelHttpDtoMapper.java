@@ -9,6 +9,7 @@ import dev.codesoapbox.backity.core.game.application.readmodel.GameWithFileCopie
 import dev.codesoapbox.backity.core.game.application.readmodel.SourceFileWithCopiesReadModel;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.http.model.game.GameIdHttpDtoMapper;
 import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driving.api.http.model.sourcefile.SourceFileHttpDtoMapper;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.ProgressHttpDto;
 import org.mapstruct.*;
 
@@ -16,6 +17,7 @@ import java.util.List;
 
 @SuppressWarnings("java:S1694") // False positive
 @Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE,
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
         uses = {SourceFileHttpDtoMapper.class, GameIdHttpDtoMapper.class, FileCopyHttpDtoMapper.class})
 public abstract class GameWithFileCopiesReadModelHttpDtoMapper {
 
@@ -34,6 +36,10 @@ public abstract class GameWithFileCopiesReadModelHttpDtoMapper {
     @Mapping(target = "progress", expression = "java( mapProgress(fileCopy, replicationProgresses) )")
     protected abstract FileCopyWithProgressHttpDto toDto(
             FileCopyReadModel model, @Context List<FileCopyReplicationProgress> replicationProgresses);
+
+    protected String getValue(FilePath filePath) {
+        return filePath.toString();
+    }
 
     @Mapping(target = "timeLeftSeconds", source = "timeLeft.seconds")
     protected abstract ProgressHttpDto toDto(FileCopyReplicationProgress domain);

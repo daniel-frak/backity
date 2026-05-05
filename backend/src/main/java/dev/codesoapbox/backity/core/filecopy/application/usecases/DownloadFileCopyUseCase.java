@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
@@ -21,7 +22,7 @@ public class DownloadFileCopyUseCase {
 
     public FileResource execute(FileCopyId fileCopyId) throws FileNotFoundException {
         FileCopy fileCopy = fileCopyRepository.getById(fileCopyId);
-        String filePath = fileCopy.getFilePath();
+        FilePath filePath = fileCopy.getFilePath();
         StorageSolution storageSolution = getStorageSolution(fileCopy);
 
         return storageSolution.getFileResource(filePath);

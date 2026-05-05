@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,7 +42,7 @@ public class FileCopyReplicator {
         OutputStreamProgressTracker outputStreamProgressTracker = outputStreamProgressTrackerFactory.create(fileCopy);
         TrackableFileStream fileStream = gameProviderFileBackupService.acquireTrackableFileStream(
                 sourceFile, outputStreamProgressTracker);
-        String filePath = fileCopy.getFilePath();
+        FilePath filePath = fileCopy.getFilePath();
         storageSolutionWriteService.writeFileToStorage(fileStream, storageSolution, filePath);
         log.info("Replicated file {} to {}", sourceFile, filePath);
     }

@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backuptarget.domain.exceptions.InvalidPathTemplatePlaceholdersException;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -94,10 +95,10 @@ class PathTemplateTest {
                         .originalFileName("someFileName")
                         .build();
 
-                String result =
+                FilePath result =
                         PATH_TEMPLATE_WITH_ALL_PLACEHOLDERS.constructPath(sourceFile, "/", 0);
 
-                String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName";
+                var expectedPath = new FilePath("/test/someGameProviderId/someGameTitle/someFileName");
 
                 assertThat(result).isEqualTo(expectedPath);
             }
@@ -109,9 +110,9 @@ class PathTemplateTest {
                         .build();
                 var pathTemplate = new PathTemplate("{FILENAME}_suffix");
 
-                String result = pathTemplate.constructPath(sourceFile, "/", 0);
+                FilePath result = pathTemplate.constructPath(sourceFile, "/", 0);
 
-                String expectedPath = "someFileName_suffix.txt";
+                var expectedPath = new FilePath("someFileName_suffix.txt");
 
                 assertThat(result).isEqualTo(expectedPath);
             }
@@ -123,9 +124,9 @@ class PathTemplateTest {
                         .build();
                 var pathTemplate = new PathTemplate("/test/{FILENAME}");
 
-                String result = pathTemplate.constructPath(sourceFile, "/", 0);
+                FilePath result = pathTemplate.constructPath(sourceFile, "/", 0);
 
-                String expectedPath = "/test/someFileName";
+                var expectedPath = new FilePath("/test/someFileName");
 
                 assertThat(result).isEqualTo(expectedPath);
             }
@@ -141,9 +142,9 @@ class PathTemplateTest {
                         .build();
                 var pathTemplate = new PathTemplate(pathTemplateValue);
 
-                String result = pathTemplate.constructPath(sourceFile, "/", 0);
+                FilePath result = pathTemplate.constructPath(sourceFile, "/", 0);
 
-                String expectedPath = "/test/someFileName";
+                var expectedPath = new FilePath("/test/someFileName");
 
                 assertThat(result).isEqualTo(expectedPath);
             }
@@ -157,9 +158,9 @@ class PathTemplateTest {
                         .build();
                 var pathTemplate = new PathTemplate("{FILENAME}");
 
-                String result = pathTemplate.constructPath(sourceFile, "/", 0);
+                FilePath result = pathTemplate.constructPath(sourceFile, "/", 0);
 
-                String expectedPath = "someFileName";
+                var expectedPath = new FilePath("someFileName");
                 assertThat(result).isEqualTo(expectedPath);
             }
 
@@ -171,9 +172,9 @@ class PathTemplateTest {
                         .originalFileName("someFileName")
                         .build();
 
-                String result = wrongPathTemplate.constructPath(sourceFile, "/", 0);
+                FilePath result = wrongPathTemplate.constructPath(sourceFile, "/", 0);
 
-                String expectedPath = "someGameTitle/someFileName";
+                var expectedPath = new FilePath("someGameTitle/someFileName");
                 assertThat(result).isEqualTo(expectedPath);
             }
 
@@ -186,9 +187,9 @@ class PathTemplateTest {
                         .build();
                 var pathTemplate = new PathTemplate("{FILENAME}");
 
-                String result = pathTemplate.constructPath(sourceFile, "/", 1);
+                FilePath result = pathTemplate.constructPath(sourceFile, "/", 1);
 
-                String expectedPath = "someFileName_1.exe";
+                var expectedPath = new FilePath("someFileName_1.exe");
                 assertThat(result).isEqualTo(expectedPath);
             }
         }
@@ -204,9 +205,9 @@ class PathTemplateTest {
                         .originalFileName("someFileName")
                         .build();
 
-                String result = pathTemplate.constructPath(sourceFile, "/", 0);
+                FilePath result = pathTemplate.constructPath(sourceFile, "/", 0);
 
-                String expectedPath = "/test/someFileName";
+                var expectedPath = new FilePath("/test/someFileName");
                 assertThat(result).isEqualTo(expectedPath);
             }
 
@@ -217,9 +218,9 @@ class PathTemplateTest {
                         .originalFileName("someFileName")
                         .build();
 
-                String result = pathTemplate.constructPath(sourceFile, "/", 0);
+                FilePath result = pathTemplate.constructPath(sourceFile, "/", 0);
 
-                String expectedPath = "/some -test folder 1 and 2/someFileName";
+                var expectedPath = new FilePath("/some -test folder 1 and 2/someFileName");
                 assertThat(result).isEqualTo(expectedPath);
             }
 
@@ -232,10 +233,10 @@ class PathTemplateTest {
                         .originalFileName("someFileName" + charactersToRemove)
                         .build();
 
-                String result =
+                FilePath result =
                         PATH_TEMPLATE_WITH_ALL_PLACEHOLDERS.constructPath(sourceFile, "/", 0);
 
-                String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName";
+                var expectedPath = new FilePath("/test/someGameProviderId/someGameTitle/someFileName");
 
                 assertThat(result).isEqualTo(expectedPath);
             }
@@ -248,10 +249,11 @@ class PathTemplateTest {
                         .originalFileName("some:File\tName 1")
                         .build();
 
-                String result =
+                FilePath result =
                         PATH_TEMPLATE_WITH_ALL_PLACEHOLDERS.constructPath(sourceFile, "/", 0);
 
-                String expectedPath = "/test/some -Game ProviderId 1/some -Game Title 1/some -File Name 1";
+                var expectedPath =
+                        new FilePath("/test/some -Game ProviderId 1/some -Game Title 1/some -File Name 1");
 
                 assertThat(result).isEqualTo(expectedPath);
             }

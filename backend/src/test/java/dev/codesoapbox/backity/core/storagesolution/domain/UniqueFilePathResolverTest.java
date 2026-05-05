@@ -41,13 +41,14 @@ class UniqueFilePathResolverTest {
                     .originalGameTitle("someGameTitle")
                     .originalFileName("someFileName.txt")
                     .build();
-            fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName.txt");
+            var filePath = new FilePath("/test/someGameProviderId/someGameTitle/someFileName.txt");
+            fakeUnixFileManager.createFile(filePath);
 
-            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
+            FilePath result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
 
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_1.txt";
 
-            assertThat(toUnixPath(result)).isEqualTo(expectedPath);
+            assertThat(toUnixPath(result.toString())).isEqualTo(expectedPath);
         }
 
         @Test
@@ -57,14 +58,16 @@ class UniqueFilePathResolverTest {
                     .originalGameTitle("someGameTitle")
                     .originalFileName("someFileName.txt")
                     .build();
-            fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName.txt");
-            fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName_1.txt");
+            fakeUnixFileManager.createFile(new FilePath(
+                    "/test/someGameProviderId/someGameTitle/someFileName.txt"));
+            fakeUnixFileManager.createFile(new FilePath(
+                    "/test/someGameProviderId/someGameTitle/someFileName_1.txt"));
 
-            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
+            FilePath result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
 
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_2.txt";
 
-            assertThat(toUnixPath(result)).isEqualTo(expectedPath);
+            assertThat(toUnixPath(result.toString())).isEqualTo(expectedPath);
         }
 
         @Test
@@ -74,13 +77,13 @@ class UniqueFilePathResolverTest {
                     .originalGameTitle("someGameTitle")
                     .originalFileName("someFileName")
                     .build();
-            fakeUnixFileManager.createFile("/test/someGameProviderId/someGameTitle/someFileName");
+            fakeUnixFileManager.createFile(new FilePath("/test/someGameProviderId/someGameTitle/someFileName"));
 
-            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
+            FilePath result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
 
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_1";
 
-            assertThat(toUnixPath(result)).isEqualTo(expectedPath);
+            assertThat(toUnixPath(result.toString())).isEqualTo(expectedPath);
         }
 
         @Test
@@ -93,19 +96,19 @@ class UniqueFilePathResolverTest {
             createFileSeveralTimes(999,
                     "/test/someGameProviderId/someGameTitle/someFileName", ".exe");
 
-            String result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
+            FilePath result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
 
             String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_999.exe";
 
-            assertThat(toUnixPath(result)).isEqualTo(expectedPath);
+            assertThat(toUnixPath(result.toString())).isEqualTo(expectedPath);
         }
 
         @SuppressWarnings("SameParameterValue")
         private void createFileSeveralTimes(int times, String pathWithoutExtension, String extension) {
-            fakeUnixFileManager.createFile(pathWithoutExtension + extension);
+            fakeUnixFileManager.createFile(new FilePath(pathWithoutExtension + extension));
             for (int i = 1; i < times; i++) {
-                fakeUnixFileManager.createFile(
-                        "/test/someGameProviderId/someGameTitle/someFileName_" + i + ".exe");
+                fakeUnixFileManager.createFile(new FilePath(
+                        "/test/someGameProviderId/someGameTitle/someFileName_" + i + ".exe"));
             }
         }
 
