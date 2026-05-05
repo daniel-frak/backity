@@ -18,9 +18,9 @@ public class Game {
 
     @NonNull
     @Setter
-    private String title;
+    private GameTitle title;
 
-    public static Game createNew(String title) {
+    public static Game createNew(GameTitle title) {
         return new Game(GameId.newInstance(), null, null, title);
     }
 }

@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persist
 
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
+import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.game.domain.exceptions.GameNotFoundException;
 import dev.codesoapbox.backity.shared.domain.Page;
@@ -37,7 +38,7 @@ abstract class GameJpaRepositoryIT {
     void saveShouldPersistNew() {
         Game game = TestGame.anyBuilder()
                 .withId(GameId.newInstance())
-                .withTitle("New Title")
+                .withTitle(new GameTitle("New Title"))
                 .build();
 
         Game result = repository.save(game);
@@ -50,7 +51,7 @@ abstract class GameJpaRepositoryIT {
     @Test
     void shouldNotSaveGivenGameWithTitleAlreadyExists() {
         populateDatabase(List.of(GAMES.GAME_1.get()));
-        String existingTitle = GAMES.GAME_1.get().getTitle();
+        GameTitle existingTitle = GAMES.GAME_1.get().getTitle();
         Game game = TestGame.anyBuilder()
                 .withId(GameId.newInstance())
                 .withTitle(existingTitle)
@@ -74,7 +75,7 @@ abstract class GameJpaRepositoryIT {
     void saveShouldModifyExisting() {
         populateDatabase(List.of(GAMES.GAME_1.get()));
         Game game = GAMES.GAME_1.get();
-        game.setTitle("New Title");
+        game.setTitle(new GameTitle("New Title"));
 
         Game result = repository.save(game);
         entityManager.flush();
@@ -173,12 +174,12 @@ abstract class GameJpaRepositoryIT {
 
         public static final Supplier<Game> GAME_1 = () -> TestGame.anyBuilder()
                 .withId(new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"))
-                .withTitle("Test Game 1")
+                .withTitle(new GameTitle("Test Game 1"))
                 .build();
 
         public static final Supplier<Game> GAME_2 = () -> TestGame.anyBuilder()
                 .withId(new GameId("1eec1c19-25bf-4094-b926-84b5bb8fa281"))
-                .withTitle("Test Game 2")
+                .withTitle(new GameTitle("Test Game 2"))
                 .build();
 
         public static List<Game> getAll() {

@@ -12,7 +12,7 @@ public final class TestGame {
     private GameId id = new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5");
 
     @lombok.Builder.Default
-    private String title = "Test Game";
+    private GameTitle title = new GameTitle("Test Game");
 
     @lombok.Builder.Default
     private LocalDateTime dateCreated = LocalDateTime.parse("2022-04-29T14:15:53");

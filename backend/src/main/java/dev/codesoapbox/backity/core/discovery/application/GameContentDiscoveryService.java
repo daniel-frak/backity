@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
+import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -87,12 +88,13 @@ public class GameContentDiscoveryService {
     }
 
     private Game getGameOrAddNew(GameProviderId gameProviderId, DiscoveredFile discoveredFile) {
-        return gameRepository.findByTitle(discoveredFile.originalGameTitle())
+        GameTitle title = new GameTitle(discoveredFile.originalGameTitle());
+        return gameRepository.findByTitle(title)
                 .orElseGet(() -> addNewGame(gameProviderId, discoveredFile));
     }
 
     private Game addNewGame(GameProviderId gameProviderId, DiscoveredFile discoveredFile) {
-        Game newGame = Game.createNew(discoveredFile.originalGameTitle());
+        Game newGame = Game.createNew(new GameTitle(discoveredFile.originalGameTitle()));
         gameRepository.save(newGame);
         discoveryProgressTracker.incrementGamesDiscovered(gameProviderId, 1);
         log.info("Discovered new game: {} (id: {})", newGame.getTitle(), newGame.getId().value());

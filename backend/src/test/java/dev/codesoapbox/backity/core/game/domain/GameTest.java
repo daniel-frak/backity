@@ -8,7 +8,7 @@ class GameTest {
 
     @Test
     void shouldCreateNew() {
-        String gameTitle = "Test game title";
+        GameTitle gameTitle = new GameTitle("Test game title");
         Game result = Game.createNew(gameTitle);
 
         assertThat(result.getTitle()).isEqualTo(gameTitle);
