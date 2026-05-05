@@ -7,7 +7,6 @@ import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.FileCouldN
 import dev.codesoapbox.backity.testing.s3.annotations.S3RepositoryTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import software.amazon.awssdk.services.s3.S3Client;
 
 import java.io.*;
@@ -20,7 +19,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@DataJpaTest
 @S3RepositoryTest(buckets = S3StorageSolutionIT.BUCKET_NAME,
         filesToUpload = {
                 @S3RepositoryTest.FileToUpload(
