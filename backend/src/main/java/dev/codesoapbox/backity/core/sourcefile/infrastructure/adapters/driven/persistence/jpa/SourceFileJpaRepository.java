@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa;
 
 import dev.codesoapbox.backity.core.game.domain.GameId;
+import dev.codesoapbox.backity.core.sourcefile.domain.FileVersion;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileRepository;
@@ -30,8 +31,8 @@ public class SourceFileJpaRepository implements SourceFileRepository {
     }
 
     @Override
-    public boolean existsByUrlAndVersion(String url, String version) {
-        return springRepository.existsByUrlAndVersion(url, version);
+    public boolean existsByUrlAndVersion(String url, FileVersion version) {
+        return springRepository.existsByUrlAndVersion(url, version.value());
     }
 
     @Override

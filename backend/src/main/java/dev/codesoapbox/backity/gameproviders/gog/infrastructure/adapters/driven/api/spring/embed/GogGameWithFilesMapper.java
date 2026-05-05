@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileTitle;
+import dev.codesoapbox.backity.core.sourcefile.domain.FileVersion;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import org.mapstruct.Mapper;
@@ -44,5 +45,9 @@ public abstract class GogGameWithFilesMapper {
 
     protected FileTitle toFileTitle(String value) {
         return new FileTitle(value);
+    }
+
+    protected FileVersion toFileVersion(String value) {
+        return new FileVersion(value);
     }
 }

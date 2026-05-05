@@ -37,7 +37,7 @@ public class SourceFile {
     private FileTitle fileTitle;
 
     @NonNull
-    private String version;
+    private FileVersion version;
 
     @NonNull
     private String url;

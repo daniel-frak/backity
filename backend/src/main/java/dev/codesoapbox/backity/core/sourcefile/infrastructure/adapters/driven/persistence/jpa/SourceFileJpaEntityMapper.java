@@ -3,10 +3,7 @@ package dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.p
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
-import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
-import dev.codesoapbox.backity.core.sourcefile.domain.FileTitle;
-import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
-import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
+import dev.codesoapbox.backity.core.sourcefile.domain.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValueCheckStrategy;
@@ -40,6 +37,10 @@ public abstract class SourceFileJpaEntityMapper {
         return gameProviderId.value();
     }
 
+    protected String getValue(FileVersion fileVersion) {
+        return fileVersion.value();
+    }
+
     protected long getBytes(FileSize fileSize) {
         return fileSize.getBytes();
     }
@@ -69,5 +70,9 @@ public abstract class SourceFileJpaEntityMapper {
 
     protected FileSize toFileSize(long sizeInBytes) {
         return new FileSize(sizeInBytes);
+    }
+
+    protected FileVersion toFileVersion(String value) {
+        return new FileVersion(value);
     }
 }

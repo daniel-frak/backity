@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileTitle;
+import dev.codesoapbox.backity.core.sourcefile.domain.FileVersion;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestDiscoveredFile;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogGameWithFiles;
 import dev.codesoapbox.backity.gameproviders.gog.domain.TestGogFile;
@@ -32,7 +33,7 @@ class GogGameWithFileCopiesMapperTest {
                 TestDiscoveredFile.minimalGogBuilder()
                         .originalGameTitle(new GameTitle("Test Game"))
                         .fileTitle(new FileTitle("Game 1 (Installer)"))
-                        .version("unknown")
+                        .version(new FileVersion("unknown"))
                         .url("/downlink/some_game/some_file")
                         .originalFileName("game_1_installer.exe")
                         .size(new FileSize(1_048_576L))

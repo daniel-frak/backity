@@ -26,7 +26,7 @@ public final class TestSourceFile {
     private FileTitle fileTitle = new FileTitle("Game 1 (Installer)");
 
     @lombok.Builder.Default
-    private String version = "1.0.0";
+    private FileVersion version = new FileVersion("1.0.0");
 
     @lombok.Builder.Default
     private String url = "/downlink/some_game/some_file";
