@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persist
 
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
+import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValueCheckStrategy;
@@ -14,8 +15,12 @@ public abstract class GameJpaEntityMapper {
 
     public abstract GameJpaEntity toEntity(Game model);
 
-    protected UUID toUuid(GameId id) {
+    protected UUID getValue(GameId id) {
         return id.value();
+    }
+
+    protected String getValue(GameTitle title) {
+        return title.value();
     }
 
     @BeanMapping(ignoreUnmappedSourceProperties = {"dateCreated", "dateModified"})
@@ -23,5 +28,9 @@ public abstract class GameJpaEntityMapper {
 
     protected GameId toId(UUID uuid) {
         return new GameId(uuid);
+    }
+
+    protected GameTitle toTitle(String value) {
+        return new GameTitle(value);
     }
 }

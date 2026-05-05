@@ -3,13 +3,15 @@ package dev.codesoapbox.backity.core.game.domain;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 public interface GameRepository {
 
     Game save(Game game);
 
-    Optional<Game> findByTitle(String title);
+    Optional<Game> findByTitle(GameTitle title);
 
     Optional<Game> findById(GameId id);
 

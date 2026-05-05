@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.discovery.application;
 import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
+import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileRepository;
@@ -172,7 +173,7 @@ class GameContentDiscoveryServiceTest {
         @Test
         void shouldNotSaveGameInformationGivenGameAlreadyExists() {
             DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
-            mockGameExists(discoveredFile.originalGameTitle());
+            mockGameExists(new GameTitle(discoveredFile.originalGameTitle()));
 
             gameContentDiscoveryService =
                     new GameContentDiscoveryService(singletonList(gameProviderFileDiscoveryService),
@@ -186,7 +187,7 @@ class GameContentDiscoveryServiceTest {
             verify(gameRepository, never()).save(any());
         }
 
-        private Game mockGameExists(String title) {
+        private Game mockGameExists(GameTitle title) {
             Game game = TestGame.anyBuilder()
                     .withTitle(title)
                     .build();
@@ -199,17 +200,17 @@ class GameContentDiscoveryServiceTest {
         @Test
         void shouldSaveGameInformationGivenItDoesNotYetExist() {
             DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
-            mockGameDoesNotExist(discoveredFile.originalGameTitle());
+            mockGameDoesNotExist(new GameTitle(discoveredFile.originalGameTitle()));
 
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();
             gameProviderFileDiscoveryService.simulateFileDiscovery(discoveredFile);
 
             Game savedGame = getSavedGame();
-            assertThat(savedGame.getTitle()).isEqualTo(discoveredFile.originalGameTitle());
+            assertThat(savedGame.getTitle().value()).isEqualTo(discoveredFile.originalGameTitle());
         }
 
-        private void mockGameDoesNotExist(String gameTitle) {
+        private void mockGameDoesNotExist(GameTitle gameTitle) {
             when(gameRepository.findByTitle(gameTitle))
                     .thenReturn(Optional.empty());
         }
@@ -223,7 +224,7 @@ class GameContentDiscoveryServiceTest {
         @Test
         void shouldSaveSourceFiles() {
             DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
-            Game game = mockGameExists(discoveredFile.originalGameTitle());
+            Game game = mockGameExists(new GameTitle(discoveredFile.originalGameTitle()));
             mockSourceFileDoesNotExist(discoveredFile);
 
             gameContentDiscoveryService.startContentDiscovery();
@@ -256,7 +257,7 @@ class GameContentDiscoveryServiceTest {
         @Test
         void shouldIncrementSourceFilesDiscovered() {
             DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
-            mockGameExists(discoveredFile.originalGameTitle());
+            mockGameExists(new GameTitle(discoveredFile.originalGameTitle()));
             mockSourceFileDoesNotExist(discoveredFile);
 
             gameContentDiscoveryService.startContentDiscovery();
@@ -270,7 +271,7 @@ class GameContentDiscoveryServiceTest {
         @Test
         void shouldIncrementGamesDiscovered() {
             DiscoveredFile discoveredFile = TestDiscoveredFile.minimalGog();
-            mockGameDoesNotExist(discoveredFile.originalGameTitle());
+            mockGameDoesNotExist(new GameTitle(discoveredFile.originalGameTitle()));
 
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();

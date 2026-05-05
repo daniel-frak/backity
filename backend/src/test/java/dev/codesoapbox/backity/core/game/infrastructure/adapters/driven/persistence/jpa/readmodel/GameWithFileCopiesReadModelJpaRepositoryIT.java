@@ -11,6 +11,7 @@ import dev.codesoapbox.backity.core.game.application.TestGameWithFileCopiesSearc
 import dev.codesoapbox.backity.core.game.application.readmodel.*;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
+import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntityMapper;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
@@ -295,7 +296,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
 
     @Test
     void findAllPaginatedShouldFilterByFullGameTitleCaseInsensitive() {
-        var searchQuery = "\"" + ExistingGames.GAME_1.getTitle().toUpperCase() + "\"";
+        var searchQuery = "\"" + ExistingGames.GAME_1.getTitle().value().toUpperCase() + "\"";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
         Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
@@ -407,19 +408,20 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
 
         public static final Game GAME_1 = TestGame.anyBuilder()
                 .withId(new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"))
-                .withTitle("Test Game 1001")
+                .withTitle(new GameTitle("Test Game 1001"))
                 .withDateCreated(TODAY.atStartOfDay())
                 .build();
 
         public static final Game GAME_2 = TestGame.anyBuilder()
                 .withId(new GameId("1eec1c19-25bf-4094-b926-84b5bb8fa281"))
-                .withTitle("Test_Game 2 - 100% Better\\Edition") // [_%\] included to test escaping characters
+                // [_%\] included to test escaping characters:
+                .withTitle(new GameTitle("Test_Game 2 - 100% Better\\Edition"))
                 .withDateCreated(YESTERDAY.atStartOfDay())
                 .build();
 
         public static final Game GAME_3 = TestGame.anyBuilder()
                 .withId(new GameId("0154e14b-b531-4748-9943-9b33ef596c2f"))
-                .withTitle("Test Game 3")
+                .withTitle(new GameTitle("Test Game 3"))
                 .withDateCreated(TWO_DAYS_AGO.atStartOfDay())
                 .build();
 

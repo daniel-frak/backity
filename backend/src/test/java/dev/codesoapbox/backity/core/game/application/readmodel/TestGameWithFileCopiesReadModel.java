@@ -32,7 +32,7 @@ public class TestGameWithFileCopiesReadModel {
 
         public Builder withValuesFrom(Game game) {
             return withId(game.getId().value().toString())
-                    .withTitle(game.getTitle());
+                    .withTitle(game.getTitle().value());
         }
 
         public GameWithFileCopiesReadModel build() {
