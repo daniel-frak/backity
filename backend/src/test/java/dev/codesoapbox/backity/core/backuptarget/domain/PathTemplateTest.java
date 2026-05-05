@@ -7,6 +7,7 @@ import dev.codesoapbox.backity.core.sourcefile.domain.FileName;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
+import dev.codesoapbox.backity.shared.domain.exceptions.DomainValueIsEmptyException;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,15 @@ class PathTemplateTest {
             assertThatThrownBy(() -> new PathTemplate(null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessageContaining("value");
+        }
+
+        @Test
+        void shouldThrowGivenBlankValue() {
+            String blankValue = " ";
+
+            assertThatThrownBy(() -> new PathTemplate(blankValue))
+                    .isInstanceOf(DomainValueIsEmptyException.class)
+                    .hasMessageContaining("Path template");
         }
 
         @Test

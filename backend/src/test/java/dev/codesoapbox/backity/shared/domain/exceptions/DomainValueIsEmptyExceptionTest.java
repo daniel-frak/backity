@@ -1,18 +1,18 @@
-package dev.codesoapbox.backity.core.sourcefile.domain.exceptions;
+package dev.codesoapbox.backity.shared.domain.exceptions;
 
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SourceFileUrlEmptyExceptionTest {
+class DomainValueIsEmptyExceptionTest {
 
     @Test
     void shouldGetMessage() {
-        var exception = new SourceFileUrlEmptyException();
+        var exception = new DomainValueIsEmptyException("SomeProperty");
 
         String result = exception.getMessage();
 
-        var expectedResult = "Source file url is empty";
+        var expectedResult = "SomeProperty is empty";
         assertThat(result).isEqualTo(expectedResult);
     }
 }

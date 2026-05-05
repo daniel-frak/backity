@@ -7,6 +7,7 @@ import dev.codesoapbox.backity.core.sourcefile.domain.FileName;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StringSanitizer;
+import dev.codesoapbox.backity.shared.domain.exceptions.DomainValueIsEmptyException;
 import lombok.NonNull;
 
 import java.util.ArrayList;
@@ -51,6 +52,11 @@ public record PathTemplate(@NonNull String value) {
     public PathTemplate {
         // We don't store the sanitized value so that we always have the original in case of sanitization bugs.
         String sanitizedValue = sanitize(value);
+
+        if (sanitizedValue.isBlank()) {
+            throw new DomainValueIsEmptyException("Path template");
+        }
+
         validateAllPlaceholdersAreValid(sanitizedValue);
     }
 
