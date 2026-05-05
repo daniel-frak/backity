@@ -2,10 +2,7 @@ package dev.codesoapbox.backity.core.discovery.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
-import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
-import dev.codesoapbox.backity.core.sourcefile.domain.FileTitle;
-import dev.codesoapbox.backity.core.sourcefile.domain.FileVersion;
-import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileUrl;
+import dev.codesoapbox.backity.core.sourcefile.domain.*;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +23,7 @@ class DiscoveredFileTest {
                     new FileTitle("Game 1 (Installer)"),
                     new FileVersion("1.0.0"),
                     new SourceFileUrl("/downlink/some_game/some_file"),
-                    "game_1_installer.exe",
+                    new FileName("game_1_installer.exe"),
                     fileSize
             ))
                     .isInstanceOf(NullPointerException.class)
@@ -44,7 +41,7 @@ class DiscoveredFileTest {
                     new FileTitle("Game 1 (Installer)"),
                     new FileVersion("1.0.0"),
                     new SourceFileUrl("/downlink/some_game/some_file"),
-                    "game_1_installer.exe",
+                    new FileName("game_1_installer.exe"),
                     fileSize
             ))
                     .isInstanceOf(NullPointerException.class)
@@ -62,7 +59,7 @@ class DiscoveredFileTest {
                     null,
                     new FileVersion("1.0.0"),
                     new SourceFileUrl("/downlink/some_game/some_file"),
-                    "game_1_installer.exe",
+                    new FileName("game_1_installer.exe"),
                     fileSize
             ))
                     .isInstanceOf(NullPointerException.class)
@@ -80,7 +77,7 @@ class DiscoveredFileTest {
                     new FileTitle("Game 1 (Installer)"),
                     null,
                     new SourceFileUrl("/downlink/some_game/some_file"),
-                    "game_1_installer.exe",
+                    new FileName("game_1_installer.exe"),
                     fileSize
             ))
                     .isInstanceOf(NullPointerException.class)
@@ -98,7 +95,7 @@ class DiscoveredFileTest {
                     new FileTitle("Game 1 (Installer)"),
                     new FileVersion("1.0.0"),
                     null,
-                    "game_1_installer.exe",
+                    new FileName("game_1_installer.exe"),
                     fileSize
             ))
                     .isInstanceOf(NullPointerException.class)
@@ -133,7 +130,7 @@ class DiscoveredFileTest {
                     new FileTitle("Game 1 (Installer)"),
                     new FileVersion("1.0.0"),
                     new SourceFileUrl("/downlink/some_game/some_file"),
-                    "/downlink/some_game/some_file",
+                    new FileName("/downlink/some_game/some_file"),
                     null
             ))
                     .isInstanceOf(NullPointerException.class)

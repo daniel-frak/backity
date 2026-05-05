@@ -14,10 +14,7 @@ import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntityMapper;
-import dev.codesoapbox.backity.core.sourcefile.domain.FileTitle;
-import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
-import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
-import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
+import dev.codesoapbox.backity.core.sourcefile.domain.*;
 import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaEntityMapper;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
@@ -344,7 +341,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
 
     @Test
     void findAllPaginatedShouldFilterByFullOriginalFileNameCaseInsensitive() {
-        var searchQuery = "\"" + ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getOriginalFileName()
+        var searchQuery = "\"" + ExistingSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getOriginalFileName().value()
                 .toUpperCase() + "\"";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
 
@@ -440,7 +437,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
                 .gameId(ExistingGames.GAME_1.getId())
                 .originalGameTitle(new GameTitle("Original Game 1 Title"))
                 .fileTitle(new FileTitle("Game 1 (Installer)"))
-                .originalFileName("game_1_installer.exe")
+                .originalFileName(new FileName("game_1_installer.exe"))
                 .build();
 
         public static final SourceFile GOG_SOURCE_FILE_2_FOR_GAME_1 = TestSourceFile.gogBuilder()
@@ -448,7 +445,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
                 .gameId(ExistingGames.GAME_1.getId())
                 .originalGameTitle(new GameTitle("Original Game 1 Title"))
                 .fileTitle(new FileTitle("Game 1 (Patch)"))
-                .originalFileName("game_1_patch.exe")
+                .originalFileName(new FileName("game_1_patch.exe"))
                 .build();
 
         public static final SourceFile GOG_SOURCE_FILE_1_FOR_GAME_2 = TestSourceFile.gogBuilder()
@@ -456,7 +453,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
                 .gameId(ExistingGames.GAME_2.getId())
                 .originalGameTitle(new GameTitle("Original Game 2 Title"))
                 .fileTitle(new FileTitle("Game 2 File"))
-                .originalFileName("game_2.exe")
+                .originalFileName(new FileName("game_2.exe"))
                 .build();
 
         public static final SourceFile GOG_SOURCE_FILE_1_FOR_GAME_3 = TestSourceFile.gogBuilder()
@@ -464,7 +461,7 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
                 .gameId(ExistingGames.GAME_3.getId())
                 .originalGameTitle(new GameTitle("Original Game 3 Title"))
                 .fileTitle(new FileTitle("Game 3 File"))
-                .originalFileName("game_3.exe")
+                .originalFileName(new FileName("game_3.exe"))
                 .build();
 
         private static final SourceFileJpaEntityMapper MAPPER = Mappers.getMapper(SourceFileJpaEntityMapper.class);

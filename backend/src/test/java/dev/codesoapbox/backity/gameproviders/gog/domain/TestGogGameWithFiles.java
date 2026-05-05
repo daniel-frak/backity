@@ -55,7 +55,7 @@ public class TestGogGameWithFiles {
                                 discoveredFile.url().value(),
                                 discoveredFile.fileTitle().value(),
                                 discoveredFile.size().toString(),
-                                discoveredFile.originalFileName()
+                                discoveredFile.originalFileName().value()
                         )
                 ),
                 null

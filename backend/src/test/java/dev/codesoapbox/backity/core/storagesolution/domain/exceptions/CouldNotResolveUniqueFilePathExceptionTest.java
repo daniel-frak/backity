@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.storagesolution.domain.exceptions;
 
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
+import dev.codesoapbox.backity.core.sourcefile.domain.FileName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,7 +11,7 @@ class CouldNotResolveUniqueFilePathExceptionTest {
     @Test
     void shouldGetMessage() {
         var gameTitle = new GameTitle("someGameTitle");
-        var fileName = "someFileName";
+        var fileName = new FileName("someFileName");
         int attemptNumber = 5;
         var exception = new CouldNotResolveUniqueFilePathException(gameTitle, fileName, attemptNumber);
 

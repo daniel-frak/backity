@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.backuptarget.domain;
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.backuptarget.domain.exceptions.InvalidPathTemplatePlaceholdersException;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
+import dev.codesoapbox.backity.core.sourcefile.domain.FileName;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
@@ -93,7 +94,7 @@ class PathTemplateTest {
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
                         .gameProviderId(new GameProviderId("someGameProviderId"))
                         .originalGameTitle(new GameTitle("someGameTitle"))
-                        .originalFileName("someFileName")
+                        .originalFileName(new FileName("someFileName"))
                         .build();
 
                 FilePath result =
@@ -107,7 +108,7 @@ class PathTemplateTest {
             @Test
             void shouldAlwaysAddFileExtensionAtTheEndOfThePath() {
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
-                        .originalFileName("someFileName.txt")
+                        .originalFileName(new FileName("someFileName.txt"))
                         .build();
                 var pathTemplate = new PathTemplate("{FILENAME}_suffix");
 
@@ -121,7 +122,7 @@ class PathTemplateTest {
             @Test
             void shouldNotThrowGivenNoFileExtensionInFileName() {
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
-                        .originalFileName("someFileName")
+                        .originalFileName(new FileName("someFileName"))
                         .build();
                 var pathTemplate = new PathTemplate("/test/{FILENAME}");
 
@@ -139,7 +140,7 @@ class PathTemplateTest {
             })
             void shouldAddFileNameAtEndGivenFileNamePlaceholderIsMissing(String pathTemplateValue) {
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
-                        .originalFileName("someFileName")
+                        .originalFileName(new FileName("someFileName"))
                         .build();
                 var pathTemplate = new PathTemplate(pathTemplateValue);
 
@@ -155,7 +156,7 @@ class PathTemplateTest {
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
                         .gameProviderId(new GameProviderId("someGameProviderId"))
                         .originalGameTitle(new GameTitle("someGameTitle"))
-                        .originalFileName("someFileName")
+                        .originalFileName(new FileName("someFileName"))
                         .build();
                 var pathTemplate = new PathTemplate("{FILENAME}");
 
@@ -170,7 +171,7 @@ class PathTemplateTest {
                 var wrongPathTemplate = new PathTemplate("{GAME_TITLE}\\{FILENAME}");
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
                         .originalGameTitle(new GameTitle("someGameTitle"))
-                        .originalFileName("someFileName")
+                        .originalFileName(new FileName("someFileName"))
                         .build();
 
                 FilePath result = wrongPathTemplate.constructPath(sourceFile, "/", 0);
@@ -184,7 +185,7 @@ class PathTemplateTest {
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
                         .gameProviderId(new GameProviderId("someGameProviderId"))
                         .originalGameTitle(new GameTitle("someGameTitle"))
-                        .originalFileName("someFileName.exe")
+                        .originalFileName(new FileName("someFileName.exe"))
                         .build();
                 var pathTemplate = new PathTemplate("{FILENAME}");
 
@@ -203,7 +204,7 @@ class PathTemplateTest {
                 var pathTemplate = new PathTemplate(
                         "/test" + CHARACTERS_TO_REMOVE + "/{FILENAME}" + CHARACTERS_TO_REMOVE);
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
-                        .originalFileName("someFileName")
+                        .originalFileName(new FileName("someFileName"))
                         .build();
 
                 FilePath result = pathTemplate.constructPath(sourceFile, "/", 0);
@@ -216,7 +217,7 @@ class PathTemplateTest {
             void shouldReplaceIllegalCharactersFromPathTemplate() {
                 var pathTemplate = new PathTemplate("/some:test\tfolder 1 & 2/{FILENAME}");
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
-                        .originalFileName("someFileName")
+                        .originalFileName(new FileName("someFileName"))
                         .build();
 
                 FilePath result = pathTemplate.constructPath(sourceFile, "/", 0);
@@ -231,7 +232,7 @@ class PathTemplateTest {
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
                         .gameProviderId(new GameProviderId("someGameProviderId" + charactersToRemove))
                         .originalGameTitle(new GameTitle("someGameTitle" + charactersToRemove))
-                        .originalFileName("someFileName" + charactersToRemove)
+                        .originalFileName(new FileName("someFileName" + charactersToRemove))
                         .build();
 
                 FilePath result =
@@ -247,7 +248,7 @@ class PathTemplateTest {
                 SourceFile sourceFile = TestSourceFile.gogBuilder()
                         .gameProviderId(new GameProviderId("some:Game\tProviderId 1"))
                         .originalGameTitle(new GameTitle("some:Game\tTitle 1"))
-                        .originalFileName("some:File\tName 1")
+                        .originalFileName(new FileName("some:File\tName 1"))
                         .build();
 
                 FilePath result =

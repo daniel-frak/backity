@@ -43,7 +43,7 @@ public class SourceFile {
     private SourceFileUrl url;
 
     @NonNull
-    private String originalFileName;
+    private FileName originalFileName;
 
     @NonNull
     private FileSize size;
