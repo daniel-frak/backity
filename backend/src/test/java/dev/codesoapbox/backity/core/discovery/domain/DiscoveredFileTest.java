@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileSize;
 import dev.codesoapbox.backity.core.sourcefile.domain.FileTitle;
+import dev.codesoapbox.backity.core.sourcefile.domain.FileVersion;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestDiscoveredFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.exceptions.DiscoveredFileUrlEmptyException;
 import org.junit.jupiter.api.Nested;
@@ -24,7 +25,7 @@ class DiscoveredFileTest {
                     null,
                     new GameTitle("Game 1"),
                     new FileTitle("Game 1 (Installer)"),
-                    "1.0.0",
+                    new FileVersion("1.0.0"),
                     "/downlink/some_game/some_file",
                     "game_1_installer.exe",
                     fileSize
@@ -42,7 +43,7 @@ class DiscoveredFileTest {
                     gameProviderId,
                     null,
                     new FileTitle("Game 1 (Installer)"),
-                    "1.0.0",
+                    new FileVersion("1.0.0"),
                     "/downlink/some_game/some_file",
                     "game_1_installer.exe",
                     fileSize
@@ -60,7 +61,7 @@ class DiscoveredFileTest {
                     gameProviderId,
                     new GameTitle("Game 1"),
                     null,
-                    "1.0.0",
+                    new FileVersion("1.0.0"),
                     "/downlink/some_game/some_file",
                     "game_1_installer.exe",
                     fileSize
@@ -96,7 +97,7 @@ class DiscoveredFileTest {
                     gameProviderId,
                     new GameTitle("Game 1"),
                     new FileTitle("Game 1 (Installer)"),
-                    "1.0.0",
+                    new FileVersion("1.0.0"),
                     null,
                     "game_1_installer.exe",
                     fileSize
@@ -114,7 +115,7 @@ class DiscoveredFileTest {
                     gameProviderId,
                     new GameTitle("Game 1"),
                     new FileTitle("Game 1 (Installer)"),
-                    "1.0.0",
+                    new FileVersion("1.0.0"),
                     "/downlink/some_game/some_file",
                     null,
                     fileSize
@@ -131,7 +132,7 @@ class DiscoveredFileTest {
                     gameProviderId,
                     new GameTitle("Game 1"),
                     new FileTitle("Game 1 (Installer)"),
-                    "1.0.0",
+                    new FileVersion("1.0.0"),
                     "/downlink/some_game/some_file",
                     "/downlink/some_game/some_file",
                     null

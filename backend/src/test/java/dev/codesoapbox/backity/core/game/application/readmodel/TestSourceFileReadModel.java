@@ -11,7 +11,7 @@ public class TestSourceFileReadModel {
                 sourceFile.getGameProviderId().value(),
                 sourceFile.getOriginalGameTitle().value(),
                 sourceFile.getFileTitle().value(),
-                sourceFile.getVersion(),
+                sourceFile.getVersion().value(),
                 sourceFile.getUrl(),
                 sourceFile.getOriginalFileName(),
                 sourceFile.getSize().toString(),

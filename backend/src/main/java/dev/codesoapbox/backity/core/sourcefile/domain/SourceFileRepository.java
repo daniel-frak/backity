@@ -10,7 +10,7 @@ public interface SourceFileRepository {
 
     SourceFile save(SourceFile sourceFile);
 
-    boolean existsByUrlAndVersion(String url, String version);
+    boolean existsByUrlAndVersion(String url, FileVersion version);
 
     SourceFile getById(SourceFileId id);
 

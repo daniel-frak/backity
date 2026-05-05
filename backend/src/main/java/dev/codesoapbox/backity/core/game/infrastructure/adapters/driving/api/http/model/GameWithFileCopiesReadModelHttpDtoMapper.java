@@ -3,23 +3,23 @@ package dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.ht
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgress;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyHttpDto;
-import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyHttpDtoMapper;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesAndReplicationProgresses;
 import dev.codesoapbox.backity.core.game.application.readmodel.FileCopyReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.GameWithFileCopiesReadModel;
 import dev.codesoapbox.backity.core.game.application.readmodel.SourceFileWithCopiesReadModel;
-import dev.codesoapbox.backity.core.game.infrastructure.adapters.driving.api.http.model.game.GameIdHttpDtoMapper;
-import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driving.api.http.model.sourcefile.SourceFileHttpDtoMapper;
+import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driving.api.http.model.sourcefile.SourceFileValueObjectHttpDtoMapper;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
+import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.SharedHttpDtoMapperConfig;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.ProgressHttpDto;
-import org.mapstruct.*;
+import org.mapstruct.Context;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
 import java.util.List;
 
 @SuppressWarnings("java:S1694") // False positive
-@Mapper(unmappedSourcePolicy = ReportingPolicy.IGNORE,
-        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS,
-        uses = {SourceFileHttpDtoMapper.class, GameIdHttpDtoMapper.class, FileCopyHttpDtoMapper.class})
+@Mapper(config = SharedHttpDtoMapperConfig.class, uses = SourceFileValueObjectHttpDtoMapper.class)
 public abstract class GameWithFileCopiesReadModelHttpDtoMapper {
 
     public GameWithFileCopiesHttpDto toDto(GameWithFileCopiesAndReplicationProgresses model) {
@@ -27,7 +27,7 @@ public abstract class GameWithFileCopiesReadModelHttpDtoMapper {
     }
 
     protected abstract GameWithFileCopiesHttpDto toDto(GameWithFileCopiesReadModel model,
-                                                    @Context List<FileCopyReplicationProgress> replicationProgresses);
+                                                       @Context List<FileCopyReplicationProgress> replicationProgresses);
 
     @Mapping(target = "fileCopiesWithProgress", source = "fileCopies")
     protected abstract SourceFileWithCopiesHttpDto toDto(

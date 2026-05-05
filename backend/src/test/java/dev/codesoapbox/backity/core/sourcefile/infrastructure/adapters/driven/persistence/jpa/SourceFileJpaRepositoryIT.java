@@ -4,6 +4,7 @@ import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntityMapper;
+import dev.codesoapbox.backity.core.sourcefile.domain.FileVersion;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
@@ -97,8 +98,9 @@ abstract class SourceFileJpaRepositoryIT {
 
     @ParameterizedTest(name = "should return {1} for version={0}")
     @CsvSource(value = {"1.0.0,true", "fakeVersion,false"})
-    void existsByUrlAndVersion(String version, boolean shouldFind) {
+    void existsByUrlAndVersion(String versionValue, boolean shouldFind) {
         populateDatabase(SOURCE_FILES.getAll());
+        var version = new FileVersion(versionValue);
         boolean exists = sourceFileJpaRepository.existsByUrlAndVersion("/downlink/some_game/some_file", version);
 
         assertThat(exists).isEqualTo(shouldFind);

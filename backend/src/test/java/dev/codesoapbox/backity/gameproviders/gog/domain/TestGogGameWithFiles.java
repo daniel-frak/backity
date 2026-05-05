@@ -51,7 +51,7 @@ public class TestGogGameWithFiles {
                 null,
                 List.of(
                         new GogFile(
-                                discoveredFile.version(),
+                                discoveredFile.version().value(),
                                 discoveredFile.url(),
                                 discoveredFile.fileTitle().value(),
                                 discoveredFile.size().toString(),
