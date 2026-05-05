@@ -30,7 +30,7 @@ class AuthenticateGogUseCaseTest {
         String code = "someCode";
         String refreshToken = mockRefreshToken();
 
-        String result = useCase.authenticateAndGetRefreshToken(code);
+        String result = useCase.execute(code);
 
         assertThat(result)
                 .isEqualTo(refreshToken);

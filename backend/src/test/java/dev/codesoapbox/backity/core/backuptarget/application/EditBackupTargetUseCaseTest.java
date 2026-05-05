@@ -38,7 +38,7 @@ class EditBackupTargetUseCaseTest {
                 .build();
         EditBackupTargetCommand command = toCommand(expectedBackupTarget);
 
-        useCase.editBackupTarget(command);
+        useCase.execute(command);
 
         assertWasPersisted(expectedBackupTarget);
     }

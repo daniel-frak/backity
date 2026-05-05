@@ -17,7 +17,7 @@ public class GetBackupTargetsController {
 
     @GetMapping
     public List<BackupTargetHttpDto> getBackupTargets() {
-        return useCase.getBackupTargets().stream()
+        return useCase.execute().stream()
                 .map(mapper::toDto)
                 .toList();
     }

@@ -43,7 +43,7 @@ class DeleteFileCopyUseCaseTest {
         FakeUnixStorageSolution storageSolution = mockStorageSolutionExists(fileCopy);
         storageSolution.createFile(filePath);
 
-        useCase.deleteFileCopy(fileCopy.getId());
+        useCase.execute(fileCopy.getId());
 
         assertThat(storageSolution.fileExists(filePath)).isFalse();
     }
@@ -79,7 +79,7 @@ class DeleteFileCopyUseCaseTest {
         FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
         mockStorageSolutionExists(fileCopy);
 
-        useCase.deleteFileCopy(fileCopy.getId());
+        useCase.execute(fileCopy.getId());
 
         assertThat(fileCopy.getStatus()).isEqualTo(FileCopyStatus.TRACKED);
         verify(fileCopyRepository).save(fileCopy);
@@ -92,7 +92,7 @@ class DeleteFileCopyUseCaseTest {
         var exception = new RuntimeException("test");
         storageSolution.setShouldThrowOnFileDeletion(exception);
 
-        assertThatThrownBy(() -> useCase.deleteFileCopy(fileCopy.getId()))
+        assertThatThrownBy(() -> useCase.execute(fileCopy.getId()))
                 .isSameAs(exception);
 
         assertThat(fileCopy.getStatus()).isNotEqualTo(FileCopyStatus.TRACKED);
@@ -104,7 +104,7 @@ class DeleteFileCopyUseCaseTest {
         FileCopy fileCopy = mockEnqueuedFileCopyExists();
         FileCopyId fileCopyId = fileCopy.getId();
 
-        assertThatThrownBy(() -> useCase.deleteFileCopy(fileCopyId))
+        assertThatThrownBy(() -> useCase.execute(fileCopyId))
                 .isInstanceOf(FileCopyNotBackedUpException.class)
                 .hasMessageContaining(fileCopyId.toString());
     }

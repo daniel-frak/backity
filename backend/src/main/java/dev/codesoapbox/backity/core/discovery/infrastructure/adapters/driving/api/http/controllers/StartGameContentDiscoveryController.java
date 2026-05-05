@@ -17,6 +17,6 @@ public class StartGameContentDiscoveryController {
     @PostMapping("start")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public void startGameContentDiscovery() {
-        useCase.startContentDiscovery();
+        useCase.execute();
     }
 }

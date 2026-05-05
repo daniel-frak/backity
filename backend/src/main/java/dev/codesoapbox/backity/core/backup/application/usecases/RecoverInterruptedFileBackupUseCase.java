@@ -28,7 +28,7 @@ public class RecoverInterruptedFileBackupUseCase {
     private final StorageSolutionRepository storageSolutionRepository;
     private final DomainEventPublisher domainEventPublisher;
 
-    public void recoverInterruptedFileBackup() {
+    public void execute() {
         List<FileCopy> inProgressFileCopies = fileCopyRepository.findAllInProgress();
         Set<BackupTargetId> backupTargetIds = inProgressFileCopies.stream()
                 .map(fileCopy -> fileCopy.getNaturalId().backupTargetId())

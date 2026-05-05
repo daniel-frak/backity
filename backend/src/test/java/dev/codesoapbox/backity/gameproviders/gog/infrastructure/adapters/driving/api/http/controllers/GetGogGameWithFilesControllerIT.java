@@ -62,7 +62,7 @@ class GetGogGameWithFilesControllerIT {
                 "someChangelog"
         );
 
-        when(useCase.getGameDetails(gameId))
+        when(useCase.execute(gameId))
                 .thenReturn(Optional.of(gogGameDetails));
 
         mockMvc.perform(get("/api/gog/games/" + gameId))
@@ -75,7 +75,7 @@ class GetGogGameWithFilesControllerIT {
     void shouldReturnHttp404GivenGameDetailsNotFound() throws Exception {
         var gameId = "someGameId";
 
-        when(useCase.getGameDetails(gameId))
+        when(useCase.execute(gameId))
                 .thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/gog/games/" + gameId))

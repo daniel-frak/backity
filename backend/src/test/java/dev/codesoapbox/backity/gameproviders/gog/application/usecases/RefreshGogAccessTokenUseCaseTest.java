@@ -30,7 +30,7 @@ class RefreshGogAccessTokenUseCaseTest {
         String oldRefreshToken = "oldRefreshToken";
         String newRefreshToken = mockNewRefreshToken();
 
-        String result = useCase.refreshAccessToken(oldRefreshToken);
+        String result = useCase.execute(oldRefreshToken);
 
         assertThat(result)
                 .isEqualTo(newRefreshToken);

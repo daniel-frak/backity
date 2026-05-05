@@ -29,7 +29,7 @@ public class EnqueueFileCopyController {
         var fileCopyNaturalId = new FileCopyNaturalId(sourceFileId, backupTargetId);
 
         try {
-            useCase.enqueue(fileCopyNaturalId);
+            useCase.execute(fileCopyNaturalId);
             return ResponseEntity.ok().build();
         } catch (FileCopyNotFoundException e) {
             log.warn("Could not enqueue file copy.", e);

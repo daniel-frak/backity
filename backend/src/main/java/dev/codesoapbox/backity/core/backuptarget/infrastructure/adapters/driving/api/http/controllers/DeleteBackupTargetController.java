@@ -21,6 +21,6 @@ public class DeleteBackupTargetController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteBackupTarget(@PathVariable String idValue) {
         var id = new BackupTargetId(idValue);
-        useCase.deleteBackupTarget(id);
+        useCase.execute(id);
     }
 }

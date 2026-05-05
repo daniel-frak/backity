@@ -17,6 +17,6 @@ public class LogOutOfGogController {
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logOutOfGog() {
-        useCase.logOutOfGog();
+        useCase.execute();
     }
 }

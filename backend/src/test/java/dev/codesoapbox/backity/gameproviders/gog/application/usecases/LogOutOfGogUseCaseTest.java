@@ -24,7 +24,7 @@ class LogOutOfGogUseCaseTest {
 
     @Test
     void shouldLogOutOfGog() {
-        useCase.logOutOfGog();
+        useCase.execute();
         verify(authService).logOut();
     }
 }

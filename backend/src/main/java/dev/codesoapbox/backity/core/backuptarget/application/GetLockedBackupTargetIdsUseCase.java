@@ -12,7 +12,7 @@ public class GetLockedBackupTargetIdsUseCase {
 
     private final FileCopyRepository fileCopyRepository;
 
-    public List<BackupTargetId> getLockedBackupTargetIds() {
+    public List<BackupTargetId> execute() {
         return fileCopyRepository.getUniqueBackupTargetIdsByStatusNotIn(FileCopyStatus.NON_LOCKING_STATUSES);
     }
 }

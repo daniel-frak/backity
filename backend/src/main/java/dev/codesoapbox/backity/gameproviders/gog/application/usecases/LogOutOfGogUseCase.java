@@ -8,7 +8,7 @@ public class LogOutOfGogUseCase {
 
     private final GogAuthService authService;
 
-    public void logOutOfGog() {
+    public void execute() {
         authService.logOut();
     }
 }

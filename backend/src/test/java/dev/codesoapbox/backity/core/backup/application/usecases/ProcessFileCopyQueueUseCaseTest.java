@@ -50,7 +50,7 @@ class ProcessFileCopyQueueUseCaseTest {
         void shouldDoNothingGivenFileCopyReplicationProcessNotReady() {
             fileCopyReplicationProcessIsNotReady();
 
-            processFileCopyQueueUseCase.processFileCopyQueue();
+            processFileCopyQueueUseCase.execute();
 
             verifyNoInteractions(fileCopyRepository, fileBackupContextFactory, fileBackupService);
         }
@@ -67,7 +67,7 @@ class ProcessFileCopyQueueUseCaseTest {
             exists(context);
             queueContains(List.of(context.fileCopy()));
 
-            processFileCopyQueueUseCase.processFileCopyQueue();
+            processFileCopyQueueUseCase.execute();
 
             verify(fileBackupService, times(1)).backUpFile(context);
         }
@@ -91,7 +91,7 @@ class ProcessFileCopyQueueUseCaseTest {
             exist(context1, context2);
             queueContains(List.of(context1.fileCopy(), context2.fileCopy()));
 
-            processFileCopyQueueUseCase.processFileCopyQueue();
+            processFileCopyQueueUseCase.execute();
 
             verify(fileBackupService, times(1)).backUpFile(context1);
             verify(fileBackupService, times(1)).backUpFile(context2);
@@ -105,7 +105,7 @@ class ProcessFileCopyQueueUseCaseTest {
             exist(context1, context2);
             queueContains(List.of(context1.fileCopy(), context1.fileCopy(), context2.fileCopy()));
 
-            processFileCopyQueueUseCase.processFileCopyQueue();
+            processFileCopyQueueUseCase.execute();
 
             verify(fileBackupService, times(1)).backUpFile(context1);
             verify(fileBackupService, never()).backUpFile(context2);
@@ -123,7 +123,7 @@ class ProcessFileCopyQueueUseCaseTest {
                     context1, context2, markAsCompletedWasCalled);
             fileBackupServiceSuccessfullyBacksUpFile();
 
-            processFileCopyQueueUseCase.processFileCopyQueue();
+            processFileCopyQueueUseCase.execute();
 
             verify(fileBackupService, times(1)).backUpFile(context1);
             verify(fileBackupService, times(1)).backUpFile(context2);
@@ -191,7 +191,7 @@ class ProcessFileCopyQueueUseCaseTest {
             exists(context);
             queueContains(List.of(context.fileCopy()));
 
-            processFileCopyQueueUseCase.processFileCopyQueue();
+            processFileCopyQueueUseCase.execute();
 
             InOrder inOrder = inOrder(fileCopyReplicationProcess, fileBackupService);
             inOrder.verify(fileBackupService).backUpFile(any());
@@ -223,7 +223,7 @@ class ProcessFileCopyQueueUseCaseTest {
             queueContains(List.of(context.fileCopy()));
             backupServiceThrows();
 
-            processFileCopyQueueUseCase.processFileCopyQueue();
+            processFileCopyQueueUseCase.execute();
 
             InOrder inOrder = inOrder(fileCopyReplicationProcess, fileBackupService);
             inOrder.verify(fileBackupService).backUpFile(any());
@@ -240,7 +240,7 @@ class ProcessFileCopyQueueUseCaseTest {
             fileCopyReplicationProcessIsReady();
             queueIsEmpty();
 
-            processFileCopyQueueUseCase.processFileCopyQueue();
+            processFileCopyQueueUseCase.execute();
 
             verify(fileCopyReplicationProcess).markAsCompleted();
             verifyNoInteractions(fileBackupContextFactory, fileBackupService);

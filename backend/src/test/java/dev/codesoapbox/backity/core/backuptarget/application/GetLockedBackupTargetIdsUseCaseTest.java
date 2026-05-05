@@ -33,7 +33,7 @@ class GetLockedBackupTargetIdsUseCaseTest {
         BackupTargetId backupTargetId = TestBackupTarget.localFolder().getId();
         backupTargetIsUsed(backupTargetId);
 
-        List<BackupTargetId> result = useCase.getLockedBackupTargetIds();
+        List<BackupTargetId> result = useCase.execute();
 
         assertThat(result).isEqualTo(List.of(backupTargetId));
     }

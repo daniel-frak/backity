@@ -8,7 +8,7 @@ public class StartGameContentDiscoveryUseCase {
 
     private final GameContentDiscoveryService gameContentDiscoveryService;
 
-    public void startContentDiscovery() {
+    public void execute() {
         gameContentDiscoveryService.startContentDiscovery();
     }
 }

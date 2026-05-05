@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driving.api.http.controllers;
 
+import dev.codesoapbox.backity.gameproviders.gog.application.usecases.AuthenticateGogUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driving.api.http.model.GogAuthenticationRequestHttpDto;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driving.api.http.model.RefreshTokenHttpDto;
-import dev.codesoapbox.backity.gameproviders.gog.application.usecases.AuthenticateGogUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class AuthenticateGogController {
     @PostMapping
     public RefreshTokenHttpDto authenticateGog(
             @RequestBody @Valid GogAuthenticationRequestHttpDto gogAuthenticationRequestHttpDto) {
-        String refreshToken = useCase.authenticateAndGetRefreshToken(gogAuthenticationRequestHttpDto.code());
+        String refreshToken = useCase.execute(gogAuthenticationRequestHttpDto.code());
         return RefreshTokenHttpDto.of(refreshToken);
     }
 }

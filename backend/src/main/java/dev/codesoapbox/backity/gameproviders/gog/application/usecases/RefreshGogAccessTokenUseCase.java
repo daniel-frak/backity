@@ -8,7 +8,7 @@ public class RefreshGogAccessTokenUseCase {
 
     private final GogAuthService authService;
 
-    public String refreshAccessToken(String refreshToken) {
+    public String execute(String refreshToken) {
         authService.refresh(refreshToken);
         return authService.getRefreshToken();
     }

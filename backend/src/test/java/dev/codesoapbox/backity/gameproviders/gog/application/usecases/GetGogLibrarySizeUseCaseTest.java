@@ -27,7 +27,7 @@ class GetGogLibrarySizeUseCaseTest {
     void shouldGetLibrarySize() {
         String size = mockLibrarySize();
 
-        String result = useCase.getLibrarySize();
+        String result = useCase.execute();
 
         assertThat(result)
                 .isEqualTo(size);

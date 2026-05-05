@@ -22,7 +22,7 @@ public class GetGamesWithFilesUseCase {
     private final GameWithFileCopiesReadModelRepository gameReadModelRepository;
     private final FileCopyReplicationProgressRepository replicationProgressRepository;
 
-    public Page<GameWithFileCopiesAndReplicationProgresses> getGamesWithFiles(
+    public Page<GameWithFileCopiesAndReplicationProgresses> execute(
             Pagination pagination, GameWithFileCopiesSearchFilter filter) {
         Page<GameWithFileCopiesReadModel> games = gameReadModelRepository.findAllPaginated(pagination, filter);
 

@@ -11,7 +11,7 @@ public class GetBackupTargetsUseCase {
 
     private final BackupTargetRepository backupTargetRepository;
 
-    public List<BackupTarget> getBackupTargets() {
+    public List<BackupTarget> execute() {
         return backupTargetRepository.findAll();
     }
 }

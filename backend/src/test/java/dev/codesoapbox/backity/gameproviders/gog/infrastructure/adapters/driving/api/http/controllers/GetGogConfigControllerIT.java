@@ -24,7 +24,7 @@ class GetGogConfigControllerIT {
 
     @Test
     void shouldGetGogConfig() throws Exception {
-        when(useCase.getGogConfig())
+        when(useCase.execute())
                 .thenReturn(new GogConfigInfo("someUserAuthUrl"));
 
         String expectedResponseJson = """

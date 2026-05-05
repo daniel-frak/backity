@@ -28,7 +28,7 @@ class GetLockedBackupTargetIdsControllerIT {
     @Test
     void shouldGetLockedBackupTargetIds() throws Exception {
         BackupTarget backupTarget = TestBackupTarget.localFolder();
-        when(useCase.getLockedBackupTargetIds())
+        when(useCase.execute())
                 .thenReturn(List.of(backupTarget.getId()));
 
         var expectedJson = """

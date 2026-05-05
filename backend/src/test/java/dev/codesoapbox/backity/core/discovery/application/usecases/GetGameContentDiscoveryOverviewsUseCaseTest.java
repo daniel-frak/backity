@@ -31,7 +31,7 @@ class GetGameContentDiscoveryOverviewsUseCaseTest {
     void shouldGetDiscoveryOverviews() {
         List<GameContentDiscoveryOverview> overviews = mockGameContentDiscoveryOverviews();
 
-        List<GameContentDiscoveryOverview> result = useCase.getDiscoveryOverviews();
+        List<GameContentDiscoveryOverview> result = useCase.execute();
 
         assertThat(result).usingRecursiveComparison()
                 .isEqualTo(overviews);

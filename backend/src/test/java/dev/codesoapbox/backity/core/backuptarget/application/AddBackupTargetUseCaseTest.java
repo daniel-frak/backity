@@ -31,7 +31,7 @@ class AddBackupTargetUseCaseTest {
         BackupTarget backupTarget = TestBackupTarget.localFolder();
         AddBackupTargetCommand command = toCommand(backupTarget);
 
-        BackupTarget result = useCase.addBackupTarget(command);
+        BackupTarget result = useCase.execute(command);
 
         assertSame(result, backupTarget);
         assertWasPersisted(result);

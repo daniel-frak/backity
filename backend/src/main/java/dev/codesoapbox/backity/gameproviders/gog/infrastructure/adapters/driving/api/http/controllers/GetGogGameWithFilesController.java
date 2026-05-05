@@ -19,7 +19,7 @@ public class GetGogGameWithFilesController {
     @Operation(summary = "Get GOG game details", description = "Returns the details of a game")
     @GetMapping("games/{id}")
     public ResponseEntity<GogGameWithFilesHttpDto> getGogGameWithFiles(@PathVariable String id) {
-        return useCase.getGameDetails(id)
+        return useCase.execute(id)
                 .map(gameDetailsResponseMapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());

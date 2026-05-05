@@ -9,7 +9,7 @@ public class EditBackupTargetUseCase {
 
     private final BackupTargetRepository backupTargetRepository;
 
-    public void editBackupTarget(EditBackupTargetCommand command) {
+    public void execute(EditBackupTargetCommand command) {
         BackupTarget backupTarget = backupTargetRepository.getById(command.id());
 
         backupTarget.setName(command.name());

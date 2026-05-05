@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driving.api.http.controllers;
 
-import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import dev.codesoapbox.backity.gameproviders.gog.application.usecases.GetGogLibrarySizeUseCase;
+import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,7 +24,7 @@ class GetGogLibrarySizeControllerIT {
     @Test
     void shouldGetLibrarySize() throws Exception {
         String expectedSize = "1GB";
-        when(useCase.getLibrarySize())
+        when(useCase.execute())
                 .thenReturn(expectedSize);
 
         mockMvc.perform(get("/api/gog/library/size"))

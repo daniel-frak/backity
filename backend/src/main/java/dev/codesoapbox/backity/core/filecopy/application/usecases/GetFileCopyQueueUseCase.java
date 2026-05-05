@@ -13,7 +13,7 @@ public class GetFileCopyQueueUseCase {
     private final FileCopyRepository fileCopyRepository;
     private final FileCopyWithContextFactory fileCopyWithContextFactory;
 
-    public Page<FileCopyWithContext> getFileCopyQueue(Pagination pagination) {
+    public Page<FileCopyWithContext> execute(Pagination pagination) {
         Page<FileCopy> fileCopiesInQueue = fileCopyRepository.findAllInProgressOrEnqueued(pagination);
 
         if (fileCopiesInQueue.content().isEmpty()) {

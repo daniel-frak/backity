@@ -11,6 +11,6 @@ public class ProcessFileCopyQueueOnFileCopyEnqueuedEventHandler {
 
     @SuppressWarnings({"java:S1172", "unused"})
     public void handle(FileCopyEnqueuedEvent event) {
-        useCase.processFileCopyQueue();
+        useCase.execute();
     }
 }

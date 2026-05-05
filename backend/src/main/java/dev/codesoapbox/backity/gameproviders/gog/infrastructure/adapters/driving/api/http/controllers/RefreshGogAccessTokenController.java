@@ -19,7 +19,7 @@ public class RefreshGogAccessTokenController {
     @PutMapping
     public RefreshTokenHttpDto refreshGogAccessToken(
             @RequestBody @Valid RefreshGogAccessTokenRequestHttpDto refreshGogAccessTokenRequestHttpDto) {
-        String accessToken = useCase.refreshAccessToken(refreshGogAccessTokenRequestHttpDto.refreshToken());
+        String accessToken = useCase.execute(refreshGogAccessTokenRequestHttpDto.refreshToken());
         return RefreshTokenHttpDto.of(accessToken);
     }
 }

@@ -9,7 +9,7 @@ public class AddBackupTargetUseCase {
 
     private final BackupTargetRepository backupTargetRepository;
 
-    public BackupTarget addBackupTarget(AddBackupTargetCommand command) {
+    public BackupTarget execute(AddBackupTargetCommand command) {
         BackupTarget backupTarget = create(command);
         backupTargetRepository.save(backupTarget);
 

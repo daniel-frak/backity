@@ -35,7 +35,7 @@ class GetGameContentDiscoveryOverviewsControllerIT {
                 TestGameContentDiscoveryProgress.twentyFivePercentGog(),
                 TestGameContentDiscoveryResult.gog()
         );
-        when(useCase.getDiscoveryOverviews())
+        when(useCase.execute())
                 .thenReturn(List.of(overview));
         var expectedJson = """
                 [{

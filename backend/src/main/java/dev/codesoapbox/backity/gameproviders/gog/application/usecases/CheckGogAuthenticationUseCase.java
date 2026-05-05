@@ -8,7 +8,7 @@ public class CheckGogAuthenticationUseCase {
 
     private final GogAuthService authService;
 
-    public boolean isAuthenticated() {
+    public boolean execute() {
         return authService.isAuthenticated();
     }
 }

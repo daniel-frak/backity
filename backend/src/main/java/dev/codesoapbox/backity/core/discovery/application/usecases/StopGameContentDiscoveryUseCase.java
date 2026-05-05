@@ -8,7 +8,7 @@ public class StopGameContentDiscoveryUseCase {
 
     private final GameContentDiscoveryService gameContentDiscoveryService;
 
-    public void stopContentDiscovery() {
+    public void execute() {
         gameContentDiscoveryService.stopContentDiscovery();
     }
 }

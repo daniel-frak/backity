@@ -25,6 +25,6 @@ class LogOutOfGogControllerIT {
         mockMvc.perform(delete("/api/" + GogAuthRestResource.RESOURCE_URL))
                 .andDo(print())
                 .andExpect(status().isNoContent());
-        verify(useCase).logOutOfGog();
+        verify(useCase).execute();
     }
 }

@@ -42,7 +42,7 @@ class CancelFileCopyUseCaseTest {
     void shouldDoNothingGivenFileCopyNotEnqueuedAndNotInProgress() {
         FileCopy fileCopy = mockTrackedFileCopyExists();
 
-        useCase.cancelFileCopy(fileCopy.getId());
+        useCase.execute(fileCopy.getId());
         verifyNoMoreInteractions(fileCopyRepository, storageSolutionWriteService);
     }
 
@@ -55,7 +55,7 @@ class CancelFileCopyUseCaseTest {
     void shouldCancelEnqueuedFileCopy() {
         FileCopy fileCopy = mockEnqueuedFileCopyExists();
 
-        useCase.cancelFileCopy(fileCopy.getId());
+        useCase.execute(fileCopy.getId());
 
         FileCopy savedFileCopy = getSavedFileCopy();
         assertThat(savedFileCopy.getStatus()).isEqualTo(FileCopyStatus.TRACKED);
@@ -85,7 +85,7 @@ class CancelFileCopyUseCaseTest {
         BackupTarget backupTarget = mockBackupTargetExistsFor(fileCopy);
         String filePath = fileCopy.getFilePath();
 
-        useCase.cancelFileCopy(fileCopy.getId());
+        useCase.execute(fileCopy.getId());
 
         var expectedWriteDestination = new WriteDestination(backupTarget.getStorageSolutionId(), filePath);
         verify(storageSolutionWriteService).cancelWrite(expectedWriteDestination);

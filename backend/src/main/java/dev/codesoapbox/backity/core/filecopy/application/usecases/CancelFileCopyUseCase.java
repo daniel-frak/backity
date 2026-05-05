@@ -17,7 +17,7 @@ public class CancelFileCopyUseCase {
     private final BackupTargetRepository backupTargetRepository;
     private final StorageSolutionWriteService storageSolutionWriteService;
 
-    public void cancelFileCopy(FileCopyId fileCopyId) {
+    public void execute(FileCopyId fileCopyId) {
         FileCopy fileCopy = fileCopyRepository.getById(fileCopyId);
 
         if (fileCopy.getStatus() == FileCopyStatus.IN_PROGRESS) {

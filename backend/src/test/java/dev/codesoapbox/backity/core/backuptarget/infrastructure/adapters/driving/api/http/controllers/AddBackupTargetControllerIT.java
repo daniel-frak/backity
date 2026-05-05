@@ -77,7 +77,7 @@ class AddBackupTargetControllerIT {
                 .withPathTemplate(new PathTemplate("games/{GAME_PROVIDER_ID}/{GAME_TITLE}/{FILENAME}"))
                 .build();
         AddBackupTargetCommand command = toAddBackupTargetCommand(expectedBackupTarget);
-        when(useCase.addBackupTarget(command))
+        when(useCase.execute(command))
                 .thenReturn(expectedBackupTarget);
 
         mockMvc.perform(post("/api/" + BackupTargetsRestResource.RESOURCE_URL)
