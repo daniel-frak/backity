@@ -21,10 +21,10 @@ import org.mapstruct.Mapping;
                 BackupValueObjectHttpDtoMapper.class,
                 StorageSolutionValueObjectHttpDtoMapper.class
         })
-public abstract class FileCopyWithContextHttpDtoMapper {
+public interface FileCopyWithContextHttpDtoMapper {
 
-    public abstract FileCopyWithContextHttpDto toDto(FileCopyWithContext fileCopyWithContext);
+    FileCopyWithContextHttpDto toDto(FileCopyWithContext fileCopyWithContext);
 
     @Mapping(target = "timeLeftSeconds", source = "timeLeft.seconds")
-    protected abstract ProgressHttpDto toDto(FileCopyReplicationProgress progress);
+    ProgressHttpDto toDto(FileCopyReplicationProgress progress);
 }

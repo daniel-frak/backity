@@ -29,8 +29,8 @@ public abstract class GameWithFileCopiesReadModelHttpDtoMapper {
         return toDto(model.gameWithFileCopies(), model.replicationProgresses());
     }
 
-    protected abstract GameWithFileCopiesHttpDto toDto(GameWithFileCopiesReadModel model,
-                                                       @Context List<FileCopyReplicationProgress> replicationProgresses);
+    protected abstract GameWithFileCopiesHttpDto toDto(
+            GameWithFileCopiesReadModel model, @Context List<FileCopyReplicationProgress> replicationProgresses);
 
     @Mapping(target = "fileCopiesWithProgress", source = "fileCopies")
     protected abstract SourceFileWithCopiesHttpDto toDto(

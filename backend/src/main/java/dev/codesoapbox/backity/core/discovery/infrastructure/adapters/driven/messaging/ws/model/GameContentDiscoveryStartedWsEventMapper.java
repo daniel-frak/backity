@@ -9,7 +9,7 @@ import org.mapstruct.Mapper;
         uses = {
                 BackupValueObjectWsDtoMapper.class
         })
-public abstract class GameContentDiscoveryStartedWsEventMapper {
+public interface GameContentDiscoveryStartedWsEventMapper {
 
-    public abstract GameContentDiscoveryStartedWsEvent toWsEvent(GameContentDiscoveryStartedEvent domain);
+    GameContentDiscoveryStartedWsEvent toWsEvent(GameContentDiscoveryStartedEvent domain);
 }

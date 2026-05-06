@@ -13,8 +13,8 @@ import org.mapstruct.Mapper;
                 SourceFileValueObjectHttpDtoMapper.class,
                 BackupTargetValueObjectHttpDtoMapper.class
         })
-public abstract class FileCopyHttpDtoMapper {
+public interface FileCopyHttpDtoMapper {
 
     @BeanMapping(ignoreUnmappedSourceProperties = {"domainEvents", "stored"})
-    public abstract FileCopyHttpDto toDto(FileCopy fileCopy);
+    FileCopyHttpDto toDto(FileCopy fileCopy);
 }

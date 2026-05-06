@@ -14,8 +14,8 @@ import org.mapstruct.Mapping;
                 BackupTargetValueObjectWsDtoMapper.class,
                 SourceFileValueObjectWsDtoMapper.class,
         })
-public abstract class FileCopyReplicationProgressUpdatedWsEventMapper {
+public interface FileCopyReplicationProgressUpdatedWsEventMapper {
 
     @Mapping(target = "timeLeftSeconds", source = "timeLeft.seconds")
-    public abstract FileCopyReplicationProgressUpdatedWsEvent toWsEvent(FileCopyReplicationProgressChangedEvent domain);
+    FileCopyReplicationProgressUpdatedWsEvent toWsEvent(FileCopyReplicationProgressChangedEvent domain);
 }

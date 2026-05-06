@@ -9,10 +9,10 @@ import org.mapstruct.Mapper;
         uses = {
                 GameValueObjectJpaDtoMapper.class
         })
-public abstract class GameJpaEntityMapper {
+public interface GameJpaEntityMapper {
 
-    public abstract GameJpaEntity toEntity(Game model);
+    GameJpaEntity toEntity(Game model);
 
     @BeanMapping(ignoreUnmappedSourceProperties = {"dateCreated", "dateModified"})
-    public abstract Game toDomain(GameJpaEntity entity);
+    Game toDomain(GameJpaEntity entity);
 }

@@ -12,9 +12,8 @@ import java.util.Map;
         uses = {
                 StorageSolutionValueObjectHttpDtoMapper.class
         })
-public abstract class StorageSolutionStatusesResponseHttpDtoMapper {
+public interface StorageSolutionStatusesResponseHttpDtoMapper {
 
     @Mapping(target = "statuses", source = "statusesById")
-    public abstract StorageSolutionStatusesResponseHttpDto toDto(
-            Map<StorageSolutionId, StorageSolutionStatus> statusesById);
+    StorageSolutionStatusesResponseHttpDto toDto(Map<StorageSolutionId, StorageSolutionStatus> statusesById);
 }

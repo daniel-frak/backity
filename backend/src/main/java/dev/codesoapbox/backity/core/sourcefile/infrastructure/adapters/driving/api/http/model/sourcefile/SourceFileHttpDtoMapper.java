@@ -12,8 +12,7 @@ import org.mapstruct.Mapper;
                 GameValueObjectHttpDtoMapper.class,
                 BackupValueObjectHttpDtoMapper.class
         })
-public abstract class SourceFileHttpDtoMapper {
+public interface SourceFileHttpDtoMapper {
 
-    public abstract SourceFileHttpDto toDto(SourceFile domain);
-
+    SourceFileHttpDto toDto(SourceFile domain);
 }

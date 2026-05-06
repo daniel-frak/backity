@@ -14,9 +14,9 @@ import org.mapstruct.Mapper;
                 SourceFileValueObjectJpaDtoMapper.class,
                 StorageSolutionValueObjectJpaDtoMapper.class,
         })
-public abstract class BackupTargetJpaEntityMapper {
+public interface BackupTargetJpaEntityMapper {
 
-    public abstract BackupTargetJpaEntity toEntity(BackupTarget model);
+    BackupTargetJpaEntity toEntity(BackupTarget model);
 
-    public abstract BackupTarget toDomain(BackupTargetJpaEntity entity);
+    BackupTarget toDomain(BackupTargetJpaEntity entity);
 }

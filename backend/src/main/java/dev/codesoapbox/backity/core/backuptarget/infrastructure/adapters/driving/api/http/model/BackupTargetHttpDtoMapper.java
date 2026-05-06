@@ -10,8 +10,7 @@ import org.mapstruct.Mapper;
                 BackupTargetValueObjectHttpDtoMapper.class,
                 StorageSolutionValueObjectHttpDtoMapper.class
         })
-public abstract class BackupTargetHttpDtoMapper {
+public interface BackupTargetHttpDtoMapper {
 
-    public abstract BackupTargetHttpDto toDto(BackupTarget backupTarget);
-
+    BackupTargetHttpDto toDto(BackupTarget backupTarget);
 }

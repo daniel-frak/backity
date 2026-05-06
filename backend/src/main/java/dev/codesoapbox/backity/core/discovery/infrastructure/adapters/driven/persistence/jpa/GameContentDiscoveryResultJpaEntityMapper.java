@@ -9,9 +9,9 @@ import org.mapstruct.Mapper;
         uses = {
                 BackupValueObjectJpaDtoMapper.class
         })
-public abstract class GameContentDiscoveryResultJpaEntityMapper {
+public interface GameContentDiscoveryResultJpaEntityMapper {
 
-    public abstract GameContentDiscoveryResultJpaEntity toEntity(GameContentDiscoveryResult domain);
+    GameContentDiscoveryResultJpaEntity toEntity(GameContentDiscoveryResult domain);
 
-    public abstract GameContentDiscoveryResult toDomain(GameContentDiscoveryResultJpaEntity entity);
+    GameContentDiscoveryResult toDomain(GameContentDiscoveryResultJpaEntity entity);
 }

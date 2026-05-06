@@ -10,9 +10,8 @@ import org.mapstruct.Mapping;
         uses = {
                 BackupValueObjectWsDtoMapper.class
         })
-public abstract class GameContentDiscoveryProgressChangedWsEventMapper {
+public interface GameContentDiscoveryProgressChangedWsEventMapper {
 
     @Mapping(target = "timeLeftSeconds", source = "timeLeft.seconds")
-    public abstract GameContentDiscoveryProgressChangedWsEvent toWsEvent(
-            GameContentDiscoveryProgressChangedEvent domain);
+    GameContentDiscoveryProgressChangedWsEvent toWsEvent(GameContentDiscoveryProgressChangedEvent domain);
 }

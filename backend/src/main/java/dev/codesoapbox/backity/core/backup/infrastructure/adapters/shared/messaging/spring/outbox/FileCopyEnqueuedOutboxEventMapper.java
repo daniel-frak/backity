@@ -14,9 +14,9 @@ import org.mapstruct.Mapper;
         uses = {
                 FileCopyValueObjectOutboxDtoMapper.class
         })
-public abstract class FileCopyEnqueuedOutboxEventMapper {
+public interface FileCopyEnqueuedOutboxEventMapper {
 
-    public abstract FileCopyEnqueuedOutboxEvent toOutbox(FileCopyEnqueuedEvent domain);
+    FileCopyEnqueuedOutboxEvent toOutbox(FileCopyEnqueuedEvent domain);
 
-    public abstract FileCopyEnqueuedEvent toDomain(FileCopyEnqueuedOutboxEvent outbox);
+    FileCopyEnqueuedEvent toDomain(FileCopyEnqueuedOutboxEvent outbox);
 }

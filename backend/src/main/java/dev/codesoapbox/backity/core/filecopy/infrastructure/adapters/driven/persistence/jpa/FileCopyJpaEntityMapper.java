@@ -15,11 +15,11 @@ import org.mapstruct.Mapping;
                 BackupTargetValueObjectJpaDtoMapper.class,
                 SourceFileValueObjectJpaDtoMapper.class
         })
-public abstract class FileCopyJpaEntityMapper {
+public interface FileCopyJpaEntityMapper {
 
     @BeanMapping(ignoreUnmappedSourceProperties = {"domainEvents", "stored"})
-    public abstract FileCopyJpaEntity toEntity(FileCopy model);
+    FileCopyJpaEntity toEntity(FileCopy model);
 
     @Mapping(target = "domainEvents", ignore = true)
-    public abstract FileCopy toDomain(FileCopyJpaEntity entity);
+    FileCopy toDomain(FileCopyJpaEntity entity);
 }

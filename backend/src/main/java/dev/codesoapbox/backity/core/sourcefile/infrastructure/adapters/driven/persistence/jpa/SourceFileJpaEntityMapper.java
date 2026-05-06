@@ -17,11 +17,11 @@ import org.mapstruct.Mapping;
                 GameValueObjectJpaDtoMapper.class,
                 BackupValueObjectJpaDtoMapper.class,
         })
-public abstract class SourceFileJpaEntityMapper {
+public interface SourceFileJpaEntityMapper {
 
     @Mapping(target = "sizeInBytes", source = "size")
-    public abstract SourceFileJpaEntity toEntity(SourceFile model);
+    SourceFileJpaEntity toEntity(SourceFile model);
 
     @Mapping(target = "size", source = "sizeInBytes")
-    public abstract SourceFile toDomain(SourceFileJpaEntity entity);
+    SourceFile toDomain(SourceFileJpaEntity entity);
 }

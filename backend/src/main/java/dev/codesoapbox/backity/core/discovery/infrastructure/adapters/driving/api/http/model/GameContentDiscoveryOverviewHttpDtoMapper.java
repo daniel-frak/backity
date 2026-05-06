@@ -11,10 +11,10 @@ import org.mapstruct.Mapping;
         uses = {
                 BackupValueObjectHttpDtoMapper.class
         })
-public abstract class GameContentDiscoveryOverviewHttpDtoMapper {
+public interface GameContentDiscoveryOverviewHttpDtoMapper {
 
-    public abstract GameContentDiscoveryOverviewHttpDto toDto(GameContentDiscoveryOverview domain);
+    GameContentDiscoveryOverviewHttpDto toDto(GameContentDiscoveryOverview domain);
 
     @Mapping(target = "timeLeftSeconds", source = "timeLeft.seconds")
-    protected abstract GameContentDiscoveryProgressHttpDto toProgressDto(GameContentDiscoveryProgress domain);
+    GameContentDiscoveryProgressHttpDto toProgressDto(GameContentDiscoveryProgress domain);
 }
