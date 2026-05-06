@@ -16,14 +16,20 @@ class DiscoveredFileTest {
         @SuppressWarnings("DataFlowIssue")
         @Test
         void constructorShouldThrowGivenGameProviderIdIsNull() {
+            var originalGameTitle = new GameTitle("Game 1");
+            var fileTitle = new FileTitle("Game 1 (Installer)");
+            var version = new FileVersion("1.0.0");
+            var url = new SourceFileUrl("/downlink/some_game/some_file");
+            var originalFileName = new FileName("game_1_installer.exe");
             var fileSize = new FileSize(5120L);
+
             assertThatThrownBy(() -> new DiscoveredFile(
                     null,
-                    new GameTitle("Game 1"),
-                    new FileTitle("Game 1 (Installer)"),
-                    new FileVersion("1.0.0"),
-                    new SourceFileUrl("/downlink/some_game/some_file"),
-                    new FileName("game_1_installer.exe"),
+                    originalGameTitle,
+                    fileTitle,
+                    version,
+                    url,
+                    originalFileName,
                     fileSize
             ))
                     .isInstanceOf(NullPointerException.class)
@@ -34,14 +40,19 @@ class DiscoveredFileTest {
         @Test
         void constructorShouldThrowGivenOriginalGameTitleIsNull() {
             var gameProviderId = new GameProviderId("GOG");
+            var fileTitle = new FileTitle("Game 1 (Installer)");
+            var version = new FileVersion("1.0.0");
+            var url = new SourceFileUrl("/downlink/some_game/some_file");
+            var originalFileName = new FileName("game_1_installer.exe");
             var fileSize = new FileSize(5120L);
+
             assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
                     null,
-                    new FileTitle("Game 1 (Installer)"),
-                    new FileVersion("1.0.0"),
-                    new SourceFileUrl("/downlink/some_game/some_file"),
-                    new FileName("game_1_installer.exe"),
+                    fileTitle,
+                    version,
+                    url,
+                    originalFileName,
                     fileSize
             ))
                     .isInstanceOf(NullPointerException.class)
@@ -52,14 +63,19 @@ class DiscoveredFileTest {
         @Test
         void constructorShouldThrowGivenFileTitleIsNull() {
             var gameProviderId = new GameProviderId("GOG");
+            var originalGameTitle = new GameTitle("Game 1");
+            var version = new FileVersion("1.0.0");
+            var url = new SourceFileUrl("/downlink/some_game/some_file");
+            var originalFileName = new FileName("game_1_installer.exe");
             var fileSize = new FileSize(5120L);
+
             assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
-                    new GameTitle("Game 1"),
+                    originalGameTitle,
                     null,
-                    new FileVersion("1.0.0"),
-                    new SourceFileUrl("/downlink/some_game/some_file"),
-                    new FileName("game_1_installer.exe"),
+                    version,
+                    url,
+                    originalFileName,
                     fileSize
             ))
                     .isInstanceOf(NullPointerException.class)
@@ -70,14 +86,19 @@ class DiscoveredFileTest {
         @Test
         void constructorShouldThrowGivenVersionIsNull() {
             var gameProviderId = new GameProviderId("GOG");
+            var originalGameTitle = new GameTitle("Game 1");
+            var fileTitle = new FileTitle("Game 1 (Installer)");
+            var url = new SourceFileUrl("/downlink/some_game/some_file");
+            var originalFileName = new FileName("game_1_installer.exe");
             var fileSize = new FileSize(5120L);
+
             assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
-                    new GameTitle("Game 1"),
-                    new FileTitle("Game 1 (Installer)"),
+                    originalGameTitle,
+                    fileTitle,
                     null,
-                    new SourceFileUrl("/downlink/some_game/some_file"),
-                    new FileName("game_1_installer.exe"),
+                    url,
+                    originalFileName,
                     fileSize
             ))
                     .isInstanceOf(NullPointerException.class)
@@ -88,14 +109,19 @@ class DiscoveredFileTest {
         @Test
         void constructorShouldThrowGivenUrlIsNull() {
             var gameProviderId = new GameProviderId("GOG");
+            var originalGameTitle = new GameTitle("Game 1");
+            var fileTitle = new FileTitle("Game 1 (Installer)");
+            var version = new FileVersion("1.0.0");
+            var originalFileName = new FileName("game_1_installer.exe");
             var fileSize = new FileSize(5120L);
+
             assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
-                    new GameTitle("Game 1"),
-                    new FileTitle("Game 1 (Installer)"),
-                    new FileVersion("1.0.0"),
+                    originalGameTitle,
+                    fileTitle,
+                    version,
                     null,
-                    new FileName("game_1_installer.exe"),
+                    originalFileName,
                     fileSize
             ))
                     .isInstanceOf(NullPointerException.class)
@@ -106,13 +132,18 @@ class DiscoveredFileTest {
         @Test
         void constructorShouldThrowGivenOriginalFileNameIsNull() {
             var gameProviderId = new GameProviderId("GOG");
+            var originalGameTitle = new GameTitle("Game 1");
+            var fileTitle = new FileTitle("Game 1 (Installer)");
+            var version = new FileVersion("1.0.0");
+            var url = new SourceFileUrl("/downlink/some_game/some_file");
             var fileSize = new FileSize(5120L);
+
             assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
-                    new GameTitle("Game 1"),
-                    new FileTitle("Game 1 (Installer)"),
-                    new FileVersion("1.0.0"),
-                    new SourceFileUrl("/downlink/some_game/some_file"),
+                    originalGameTitle,
+                    fileTitle,
+                    version,
+                    url,
                     null,
                     fileSize
             ))
@@ -124,13 +155,19 @@ class DiscoveredFileTest {
         @Test
         void constructorShouldThrowGivenSizeIsNull() {
             var gameProviderId = new GameProviderId("GOG");
+            var originalGameTitle = new GameTitle("Game 1");
+            var fileTitle = new FileTitle("Game 1 (Installer)");
+            var version = new FileVersion("1.0.0");
+            var url = new SourceFileUrl("/downlink/some_game/some_file");
+            var originalFileName = new FileName("/downlink/some_game/some_file");
+
             assertThatThrownBy(() -> new DiscoveredFile(
                     gameProviderId,
-                    new GameTitle("Game 1"),
-                    new FileTitle("Game 1 (Installer)"),
-                    new FileVersion("1.0.0"),
-                    new SourceFileUrl("/downlink/some_game/some_file"),
-                    new FileName("/downlink/some_game/some_file"),
+                    originalGameTitle,
+                    fileTitle,
+                    version,
+                    url,
+                    originalFileName,
                     null
             ))
                     .isInstanceOf(NullPointerException.class)
