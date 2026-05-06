@@ -7,13 +7,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class GameProviderIdTest {
 
-    @Test
-    void toStringShouldReturnValue() {
-        var gameProviderId = new GameProviderId("test");
+    @Nested
+    class ToString {
 
-        String result = gameProviderId.toString();
+        @Test
+        void shouldReturnValue() {
+            var gameProviderId = new GameProviderId("test");
 
-        assertThat(result).isEqualTo("test");
+            String result = gameProviderId.toString();
+
+            assertThat(result).isEqualTo("test");
+        }
     }
 
     @Nested

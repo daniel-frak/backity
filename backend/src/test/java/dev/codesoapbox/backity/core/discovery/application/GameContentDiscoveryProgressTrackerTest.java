@@ -61,7 +61,7 @@ class GameContentDiscoveryProgressTrackerTest {
 
     private Function<GameProviderId, GameProviderContentDiscoveryTracker> resetProviderTrackerWhenNewRequested() {
         return (GameProviderId gameProviderId) -> {
-            if(!gameProviderId.equals(gameProviderFileDiscoveryService.getGameProviderId())) {
+            if (!gameProviderId.equals(gameProviderFileDiscoveryService.getGameProviderId())) {
                 // Return different tracker for anotherGameProviderFileDiscoveryService
                 return mock(GameProviderContentDiscoveryTracker.class);
             }
@@ -75,7 +75,7 @@ class GameContentDiscoveryProgressTrackerTest {
     class IsInProgress {
 
         @Test
-        void isInProgressShouldReturnFalseGivenNotInProgress() {
+        void shouldReturnFalseGivenNotInProgress() {
             when(providerTracker.isInProgress())
                     .thenReturn(false);
 
@@ -83,7 +83,7 @@ class GameContentDiscoveryProgressTrackerTest {
         }
 
         @Test
-        void isInProgressShouldReturnTrueGivenInProgress() {
+        void ShouldReturnTrueGivenInProgress() {
             when(providerTracker.isInProgress())
                     .thenReturn(true);
 
@@ -92,17 +92,17 @@ class GameContentDiscoveryProgressTrackerTest {
     }
 
     @Nested
-    class InitializingTracking {
+    class InitializeTracking {
 
         @Test
-        void initializeTrackingShouldSetInProgressToTrue() {
+        void shouldSetInProgressToTrue() {
             tracker.initializeTracking(gameProviderFileDiscoveryService.getGameProviderId());
 
             verify(providerTracker).setInProgress(true);
         }
 
         @Test
-        void initializeTrackingShouldResetStats() {
+        void shouldResetStats() {
             providerTrackerResetCounter = 0;
 
             tracker.initializeTracking(gameProviderFileDiscoveryService.getGameProviderId());
@@ -111,7 +111,7 @@ class GameContentDiscoveryProgressTrackerTest {
         }
 
         @Test
-        void initializeTrackingShouldSetStartedAt() {
+        void shouldSetStartedAt() {
             providerTrackerResetCounter = 0;
 
             tracker.initializeTracking(gameProviderFileDiscoveryService.getGameProviderId());
@@ -120,7 +120,7 @@ class GameContentDiscoveryProgressTrackerTest {
         }
 
         @Test
-        void initializeTrackingShouldSendDiscoveryStartedEvent() {
+        void shouldSendDiscoveryStartedEvent() {
             tracker.initializeTracking(gameProviderFileDiscoveryService.getGameProviderId());
 
             var discoveryStartedEvent = new GameContentDiscoveryStartedEvent(
@@ -130,17 +130,17 @@ class GameContentDiscoveryProgressTrackerTest {
     }
 
     @Nested
-    class IncrementingDiscoveries {
+    class IncrementGamesDiscovered {
 
         @Test
-        void incrementGamesDiscoveredShouldIncrementGamesDiscovered() {
+        void shouldIncrementGamesDiscovered() {
             tracker.incrementGamesDiscovered(gameProviderFileDiscoveryService.getGameProviderId(), 5);
 
             verify(providerTracker).incrementGamesDiscovered(5);
         }
 
         @Test
-        void incrementSourceFilesDiscoveredShouldIncrementSourceFilesDiscovered() {
+        void shouldIncrementSourceFilesDiscovered() {
             tracker.incrementSourceFilesDiscovered(gameProviderFileDiscoveryService.getGameProviderId(), 5);
 
             verify(providerTracker).incrementSourceFilesDiscovered(5);
@@ -148,10 +148,10 @@ class GameContentDiscoveryProgressTrackerTest {
     }
 
     @Nested
-    class FinalizingTracking {
+    class FinalizeTracking {
 
         @Test
-        void finalizeTrackingShouldSetInProgressToFalse() {
+        void shouldSetInProgressToFalse() {
             tracker.initializeTracking(
                     gameProviderFileDiscoveryService.getGameProviderId()); // To set in progressTracker to true
             reset(providerTracker); // To make sure any assertions on behavior don't include setup behavior
@@ -170,7 +170,7 @@ class GameContentDiscoveryProgressTrackerTest {
         }
 
         @Test
-        void finalizeTrackingShouldSetStoppedAt() {
+        void shouldSetStoppedAt() {
             mockProviderTrackerReturnsDiscoveryResult();
 
             tracker.finalizeTracking(gameProviderFileDiscoveryService.getGameProviderId());
@@ -179,7 +179,7 @@ class GameContentDiscoveryProgressTrackerTest {
         }
 
         @Test
-        void finalizeTrackingShouldSaveDiscoveryResult() {
+        void shouldSaveDiscoveryResult() {
             GameContentDiscoveryResult discoveryResult = mockProviderTrackerReturnsDiscoveryResult();
 
             tracker.finalizeTracking(gameProviderFileDiscoveryService.getGameProviderId());
@@ -188,7 +188,7 @@ class GameContentDiscoveryProgressTrackerTest {
         }
 
         @Test
-        void finalizeTrackingShouldSendDiscoveryStoppedEvent() {
+        void shouldSendDiscoveryStoppedEvent() {
             GameContentDiscoveryResult discoveryResult = mockProviderTrackerReturnsDiscoveryResult();
 
             tracker.finalizeTracking(gameProviderFileDiscoveryService.getGameProviderId());
@@ -200,10 +200,10 @@ class GameContentDiscoveryProgressTrackerTest {
     }
 
     @Nested
-    class MarkingSuccessful {
+    class MarkSuccessful {
 
         @Test
-        void markSuccessfulShouldSetDiscoveryOutcomeAsSuccess() {
+        void shouldSetDiscoveryOutcomeAsSuccess() {
             tracker.markSuccessful(gameProviderFileDiscoveryService.getGameProviderId());
 
             verify(providerTracker).setDiscoveryOutcome(GameContentDiscoveryOutcome.SUCCESS, clock);
@@ -225,7 +225,7 @@ class GameContentDiscoveryProgressTrackerTest {
     }
 
     @Nested
-    class DiscoveryOverviews {
+    class GetDiscoveryOverviews {
 
         @Test
         void shouldGetDiscoveryOverviews() {
@@ -237,7 +237,7 @@ class GameContentDiscoveryProgressTrackerTest {
             List<GameContentDiscoveryOverview> result = tracker.getDiscoveryOverviews();
 
             GameContentDiscoveryOverview expectedResult = new GameContentDiscoveryOverview(
-                            gameProviderId, true, discoveryProgress, contentDiscoveryResult);
+                    gameProviderId, true, discoveryProgress, contentDiscoveryResult);
             assertThat(result).contains(expectedResult);
         }
 

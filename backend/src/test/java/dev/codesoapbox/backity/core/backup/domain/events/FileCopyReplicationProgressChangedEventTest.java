@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class FileCopyReplicationProgressChangedEventTest {
 
     @Nested
-    class Creation {
+    class Constructor {
 
         private static final FileCopyId TEST_FILE_COPY_ID = new FileCopyId("6df888e8-90b9-4df5-a237-0cba422c0310");
         private static final FileCopyNaturalId TEST_FILE_COPY_NATURAL_ID = new FileCopyNaturalId(
@@ -26,7 +26,7 @@ class FileCopyReplicationProgressChangedEventTest {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenNullFileCopyId() {
+        void shouldThrowGivenNullFileCopyId() {
             assertThatThrownBy(() -> new FileCopyReplicationProgressChangedEvent(
                     null,
                     TEST_FILE_COPY_NATURAL_ID,
@@ -39,7 +39,7 @@ class FileCopyReplicationProgressChangedEventTest {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenNullFileCopyNaturalId() {
+        void shouldThrowGivenNullFileCopyNaturalId() {
             assertThatThrownBy(() -> new FileCopyReplicationProgressChangedEvent(
                     TEST_FILE_COPY_ID,
                     null,
@@ -52,7 +52,7 @@ class FileCopyReplicationProgressChangedEventTest {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenNullTimeLeft() {
+        void shouldThrowGivenNullTimeLeft() {
             assertThatThrownBy(() -> new FileCopyReplicationProgressChangedEvent(
                     TEST_FILE_COPY_ID,
                     TEST_FILE_COPY_NATURAL_ID,

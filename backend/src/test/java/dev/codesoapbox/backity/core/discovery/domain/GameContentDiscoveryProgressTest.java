@@ -13,11 +13,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class GameContentDiscoveryProgressTest {
 
     @Nested
-    class Creation {
+    class Constructor {
 
         @ParameterizedTest
         @ValueSource(ints = {-1, 101})
-        void constructorShouldThrowGivenInvalidPercentage(int invalidPercentage) {
+        void shouldThrowGivenInvalidPercentage(int invalidPercentage) {
             var gameProviderId = new GameProviderId("GOG");
             Duration duration = Duration.ofSeconds(1);
             int gamesDiscovered = 5;

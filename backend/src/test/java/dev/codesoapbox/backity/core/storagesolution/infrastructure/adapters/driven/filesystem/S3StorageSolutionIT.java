@@ -7,6 +7,7 @@ import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionStatus
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.FileCouldNotBeDeletedException;
 import dev.codesoapbox.backity.testing.s3.annotations.S3RepositoryTest;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.services.s3.S3Client;
 
@@ -66,178 +67,210 @@ class S3StorageSolutionIT {
         s3StorageSolution = new S3StorageSolution(s3Client, BUCKET_NAME, BUFFER_SIZE_IN_BYTES);
     }
 
-    @Test
-    void shouldGetId() {
-        StorageSolutionId result = s3StorageSolution.getId();
-
-        StorageSolutionId expectedResult = new StorageSolutionId("S3");
-        assertThat(result).isEqualTo(expectedResult);
-    }
-
-    @Test
-    void shouldGetSeparator() {
-        String result = s3StorageSolution.getSeparator();
-
-        assertThat(result).isEqualTo("/");
-    }
-
-    @Test
-    void getOutputStreamShouldReturnValidOutputStream() throws IOException {
-        var filePath = new FilePath(S3_FILE_PATH + "someFile");
-        var fileContent = "Test Data";
-
-        try (OutputStream outputStream = s3StorageSolution.getOutputStream(filePath)) {
-            outputStream.write(fileContent.getBytes());
-        }
-
-        assertThatDataWasWrittenToS3(filePath, fileContent);
-    }
-
-    private void assertThatDataWasWrittenToS3(FilePath filePath, String fileContent) throws IOException {
-        try (var fileResource = s3StorageSolution.getFileResource(filePath)) {
-            String readData = readContent(fileResource);
-            assertThat(readData).isEqualTo(fileContent);
-        }
-    }
-
     private String readContent(FileResource fileResource) {
         return new BufferedReader(new InputStreamReader(fileResource.inputStream()))
                 .lines().collect(Collectors.joining("\n"));
     }
 
-    @Test
-    void getOutputStreamShouldFailGivenFileAlreadyExists() {
-        var filePath = new FilePath(S3_FILE_1_KEY);
+    @Nested
+    class GetId {
 
-        assertThatThrownBy(() -> s3StorageSolution.getOutputStream(filePath))
-                .isInstanceOf(FileAlreadyExistsException.class);
+        @Test
+        void shouldGetId() {
+            StorageSolutionId result = s3StorageSolution.getId();
+
+            StorageSolutionId expectedResult = new StorageSolutionId("S3");
+            assertThat(result).isEqualTo(expectedResult);
+        }
     }
 
-    @Test
-    void shouldDeleteGivenFileExists() {
-        var filePath = new FilePath(S3_FILE_1_KEY);
+    @Nested
+    class GetSeparator {
 
-        s3StorageSolution.deleteIfExists(filePath);
+        @Test
+        void shouldGetSeparator() {
+            String result = s3StorageSolution.getSeparator();
 
-        assertFileDoesNotExist(filePath);
+            assertThat(result).isEqualTo("/");
+        }
     }
 
-    private void assertFileDoesNotExist(FilePath filePath) {
-        assertThatThrownBy(() -> s3StorageSolution.getFileResource(filePath).close())
-                .isInstanceOf(FileNotFoundException.class);
+    @Nested
+    class GetOutputStream {
+
+        @Test
+        void ShouldReturnValidOutputStream() throws IOException {
+            var filePath = new FilePath(S3_FILE_PATH + "someFile");
+            var fileContent = "Test Data";
+
+            try (OutputStream outputStream = s3StorageSolution.getOutputStream(filePath)) {
+                outputStream.write(fileContent.getBytes());
+            }
+
+            assertThatDataWasWrittenToS3(filePath, fileContent);
+        }
+
+        private void assertThatDataWasWrittenToS3(FilePath filePath, String fileContent) throws IOException {
+            try (var fileResource = s3StorageSolution.getFileResource(filePath)) {
+                String readData = readContent(fileResource);
+                assertThat(readData).isEqualTo(fileContent);
+            }
+        }
+
+        @Test
+        void shouldFailGivenFileAlreadyExists() {
+            var filePath = new FilePath(S3_FILE_1_KEY);
+
+            assertThatThrownBy(() -> s3StorageSolution.getOutputStream(filePath))
+                    .isInstanceOf(FileAlreadyExistsException.class);
+        }
     }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    void deleteIfExistsShouldThrowGivenException() {
-        S3Client s3Client = mock(S3Client.class);
-        var expectedCause = new RuntimeException("Test exception");
-        when(s3Client.deleteObject(any(Consumer.class)))
-                .thenThrow(expectedCause);
-        s3StorageSolution = new S3StorageSolution(s3Client, BUCKET_NAME, BUFFER_SIZE_IN_BYTES);
-        var filePath = new FilePath(S3_FILE_1_KEY);
+    @Nested
+    class DeleteIfExists {
 
-        assertThatThrownBy(() -> s3StorageSolution.deleteIfExists(filePath))
-                .isInstanceOf(FileCouldNotBeDeletedException.class)
-                .hasMessageContaining(S3_FILE_1_KEY)
-                .hasCause(expectedCause);
+        @Test
+        void shouldDeleteGivenFileExists() {
+            var filePath = new FilePath(S3_FILE_1_KEY);
+
+            s3StorageSolution.deleteIfExists(filePath);
+
+            assertFileDoesNotExist(filePath);
+        }
+
+        private void assertFileDoesNotExist(FilePath filePath) {
+            assertThatThrownBy(() -> s3StorageSolution.getFileResource(filePath).close())
+                    .isInstanceOf(FileNotFoundException.class);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Test
+        void shouldThrowGivenException() {
+            S3Client s3Client = mock(S3Client.class);
+            var expectedCause = new RuntimeException("Test exception");
+            when(s3Client.deleteObject(any(Consumer.class)))
+                    .thenThrow(expectedCause);
+            s3StorageSolution = new S3StorageSolution(s3Client, BUCKET_NAME, BUFFER_SIZE_IN_BYTES);
+            var filePath = new FilePath(S3_FILE_1_KEY);
+
+            assertThatThrownBy(() -> s3StorageSolution.deleteIfExists(filePath))
+                    .isInstanceOf(FileCouldNotBeDeletedException.class)
+                    .hasMessageContaining(S3_FILE_1_KEY)
+                    .hasCause(expectedCause);
+        }
+
+        @Test
+        void shouldDoNothingGivenFileDoesNotExist() {
+            var filePath = new FilePath("nonexistent_file");
+            assertThatCode(() -> s3StorageSolution.deleteIfExists(filePath))
+                    .doesNotThrowAnyException();
+        }
     }
 
-    @Test
-    void deleteShouldDoNothingGivenFileDoesNotExist() {
-        var filePath = new FilePath("nonexistent_file");
-        assertThatCode(() -> s3StorageSolution.deleteIfExists(filePath))
-                .doesNotThrowAnyException();
+    @Nested
+    class GetSizeInBytes {
+
+        @Test
+        void shouldReturnCorrectSize() {
+            long expectedSizeInBytes = S3_FILE_1_CONTENT.length();
+            var filePath = new FilePath(S3_FILE_1_KEY);
+
+            long result = s3StorageSolution.getSizeInBytes(filePath);
+
+            assertThat(result).isEqualTo(expectedSizeInBytes);
+        }
+
+        @Test
+        void shouldReturnZeroGivenFileNotFound() {
+            var filePath = new FilePath("nonexistentfile.txt");
+
+            long result = s3StorageSolution.getSizeInBytes(filePath);
+
+            assertThat(result).isZero();
+        }
     }
 
-    @Test
-    void getSizeInBytesShouldReturnCorrectSize() {
-        long expectedSizeInBytes = S3_FILE_1_CONTENT.length();
-        var filePath = new FilePath(S3_FILE_1_KEY);
+    @Nested
+    class GetFileResource {
 
-        long result = s3StorageSolution.getSizeInBytes(filePath);
+        @Test
+        void shouldReturnFileResourceGivenFileExists() throws FileNotFoundException {
+            var filePath = new FilePath(S3_FILE_1_KEY);
+            FileResource fileResource = s3StorageSolution.getFileResource(filePath);
 
-        assertThat(result).isEqualTo(expectedSizeInBytes);
+            assertThat(fileResource).isNotNull();
+            assertThat(fileResource.sizeInBytes()).isPositive();
+            assertThat(fileResource.fileName()).isEqualTo(S3_FILE_1_NAME);
+            assertThat(readContent(fileResource)).isEqualTo(S3_FILE_1_CONTENT);
+            assertThatCode(fileResource::close)
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void shouldThrowGivenFileNotFound() {
+            var filePath = new FilePath("nonexistentfile.txt");
+
+            assertThatThrownBy(() -> s3StorageSolution.getFileResource(filePath))
+                    .isInstanceOf(FileNotFoundException.class)
+                    .hasMessage("File not found: " + filePath);
+        }
+
+        @Test
+        void ShouldThrowGivenFileIsDirectory() {
+            var filePath = new FilePath(S3_FILE_PATH);
+            assertThatThrownBy(() -> s3StorageSolution.getFileResource(filePath))
+                    .isInstanceOf(FileNotFoundException.class)
+                    .hasMessage("File not found: " + S3_FILE_PATH);
+        }
     }
 
-    @Test
-    void getSizeInBytesShouldReturnZeroGivenFileNotFound() {
-        var filePath = new FilePath("nonexistentfile.txt");
+    @Nested
+    class FileExists {
 
-        long result = s3StorageSolution.getSizeInBytes(filePath);
+        @Test
+        void shouldReturnTrueGivenFileExists() {
+            var filePath = new FilePath(S3_FILE_1_KEY);
+            boolean result = s3StorageSolution.fileExists(filePath);
 
-        assertThat(result).isZero();
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        void shouldReturnTrueGivenFileDoesNotExist() {
+            var nonExistentFilePath = new FilePath("someFilePath");
+
+            boolean result = s3StorageSolution.fileExists(nonExistentFilePath);
+
+            assertThat(result).isFalse();
+        }
     }
 
-    @Test
-    void getFileResourceShouldReturnFileResourceGivenFileExists() throws FileNotFoundException {
-        var filePath = new FilePath(S3_FILE_1_KEY);
-        FileResource fileResource = s3StorageSolution.getFileResource(filePath);
+    @Nested
+    class GetStatus {
 
-        assertThat(fileResource).isNotNull();
-        assertThat(fileResource.sizeInBytes()).isPositive();
-        assertThat(fileResource.fileName()).isEqualTo(S3_FILE_1_NAME);
-        assertThat(readContent(fileResource)).isEqualTo(S3_FILE_1_CONTENT);
-        assertThatCode(fileResource::close)
-                .doesNotThrowAnyException();
-    }
+        @Test
+        void shouldReturnConnectedGivenBucketCanBeAccessed() {
+            StorageSolutionStatus result = s3StorageSolution.getStatus();
 
-    @Test
-    void getFileResourceShouldThrowGivenFileNotFound() {
-        var filePath = new FilePath("nonexistentfile.txt");
+            assertThat(result).isEqualTo(StorageSolutionStatus.CONNECTED);
+        }
 
-        assertThatThrownBy(() -> s3StorageSolution.getFileResource(filePath))
-                .isInstanceOf(FileNotFoundException.class)
-                .hasMessage("File not found: " + filePath);
-    }
+        @Test
+        void shouldReturnNotConnectedGivenBucketCannotBeAccessed() {
+            S3StorageSolution failingStorageSolution = createNotConnectedStorageSolution();
 
-    @Test
-    void getFileResourceShouldThrowGivenFileIsDirectory() {
-        var filePath = new FilePath(S3_FILE_PATH);
-        assertThatThrownBy(() -> s3StorageSolution.getFileResource(filePath))
-                .isInstanceOf(FileNotFoundException.class)
-                .hasMessage("File not found: " + S3_FILE_PATH);
-    }
+            StorageSolutionStatus result = failingStorageSolution.getStatus();
 
-    @Test
-    void fileExistsShouldReturnTrueGivenFileExists() {
-        var filePath = new FilePath(S3_FILE_1_KEY);
-        boolean result = s3StorageSolution.fileExists(filePath);
+            assertThat(result).isEqualTo(StorageSolutionStatus.NOT_CONNECTED);
+        }
 
-        assertThat(result).isTrue();
-    }
+        @SuppressWarnings("unchecked")
+        private S3StorageSolution createNotConnectedStorageSolution() {
+            S3Client failingClient = mock(S3Client.class);
+            when(failingClient.headBucket(any(Consumer.class)))
+                    .thenThrow(new RuntimeException("Simulated connectivity failure"));
 
-    @Test
-    void fileExistsShouldReturnTrueGivenFileDoesNotExist() {
-        var nonExistentFilePath = new FilePath("someFilePath");
-
-        boolean result = s3StorageSolution.fileExists(nonExistentFilePath);
-
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    void getStatusShouldReturnConnectedGivenBucketCanBeAccessed() {
-        StorageSolutionStatus result = s3StorageSolution.getStatus();
-
-        assertThat(result).isEqualTo(StorageSolutionStatus.CONNECTED);
-    }
-
-    @Test
-    void getStatusShouldReturnNotConnectedGivenBucketCannotBeAccessed() {
-        S3StorageSolution failingStorageSolution = createNotConnectedStorageSolution();
-
-        StorageSolutionStatus result = failingStorageSolution.getStatus();
-
-        assertThat(result).isEqualTo(StorageSolutionStatus.NOT_CONNECTED);
-    }
-
-    @SuppressWarnings("unchecked")
-    private S3StorageSolution createNotConnectedStorageSolution() {
-        S3Client failingClient = mock(S3Client.class);
-        when(failingClient.headBucket(any(Consumer.class)))
-                .thenThrow(new RuntimeException("Simulated connectivity failure"));
-
-        return new S3StorageSolution(failingClient, BUCKET_NAME, BUFFER_SIZE_IN_BYTES);
+            return new S3StorageSolution(failingClient, BUCKET_NAME, BUFFER_SIZE_IN_BYTES);
+        }
     }
 }

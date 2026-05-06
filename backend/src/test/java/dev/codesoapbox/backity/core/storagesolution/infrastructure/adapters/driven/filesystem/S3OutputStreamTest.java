@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.dri
 
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -33,60 +34,6 @@ class S3OutputStreamTest {
     void setUp() {
         s3Client = mock(S3Client.class);
         s3OutputStream = new S3OutputStream(s3Client, BUCKET_NAME, OBJECT_KEY, BUFFER_SIZE_BYTES);
-    }
-
-    @Test
-    void writeSingleByteShouldThrowGivenStreamIsClosed() {
-        s3OutputStream.close();
-
-        assertThatThrownBy(() -> s3OutputStream.write(LETTER_A_ASCII))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Stream closed");
-    }
-
-    @Test
-    void writeArrayOfBytesShouldThrowGivenStreamIsClosed() {
-        byte[] data = "hello".getBytes();
-        s3OutputStream.close();
-
-        assertThatThrownBy(() -> s3OutputStream.write(data))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Stream closed");
-    }
-
-    @Test
-    void shouldWriteSingleByteToBufferGivenBufferIsNotFull() {
-        int data = LETTER_A_ASCII;
-
-        s3OutputStream.write(data);
-
-        assertThat(s3OutputStream.temporaryBuffer).startsWith(data);
-        verifyNoInteractions(s3Client);
-    }
-
-    @Test
-    void shouldWriteByteArrayToBufferGivenBufferIsNotFull() {
-        byte[] data = "hello".getBytes();
-
-        s3OutputStream.write(data);
-
-        assertThat(s3OutputStream.temporaryBuffer).startsWith(data);
-        verifyNoInteractions(s3Client);
-    }
-
-    @Test
-    void writeSingleByteShouldFlushBufferGivenItIsFull() {
-        mockMultipartUploadCreationAndPartUpload();
-        byte[] fullBufferData = new byte[BUFFER_SIZE_BYTES];
-
-        s3OutputStream.write(fullBufferData);
-        s3OutputStream.write(LETTER_A_ASCII);
-
-        assertThatMultipartUploadWasCreated();
-        assertPartWasUploaded(fullBufferData, 1);
-        assertNumberOfPartsUploaded(1);
-        assertThat(s3OutputStream.temporaryBuffer).startsWith(LETTER_A_ASCII);
-        verifyNoMoreInteractions(s3Client);
     }
 
     private void assertThatMultipartUploadWasCreated() {
@@ -140,7 +87,7 @@ class S3OutputStreamTest {
         UploadPartResponse uploadPartResponse = mock(UploadPartResponse.class);
         AtomicInteger partNumber = new AtomicInteger(1);
         when(uploadPartResponse.eTag())
-                .thenAnswer(inv -> UPLOAD_PART_E_TAG + "_" + partNumber.getAndIncrement());
+                .thenAnswer(_ -> UPLOAD_PART_E_TAG + "_" + partNumber.getAndIncrement());
         when(s3Client.uploadPart(any(UploadPartRequest.class), any(RequestBody.class)))
                 .thenReturn(uploadPartResponse);
     }
@@ -149,108 +96,10 @@ class S3OutputStreamTest {
         verify(s3Client, times(times)).uploadPart(any(UploadPartRequest.class), any(RequestBody.class));
     }
 
-    @Test
-    void writeByteArrayShouldFlushBufferGivenItIsFull() {
-        mockMultipartUploadCreationAndPartUpload();
-        byte[] fullBufferData = new byte[BUFFER_SIZE_BYTES];
-        byte[] bufferOverflowingData = new byte[BUFFER_SIZE_BYTES + 1];
-        bufferOverflowingData[BUFFER_SIZE_BYTES] = LETTER_A_ASCII;
-
-        s3OutputStream.write(bufferOverflowingData);
-
-        assertThatMultipartUploadWasCreated();
-        assertPartWasUploaded(fullBufferData, 1);
-        assertNumberOfPartsUploaded(1);
-        assertThat(s3OutputStream.temporaryBuffer).startsWith(LETTER_A_ASCII);
-        verifyNoMoreInteractions(s3Client);
-    }
-
-    @Test
-    void shouldWriteByteArrayWithOffsetAndLengthToBuffer() {
-        byte[] data = "abcdefghij".getBytes();
-
-        s3OutputStream.write(data, 2, BUFFER_SIZE_BYTES);
-
-        assertThat(s3OutputStream.temporaryBuffer).startsWith("cdefg".getBytes());
-        verifyNoInteractions(s3Client);
-    }
-
-    @Test
-    void writeShouldNotFlushGivenBufferSizeNotExceeded() {
-        byte[] fullBufferData = new byte[BUFFER_SIZE_BYTES];
-
-        s3OutputStream.write(fullBufferData);
-
-        verifyNoInteractions(s3Client);
-    }
-
-    @Test
-    void writeShouldFlushBufferAndUploadPartsWithCorrectNumbersGivenFull() {
-        mockMultipartUploadCreationAndPartUpload();
-        var fullBufferData = new byte[BUFFER_SIZE_BYTES];
-        s3OutputStream.write(fullBufferData); // Triggers multipart upload creation and first part upload
-        s3OutputStream.write(fullBufferData); // Triggers second part upload
-        s3OutputStream.write(fullBufferData); // Triggers flush, but doesn't upload third part because it fits in buffer
-
-        assertThatMultipartUploadWasCreated();
-        assertPartWasUploaded(fullBufferData, 1);
-        assertPartWasUploaded(fullBufferData, 2);
-        assertNumberOfPartsUploaded(2);
-        verifyNoMoreInteractions(s3Client);
-    }
-
-    @Test
-    void flushShouldThrowGivenStreamIsClosed() {
-        s3OutputStream.close();
-
-        assertThatThrownBy(() -> s3OutputStream.flush())
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Stream closed");
-    }
-
-    @Test
-    void flushShouldStartMultipartUploadAndUploadPartGivenBufferNotEmpty() {
-        mockMultipartUploadCreationAndPartUpload();
-
-        s3OutputStream.write(LETTER_A_ASCII);
-        s3OutputStream.flush();
-
-        assertThatMultipartUploadWasCreated();
-        assertPartWasUploaded(new byte[]{LETTER_A_ASCII}, 1);
-        assertNumberOfPartsUploaded(1);
-        verifyNoMoreInteractions(s3Client);
-    }
-
-    @Test
-    void shouldThrowExceptionGivenWritingToClosedStream() {
-        s3OutputStream.close();
-
-        assertThatWritingToStreamCausesException();
-    }
-
     private void assertThatWritingToStreamCausesException() {
         assertThatThrownBy(() -> s3OutputStream.write(LETTER_A_ASCII))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Stream closed");
-    }
-
-    @Test
-    void shouldCloseStreamOnCancel() {
-        s3OutputStream.cancel();
-
-        assertThatWritingToStreamCausesException();
-        verifyNoInteractions(s3Client);
-    }
-
-    @Test
-    void shouldAbortUploadOnCancelGivenMultipartUpload() {
-        mockMultipartUploadCreationAndPartUpload();
-        // When the upload doesn't fit within the buffer, it becomes a multipart upload:
-        triggerFlushInS3OutputStreamByOverfillingBuffer();
-
-        s3OutputStream.cancel();
-
-        assertMultiPartUploadWasAborted();
     }
 
     private void triggerFlushInS3OutputStreamByOverfillingBuffer() {
@@ -270,139 +119,322 @@ class S3OutputStreamTest {
         assertThat(capturedRequest.uploadId()).isEqualTo(MULTI_PART_UPLOAD_ID);
     }
 
-    @Test
-    void closeShouldOnlyCompleteUploadGivenMultipartUploadWithNoBufferedData() {
-        mockMultipartUploadWithNoBufferedData();
-        CompleteMultipartUploadRequest.Builder completeMultipartUploadRequestBuilder =
-                interceptCompleteMultipartUploadRequestBuilder();
+    @Nested
+    class Write {
 
-        s3OutputStream.close();
+        @Nested
+        class SingleByte {
 
-        assertMultipartUploadWasCompletedWithNumberOfParts(
-                completeMultipartUploadRequestBuilder, 1);
-        verifyNoMoreInteractions(s3Client);
-    }
+            @Test
+            void shouldThrowGivenStreamIsClosed() {
+                s3OutputStream.close();
 
-    private void mockMultipartUploadWithNoBufferedData() {
-        mockMultipartUploadCreationAndPartUpload();
-        var fullBufferData = new byte[BUFFER_SIZE_BYTES];
-        s3OutputStream.write(fullBufferData);
-        s3OutputStream.flush(); // Uploads the buffered data so the buffer becomes empty and forces a multipart upload
+                assertThatThrownBy(() -> s3OutputStream.write(LETTER_A_ASCII))
+                        .isInstanceOf(IllegalStateException.class)
+                        .hasMessage("Stream closed");
+            }
 
-        // Asserting here for cleaner `verifyNoMoreInteractions(s3Client);` later
-        assertThatMultipartUploadWasCreated();
-        assertPartWasUploaded(fullBufferData, 1);
-        assertNumberOfPartsUploaded(1);
-    }
+            @Test
+            void shouldWriteSingleByteToBufferGivenBufferIsNotFull() {
+                int data = LETTER_A_ASCII;
 
-    @SuppressWarnings("unchecked")
-    private CompleteMultipartUploadRequest.Builder interceptCompleteMultipartUploadRequestBuilder() {
-        CompleteMultipartUploadRequest.Builder completeMultipartUploadRequestBuilder =
-                CompleteMultipartUploadRequest.builder();
-        when(s3Client.completeMultipartUpload(any(Consumer.class)))
-                .thenAnswer(inv -> {
-                    ((Consumer<CompleteMultipartUploadRequest.Builder>) inv.getArgument(0))
-                            .accept(completeMultipartUploadRequestBuilder);
-                    return null;
-                });
+                s3OutputStream.write(data);
 
-        return completeMultipartUploadRequestBuilder;
-    }
+                assertThat(s3OutputStream.temporaryBuffer).startsWith(data);
+                verifyNoInteractions(s3Client);
+            }
 
-    @SuppressWarnings("unchecked")
-    private void assertMultipartUploadWasCompletedWithNumberOfParts(
-            CompleteMultipartUploadRequest.Builder requestBuilder,
-            int numberOfUploadedPartsExpected) {
-        verify(s3Client).completeMultipartUpload(any(Consumer.class));
+            @Test
+            void shouldFlushBufferGivenItIsFull() {
+                mockMultipartUploadCreationAndPartUpload();
+                byte[] fullBufferData = new byte[BUFFER_SIZE_BYTES];
 
-        CompleteMultipartUploadRequest capturedRequest = requestBuilder.build();
-        assertThat(capturedRequest.bucket()).isEqualTo(BUCKET_NAME);
-        assertThat(capturedRequest.key()).isEqualTo(OBJECT_KEY);
-        assertThat(capturedRequest.uploadId()).isEqualTo(MULTI_PART_UPLOAD_ID);
-        assertThat(capturedRequest.multipartUpload()).isNotNull();
-        assertCorrectPartInformationWasPassed(capturedRequest, numberOfUploadedPartsExpected);
-    }
+                s3OutputStream.write(fullBufferData);
+                s3OutputStream.write(LETTER_A_ASCII);
 
-    private void assertCorrectPartInformationWasPassed(CompleteMultipartUploadRequest capturedRequest,
-                                                       int numberOfUploadedPartsExpected) {
-        List<CompletedPart> parts = capturedRequest.multipartUpload().parts();
-        assertThat(parts).hasSize(numberOfUploadedPartsExpected);
-        assertPartsWereCorrectlyAssembled(parts);
-    }
+                assertThatMultipartUploadWasCreated();
+                assertPartWasUploaded(fullBufferData, 1);
+                assertNumberOfPartsUploaded(1);
+                assertThat(s3OutputStream.temporaryBuffer).startsWith(LETTER_A_ASCII);
+                verifyNoMoreInteractions(s3Client);
+            }
 
-    private void assertPartsWereCorrectlyAssembled(List<CompletedPart> parts) {
-        List<String> actualETags = new ArrayList<>();
-        List<Integer> actualPartNumbers = new ArrayList<>();
-        List<String> expectedETags = new ArrayList<>();
-        List<Integer> expectedPartNumbers = new ArrayList<>();
-        for (int i = 0; i < parts.size(); i++) {
-            CompletedPart completedPart = parts.get(i);
-            actualETags.add(completedPart.eTag());
-            actualPartNumbers.add(completedPart.partNumber());
-            expectedETags.add(UPLOAD_PART_E_TAG + "_" + (i + 1));
-            expectedPartNumbers.add(i + 1);
+            @Test
+            void shouldThrowExceptionGivenWritingToClosedStream() {
+                s3OutputStream.close();
+
+                assertThatWritingToStreamCausesException();
+            }
         }
-        assertThat(actualETags).containsExactlyElementsOf(expectedETags);
-        assertThat(actualPartNumbers).containsExactlyElementsOf(expectedPartNumbers);
+
+        @Nested
+        class ByteArray {
+
+            @Test
+            void shouldThrowGivenStreamIsClosed() {
+                byte[] data = "hello".getBytes();
+                s3OutputStream.close();
+
+                assertThatThrownBy(() -> s3OutputStream.write(data))
+                        .isInstanceOf(IllegalStateException.class)
+                        .hasMessage("Stream closed");
+            }
+
+            @Test
+            void shouldWriteByteArrayToBufferGivenBufferIsNotFull() {
+                byte[] data = "hello".getBytes();
+
+                s3OutputStream.write(data);
+
+                assertThat(s3OutputStream.temporaryBuffer).startsWith(data);
+                verifyNoInteractions(s3Client);
+            }
+
+            @Test
+            void shouldFlushBufferGivenItIsFull() {
+                mockMultipartUploadCreationAndPartUpload();
+                byte[] fullBufferData = new byte[BUFFER_SIZE_BYTES];
+                byte[] bufferOverflowingData = new byte[BUFFER_SIZE_BYTES + 1];
+                bufferOverflowingData[BUFFER_SIZE_BYTES] = LETTER_A_ASCII;
+
+                s3OutputStream.write(bufferOverflowingData);
+
+                assertThatMultipartUploadWasCreated();
+                assertPartWasUploaded(fullBufferData, 1);
+                assertNumberOfPartsUploaded(1);
+                assertThat(s3OutputStream.temporaryBuffer).startsWith(LETTER_A_ASCII);
+                verifyNoMoreInteractions(s3Client);
+            }
+
+            @Test
+            void shouldWriteByteArrayWithOffsetAndLengthToBuffer() {
+                byte[] data = "abcdefghij".getBytes();
+
+                s3OutputStream.write(data, 2, BUFFER_SIZE_BYTES);
+
+                assertThat(s3OutputStream.temporaryBuffer).startsWith("cdefg".getBytes());
+                verifyNoInteractions(s3Client);
+            }
+
+            @Test
+            void shouldNotFlushGivenBufferSizeNotExceeded() {
+                byte[] fullBufferData = new byte[BUFFER_SIZE_BYTES];
+
+                s3OutputStream.write(fullBufferData);
+
+                verifyNoInteractions(s3Client);
+            }
+
+            @Test
+            void shouldFlushBufferAndUploadPartsWithCorrectNumbersGivenFull() {
+                mockMultipartUploadCreationAndPartUpload();
+                var fullBufferData = new byte[BUFFER_SIZE_BYTES];
+
+                // Triggers multipart upload creation and first part upload:
+                s3OutputStream.write(fullBufferData);
+                // Triggers second part upload:
+                s3OutputStream.write(fullBufferData);
+                // Triggers flush, but doesn't upload third part because it fits in buffer:
+                s3OutputStream.write(fullBufferData);
+
+                assertThatMultipartUploadWasCreated();
+                assertPartWasUploaded(fullBufferData, 1);
+                assertPartWasUploaded(fullBufferData, 2);
+                assertNumberOfPartsUploaded(2);
+                verifyNoMoreInteractions(s3Client);
+            }
+        }
     }
 
-    @Test
-    void closeShouldUploadBufferedPartAndCompleteUploadGivenMultipartUploadWithSomeBufferedData() {
-        mockMultiPartUploadWithSomeBufferedData();
-        CompleteMultipartUploadRequest.Builder completeMultipartUploadRequestBuilder =
-                interceptCompleteMultipartUploadRequestBuilder();
+    @Nested
+    class Flush {
 
-        s3OutputStream.close();
+        @Test
+        void shouldThrowGivenStreamIsClosed() {
+            s3OutputStream.close();
 
-        assertPartWasUploaded(new byte[]{LETTER_A_ASCII}, 2);
-        assertNumberOfPartsUploaded(2);
-        assertMultipartUploadWasCompletedWithNumberOfParts(
-                completeMultipartUploadRequestBuilder, 2);
-        verifyNoMoreInteractions(s3Client);
+            assertThatThrownBy(() -> s3OutputStream.flush())
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessage("Stream closed");
+        }
+
+        @Test
+        void shouldStartMultipartUploadAndUploadPartGivenBufferNotEmpty() {
+            mockMultipartUploadCreationAndPartUpload();
+
+            s3OutputStream.write(LETTER_A_ASCII);
+            s3OutputStream.flush();
+
+            assertThatMultipartUploadWasCreated();
+            assertPartWasUploaded(new byte[]{LETTER_A_ASCII}, 1);
+            assertNumberOfPartsUploaded(1);
+            verifyNoMoreInteractions(s3Client);
+        }
     }
 
-    private void mockMultiPartUploadWithSomeBufferedData() {
-        mockMultipartUploadCreationAndPartUpload();
-        var fullBufferData = new byte[BUFFER_SIZE_BYTES];
-        s3OutputStream.write(fullBufferData); // The first flush sets uploadId, making it a multipart upload
-        s3OutputStream.write(LETTER_A_ASCII);
-        assertThatMultipartUploadWasCreated(); // Asserting here for cleaner `verifyNoMoreInteractions(s3Client);` later
+    @Nested
+    class Cancel {
+
+        @Test
+        void shouldCloseStream() {
+            s3OutputStream.cancel();
+
+            assertThatWritingToStreamCausesException();
+            verifyNoInteractions(s3Client);
+        }
+
+        @Test
+        void shouldAbortUploadGivenMultipartUpload() {
+            mockMultipartUploadCreationAndPartUpload();
+            // When the upload doesn't fit within the buffer, it becomes a multipart upload:
+            triggerFlushInS3OutputStreamByOverfillingBuffer();
+
+            s3OutputStream.cancel();
+
+            assertMultiPartUploadWasAborted();
+        }
     }
 
-    @Test
-    void closeShouldFallbackToPutObjectGivenSinglePartUpload() {
-        byte data = LETTER_A_ASCII;
-        s3OutputStream.write(data);
+    @Nested
+    class Close {
 
-        s3OutputStream.close();
+        @Test
+        void shouldOnlyCompleteUploadGivenMultipartUploadWithNoBufferedData() {
+            mockMultipartUploadWithNoBufferedData();
+            CompleteMultipartUploadRequest.Builder completeMultipartUploadRequestBuilder =
+                    interceptCompleteMultipartUploadRequestBuilder();
 
-        assertThatPutObjectWasUsedToUpload(new byte[]{data});
-        verifyNoMoreInteractions(s3Client);
-    }
+            s3OutputStream.close();
 
-    private void assertThatPutObjectWasUsedToUpload(byte[] data) {
-        ArgumentCaptor<PutObjectRequest> putObjectCaptor = ArgumentCaptor.forClass(PutObjectRequest.class);
-        verify(s3Client).putObject(putObjectCaptor.capture(), any(RequestBody.class));
+            assertMultipartUploadWasCompletedWithNumberOfParts(
+                    completeMultipartUploadRequestBuilder, 1);
+            verifyNoMoreInteractions(s3Client);
+        }
 
-        PutObjectRequest capturedRequest = putObjectCaptor.getValue();
-        assertThat(capturedRequest.bucket()).isEqualTo(BUCKET_NAME);
-        assertThat(capturedRequest.key()).isEqualTo(OBJECT_KEY);
-        assertThat(capturedRequest.contentLength()).isEqualTo(data.length);
-    }
 
-    @Test
-    void closeShouldDoNothingGivenStreamIsAlreadyClosed() {
-        writeDataAndCloseStream();
+        private void mockMultipartUploadWithNoBufferedData() {
+            mockMultipartUploadCreationAndPartUpload();
+            var fullBufferData = new byte[BUFFER_SIZE_BYTES];
+            s3OutputStream.write(fullBufferData);
+            // Uploads the buffered data so the buffer becomes empty and forces a multipart upload:
+            s3OutputStream.flush();
 
-        s3OutputStream.close();
+            // Asserting here for cleaner `verifyNoMoreInteractions(s3Client);` later
+            assertThatMultipartUploadWasCreated();
+            assertPartWasUploaded(fullBufferData, 1);
+            assertNumberOfPartsUploaded(1);
+        }
 
-        verify(s3Client, times(1))
-                .putObject(any(PutObjectRequest.class), any(RequestBody.class));
-        verifyNoMoreInteractions(s3Client);
-    }
+        @SuppressWarnings("unchecked")
+        private CompleteMultipartUploadRequest.Builder interceptCompleteMultipartUploadRequestBuilder() {
+            CompleteMultipartUploadRequest.Builder completeMultipartUploadRequestBuilder =
+                    CompleteMultipartUploadRequest.builder();
+            when(s3Client.completeMultipartUpload(any(Consumer.class)))
+                    .thenAnswer(inv -> {
+                        ((Consumer<CompleteMultipartUploadRequest.Builder>) inv.getArgument(0))
+                                .accept(completeMultipartUploadRequestBuilder);
+                        return null;
+                    });
 
-    private void writeDataAndCloseStream() {
-        s3OutputStream.write((byte) LETTER_A_ASCII);
-        s3OutputStream.close();
+            return completeMultipartUploadRequestBuilder;
+        }
+
+        @SuppressWarnings("unchecked")
+        private void assertMultipartUploadWasCompletedWithNumberOfParts(
+                CompleteMultipartUploadRequest.Builder requestBuilder,
+                int numberOfUploadedPartsExpected) {
+            verify(s3Client).completeMultipartUpload(any(Consumer.class));
+
+            CompleteMultipartUploadRequest capturedRequest = requestBuilder.build();
+            assertThat(capturedRequest.bucket()).isEqualTo(BUCKET_NAME);
+            assertThat(capturedRequest.key()).isEqualTo(OBJECT_KEY);
+            assertThat(capturedRequest.uploadId()).isEqualTo(MULTI_PART_UPLOAD_ID);
+            assertThat(capturedRequest.multipartUpload()).isNotNull();
+            assertCorrectPartInformationWasPassed(capturedRequest, numberOfUploadedPartsExpected);
+        }
+
+        private void assertCorrectPartInformationWasPassed(CompleteMultipartUploadRequest capturedRequest,
+                                                           int numberOfUploadedPartsExpected) {
+            List<CompletedPart> parts = capturedRequest.multipartUpload().parts();
+            assertThat(parts).hasSize(numberOfUploadedPartsExpected);
+            assertPartsWereCorrectlyAssembled(parts);
+        }
+
+        private void assertPartsWereCorrectlyAssembled(List<CompletedPart> parts) {
+            List<String> actualETags = new ArrayList<>();
+            List<Integer> actualPartNumbers = new ArrayList<>();
+            List<String> expectedETags = new ArrayList<>();
+            List<Integer> expectedPartNumbers = new ArrayList<>();
+            for (int i = 0; i < parts.size(); i++) {
+                CompletedPart completedPart = parts.get(i);
+                actualETags.add(completedPart.eTag());
+                actualPartNumbers.add(completedPart.partNumber());
+                expectedETags.add(UPLOAD_PART_E_TAG + "_" + (i + 1));
+                expectedPartNumbers.add(i + 1);
+            }
+            assertThat(actualETags).containsExactlyElementsOf(expectedETags);
+            assertThat(actualPartNumbers).containsExactlyElementsOf(expectedPartNumbers);
+        }
+
+        @Test
+        void shouldUploadBufferedPartAndCompleteUploadGivenMultipartUploadWithSomeBufferedData() {
+            mockMultiPartUploadWithSomeBufferedData();
+            CompleteMultipartUploadRequest.Builder completeMultipartUploadRequestBuilder =
+                    interceptCompleteMultipartUploadRequestBuilder();
+
+            s3OutputStream.close();
+
+            assertPartWasUploaded(new byte[]{LETTER_A_ASCII}, 2);
+            assertNumberOfPartsUploaded(2);
+            assertMultipartUploadWasCompletedWithNumberOfParts(
+                    completeMultipartUploadRequestBuilder, 2);
+            verifyNoMoreInteractions(s3Client);
+        }
+
+        private void mockMultiPartUploadWithSomeBufferedData() {
+            mockMultipartUploadCreationAndPartUpload();
+            var fullBufferData = new byte[BUFFER_SIZE_BYTES];
+            s3OutputStream.write(fullBufferData); // The first flush sets uploadId, making it a multipart upload
+            s3OutputStream.write(LETTER_A_ASCII);
+            // Asserting here for cleaner `verifyNoMoreInteractions(s3Client);` later:
+            assertThatMultipartUploadWasCreated();
+        }
+
+        @Test
+        void shouldFallbackToPutObjectGivenSinglePartUpload() {
+            byte data = LETTER_A_ASCII;
+            s3OutputStream.write(data);
+
+            s3OutputStream.close();
+
+            assertThatPutObjectWasUsedToUpload(new byte[]{data});
+            verifyNoMoreInteractions(s3Client);
+        }
+
+        private void assertThatPutObjectWasUsedToUpload(byte[] data) {
+            ArgumentCaptor<PutObjectRequest> putObjectCaptor = ArgumentCaptor.forClass(PutObjectRequest.class);
+            verify(s3Client).putObject(putObjectCaptor.capture(), any(RequestBody.class));
+
+            PutObjectRequest capturedRequest = putObjectCaptor.getValue();
+            assertThat(capturedRequest.bucket()).isEqualTo(BUCKET_NAME);
+            assertThat(capturedRequest.key()).isEqualTo(OBJECT_KEY);
+            assertThat(capturedRequest.contentLength()).isEqualTo(data.length);
+        }
+
+        @Test
+        void shouldDoNothingGivenStreamIsAlreadyClosed() {
+            writeDataAndCloseStream();
+
+            s3OutputStream.close();
+
+            verify(s3Client, times(1))
+                    .putObject(any(PutObjectRequest.class), any(RequestBody.class));
+            verifyNoMoreInteractions(s3Client);
+        }
+
+        private void writeDataAndCloseStream() {
+            s3OutputStream.write((byte) LETTER_A_ASCII);
+            s3OutputStream.close();
+        }
     }
 }

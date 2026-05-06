@@ -17,11 +17,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class FileCopyWithContextTest {
 
     @Nested
-    class Creation {
+    class Constructor {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenNullFileCopy() {
+        void shouldThrowGivenNullFileCopy() {
             SourceFile sourceFile = TestSourceFile.gog();
             Game game = TestGame.any();
             BackupTarget backupTarget = TestBackupTarget.localFolder();
@@ -32,7 +32,7 @@ class FileCopyWithContextTest {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenNullSourceFile() {
+        void shouldThrowGivenNullSourceFile() {
             FileCopy fileCopy = TestFileCopy.tracked();
             Game game = TestGame.any();
             BackupTarget backupTarget = TestBackupTarget.localFolder();
@@ -43,7 +43,7 @@ class FileCopyWithContextTest {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenNullGame() {
+        void shouldThrowGivenNullGame() {
             FileCopy fileCopy = TestFileCopy.tracked();
             SourceFile sourceFile = TestSourceFile.gog();
             BackupTarget backupTarget = TestBackupTarget.localFolder();
@@ -54,7 +54,7 @@ class FileCopyWithContextTest {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenNullBackupTarget() {
+        void shouldThrowGivenNullBackupTarget() {
             FileCopy fileCopy = TestFileCopy.tracked();
             SourceFile sourceFile = TestSourceFile.gog();
             Game game = TestGame.any();
@@ -63,7 +63,6 @@ class FileCopyWithContextTest {
                     .hasMessageContaining("backupTarget");
         }
 
-        @SuppressWarnings("DataFlowIssue")
         @Test
         void shouldConstructWithNullProgress() {
             FileCopy fileCopy = TestFileCopy.tracked();

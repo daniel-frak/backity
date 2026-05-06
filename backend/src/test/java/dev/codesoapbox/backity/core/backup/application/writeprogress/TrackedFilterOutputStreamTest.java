@@ -34,31 +34,31 @@ class TrackedFilterOutputStreamTest {
     }
 
     @Nested
-    class Writing {
+    class Write {
 
         @Test
-        void writeShouldWriteToOutputStreamGivenLength() throws IOException {
+        void shouldWriteToOutputStreamGivenLength() throws IOException {
             trackedFilterOutputStream.write(new byte[]{1, 2}, 20, 30);
 
             verify(outputStream).write(new byte[]{1, 2}, 20, 30);
         }
 
         @Test
-        void writeShouldNotifySubscriberGivenLength() throws IOException {
+        void shouldNotifySubscriberGivenLength() throws IOException {
             trackedFilterOutputStream.write(new byte[]{1, 2}, 20, 30);
 
             assertThat(writtenBytesLength).isEqualTo(30);
         }
 
         @Test
-        void writeShouldWriteToOutputStream() throws IOException {
+        void shouldWriteToOutputStream() throws IOException {
             trackedFilterOutputStream.write(12);
 
             verify(outputStream).write(12);
         }
 
         @Test
-        void writeShouldNotifySubscriberGivenSingleByte() throws IOException {
+        void shouldNotifySubscriberGivenSingleByte() throws IOException {
             trackedFilterOutputStream.write(12);
 
             assertThat(writtenBytesLength).isEqualTo(1);
@@ -66,17 +66,17 @@ class TrackedFilterOutputStreamTest {
     }
 
     @Nested
-    class Closing {
+    class Close {
 
         @Test
-        void closeShouldCloseStream() throws IOException {
+        void shouldCloseStream() throws IOException {
             trackedFilterOutputStream.close();
 
             verify(outputStream).close();
         }
 
         @Test
-        void closeShouldNotifySubscriber() throws IOException {
+        void shouldNotifySubscriber() throws IOException {
             trackedFilterOutputStream.close();
 
             assertThat(wasClosed).isTrue();

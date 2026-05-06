@@ -15,6 +15,7 @@ import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
 import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driving.api.http.model.sourcefile.FileCopyStatusHttpDto;
 import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driving.api.http.model.sourcefile.SourceFileHttpDto;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.ProgressHttpDto;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -37,16 +38,6 @@ class GameWithFileCopiesReadModelHttpDtoMapperTest {
     private static final String FILE_COPY_ID = "6df888e8-90b9-4df5-a237-0cba422c0310";
     private static final String BACKUP_TARGET_ID = "eda52c13-ddf7-406f-97d9-d3ce2cab5a76";
 
-    @Test
-    void shouldMapDomainToDto() {
-        GameWithFileCopiesAndReplicationProgresses domain = domain();
-
-        GameWithFileCopiesHttpDto result = MAPPER.toDto(domain);
-
-        GameWithFileCopiesHttpDto expectedResult = dto();
-        assertThat(result)
-                .usingRecursiveComparison().isEqualTo(expectedResult);
-    }
 
     private GameWithFileCopiesAndReplicationProgresses domain() {
         return new GameWithFileCopiesAndReplicationProgresses(
@@ -140,9 +131,24 @@ class GameWithFileCopiesReadModelHttpDtoMapperTest {
         );
     }
 
-    @Test
-    void toDtoShouldReturnNullGivenNull() {
-        assertThat(MAPPER.toDto((GameWithFileCopiesReadModel) null, emptyList()))
-                .isNull();
+    @Nested
+    class ToDto {
+
+        @Test
+        void shouldMapDomainToDto() {
+            GameWithFileCopiesAndReplicationProgresses domain = domain();
+
+            GameWithFileCopiesHttpDto result = MAPPER.toDto(domain);
+
+            GameWithFileCopiesHttpDto expectedResult = dto();
+            assertThat(result)
+                    .usingRecursiveComparison().isEqualTo(expectedResult);
+        }
+
+        @Test
+        void shouldReturnNullGivenNull() {
+            assertThat(MAPPER.toDto((GameWithFileCopiesReadModel) null, emptyList()))
+                    .isNull();
+        }
     }
 }

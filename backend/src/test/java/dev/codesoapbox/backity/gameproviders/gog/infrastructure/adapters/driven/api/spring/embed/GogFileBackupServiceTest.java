@@ -35,7 +35,7 @@ class GogFileBackupServiceTest {
     class AcquireTrackableFileStream {
 
         @Test
-        void acquireTrackableFileShouldReturnFileStream() {
+        void shouldReturnFileStream() {
             SourceFile sourceFile = TestSourceFile.gog();
             OutputStreamProgressTracker outputStreamProgressTracker = mock(OutputStreamProgressTracker.class);
             TrackableFileStream trackableFileStream =

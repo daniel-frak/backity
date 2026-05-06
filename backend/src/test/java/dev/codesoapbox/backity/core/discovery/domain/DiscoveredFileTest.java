@@ -11,11 +11,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class DiscoveredFileTest {
 
     @Nested
-    class Creation {
+    class Constructor {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenGameProviderIdIsNull() {
+        void shouldThrowGivenGameProviderIdIsNull() {
             var originalGameTitle = new GameTitle("Game 1");
             var fileTitle = new FileTitle("Game 1 (Installer)");
             var version = new FileVersion("1.0.0");
@@ -38,7 +38,7 @@ class DiscoveredFileTest {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenOriginalGameTitleIsNull() {
+        void shouldThrowGivenOriginalGameTitleIsNull() {
             var gameProviderId = new GameProviderId("GOG");
             var fileTitle = new FileTitle("Game 1 (Installer)");
             var version = new FileVersion("1.0.0");
@@ -61,7 +61,7 @@ class DiscoveredFileTest {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenFileTitleIsNull() {
+        void shouldThrowGivenFileTitleIsNull() {
             var gameProviderId = new GameProviderId("GOG");
             var originalGameTitle = new GameTitle("Game 1");
             var version = new FileVersion("1.0.0");
@@ -84,7 +84,7 @@ class DiscoveredFileTest {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenVersionIsNull() {
+        void shouldThrowGivenVersionIsNull() {
             var gameProviderId = new GameProviderId("GOG");
             var originalGameTitle = new GameTitle("Game 1");
             var fileTitle = new FileTitle("Game 1 (Installer)");
@@ -107,7 +107,7 @@ class DiscoveredFileTest {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenUrlIsNull() {
+        void shouldThrowGivenUrlIsNull() {
             var gameProviderId = new GameProviderId("GOG");
             var originalGameTitle = new GameTitle("Game 1");
             var fileTitle = new FileTitle("Game 1 (Installer)");
@@ -130,7 +130,7 @@ class DiscoveredFileTest {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenOriginalFileNameIsNull() {
+        void shouldThrowGivenOriginalFileNameIsNull() {
             var gameProviderId = new GameProviderId("GOG");
             var originalGameTitle = new GameTitle("Game 1");
             var fileTitle = new FileTitle("Game 1 (Installer)");
@@ -153,7 +153,7 @@ class DiscoveredFileTest {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenSizeIsNull() {
+        void shouldThrowGivenSizeIsNull() {
             var gameProviderId = new GameProviderId("GOG");
             var originalGameTitle = new GameTitle("Game 1");
             var fileTitle = new FileTitle("Game 1 (Installer)");

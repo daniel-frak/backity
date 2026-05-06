@@ -17,49 +17,57 @@ class StringSanitizerTest {
     @Nested
     class Creation {
 
-        @Test
-        void constructorShouldDefensivelyCopyCharactersToRemove() {
-            Set<Character> charactersToRemove = new HashSet<>();
+        @Nested
+        class Constructor {
 
-            var sanitizer = new StringSanitizer(charactersToRemove, emptyList());
+            @Test
+            void shouldDefensivelyCopyCharactersToRemove() {
+                Set<Character> charactersToRemove = new HashSet<>();
 
-            charactersToRemove.add('$');
-            String result = sanitizer.sanitize("$");
-            assertThat(result).isEqualTo("$");
+                var sanitizer = new StringSanitizer(charactersToRemove, emptyList());
+
+                charactersToRemove.add('$');
+                String result = sanitizer.sanitize("$");
+                assertThat(result).isEqualTo("$");
+            }
+
+            @Test
+            void shouldDefensivelyCopyCharactersToReplace() {
+                List<StringSanitizer.StringReplacement> charactersToReplace = new ArrayList<>();
+
+                var sanitizer = new StringSanitizer(emptySet(), charactersToReplace);
+
+                charactersToReplace.add(new StringSanitizer.StringReplacement("-", "_"));
+                String result = sanitizer.sanitize("-");
+                assertThat(result).isEqualTo("-");
+            }
         }
 
-        @Test
-        void constructorShouldDefensivelyCopyCharactersToReplace() {
-            List<StringSanitizer.StringReplacement> charactersToReplace = new ArrayList<>();
+        @Nested
+        class WithAdditionalCharactersToRemove {
 
-            var sanitizer = new StringSanitizer(emptySet(), charactersToReplace);
+            @Test
+            void shouldConstructWithAdditionalCharactersToRemove() {
+                Set<Character> charactersToRemove = Set.of('$');
+                List<StringSanitizer.StringReplacement> charactersToReplace =
+                        List.of(new StringSanitizer.StringReplacement("-", "_"));
+                var originalSanitizer = new StringSanitizer(charactersToRemove, charactersToReplace);
+                Set<Character> additionalCharactersToRemove = Set.of('!');
 
-            charactersToReplace.add(new StringSanitizer.StringReplacement("-", "_"));
-            String result = sanitizer.sanitize("-");
-            assertThat(result).isEqualTo("-");
-        }
+                StringSanitizer newSanitizer =
+                        originalSanitizer.withAdditionalCharactersToRemove(additionalCharactersToRemove);
 
-        @Test
-        void shouldConstructWithAdditionalCharactersToRemove() {
-            Set<Character> charactersToRemove = Set.of('$');
-            List<StringSanitizer.StringReplacement> charactersToReplace =
-                    List.of(new StringSanitizer.StringReplacement("-", "_"));
-            var originalSanitizer = new StringSanitizer(charactersToRemove, charactersToReplace);
-            Set<Character> additionalCharactersToRemove = Set.of('!');
-
-            StringSanitizer newSanitizer =
-                    originalSanitizer.withAdditionalCharactersToRemove(additionalCharactersToRemove);
-
-            String sanitized = newSanitizer.sanitize("$!$!");
-            assertThat(sanitized).isEmpty();
+                String sanitized = newSanitizer.sanitize("$!$!");
+                assertThat(sanitized).isEmpty();
+            }
         }
     }
 
     @Nested
-    class Sanitization {
+    class Sanitize {
 
         @Test
-        void sanitizeShouldRemoveCharacters() {
+        void shouldRemoveCharacters() {
             Set<Character> charactersToRemove = Set.of('$');
             var sanitizer = new StringSanitizer(charactersToRemove, emptyList());
 
@@ -69,7 +77,7 @@ class StringSanitizerTest {
         }
 
         @Test
-        void sanitizeShouldReplaceStrings() {
+        void shouldReplaceStrings() {
             List<StringSanitizer.StringReplacement> charactersToReplace =
                     List.of(new StringSanitizer.StringReplacement("-", "_"));
             var sanitizer = new StringSanitizer(emptySet(), charactersToReplace);
