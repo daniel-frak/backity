@@ -7,23 +7,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class StorageSolutionIdTest {
 
-    @Test
-    void shouldCreateFromString() {
-        String expectedValue = "storageSolution1";
-        var result = new StorageSolutionId(expectedValue);
+    @Nested
+    class Constructor {
 
-        assertThat(result.value()).isEqualTo(expectedValue);
+        @Test
+        void shouldCreateFromString() {
+            String expectedValue = "storageSolution1";
+            var result = new StorageSolutionId(expectedValue);
+
+            assertThat(result.value()).isEqualTo(expectedValue);
+        }
     }
 
-    @Test
-    void toStringShouldReturnValue() {
-        String idString = "storageSolution1";
-        var id = new StorageSolutionId(idString);
+    @Nested
+    class ToString {
 
-        String result = id.toString();
+        @Test
+        void shouldReturnValue() {
+            String idString = "storageSolution1";
+            var id = new StorageSolutionId(idString);
 
-        assertThat(result)
-                .isEqualTo(idString);
+            String result = id.toString();
+
+            assertThat(result)
+                    .isEqualTo(idString);
+        }
     }
 
     @Nested

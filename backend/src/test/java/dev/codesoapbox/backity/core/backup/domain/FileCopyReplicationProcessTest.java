@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.backup.domain;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,40 +15,44 @@ class FileCopyReplicationProcessTest {
         process = new FileCopyReplicationProcess();
     }
 
-    @Test
-    void tryStartShouldReturnTrueGivenNotInProgressAndBackupRecoveryCompleted() {
-        process.markBackupRecoveryCompleted();
+    @Nested
+    class TryStart {
 
-        boolean result = process.tryStart();
+        @Test
+        void shouldReturnTrueGivenNotInProgressAndBackupRecoveryCompleted() {
+            process.markBackupRecoveryCompleted();
 
-        assertThat(result).isTrue();
-    }
+            boolean result = process.tryStart();
 
-    @Test
-    void tryStartShouldReturnFalseGivenNotInProgressButBackupRecoveryNotCompleted() {
-        boolean result = process.tryStart();
+            assertThat(result).isTrue();
+        }
 
-        assertThat(result).isFalse();
-    }
+        @Test
+        void shouldReturnFalseGivenNotInProgressButBackupRecoveryNotCompleted() {
+            boolean result = process.tryStart();
 
-    @Test
-    void tryStartShouldReturnFalseGivenBackupRecoveryCompletedButInProgress() {
-        process.markBackupRecoveryCompleted();
-        process.tryStart();
+            assertThat(result).isFalse();
+        }
 
-        boolean result = process.tryStart();
+        @Test
+        void shouldReturnFalseGivenBackupRecoveryCompletedButInProgress() {
+            process.markBackupRecoveryCompleted();
+            process.tryStart();
 
-        assertThat(result).isFalse();
-    }
+            boolean result = process.tryStart();
 
-    @Test
-    void tryStartShouldReturnTrueGivenInProgressProcessWasCompleted() {
-        process.markBackupRecoveryCompleted();
-        process.tryStart();
+            assertThat(result).isFalse();
+        }
 
-        process.markAsCompleted();
-        boolean result = process.tryStart();
+        @Test
+        void shouldReturnTrueGivenInProgressProcessWasCompleted() {
+            process.markBackupRecoveryCompleted();
+            process.tryStart();
 
-        assertThat(result).isTrue();
+            process.markAsCompleted();
+            boolean result = process.tryStart();
+
+            assertThat(result).isTrue();
+        }
     }
 }

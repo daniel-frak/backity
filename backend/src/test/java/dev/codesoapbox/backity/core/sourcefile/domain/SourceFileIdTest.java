@@ -9,19 +9,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class SourceFileIdTest {
 
-    @Test
-    void toStringShouldReturnValue() {
-        String idString = "3b21cc23-54c6-48f3-914d-188b790128b4";
-        var id = new SourceFileId(idString);
-
-        String result = id.toString();
-
-        assertThat(result)
-                .isEqualTo(idString);
-    }
-
     @Nested
     class Creation {
+
         @Test
         void shouldCreateFromString() {
             var result = new SourceFileId("acde26d7-33c7-42ee-be16-bca91a604b48");
@@ -35,6 +25,21 @@ class SourceFileIdTest {
             SourceFileId result = SourceFileId.newInstance();
 
             assertThat(result.value()).isNotNull();
+        }
+    }
+
+    @Nested
+    class ToString {
+
+        @Test
+        void shouldReturnValue() {
+            String idString = "3b21cc23-54c6-48f3-914d-188b790128b4";
+            var id = new SourceFileId(idString);
+
+            String result = id.toString();
+
+            assertThat(result)
+                    .isEqualTo(idString);
         }
     }
 

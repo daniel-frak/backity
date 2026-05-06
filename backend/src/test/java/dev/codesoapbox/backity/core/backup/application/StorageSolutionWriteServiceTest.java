@@ -126,7 +126,7 @@ class StorageSolutionWriteServiceTest {
         }
 
         @Test
-        void cancelWriteShouldNotThrowGivenFileIsNotCurrentlyBeingWritten() {
+        void shouldNotThrowGivenFileIsNotCurrentlyBeingWritten() {
             var nonExistentFilePath = new FilePath("nonExistentFilePath");
             var writeDestination = new WriteDestination(storageSolution.getId(), nonExistentFilePath);
             assertThatCode(() -> storageSolutionWriteService.cancelWrite(writeDestination))
@@ -135,7 +135,7 @@ class StorageSolutionWriteServiceTest {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void cancelWriteShouldThrowGivenNullWriteDestination() {
+        void shouldThrowGivenNullWriteDestination() {
             assertThatThrownBy(() -> storageSolutionWriteService.cancelWrite(null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessageContaining("writeDestination");

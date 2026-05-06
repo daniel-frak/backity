@@ -6,6 +6,7 @@ import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.testing.time.FakeClock;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -41,20 +42,26 @@ class OutputStreamProgressTrackerFactoryTest {
         assertThat(result).isNotNull();
     }
 
-    @Test
-    void createdOutputStreamProgressShouldPublishEventOnChange() {
-        FileCopy fileCopy = TestFileCopy.inProgress();
-        long entireContentLengthBytes = 10L;
-        int halfContentLengthBytes = 5;
-        long timeToWriteHalfOfContentInSeconds = 2L;
-        OutputStreamProgressTracker outputStreamProgressTracker = outputStreamProgressTrackerFactory.create(fileCopy);
-        outputStreamProgressTracker.initializeTracking(entireContentLengthBytes, clock);
-        clock.moveForward(Duration.of(timeToWriteHalfOfContentInSeconds, ChronoUnit.SECONDS));
+    @Nested
+    class IncrementWrittenBytes {
 
-        outputStreamProgressTracker.incrementWrittenBytes(halfContentLengthBytes);
+        @Test
+        void shouldTriggerSubscribedConsumers() {
+            FileCopy fileCopy = TestFileCopy.inProgress();
+            long entireContentLengthBytes = 10L;
+            int halfContentLengthBytes = 5;
+            long timeToWriteHalfOfContentInSeconds = 2L;
+            OutputStreamProgressTracker outputStreamProgressTracker =
+                    outputStreamProgressTrackerFactory.create(fileCopy);
+            outputStreamProgressTracker.initializeTracking(entireContentLengthBytes, clock);
+            clock.moveForward(Duration.of(timeToWriteHalfOfContentInSeconds, ChronoUnit.SECONDS));
 
-        verify(domainEventPublisher).publish(
-                new FileCopyReplicationProgressChangedEvent(fileCopy.getId(), fileCopy.getNaturalId(), 50,
-                        Duration.ofSeconds(timeToWriteHalfOfContentInSeconds)));
+            outputStreamProgressTracker.incrementWrittenBytes(halfContentLengthBytes);
+
+            verify(domainEventPublisher).publish(
+                    new FileCopyReplicationProgressChangedEvent(
+                            fileCopy.getId(), fileCopy.getNaturalId(), 50,
+                            Duration.ofSeconds(timeToWriteHalfOfContentInSeconds)));
+        }
     }
 }

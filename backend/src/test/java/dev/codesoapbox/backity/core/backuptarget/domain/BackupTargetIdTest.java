@@ -9,17 +9,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class BackupTargetIdTest {
 
-    @Test
-    void toStringShouldReturnValue() {
-        String idString = "3553a3c7-47a7-4f7a-8b47-75928bee37d0";
-        var id = new BackupTargetId(idString);
-
-        String result = id.toString();
-
-        assertThat(result)
-                .isEqualTo(idString);
-    }
-
     @Nested
     class Creation {
         @Test
@@ -35,6 +24,21 @@ class BackupTargetIdTest {
             BackupTargetId result = BackupTargetId.newInstance();
 
             assertThat(result.value()).isNotNull();
+        }
+    }
+
+    @Nested
+    class ToString {
+
+        @Test
+        void shouldReturnValue() {
+            String idString = "3553a3c7-47a7-4f7a-8b47-75928bee37d0";
+            var id = new BackupTargetId(idString);
+
+            String result = id.toString();
+
+            assertThat(result)
+                    .isEqualTo(idString);
         }
     }
 

@@ -9,19 +9,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class FileCopyIdTest {
 
-    @Test
-    void toStringShouldReturnValue() {
-        String idString = "6df888e8-90b9-4df5-a237-0cba422c0310";
-        var id = new FileCopyId(idString);
-
-        String result = id.toString();
-
-        assertThat(result)
-                .isEqualTo(idString);
-    }
-
     @Nested
     class Creation {
+
         @Test
         void shouldCreateFromString() {
             var result = new FileCopyId("6df888e8-90b9-4df5-a237-0cba422c0310");
@@ -35,6 +25,21 @@ class FileCopyIdTest {
             FileCopyId result = FileCopyId.newInstance();
 
             assertThat(result.value()).isNotNull();
+        }
+    }
+
+    @Nested
+    class ToString {
+
+        @Test
+        void shouldReturnValue() {
+            String idString = "6df888e8-90b9-4df5-a237-0cba422c0310";
+            var id = new FileCopyId(idString);
+
+            String result = id.toString();
+
+            assertThat(result)
+                    .isEqualTo(idString);
         }
     }
 

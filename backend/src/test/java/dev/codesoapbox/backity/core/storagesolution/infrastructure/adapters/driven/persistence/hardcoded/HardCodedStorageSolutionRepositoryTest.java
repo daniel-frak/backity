@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.StorageSolutionNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -23,25 +24,33 @@ class HardCodedStorageSolutionRepositoryTest {
         repository = new HardCodedStorageSolutionRepository(List.of(fakeUnixStorageSolution));
     }
 
-    @Test
-    void shouldGetById() {
-        StorageSolution result = repository.getById(FakeUnixStorageSolution.DEFAULT_ID);
+    @Nested
+    class GetById {
 
-        assertThat(result).isEqualTo(fakeUnixStorageSolution);
+        @Test
+        void shouldGetById() {
+            StorageSolution result = repository.getById(FakeUnixStorageSolution.DEFAULT_ID);
+
+            assertThat(result).isEqualTo(fakeUnixStorageSolution);
+        }
+
+        @Test
+        void shouldThrowExceptionGivenNotFound() {
+            var nonExistentId = new StorageSolutionId("nonExistentId");
+            assertThatThrownBy(() -> repository.getById(nonExistentId))
+                    .isInstanceOf(StorageSolutionNotFoundException.class)
+                    .hasMessageContaining(nonExistentId.toString());
+        }
     }
 
-    @Test
-    void getByIdShouldThrowExceptionGivenNotFound() {
-        var nonExistentId = new StorageSolutionId("nonExistentId");
-        assertThatThrownBy(() -> repository.getById(nonExistentId))
-                .isInstanceOf(StorageSolutionNotFoundException.class)
-                .hasMessageContaining(nonExistentId.toString());
-    }
+    @Nested
+    class FindAll {
 
-    @Test
-    void shouldFindAll() {
-        List<StorageSolution> result = repository.findAll();
+        @Test
+        void shouldFindAll() {
+            List<StorageSolution> result = repository.findAll();
 
-        assertThat(result).containsExactly(fakeUnixStorageSolution);
+            assertThat(result).containsExactly(fakeUnixStorageSolution);
+        }
     }
 }

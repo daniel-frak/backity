@@ -11,7 +11,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class FileCopyNaturalIdTest {
 
     @Nested
-    class Creation {
+    class Constructor {
+
         @Test
         void shouldCreate() {
             var sourceFileId = new SourceFileId("acde26d7-33c7-42ee-be16-bca91a604b48");
@@ -24,7 +25,7 @@ class FileCopyNaturalIdTest {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenNullSourceFileId() {
+        void shouldThrowGivenNullSourceFileId() {
             var backupTargetId = new BackupTargetId("3553a3c7-47a7-4f7a-8b47-75928bee37d0");
 
             assertThatThrownBy(() -> new FileCopyNaturalId(null, backupTargetId))
@@ -34,7 +35,7 @@ class FileCopyNaturalIdTest {
 
         @SuppressWarnings("DataFlowIssue")
         @Test
-        void constructorShouldThrowGivenNullBackupTargetId() {
+        void shouldThrowGivenNullBackupTargetId() {
             var sourceFileId = new SourceFileId("acde26d7-33c7-42ee-be16-bca91a604b48");
 
             assertThatThrownBy(() -> new FileCopyNaturalId(sourceFileId, null))
