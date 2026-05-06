@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.core.sourcefile.domain;
 
 import dev.codesoapbox.backity.shared.domain.exceptions.DomainValueIsEmptyException;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,23 +9,39 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class FileTitleTest {
 
-    @Test
-    void constructorShouldThrowGivenBlankValue() {
-        String blankValue = " ";
+    @Nested
+    class Constructor {
 
-        assertThatThrownBy(() -> new FileTitle(blankValue))
-                .isInstanceOf(DomainValueIsEmptyException.class)
-                .hasMessageContaining("File title");
+        @Test
+        @SuppressWarnings("DataFlowIssue")
+        void shouldThrowGivenNullValue() {
+            assertThatThrownBy(() -> new FileTitle(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("value");
+        }
+
+        @Test
+        void shouldThrowGivenBlankValue() {
+            String blankValue = " ";
+
+            assertThatThrownBy(() -> new FileTitle(blankValue))
+                    .isInstanceOf(DomainValueIsEmptyException.class)
+                    .hasMessageContaining("File title");
+        }
     }
 
-    @Test
-    void toStringShouldReturnValue() {
-        String value = "someValue";
-        var fileTitle = new FileTitle(value);
+    @Nested
+    class ToString {
 
-        String result = fileTitle.toString();
+        @Test
+        void shouldReturnValue() {
+            String value = "someValue";
+            var fileTitle = new FileTitle(value);
 
-        assertThat(result)
-                .isEqualTo(value);
+            String result = fileTitle.toString();
+
+            assertThat(result)
+                    .isEqualTo(value);
+        }
     }
 }
