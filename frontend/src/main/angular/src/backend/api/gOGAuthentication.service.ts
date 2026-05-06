@@ -42,7 +42,7 @@ export class GOGAuthenticationClient extends BaseService {
     /**
      * Authenticate
      * Returns a refresh token based on a code
-     * @endpoint post /api/gog/auth
+     * @endpoint post /api/providers/gog/auth
      * @param gogAuthenticationRequest
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -90,7 +90,7 @@ export class GOGAuthenticationClient extends BaseService {
             }
         }
 
-        let localVarPath = `/api/gog/auth`;
+        let localVarPath = `/api/providers/gog/auth`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<RefreshTokenResponse>('post', `${basePath}${localVarPath}`,
             {
@@ -109,7 +109,7 @@ export class GOGAuthenticationClient extends BaseService {
     /**
      * Get authentication status
      * Returns whether or not the user is currently authenticated
-     * @endpoint get /api/gog/auth
+     * @endpoint get /api/providers/gog/auth
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
@@ -144,7 +144,7 @@ export class GOGAuthenticationClient extends BaseService {
             }
         }
 
-        let localVarPath = `/api/gog/auth`;
+        let localVarPath = `/api/providers/gog/auth`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<boolean>('get', `${basePath}${localVarPath}`,
             {
@@ -162,7 +162,7 @@ export class GOGAuthenticationClient extends BaseService {
     /**
      * Log out of GOG
      * Logs out of GOG
-     * @endpoint delete /api/gog/auth
+     * @endpoint delete /api/providers/gog/auth
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
@@ -197,7 +197,7 @@ export class GOGAuthenticationClient extends BaseService {
             }
         }
 
-        let localVarPath = `/api/gog/auth`;
+        let localVarPath = `/api/providers/gog/auth`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`,
             {
@@ -215,7 +215,7 @@ export class GOGAuthenticationClient extends BaseService {
     /**
      * Refresh access token
      * Refreshes the access token using a refresh token
-     * @endpoint put /api/gog/auth
+     * @endpoint put /api/providers/gog/auth
      * @param refreshGogAccessTokenRequest
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -263,7 +263,7 @@ export class GOGAuthenticationClient extends BaseService {
             }
         }
 
-        let localVarPath = `/api/gog/auth`;
+        let localVarPath = `/api/providers/gog/auth`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<RefreshTokenResponse>('put', `${basePath}${localVarPath}`,
             {

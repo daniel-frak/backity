@@ -38,7 +38,7 @@ export class GOGConfigurationClient extends BaseService {
     /**
      * Get GOG configuration
      * Returns GOG configuration information
-     * @endpoint get /api/gog/config
+     * @endpoint get /api/providers/gog/config
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      * @param options additional options
@@ -73,7 +73,7 @@ export class GOGConfigurationClient extends BaseService {
             }
         }
 
-        let localVarPath = `/api/gog/config`;
+        let localVarPath = `/api/providers/gog/config`;
         const { basePath, withCredentials } = this.configuration;
         return this.httpClient.request<GogConfig>('get', `${basePath}${localVarPath}`,
             {
