@@ -20,7 +20,7 @@
     "remark-toc": "^9.0.0"
   },
   "devDependencies": {
-    "@types/node": "25.6.1",
+    "@types/node": "25.6.2",
     "sass-embedded": "1.99.0"
   }
 }
