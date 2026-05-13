@@ -1,13 +1,13 @@
 ---
 import BaseLayout from "../BaseLayout.astro";
-import Search from "astro-pagefind/components/Search";
+import Search from "astro-pagefind/components/Search.astro";
 import DevDocNav from "./components/DevDocNav.astro";
 import type {DevDocNode} from "./domain";
 import {createAdrNodes, getDevDocsPath} from "./services/adrService";
 import {buildTree, sortTree} from "./services/treeService";
 import {adrPath, scopeOrder, statusOrder, scopeLabels, statuses} from "./config";
 import {getCollection} from "astro:content";
-import {isSameUrl, withBase} from "../../url.ts";
+import {isSameUrl} from "../../url.ts";
 
 const {frontmatter} = Astro.props;
 const {url} = Astro;
@@ -123,12 +123,17 @@ const isCurrentPage = (item: DevDocNode) => {
   @use "../../styles/mixins" as *;
 
   :root {
-    --pagefind-ui-primary: var(--primary-color);
-    --pagefind-ui-text: var(--text-color);
-    --pagefind-ui-background: var(--bg-color);
-    --pagefind-ui-border: var(--secondary-color);
-    --pagefind-ui-border-radius: 8px;
-    --pagefind-ui-font: var(--font-family);
+    --pf-outline-focus: var(--primary-color);
+    --pf-mark: var(--primary-color);
+    --pf-text: var(--text-color);
+    --pf-text-secondary: var(--text-secondary-color);
+    --pf-text-muted: var(--text-secondary-color);
+    --pf-background: var(--bg-color);
+    --pf-hover: var(--secondary-color);
+    --pf-border: var(--secondary-color);
+    --pf-border-radius: 8px;
+    --pf-font: var(--font-family);
+    --pf-searchbox-max-width: 100%;
   }
 
   #sidenav-toggle {
