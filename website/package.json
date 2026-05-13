@@ -14,7 +14,7 @@
   "dependencies": {
     "astro": "^6.0.8",
     "astro-mermaid": "^2.0.1",
-    "astro-pagefind": "^1.8.6",
+    "astro-pagefind": "^2.0.0",
     "mermaid": "^11.13.0",
     "rehype-shift-heading": "^2.0.0",
     "remark-toc": "^9.0.0"
