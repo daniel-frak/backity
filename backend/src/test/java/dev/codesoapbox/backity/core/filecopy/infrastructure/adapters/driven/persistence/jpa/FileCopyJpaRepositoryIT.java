@@ -22,8 +22,11 @@ import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageableMapper;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
+import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
+import dev.codesoapbox.backity.testing.time.FakeClock;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import org.hibernate.exception.ConstraintViolationException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +57,8 @@ abstract class FileCopyJpaRepositoryIT {
     private static final LocalDate YESTERDAY = TODAY.minusDays(1);
     private static final LocalDate BEFORE_YESTERDAY = TODAY.minusDays(2);
 
+    private final Assertions assertThat = new Assertions();
+
     @Autowired
     protected FileCopyJpaRepository repository;
 
@@ -66,9 +71,30 @@ abstract class FileCopyJpaRepositoryIT {
     @Autowired
     protected DomainEventPublisher domainEventPublisher;
 
-    private void persistSampleData() {
+    @Autowired
+    protected FakeClock clock;
+
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    @BeforeEach
+    void setUp(EntityAuditControl entityAuditControl) {
+        entityAuditControl.disable();
+    }
+
+    @Test
+    void saveShouldPersistNew() {
         persistSampleDependencies();
-        persistFileCopies(SampleFileCopies.getAll());
+        FileCopy fileCopy = TestFileCopy.trackedBuilder()
+                .naturalId(new FileCopyNaturalId(
+                        SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId(),
+                        SampleBackupTargets.LOCAL_FOLDER_1.get().getId()
+                ))
+                .build();
+
+        FileCopy result = repository.save(fileCopy);
+        entityManager.flush();
+
+        assertSame(result, fileCopy);
+        assertWasPersisted(fileCopy);
     }
 
     private void persistSampleDependencies() {
@@ -95,41 +121,6 @@ abstract class FileCopyJpaRepositoryIT {
         }
     }
 
-    private void persistFileCopies(List<FileCopy> fileCopies) {
-        for (FileCopy fileCopy : fileCopies) {
-            entityManager.persist(entityMapper.toEntity(fileCopy));
-            updateDateModified(fileCopy);
-        }
-    }
-
-    /*
-    DateModified gets overwritten by the database on every INSERT/UPDATE, so we need to update it manually.
-     */
-    private void updateDateModified(FileCopy fileCopy) {
-        entityManager.getEntityManager()
-                .createQuery("UPDATE FileCopy f SET f.dateModified = :date WHERE f.id = :id")
-                .setParameter("date", fileCopy.getDateModified())
-                .setParameter("id", fileCopy.getId().value())
-                .executeUpdate();
-    }
-
-    @Test
-    void saveShouldPersistNew() {
-        persistSampleDependencies();
-        FileCopy fileCopy = TestFileCopy.trackedBuilder()
-                .naturalId(new FileCopyNaturalId(
-                        SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId(),
-                        SampleBackupTargets.LOCAL_FOLDER_1.get().getId()
-                ))
-                .build();
-
-        FileCopy result = repository.save(fileCopy);
-        entityManager.flush();
-
-        assertSame(result, fileCopy);
-        assertWasPersisted(fileCopy);
-    }
-
     private void assertWasPersisted(FileCopy fileCopy) {
         FileCopyJpaEntity persistedEntity = entityManager.find(FileCopyJpaEntity.class, fileCopy.getId().value());
         FileCopy persistedFileCopy = entityMapper.toDomain(persistedEntity);
@@ -143,7 +134,6 @@ abstract class FileCopyJpaRepositoryIT {
                     assertThat(it.getDateModified()).isNotNull();
                 })
                 .usingRecursiveComparison()
-                .ignoringFields("dateCreated", "dateModified")
                 .isEqualTo(expected);
     }
 
@@ -159,6 +149,30 @@ abstract class FileCopyJpaRepositoryIT {
 
         assertSame(result, fileCopy);
         assertWasPersisted(fileCopy);
+    }
+
+    private void persistSampleData() {
+        persistSampleDependencies();
+        persistFileCopies(SampleFileCopies.getAll());
+    }
+
+    private void persistFileCopies(List<FileCopy> fileCopies) {
+        for (FileCopy fileCopy : fileCopies) {
+            entityManager.persist(entityMapper.toEntity(fileCopy));
+        }
+    }
+
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    @Test
+    void saveShouldUpdateDates(EntityAuditControl entityAuditControl) {
+        persistSampleDependencies();
+        entityAuditControl.enable();
+        FileCopy fileCopy = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
+
+        repository.save(fileCopy);
+        entityManager.flush();
+
+        assertThat.datesWereUpdatedByAuditingHandler(fileCopy);
     }
 
     @Test
@@ -321,7 +335,6 @@ abstract class FileCopyJpaRepositoryIT {
     private void assertSame(Page<FileCopy> result, Page<FileCopy> expectedResult) {
         assertThat(result)
                 .usingRecursiveComparison()
-                .ignoringFields("content.dateCreated", "content.dateModified")
                 .isEqualTo(expectedResult);
         assertThat(result.content()).containsExactlyElementsOf(expectedResult.content());
     }
@@ -340,7 +353,6 @@ abstract class FileCopyJpaRepositoryIT {
     private void assertSame(List<FileCopy> result, List<FileCopy> expectedResult) {
         assertThat(result)
                 .usingRecursiveComparison()
-                .ignoringFields("dateCreated", "dateModified")
                 .isEqualTo(expectedResult);
         assertThat(result).containsExactlyElementsOf(expectedResult);
     }
@@ -356,7 +368,6 @@ abstract class FileCopyJpaRepositoryIT {
                 SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get()
         );
         assertThat(result)
-                .usingRecursiveFieldByFieldElementComparatorIgnoringFields("dateCreated", "dateModified")
                 .containsExactlyElementsOf(expectedResult);
     }
 
@@ -481,8 +492,6 @@ abstract class FileCopyJpaRepositoryIT {
 
     private static class SampleBackupTargets {
 
-        private static final BackupTargetJpaEntityMapper MAPPER = Mappers.getMapper(BackupTargetJpaEntityMapper.class);
-
         public static final Supplier<BackupTarget> LOCAL_FOLDER_1 = () -> TestBackupTarget.localFolderBuilder()
                 .withId(new BackupTargetId("eda52c13-ddf7-406f-97d9-d3ce2cab5a76"))
                 .build();
@@ -514,6 +523,8 @@ abstract class FileCopyJpaRepositoryIT {
         public static final Supplier<BackupTarget> LOCAL_FOLDER_8 = () -> TestBackupTarget.localFolderBuilder()
                 .withId(new BackupTargetId("03468b45-7152-4026-b416-6a2602bf0c1c"))
                 .build();
+
+        private static final BackupTargetJpaEntityMapper MAPPER = Mappers.getMapper(BackupTargetJpaEntityMapper.class);
 
         public static List<BackupTarget> getAll() {
             return List.of(
@@ -630,6 +641,24 @@ abstract class FileCopyJpaRepositoryIT {
                     STORED_VERIFIED_FILE_COPY_FROM_BEFORE_YESTERDAY_FOR_SOURCE_FILE_2.get(),
                     FAILED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get()
             );
+        }
+    }
+
+    private class Assertions {
+
+        void datesWereUpdatedByAuditingHandler(FileCopy fileCopy) {
+            LocalDateTime now = LocalDateTime.now(clock);
+            FileCopyJpaEntity persistedEntity = getPersistedEntity(fileCopy.getId());
+            assertThat(persistedEntity.getDateCreated())
+                    .isNotEqualTo(fileCopy.getDateCreated())
+                    .isEqualTo(now);
+            assertThat(persistedEntity.getDateModified())
+                    .isNotEqualTo(fileCopy.getDateModified())
+                    .isEqualTo(now);
+        }
+
+        private FileCopyJpaEntity getPersistedEntity(FileCopyId id) {
+            return entityManager.find(FileCopyJpaEntity.class, id.value());
         }
     }
 }

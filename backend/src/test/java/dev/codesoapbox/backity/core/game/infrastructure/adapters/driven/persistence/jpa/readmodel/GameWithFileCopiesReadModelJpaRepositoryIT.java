@@ -19,6 +19,7 @@ import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.pe
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
+import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,6 @@ import org.mapstruct.factory.Mappers;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
-import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -41,8 +41,6 @@ import java.util.function.Supplier;
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 @MultiDatabaseRepositoryTest
@@ -121,20 +119,14 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
     @Autowired
     private GameWithFilesCopiesReadModelJpaEntityMapper entityMapperSpy;
 
-    @Autowired
-    private AuditingHandler auditingHandlerSpy;
-
+    @SuppressWarnings("JUnitMalformedDeclaration")
     @BeforeEach
-    void setUp() {
+    void setUp(EntityAuditControl entityAuditControl) {
+        entityAuditControl.disable();
         populateDatabase();
     }
 
     private void populateDatabase() {
-        // Prevent Spring Data JPA auditing from overwriting preset @CreatedDate/@LastModifiedDate values
-        // during test data setup:
-        doAnswer(inv -> inv)
-                .when(auditingHandlerSpy).markCreated(any());
-
         for (Game game : ExistingGames.getAll()) {
             entityManager.persist(ExistingGames.MAPPER.toEntity(game));
         }
@@ -249,7 +241,8 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
 
     private List<GameWithFileCopiesReadModelJpaEntity> interceptFetchedEntities() {
         List<GameWithFileCopiesReadModelJpaEntity> entities = new ArrayList<>();
-        var captor = ArgumentCaptor.forClass(GameWithFileCopiesReadModelJpaEntity.class);
+        ArgumentCaptor<GameWithFileCopiesReadModelJpaEntity> captor =
+                ArgumentCaptor.forClass(GameWithFileCopiesReadModelJpaEntity.class);
         when(entityMapperSpy.toReadModel(captor.capture()))
                 .thenAnswer(_ -> {
                     entities.add(captor.getValue());

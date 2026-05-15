@@ -37,7 +37,7 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
     }
 
     private void persistExistingDependencies() {
-        for (GameContentDiscoveryResult discoveryResult : EXISTING_DISCOVERY_RESULTS.getAll()) {
+        for (GameContentDiscoveryResult discoveryResult : SampleDiscoveryResults.getAll()) {
             entityManager.persist(entityMapper.toEntity(discoveryResult));
         }
     }
@@ -74,7 +74,7 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
 
     @Test
     void saveShouldReplaceExisting() {
-        GameContentDiscoveryResult discoveryResult = EXISTING_DISCOVERY_RESULTS.GOG_DISCOVERY_RESULT.get();
+        GameContentDiscoveryResult discoveryResult = SampleDiscoveryResults.GOG_DISCOVERY_RESULT.get();
         discoveryResult.setGamesDiscovered(999);
         repository.save(discoveryResult);
         entityManager.flush();
@@ -87,12 +87,12 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
 
     private void assertDidNotCreateNewDbRow() {
         long numberOfRecordsInDb = springRepository.count();
-        assertThat(numberOfRecordsInDb).isEqualTo(EXISTING_DISCOVERY_RESULTS.getAll().size());
+        assertThat(numberOfRecordsInDb).isEqualTo(SampleDiscoveryResults.getAll().size());
     }
 
     @Test
     void shouldFindAllByGameProviderIdIn() {
-        GameContentDiscoveryResult expectedDiscoveryResult = EXISTING_DISCOVERY_RESULTS.GOG_DISCOVERY_RESULT.get();
+        GameContentDiscoveryResult expectedDiscoveryResult = SampleDiscoveryResults.GOG_DISCOVERY_RESULT.get();
 
         List<GameContentDiscoveryResult> result = repository.findAllByGameProviderIdIn(
                 List.of(expectedDiscoveryResult.getGameProviderId()));
@@ -100,7 +100,7 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
         assertThat(result).containsExactly(expectedDiscoveryResult);
     }
 
-    private static class EXISTING_DISCOVERY_RESULTS {
+    private static class SampleDiscoveryResults {
 
         public static final Supplier<GameContentDiscoveryResult> GOG_DISCOVERY_RESULT =
                 TestGameContentDiscoveryResult::gog;

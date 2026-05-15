@@ -4,13 +4,14 @@ import dev.codesoapbox.backity.BackityApplication;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.readmodel.GameWithFilesCopiesReadModelJpaEntityMapper;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositoryBeanConfiguration;
+import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControlExtension;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import dev.codesoapbox.backity.testing.time.config.ResetClockTestExecutionListener;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.auditing.AuditingHandler;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -60,7 +61,7 @@ import java.lang.annotation.Target;
 })
 @MockitoSpyBean(types = {
         GameWithFilesCopiesReadModelJpaEntityMapper.class,
-        AuditingHandler.class
 })
+@ExtendWith(EntityAuditControlExtension.class)
 public @interface JpaRepositoryTest {
 }
