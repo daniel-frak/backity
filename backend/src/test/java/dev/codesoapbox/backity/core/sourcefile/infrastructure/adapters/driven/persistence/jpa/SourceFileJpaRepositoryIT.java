@@ -6,8 +6,8 @@ import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntityMapper;
 import dev.codesoapbox.backity.core.sourcefile.domain.*;
 import dev.codesoapbox.backity.core.sourcefile.domain.exceptions.SourceFileNotFoundException;
-import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
+import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -29,8 +31,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Transactional // Required by @JpaRepositoryTest
 abstract class SourceFileJpaRepositoryIT {
 
+    private final Assertions assertThat = new Assertions();
+
     @Autowired
-    protected SourceFileJpaRepository sourceFileJpaRepository;
+    protected SourceFileJpaRepository repository;
 
     @Autowired
     protected TestEntityManager entityManager;
@@ -39,34 +43,28 @@ abstract class SourceFileJpaRepositoryIT {
     protected SourceFileJpaEntityMapper entityMapper;
 
     @Autowired
-    protected DomainEventPublisher domainEventPublisher;
+    protected Clock clock;
 
+    @SuppressWarnings("JUnitMalformedDeclaration")
     @BeforeEach
-    void setUp() {
-        persistExistingDependencies();
-        entityManager.flush();
-        entityManager.clear();
+    void setUp(EntityAuditControl entityAuditControl) {
+        entityAuditControl.disable();
     }
 
-    private void persistExistingDependencies() {
-        for (Game game : EXISTING_GAMES.getAll()) {
-            entityManager.persist(EXISTING_GAMES.MAPPER.toEntity(game));
-        }
-    }
-
-    private void populateDatabase(List<SourceFile> sourceFiles) {
-        for (SourceFile sourceFile : sourceFiles) {
-            entityManager.persist(entityMapper.toEntity(sourceFile));
+    private void persistSampleDependencies() {
+        for (Game game : SampleGames.getAll()) {
+            entityManager.persist(SampleGames.MAPPER.toEntity(game));
         }
         entityManager.flush();
         entityManager.clear();
     }
 
     @Test
-    void shouldSave() {
+    void saveShouldPersistNew() {
+        persistSampleDependencies();
         SourceFile newSourceFile = TestSourceFile.gog();
 
-        SourceFile result = sourceFileJpaRepository.save(newSourceFile);
+        SourceFile result = repository.save(newSourceFile);
         entityManager.flush();
 
         assertEquals(result, newSourceFile);
@@ -76,7 +74,6 @@ abstract class SourceFileJpaRepositoryIT {
     private void assertEquals(SourceFile result, SourceFile expected) {
         assertThat(result)
                 .usingRecursiveComparison()
-                .ignoringFields("dateCreated", "dateModified")
                 .isEqualTo(expected);
     }
 
@@ -87,41 +84,74 @@ abstract class SourceFileJpaRepositoryIT {
                 .extracting(entity -> entityMapper.toDomain(entity))
                 .hasNoNullFieldsOrProperties()
                 .usingRecursiveComparison()
-                .ignoringFields("dateCreated", "dateModified")
                 .isEqualTo(newSourceFile);
-        assertThat(persistedEntity.getDateCreated()).isNotNull();
-        assertThat(persistedEntity.getDateModified()).isNotNull();
+    }
+
+    @Test
+    void saveShouldModifyExisting() {
+        persistSampleDependencies();
+        SourceFile sourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
+        persistSourceFiles(List.of(sourceFile));
+        sourceFile.setFileTitle(new FileTitle("differentFileTitle"));
+
+        repository.save(sourceFile);
+        entityManager.flush();
+
+        assertWasPersisted(sourceFile);
+    }
+
+    private void persistSourceFiles(List<SourceFile> sourceFiles) {
+        for (SourceFile sourceFile : sourceFiles) {
+            entityManager.persist(entityMapper.toEntity(sourceFile));
+        }
+        entityManager.flush();
+        entityManager.clear();
+    }
+
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    @Test
+    void saveShouldUpdateDates(EntityAuditControl entityAuditControl) {
+        persistSampleDependencies();
+        entityAuditControl.enable();
+        SourceFile sourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
+
+        repository.save(sourceFile);
+        entityManager.flush();
+
+        assertThat.datesWereUpdatedByAuditingHandler(sourceFile);
     }
 
     @ParameterizedTest(name = "should return {1} for version={0}")
     @CsvSource(value = {"1.0.0,true", "fakeVersion,false"})
     void existsByUrlAndVersion(String versionValue, boolean shouldFind) {
-        populateDatabase(SOURCE_FILES.getAll());
+        persistSampleDependencies();
+        persistSourceFiles(SampleSourceFiles.getAll());
         var version = new FileVersion(versionValue);
         var url = new SourceFileUrl("/downlink/some_game/some_file");
-        boolean exists = sourceFileJpaRepository.existsByUrlAndVersion(url, version);
+        boolean exists = repository.existsByUrlAndVersion(url, version);
 
         assertThat(exists).isEqualTo(shouldFind);
     }
 
     @Test
     void shouldFindById() {
-        populateDatabase(SOURCE_FILES.getAll());
-        SourceFile expectedSourceFile = SOURCE_FILES.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
+        persistSampleDependencies();
+        persistSourceFiles(SampleSourceFiles.getAll());
+        SourceFile expectedSourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
 
-        Optional<SourceFile> result = sourceFileJpaRepository.findById(expectedSourceFile.getId());
+        Optional<SourceFile> result = repository.findById(expectedSourceFile.getId());
 
         assertThat(result).get().usingRecursiveComparison()
-                .ignoringFields("dateCreated", "dateModified")
                 .isEqualTo(expectedSourceFile);
     }
 
     @Test
     void shouldGetById() {
-        populateDatabase(SOURCE_FILES.getAll());
-        SourceFile expectedSourceFile = SOURCE_FILES.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
+        persistSampleDependencies();
+        persistSourceFiles(SampleSourceFiles.getAll());
+        SourceFile expectedSourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
 
-        SourceFile result = sourceFileJpaRepository.getById(expectedSourceFile.getId());
+        SourceFile result = repository.getById(expectedSourceFile.getId());
 
         assertEquals(result, expectedSourceFile);
     }
@@ -130,45 +160,47 @@ abstract class SourceFileJpaRepositoryIT {
     void getByIdShouldThrowGivenNotFound() {
         var nonexistentId = new SourceFileId("59e37c43-dda7-4c5f-87a3-c380ebb5f8ea");
 
-        assertThatThrownBy(() -> sourceFileJpaRepository.getById(nonexistentId))
+        assertThatThrownBy(() -> repository.getById(nonexistentId))
                 .isInstanceOf(SourceFileNotFoundException.class);
     }
 
     @Test
     void shouldFindByGameId() {
-        populateDatabase(SOURCE_FILES.getAll());
-        List<SourceFile> result = sourceFileJpaRepository.findAllByGameId(EXISTING_GAMES.GAME_1.getId());
+        persistSampleDependencies();
+        persistSourceFiles(SampleSourceFiles.getAll());
+        List<SourceFile> result = repository.findAllByGameId(SampleGames.GAME_1.getId());
 
         assertThat(result).containsExactlyInAnyOrder(
-                SOURCE_FILES.GOG_SOURCE_FILE_1_FOR_GAME_1.get(),
-                SOURCE_FILES.GOG_SOURCE_FILE_2_FOR_GAME_1.get()
+                SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get(),
+                SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get()
         );
     }
 
     @Test
     void shouldFindAllById() {
-        populateDatabase(SOURCE_FILES.getAll());
-        SourceFile expectedSourceFile = SOURCE_FILES.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
+        persistSampleDependencies();
+        persistSourceFiles(SampleSourceFiles.getAll());
+        SourceFile expectedSourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
 
-        List<SourceFile> result = sourceFileJpaRepository.findAllByIdIn(List.of(expectedSourceFile.getId()));
+        List<SourceFile> result = repository.findAllByIdIn(List.of(expectedSourceFile.getId()));
 
         assertThat(result).usingRecursiveComparison()
-                .ignoringFields("dateCreated", "dateModified")
                 .isEqualTo(List.of(expectedSourceFile));
     }
 
     @Test
     void shouldDeleteById() {
-        SourceFile sourceFile = SOURCE_FILES.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
-        populateDatabase(List.of(sourceFile));
+        persistSampleDependencies();
+        SourceFile sourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
+        persistSourceFiles(List.of(sourceFile));
 
-        sourceFileJpaRepository.deleteById(sourceFile.getId());
+        repository.deleteById(sourceFile.getId());
 
         var foundEntity = entityManager.find(SourceFileJpaEntity.class, sourceFile.getId().value());
         assertThat(foundEntity).isNull();
     }
 
-    private static class EXISTING_GAMES {
+    private static class SampleGames {
 
         public static final GameJpaEntityMapper MAPPER = Mappers.getMapper(GameJpaEntityMapper.class);
 
@@ -187,28 +219,46 @@ abstract class SourceFileJpaRepositoryIT {
         }
     }
 
-    private static class SOURCE_FILES {
+    private static class SampleSourceFiles {
 
         public static final Supplier<SourceFile> GOG_SOURCE_FILE_1_FOR_GAME_1 = () -> TestSourceFile.gogBuilder()
                 .id(new SourceFileId("acde26d7-33c7-42ee-be16-bca91a604b48"))
-                .gameId(EXISTING_GAMES.GAME_1.getId())
+                .gameId(SampleGames.GAME_1.getId())
                 .build();
 
         public static final Supplier<SourceFile> GOG_SOURCE_FILE_2_FOR_GAME_1 = () -> TestSourceFile.gogBuilder()
                 .id(new SourceFileId("a6adc122-df20-4e2c-a975-7d4af7104704"))
-                .gameId(EXISTING_GAMES.GAME_1.getId())
+                .gameId(SampleGames.GAME_1.getId())
                 .build();
 
         public static final Supplier<SourceFile> GOG_SOURCE_FILE_1_FOR_GAME_2 = () -> TestSourceFile.gogBuilder()
                 .id(new SourceFileId("3d65af79-a558-4f23-88bd-3c04e977e63f"))
-                .gameId(EXISTING_GAMES.GAME_2.getId())
+                .gameId(SampleGames.GAME_2.getId())
                 .build();
 
         public static List<SourceFile> getAll() {
             return List.of(
-                    SOURCE_FILES.GOG_SOURCE_FILE_1_FOR_GAME_1.get(), SOURCE_FILES.GOG_SOURCE_FILE_2_FOR_GAME_1.get(),
-                    SOURCE_FILES.GOG_SOURCE_FILE_1_FOR_GAME_2.get()
+                    SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get(), SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get(),
+                    SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_2.get()
             );
+        }
+    }
+
+    private class Assertions {
+
+        void datesWereUpdatedByAuditingHandler(SourceFile sourceFile) {
+            LocalDateTime now = LocalDateTime.now(clock);
+            SourceFileJpaEntity persistedEntity = getPersistedEntity(sourceFile.getId());
+            assertThat(persistedEntity.getDateCreated())
+                    .isNotEqualTo(sourceFile.getDateCreated())
+                    .isEqualTo(now);
+            assertThat(persistedEntity.getDateModified())
+                    .isNotEqualTo(sourceFile.getDateModified())
+                    .isEqualTo(now);
+        }
+
+        private SourceFileJpaEntity getPersistedEntity(SourceFileId id) {
+            return entityManager.find(SourceFileJpaEntity.class, id.value());
         }
     }
 }

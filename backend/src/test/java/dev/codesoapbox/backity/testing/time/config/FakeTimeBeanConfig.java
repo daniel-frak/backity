@@ -1,13 +1,15 @@
 package dev.codesoapbox.backity.testing.time.config;
 
 import dev.codesoapbox.backity.testing.time.FakeClock;
-import jakarta.validation.ClockProvider;
-import lombok.RequiredArgsConstructor;
 import org.springframework.boot.validation.autoconfigure.ValidationConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.auditing.DateTimeProvider;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 public class FakeTimeBeanConfig {
 
@@ -17,27 +19,19 @@ public class FakeTimeBeanConfig {
     public static final FakeClock CLOCK = FakeClock.at(DEFAULT_NOW);
 
     @Bean
-    FakeClock fixedClock() {
+    FakeClock fakeClock() {
         return CLOCK;
     }
 
-    /**
-     * Freezes time for bean validation, so that annotations like {@code @FutureOrPresent} don't break in the future.
-     */
+    /// Provides time for bean validation
     @Bean
     ValidationConfigurationCustomizer validationConfigurationCustomizer(Clock clock) {
-        FakeClockProvider fixedClockProvider = new FakeClockProvider(clock);
-        return c -> c.clockProvider(fixedClockProvider);
+        return c -> c.clockProvider(() -> clock);
     }
 
-    @RequiredArgsConstructor
-    private static class FakeClockProvider implements ClockProvider {
-
-        private final Clock clock;
-
-        @Override
-        public Clock getClock() {
-            return clock;
-        }
+    /// Provides time for entity auditing ([CreatedDate], [LastModifiedDate])
+    @Bean
+    DateTimeProvider auditingDateTimeProvider(Clock clock) {
+        return () -> Optional.of(LocalDateTime.now(clock));
     }
 }

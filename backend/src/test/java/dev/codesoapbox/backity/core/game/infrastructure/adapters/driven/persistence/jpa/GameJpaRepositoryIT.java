@@ -8,12 +8,16 @@ import dev.codesoapbox.backity.core.game.domain.exceptions.GameNotFoundException
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
+import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
+import dev.codesoapbox.backity.testing.time.FakeClock;
 import org.hibernate.exception.ConstraintViolationException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -25,6 +29,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Transactional // Required by @JpaRepositoryTest
 abstract class GameJpaRepositoryIT {
 
+    private final Assertions assertThat = new Assertions();
+
     @Autowired
     private GameJpaRepository repository;
 
@@ -33,6 +39,15 @@ abstract class GameJpaRepositoryIT {
 
     @Autowired
     private GameJpaEntityMapper entityMapper;
+
+    @Autowired
+    private FakeClock clock;
+
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    @BeforeEach
+    void setUp(EntityAuditControl entityAuditControl) {
+        entityAuditControl.disable();
+    }
 
     @Test
     void saveShouldPersistNew() {
@@ -48,10 +63,26 @@ abstract class GameJpaRepositoryIT {
         assertWasPersisted(game);
     }
 
+    private void assertWasPersisted(Game game) {
+        GameJpaEntity persistedEntity = entityManager.find(GameJpaEntity.class, game.getId().value());
+        Game persistedGame = entityMapper.toDomain(persistedEntity);
+        assertSame(persistedGame, game);
+    }
+
+    private void assertSame(Game actual, Game expected) {
+        assertThat(actual)
+                .satisfies(it -> {
+                    assertThat(it.getDateCreated()).isNotNull();
+                    assertThat(it.getDateModified()).isNotNull();
+                })
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
+    }
+
     @Test
     void shouldNotSaveGivenGameWithTitleAlreadyExists() {
-        populateDatabase(List.of(GAMES.GAME_1.get()));
-        GameTitle existingTitle = GAMES.GAME_1.get().getTitle();
+        persistGames(List.of(SampleGames.GAME_1.get()));
+        GameTitle existingTitle = SampleGames.GAME_1.get().getTitle();
         Game game = TestGame.anyBuilder()
                 .withId(GameId.newInstance())
                 .withTitle(existingTitle)
@@ -63,7 +94,7 @@ abstract class GameJpaRepositoryIT {
                 .isInstanceOf(ConstraintViolationException.class);
     }
 
-    private void populateDatabase(List<Game> games) {
+    private void persistGames(List<Game> games) {
         for (Game game : games) {
             entityManager.persist(entityMapper.toEntity(game));
         }
@@ -73,8 +104,8 @@ abstract class GameJpaRepositoryIT {
 
     @Test
     void saveShouldModifyExisting() {
-        populateDatabase(List.of(GAMES.GAME_1.get()));
-        Game game = GAMES.GAME_1.get();
+        persistGames(List.of(SampleGames.GAME_1.get()));
+        Game game = SampleGames.GAME_1.get();
         game.setTitle(new GameTitle("New Title"));
 
         Game result = repository.save(game);
@@ -84,16 +115,22 @@ abstract class GameJpaRepositoryIT {
         assertWasPersisted(game);
     }
 
-    private void assertWasPersisted(Game game) {
-        GameJpaEntity persistedEntity = entityManager.find(GameJpaEntity.class, game.getId().value());
-        Game persistedGame = entityMapper.toDomain(persistedEntity);
-        assertSame(persistedGame, game);
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    @Test
+    void saveShouldUpdateDates(EntityAuditControl entityAuditControl) {
+        entityAuditControl.enable();
+        Game game = SampleGames.GAME_1.get();
+
+        repository.save(game);
+        entityManager.flush();
+
+        assertThat.datesWereUpdatedByAuditingHandler(game);
     }
 
     @Test
     void shouldFindById() {
-        populateDatabase(GAMES.getAll());
-        Game game = GAMES.GAME_1.get();
+        persistGames(SampleGames.getAll());
+        Game game = SampleGames.GAME_1.get();
 
         Optional<Game> maybeFoundGame = repository.findById(game.getId());
 
@@ -101,21 +138,10 @@ abstract class GameJpaRepositoryIT {
         assertSame(maybeFoundGame.get(), game);
     }
 
-    private void assertSame(Game actual, Game expected) {
-        assertThat(actual)
-                .satisfies(it -> {
-                    assertThat(it.getDateCreated()).isNotNull();
-                    assertThat(it.getDateModified()).isNotNull();
-                })
-                .usingRecursiveComparison()
-                .ignoringFields("dateCreated", "dateModified")
-                .isEqualTo(expected);
-    }
-
     @Test
     void shouldGetById() {
-        populateDatabase(GAMES.getAll());
-        Game game = GAMES.GAME_1.get();
+        persistGames(SampleGames.getAll());
+        Game game = SampleGames.GAME_1.get();
 
         Game maybeFoundGame = repository.getById(game.getId());
 
@@ -132,8 +158,8 @@ abstract class GameJpaRepositoryIT {
 
     @Test
     void shouldFindByTitle() {
-        populateDatabase(GAMES.getAll());
-        var game = GAMES.GAME_1.get();
+        persistGames(SampleGames.getAll());
+        var game = SampleGames.GAME_1.get();
 
         Optional<Game> maybeFoundGame = repository.findByTitle(game.getTitle());
 
@@ -143,11 +169,11 @@ abstract class GameJpaRepositoryIT {
 
     @Test
     void shouldFindAllPaginated() {
-        populateDatabase(GAMES.getAll());
+        persistGames(SampleGames.getAll());
         Pagination pageable = new Pagination(0, 5);
         Page<Game> result = repository.findAll(pageable);
 
-        Page<Game> expectedResult = new Page<>(List.of(GAMES.GAME_1.get(), GAMES.GAME_2.get()),
+        Page<Game> expectedResult = new Page<>(List.of(SampleGames.GAME_1.get(), SampleGames.GAME_2.get()),
                 1, 2,
                 new Pagination(0, 5));
         assertThat(result).usingRecursiveComparison()
@@ -159,18 +185,17 @@ abstract class GameJpaRepositoryIT {
 
     @Test
     void shouldFindAllById() {
-        populateDatabase(GAMES.getAll());
-        Game game = GAMES.GAME_1.get();
+        persistGames(SampleGames.getAll());
+        Game game = SampleGames.GAME_1.get();
 
         List<Game> result = repository.findAllByIdIn(List.of(game.getId()));
 
         List<Game> expectedResult = List.of(game);
         assertThat(result).usingRecursiveComparison()
-                .ignoringFields("dateCreated", "dateModified")
                 .isEqualTo(expectedResult);
     }
 
-    private static class GAMES {
+    private static class SampleGames {
 
         public static final Supplier<Game> GAME_1 = () -> TestGame.anyBuilder()
                 .withId(new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"))
@@ -184,6 +209,24 @@ abstract class GameJpaRepositoryIT {
 
         public static List<Game> getAll() {
             return List.of(GAME_1.get(), GAME_2.get());
+        }
+    }
+
+    private class Assertions {
+
+        void datesWereUpdatedByAuditingHandler(Game game) {
+            LocalDateTime now = LocalDateTime.now(clock);
+            GameJpaEntity persistedEntity = getPersistedEntity(game.getId());
+            assertThat(persistedEntity.getDateCreated())
+                    .isNotEqualTo(game.getDateCreated())
+                    .isEqualTo(now);
+            assertThat(persistedEntity.getDateModified())
+                    .isNotEqualTo(game.getDateModified())
+                    .isEqualTo(now);
+        }
+
+        private GameJpaEntity getPersistedEntity(GameId id) {
+            return entityManager.find(GameJpaEntity.class, id.value());
         }
     }
 }

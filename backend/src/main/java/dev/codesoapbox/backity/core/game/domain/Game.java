@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 @Getter
+@ToString
 public class Game {
 
     @EqualsAndHashCode.Include
