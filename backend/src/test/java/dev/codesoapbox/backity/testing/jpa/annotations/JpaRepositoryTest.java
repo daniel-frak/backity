@@ -1,7 +1,6 @@
 package dev.codesoapbox.backity.testing.jpa.annotations;
 
 import dev.codesoapbox.backity.BackityApplication;
-import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.readmodel.GameWithFilesCopiesReadModelJpaEntityMapper;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositoryBeanConfiguration;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControlExtension;
@@ -15,7 +14,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -41,7 +39,10 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 @DataJpaTest
-@TestPropertySource(properties = {"spring.jpa.hibernate.ddl-auto=validate"})
+@TestPropertySource(properties = {
+        "spring.jpa.hibernate.ddl-auto=validate",
+        "spring.jpa.properties.hibernate.generate_statistics=true"
+})
 @TestExecutionListeners(listeners = ResetClockTestExecutionListener.class,
         mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 @Import({
@@ -58,9 +59,6 @@ import java.lang.annotation.Target;
 )
 @MockitoBean(types = {
         DomainEventPublisher.class
-})
-@MockitoSpyBean(types = {
-        GameWithFilesCopiesReadModelJpaEntityMapper.class,
 })
 @ExtendWith(EntityAuditControlExtension.class)
 public @interface JpaRepositoryTest {

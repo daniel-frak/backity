@@ -21,27 +21,25 @@ import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
+import org.hibernate.SessionFactory;
+import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mapstruct.factory.Mappers;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.mockito.Mockito.when;
 
 @MultiDatabaseRepositoryTest
 @Transactional // Required by @JpaRepositoryTest
@@ -115,9 +113,6 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
 
     @Autowired
     private TestEntityManager entityManager;
-
-    @Autowired
-    private GameWithFilesCopiesReadModelJpaEntityMapper entityMapperSpy;
 
     @SuppressWarnings("JUnitMalformedDeclaration")
     @BeforeEach
@@ -225,42 +220,34 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
     }
 
     @Test
-    void findAllPaginatedShouldFetchAllEntities() {
+    void findAllPaginatedShouldFetchEntireAggregateWithoutAdditionalLazyQueries() {
+        Statistics statistics = getHibernateStatistics();
+        statistics.clear();
+
         Pagination pagination = new Pagination(0, 1);
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(null);
 
-        List<GameWithFileCopiesReadModelJpaEntity> entities = interceptFetchedEntities();
+        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
 
-        repository.findAllPaginated(pagination, filter);
-        entityManager.clear(); // Detach all entities to make sure there's no lazy loading
+        assertThat(result.content())
+                .usingRecursiveFieldByFieldElementComparator()
+                .containsExactly(GAME_1_READ_MODEL);
 
-        GameWithFileCopiesReadModelJpaEntity firstGame = entities.getFirst();
-        assertFetchedSourceFiles(firstGame);
-        assertFetchedFileCopies(firstGame);
+        // 1 count query
+        // 1 query for fetching Games
+        // 1 query for fetching SourceFiles
+        // 1 query for fetching FileCopies
+        assertThat(statistics.getPrepareStatementCount())
+                .isEqualTo(4L);
     }
 
-    private List<GameWithFileCopiesReadModelJpaEntity> interceptFetchedEntities() {
-        List<GameWithFileCopiesReadModelJpaEntity> entities = new ArrayList<>();
-        ArgumentCaptor<GameWithFileCopiesReadModelJpaEntity> captor =
-                ArgumentCaptor.forClass(GameWithFileCopiesReadModelJpaEntity.class);
-        when(entityMapperSpy.toReadModel(captor.capture()))
-                .thenAnswer(_ -> {
-                    entities.add(captor.getValue());
-                    return null;
-                });
-
-        return entities;
-    }
-
-    private void assertFetchedSourceFiles(GameWithFileCopiesReadModelJpaEntity firstGame) {
-        assertThatCode(() -> firstGame.getSourceFilesWithCopies().getFirst())
-                .doesNotThrowAnyException();
-    }
-
-    private void assertFetchedFileCopies(GameWithFileCopiesReadModelJpaEntity firstGame) {
-        SourceFileWithCopiesReadModelJpaEntity firstSourceFile = firstGame.getSourceFilesWithCopies().getFirst();
-        assertThatCode(() -> firstSourceFile.getFileCopies().getFirst())
-                .doesNotThrowAnyException();
+    private Statistics getHibernateStatistics() {
+        @SuppressWarnings("resource") // Spring owns SessionFactory, so we should not close it
+        Statistics statistics = entityManager.getEntityManager()
+                .getEntityManagerFactory()
+                .unwrap(SessionFactory.class)
+                .getStatistics();
+        return statistics;
     }
 
     @Test
