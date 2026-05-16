@@ -37,8 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -197,14 +195,12 @@ abstract class FileCopyJpaRepositoryIT {
     }
 
     @Test
-    void saveShouldPublishEventsAfterCommitting() {
+    void saveShouldPublishEvents() {
         persistSampleData();
         FileCopy fileCopy = TestFileCopy.enqueued();
         var aFilePath = new FilePath("someFilePath");
         fileCopy.toInProgress(aFilePath);
         repository.save(fileCopy);
-
-        TransactionSynchronizationManager.getSynchronizations().forEach(TransactionSynchronization::afterCommit);
 
         verify(domainEventPublisher).publish(any(FileBackupStartedEvent.class));
     }
@@ -216,8 +212,6 @@ abstract class FileCopyJpaRepositoryIT {
         var aFilePath = new FilePath("someFilePath");
         fileCopy.toInProgress(aFilePath);
         repository.save(fileCopy);
-
-        TransactionSynchronizationManager.getSynchronizations().forEach(TransactionSynchronization::afterCommit);
 
         assertThat(fileCopy.getDomainEvents()).isEmpty();
     }
