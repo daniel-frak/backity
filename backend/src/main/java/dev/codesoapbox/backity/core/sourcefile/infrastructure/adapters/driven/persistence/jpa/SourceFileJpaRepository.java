@@ -20,11 +20,9 @@ public class SourceFileJpaRepository implements SourceFileRepository {
 
     @Transactional
     @Override
-    public SourceFile save(SourceFile sourceFile) {
+    public void save(SourceFile sourceFile) {
         SourceFileJpaEntity entity = entityMapper.toEntity(sourceFile);
-        SourceFileJpaEntity savedEntity = springRepository.save(entity);
-
-        return entityMapper.toDomain(savedEntity);
+        springRepository.save(entity);
     }
 
     @Override

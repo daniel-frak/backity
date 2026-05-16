@@ -71,6 +71,7 @@ class FileBackupServiceTest {
                     .isEqualTo(statusChanges);
         }
 
+        @SuppressWarnings("SameParameterValue")
         private void assertLastPersistedChangeWas(PersistedChangesToFileCopy persistedChangesToFileCopy,
                                                   FileCopyStatus expectedStatus) {
             assertThat(persistedChangesToFileCopy.savedFileCopyStatuses().getLast())
@@ -79,13 +80,12 @@ class FileBackupServiceTest {
 
         private PersistedChangesToFileCopy trackPersistedChangesToFileCopy() {
             var persistedChanges = new PersistedChangesToFileCopy();
-            when(fileCopyRepository.save(any()))
-                    .then(a -> {
-                        FileCopy fileCopy = a.getArgument(0, FileCopy.class);
-                        persistedChanges.addFor(fileCopy);
+            doAnswer(a -> {
+                FileCopy fileCopy = a.getArgument(0, FileCopy.class);
+                persistedChanges.addFor(fileCopy);
 
-                        return fileCopy;
-                    });
+                return fileCopy;
+            }).when(fileCopyRepository).save(any());
 
             return persistedChanges;
         }

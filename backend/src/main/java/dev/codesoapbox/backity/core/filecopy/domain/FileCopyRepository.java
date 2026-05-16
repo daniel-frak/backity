@@ -11,11 +11,11 @@ import java.util.function.Supplier;
 
 public interface FileCopyRepository {
 
-    FileCopy save(FileCopy fileCopy);
+    void save(FileCopy fileCopy);
 
     FileCopy getById(FileCopyId id);
 
-    FileCopy findByNaturalIdOrCreate(FileCopyNaturalId naturalId, Supplier<FileCopy> fileCopyFactory);
+    FileCopy getByNaturalIdOrCreate(FileCopyNaturalId naturalId, Supplier<FileCopy> fileCopyFactory);
 
     Optional<FileCopy> findOldestEnqueued();
 

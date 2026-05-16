@@ -47,7 +47,7 @@ class EnqueueFileCopyUseCaseTest {
 
     private FileCopy mockTrackedFileCopyExists() {
         FileCopy fileCopy = TestFileCopy.tracked();
-        when(fileCopyRepository.findByNaturalIdOrCreate(eq(fileCopy.getNaturalId()), any()))
+        when(fileCopyRepository.getByNaturalIdOrCreate(eq(fileCopy.getNaturalId()), any()))
                 .thenAnswer(inv -> {
                     checkFactoryWasPassed(inv);
                     return fileCopy;
