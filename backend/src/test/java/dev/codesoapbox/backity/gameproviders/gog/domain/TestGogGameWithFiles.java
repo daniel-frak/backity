@@ -7,8 +7,7 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 
-@Builder(builderClassName = "Builder", builderMethodName = "minimalBuilder", buildMethodName = "internalBuilder",
-        setterPrefix = "with")
+@Builder(builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
 public class TestGogGameWithFiles {
 
     @lombok.Builder.Default
@@ -65,7 +64,7 @@ public class TestGogGameWithFiles {
     public static class Builder {
 
         public GogGameWithFiles build() {
-            TestGogGameWithFiles temp = internalBuilder();
+            TestGogGameWithFiles temp = internalBuild();
             return new GogGameWithFiles(temp.title, temp.backgroundImage, temp.cdKey, temp.textInformation,
                     temp.files, temp.changelog);
         }

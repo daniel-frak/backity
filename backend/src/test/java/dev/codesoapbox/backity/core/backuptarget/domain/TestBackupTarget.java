@@ -5,8 +5,7 @@ import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-@Builder(builderClassName = "Builder", builderMethodName = "localFolderBuilder", buildMethodName = "internalBuilder",
-        setterPrefix = "with")
+@Builder(builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
 public class TestBackupTarget {
 
     @lombok.Builder.Default
@@ -18,17 +17,22 @@ public class TestBackupTarget {
     @lombok.Builder.Default
     private LocalDateTime dateModified = LocalDateTime.parse("2023-04-29T14:15:53");
 
-    @lombok.Builder.Default
-    private BackupTargetName name = new BackupTargetName("Local folder");
+    private BackupTargetName name;
 
-    @lombok.Builder.Default
-    private StorageSolutionId storageSolutionId = new StorageSolutionId("storageSolution1");
+    private StorageSolutionId storageSolutionId;
 
     @lombok.Builder.Default
     private PathTemplate pathTemplate = new PathTemplate("games/{GAME_PROVIDER_ID}/{GAME_TITLE}/{FILENAME}");
 
     public static BackupTarget localFolder() {
         return localFolderBuilder().build();
+    }
+
+    public static Builder localFolderBuilder() {
+        return new Builder()
+                .withId(new BackupTargetId("eda52c13-ddf7-406f-97d9-d3ce2cab5a76"))
+                .withName(new BackupTargetName("Local folder"))
+                .withStorageSolutionId(new StorageSolutionId("LOCAL_FOLDER_STORAGE_SOLUTION"));
     }
 
     public static BackupTarget s3Bucket() {
@@ -40,13 +44,13 @@ public class TestBackupTarget {
         return localFolderBuilder()
                 .withId(new BackupTargetId("ac74de14-ee63-446d-b97d-d152ab846cad"))
                 .withName(new BackupTargetName("S3 bucket"))
-                .withStorageSolutionId(new StorageSolutionId("storageSolution2"));
+                .withStorageSolutionId(new StorageSolutionId("S3_STORAGE_SOLUTION"));
     }
 
     public static class Builder {
 
         public BackupTarget build() {
-            TestBackupTarget temp = internalBuilder();
+            TestBackupTarget temp = internalBuild();
             return new BackupTarget(temp.id, temp.dateCreated, temp.dateModified, temp.storageSolutionId, temp.name,
                     temp.pathTemplate);
         }

@@ -66,7 +66,7 @@ class FileCopyWithContextHttpDtoMapperTest {
                 ),
                 new BackupTargetInFileCopyContextHttpDto(
                         "Local folder",
-                        "storageSolution1"
+                        "LOCAL_FOLDER_STORAGE_SOLUTION"
                 ),
                 new ProgressHttpDto(
                         25,

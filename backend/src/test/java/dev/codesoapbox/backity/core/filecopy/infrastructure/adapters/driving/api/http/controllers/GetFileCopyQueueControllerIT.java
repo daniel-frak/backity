@@ -65,7 +65,7 @@ class GetFileCopyQueueControllerIT {
                       },
                       backupTarget: {
                         name: "Local folder",
-                        "storageSolutionId": "storageSolution1"
+                        "storageSolutionId": "LOCAL_FOLDER_STORAGE_SOLUTION"
                       },
                       progress: {
                         percentage: 25,

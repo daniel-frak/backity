@@ -4,8 +4,7 @@ import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-@Builder(builderClassName = "Builder", builderMethodName = "anyBuilder", buildMethodName = "internalBuilder",
-        setterPrefix = "with")
+@Builder(builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
 public final class TestGame {
 
     @lombok.Builder.Default
@@ -31,7 +30,7 @@ public final class TestGame {
     public static class Builder {
 
         public Game build() {
-            TestGame temp = internalBuilder();
+            TestGame temp = internalBuild();
             return new Game(temp.id, temp.dateCreated, temp.dateModified, temp.title);
         }
     }
