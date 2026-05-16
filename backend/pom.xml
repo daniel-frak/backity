@@ -483,6 +483,7 @@
                                 <profile>angular-client-code-gen</profile>
                             </profiles>
                             <arguments>
+                                <!--suppress MavenModelInspection -->
                                 <argument>--server.port=${tomcat.http.port}</argument>
                             </arguments>
                         </configuration>
@@ -512,6 +513,7 @@
                                     <goal>generate</goal>
                                 </goals>
                                 <configuration>
+                                    <!--suppress MavenModelInspection -->
                                     <inputSpec>http://localhost:${tomcat.http.port}/v3/api-docs</inputSpec>
                                     <output>${project.build.directory}/../../frontend/src/main/angular/src/backend
                                     </output>
