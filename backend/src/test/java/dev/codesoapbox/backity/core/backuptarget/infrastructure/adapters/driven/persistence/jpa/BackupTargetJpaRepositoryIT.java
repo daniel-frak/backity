@@ -49,8 +49,7 @@ abstract class BackupTargetJpaRepositoryIT {
                 entityManager,
                 entityMapper::toEntity,
                 entityMapper::toDomain,
-                (entityManager, domainObject) ->
-                        entityManager.find(BackupTargetJpaEntity.class, domainObject.getId().value())
+                (em, obj) -> em.find(BackupTargetJpaEntity.class, obj.getId().value())
         );
     }
 

@@ -127,29 +127,25 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
                 entityManager,
                 SampleFileCopies.MAPPER::toEntity,
                 SampleFileCopies.MAPPER::toDomain,
-                (entityManager, domainObject) ->
-                        entityManager.find(FileCopyJpaEntity.class, domainObject.getId().value())
+                (em, obj) -> em.find(FileCopyJpaEntity.class, obj.getId().value())
         );
         gameJpaAdapter = new TestJpaPersistenceAdapter<>(
                 entityManager,
                 SampleGames.MAPPER::toEntity,
                 SampleGames.MAPPER::toDomain,
-                (entityManager, domainObject) ->
-                        entityManager.find(GameJpaEntity.class, domainObject.getId().value())
+                (em, obj) -> em.find(GameJpaEntity.class, obj.getId().value())
         );
         sourceFileJpaAdapter = new TestJpaPersistenceAdapter<>(
                 entityManager,
                 SampleSourceFiles.MAPPER::toEntity,
                 SampleSourceFiles.MAPPER::toDomain,
-                (entityManager, domainObject) ->
-                        entityManager.find(SourceFileJpaEntity.class, domainObject.getId().value())
+                (em, obj) -> em.find(SourceFileJpaEntity.class, obj.getId().value())
         );
         backupTargetJpaAdapter = new TestJpaPersistenceAdapter<>(
                 entityManager,
                 SampleBackupTargets.MAPPER::toEntity,
                 SampleBackupTargets.MAPPER::toDomain,
-                (entityManager, domainObject) ->
-                        entityManager.find(BackupTargetJpaEntity.class, domainObject.getId().value())
+                (em, obj) -> em.find(BackupTargetJpaEntity.class, obj.getId().value())
         );
         persistSampleData();
     }

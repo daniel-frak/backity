@@ -41,9 +41,8 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
                 entityManager,
                 entityMapper::toEntity,
                 entityMapper::toDomain,
-                (entityManager, domainObject) ->
-                        entityManager.find(GameContentDiscoveryResultJpaEntity.class,
-                                domainObject.getGameProviderId().value())
+                (em, obj) ->
+                        em.find(GameContentDiscoveryResultJpaEntity.class, obj.getGameProviderId().value())
         );
         persistSampleDependencies();
     }
