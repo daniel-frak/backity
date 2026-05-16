@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.persistence.jpa;
 
-import dev.codesoapbox.backity.DoNotMutate;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.filecopy.domain.*;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotFoundException;
@@ -17,10 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -47,17 +43,15 @@ public class FileCopyJpaRepository implements FileCopyRepository {
     private FileCopy internalSave(FileCopy fileCopy) {
         FileCopyJpaEntity entity = entityMapper.toEntity(fileCopy);
         FileCopyJpaEntity savedEntity = springRepository.save(entity);
-        schedulePublishingDomainEventsAfterCommit(fileCopy);
+        publishDomainEvents(fileCopy);
 
         return entityMapper.toDomain(savedEntity);
     }
 
-    private void schedulePublishingDomainEventsAfterCommit(FileCopy fileCopy) {
-        List<DomainEvent> events = fileCopy.getDomainEvents();
-
-        // Events should only be published after the Aggregate changes have been committed to the database:
-        TransactionSynchronizationManager.registerSynchronization(
-                new PublishEventsAfterCommitTransactionSynchronization(events));
+    private void publishDomainEvents(FileCopy fileCopy) {
+        for (DomainEvent domainEvent : fileCopy.getDomainEvents()) {
+            domainEventPublisher.publish(domainEvent);
+        }
 
         // Clear the domain events to prevent them from being republished in case this instance is saved several times:
         fileCopy.clearDomainEvents();
@@ -147,26 +141,5 @@ public class FileCopyJpaRepository implements FileCopyRepository {
     @Override
     public void deleteByBackupTargetIdAndStatusIn(BackupTargetId id, List<FileCopyStatus> statuses) {
         springRepository.deleteByNaturalIdBackupTargetIdAndStatusIn(id.value(), statuses);
-    }
-
-    @DoNotMutate // Not covered by unit tests
-    private class PublishEventsAfterCommitTransactionSynchronization implements TransactionSynchronization {
-
-        private final List<DomainEvent> events;
-
-        public PublishEventsAfterCommitTransactionSynchronization(List<DomainEvent> events) {
-            this.events = new ArrayList<>(events);
-        }
-
-        @Override
-        public void afterCommit() {
-            publish();
-        }
-
-        private void publish() {
-            for (DomainEvent domainEvent : events) {
-                domainEventPublisher.publish(domainEvent);
-            }
-        }
     }
 }
