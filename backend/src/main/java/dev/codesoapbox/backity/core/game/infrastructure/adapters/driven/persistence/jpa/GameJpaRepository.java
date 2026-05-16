@@ -32,11 +32,9 @@ public class GameJpaRepository implements GameRepository {
 
     @Transactional
     @Override
-    public Game save(Game game) {
+    public void save(Game game) {
         GameJpaEntity entity = entityMapper.toEntity(game);
-
-        GameJpaEntity savedEntity = springRepository.save(entity);
-        return entityMapper.toDomain(savedEntity);
+        springRepository.save(entity);
     }
 
     @Override

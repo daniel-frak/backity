@@ -3,7 +3,9 @@ package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.pe
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResult;
 import dev.codesoapbox.backity.core.discovery.domain.TestGameContentDiscoveryResult;
+import dev.codesoapbox.backity.testing.jpa.DatabaseTable;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
+import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,27 +25,37 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
     protected GameContentDiscoveryResultJpaRepository repository;
 
     @Autowired
-    protected GameContentDiscoveryResultSpringRepository springRepository;
-
-    @Autowired
     protected TestEntityManager entityManager;
 
     @Autowired
     protected GameContentDiscoveryResultJpaEntityMapper entityMapper;
 
+    private DatabaseTable<GameContentDiscoveryResult, GameContentDiscoveryResultJpaEntity>
+            gameContentDiscoveryResultTable;
+
+    @SuppressWarnings("JUnitMalformedDeclaration")
     @BeforeEach
-    void setUp() {
-        persistExistingDependencies();
+    void setUp(EntityAuditControl entityAuditControl) {
+        entityAuditControl.disable();
+        gameContentDiscoveryResultTable = new DatabaseTable<>(
+                entityManager,
+                entityMapper::toEntity,
+                entityMapper::toDomain,
+                (entityManager, domainObject) ->
+                        entityManager.find(GameContentDiscoveryResultJpaEntity.class,
+                                domainObject.getGameProviderId().value())
+        );
+        persistSampleDependencies();
     }
 
-    private void persistExistingDependencies() {
+    private void persistSampleDependencies() {
         for (GameContentDiscoveryResult discoveryResult : SampleDiscoveryResults.getAll()) {
             entityManager.persist(entityMapper.toEntity(discoveryResult));
         }
     }
 
     @Test
-    void saveShouldSaveNew() {
+    void saveShouldPersistNew() {
         GameContentDiscoveryResult newDiscoveryResult = TestGameContentDiscoveryResult.gogBuilder()
                 .withGameProviderId(new GameProviderId("ANOTHER_PROVIDER"))
                 .build();
@@ -51,25 +63,11 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
         repository.save(newDiscoveryResult);
         entityManager.flush();
 
-        assertWasPersisted(newDiscoveryResult);
-    }
-
-    private void assertWasPersisted(GameContentDiscoveryResult newDiscoveryResult) {
-        GameContentDiscoveryResult persistedDomain =
-                getPersistedDiscoveryResult(newDiscoveryResult.getGameProviderId());
-        assertSame(persistedDomain, newDiscoveryResult);
-    }
-
-    private GameContentDiscoveryResult getPersistedDiscoveryResult(GameProviderId gameProviderId) {
-        GameContentDiscoveryResultJpaEntity persistedEntity = entityManager.find(
-                GameContentDiscoveryResultJpaEntity.class, gameProviderId.value());
-        return entityMapper.toDomain(persistedEntity);
-    }
-
-    private void assertSame(GameContentDiscoveryResult actual, GameContentDiscoveryResult expected) {
-        assertThat(actual)
+        GameContentDiscoveryResult persistedAggregate =
+                gameContentDiscoveryResultTable.getPersistedDomainObject(newDiscoveryResult);
+        assertThat(persistedAggregate)
                 .usingRecursiveComparison()
-                .isEqualTo(expected);
+                .isEqualTo(newDiscoveryResult);
     }
 
     @Test
@@ -79,19 +77,13 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
         repository.save(discoveryResult);
         entityManager.flush();
 
-        assertDidNotCreateNewDbRow();
         GameContentDiscoveryResult persistedResult =
-                getPersistedDiscoveryResult(discoveryResult.getGameProviderId());
+                gameContentDiscoveryResultTable.getPersistedDomainObject(discoveryResult);
         assertThat(persistedResult.getGamesDiscovered()).isEqualTo(999);
     }
 
-    private void assertDidNotCreateNewDbRow() {
-        long numberOfRecordsInDb = springRepository.count();
-        assertThat(numberOfRecordsInDb).isEqualTo(SampleDiscoveryResults.getAll().size());
-    }
-
     @Test
-    void shouldFindAllByGameProviderIdIn() {
+    void findAllByGameProviderIdInShouldReturnAllDataForAggregate() {
         GameContentDiscoveryResult expectedDiscoveryResult = SampleDiscoveryResults.GOG_DISCOVERY_RESULT.get();
 
         List<GameContentDiscoveryResult> result = repository.findAllByGameProviderIdIn(

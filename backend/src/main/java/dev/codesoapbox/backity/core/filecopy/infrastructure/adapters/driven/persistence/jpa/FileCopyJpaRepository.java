@@ -40,8 +40,8 @@ public class FileCopyJpaRepository implements FileCopyRepository {
 
     @Transactional
     @Override
-    public FileCopy save(FileCopy fileCopy) {
-        return internalSave(fileCopy);
+    public void save(FileCopy fileCopy) {
+        internalSave(fileCopy);
     }
 
     private FileCopy internalSave(FileCopy fileCopy) {
@@ -76,7 +76,7 @@ public class FileCopyJpaRepository implements FileCopyRepository {
 
     @SuppressWarnings("java:S1166") // No reason to log or rethrow DataIntegrityViolationException
     @Override
-    public FileCopy findByNaturalIdOrCreate(FileCopyNaturalId naturalId, Supplier<FileCopy> fileCopyFactory) {
+    public FileCopy getByNaturalIdOrCreate(FileCopyNaturalId naturalId, Supplier<FileCopy> fileCopyFactory) {
         return springRepository.findByNaturalIdSourceFileIdAndNaturalIdBackupTargetId(
                         naturalId.sourceFileId().value(), naturalId.backupTargetId().value())
                 .map(entityMapper::toDomain)

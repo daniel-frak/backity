@@ -15,7 +15,7 @@ public class EnqueueFileCopyUseCase {
 
     @DoNotMutate // False positive on replacing lambda with null for fileCopyFactory argument
     public void execute(FileCopyNaturalId fileCopyNaturalId) {
-        FileCopy fileCopy = fileCopyRepository.findByNaturalIdOrCreate(fileCopyNaturalId,
+        FileCopy fileCopy = fileCopyRepository.getByNaturalIdOrCreate(fileCopyNaturalId,
                         () -> fileCopyFactory.create(fileCopyNaturalId));
 
         fileCopy.enqueue();

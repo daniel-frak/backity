@@ -69,8 +69,8 @@ abstract class BackupTargetJpaRepositoryIT {
 
     @Test
     void saveShouldModifyExisting() {
+        persistSampleData();
         BackupTarget backupTarget = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
-        backupTargetTable.persist(backupTarget);
         backupTarget.setName(new BackupTargetName("Changed name"));
 
         repository.save(backupTarget);
@@ -80,6 +80,10 @@ abstract class BackupTargetJpaRepositoryIT {
         assertThat(persistedAggregate)
                 .usingRecursiveComparison()
                 .isEqualTo(backupTarget);
+    }
+
+    void persistSampleData() {
+        backupTargetTable.persist(SampleBackupTargets.getAll());
     }
 
     @SuppressWarnings("JUnitMalformedDeclaration")
@@ -104,8 +108,8 @@ abstract class BackupTargetJpaRepositoryIT {
     @SuppressWarnings("JUnitMalformedDeclaration")
     @Test
     void saveShouldUpdateDatesGivenExisting(EntityAuditControl entityAuditControl) {
+        persistSampleData();
         BackupTarget backupTarget = SampleBackupTargets.YESTERDAY_S3_BUCKET.get();
-        backupTargetTable.persist(backupTarget);
         backupTarget.setName(new BackupTargetName("Changed name"));
         entityAuditControl.enable();
 
@@ -124,14 +128,14 @@ abstract class BackupTargetJpaRepositoryIT {
 
     @Test
     void getByIdShouldReturnAggregateGivenItExists() {
-        backupTargetTable.persist(SampleBackupTargets.getAll());
-        BackupTarget expectedBackupTarget = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
+        persistSampleData();
+        BackupTarget expectedResult = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
 
-        BackupTarget result = repository.getById(expectedBackupTarget.getId());
+        BackupTarget result = repository.getById(expectedResult.getId());
 
         assertThat(result)
                 .usingRecursiveComparison()
-                .isEqualTo(expectedBackupTarget);
+                .isEqualTo(expectedResult);
     }
 
     @Test
@@ -164,7 +168,7 @@ abstract class BackupTargetJpaRepositoryIT {
 
     @Test
     void findAllShouldSortByDateCreatedAsc() {
-        backupTargetTable.persist(SampleBackupTargets.getAll());
+        persistSampleData();
 
         List<BackupTarget> result = repository.findAll();
 
@@ -186,7 +190,7 @@ abstract class BackupTargetJpaRepositoryIT {
 
     @Test
     void findAllByIdInShouldReturnAllDataForAggregate() {
-        backupTargetTable.persist(SampleBackupTargets.getAll());
+        persistSampleData();
         BackupTarget expectedBackupTarget = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
 
         List<BackupTarget> result = repository.findAllByIdIn(List.of(expectedBackupTarget.getId()));
@@ -198,7 +202,7 @@ abstract class BackupTargetJpaRepositoryIT {
 
     @Test
     void findAllByIdInShouldSortByDateCreatedAsc() {
-        backupTargetTable.persist(SampleBackupTargets.getAll());
+        persistSampleData();
         BackupTarget todayBackupTarget = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
         BackupTarget yesterdayBackupTarget = SampleBackupTargets.YESTERDAY_S3_BUCKET.get();
 
@@ -214,8 +218,8 @@ abstract class BackupTargetJpaRepositoryIT {
 
     @Test
     void deleteByIdShouldDeleteAggregate() {
+        persistSampleData();
         BackupTarget aggregateToDelete = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
-        backupTargetTable.persist(aggregateToDelete);
 
         repository.deleteById(aggregateToDelete.getId());
 
@@ -224,8 +228,8 @@ abstract class BackupTargetJpaRepositoryIT {
 
     private static class Time {
 
-        private static final LocalDateTime NOW = FakeTimeBeanConfig.DEFAULT_NOW;
-        private static final LocalDateTime YESTERDAY = NOW.minusDays(1);
+        public static final LocalDateTime NOW = FakeTimeBeanConfig.DEFAULT_NOW;
+        public static final LocalDateTime YESTERDAY = NOW.minusDays(1);
     }
 
     private static class SampleBackupTargets {

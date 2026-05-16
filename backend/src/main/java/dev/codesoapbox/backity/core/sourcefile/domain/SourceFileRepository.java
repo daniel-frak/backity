@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface SourceFileRepository {
 
-    SourceFile save(SourceFile sourceFile);
+    void save(SourceFile sourceFile);
 
     boolean existsByUrlAndVersion(SourceFileUrl url, FileVersion version);
 

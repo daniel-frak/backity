@@ -4,16 +4,19 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
+import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driven.persistence.jpa.BackupTargetJpaEntity;
 import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driven.persistence.jpa.BackupTargetJpaEntityMapper;
 import dev.codesoapbox.backity.core.filecopy.domain.*;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotFoundException;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
+import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntity;
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntityMapper;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
+import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaEntity;
 import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaEntityMapper;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
@@ -21,6 +24,7 @@ import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageableMapper;
+import dev.codesoapbox.backity.testing.jpa.DatabaseTable;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import dev.codesoapbox.backity.testing.time.FakeClock;
@@ -52,13 +56,6 @@ import static org.mockito.Mockito.*;
 @Transactional // Required by @JpaRepositoryTest
 abstract class FileCopyJpaRepositoryIT {
 
-    private static final LocalDateTime NOW = FakeTimeBeanConfig.DEFAULT_NOW;
-    private static final LocalDate TODAY = NOW.toLocalDate();
-    private static final LocalDate YESTERDAY = TODAY.minusDays(1);
-    private static final LocalDate BEFORE_YESTERDAY = TODAY.minusDays(2);
-
-    private final Assertions assertThat = new Assertions();
-
     @Autowired
     protected FileCopyJpaRepository repository;
 
@@ -74,10 +71,43 @@ abstract class FileCopyJpaRepositoryIT {
     @Autowired
     protected FakeClock clock;
 
+    private DatabaseTable<FileCopy, FileCopyJpaEntity> fileCopyTable;
+    private DatabaseTable<Game, GameJpaEntity> gameTable;
+    private DatabaseTable<SourceFile, SourceFileJpaEntity> sourceFileTable;
+    private DatabaseTable<BackupTarget, BackupTargetJpaEntity> backupTargetTable;
+
     @SuppressWarnings("JUnitMalformedDeclaration")
     @BeforeEach
     void setUp(EntityAuditControl entityAuditControl) {
         entityAuditControl.disable();
+        fileCopyTable = new DatabaseTable<>(
+                entityManager,
+                entityMapper::toEntity,
+                entityMapper::toDomain,
+                (entityManager, domainObject) ->
+                        entityManager.find(FileCopyJpaEntity.class, domainObject.getId().value())
+        );
+        gameTable = new DatabaseTable<>(
+                entityManager,
+                SampleGames.MAPPER::toEntity,
+                SampleGames.MAPPER::toDomain,
+                (entityManager, domainObject) ->
+                        entityManager.find(GameJpaEntity.class, domainObject.getId().value())
+        );
+        sourceFileTable = new DatabaseTable<>(
+                entityManager,
+                SampleSourceFiles.MAPPER::toEntity,
+                SampleSourceFiles.MAPPER::toDomain,
+                (entityManager, domainObject) ->
+                        entityManager.find(SourceFileJpaEntity.class, domainObject.getId().value())
+        );
+        backupTargetTable = new DatabaseTable<>(
+                entityManager,
+                SampleBackupTargets.MAPPER::toEntity,
+                SampleBackupTargets.MAPPER::toDomain,
+                (entityManager, domainObject) ->
+                        entityManager.find(BackupTargetJpaEntity.class, domainObject.getId().value())
+        );
     }
 
     @Test
@@ -90,81 +120,44 @@ abstract class FileCopyJpaRepositoryIT {
                 ))
                 .build();
 
-        FileCopy result = repository.save(fileCopy);
+        repository.save(fileCopy);
         entityManager.flush();
 
-        assertSame(result, fileCopy);
-        assertWasPersisted(fileCopy);
+        FileCopy persistedAggregate = fileCopyTable.getPersistedDomainObject(fileCopy);
+        assertThat(persistedAggregate)
+                .usingRecursiveComparison()
+                .isEqualTo(fileCopy);
     }
 
     private void persistSampleDependencies() {
-        persistGames(SampleGames.getAll());
-        persistSourceFiles(SampleSourceFiles.getAll());
-        persistBackupTargets(SampleBackupTargets.getAll());
-    }
-
-    private void persistGames(List<Game> games) {
-        for (Game game : games) {
-            entityManager.persist(SampleGames.MAPPER.toEntity(game));
-        }
-    }
-
-    private void persistSourceFiles(List<SourceFile> sourceFiles) {
-        for (SourceFile sourceFile : sourceFiles) {
-            entityManager.persist(SampleSourceFiles.MAPPER.toEntity(sourceFile));
-        }
-    }
-
-    private void persistBackupTargets(List<BackupTarget> backupTargets) {
-        for (BackupTarget backupTarget : backupTargets) {
-            entityManager.persist(SampleBackupTargets.MAPPER.toEntity(backupTarget));
-        }
-    }
-
-    private void assertWasPersisted(FileCopy fileCopy) {
-        FileCopyJpaEntity persistedEntity = entityManager.find(FileCopyJpaEntity.class, fileCopy.getId().value());
-        FileCopy persistedFileCopy = entityMapper.toDomain(persistedEntity);
-        assertSame(persistedFileCopy, fileCopy);
-    }
-
-    private void assertSame(FileCopy actual, FileCopy expected) {
-        assertThat(actual)
-                .satisfies(it -> {
-                    assertThat(it.getDateCreated()).isNotNull();
-                    assertThat(it.getDateModified()).isNotNull();
-                })
-                .usingRecursiveComparison()
-                .isEqualTo(expected);
+        gameTable.persist(SampleGames.getAll());
+        sourceFileTable.persist(SampleSourceFiles.getAll());
+        backupTargetTable.persist(SampleBackupTargets.getAll());
     }
 
     @Test
     void saveShouldModifyExisting() {
         persistSampleData();
         FileCopy fileCopy = SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get();
-        var aFilePath = new FilePath("someFilePath");
-        fileCopy.toInProgress(aFilePath);
+        fileCopy.toInProgress(new FilePath("someFilePath"));
 
-        FileCopy result = repository.save(fileCopy);
+        repository.save(fileCopy);
         entityManager.flush();
 
-        assertSame(result, fileCopy);
-        assertWasPersisted(fileCopy);
+        FileCopy persistedAggregate = fileCopyTable.getPersistedDomainObject(fileCopy);
+        assertThat(persistedAggregate)
+                .usingRecursiveComparison()
+                .isEqualTo(fileCopy);
     }
 
     private void persistSampleData() {
         persistSampleDependencies();
-        persistFileCopies(SampleFileCopies.getAll());
-    }
-
-    private void persistFileCopies(List<FileCopy> fileCopies) {
-        for (FileCopy fileCopy : fileCopies) {
-            entityManager.persist(entityMapper.toEntity(fileCopy));
-        }
+        fileCopyTable.persist(SampleFileCopies.getAll());
     }
 
     @SuppressWarnings("JUnitMalformedDeclaration")
     @Test
-    void saveShouldUpdateDates(EntityAuditControl entityAuditControl) {
+    void saveShouldUpdateDatesGivenNew(EntityAuditControl entityAuditControl) {
         persistSampleDependencies();
         entityAuditControl.enable();
         FileCopy fileCopy = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
@@ -172,7 +165,35 @@ abstract class FileCopyJpaRepositoryIT {
         repository.save(fileCopy);
         entityManager.flush();
 
-        assertThat.datesWereUpdatedByAuditingHandler(fileCopy);
+        LocalDateTime now = LocalDateTime.now(clock);
+        FileCopy persistedAggregate = fileCopyTable.getPersistedDomainObject(fileCopy);
+        assertThat(persistedAggregate.getDateCreated())
+                .isNotEqualTo(fileCopy.getDateCreated())
+                .isEqualTo(now);
+        assertThat(persistedAggregate.getDateModified())
+                .isNotEqualTo(fileCopy.getDateModified())
+                .isEqualTo(now);
+    }
+
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    @Test
+    void saveShouldUpdateDatesGivenExisting(EntityAuditControl entityAuditControl) {
+        persistSampleData();
+        entityAuditControl.enable();
+        FileCopy fileCopy = SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get();
+        fileCopy.toInProgress(new FilePath("someFilePath"));
+
+        repository.save(fileCopy);
+        entityManager.flush();
+
+        LocalDateTime now = LocalDateTime.now(clock);
+        FileCopy persistedAggregate = fileCopyTable.getPersistedDomainObject(fileCopy);
+        assertThat(persistedAggregate.getDateCreated())
+                .isEqualTo(fileCopy.getDateCreated())
+                .isNotEqualTo(now);
+        assertThat(persistedAggregate.getDateModified())
+                .isNotEqualTo(fileCopy.getDateModified())
+                .isEqualTo(now);
     }
 
     @Test
@@ -203,7 +224,7 @@ abstract class FileCopyJpaRepositoryIT {
 
     @Test
     void saveShouldThrowGivenNaturalIdIsNotUnique() {
-        persistSampleData();
+        persistSampleDependencies();
         FileCopy fileCopy1 = TestFileCopy.trackedBuilder()
                 .id(new FileCopyId("7bf408f7-9b6e-4ee7-a2f2-27a454a4f5ba"))
                 .build();
@@ -211,7 +232,8 @@ abstract class FileCopyJpaRepositoryIT {
                 .id(new FileCopyId("09366863-b707-4e5c-8315-ed7e7c56d0a9"))
                 .naturalId(fileCopy1.getNaturalId())
                 .build();
-        repository.save(fileCopy1);
+        fileCopyTable.persist(fileCopy1);
+
         repository.save(fileCopy2);
 
         assertThatThrownBy(() -> entityManager.flush())
@@ -219,12 +241,14 @@ abstract class FileCopyJpaRepositoryIT {
     }
 
     @Test
-    void shouldGetById() {
+    void getByIdShouldReturnAggregateGivenItExists() {
         persistSampleData();
-        FileCopy result = repository.getById(
-                SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get().getId());
+        FileCopy expectedResult = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
+        FileCopy result = repository.getById(expectedResult.getId());
 
-        assertSame(result, SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get());
+        assertThat(result)
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResult);
     }
 
     @Test
@@ -238,31 +262,37 @@ abstract class FileCopyJpaRepositoryIT {
     }
 
     @Test
-    void findByNaturalIdOrCreateShouldFindGivenExists() {
+    void findByNaturalIdOrCreateShouldGetGivenExists() {
         persistSampleData();
-        FileCopy expectedFileCopy = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
-        FileCopy result = repository.findByNaturalIdOrCreate(expectedFileCopy.getNaturalId(), () -> null);
+        FileCopy expectedResult = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
 
-        assertSame(result, expectedFileCopy);
+        FileCopy result = repository.getByNaturalIdOrCreate(expectedResult.getNaturalId(), () -> null);
+
+        assertThat(result)
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResult);
     }
 
     @Test
-    void findByNaturalIdOrCreateShouldFindGivenNotExists() {
+    void findByNaturalIdOrCreateShouldGetGivenNotExists() {
         persistSampleDependencies();
-        FileCopy expectedFileCopy = TestFileCopy.trackedBuilder()
+        FileCopy expectedResult = TestFileCopy.trackedBuilder()
                 .id(new FileCopyId("7bf408f7-9b6e-4ee7-a2f2-27a454a4f5ba"))
                 .naturalId(new FileCopyNaturalId(
                         SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
                         SampleBackupTargets.LOCAL_FOLDER_1.get().getId()
                 ))
                 .build();
-        FileCopy result = repository.findByNaturalIdOrCreate(expectedFileCopy.getNaturalId(), () -> expectedFileCopy);
 
-        assertSame(result, expectedFileCopy);
+        FileCopy result = repository.getByNaturalIdOrCreate(expectedResult.getNaturalId(), () -> expectedResult);
+
+        assertThat(result)
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResult);
     }
 
     @Test
-    void findByNaturalIdOrCreateShouldFindGivenCreatedInParallel() {
+    void findByNaturalIdOrCreateShouldGetGivenCreatedInParallel() {
         persistSampleData();
         FileCopySpringRepository mockSpringRepository = mock(FileCopySpringRepository.class);
         repository = new FileCopyJpaRepository(mockSpringRepository, entityMapper,
@@ -284,81 +314,91 @@ abstract class FileCopyJpaRepositoryIT {
                 // Someone saved before second lookup:
                 .thenReturn(entityMapper.toEntity(expectedExisting));
 
-        FileCopy result = repository.findByNaturalIdOrCreate(naturalId, () -> newFileCopy);
+        FileCopy result = repository.getByNaturalIdOrCreate(naturalId, () -> newFileCopy);
 
-        assertSame(result, expectedExisting);
+        assertThat(result)
+                .usingRecursiveComparison()
+                .isEqualTo(expectedExisting);
     }
 
     @Test
-    void shouldFindOldestEnqueued() {
+    void findOldestEnqueuedShouldReturnOldestEnqueued() {
         persistSampleData();
         Optional<FileCopy> result = repository.findOldestEnqueued();
 
         FileCopy expectedResult = SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get();
         assertThat(result).isPresent();
-        assertSame(result.get(), expectedResult);
+        assertThat(result.get())
+                .usingRecursiveComparison()
+                .isEqualTo(expectedResult);
     }
 
     @Test
-    void shouldFindAllInProgressOrEnqueuedInOrderOfStatusThenDateModifiedAscending() {
+    void findAllInProgressOrEnqueuedShouldReturnInProgressAndEnqueued() {
         persistSampleData();
-        var pagination = new Pagination(0, 3);
-
-        Page<FileCopy> result = repository.findAllInProgressOrEnqueued(pagination);
-
-        List<FileCopy> expectedItems = List.of(
+        Pagination pagination = everythingOnOnePage();
+        List<FileCopy> expectedContent = List.of(
                 SampleFileCopies.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
                 SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
                 SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get()
         );
-        int totalPages = 1;
-        int totalElements = 3;
-        assertContainsInOrder(result, pagination, totalPages, totalElements, expectedItems);
+
+        Page<FileCopy> result = repository.findAllInProgressOrEnqueued(pagination);
+
+        assertThat(result.content())
+                .usingRecursiveFieldByFieldElementComparator()
+                .containsExactlyInAnyOrderElementsOf(expectedContent);
     }
 
-    private void assertContainsInOrder(Page<FileCopy> result, Pagination pagination, int totalPages, int totalElements,
-                                       List<FileCopy> items) {
-        Page<FileCopy> expectedResult = pageFrom(pagination, totalPages, totalElements, items);
-        assertSame(result, expectedResult);
-    }
-
-    private Page<FileCopy> pageFrom(Pagination pagination, int totalPages, int totalElements,
-                                    List<FileCopy> items) {
-        return new Page<>(
-                items,
-                totalPages,
-                totalElements,
-                pagination
-        );
-    }
-
-    private void assertSame(Page<FileCopy> result, Page<FileCopy> expectedResult) {
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(expectedResult);
-        assertThat(result.content()).containsExactlyElementsOf(expectedResult.content());
+    private Pagination everythingOnOnePage() {
+        return new Pagination(0, 999);
     }
 
     @Test
-    void shouldFindAllInProgress() {
+    void findAllInProgressOrEnqueuedShouldProperlyPaginate() {
         persistSampleData();
-        List<FileCopy> result = repository.findAllInProgress();
+        Pagination pagination = new Pagination(0, 1);
 
+        Page<FileCopy> result = repository.findAllInProgressOrEnqueued(pagination);
+
+        assertThat(result.content().size()).isEqualTo(1);
+        assertThat(result.totalPages()).isEqualTo(3);
+        assertThat(result.totalElements()).isEqualTo(3);
+        assertThat(result.pagination()).isEqualTo(pagination);
+    }
+
+    @Test
+    void findAllInProgressOrEnqueuedShouldSortByStatusAscThenDateModifiedAsc() {
+        persistSampleData();
+        Pagination pagination = everythingOnOnePage();
+        var expectedContent = List.of(
+                SampleFileCopies.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
+                SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
+                SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get()
+        );
+
+        Page<FileCopy> result = repository.findAllInProgressOrEnqueued(pagination);
+
+        assertThat(result.content())
+                .containsExactlyElementsOf(expectedContent);
+    }
+
+    @Test
+    void findAllInProgressShouldReturnAllInProgress() {
+        persistSampleData();
         List<FileCopy> expectedResult = List.of(
                 SampleFileCopies.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get()
         );
-        assertSame(result, expectedResult);
-    }
 
-    private void assertSame(List<FileCopy> result, List<FileCopy> expectedResult) {
+        List<FileCopy> result = repository.findAllInProgress();
+
         assertThat(result)
                 .usingRecursiveComparison()
                 .isEqualTo(expectedResult);
-        assertThat(result).containsExactlyElementsOf(expectedResult);
     }
 
     @Test
-    void shouldFindAllBySourceFileId() {
+    void findAllBySourceFileIdShouldReturnAllMatching() {
         persistSampleData();
         List<FileCopy> result =
                 repository.findAllBySourceFileId(SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId());
@@ -368,15 +408,15 @@ abstract class FileCopyJpaRepositoryIT {
                 SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get()
         );
         assertThat(result)
-                .containsExactlyElementsOf(expectedResult);
+                .usingRecursiveFieldByFieldElementComparator()
+                .containsExactlyInAnyOrderElementsOf(expectedResult);
     }
 
     @Test
     void existByBackupTargetIdAndStatusNotInShouldReturnTrueGivenFileCopyExists() {
         persistSampleData();
         BackupTargetId existingBackupTargetId =
-                SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get().getNaturalId()
-                        .backupTargetId();
+                SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get().getNaturalId().backupTargetId();
 
         boolean result = repository.existByBackupTargetIdAndStatusNotIn(
                 existingBackupTargetId, List.of(FileCopyStatus.IN_PROGRESS));
@@ -388,8 +428,7 @@ abstract class FileCopyJpaRepositoryIT {
     void existByBackupTargetIdAndStatusNotInShouldReturnFalseGivenFileCopyNotFoundWithCorrectStatusNot() {
         persistSampleData();
         BackupTargetId existingBackupTargetId =
-                SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get().getNaturalId()
-                        .backupTargetId();
+                SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get().getNaturalId().backupTargetId();
 
         boolean result = repository.existByBackupTargetIdAndStatusNotIn(
                 existingBackupTargetId, List.of(FileCopyStatus.values()));
@@ -411,7 +450,7 @@ abstract class FileCopyJpaRepositoryIT {
     }
 
     @Test
-    void getUniqueBackupTargetIdsForStatusOtherThanShouldReturnIds() {
+    void getUniqueBackupTargetIdsByStatusNotInShouldReturnIds() {
         persistSampleData();
         List<BackupTargetId> result =
                 repository.getUniqueBackupTargetIdsByStatusNotIn(
@@ -440,8 +479,8 @@ abstract class FileCopyJpaRepositoryIT {
         repository.deleteByBackupTargetIdAndStatusIn(
                 fileCopy.getNaturalId().backupTargetId(), List.of(fileCopy.getStatus()));
 
-        assertThat(entityManager.find(FileCopyJpaEntity.class, fileCopy.getId().value())).isNull();
-        assertThat(entityManager.find(FileCopyJpaEntity.class, unaffectedFileCopy.getId().value())).isNotNull();
+        assertThat(fileCopyTable.exists(fileCopy)).isFalse();
+        assertThat(fileCopyTable.exists(unaffectedFileCopy)).isTrue();
     }
 
     @Test
@@ -452,7 +491,15 @@ abstract class FileCopyJpaRepositoryIT {
         repository.deleteByBackupTargetIdAndStatusIn(
                 fileCopy.getNaturalId().backupTargetId(), List.of(FileCopyStatus.FAILED));
 
-        assertThat(entityManager.find(FileCopyJpaEntity.class, fileCopy.getId().value())).isNotNull();
+        assertThat(fileCopyTable.exists(fileCopy)).isTrue();
+    }
+
+    private static class Time {
+
+        public static final LocalDateTime NOW = FakeTimeBeanConfig.DEFAULT_NOW;
+        public static final LocalDate TODAY = NOW.toLocalDate();
+        public static final LocalDate YESTERDAY = TODAY.minusDays(1);
+        public static final LocalDate BEFORE_YESTERDAY = TODAY.minusDays(2);
     }
 
     private static class SampleGames {
@@ -550,7 +597,7 @@ abstract class FileCopyJpaRepositoryIT {
                                 SampleBackupTargets.LOCAL_FOLDER_1.get().getId()
                         ))
                         .filePath(new FilePath("filePath1"))
-                        .dateModified(YESTERDAY.atStartOfDay())
+                        .dateModified(Time.YESTERDAY.atStartOfDay())
                         .build();
 
         public static final Supplier<FileCopy> TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1 =
@@ -561,7 +608,7 @@ abstract class FileCopyJpaRepositoryIT {
                                 SampleBackupTargets.LOCAL_FOLDER_2.get().getId()
                         ))
                         .filePath(new FilePath("filePath2"))
-                        .dateModified(TODAY.atStartOfDay())
+                        .dateModified(Time.TODAY.atStartOfDay())
                         .build();
 
         public static final Supplier<FileCopy> IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2 =
@@ -572,7 +619,7 @@ abstract class FileCopyJpaRepositoryIT {
                                 SampleBackupTargets.LOCAL_FOLDER_3.get().getId()
                         ))
                         .filePath(new FilePath("filePath3"))
-                        .dateModified(YESTERDAY.atStartOfDay())
+                        .dateModified(Time.YESTERDAY.atStartOfDay())
                         .build();
 
         public static final Supplier<FileCopy> ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2 =
@@ -583,7 +630,7 @@ abstract class FileCopyJpaRepositoryIT {
                                 SampleBackupTargets.LOCAL_FOLDER_4.get().getId()
                         ))
                         .filePath(new FilePath("filePath4"))
-                        .dateModified(YESTERDAY.atStartOfDay())
+                        .dateModified(Time.YESTERDAY.atStartOfDay())
                         .build();
 
         public static final Supplier<FileCopy> ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2 =
@@ -594,7 +641,7 @@ abstract class FileCopyJpaRepositoryIT {
                                 SampleBackupTargets.LOCAL_FOLDER_5.get().getId()
                         ))
                         .filePath(new FilePath("filePath5"))
-                        .dateModified(TODAY.atStartOfDay())
+                        .dateModified(Time.TODAY.atStartOfDay())
                         .build();
 
         public static final Supplier<FileCopy> STORED_UNVERIFIED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2 =
@@ -605,7 +652,7 @@ abstract class FileCopyJpaRepositoryIT {
                                 SampleBackupTargets.LOCAL_FOLDER_6.get().getId()
                         ))
                         .filePath(new FilePath("filePath6"))
-                        .dateModified(YESTERDAY.atStartOfDay())
+                        .dateModified(Time.YESTERDAY.atStartOfDay())
                         .build();
 
         public static final Supplier<FileCopy> STORED_VERIFIED_FILE_COPY_FROM_BEFORE_YESTERDAY_FOR_SOURCE_FILE_2 =
@@ -616,7 +663,7 @@ abstract class FileCopyJpaRepositoryIT {
                                 SampleBackupTargets.LOCAL_FOLDER_7.get().getId()
                         ))
                         .filePath(new FilePath("filePath7"))
-                        .dateModified(BEFORE_YESTERDAY.atStartOfDay())
+                        .dateModified(Time.BEFORE_YESTERDAY.atStartOfDay())
                         .build();
 
         public static final Supplier<FileCopy> FAILED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2 =
@@ -627,7 +674,7 @@ abstract class FileCopyJpaRepositoryIT {
                                 SampleBackupTargets.LOCAL_FOLDER_8.get().getId()
                         ))
                         .filePath(new FilePath("filePath8"))
-                        .dateModified(TODAY.atStartOfDay())
+                        .dateModified(Time.TODAY.atStartOfDay())
                         .build();
 
         public static List<FileCopy> getAll() {
@@ -641,24 +688,6 @@ abstract class FileCopyJpaRepositoryIT {
                     STORED_VERIFIED_FILE_COPY_FROM_BEFORE_YESTERDAY_FOR_SOURCE_FILE_2.get(),
                     FAILED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get()
             );
-        }
-    }
-
-    private class Assertions {
-
-        void datesWereUpdatedByAuditingHandler(FileCopy fileCopy) {
-            LocalDateTime now = LocalDateTime.now(clock);
-            FileCopyJpaEntity persistedEntity = getPersistedEntity(fileCopy.getId());
-            assertThat(persistedEntity.getDateCreated())
-                    .isNotEqualTo(fileCopy.getDateCreated())
-                    .isEqualTo(now);
-            assertThat(persistedEntity.getDateModified())
-                    .isNotEqualTo(fileCopy.getDateModified())
-                    .isEqualTo(now);
-        }
-
-        private FileCopyJpaEntity getPersistedEntity(FileCopyId id) {
-            return entityManager.find(FileCopyJpaEntity.class, id.value());
         }
     }
 }
