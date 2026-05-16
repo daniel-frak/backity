@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.pe
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResult;
 import dev.codesoapbox.backity.core.discovery.domain.TestGameContentDiscoveryResult;
-import dev.codesoapbox.backity.testing.jpa.DatabaseTable;
+import dev.codesoapbox.backity.testing.jpa.TestJpaPersistenceAdapter;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,14 +30,14 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
     @Autowired
     protected GameContentDiscoveryResultJpaEntityMapper entityMapper;
 
-    private DatabaseTable<GameContentDiscoveryResult, GameContentDiscoveryResultJpaEntity>
-            gameContentDiscoveryResultTable;
+    private TestJpaPersistenceAdapter<GameContentDiscoveryResult, GameContentDiscoveryResultJpaEntity>
+            gameContentDiscoveryResultJpaAdapter;
 
     @SuppressWarnings("JUnitMalformedDeclaration")
     @BeforeEach
     void setUp(EntityAuditControl entityAuditControl) {
         entityAuditControl.disable();
-        gameContentDiscoveryResultTable = new DatabaseTable<>(
+        gameContentDiscoveryResultJpaAdapter = new TestJpaPersistenceAdapter<>(
                 entityManager,
                 entityMapper::toEntity,
                 entityMapper::toDomain,
@@ -64,7 +64,7 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
         entityManager.flush();
 
         GameContentDiscoveryResult persistedAggregate =
-                gameContentDiscoveryResultTable.getPersistedDomainObject(newDiscoveryResult);
+                gameContentDiscoveryResultJpaAdapter.getPersistedDomainObject(newDiscoveryResult);
         assertThat(persistedAggregate)
                 .usingRecursiveComparison()
                 .isEqualTo(newDiscoveryResult);
@@ -78,7 +78,7 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
         entityManager.flush();
 
         GameContentDiscoveryResult persistedResult =
-                gameContentDiscoveryResultTable.getPersistedDomainObject(discoveryResult);
+                gameContentDiscoveryResultJpaAdapter.getPersistedDomainObject(discoveryResult);
         assertThat(persistedResult.getGamesDiscovered()).isEqualTo(999);
     }
 

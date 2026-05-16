@@ -7,7 +7,7 @@ import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persiste
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntityMapper;
 import dev.codesoapbox.backity.core.sourcefile.domain.*;
 import dev.codesoapbox.backity.core.sourcefile.domain.exceptions.SourceFileNotFoundException;
-import dev.codesoapbox.backity.testing.jpa.DatabaseTable;
+import dev.codesoapbox.backity.testing.jpa.TestJpaPersistenceAdapter;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,21 +45,21 @@ abstract class SourceFileJpaRepositoryIT {
     @Autowired
     protected Clock clock;
 
-    private DatabaseTable<SourceFile, SourceFileJpaEntity> sourceFileTable;
-    private DatabaseTable<Game, GameJpaEntity> gameTable;
+    private TestJpaPersistenceAdapter<SourceFile, SourceFileJpaEntity> sourceFileJpaAdapter;
+    private TestJpaPersistenceAdapter<Game, GameJpaEntity> gameJpaAdapter;
 
     @SuppressWarnings("JUnitMalformedDeclaration")
     @BeforeEach
     void setUp(EntityAuditControl entityAuditControl) {
         entityAuditControl.disable();
-        sourceFileTable = new DatabaseTable<>(
+        sourceFileJpaAdapter = new TestJpaPersistenceAdapter<>(
                 entityManager,
                 entityMapper::toEntity,
                 entityMapper::toDomain,
                 (entityManager, domainObject) ->
                         entityManager.find(SourceFileJpaEntity.class, domainObject.getId().value())
         );
-        gameTable = new DatabaseTable<>(
+        gameJpaAdapter = new TestJpaPersistenceAdapter<>(
                 entityManager,
                 SampleGames.MAPPER::toEntity,
                 SampleGames.MAPPER::toDomain,
@@ -76,14 +76,14 @@ abstract class SourceFileJpaRepositoryIT {
         repository.save(sourceFile);
         entityManager.flush();
 
-        SourceFile persistedAggregate = sourceFileTable.getPersistedDomainObject(sourceFile);
+        SourceFile persistedAggregate = sourceFileJpaAdapter.getPersistedDomainObject(sourceFile);
         assertThat(persistedAggregate)
                 .usingRecursiveComparison()
                 .isEqualTo(sourceFile);
     }
 
     private void persistSampleDependencies() {
-        gameTable.persist(SampleGames.getAll());
+        gameJpaAdapter.persist(SampleGames.getAll());
     }
 
     @Test
@@ -95,7 +95,7 @@ abstract class SourceFileJpaRepositoryIT {
         repository.save(sourceFile);
         entityManager.flush();
 
-        SourceFile persistedAggregate = sourceFileTable.getPersistedDomainObject(sourceFile);
+        SourceFile persistedAggregate = sourceFileJpaAdapter.getPersistedDomainObject(sourceFile);
         assertThat(persistedAggregate)
                 .usingRecursiveComparison()
                 .isEqualTo(sourceFile);
@@ -103,7 +103,7 @@ abstract class SourceFileJpaRepositoryIT {
 
     void persistSampleData() {
         persistSampleDependencies();
-        sourceFileTable.persist(SampleSourceFiles.getAll());
+        sourceFileJpaAdapter.persist(SampleSourceFiles.getAll());
     }
 
     @SuppressWarnings("JUnitMalformedDeclaration")
@@ -117,7 +117,7 @@ abstract class SourceFileJpaRepositoryIT {
         entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
-        SourceFile persistedAggregate = sourceFileTable.getPersistedDomainObject(sourceFile);
+        SourceFile persistedAggregate = sourceFileJpaAdapter.getPersistedDomainObject(sourceFile);
         assertThat(persistedAggregate.getDateCreated())
                 .isNotEqualTo(sourceFile.getDateCreated())
                 .isEqualTo(now);
@@ -138,7 +138,7 @@ abstract class SourceFileJpaRepositoryIT {
         entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
-        SourceFile persistedAggregate = sourceFileTable.getPersistedDomainObject(sourceFile);
+        SourceFile persistedAggregate = sourceFileJpaAdapter.getPersistedDomainObject(sourceFile);
         assertThat(persistedAggregate.getDateCreated())
                 .isEqualTo(sourceFile.getDateCreated())
                 .isNotEqualTo(now);
@@ -151,7 +151,7 @@ abstract class SourceFileJpaRepositoryIT {
     @CsvSource(value = {"1.0.0,true", "fakeVersion,false"})
     void existsByUrlAndVersion(String versionValue, boolean shouldFind) {
         persistSampleDependencies();
-        sourceFileTable.persist(SampleSourceFiles.getAll());
+        sourceFileJpaAdapter.persist(SampleSourceFiles.getAll());
         var version = new FileVersion(versionValue);
         var url = new SourceFileUrl("/downlink/some_game/some_file");
 
@@ -163,7 +163,7 @@ abstract class SourceFileJpaRepositoryIT {
     @Test
     void findByIdShouldReturnAggregateGivenItExists() {
         persistSampleDependencies();
-        sourceFileTable.persist(SampleSourceFiles.getAll());
+        sourceFileJpaAdapter.persist(SampleSourceFiles.getAll());
         SourceFile expectedSourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
 
         Optional<SourceFile> result = repository.findById(expectedSourceFile.getId());
@@ -186,7 +186,7 @@ abstract class SourceFileJpaRepositoryIT {
     @Test
     void getByIdShouldReturnAggregateGivenItExists() {
         persistSampleDependencies();
-        sourceFileTable.persist(SampleSourceFiles.getAll());
+        sourceFileJpaAdapter.persist(SampleSourceFiles.getAll());
         SourceFile expectedSourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
 
         SourceFile result = repository.getById(expectedSourceFile.getId());
@@ -206,7 +206,7 @@ abstract class SourceFileJpaRepositoryIT {
     @Test
     void findAllByGameIdShouldReturnAllDataForAggregate() {
         persistSampleDependencies();
-        sourceFileTable.persist(SampleSourceFiles.getAll());
+        sourceFileJpaAdapter.persist(SampleSourceFiles.getAll());
         List<SourceFile> result = repository.findAllByGameId(SampleGames.GAME_1.getId());
 
         assertThat(result)
@@ -220,7 +220,7 @@ abstract class SourceFileJpaRepositoryIT {
     @Test
     void findAllByIdInShouldReturnAllDataForAggregate() {
         persistSampleDependencies();
-        sourceFileTable.persist(SampleSourceFiles.getAll());
+        sourceFileJpaAdapter.persist(SampleSourceFiles.getAll());
         SourceFile expectedSourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
 
         List<SourceFile> result = repository.findAllByIdIn(List.of(expectedSourceFile.getId()));
@@ -234,11 +234,11 @@ abstract class SourceFileJpaRepositoryIT {
     void deleteByIdShouldDeleteAggregate() {
         persistSampleDependencies();
         SourceFile sourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
-        sourceFileTable.persist(sourceFile);
+        sourceFileJpaAdapter.persist(sourceFile);
 
         repository.deleteById(sourceFile.getId());
 
-        assertThat(sourceFileTable.exists(sourceFile)).isFalse();
+        assertThat(sourceFileJpaAdapter.exists(sourceFile)).isFalse();
     }
 
     private static class SampleGames {
