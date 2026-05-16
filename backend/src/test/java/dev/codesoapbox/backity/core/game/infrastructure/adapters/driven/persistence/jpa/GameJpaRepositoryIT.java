@@ -218,7 +218,7 @@ abstract class GameJpaRepositoryIT {
 
         Page<Game> result = repository.findAll(pagination);
 
-        assertThat(result.content().size()).isEqualTo(1);
+        assertThat(result.content()).hasSize(1);
         assertThat(result.totalPages()).isEqualTo(2);
         assertThat(result.totalElements()).isEqualTo(2);
         assertThat(result.pagination()).isEqualTo(pagination);
