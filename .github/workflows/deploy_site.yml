@@ -3,6 +3,10 @@ name: Deploy website
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'website/**'
+      - 'docs/**'
+      - 'branding/**'
   workflow_dispatch:
 
 jobs:
