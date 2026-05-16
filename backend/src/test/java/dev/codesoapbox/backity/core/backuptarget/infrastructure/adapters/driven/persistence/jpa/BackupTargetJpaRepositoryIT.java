@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetName;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.exceptions.BackupTargetNotFoundException;
+import dev.codesoapbox.backity.testing.jpa.DatabaseTable;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import dev.codesoapbox.backity.testing.time.FakeClock;
@@ -26,9 +27,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @Transactional // Required by @JpaRepositoryTest
 abstract class BackupTargetJpaRepositoryIT {
 
-    private final Persist persist = new Persist();
-    private final Assertions assertThat = new Assertions();
-
     @Autowired
     protected BackupTargetJpaRepository repository;
 
@@ -41,10 +39,19 @@ abstract class BackupTargetJpaRepositoryIT {
     @Autowired
     protected FakeClock clock;
 
+    private DatabaseTable<BackupTarget, BackupTargetJpaEntity> backupTargetTable;
+
     @SuppressWarnings("JUnitMalformedDeclaration")
     @BeforeEach
     void setUp(EntityAuditControl entityAuditControl) {
         entityAuditControl.disable();
+        backupTargetTable = new DatabaseTable<>(
+                entityManager,
+                entityMapper::toEntity,
+                entityMapper::toDomain,
+                (entityManager, domainObject) ->
+                        entityManager.find(BackupTargetJpaEntity.class, domainObject.getId().value())
+        );
     }
 
     @Test
@@ -54,41 +61,77 @@ abstract class BackupTargetJpaRepositoryIT {
         repository.save(backupTarget);
         entityManager.flush();
 
-        assertThat.wasPersistedWithAllData(backupTarget);
+        BackupTarget persistedAggregate = backupTargetTable.getPersistedDomainObject(backupTarget);
+        assertThat(persistedAggregate)
+                .usingRecursiveComparison()
+                .isEqualTo(backupTarget);
     }
 
     @Test
     void saveShouldModifyExisting() {
         BackupTarget backupTarget = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
-        persist.backupTarget(backupTarget);
+        backupTargetTable.persist(backupTarget);
         backupTarget.setName(new BackupTargetName("Changed name"));
 
         repository.save(backupTarget);
         entityManager.flush();
 
-        assertThat.wasPersistedWithAllData(backupTarget);
+        BackupTarget persistedAggregate = backupTargetTable.getPersistedDomainObject(backupTarget);
+        assertThat(persistedAggregate)
+                .usingRecursiveComparison()
+                .isEqualTo(backupTarget);
     }
 
     @SuppressWarnings("JUnitMalformedDeclaration")
     @Test
-    void saveShouldUpdateDates(EntityAuditControl entityAuditControl) {
+    void saveShouldUpdateDatesGivenNew(EntityAuditControl entityAuditControl) {
         entityAuditControl.enable();
-        BackupTarget backupTarget = SampleBackupTargets.YESTERDAY_LOCAL_FOLDER.get();
+        BackupTarget backupTarget = SampleBackupTargets.YESTERDAY_S3_BUCKET.get();
 
         repository.save(backupTarget);
         entityManager.flush();
 
-        assertThat.datesWereUpdatedByAuditingHandler(backupTarget);
+        LocalDateTime now = LocalDateTime.now(clock);
+        BackupTarget persistedAggregate = backupTargetTable.getPersistedDomainObject(backupTarget);
+        assertThat(persistedAggregate.getDateCreated())
+                .isNotEqualTo(backupTarget.getDateCreated())
+                .isEqualTo(now);
+        assertThat(persistedAggregate.getDateModified())
+                .isNotEqualTo(backupTarget.getDateModified())
+                .isEqualTo(now);
+    }
+
+    @SuppressWarnings("JUnitMalformedDeclaration")
+    @Test
+    void saveShouldUpdateDatesGivenExisting(EntityAuditControl entityAuditControl) {
+        BackupTarget backupTarget = SampleBackupTargets.YESTERDAY_S3_BUCKET.get();
+        backupTargetTable.persist(backupTarget);
+        backupTarget.setName(new BackupTargetName("Changed name"));
+        entityAuditControl.enable();
+
+        repository.save(backupTarget);
+        entityManager.flush();
+
+        LocalDateTime now = LocalDateTime.now(clock);
+        BackupTarget persistedAggregate = backupTargetTable.getPersistedDomainObject(backupTarget);
+        assertThat(persistedAggregate.getDateCreated())
+                .isEqualTo(backupTarget.getDateCreated())
+                .isNotEqualTo(now);
+        assertThat(persistedAggregate.getDateModified())
+                .isNotEqualTo(backupTarget.getDateModified())
+                .isEqualTo(now);
     }
 
     @Test
     void getByIdShouldReturnAggregateGivenItExists() {
-        persist.backupTargets(SampleBackupTargets.getAll());
+        backupTargetTable.persist(SampleBackupTargets.getAll());
         BackupTarget expectedBackupTarget = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
 
         BackupTarget result = repository.getById(expectedBackupTarget.getId());
 
-        assertThat.allDataIsSame(result, expectedBackupTarget);
+        assertThat(result)
+                .usingRecursiveComparison()
+                .isEqualTo(expectedBackupTarget);
     }
 
     @Test
@@ -110,23 +153,26 @@ abstract class BackupTargetJpaRepositoryIT {
     @Test
     void findAllShouldReturnAllDataForAggregate() {
         BackupTarget backupTarget = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
-        persist.backupTarget(backupTarget);
+        backupTargetTable.persist(backupTarget);
 
         List<BackupTarget> result = repository.findAll();
 
-        assertThat.containsOnlyWithAllData(result, backupTarget);
+        assertThat(result)
+                .usingRecursiveFieldByFieldElementComparator()
+                .containsExactly(backupTarget);
     }
 
     @Test
     void findAllShouldSortByDateCreatedAsc() {
-        persist.backupTargets(SampleBackupTargets.getAll());
+        backupTargetTable.persist(SampleBackupTargets.getAll());
 
         List<BackupTarget> result = repository.findAll();
 
-        assertThat.containsInOrder(result,
-                SampleBackupTargets.YESTERDAY_LOCAL_FOLDER.get(),
-                SampleBackupTargets.TODAY_LOCAL_FOLDER.get()
-        );
+        assertThat(result)
+                .containsExactly(
+                        SampleBackupTargets.YESTERDAY_S3_BUCKET.get(),
+                        SampleBackupTargets.TODAY_LOCAL_FOLDER.get()
+                );
     }
 
     @Test
@@ -140,37 +186,40 @@ abstract class BackupTargetJpaRepositoryIT {
 
     @Test
     void findAllByIdInShouldReturnAllDataForAggregate() {
-        persist.backupTargets(SampleBackupTargets.getAll());
+        backupTargetTable.persist(SampleBackupTargets.getAll());
         BackupTarget expectedBackupTarget = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
 
         List<BackupTarget> result = repository.findAllByIdIn(List.of(expectedBackupTarget.getId()));
 
-        assertThat.containsOnlyWithAllData(result, expectedBackupTarget);
+        assertThat(result)
+                .usingRecursiveFieldByFieldElementComparator()
+                .containsExactly(expectedBackupTarget);
     }
 
     @Test
     void findAllByIdInShouldSortByDateCreatedAsc() {
-        persist.backupTargets(SampleBackupTargets.getAll());
+        backupTargetTable.persist(SampleBackupTargets.getAll());
         BackupTarget todayBackupTarget = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
-        BackupTarget yesterdayBackupTarget = SampleBackupTargets.YESTERDAY_LOCAL_FOLDER.get();
+        BackupTarget yesterdayBackupTarget = SampleBackupTargets.YESTERDAY_S3_BUCKET.get();
 
         List<BackupTarget> result = repository.findAllByIdIn(
                 List.of(todayBackupTarget.getId(), yesterdayBackupTarget.getId()));
 
-        assertThat.containsInOrder(result,
-                SampleBackupTargets.YESTERDAY_LOCAL_FOLDER.get(),
-                SampleBackupTargets.TODAY_LOCAL_FOLDER.get()
-        );
+        assertThat(result)
+                .containsExactly(
+                        SampleBackupTargets.YESTERDAY_S3_BUCKET.get(),
+                        SampleBackupTargets.TODAY_LOCAL_FOLDER.get()
+                );
     }
 
     @Test
     void deleteByIdShouldDeleteAggregate() {
         BackupTarget aggregateToDelete = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
-        persist.backupTargets(aggregateToDelete);
+        backupTargetTable.persist(aggregateToDelete);
 
         repository.deleteById(aggregateToDelete.getId());
 
-        assertThat.doesNotExist(aggregateToDelete);
+        assertThat(backupTargetTable.exists(aggregateToDelete)).isFalse();
     }
 
     private static class Time {
@@ -186,82 +235,14 @@ abstract class BackupTargetJpaRepositoryIT {
                 .withDateCreated(Time.NOW)
                 .build();
 
-        static final Supplier<BackupTarget> YESTERDAY_LOCAL_FOLDER = () -> TestBackupTarget.s3BucketBuilder()
+        static final Supplier<BackupTarget> YESTERDAY_S3_BUCKET = () -> TestBackupTarget.s3BucketBuilder()
                 .withId(new BackupTargetId("d94eaa11-0259-4aaa-9eaf-4c50acc42a82"))
                 .withDateCreated(Time.YESTERDAY)
+                .withDateModified(Time.YESTERDAY)
                 .build();
 
         static List<BackupTarget> getAll() {
-            return List.of(TODAY_LOCAL_FOLDER.get(), YESTERDAY_LOCAL_FOLDER.get());
-        }
-    }
-
-    private class Assertions {
-
-        void datesWereUpdatedByAuditingHandler(BackupTarget backupTarget) {
-            LocalDateTime now = LocalDateTime.now(clock);
-            BackupTargetJpaEntity persistedEntity = getPersistedEntity(backupTarget.getId());
-            assertThat(persistedEntity.getDateCreated())
-                    .isNotEqualTo(backupTarget.getDateCreated())
-                    .isEqualTo(now);
-            assertThat(persistedEntity.getDateModified())
-                    .isNotEqualTo(backupTarget.getDateModified())
-                    .isEqualTo(now);
-        }
-
-        private BackupTargetJpaEntity getPersistedEntity(BackupTargetId id) {
-            return entityManager.find(BackupTargetJpaEntity.class, id.value());
-        }
-
-        void wasPersistedWithAllData(BackupTarget expected) {
-            BackupTargetJpaEntity persistedEntity = getPersistedEntity(expected.getId());
-            BackupTarget persisted = entityMapper.toDomain(persistedEntity);
-            allDataIsSame(persisted, expected);
-        }
-
-        void allDataIsSame(BackupTarget actual, BackupTarget expected) {
-            assertThat(actual)
-                    .satisfies(it -> {
-                        assertThat(it).isNotNull();
-                        assertThat(it.getDateCreated()).isNotNull();
-                        assertThat(it.getDateModified()).isNotNull();
-                    })
-                    .usingRecursiveComparison()
-                    .isEqualTo(expected);
-        }
-
-        void containsOnlyWithAllData(List<BackupTarget> actual, BackupTarget expected) {
-            assertThat(actual)
-                    .usingRecursiveFieldByFieldElementComparator()
-                    .containsExactly(expected);
-        }
-
-        void containsInOrder(List<BackupTarget> actual, BackupTarget... expected) {
-            assertThat(actual)
-                    .containsExactly(expected);
-        }
-
-        public void doesNotExist(BackupTarget aggregate) {
-            BackupTargetJpaEntity entity = entityManager.find(BackupTargetJpaEntity.class, aggregate.getId().value());
-            assertThat(entity).isNull();
-        }
-    }
-
-    private class Persist {
-
-        void backupTarget(BackupTarget backupTarget) {
-            backupTargets(backupTarget);
-        }
-
-        void backupTargets(BackupTarget... backupTargets) {
-            backupTargets(List.of(backupTargets));
-        }
-
-        void backupTargets(List<BackupTarget> backupTargets) {
-            for (BackupTarget backupTarget : backupTargets) {
-                entityManager.persist(entityMapper.toEntity(backupTarget));
-            }
-            entityManager.flush();
+            return List.of(TODAY_LOCAL_FOLDER.get(), YESTERDAY_S3_BUCKET.get());
         }
     }
 }
