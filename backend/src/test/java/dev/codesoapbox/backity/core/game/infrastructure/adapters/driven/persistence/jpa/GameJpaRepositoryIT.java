@@ -54,8 +54,7 @@ abstract class GameJpaRepositoryIT {
                 entityManager,
                 entityMapper::toEntity,
                 entityMapper::toDomain,
-                (entityManager, domainObject) ->
-                        entityManager.find(GameJpaEntity.class, domainObject.getId().value())
+                (em, obj) -> em.find(GameJpaEntity.class, obj.getId().value())
         );
     }
 

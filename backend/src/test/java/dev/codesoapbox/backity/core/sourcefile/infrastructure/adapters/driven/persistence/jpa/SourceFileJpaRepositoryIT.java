@@ -56,15 +56,13 @@ abstract class SourceFileJpaRepositoryIT {
                 entityManager,
                 entityMapper::toEntity,
                 entityMapper::toDomain,
-                (entityManager, domainObject) ->
-                        entityManager.find(SourceFileJpaEntity.class, domainObject.getId().value())
+                (em, obj) -> em.find(SourceFileJpaEntity.class, obj.getId().value())
         );
         gameJpaAdapter = new TestJpaPersistenceAdapter<>(
                 entityManager,
                 SampleGames.MAPPER::toEntity,
                 SampleGames.MAPPER::toDomain,
-                (entityManager, domainObject) ->
-                        entityManager.find(GameJpaEntity.class, domainObject.getId().value())
+                (em, obj) -> em.find(GameJpaEntity.class, obj.getId().value())
         );
     }
 
