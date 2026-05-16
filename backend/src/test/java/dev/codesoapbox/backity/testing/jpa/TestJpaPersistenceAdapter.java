@@ -7,17 +7,17 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /// Simplifies persistence operations for JPA repository tests
-public class DatabaseTable<T, E> {
+public class TestJpaPersistenceAdapter<T, E> {
 
     private final TestEntityManager entityManager;
     private final Function<T, E> toEntity;
     private final Function<E, T> toDomain;
     private final BiFunction<TestEntityManager, T, E> persistedEntityFinder;
 
-    public DatabaseTable(TestEntityManager entityManager,
-                         Function<T, E> toEntity,
-                         Function<E, T> toDomain,
-                         BiFunction<TestEntityManager, T, E> persistedEntityFinder) {
+    public TestJpaPersistenceAdapter(TestEntityManager entityManager,
+                                     Function<T, E> toEntity,
+                                     Function<E, T> toDomain,
+                                     BiFunction<TestEntityManager, T, E> persistedEntityFinder) {
         this.entityManager = entityManager;
         this.toEntity = toEntity;
         this.toDomain = toDomain;

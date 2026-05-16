@@ -22,7 +22,7 @@ import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.pe
 import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaEntityMapper;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
-import dev.codesoapbox.backity.testing.jpa.DatabaseTable;
+import dev.codesoapbox.backity.testing.jpa.TestJpaPersistenceAdapter;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
@@ -114,37 +114,37 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
     @Autowired
     private TestEntityManager entityManager;
 
-    private DatabaseTable<Game, GameJpaEntity> gameTable;
-    private DatabaseTable<SourceFile, SourceFileJpaEntity> sourceFileTable;
-    private DatabaseTable<BackupTarget, BackupTargetJpaEntity> backupTargetTable;
-    private DatabaseTable<FileCopy, FileCopyJpaEntity> fileCopyTable;
+    private TestJpaPersistenceAdapter<Game, GameJpaEntity> gameJpaAdapter;
+    private TestJpaPersistenceAdapter<SourceFile, SourceFileJpaEntity> sourceFileJpaAdapter;
+    private TestJpaPersistenceAdapter<BackupTarget, BackupTargetJpaEntity> backupTargetJpaAdapter;
+    private TestJpaPersistenceAdapter<FileCopy, FileCopyJpaEntity> fileCopyJpaAdapter;
 
     @SuppressWarnings("JUnitMalformedDeclaration")
     @BeforeEach
     void setUp(EntityAuditControl entityAuditControl) {
         entityAuditControl.disable();
-        fileCopyTable = new DatabaseTable<>(
+        fileCopyJpaAdapter = new TestJpaPersistenceAdapter<>(
                 entityManager,
                 SampleFileCopies.MAPPER::toEntity,
                 SampleFileCopies.MAPPER::toDomain,
                 (entityManager, domainObject) ->
                         entityManager.find(FileCopyJpaEntity.class, domainObject.getId().value())
         );
-        gameTable = new DatabaseTable<>(
+        gameJpaAdapter = new TestJpaPersistenceAdapter<>(
                 entityManager,
                 SampleGames.MAPPER::toEntity,
                 SampleGames.MAPPER::toDomain,
                 (entityManager, domainObject) ->
                         entityManager.find(GameJpaEntity.class, domainObject.getId().value())
         );
-        sourceFileTable = new DatabaseTable<>(
+        sourceFileJpaAdapter = new TestJpaPersistenceAdapter<>(
                 entityManager,
                 SampleSourceFiles.MAPPER::toEntity,
                 SampleSourceFiles.MAPPER::toDomain,
                 (entityManager, domainObject) ->
                         entityManager.find(SourceFileJpaEntity.class, domainObject.getId().value())
         );
-        backupTargetTable = new DatabaseTable<>(
+        backupTargetJpaAdapter = new TestJpaPersistenceAdapter<>(
                 entityManager,
                 SampleBackupTargets.MAPPER::toEntity,
                 SampleBackupTargets.MAPPER::toDomain,
@@ -155,10 +155,10 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
     }
 
     private void persistSampleData() {
-        gameTable.persist(SampleGames.getAll());
-        sourceFileTable.persist(SampleSourceFiles.getAll());
-        backupTargetTable.persist(SampleBackupTargets.getAll());
-        fileCopyTable.persist(SampleFileCopies.getAll());
+        gameJpaAdapter.persist(SampleGames.getAll());
+        sourceFileJpaAdapter.persist(SampleSourceFiles.getAll());
+        backupTargetJpaAdapter.persist(SampleBackupTargets.getAll());
+        fileCopyJpaAdapter.persist(SampleFileCopies.getAll());
     }
 
     @ParameterizedTest

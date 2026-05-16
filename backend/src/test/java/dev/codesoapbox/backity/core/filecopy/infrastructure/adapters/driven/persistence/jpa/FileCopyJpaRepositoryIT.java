@@ -24,7 +24,7 @@ import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageableMapper;
-import dev.codesoapbox.backity.testing.jpa.DatabaseTable;
+import dev.codesoapbox.backity.testing.jpa.TestJpaPersistenceAdapter;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import dev.codesoapbox.backity.testing.time.FakeClock;
@@ -71,37 +71,37 @@ abstract class FileCopyJpaRepositoryIT {
     @Autowired
     protected FakeClock clock;
 
-    private DatabaseTable<FileCopy, FileCopyJpaEntity> fileCopyTable;
-    private DatabaseTable<Game, GameJpaEntity> gameTable;
-    private DatabaseTable<SourceFile, SourceFileJpaEntity> sourceFileTable;
-    private DatabaseTable<BackupTarget, BackupTargetJpaEntity> backupTargetTable;
+    private TestJpaPersistenceAdapter<FileCopy, FileCopyJpaEntity> fileCopyJpaAdapter;
+    private TestJpaPersistenceAdapter<Game, GameJpaEntity> gameJpaAdapter;
+    private TestJpaPersistenceAdapter<SourceFile, SourceFileJpaEntity> sourceFileJpaAdapter;
+    private TestJpaPersistenceAdapter<BackupTarget, BackupTargetJpaEntity> backupTargetJpaAdapter;
 
     @SuppressWarnings("JUnitMalformedDeclaration")
     @BeforeEach
     void setUp(EntityAuditControl entityAuditControl) {
         entityAuditControl.disable();
-        fileCopyTable = new DatabaseTable<>(
+        fileCopyJpaAdapter = new TestJpaPersistenceAdapter<>(
                 entityManager,
                 entityMapper::toEntity,
                 entityMapper::toDomain,
                 (entityManager, domainObject) ->
                         entityManager.find(FileCopyJpaEntity.class, domainObject.getId().value())
         );
-        gameTable = new DatabaseTable<>(
+        gameJpaAdapter = new TestJpaPersistenceAdapter<>(
                 entityManager,
                 SampleGames.MAPPER::toEntity,
                 SampleGames.MAPPER::toDomain,
                 (entityManager, domainObject) ->
                         entityManager.find(GameJpaEntity.class, domainObject.getId().value())
         );
-        sourceFileTable = new DatabaseTable<>(
+        sourceFileJpaAdapter = new TestJpaPersistenceAdapter<>(
                 entityManager,
                 SampleSourceFiles.MAPPER::toEntity,
                 SampleSourceFiles.MAPPER::toDomain,
                 (entityManager, domainObject) ->
                         entityManager.find(SourceFileJpaEntity.class, domainObject.getId().value())
         );
-        backupTargetTable = new DatabaseTable<>(
+        backupTargetJpaAdapter = new TestJpaPersistenceAdapter<>(
                 entityManager,
                 SampleBackupTargets.MAPPER::toEntity,
                 SampleBackupTargets.MAPPER::toDomain,
@@ -123,16 +123,16 @@ abstract class FileCopyJpaRepositoryIT {
         repository.save(fileCopy);
         entityManager.flush();
 
-        FileCopy persistedAggregate = fileCopyTable.getPersistedDomainObject(fileCopy);
+        FileCopy persistedAggregate = fileCopyJpaAdapter.getPersistedDomainObject(fileCopy);
         assertThat(persistedAggregate)
                 .usingRecursiveComparison()
                 .isEqualTo(fileCopy);
     }
 
     private void persistSampleDependencies() {
-        gameTable.persist(SampleGames.getAll());
-        sourceFileTable.persist(SampleSourceFiles.getAll());
-        backupTargetTable.persist(SampleBackupTargets.getAll());
+        gameJpaAdapter.persist(SampleGames.getAll());
+        sourceFileJpaAdapter.persist(SampleSourceFiles.getAll());
+        backupTargetJpaAdapter.persist(SampleBackupTargets.getAll());
     }
 
     @Test
@@ -144,7 +144,7 @@ abstract class FileCopyJpaRepositoryIT {
         repository.save(fileCopy);
         entityManager.flush();
 
-        FileCopy persistedAggregate = fileCopyTable.getPersistedDomainObject(fileCopy);
+        FileCopy persistedAggregate = fileCopyJpaAdapter.getPersistedDomainObject(fileCopy);
         assertThat(persistedAggregate)
                 .usingRecursiveComparison()
                 .isEqualTo(fileCopy);
@@ -152,7 +152,7 @@ abstract class FileCopyJpaRepositoryIT {
 
     private void persistSampleData() {
         persistSampleDependencies();
-        fileCopyTable.persist(SampleFileCopies.getAll());
+        fileCopyJpaAdapter.persist(SampleFileCopies.getAll());
     }
 
     @SuppressWarnings("JUnitMalformedDeclaration")
@@ -166,7 +166,7 @@ abstract class FileCopyJpaRepositoryIT {
         entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
-        FileCopy persistedAggregate = fileCopyTable.getPersistedDomainObject(fileCopy);
+        FileCopy persistedAggregate = fileCopyJpaAdapter.getPersistedDomainObject(fileCopy);
         assertThat(persistedAggregate.getDateCreated())
                 .isNotEqualTo(fileCopy.getDateCreated())
                 .isEqualTo(now);
@@ -187,7 +187,7 @@ abstract class FileCopyJpaRepositoryIT {
         entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
-        FileCopy persistedAggregate = fileCopyTable.getPersistedDomainObject(fileCopy);
+        FileCopy persistedAggregate = fileCopyJpaAdapter.getPersistedDomainObject(fileCopy);
         assertThat(persistedAggregate.getDateCreated())
                 .isEqualTo(fileCopy.getDateCreated())
                 .isNotEqualTo(now);
@@ -232,7 +232,7 @@ abstract class FileCopyJpaRepositoryIT {
                 .id(new FileCopyId("09366863-b707-4e5c-8315-ed7e7c56d0a9"))
                 .naturalId(fileCopy1.getNaturalId())
                 .build();
-        fileCopyTable.persist(fileCopy1);
+        fileCopyJpaAdapter.persist(fileCopy1);
 
         repository.save(fileCopy2);
 
@@ -479,8 +479,8 @@ abstract class FileCopyJpaRepositoryIT {
         repository.deleteByBackupTargetIdAndStatusIn(
                 fileCopy.getNaturalId().backupTargetId(), List.of(fileCopy.getStatus()));
 
-        assertThat(fileCopyTable.exists(fileCopy)).isFalse();
-        assertThat(fileCopyTable.exists(unaffectedFileCopy)).isTrue();
+        assertThat(fileCopyJpaAdapter.exists(fileCopy)).isFalse();
+        assertThat(fileCopyJpaAdapter.exists(unaffectedFileCopy)).isTrue();
     }
 
     @Test
@@ -491,7 +491,7 @@ abstract class FileCopyJpaRepositoryIT {
         repository.deleteByBackupTargetIdAndStatusIn(
                 fileCopy.getNaturalId().backupTargetId(), List.of(FileCopyStatus.FAILED));
 
-        assertThat(fileCopyTable.exists(fileCopy)).isTrue();
+        assertThat(fileCopyJpaAdapter.exists(fileCopy)).isTrue();
     }
 
     private static class Time {
