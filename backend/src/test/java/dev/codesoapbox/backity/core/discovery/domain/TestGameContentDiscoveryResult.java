@@ -5,12 +5,10 @@ import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-@Builder(builderClassName = "Builder", builderMethodName = "gogBuilder", buildMethodName = "internalBuilder",
-        setterPrefix = "with")
+@Builder(builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
 public class TestGameContentDiscoveryResult {
 
-    @lombok.Builder.Default
-    private GameProviderId gameProviderId = new GameProviderId("GOG");
+    private GameProviderId gameProviderId;
 
     @lombok.Builder.Default
     private LocalDateTime startedAt = LocalDateTime.parse("2022-04-29T15:00:00");
@@ -31,7 +29,9 @@ public class TestGameContentDiscoveryResult {
     private int sourceFilesDiscovered = 70;
 
     public static GameContentDiscoveryResult gog() {
-        return gogBuilder().build();
+        return gogBuilder()
+                .withGameProviderId(new GameProviderId("GOG"))
+                .build();
     }
 
     public static Builder gogBuilder() {
@@ -41,7 +41,7 @@ public class TestGameContentDiscoveryResult {
     public static class Builder {
 
         public GameContentDiscoveryResult build() {
-            TestGameContentDiscoveryResult temp = internalBuilder();
+            TestGameContentDiscoveryResult temp = internalBuild();
             return new GameContentDiscoveryResult(temp.gameProviderId, temp.startedAt, temp.stoppedAt,
                     temp.discoveryOutcome, temp.lastSuccessfulDiscoveryCompletedAt, temp.gamesDiscovered,
                     temp.sourceFilesDiscovered);

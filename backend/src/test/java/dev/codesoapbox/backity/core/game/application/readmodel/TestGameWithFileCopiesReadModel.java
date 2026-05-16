@@ -7,8 +7,7 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 
-@Builder(builderClassName = "Builder", builderMethodName = "withNoSourceFilesBuilder",
-        buildMethodName = "internalBuilder", setterPrefix = "with")
+@Builder(builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
 public class TestGameWithFileCopiesReadModel {
 
     @lombok.Builder.Default
@@ -17,15 +16,15 @@ public class TestGameWithFileCopiesReadModel {
     @lombok.Builder.Default
     private String title = "Test Game";
 
-    @lombok.Builder.Default
-    private List<SourceFileWithCopiesReadModel> sourceFilesWithCopies = emptyList();
+    private List<SourceFileWithCopiesReadModel> sourceFilesWithCopies;
 
     public static GameWithFileCopiesReadModel withNoSourceFiles() {
         return withNoSourceFilesBuilder().build();
     }
 
     public static TestGameWithFileCopiesReadModel.Builder withNoSourceFilesBuilder() {
-        return new TestGameWithFileCopiesReadModel.Builder();
+        return new TestGameWithFileCopiesReadModel.Builder()
+                .withSourceFilesWithCopies(emptyList());
     }
 
     public static class Builder {
@@ -36,7 +35,7 @@ public class TestGameWithFileCopiesReadModel {
         }
 
         public GameWithFileCopiesReadModel build() {
-            TestGameWithFileCopiesReadModel temp = internalBuilder();
+            TestGameWithFileCopiesReadModel temp = internalBuild();
             return new GameWithFileCopiesReadModel(temp.id, temp.title, temp.sourceFilesWithCopies);
         }
     }

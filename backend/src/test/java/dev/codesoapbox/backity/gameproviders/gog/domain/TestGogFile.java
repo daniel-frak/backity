@@ -2,8 +2,7 @@ package dev.codesoapbox.backity.gameproviders.gog.domain;
 
 import lombok.Builder;
 
-@Builder(builderClassName = "Builder", builderMethodName = "minimalBuilder", buildMethodName = "internalBuilder",
-        setterPrefix = "with")
+@Builder(builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
 public class TestGogFile {
 
     @lombok.Builder.Default
@@ -32,7 +31,7 @@ public class TestGogFile {
     public static class Builder {
 
         public GogFile build() {
-            TestGogFile temp = internalBuilder();
+            TestGogFile temp = internalBuild();
             return new GogFile(temp.version, temp.manualUrl, temp.title, temp.size, temp.fileName);
         }
     }
