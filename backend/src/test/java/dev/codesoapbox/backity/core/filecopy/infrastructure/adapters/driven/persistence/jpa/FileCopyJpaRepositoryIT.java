@@ -351,7 +351,7 @@ abstract class FileCopyJpaRepositoryIT {
 
         Page<FileCopy> result = repository.findAllInProgressOrEnqueued(pagination);
 
-        assertThat(result.content().size()).isEqualTo(1);
+        assertThat(result.content()).hasSize(1);
         assertThat(result.totalPages()).isEqualTo(3);
         assertThat(result.totalElements()).isEqualTo(3);
         assertThat(result.pagination()).isEqualTo(pagination);
