@@ -1,11 +1,11 @@
-name: Sonar
+name: Run Sonar analysis
 
 on:
   # `workflow_run` runs in the context of the base repository,
   # allowing it to access secrets even from forked pull requests.
   # This enables us to trigger a SonarCloud analysis for all PRs.
   workflow_run:
-    workflows: [ Build ]
+    workflows: [ Build application ]
     types:
       - completed
 

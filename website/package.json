@@ -12,12 +12,14 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.9",
     "astro": "^6.0.8",
     "astro-mermaid": "^2.0.1",
     "astro-pagefind": "^2.0.0",
     "mermaid": "^11.13.0",
     "rehype-shift-heading": "^2.0.0",
-    "remark-toc": "^9.0.0"
+    "remark-toc": "^9.0.0",
+    "typescript": "^6.0.3"
   },
   "devDependencies": {
     "@types/node": "25.7.0",
