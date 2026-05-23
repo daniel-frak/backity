@@ -5,7 +5,7 @@
 
 ARG MOCKSERVER_VERSION
 
-FROM busybox:1.37.0-uclibc@sha256:e3a499df044f0129fd2e82a63177e7affe66ba6fd73acc9e231fd7695f06e5e2 AS busybox
+FROM busybox:1.37.0-uclibc@sha256:a82b9a529cd5a4e49693db628e997ed17f3dd038bb73d184ab9baa8165d44a16 AS busybox
 FROM mockserver/mockserver:$MOCKSERVER_VERSION
 
 COPY --from=busybox /bin /bin
