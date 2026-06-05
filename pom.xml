@@ -32,7 +32,7 @@
         <!-- END of Project version info -->
 
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
-        <jacoco.version>0.8.14</jacoco.version>
+        <jacoco.version>0.8.15</jacoco.version>
 
         <!-- Sonar -->
         <sonar.projectKey>backity</sonar.projectKey>
