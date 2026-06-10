@@ -1,9 +1,6 @@
 package dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.readmodel;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -37,6 +34,7 @@ public class GameWithFileCopiesReadModelJpaEntity {
     private LocalDateTime dateCreated;
     private LocalDateTime dateModified;
 
+    @OrderBy("fileTitle ASC")
     @OneToMany(mappedBy = "gameId")
     private List<SourceFileWithCopiesReadModelJpaEntity> sourceFilesWithCopies = new ArrayList<>();
 }
