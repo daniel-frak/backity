@@ -69,6 +69,7 @@ public class SourceFileWithCopiesReadModelJpaEntity {
     @Column(nullable = false)
     private long sizeInBytes;
 
+    @OrderBy("dateCreated DESC")
     @OneToMany(mappedBy = "naturalId.sourceFileId")
     private List<FileCopyReadModelJpaEntity> fileCopies = new ArrayList<>();
 }
