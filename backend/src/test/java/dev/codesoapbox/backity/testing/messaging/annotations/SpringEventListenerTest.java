@@ -1,11 +1,7 @@
 package dev.codesoapbox.backity.testing.messaging.annotations;
 
 import dev.codesoapbox.backity.BackityApplication;
-import dev.codesoapbox.backity.core.backup.application.eventhandlers.ClearProgressOnFileBackupFinishedEventHandler;
-import dev.codesoapbox.backity.core.backup.application.eventhandlers.MarkBackupRecoveryCompletedOnBackupRecoveryCompletedEventHandler;
-import dev.codesoapbox.backity.core.backup.application.eventhandlers.ProcessFileCopyQueueOnFileCopyEnqueuedEventHandler;
-import dev.codesoapbox.backity.core.backup.application.eventhandlers.SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventHandler;
-import dev.codesoapbox.backity.shared.application.eventhandlers.DomainEventForwardingHandler;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.DomainEventHandlerBeanConfiguration;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringApplicationEventPublisherBeanConfiguration;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringAsyncConfiguration;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringEventListenerBeanConfiguration;
@@ -15,6 +11,7 @@ import dev.codesoapbox.backity.testing.messaging.extensions.InMemoryEventScenari
 import dev.codesoapbox.backity.testing.messaging.extensions.OutboxEventScenarioExtension;
 import dev.codesoapbox.backity.testing.messaging.outbox.CleanUpOutboxEventsAfterTestExtension;
 import dev.codesoapbox.backity.testing.messaging.outbox.OutboxEventScenario;
+import dev.codesoapbox.backity.testing.mocking.MockBeansMatching;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -24,7 +21,6 @@ import org.springframework.modulith.events.config.EnablePersistentDomainEvents;
 import org.springframework.modulith.events.core.EventPublicationRepository;
 import org.springframework.modulith.events.jpa.updating.DefaultJpaEventPublication;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.event.TransactionalEventListener;
 import tools.jackson.databind.json.JsonMapper;
@@ -72,16 +68,6 @@ import java.lang.annotation.*;
         // Otherwise will throw `This ResultSet is closed` PSQLException:
         "spring.modulith.events.republish-outstanding-events-on-restart=false"
 })
-@MockitoBean(types = {
-        ClearProgressOnFileBackupFinishedEventHandler.class,
-        MarkBackupRecoveryCompletedOnBackupRecoveryCompletedEventHandler.class,
-        SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventHandler.class,
-        ProcessFileCopyQueueOnFileCopyEnqueuedEventHandler.class,
-        DomainEventForwardingHandler.class
-})
-@ExtendWith(OutboxEventScenarioExtension.class)
-@ExtendWith(InMemoryEventScenarioExtension.class)
-@ExtendWith(CleanUpOutboxEventsAfterTestExtension.class)
 @PostgresRepositoryTest
 @ComponentScan(
         basePackageClasses = BackityApplication.class,
@@ -95,10 +81,23 @@ import java.lang.annotation.*;
         ),
         useDefaultFilters = false
 )
+@MockBeansMatching(
+        @ComponentScan(
+                basePackageClasses = BackityApplication.class,
+                includeFilters = @ComponentScan.Filter(
+                        type = FilterType.ANNOTATION,
+                        classes = DomainEventHandlerBeanConfiguration.class
+                ),
+                useDefaultFilters = false
+        )
+)
 @EntityScan(basePackageClasses = {
         BackityApplication.class,
         DefaultJpaEventPublication.class
 })
+@ExtendWith(OutboxEventScenarioExtension.class)
+@ExtendWith(InMemoryEventScenarioExtension.class)
+@ExtendWith(CleanUpOutboxEventsAfterTestExtension.class)
 public @interface SpringEventListenerTest {
 
     @TestConfiguration

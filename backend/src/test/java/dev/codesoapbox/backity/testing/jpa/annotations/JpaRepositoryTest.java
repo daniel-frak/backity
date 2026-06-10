@@ -1,9 +1,10 @@
 package dev.codesoapbox.backity.testing.jpa.annotations;
 
 import dev.codesoapbox.backity.BackityApplication;
-import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositoryBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringApplicationEventPublisherBeanConfiguration;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControlExtension;
+import dev.codesoapbox.backity.testing.mocking.MockBeansMatching;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import dev.codesoapbox.backity.testing.time.config.ResetClockTestExecutionListener;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +14,6 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -57,9 +57,16 @@ import java.lang.annotation.Target;
         ),
         useDefaultFilters = false
 )
-@MockitoBean(types = {
-        DomainEventPublisher.class
-})
+@MockBeansMatching(
+        @ComponentScan(
+                basePackageClasses = BackityApplication.class,
+                includeFilters = @ComponentScan.Filter(
+                        type = FilterType.ANNOTATION,
+                        classes = SpringApplicationEventPublisherBeanConfiguration.class
+                ),
+                useDefaultFilters = false
+        )
+)
 @ExtendWith(EntityAuditControlExtension.class)
 public @interface JpaRepositoryTest {
 }

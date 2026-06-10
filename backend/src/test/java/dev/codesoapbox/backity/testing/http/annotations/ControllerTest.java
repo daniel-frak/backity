@@ -1,19 +1,9 @@
 package dev.codesoapbox.backity.testing.http.annotations;
 
 import dev.codesoapbox.backity.BackityApplication;
-import dev.codesoapbox.backity.core.backuptarget.application.*;
-import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoveryService;
-import dev.codesoapbox.backity.core.discovery.application.usecases.GetGameContentDiscoveryOverviewsUseCase;
-import dev.codesoapbox.backity.core.discovery.application.usecases.StartGameContentDiscoveryUseCase;
-import dev.codesoapbox.backity.core.discovery.application.usecases.StopGameContentDiscoveryUseCase;
-import dev.codesoapbox.backity.core.filecopy.application.usecases.*;
-import dev.codesoapbox.backity.core.game.application.usecases.GetGamesWithFilesUseCase;
-import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileRepository;
-import dev.codesoapbox.backity.core.storagesolution.application.GetStorageSolutionStatusesUseCase;
-import dev.codesoapbox.backity.gameproviders.gog.application.usecases.*;
-import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
-import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.ControllerBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseBeanConfiguration;
+import dev.codesoapbox.backity.testing.mocking.MockBeansMatching;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import dev.codesoapbox.backity.testing.time.config.ResetClockTestExecutionListener;
 import jakarta.persistence.EntityManager;
@@ -58,39 +48,18 @@ import java.lang.annotation.*;
         ),
         useDefaultFilters = false
 )
+@MockBeansMatching(
+        @ComponentScan(
+                basePackageClasses = BackityApplication.class,
+                includeFilters = @ComponentScan.Filter(
+                        type = FilterType.ANNOTATION,
+                        classes = UseCaseBeanConfiguration.class
+                ),
+                useDefaultFilters = false
+        )
+)
 @MockitoBean(types = {
-        // Common
-        EntityManager.class,
-
-        // Specific
-        SourceFileRepository.class,
-        GameContentDiscoveryService.class,
-        GogAuthService.class,
-        GogLibraryService.class,
-
-        // Use cases
-        GetGamesWithFilesUseCase.class,
-        StartGameContentDiscoveryUseCase.class,
-        StopGameContentDiscoveryUseCase.class,
-        GetGameContentDiscoveryOverviewsUseCase.class,
-        EnqueueFileCopyUseCase.class,
-        CancelFileCopyUseCase.class,
-        DeleteFileCopyUseCase.class,
-        DownloadFileCopyUseCase.class,
-        GetFileCopyQueueUseCase.class,
-        GetGogConfigUseCase.class,
-        AuthenticateGogUseCase.class,
-        CheckGogAuthenticationUseCase.class,
-        RefreshGogAccessTokenUseCase.class,
-        LogOutOfGogUseCase.class,
-        GetGogLibrarySizeUseCase.class,
-        GetGogGameDetailsUseCase.class,
-        GetBackupTargetsUseCase.class,
-        GetLockedBackupTargetIdsUseCase.class,
-        AddBackupTargetUseCase.class,
-        EditBackupTargetUseCase.class,
-        DeleteBackupTargetUseCase.class,
-        GetStorageSolutionStatusesUseCase.class
+        EntityManager.class // Needed by H2DbController
 })
 public @interface ControllerTest {
 }
