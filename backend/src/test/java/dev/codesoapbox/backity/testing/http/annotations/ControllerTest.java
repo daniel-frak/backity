@@ -6,13 +6,11 @@ import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseBeanCo
 import dev.codesoapbox.backity.testing.mocking.MockBeansMatching;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import dev.codesoapbox.backity.testing.time.config.ResetClockTestExecutionListener;
-import jakarta.persistence.EntityManager;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.lang.annotation.*;
 
@@ -58,8 +56,5 @@ import java.lang.annotation.*;
                 useDefaultFilters = false
         )
 )
-@MockitoBean(types = {
-        EntityManager.class // Needed by H2DbController
-})
 public @interface ControllerTest {
 }
