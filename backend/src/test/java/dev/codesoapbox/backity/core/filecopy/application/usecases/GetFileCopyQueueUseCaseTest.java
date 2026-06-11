@@ -20,6 +20,7 @@ import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -42,14 +43,14 @@ class GetFileCopyQueueUseCaseTest {
     @Test
     void shouldGetFileCopyQueue() {
         var pagination = new Pagination(0, 10);
-        Page<FileCopyWithContext> fileCopyWithContextPage = mockFileCopyPageExists(pagination);
+        Page<FileCopyWithContext> fileCopyWithContextPage = fileCopyPageExists(pagination);
 
         Page<FileCopyWithContext> result = useCase.execute(pagination);
 
         assertThat(result).isEqualTo(fileCopyWithContextPage);
     }
 
-    private Page<FileCopyWithContext> mockFileCopyPageExists(Pagination pagination) {
+    private Page<FileCopyWithContext> fileCopyPageExists(Pagination pagination) {
         Page<FileCopy> fileCopyPage = TestPage.of(List.of(TestFileCopy.enqueued()), pagination);
         when(fileCopyRepository.findAllInProgressOrEnqueued(pagination))
                 .thenReturn(fileCopyPage);
@@ -77,12 +78,17 @@ class GetFileCopyQueueUseCaseTest {
     @Test
     void shouldNotUseFileCopyWithContextFactoryGivenNoFileCopiesInQueue() {
         var pagination = new Pagination(0, 10);
-        when(fileCopyRepository.findAllInProgressOrEnqueued(pagination))
-                .thenReturn(TestPage.of(emptyList(), pagination));
+        noFileCopiesExist();
 
         Page<FileCopyWithContext> result = useCase.execute(pagination);
 
         assertThat(result).isNotNull();
         verifyNoInteractions(fileCopyWithContextFactory);
+    }
+
+    private void noFileCopiesExist() {
+        when(fileCopyRepository.findAllInProgressOrEnqueued(any()))
+                .thenAnswer(inv ->
+                        TestPage.of(emptyList(), inv.getArgument(0, Pagination.class)));
     }
 }

@@ -8,7 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -35,14 +36,17 @@ class CancelFileCopyControllerIT {
     }
 
     @Test
-    void shouldReturnNotFoundForNonExistentFile() throws Exception {
+    void shouldReturnNotFoundForNonExistentFileCopy() throws Exception {
         var stringUuid = "6df888e8-90b9-4df5-a237-0cba422c0310";
-        var fileCopyId = new FileCopyId(stringUuid);
-
-        doThrow(new FileCopyNotFoundException(fileCopyId))
-                .when(useCase).execute(fileCopyId);
+        noFileCopiesExist();
 
         mockMvc.perform(delete("/api/" + FileCopyQueueRestResource.RESOURCE_URL + "/" + stringUuid))
                 .andExpect(status().isNotFound());
+    }
+
+    private void noFileCopiesExist() {
+        doAnswer(inv -> {
+            throw new FileCopyNotFoundException(inv.getArgument(0));
+        }).when(useCase).execute(any());
     }
 }

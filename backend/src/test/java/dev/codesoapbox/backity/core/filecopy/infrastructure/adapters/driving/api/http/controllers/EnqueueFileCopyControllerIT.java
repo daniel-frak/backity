@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -59,9 +60,7 @@ class EnqueueFileCopyControllerIT {
         var backupTargetUuid = "224440e2-6e5c-4f24-94ac-3222587652f7";
         var sourceFileId = new SourceFileId(sourceFileUuid);
         var backupTargetId = new BackupTargetId(backupTargetUuid);
-        var fileCopyNaturalId = new FileCopyNaturalId(sourceFileId, backupTargetId);
-        doThrow(new FileCopyNotFoundException(sourceFileId, backupTargetId))
-                .when(useCase).execute(fileCopyNaturalId);
+        noFileCopiesExist(sourceFileId, backupTargetId);
 
         mockMvc.perform(post("/api/" + FileCopyQueueRestResource.RESOURCE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -80,5 +79,10 @@ class EnqueueFileCopyControllerIT {
                 .contains("Could not enqueue file copy.")
                 .contains(sourceFileUuid)
                 .contains(backupTargetUuid);
+    }
+
+    private void noFileCopiesExist(SourceFileId sourceFileId, BackupTargetId backupTargetId) {
+        doThrow(new FileCopyNotFoundException(sourceFileId, backupTargetId))
+                .when(useCase).execute(any());
     }
 }

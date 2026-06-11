@@ -6,11 +6,14 @@ import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 
 @Slf4j
 @RequiredArgsConstructor
 public class GogAuthSpringService implements GogAuthService {
+
+    private final Clock clock;
 
     private String accessToken;
     private String refreshToken;
@@ -21,7 +24,7 @@ public class GogAuthSpringService implements GogAuthService {
 
     @Override
     public boolean isAuthenticated() {
-        return accessToken != null && expirationTime.isAfter(LocalDateTime.now());
+        return accessToken != null && expirationTime.isAfter(LocalDateTime.now(clock));
     }
 
     @Override
@@ -34,7 +37,7 @@ public class GogAuthSpringService implements GogAuthService {
         this.accessToken = response.getAccessToken();
         this.refreshToken = response.getRefreshToken();
         this.expiresInSeconds = response.getExpiresIn();
-        this.expirationTime = LocalDateTime.now().plusSeconds(response.getExpiresIn());
+        this.expirationTime = LocalDateTime.now(clock).plusSeconds(response.getExpiresIn());
     }
 
     @Override
@@ -50,14 +53,26 @@ public class GogAuthSpringService implements GogAuthService {
 
     @Override
     public String getAccessToken() {
+        validateIsAuthenticated();
+        validateNotExpired();
+
+        return accessToken;
+    }
+
+    private void validateIsAuthenticated() {
         if (accessToken == null) {
             throw new GogAuthException("You must authenticate before using the GOG API!");
         }
-        if (expirationTime.isBefore(LocalDateTime.now())) {
+    }
+
+    private void validateNotExpired() {
+        if (hasExpired(expirationTime)) {
             throw new GogAuthException("Access token expired!");
         }
+    }
 
-        return accessToken;
+    private boolean hasExpired(LocalDateTime expirationTime) {
+        return !expirationTime.isAfter(LocalDateTime.now(clock));
     }
 
     @Override
@@ -78,11 +93,15 @@ public class GogAuthSpringService implements GogAuthService {
             return;
         }
 
-        // Refresh token when it's halfway to expiring
-        if (expirationTime.minusSeconds(expiresInSeconds / 2).isBefore(LocalDateTime.now())) {
+        if (refreshTokenIsAtLeastHalfwayToExpiring()) {
             log.info("Refreshing access token...");
             refresh();
         }
+    }
+
+    private boolean refreshTokenIsAtLeastHalfwayToExpiring() {
+        LocalDateTime halfwayToActualExpiration = expirationTime.minusSeconds(expiresInSeconds / 2);
+        return hasExpired(halfwayToActualExpiration);
     }
 
     @Override

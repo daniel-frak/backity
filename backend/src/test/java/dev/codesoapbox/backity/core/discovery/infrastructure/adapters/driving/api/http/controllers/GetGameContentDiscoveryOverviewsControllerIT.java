@@ -35,8 +35,7 @@ class GetGameContentDiscoveryOverviewsControllerIT {
                 TestGameContentDiscoveryProgress.twentyFivePercentGog(),
                 TestGameContentDiscoveryResult.gog()
         );
-        when(useCase.execute())
-                .thenReturn(List.of(overview));
+        exists(overview);
         var expectedJson = """
                 [{
                   "gameProviderId": "TestGameProviderId",
@@ -59,5 +58,10 @@ class GetGameContentDiscoveryOverviewsControllerIT {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
+    }
+
+    private void exists(GameContentDiscoveryOverview overview) {
+        when(useCase.execute())
+                .thenReturn(List.of(overview));
     }
 }

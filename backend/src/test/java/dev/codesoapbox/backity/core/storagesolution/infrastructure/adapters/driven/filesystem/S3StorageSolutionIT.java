@@ -143,13 +143,10 @@ class S3StorageSolutionIT {
                     .isInstanceOf(FileNotFoundException.class);
         }
 
-        @SuppressWarnings("unchecked")
         @Test
         void shouldThrowGivenException() {
-            S3Client s3Client = mock(S3Client.class);
             var expectedCause = new RuntimeException("Test exception");
-            when(s3Client.deleteObject(any(Consumer.class)))
-                    .thenThrow(expectedCause);
+            S3Client s3Client = s3ClientThrowingOnDeletion(expectedCause);
             s3StorageSolution = new S3StorageSolution(s3Client, BUCKET_NAME, BUFFER_SIZE_IN_BYTES);
             var filePath = new FilePath(S3_FILE_1_KEY);
 
@@ -157,6 +154,14 @@ class S3StorageSolutionIT {
                     .isInstanceOf(FileCouldNotBeDeletedException.class)
                     .hasMessageContaining(S3_FILE_1_KEY)
                     .hasCause(expectedCause);
+        }
+
+        @SuppressWarnings("unchecked")
+        private S3Client s3ClientThrowingOnDeletion(RuntimeException expectedCause) {
+            S3Client s3Client = mock(S3Client.class);
+            when(s3Client.deleteObject(any(Consumer.class)))
+                    .thenThrow(expectedCause);
+            return s3Client;
         }
 
         @Test

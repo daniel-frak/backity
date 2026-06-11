@@ -28,8 +28,7 @@ class GetBackupTargetsControllerIT {
     @Test
     void shouldGetBackupTargets() throws Exception {
         BackupTarget backupTarget = TestBackupTarget.localFolder();
-        when(useCase.execute())
-                .thenReturn(List.of(backupTarget));
+        useCaseReturns(backupTarget);
 
         var expectedJson = """
                 [
@@ -45,5 +44,10 @@ class GetBackupTargetsControllerIT {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
+    }
+
+    private void useCaseReturns(BackupTarget backupTarget) {
+        when(useCase.execute())
+                .thenReturn(List.of(backupTarget));
     }
 }

@@ -27,11 +27,11 @@ class GetStorageSolutionStatusesControllerIT {
 
     @Test
     void shouldGetStorageSolutionStatuses() throws Exception {
-        when(useCase.execute())
-                .thenReturn(Map.of(
-                        new StorageSolutionId("LOCAL_FILE_SYSTEM"), StorageSolutionStatus.CONNECTED,
-                        new StorageSolutionId("S3"), StorageSolutionStatus.NOT_CONNECTED
-                ));
+        Map<StorageSolutionId, StorageSolutionStatus> statuses = Map.of(
+                new StorageSolutionId("LOCAL_FILE_SYSTEM"), StorageSolutionStatus.CONNECTED,
+                new StorageSolutionId("S3"), StorageSolutionStatus.NOT_CONNECTED
+        );
+        statusesExist(statuses);
         var expectedJson = """
                 {
                   "statuses": {
@@ -45,5 +45,10 @@ class GetStorageSolutionStatusesControllerIT {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
+    }
+
+    private void statusesExist(Map<StorageSolutionId, StorageSolutionStatus> statuses) {
+        when(useCase.execute())
+                .thenReturn(statuses);
     }
 }

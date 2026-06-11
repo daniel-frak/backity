@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.drivin
 
 import dev.codesoapbox.backity.core.backuptarget.application.GetLockedBackupTargetIdsUseCase;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
+import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
@@ -28,8 +29,7 @@ class GetLockedBackupTargetIdsControllerIT {
     @Test
     void shouldGetLockedBackupTargetIds() throws Exception {
         BackupTarget backupTarget = TestBackupTarget.localFolder();
-        when(useCase.execute())
-                .thenReturn(List.of(backupTarget.getId()));
+        useCaseReturns(List.of(backupTarget.getId()));
 
         var expectedJson = """
                 [
@@ -40,5 +40,10 @@ class GetLockedBackupTargetIdsControllerIT {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
+    }
+
+    private void useCaseReturns(List<BackupTargetId> backupTargetIds) {
+        when(useCase.execute())
+                .thenReturn(backupTargetIds);
     }
 }

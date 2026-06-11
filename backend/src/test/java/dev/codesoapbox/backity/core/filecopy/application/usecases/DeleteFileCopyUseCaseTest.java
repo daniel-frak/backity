@@ -39,9 +39,9 @@ class DeleteFileCopyUseCaseTest {
 
     @Test
     void shouldDeleteFileCopyGivenSourceFileStatusIsStoredIntegrityUnknown() {
-        FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
+        FileCopy fileCopy = storedUnverifiedFileCopyExists();
         FilePath filePath = fileCopy.getFilePath();
-        FakeUnixStorageSolution storageSolution = mockStorageSolutionExists(fileCopy);
+        FakeUnixStorageSolution storageSolution = storageSolutionExists(fileCopy);
         storageSolution.createFile(filePath);
 
         useCase.execute(fileCopy.getId());
@@ -49,26 +49,26 @@ class DeleteFileCopyUseCaseTest {
         assertThat(storageSolution.fileExists(filePath)).isFalse();
     }
 
-    private FileCopy mockStoredUnverifiedFileCopyExists() {
+    private FileCopy storedUnverifiedFileCopyExists() {
         FileCopy fileCopy = TestFileCopy.storedIntegrityUnknown();
         when(fileCopyRepository.getById(fileCopy.getId()))
                 .thenReturn(fileCopy);
         return fileCopy;
     }
 
-    private FakeUnixStorageSolution mockStorageSolutionExists(FileCopy fileCopy) {
-        BackupTarget backupTarget = mockBackupTargetExists(fileCopy);
-        return mockStorageSolutionExists(backupTarget);
+    private FakeUnixStorageSolution storageSolutionExists(FileCopy fileCopy) {
+        BackupTarget backupTarget = backupTargetExists(fileCopy);
+        return storageSolutionExists(backupTarget);
     }
 
-    private FakeUnixStorageSolution mockStorageSolutionExists(BackupTarget backupTarget) {
+    private FakeUnixStorageSolution storageSolutionExists(BackupTarget backupTarget) {
         var storageSolution = new FakeUnixStorageSolution();
         lenient().when(storageSolutionRepository.getById(backupTarget.getStorageSolutionId()))
                 .thenReturn(storageSolution);
         return storageSolution;
     }
 
-    private BackupTarget mockBackupTargetExists(FileCopy fileCopy) {
+    private BackupTarget backupTargetExists(FileCopy fileCopy) {
         BackupTarget backupTarget = TestBackupTarget.localFolder();
         lenient().when(backupTargetRepository.getById(fileCopy.getNaturalId().backupTargetId()))
                 .thenReturn(backupTarget);
@@ -77,8 +77,8 @@ class DeleteFileCopyUseCaseTest {
 
     @Test
     void shouldChangeStatusOfFileCopyGivenDeletingFile() {
-        FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
-        mockStorageSolutionExists(fileCopy);
+        FileCopy fileCopy = storedUnverifiedFileCopyExists();
+        storageSolutionExists(fileCopy);
 
         useCase.execute(fileCopy.getId());
 
@@ -88,8 +88,8 @@ class DeleteFileCopyUseCaseTest {
 
     @Test
     void shouldNotChangeStatusOfSourceFileGivenFileDeletionFailed() {
-        FileCopy fileCopy = mockStoredUnverifiedFileCopyExists();
-        FakeUnixStorageSolution storageSolution = mockStorageSolutionExists(fileCopy);
+        FileCopy fileCopy = storedUnverifiedFileCopyExists();
+        FakeUnixStorageSolution storageSolution = storageSolutionExists(fileCopy);
         var exception = new RuntimeException("test");
         storageSolution.setShouldThrowOnFileDeletion(exception);
 
@@ -101,8 +101,8 @@ class DeleteFileCopyUseCaseTest {
     }
 
     @Test
-    void shouldThrowGivenSourceFilestatusIsNotStored() {
-        FileCopy fileCopy = mockEnqueuedFileCopyExists();
+    void shouldThrowGivenSourceFileStatusIsNotStored() {
+        FileCopy fileCopy = enqueuedFileCopyExists();
         FileCopyId fileCopyId = fileCopy.getId();
 
         assertThatThrownBy(() -> useCase.execute(fileCopyId))
@@ -110,7 +110,7 @@ class DeleteFileCopyUseCaseTest {
                 .hasMessageContaining(fileCopyId.toString());
     }
 
-    private FileCopy mockEnqueuedFileCopyExists() {
+    private FileCopy enqueuedFileCopyExists() {
         FileCopy fileCopy = TestFileCopy.enqueued();
         when(fileCopyRepository.getById(fileCopy.getId()))
                 .thenReturn(fileCopy);

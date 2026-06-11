@@ -61,10 +61,7 @@ class LowercaseEnumFinderTest {
 
         @Test
         void shouldReturnEnumsAnnotatedWithLowercaseApiEnum() {
-            when(applicationContext.getBeanNamesForAnnotation(RestController.class))
-                    .thenReturn(new String[]{"testController"});
-            doReturn(TestController.class)
-                    .when(applicationContext).getType("testController");
+            controllerIsRegisteredInApplicationContext();
 
             List<Class<?>> result = enumFinder.getAnnotatedControllerEnums();
 
@@ -72,5 +69,12 @@ class LowercaseEnumFinderTest {
                     .hasSize(2)
                     .hasSameElementsAs(Set.of(TestEnum1.class, TestEnum3.class));
         }
+    }
+
+    private void controllerIsRegisteredInApplicationContext() {
+        when(applicationContext.getBeanNamesForAnnotation(RestController.class))
+                .thenReturn(new String[]{"testController"});
+        doReturn(TestController.class)
+                .when(applicationContext).getType("testController");
     }
 }

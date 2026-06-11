@@ -37,8 +37,8 @@ public class GogServiceBeanConfig {
     }
 
     @Bean
-    GogAuthSpringService gogAuthService(GogAuthClient gogAuthClient) {
-        return new GogAuthSpringService(gogAuthClient);
+    GogAuthSpringService gogAuthService(Clock clock, GogAuthClient gogAuthClient) {
+        return new GogAuthSpringService(clock, gogAuthClient);
     }
 
     @Bean

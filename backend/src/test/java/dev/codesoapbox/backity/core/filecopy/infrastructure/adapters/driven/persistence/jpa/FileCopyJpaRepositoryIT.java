@@ -292,6 +292,16 @@ abstract class FileCopyJpaRepositoryIT {
         FileCopy newFileCopy = TestFileCopy.trackedBuilder()
                 .naturalId(naturalId)
                 .build();
+        aggregateIsCreatedConcurrently(mockSpringRepository, naturalId, expectedExisting);
+
+        FileCopy result = repository.getByNaturalIdOrCreate(naturalId, () -> newFileCopy);
+
+        assertThat(result)
+                .usingRecursiveComparison()
+                .isEqualTo(expectedExisting);
+    }
+
+    private void aggregateIsCreatedConcurrently(FileCopySpringRepository mockSpringRepository, FileCopyNaturalId naturalId, FileCopy expectedExisting) {
         when(mockSpringRepository.findByNaturalIdSourceFileIdAndNaturalIdBackupTargetId(
                 naturalId.sourceFileId().value(), naturalId.backupTargetId().value()))
                 // Nothing in DB during initial lookup:
@@ -303,12 +313,6 @@ abstract class FileCopyJpaRepositoryIT {
                 naturalId.sourceFileId().value(), naturalId.backupTargetId().value()))
                 // Someone saved before second lookup:
                 .thenReturn(entityMapper.toEntity(expectedExisting));
-
-        FileCopy result = repository.getByNaturalIdOrCreate(naturalId, () -> newFileCopy);
-
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(expectedExisting);
     }
 
     @Test

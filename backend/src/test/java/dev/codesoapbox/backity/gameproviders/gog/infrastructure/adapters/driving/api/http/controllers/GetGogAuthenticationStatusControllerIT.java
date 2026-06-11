@@ -23,12 +23,16 @@ class GetGogAuthenticationStatusControllerIT {
 
     @Test
     void shouldCheckAuthentication() throws Exception {
-        when(useCase.execute())
-                .thenReturn(true);
+        isAuthenticated();
 
         mockMvc.perform(get("/api/" + GogAuthRestResource.RESOURCE_URL))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("true"));
+    }
+
+    private void isAuthenticated() {
+        when(useCase.execute())
+                .thenReturn(true);
     }
 }

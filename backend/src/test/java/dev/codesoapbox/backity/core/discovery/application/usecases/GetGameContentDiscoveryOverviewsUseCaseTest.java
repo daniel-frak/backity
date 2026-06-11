@@ -29,7 +29,7 @@ class GetGameContentDiscoveryOverviewsUseCaseTest {
 
     @Test
     void shouldGetDiscoveryOverviews() {
-        List<GameContentDiscoveryOverview> overviews = mockGameContentDiscoveryOverviews();
+        List<GameContentDiscoveryOverview> overviews = trackerHasSomeDiscoveryOverviews();
 
         List<GameContentDiscoveryOverview> result = useCase.execute();
 
@@ -37,7 +37,7 @@ class GetGameContentDiscoveryOverviewsUseCaseTest {
                 .isEqualTo(overviews);
     }
 
-    private List<GameContentDiscoveryOverview> mockGameContentDiscoveryOverviews() {
+    private List<GameContentDiscoveryOverview> trackerHasSomeDiscoveryOverviews() {
         var gameProviderId = new GameProviderId("TestGameProviderId");
         List<GameContentDiscoveryOverview> overviews =
                 List.of(new GameContentDiscoveryOverview(

@@ -31,8 +31,7 @@ class RefreshGogAccessTokenControllerIT {
                     "refresh_token": "%s"
                 }
                 """.formatted(accessToken);
-        when(useCase.execute(refreshToken))
-                .thenReturn(accessToken);
+        useCaseRefreshesToken(refreshToken, accessToken);
 
         mockMvc.perform(put("/api/" + GogAuthRestResource.RESOURCE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -44,5 +43,10 @@ class RefreshGogAccessTokenControllerIT {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
+    }
+
+    private void useCaseRefreshesToken(String refreshToken, String accessToken) {
+        when(useCase.execute(refreshToken))
+                .thenReturn(accessToken);
     }
 }

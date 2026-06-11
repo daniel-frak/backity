@@ -33,7 +33,7 @@ class DownloadFileCopyControllerIT {
         var fileCopyId = new FileCopyId(stringUuid);
         byte[] fileContent = "Test file content".getBytes();
         @SuppressWarnings("resource")
-        FileResource fileResource = mockFileResourceExists(fileContent, fileCopyId);
+        FileResource fileResource = fileResourceExists(fileContent, fileCopyId);
 
         mockMvc.perform(get("/api/" + FileCopiesRestResource.RESOURCE_URL + "/" + stringUuid)
                         .accept(MediaType.APPLICATION_OCTET_STREAM))
@@ -47,7 +47,7 @@ class DownloadFileCopyControllerIT {
                         "attachment; filename=\"" + fileResource.fileName() + "\""));
     }
 
-    private FileResource mockFileResourceExists(byte[] fileContent, FileCopyId fileCopyId)
+    private FileResource fileResourceExists(byte[] fileContent, FileCopyId fileCopyId)
             throws FileNotFoundException {
         InputStream inputStream = new ByteArrayInputStream(fileContent);
         FileResource fileResource = new FileResource(inputStream, fileContent.length, "test_file.exe");
@@ -59,24 +59,23 @@ class DownloadFileCopyControllerIT {
     }
 
     @Test
-    void shouldReturnNotFoundForNonExistentFile() throws Exception {
+    void shouldReturnNotFoundForNonExistentFileCopy() throws Exception {
         var stringUuid = "6df888e8-90b9-4df5-a237-0cba422c0310";
-        var fileCopyId = new FileCopyId(stringUuid);
-
-        when(useCase.execute(fileCopyId))
-                .thenThrow(new FileNotFoundException("File not found"));
+        noFileCopiesExist();
 
         mockMvc.perform(get("/api/" + FileCopiesRestResource.RESOURCE_URL + "/" + stringUuid))
                 .andExpect(status().isNotFound());
     }
 
+    private void noFileCopiesExist() throws FileNotFoundException {
+        when(useCase.execute(any()))
+                .thenThrow(new FileNotFoundException("File not found"));
+    }
+
     @Test
     void shouldReturnInternalServerErrorOnUseCaseException() throws Exception {
         var stringUuid = "6df888e8-90b9-4df5-a237-0cba422c0310";
-        var fileCopyId = new FileCopyId(stringUuid);
-
-        when(useCase.execute(fileCopyId))
-                .thenThrow(new RuntimeException("Something went wrong"));
+        useCaseThrows();
 
         mockMvc.perform(get("/api/" + FileCopiesRestResource.RESOURCE_URL + "/" + stringUuid))
                 .andExpect(status().isInternalServerError());
@@ -86,14 +85,14 @@ class DownloadFileCopyControllerIT {
     void shouldCloseResourceAndRethrowGivenRuntimeExceptionAfterAcquiringResource() throws Exception {
         var stringUuid = "6df888e8-90b9-4df5-a237-0cba422c0310";
         var fileCopyId = new FileCopyId(stringUuid);
-        FileResource fileResource = mockThrowingFileResourceExists(fileCopyId);
+        FileResource fileResource = throwingFileResourceExists(fileCopyId);
 
         mockMvc.perform(get("/api/" + FileCopiesRestResource.RESOURCE_URL + "/" + stringUuid))
                 .andExpect(status().isInternalServerError());
         verify(fileResource).close();
     }
 
-    private FileResource mockThrowingFileResourceExists(FileCopyId fileCopyId) throws FileNotFoundException {
+    private FileResource throwingFileResourceExists(FileCopyId fileCopyId) throws FileNotFoundException {
         FileResource fileResource = mock(FileResource.class);
         when(useCase.execute(fileCopyId))
                 .thenReturn(fileResource);
@@ -103,14 +102,8 @@ class DownloadFileCopyControllerIT {
         return fileResource;
     }
 
-    @Test
-    void shouldRethrowGivenRuntimeExceptionDuringAcquiringResource() throws Exception {
-        var stringUuid = "6df888e8-90b9-4df5-a237-0cba422c0310";
-        var fileCopyId = new FileCopyId(stringUuid);
-        when(useCase.execute(fileCopyId))
+    private void useCaseThrows() throws FileNotFoundException {
+        when(useCase.execute(any()))
                 .thenThrow(new RuntimeException("Test exception"));
-
-        mockMvc.perform(get("/api/" + FileCopiesRestResource.RESOURCE_URL + "/" + stringUuid))
-                .andExpect(status().isInternalServerError());
     }
 }

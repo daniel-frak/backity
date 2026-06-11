@@ -31,8 +31,7 @@ class GetStorageSolutionStatusesUseCaseTest {
 
     @Test
     void shouldGetStorageSolutionStatuses() {
-        when(storageSolutionRepository.findAll())
-                .thenReturn(List.of(new FakeUnixStorageSolution()));
+        storageSolutionRepositoryContainsFakeUnixSolution();
 
         Map<StorageSolutionId, StorageSolutionStatus> result = useCase.execute();
 
@@ -40,5 +39,10 @@ class GetStorageSolutionStatusesUseCaseTest {
                 FakeUnixStorageSolution.DEFAULT_ID, StorageSolutionStatus.CONNECTED
         );
         assertThat(result).isEqualTo(expectedResult);
+    }
+
+    private void storageSolutionRepositoryContainsFakeUnixSolution() {
+        when(storageSolutionRepository.findAll())
+                .thenReturn(List.of(new FakeUnixStorageSolution()));
     }
 }

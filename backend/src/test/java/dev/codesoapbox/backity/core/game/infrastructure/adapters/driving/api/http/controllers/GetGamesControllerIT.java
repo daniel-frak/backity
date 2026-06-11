@@ -69,8 +69,7 @@ class GetGamesControllerIT {
                                 .build())
                 )
         ), pagination);
-        when(getGamesWithFilesUseCase.execute(pagination, expectedFilter))
-                .thenReturn(gameWithFileCopiesPage);
+        gamesWithFileCopiesExist(pagination, expectedFilter, gameWithFileCopiesPage);
 
         mockMvc.perform(get("/api/games?page=0&size=2"))
                 .andExpect(status().isOk())
@@ -186,11 +185,16 @@ class GetGamesControllerIT {
                                 .build())
                 )
         ), pagination);
-        when(getGamesWithFilesUseCase.execute(pagination, expectedFilter))
-                .thenReturn(gameWithFileCopiesPage);
+        gamesWithFileCopiesExist(pagination, expectedFilter, gameWithFileCopiesPage);
 
         mockMvc.perform(get("/api/games?page=0&size=2&query=someSearchQuery&file-copy-status=ENQUEUED"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJsonResponse()));
+    }
+
+    private void gamesWithFileCopiesExist(Pagination pagination, GameWithFileCopiesSearchFilter expectedFilter,
+                                          Page<GameWithFileCopiesAndReplicationProgresses> gameWithFileCopiesPage) {
+        when(getGamesWithFilesUseCase.execute(pagination, expectedFilter))
+                .thenReturn(gameWithFileCopiesPage);
     }
 }

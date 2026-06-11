@@ -24,8 +24,8 @@ class GetGogConfigControllerIT {
 
     @Test
     void shouldGetGogConfig() throws Exception {
-        when(useCase.execute())
-                .thenReturn(new GogConfigInfo("someUserAuthUrl"));
+        GogConfigInfo gogConfigInfo = new GogConfigInfo("someUserAuthUrl");
+        exists(gogConfigInfo);
 
         String expectedResponseJson = """
                 {
@@ -36,5 +36,10 @@ class GetGogConfigControllerIT {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedResponseJson));
+    }
+
+    private void exists(GogConfigInfo gogConfigInfo) {
+        when(useCase.execute())
+                .thenReturn(gogConfigInfo);
     }
 }

@@ -24,12 +24,16 @@ class GetGogLibrarySizeControllerIT {
     @Test
     void shouldGetLibrarySize() throws Exception {
         String expectedSize = "1GB";
-        when(useCase.execute())
-                .thenReturn(expectedSize);
+        librarySizeIs(expectedSize);
 
         mockMvc.perform(get("/api/gog/library/size"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(expectedSize));
+    }
+
+    private void librarySizeIs(String expectedSize) {
+        when(useCase.execute())
+                .thenReturn(expectedSize);
     }
 }

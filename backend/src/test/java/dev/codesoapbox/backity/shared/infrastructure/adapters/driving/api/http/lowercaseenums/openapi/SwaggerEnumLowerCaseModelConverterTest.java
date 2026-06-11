@@ -107,11 +107,15 @@ class SwaggerEnumLowerCaseModelConverterTest {
     }
 
     private void mockDelegation(AnnotatedType annotatedType, Schema<?> expectedResult) {
-        when(iterator.hasNext()).thenReturn(true);
         ModelConverter nextModelConverterMock = mock(ModelConverter.class);
-        when(iterator.next()).thenReturn(nextModelConverterMock);
+        nextIteratorValueIs(nextModelConverterMock);
         when(nextModelConverterMock.resolve(annotatedType, modelConverterContext, iterator))
                 .thenReturn(expectedResult);
+    }
+
+    private void nextIteratorValueIs(ModelConverter nextModelConverterMock) {
+        when(iterator.hasNext()).thenReturn(true);
+        when(iterator.next()).thenReturn(nextModelConverterMock);
     }
 
     @Test
@@ -133,13 +137,16 @@ class SwaggerEnumLowerCaseModelConverterTest {
     void shouldReturnNullGivenIteratorEmpty() {
         AnnotatedType annotatedType = getAnnotatedTypeFromArgumentAsSimpleType(
                 "testMethodWithoutEnumWithoutAnnotation", Object.class);
-
-        when(iterator.hasNext()).thenReturn(false);
+        iteratorIsEmpty();
 
         Schema<?> result = modelConverter.resolve(annotatedType, modelConverterContext, iterator);
 
         assertThat(result)
                 .isNull();
+    }
+
+    private void iteratorIsEmpty() {
+        when(iterator.hasNext()).thenReturn(false);
     }
 
     @LowercaseApiEnum

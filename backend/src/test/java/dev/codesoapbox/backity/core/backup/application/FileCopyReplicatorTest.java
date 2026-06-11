@@ -106,7 +106,7 @@ class FileCopyReplicatorTest {
         void shouldReturnTrueGivenConnected() {
             SourceFile sourceFile = TestSourceFile.gog();
             gameProviderExistsFor(sourceFile);
-            mockGameProviderIsConnected();
+            gameProviderIsConnected();
             var fileCopyReplicator = new FileCopyReplicator(
                     List.of(gameProviderFileBackupService), outputStreamProgressTrackerFactory, storageSolutionWriteService);
 
@@ -115,7 +115,7 @@ class FileCopyReplicatorTest {
             assertThat(result).isTrue();
         }
 
-        private void mockGameProviderIsConnected() {
+        private void gameProviderIsConnected() {
             when(gameProviderFileBackupService.isConnected())
                     .thenReturn(true);
         }
