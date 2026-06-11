@@ -41,20 +41,20 @@ class CancelFileCopyUseCaseTest {
 
     @Test
     void shouldDoNothingGivenFileCopyNotEnqueuedAndNotInProgress() {
-        FileCopy fileCopy = mockTrackedFileCopyExists();
+        FileCopy fileCopy = trackedFileCopyExists();
 
         useCase.execute(fileCopy.getId());
         verifyNoMoreInteractions(fileCopyRepository, storageSolutionWriteService);
     }
 
-    private FileCopy mockTrackedFileCopyExists() {
+    private FileCopy trackedFileCopyExists() {
         FileCopy fileCopy = TestFileCopy.tracked();
-        return mockFileCopyExists(fileCopy);
+        return fileCopyExists(fileCopy);
     }
 
     @Test
     void shouldCancelEnqueuedFileCopy() {
-        FileCopy fileCopy = mockEnqueuedFileCopyExists();
+        FileCopy fileCopy = enqueuedFileCopyExists();
 
         useCase.execute(fileCopy.getId());
 
@@ -63,12 +63,12 @@ class CancelFileCopyUseCaseTest {
         verifyNoInteractions(storageSolutionWriteService);
     }
 
-    private FileCopy mockEnqueuedFileCopyExists() {
+    private FileCopy enqueuedFileCopyExists() {
         FileCopy fileCopy = TestFileCopy.enqueued();
-        return mockFileCopyExists(fileCopy);
+        return fileCopyExists(fileCopy);
     }
 
-    private FileCopy mockFileCopyExists(FileCopy fileCopy) {
+    private FileCopy fileCopyExists(FileCopy fileCopy) {
         when(fileCopyRepository.getById(fileCopy.getId()))
                 .thenReturn(fileCopy);
         return fileCopy;
@@ -82,8 +82,8 @@ class CancelFileCopyUseCaseTest {
 
     @Test
     void shouldCancelInProgressFileCopy() {
-        FileCopy fileCopy = mockInProgressFileCopyExists();
-        BackupTarget backupTarget = mockBackupTargetExistsFor(fileCopy);
+        FileCopy fileCopy = inProgressFileCopyExists();
+        BackupTarget backupTarget = backupTargetExistsFor(fileCopy);
         FilePath filePath = fileCopy.getFilePath();
 
         useCase.execute(fileCopy.getId());
@@ -93,15 +93,15 @@ class CancelFileCopyUseCaseTest {
         verifyNoMoreInteractions(fileCopyRepository);
     }
 
-    private BackupTarget mockBackupTargetExistsFor(FileCopy fileCopy) {
+    private BackupTarget backupTargetExistsFor(FileCopy fileCopy) {
         BackupTarget backupTarget = TestBackupTarget.localFolder();
         when(backupTargetRepository.getById(fileCopy.getNaturalId().backupTargetId()))
                 .thenReturn(backupTarget);
         return backupTarget;
     }
 
-    private FileCopy mockInProgressFileCopyExists() {
+    private FileCopy inProgressFileCopyExists() {
         FileCopy fileCopy = TestFileCopy.inProgress();
-        return mockFileCopyExists(fileCopy);
+        return fileCopyExists(fileCopy);
     }
 }

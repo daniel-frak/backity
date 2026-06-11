@@ -49,10 +49,12 @@ class RecoverInterruptedFileBackupUseCaseTest {
 
     @Test
     void shouldRecoverInterruptedFileBackup() {
-        FileCopy fileCopy = mockInProgressFileCopyExists();
-        FakeUnixStorageSolution storageSolution = mockStorageSolutionExists();
+        FileCopy fileCopy = TestFileCopy.inProgress();
+        FakeUnixStorageSolution storageSolution = aStorageSolution();
         storageSolution.createFile(fileCopy.getFilePath());
-        mockBackupTargetExists(fileCopy, storageSolution);
+        existsInProgress(fileCopy);
+        exists(storageSolution);
+        aBackupTargetExists(fileCopy, storageSolution);
         FilePath filePathToDelete = fileCopy.getFilePath();
 
         useCase.execute();
@@ -66,14 +68,12 @@ class RecoverInterruptedFileBackupUseCaseTest {
         assertThat(savedFileCopy.getFilePath()).isNull();
     }
 
-    private FileCopy mockInProgressFileCopyExists() {
-        FileCopy fileCopy = TestFileCopy.inProgress();
+    private void existsInProgress(FileCopy fileCopy) {
         when(fileCopyRepository.findAllInProgress())
                 .thenReturn(List.of(fileCopy));
-        return fileCopy;
     }
 
-    private void mockBackupTargetExists(FileCopy fileCopy, StorageSolution storageSolution) {
+    private void aBackupTargetExists(FileCopy fileCopy, StorageSolution storageSolution) {
         BackupTarget backupTarget = TestBackupTarget.localFolderBuilder()
                 .withId(fileCopy.getNaturalId().backupTargetId())
                 .withStorageSolutionId(storageSolution.getId())
@@ -82,12 +82,13 @@ class RecoverInterruptedFileBackupUseCaseTest {
                 .thenReturn(List.of(backupTarget));
     }
 
-    private FakeUnixStorageSolution mockStorageSolutionExists() {
-        var storageSolution = new FakeUnixStorageSolution();
+    private FakeUnixStorageSolution aStorageSolution() {
+        return new FakeUnixStorageSolution();
+    }
+
+    private void exists(FakeUnixStorageSolution storageSolution) {
         when(storageSolutionRepository.findAll())
                 .thenReturn(List.of(storageSolution));
-
-        return storageSolution;
     }
 
     private FileCopy getSavedFileCopy() {
@@ -98,9 +99,11 @@ class RecoverInterruptedFileBackupUseCaseTest {
 
     @Test
     void shouldPublishEventOnCompletion() {
-        FileCopy fileCopy = mockInProgressFileCopyExists();
-        FakeUnixStorageSolution storageSolution = mockStorageSolutionExists();
-        mockBackupTargetExists(fileCopy, storageSolution);
+        FileCopy fileCopy = TestFileCopy.inProgress();
+        existsInProgress(fileCopy);
+        FakeUnixStorageSolution storageSolution = aStorageSolution();
+        exists(storageSolution);
+        aBackupTargetExists(fileCopy, storageSolution);
 
         useCase.execute();
 

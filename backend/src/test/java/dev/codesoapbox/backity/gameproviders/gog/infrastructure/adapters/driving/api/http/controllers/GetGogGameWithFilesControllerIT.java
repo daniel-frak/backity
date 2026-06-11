@@ -61,9 +61,7 @@ class GetGogGameWithFilesControllerIT {
                 )),
                 "someChangelog"
         );
-
-        when(useCase.execute(gameId))
-                .thenReturn(Optional.of(gogGameDetails));
+        gameExists(gameId, gogGameDetails);
 
         mockMvc.perform(get("/api/gog/games/" + gameId))
                 .andDo(print())
@@ -71,15 +69,23 @@ class GetGogGameWithFilesControllerIT {
                 .andExpect(content().json(expectedResponse));
     }
 
+    private void gameExists(String gameId, GogGameWithFiles gogGameDetails) {
+        when(useCase.execute(gameId))
+                .thenReturn(Optional.of(gogGameDetails));
+    }
+
     @Test
     void shouldReturnHttp404GivenGameDetailsNotFound() throws Exception {
         var gameId = "someGameId";
-
-        when(useCase.execute(gameId))
-                .thenReturn(Optional.empty());
+        gameDoesNotExist(gameId);
 
         mockMvc.perform(get("/api/gog/games/" + gameId))
                 .andDo(print())
                 .andExpect(status().isNotFound());
+    }
+
+    private void gameDoesNotExist(String gameId) {
+        when(useCase.execute(gameId))
+                .thenReturn(Optional.empty());
     }
 }

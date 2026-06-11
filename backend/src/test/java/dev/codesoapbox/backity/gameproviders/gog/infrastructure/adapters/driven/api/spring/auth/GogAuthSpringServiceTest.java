@@ -2,12 +2,16 @@ package dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven
 
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.auth.exceptions.GogAuthException;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.auth.model.remote.GogAuthenticationResponse;
+import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.spring.auth.model.remote.TestGogAuthenticationResponse;
+import dev.codesoapbox.backity.testing.time.FakeClock;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -16,17 +20,21 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class GogAuthSpringServiceTest {
 
-    @InjectMocks
     private GogAuthSpringService gogAuthService;
 
     @Mock
     private GogAuthClient gogAuthClient;
 
-    private void authenticateCorrectly(int expiresInSeconds) {
+    private FakeClock clock;
+
+    @BeforeEach
+    void setUp() {
+        clock = FakeClock.atEpochUtc();
+        gogAuthService = new GogAuthSpringService(clock, gogAuthClient);
+    }
+
+    private void authenticateCorrectly(GogAuthenticationResponse gogAuthResponse) {
         var code = "someCode";
-        var gogAuthResponse = new GogAuthenticationResponse(
-                "someAccessToken", "someRefreshToken", expiresInSeconds,
-                "someSessionId", "someUserId");
 
         when(gogAuthClient.getInitialToken(code))
                 .thenReturn(gogAuthResponse);
@@ -34,12 +42,17 @@ class GogAuthSpringServiceTest {
         gogAuthService.authenticate(code);
     }
 
+    private void tokenCanBeRefreshed(String oldRefreshToken, GogAuthenticationResponse gogAuthResponseRefreshed) {
+        when(gogAuthClient.refreshToken(oldRefreshToken))
+                .thenReturn(gogAuthResponseRefreshed);
+    }
+
     @Nested
     class Authentication {
 
         @Test
         void shouldAuthenticate() {
-            authenticateCorrectly(3600);
+            authenticateCorrectly(TestGogAuthenticationResponse.valid());
 
             assertThat(gogAuthService.isAuthenticated()).isTrue();
         }
@@ -51,7 +64,9 @@ class GogAuthSpringServiceTest {
 
         @Test
         void shouldReturnFalseGivenAuthenticationExpired() {
-            authenticateCorrectly(-1);
+            GogAuthenticationResponse gogAuthResponse = TestGogAuthenticationResponse.valid();
+            authenticateCorrectly(gogAuthResponse);
+            clock.moveForward(Duration.ofSeconds(gogAuthResponse.getExpiresIn()));
 
             assertThat(gogAuthService.isAuthenticated()).isFalse();
         }
@@ -61,31 +76,13 @@ class GogAuthSpringServiceTest {
     class Refresh {
 
         @Test
-        void shouldRefresh() {
-            var gogAuthResponseRefreshed = new GogAuthenticationResponse("someAccessToken",
-                    "someRefreshToken", 3600, "someSessionId", "someUserId");
-
-            when(gogAuthClient.refreshToken("someRefreshToken"))
-                    .thenReturn(gogAuthResponseRefreshed);
-
-            authenticateCorrectly(-1);
+        void shouldRefreshAuthentication() {
+            GogAuthenticationResponse gogAuthResponse = TestGogAuthenticationResponse.valid();
+            authenticateCorrectly(gogAuthResponse);
+            clock.moveForward(Duration.ofSeconds(gogAuthResponse.getExpiresIn()));
+            tokenCanBeRefreshed(gogAuthResponse.getRefreshToken(), gogAuthResponse);
 
             gogAuthService.refresh();
-
-            assertThat(gogAuthService.isAuthenticated()).isTrue();
-        }
-
-        @Test
-        void shouldRefreshWithNewRefreshToken() {
-            var gogAuthResponseRefreshed = new GogAuthenticationResponse("someAccessToken",
-                    "someRefreshToken", 3600, "someSessionId", "someUserId");
-
-            when(gogAuthClient.refreshToken("someCustomRefreshToken"))
-                    .thenReturn(gogAuthResponseRefreshed);
-
-            authenticateCorrectly(-1);
-
-            gogAuthService.refresh("someCustomRefreshToken");
 
             assertThat(gogAuthService.isAuthenticated()).isTrue();
         }
@@ -95,22 +92,37 @@ class GogAuthSpringServiceTest {
     class GetAccessToken {
 
         @Test
-        void shouldGetAccessToken() {
-            authenticateCorrectly(3600);
+        void shouldReturnAccessTokenGivenAuthenticatedAndNotExpired() {
+            GogAuthenticationResponse gogAuthResponse = TestGogAuthenticationResponse.valid();
+            authenticateCorrectly(gogAuthResponse);
 
-            assertThat(gogAuthService.getAccessToken()).isEqualTo("someAccessToken");
+            assertThat(gogAuthService.getAccessToken()).isEqualTo(gogAuthResponse.getAccessToken());
         }
 
         @Test
-        void shouldThrowGivenTokenIsNull() {
+        void shouldThrowGivenNotAuthenticated() {
             assertThatThrownBy(() -> gogAuthService.getAccessToken())
                     .isInstanceOf(GogAuthException.class)
                     .hasMessageContaining("must authenticate");
         }
 
         @Test
-        void shouldThrowGivenTokenIsExpired() {
-            authenticateCorrectly(-1);
+        void shouldThrowGivenAccessTokenIsExpiredOnBoundary() {
+            GogAuthenticationResponse gogAuthResponse = TestGogAuthenticationResponse.valid();
+            authenticateCorrectly(gogAuthResponse);
+            clock.moveForward(Duration.ofSeconds(gogAuthResponse.getExpiresIn()));
+
+            assertThatThrownBy(() -> gogAuthService.getAccessToken())
+                    .isInstanceOf(GogAuthException.class)
+                    .hasMessageContaining("Access token expired");
+        }
+
+        @Test
+        void shouldThrowGivenAccessTokenIsExpiredBeyondBoundary() {
+            GogAuthenticationResponse gogAuthResponse = TestGogAuthenticationResponse.valid();
+            authenticateCorrectly(gogAuthResponse);
+            clock.moveForward(Duration.ofSeconds(gogAuthResponse.getExpiresIn() + 1));
+
             assertThatThrownBy(() -> gogAuthService.getAccessToken())
                     .isInstanceOf(GogAuthException.class)
                     .hasMessageContaining("Access token expired");
@@ -121,8 +133,8 @@ class GogAuthSpringServiceTest {
     class GetRefreshToken {
 
         @Test
-        void shouldGetRefreshToken() {
-            authenticateCorrectly(3600);
+        void shouldGetRefreshTokenGivenAuthenticated() {
+            authenticateCorrectly(TestGogAuthenticationResponse.valid());
 
             assertThat(gogAuthService.getRefreshToken()).isEqualTo("someRefreshToken");
         }
@@ -148,7 +160,8 @@ class GogAuthSpringServiceTest {
 
         @Test
         void shouldNotRefreshAccessTokenGivenNotNeeded() {
-            authenticateCorrectly(3600);
+            GogAuthenticationResponse gogAuthResponse = TestGogAuthenticationResponse.valid();
+            authenticateCorrectly(gogAuthResponse);
 
             gogAuthService.refreshAccessTokenIfNeeded();
 
@@ -157,18 +170,21 @@ class GogAuthSpringServiceTest {
         }
 
         @Test
-        void shouldRefreshAccessTokenGivenNeeded() {
-            authenticateCorrectly(-1);
-
-            var gogAuthResponseRefreshed = new GogAuthenticationResponse("someAccessToken",
-                    "someRefreshToken", 3600, "someSessionId", "someUserId");
-
-            when(gogAuthClient.refreshToken("someRefreshToken"))
-                    .thenReturn(gogAuthResponseRefreshed);
+        void shouldRefreshAccessTokenGivenExactlyHalfwayToExpiry() {
+            GogAuthenticationResponse gogAuthResponseInitial = TestGogAuthenticationResponse.validBuilder()
+                    .withAccessToken("initialAccessToken")
+                    .withExpiresIn(2) // Easily divisible by 2
+                    .build();
+            GogAuthenticationResponse gogAuthResponseRefreshed = TestGogAuthenticationResponse.validBuilder()
+                    .withAccessToken("refreshedAccessToken")
+                    .build();
+            authenticateCorrectly(gogAuthResponseInitial);
+            tokenCanBeRefreshed(gogAuthResponseInitial.getRefreshToken(), gogAuthResponseRefreshed);
+            clock.moveForward(Duration.ofSeconds(gogAuthResponseInitial.getExpiresIn() / 2));
 
             gogAuthService.refreshAccessTokenIfNeeded();
 
-            assertThat(gogAuthService.isAuthenticated()).isTrue();
+            assertThat(gogAuthService.getAccessToken()).isEqualTo(gogAuthResponseRefreshed.getAccessToken());
         }
     }
 
@@ -177,7 +193,7 @@ class GogAuthSpringServiceTest {
 
         @Test
         void shouldLogOut() {
-            authenticateCorrectly(3600);
+            authenticateCorrectly(TestGogAuthenticationResponse.valid());
 
             gogAuthService.logOut();
 

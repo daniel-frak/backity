@@ -49,8 +49,9 @@ class GetGamesWithFilesUseCaseTest {
         var searchQuery = "someSearchQuery";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
         FileCopy localCopy = TestFileCopy.storedIntegrityUnknown();
-        GameWithFileCopiesReadModel game = mockGameIsFound(localCopy, pagination, filter);
-        FileCopyReplicationProgress replicationProgress = mockReplicationProgressExists(localCopy);
+        GameWithFileCopiesReadModel game = gameWithFileCopiesExists(localCopy, pagination, filter);
+        FileCopyReplicationProgress replicationProgress = TestFileCopyReplicationProgress.twentyFivePercent();
+        replicationProgressExistsForFileCopy(replicationProgress, localCopy);
 
         Page<GameWithFileCopiesAndReplicationProgresses> result = useCase.execute(pagination, filter);
 
@@ -61,8 +62,8 @@ class GetGamesWithFilesUseCaseTest {
                 .usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
-    private GameWithFileCopiesReadModel mockGameIsFound(FileCopy localCopy, Pagination pagination,
-                                                        GameWithFileCopiesSearchFilter filter) {
+    private GameWithFileCopiesReadModel gameWithFileCopiesExists(FileCopy localCopy, Pagination pagination,
+                                                                 GameWithFileCopiesSearchFilter filter) {
         GameWithFileCopiesReadModel game = TestGameWithFileCopiesReadModel.withNoSourceFilesBuilder()
                 .withSourceFilesWithCopies(List.of(
                         new SourceFileWithCopiesReadModel(
@@ -77,11 +78,10 @@ class GetGamesWithFilesUseCaseTest {
         return game;
     }
 
-    private FileCopyReplicationProgress mockReplicationProgressExists(FileCopy localCopy) {
-        FileCopyReplicationProgress replicationProgress = TestFileCopyReplicationProgress.twentyFivePercent();
+    private void replicationProgressExistsForFileCopy(
+            FileCopyReplicationProgress replicationProgress, FileCopy localCopy) {
         when(replicationProgressRepository.findAllByFileCopyIdIn(Set.of(localCopy.getId())))
                 .thenReturn(List.of(replicationProgress));
-        return replicationProgress;
     }
 
     @Test
@@ -90,7 +90,7 @@ class GetGamesWithFilesUseCaseTest {
         var searchQuery = "someSearchQuery";
         GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
         FileCopy localCopy = TestFileCopy.storedIntegrityUnknown();
-        GameWithFileCopiesReadModel game = mockGameIsFound(localCopy, pagination, filter);
+        GameWithFileCopiesReadModel game = gameWithFileCopiesExists(localCopy, pagination, filter);
 
         Page<GameWithFileCopiesAndReplicationProgresses> result = useCase.execute(pagination, filter);
 

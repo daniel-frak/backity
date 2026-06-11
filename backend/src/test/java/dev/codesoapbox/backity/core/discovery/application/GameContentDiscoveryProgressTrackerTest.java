@@ -51,12 +51,16 @@ class GameContentDiscoveryProgressTrackerTest {
     void setUp() {
         clock = FakeClock.atEpochUtc();
         gameProviderFileDiscoveryService = new FakeGameProviderFileDiscoveryService();
-        when(anotherGameProviderFileDiscoveryService.getGameProviderId())
-                .thenReturn(new GameProviderId("anotherGameProviderId"));
+        anotherGameProviderFileDiscoveryServiceWorks();
         tracker = new GameContentDiscoveryProgressTracker(
                 clock, domainEventPublisher, discoveryResultRepository,
                 List.of(gameProviderFileDiscoveryService, anotherGameProviderFileDiscoveryService),
                 resetProviderTrackerWhenNewRequested());
+    }
+
+    private void anotherGameProviderFileDiscoveryServiceWorks() {
+        when(anotherGameProviderFileDiscoveryService.getGameProviderId())
+                .thenReturn(new GameProviderId("anotherGameProviderId"));
     }
 
     private Function<GameProviderId, GameProviderContentDiscoveryTracker> resetProviderTrackerWhenNewRequested() {
@@ -76,18 +80,26 @@ class GameContentDiscoveryProgressTrackerTest {
 
         @Test
         void shouldReturnFalseGivenNotInProgress() {
-            when(providerTracker.isInProgress())
-                    .thenReturn(false);
+            isNotInProgress();
 
             assertThat(tracker.isInProgress(gameProviderFileDiscoveryService)).isFalse();
         }
 
+        private void isNotInProgress() {
+            when(providerTracker.isInProgress())
+                    .thenReturn(false);
+        }
+
         @Test
         void ShouldReturnTrueGivenInProgress() {
-            when(providerTracker.isInProgress())
-                    .thenReturn(true);
+            isInProgress();
 
             assertThat(tracker.isInProgress(gameProviderFileDiscoveryService)).isTrue();
+        }
+
+        private void isInProgress() {
+            when(providerTracker.isInProgress())
+                    .thenReturn(true);
         }
     }
 
@@ -155,14 +167,14 @@ class GameContentDiscoveryProgressTrackerTest {
             tracker.initializeTracking(
                     gameProviderFileDiscoveryService.getGameProviderId()); // To set in progressTracker to true
             reset(providerTracker); // To make sure any assertions on behavior don't include setup behavior
-            mockProviderTrackerReturnsDiscoveryResult();
+            providerTrackerReturnsDiscoveryResult();
 
             tracker.finalizeTracking(gameProviderFileDiscoveryService.getGameProviderId());
 
             verify(providerTracker).setInProgress(false);
         }
 
-        private GameContentDiscoveryResult mockProviderTrackerReturnsDiscoveryResult() {
+        private GameContentDiscoveryResult providerTrackerReturnsDiscoveryResult() {
             GameContentDiscoveryResult result = mock(GameContentDiscoveryResult.class);
             lenient().when(providerTracker.getResult())
                     .thenReturn(result);
@@ -171,7 +183,7 @@ class GameContentDiscoveryProgressTrackerTest {
 
         @Test
         void shouldSetStoppedAt() {
-            mockProviderTrackerReturnsDiscoveryResult();
+            providerTrackerReturnsDiscoveryResult();
 
             tracker.finalizeTracking(gameProviderFileDiscoveryService.getGameProviderId());
 
@@ -180,7 +192,7 @@ class GameContentDiscoveryProgressTrackerTest {
 
         @Test
         void shouldSaveDiscoveryResult() {
-            GameContentDiscoveryResult discoveryResult = mockProviderTrackerReturnsDiscoveryResult();
+            GameContentDiscoveryResult discoveryResult = providerTrackerReturnsDiscoveryResult();
 
             tracker.finalizeTracking(gameProviderFileDiscoveryService.getGameProviderId());
 
@@ -189,7 +201,7 @@ class GameContentDiscoveryProgressTrackerTest {
 
         @Test
         void shouldSendDiscoveryStoppedEvent() {
-            GameContentDiscoveryResult discoveryResult = mockProviderTrackerReturnsDiscoveryResult();
+            GameContentDiscoveryResult discoveryResult = providerTrackerReturnsDiscoveryResult();
 
             tracker.finalizeTracking(gameProviderFileDiscoveryService.getGameProviderId());
 
@@ -230,9 +242,9 @@ class GameContentDiscoveryProgressTrackerTest {
         @Test
         void shouldGetDiscoveryOverviews() {
             GameProviderId gameProviderId = gameProviderFileDiscoveryService.getGameProviderId();
-            mockProviderTrackerIsInProgress();
-            GameContentDiscoveryProgress discoveryProgress = mockProviderTrackerReturnsProgress();
-            GameContentDiscoveryResult contentDiscoveryResult = mockDiscoveryResultExistsInRepository(gameProviderId);
+            providerTrackerIsInProgress();
+            GameContentDiscoveryProgress discoveryProgress = providerTrackerReturnsProgress();
+            GameContentDiscoveryResult contentDiscoveryResult = discoveryResultExistsInRepository(gameProviderId);
 
             List<GameContentDiscoveryOverview> result = tracker.getDiscoveryOverviews();
 
@@ -241,7 +253,7 @@ class GameContentDiscoveryProgressTrackerTest {
             assertThat(result).contains(expectedResult);
         }
 
-        private GameContentDiscoveryResult mockDiscoveryResultExistsInRepository(GameProviderId gameProviderId) {
+        private GameContentDiscoveryResult discoveryResultExistsInRepository(GameProviderId gameProviderId) {
             GameContentDiscoveryResult contentDiscoveryResult = mock(GameContentDiscoveryResult.class);
             lenient().when(contentDiscoveryResult.getGameProviderId())
                     .thenReturn(gameProviderId);
@@ -251,12 +263,12 @@ class GameContentDiscoveryProgressTrackerTest {
             return contentDiscoveryResult;
         }
 
-        private void mockProviderTrackerIsInProgress() {
+        private void providerTrackerIsInProgress() {
             when(providerTracker.isInProgress())
                     .thenReturn(true);
         }
 
-        private GameContentDiscoveryProgress mockProviderTrackerReturnsProgress() {
+        private GameContentDiscoveryProgress providerTrackerReturnsProgress() {
             GameContentDiscoveryProgress discoveryProgress = mock(GameContentDiscoveryProgress.class);
             when(providerTracker.getProgress())
                     .thenReturn(discoveryProgress);

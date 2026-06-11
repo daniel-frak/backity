@@ -29,17 +29,18 @@ class GetBackupTargetsUseCaseTest {
 
     @Test
     void shouldGetBackupTargets() {
-        List<BackupTarget> backupTargets = mockBackupTargetsExist();
+        List<BackupTarget> backupTargets = backupTargetsExist();
 
         List<BackupTarget> result = useCase.execute();
 
         assertThat(result).isEqualTo(backupTargets);
     }
 
-    private List<BackupTarget> mockBackupTargetsExist() {
+    private List<BackupTarget> backupTargetsExist() {
         List<BackupTarget> backupTargets = List.of(TestBackupTarget.localFolder());
         when(backupTargetRepository.findAll())
                 .thenReturn(backupTargets);
+
         return backupTargets;
     }
 }

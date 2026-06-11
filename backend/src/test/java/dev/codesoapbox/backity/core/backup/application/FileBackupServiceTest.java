@@ -168,9 +168,7 @@ class FileBackupServiceTest {
                 gameProviderIsConnectedFor(fileBackupContext.sourceFile());
                 PersistedChangesToFileCopy persistedChangesToFileCopy = trackPersistedChangesToFileCopy();
                 aUniqueFilePathIsResolvedFor(fileBackupContext);
-                doThrow(new FileWriteWasCanceledException(aFilePath, storageSolution))
-                        .when(fileCopyReplicator).replicate(storageSolution, fileBackupContext.sourceFile(),
-                                fileBackupContext.fileCopy());
+                backupIsCanceledDuringReplication(aFilePath, storageSolution, fileBackupContext);
 
                 fileBackupService.backUpFile(fileBackupContext);
 
@@ -186,13 +184,17 @@ class FileBackupServiceTest {
                 FilePath filePath = aUniqueFilePathIsResolvedFor(fileBackupContext);
                 storageSolution.createFile(filePath);
                 gameProviderIsConnectedFor(fileBackupContext.sourceFile());
-                doThrow(new FileWriteWasCanceledException(filePath, storageSolution))
-                        .when(fileCopyReplicator).replicate(storageSolution, fileBackupContext.sourceFile(),
-                                fileBackupContext.fileCopy());
+                backupIsCanceledDuringReplication(filePath, storageSolution, fileBackupContext);
 
                 fileBackupService.backUpFile(fileBackupContext);
 
                 assertThat(storageSolution.fileExists(filePath)).isFalse();
+            }
+
+            private void backupIsCanceledDuringReplication(FilePath filePath, FakeUnixStorageSolution storageSolution, FileBackupContext fileBackupContext) {
+                doThrow(new FileWriteWasCanceledException(filePath, storageSolution))
+                        .when(fileCopyReplicator).replicate(storageSolution, fileBackupContext.sourceFile(),
+                                fileBackupContext.fileCopy());
             }
 
             @Test
@@ -203,9 +205,7 @@ class FileBackupServiceTest {
                         .build();
                 FilePath filePath = aUniqueFilePathIsResolvedFor(fileBackupContext);
                 gameProviderIsConnectedFor(fileBackupContext.sourceFile());
-                doThrow(new FileWriteWasCanceledException(filePath, storageSolution))
-                        .when(fileCopyReplicator).replicate(storageSolution, fileBackupContext.sourceFile(),
-                                fileBackupContext.fileCopy());
+                backupIsCanceledDuringReplication(filePath, storageSolution, fileBackupContext);
 
                 fileBackupService.backUpFile(fileBackupContext);
 

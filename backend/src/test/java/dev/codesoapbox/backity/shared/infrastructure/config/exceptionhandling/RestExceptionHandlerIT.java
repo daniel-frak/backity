@@ -50,7 +50,7 @@ class RestExceptionHandlerIT {
 
     @Test
     void shouldHandleGeneralErrors() throws Exception {
-        when(testController.testEndpoint()).thenThrow(new RuntimeException());
+        testEndpointThrows(new RuntimeException());
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isInternalServerError())
@@ -60,7 +60,7 @@ class RestExceptionHandlerIT {
     @Test
     void shouldHandleDomainInvariantViolationExceptionsWithNoCause() throws Exception {
         String expectedMessage = "Domain error message";
-        when(testController.testEndpoint()).thenThrow(new DomainInvariantViolationException(expectedMessage));
+        testEndpointThrows(new DomainInvariantViolationException(expectedMessage));
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isUnprocessableContent())
@@ -70,19 +70,23 @@ class RestExceptionHandlerIT {
     @Test
     void shouldHandleDomainInvariantViolationExceptionsWithCause() throws Exception {
         String expectedMessage = "Domain error message";
-        when(testController.testEndpoint())
-                .thenThrow(new DomainInvariantViolationException(expectedMessage, new RuntimeException()));
+        testEndpointThrows(new DomainInvariantViolationException(expectedMessage, new RuntimeException()));
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isUnprocessableContent())
                 .andExpect(jsonPath("$.message").value(expectedMessage));
     }
 
+    private void testEndpointThrows(Throwable exception)
+            throws MethodArgumentNotValidException {
+        when(testController.testEndpoint())
+                .thenThrow(exception);
+    }
+
     @Test
     void shouldHandleDomainInvariantViolationExceptionsWithNoCauseWithMessageKeys() throws Exception {
         var expectedException = new FileCopyNotBackedUpException(FileCopyId.newInstance());
-        when(testController.testEndpoint())
-                .thenThrow(expectedException);
+        testEndpointThrows(expectedException);
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isUnprocessableContent())
@@ -93,7 +97,7 @@ class RestExceptionHandlerIT {
     @Test
     void shouldHandleDomainInvariantViolationExceptionsWithCauseWithMessageKeys() throws Exception {
         String expectedMessage = "Domain error message";
-        when(testController.testEndpoint()).thenThrow(new DomainInvariantViolationException(expectedMessage,
+        testEndpointThrows(new DomainInvariantViolationException(expectedMessage,
                 new FileCopyNotBackedUpException(FileCopyId.newInstance())));
 
         mockMvc.perform(get("/"))
@@ -105,7 +109,7 @@ class RestExceptionHandlerIT {
     @Test
     void shouldHandleIllegalArgumentExceptions() throws Exception {
         String expectedMessage = "Test message";
-        when(testController.testEndpoint()).thenThrow(new IllegalArgumentException(expectedMessage));
+        testEndpointThrows(new IllegalArgumentException(expectedMessage));
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isBadRequest())
@@ -114,7 +118,7 @@ class RestExceptionHandlerIT {
 
     @Test
     void shouldHandleOptimisticLockExceptions() throws Exception {
-        when(testController.testEndpoint()).thenThrow(new OptimisticLockException());
+        testEndpointThrows(new OptimisticLockException());
 
         String expectedMessage = "The resource has been modified by another user. Please refresh and try again.";
         mockMvc.perform(get("/"))
@@ -124,8 +128,7 @@ class RestExceptionHandlerIT {
 
     @Test
     void shouldHandleObjectOptimisticLockingFailureExceptions() throws Exception {
-        when(testController.testEndpoint()).thenThrow(new ObjectOptimisticLockingFailureException("",
-                new RuntimeException()));
+        testEndpointThrows(new ObjectOptimisticLockingFailureException("", new RuntimeException()));
 
         String expectedMessage = "The resource has been modified by another user. Please refresh and try again.";
         mockMvc.perform(get("/"))
@@ -135,18 +138,14 @@ class RestExceptionHandlerIT {
 
     @Test
     void shouldHandleMethodArgumentNotValidExceptions() throws Exception {
-        BindingResult bindingResult = mock(BindingResult.class);
-        when(bindingResult.getAllErrors()).thenReturn(List.of(
+        List<ObjectError> bindingResultErrors = List.of(
                 new ObjectError("objectName1", "defaultMessage1"),
                 new FieldError("objectName2", "field2", "defaultMessage2")
-        ));
-        MethodParameter methodParameter = mock(MethodParameter.class);
+        );
+        BindingResult bindingResult = aBindingResultWithErrors(bindingResultErrors);
+        MethodParameter methodParameter = aMethodParameterWithExecutable();
 
-        // Can't mock Executable.class so just use anything as a stand-in:
-        when(methodParameter.getExecutable()).thenReturn(this.getClass().getDeclaredConstructor());
-
-        when(testController.testEndpoint()).thenThrow(new MethodArgumentNotValidException(
-                methodParameter, bindingResult));
+        testEndpointThrows(new MethodArgumentNotValidException(methodParameter, bindingResult));
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isBadRequest())
@@ -154,6 +153,20 @@ class RestExceptionHandlerIT {
                 .andExpect(jsonPath("$[0].message").value("defaultMessage1"))
                 .andExpect(jsonPath("$[1].fieldName").value("field2"))
                 .andExpect(jsonPath("$[1].message").value("defaultMessage2"));
+    }
+
+    private BindingResult aBindingResultWithErrors(List<ObjectError> bindingResultErrors) {
+        BindingResult bindingResult = mock(BindingResult.class);
+        when(bindingResult.getAllErrors()).thenReturn(bindingResultErrors);
+        return bindingResult;
+    }
+
+    private MethodParameter aMethodParameterWithExecutable() throws NoSuchMethodException {
+        MethodParameter methodParameter = mock(MethodParameter.class);
+
+        // Can't mock Executable.class so just use anything as a stand-in:
+        when(methodParameter.getExecutable()).thenReturn(this.getClass().getDeclaredConstructor());
+        return methodParameter;
     }
 
     @RestController

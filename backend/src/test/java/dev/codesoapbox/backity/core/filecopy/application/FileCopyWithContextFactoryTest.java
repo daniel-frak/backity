@@ -58,10 +58,10 @@ class FileCopyWithContextFactoryTest {
         var pagination = new Pagination(0, 1);
         FileCopy fileCopy = TestFileCopy.enqueued();
         Page<FileCopy> fileCopyPage = TestPage.of(List.of(fileCopy), pagination);
-        SourceFile sourceFile = mockSourceFileExists(fileCopy);
-        Game game = mockGameExists(sourceFile);
-        BackupTarget backupTarget = mockBackupTargetExists(fileCopy);
-        FileCopyReplicationProgress replicationProgress = mockReplicationProgressExists(fileCopy);
+        SourceFile sourceFile = sourceFileExists(fileCopy);
+        Game game = gameExists(sourceFile);
+        BackupTarget backupTarget = backupTargetExists(fileCopy);
+        FileCopyReplicationProgress replicationProgress = replicationProgressExists(fileCopy);
 
         Page<FileCopyWithContext> result = fileCopyWithContextFactory.createPageFrom(fileCopyPage);
 
@@ -72,7 +72,7 @@ class FileCopyWithContextFactoryTest {
                 .isEqualTo(expectedResult);
     }
 
-    private SourceFile mockSourceFileExists(FileCopy fileCopy) {
+    private SourceFile sourceFileExists(FileCopy fileCopy) {
         SourceFile sourceFile = TestSourceFile.gogBuilder()
                 .id(fileCopy.getNaturalId().sourceFileId())
                 .build();
@@ -82,7 +82,7 @@ class FileCopyWithContextFactoryTest {
         return sourceFile;
     }
 
-    private Game mockGameExists(SourceFile sourceFile) {
+    private Game gameExists(SourceFile sourceFile) {
         Game game = TestGame.anyBuilder()
                 .withId(sourceFile.getGameId())
                 .build();
@@ -92,7 +92,7 @@ class FileCopyWithContextFactoryTest {
         return game;
     }
 
-    private BackupTarget mockBackupTargetExists(FileCopy fileCopy) {
+    private BackupTarget backupTargetExists(FileCopy fileCopy) {
         BackupTarget backupTarget = TestBackupTarget.localFolderBuilder()
                 .withId(fileCopy.getNaturalId().backupTargetId())
                 .build();
@@ -102,7 +102,7 @@ class FileCopyWithContextFactoryTest {
         return backupTarget;
     }
 
-    private FileCopyReplicationProgress mockReplicationProgressExists(FileCopy fileCopy) {
+    private FileCopyReplicationProgress replicationProgressExists(FileCopy fileCopy) {
         FileCopyReplicationProgress replicationProgress = TestFileCopyReplicationProgress.twentyFivePercent();
         when(replicationProgressRepository.findAllByFileCopyIdIn(Set.of(fileCopy.getId())))
                 .thenReturn(List.of(replicationProgress));

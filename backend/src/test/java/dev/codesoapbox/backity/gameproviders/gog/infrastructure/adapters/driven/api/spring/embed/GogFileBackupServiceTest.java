@@ -61,12 +61,26 @@ class GogFileBackupServiceTest {
 
         @Test
         void shouldReturnTrueGivenConnected() {
+            isConnected();
+
+            assertThat(gogFileBackupService.isConnected()).isTrue();
+        }
+
+        private void isConnected() {
             when(authService.isAuthenticated())
-                    .thenReturn(false)
                     .thenReturn(true);
+        }
+
+        @Test
+        void shouldReturnFalseGivenNotConnected() {
+            isNotConnected();
 
             assertThat(gogFileBackupService.isConnected()).isFalse();
-            assertThat(gogFileBackupService.isConnected()).isTrue();
+        }
+
+        private void isNotConnected() {
+            when(authService.isAuthenticated())
+                    .thenReturn(false);
         }
     }
 

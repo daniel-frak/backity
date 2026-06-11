@@ -31,9 +31,7 @@ class AuthenticateGogControllerIT {
                     "refresh_token": "%s"
                 }
                 """.formatted(refreshToken);
-
-        when(useCase.execute(code))
-                .thenReturn(refreshToken);
+        authenticationSucceeds(code, refreshToken);
 
         mockMvc.perform(post("/api/" + GogAuthRestResource.RESOURCE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -46,5 +44,10 @@ class AuthenticateGogControllerIT {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
+    }
+
+    private void authenticationSucceeds(String code, String refreshToken) {
+        when(useCase.execute(code))
+                .thenReturn(refreshToken);
     }
 }

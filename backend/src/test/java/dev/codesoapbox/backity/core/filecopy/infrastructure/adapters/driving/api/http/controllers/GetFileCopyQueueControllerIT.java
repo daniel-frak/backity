@@ -36,7 +36,7 @@ class GetFileCopyQueueControllerIT {
     @Test
     void shouldGetQueue() throws Exception {
         var expectedPagination = new Pagination(0, 1);
-        mockEnqueuedFileExists(expectedPagination);
+        anEnqueuedFileExists(expectedPagination);
         var expectedJson = """
                 {
                   "content": [
@@ -88,7 +88,7 @@ class GetFileCopyQueueControllerIT {
                 .andExpect(content().json(expectedJson));
     }
 
-    private void mockEnqueuedFileExists(Pagination expectedPagination) {
+    private void anEnqueuedFileExists(Pagination expectedPagination) {
         var fileCopyWithContext = new FileCopyWithContext(
                 TestFileCopy.enqueued(),
                 TestSourceFile.gog(),

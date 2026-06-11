@@ -74,8 +74,7 @@ class AddBackupTargetControllerIT {
                 .withPathTemplate(new PathTemplate("games/{GAME_PROVIDER_ID}/{GAME_TITLE}/{FILENAME}"))
                 .build();
         AddBackupTargetCommand command = toAddBackupTargetCommand(expectedBackupTarget);
-        when(useCase.execute(command))
-                .thenReturn(expectedBackupTarget);
+        backupTargetIsAdded(command, expectedBackupTarget);
 
         mockMvc.perform(post("/api/" + BackupTargetsRestResource.RESOURCE_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -98,6 +97,11 @@ class AddBackupTargetControllerIT {
                             }
                         }
                         """));
+    }
+
+    private void backupTargetIsAdded(AddBackupTargetCommand command, BackupTarget expectedBackupTarget) {
+        when(useCase.execute(command))
+                .thenReturn(expectedBackupTarget);
     }
 
     private AddBackupTargetCommand toAddBackupTargetCommand(BackupTarget expectedBackupTarget) {

@@ -55,13 +55,17 @@ class GogEmbedWebClientIT {
         @Test
         void shouldDelegateToOperation() {
             String gameId = "someGameId";
-            Optional<GogGameWithFiles> expectedResult = Optional.of(mock(GogGameWithFiles.class));
-            when(getGameDetailsOperation.execute(gameId))
-                    .thenReturn(expectedResult);
+            GogGameWithFiles expectedResult = mock(GogGameWithFiles.class);
+            getGameDetailsOperationExecutes(gameId, expectedResult);
 
             Optional<GogGameWithFiles> result = gogEmbedClient.getGameDetails(gameId);
 
-            assertThat(result).isEqualTo(expectedResult);
+            assertThat(result).get().isEqualTo(expectedResult);
+        }
+
+        private void getGameDetailsOperationExecutes(String gameId, GogGameWithFiles expectedResult) {
+            when(getGameDetailsOperation.execute(gameId))
+                    .thenReturn(Optional.of(expectedResult));
         }
     }
 
@@ -71,12 +75,16 @@ class GogEmbedWebClientIT {
         @Test
         void shouldDelegateToOperation() {
             String expectedResult = "10 GB";
-            when(getLibrarySizeOperation.execute())
-                    .thenReturn(expectedResult);
+            getLibrarySizeOperationExecutes(expectedResult);
 
             String result = gogEmbedClient.getLibrarySize();
 
             assertThat(result).isEqualTo(expectedResult);
+        }
+
+        private void getLibrarySizeOperationExecutes(String expectedResult) {
+            when(getLibrarySizeOperation.execute())
+                    .thenReturn(expectedResult);
         }
     }
 
@@ -86,12 +94,16 @@ class GogEmbedWebClientIT {
         @Test
         void shouldDelegateToOperation() {
             List<String> expectedResult = List.of("1", "2", "3");
-            when(getLibraryGameIdsOperation.execute())
-                    .thenReturn(expectedResult);
+            getLibraryGameIdsOperationExecutes(expectedResult);
 
             List<String> result = gogEmbedClient.getLibraryGameIds();
 
             assertThat(result).isEqualTo(expectedResult);
+        }
+
+        private void getLibraryGameIdsOperationExecutes(List<String> expectedResult) {
+            when(getLibraryGameIdsOperation.execute())
+                    .thenReturn(expectedResult);
         }
     }
 
@@ -103,13 +115,19 @@ class GogEmbedWebClientIT {
             SourceFile sourceFile = mock(SourceFile.class);
             OutputStreamProgressTracker progress = mock(OutputStreamProgressTracker.class);
             DataBufferFluxTrackableFileStream expectedResult = mock(DataBufferFluxTrackableFileStream.class);
-            when(initializeProgressAndStreamFileOperation.execute(sourceFile, progress))
-                    .thenReturn(expectedResult);
+            initializeProgressAndStreamFileOperationExecutes(sourceFile, progress, expectedResult);
 
             DataBufferFluxTrackableFileStream result = gogEmbedClient
                     .initializeProgressAndStreamFile(sourceFile, progress);
 
             assertThat(result).isEqualTo(expectedResult);
+        }
+
+        private void initializeProgressAndStreamFileOperationExecutes(
+                SourceFile sourceFile, OutputStreamProgressTracker progress,
+                DataBufferFluxTrackableFileStream expectedResult) {
+            when(initializeProgressAndStreamFileOperation.execute(sourceFile, progress))
+                    .thenReturn(expectedResult);
         }
     }
 }
