@@ -44,7 +44,7 @@ public class TestRules {
 
     @ArchTest
     static final ArchRule DISABLED_TESTS_SHOULD_HAVE_A_REASON =
-            methods().that().areAnnotatedWith(Disabled.class)
+            methods().that().areMetaAnnotatedWith(Disabled.class)
                     .should(haveNonBlankDisabledReason())
                     .allowEmptyShould(true)
                     .because("""
@@ -53,7 +53,7 @@ public class TestRules {
 
     @ArchTest
     static final ArchRule DISABLED_TEST_CLASSES_SHOULD_HAVE_A_REASON =
-            classes().that().areAnnotatedWith(Disabled.class)
+            classes().that().areMetaAnnotatedWith(Disabled.class)
                     .should(haveNonBlankDisabledReasonOnClass())
                     .allowEmptyShould(true)
                     .because("""
@@ -93,7 +93,7 @@ public class TestRules {
     @ArchTest
     static final ArchRule STUBBING_MUST_BE_EXTRACTED_TO_METHODS =
             methods()
-                    .that(DescribedPredicate.describe("are test methods", method ->
+                    .that(DescribedPredicate.describe("are primary test methods", method ->
                             method.isAnnotatedWith(Test.class)
                                     || method.isAnnotatedWith(ParameterizedTest.class)
                                     || method.isAnnotatedWith(RepeatedTest.class)

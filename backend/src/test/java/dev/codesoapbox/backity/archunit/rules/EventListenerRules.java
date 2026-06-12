@@ -19,7 +19,7 @@ public class EventListenerRules {
 
     @ArchTest
     static final ArchRule TRANSACTIONAL_EVENT_LISTENER_MUST_HAVE_UNIQUE_ID = methods()
-            .that().areAnnotatedWith(TransactionalEventListener.class)
+            .that().areMetaAnnotatedWith(TransactionalEventListener.class)
             .should(new ArchCondition<>("have non-empty unique id") {
 
                 private final Map<String, List<JavaMethod>> ids = new HashMap<>();
@@ -92,7 +92,7 @@ public class EventListenerRules {
 
     @ArchTest
     static final ArchRule EVENT_LISTENERS_MUST_BE_ASYNC = methods()
-            .that().areAnnotatedWith(EventListener.class)
+            .that().areMetaAnnotatedWith(EventListener.class)
             .should().beAnnotatedWith(Async.class)
             .because("""
                     event handlers must not be executed within the same transaction which triggered the event.

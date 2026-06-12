@@ -4,8 +4,13 @@ import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.lang.annotation.Annotation;
 
@@ -18,9 +23,6 @@ public class GeneralCodingRules {
 
     static final String CONFIG_PACKAGE =
             ".." + PortsAndAdaptersArchitectureRules.Constants.CONFIG_PACKAGE + "..";
-    static final String SPRING_COMPONENT_ANNOTATION = "org.springframework.stereotype.Component";
-    static final String SPRING_CONFIGURATION_ANNOTATION =
-            "org.springframework.context.annotation.Configuration";
 
     @ArchTest
     static final ArchRule INTERFACE_NAMES_SHOULD_NOT_START_WITH_I =
@@ -175,7 +177,7 @@ public class GeneralCodingRules {
                 @Override
                 public boolean test(JavaClass javaClass) {
                     while (javaClass != null) {
-                        if(isMetaAnnotated(Configuration.class, javaClass)
+                        if (isMetaAnnotated(Configuration.class, javaClass)
                                 || isMetaAnnotated(ConfigurationProperties.class, javaClass)) {
                             return false;
                         }
@@ -218,29 +220,32 @@ public class GeneralCodingRules {
                     """);
 
     @ArchTest
-    static final ArchRule BEANS_SHOULD_BE_DEFINED_IN_CONFIGURATION_PACKAGE = noClasses().that()
-            .resideOutsideOfPackage(CONFIG_PACKAGE)
-            .should()
-            .beAnnotatedWith(SPRING_COMPONENT_ANNOTATION)
-            .orShould().beAnnotatedWith("org.springframework.stereotype.Service")
+    static final ArchRule BEANS_SHOULD_BE_DEFINED_IN_CONFIGURATION_CLASSES = noClasses()
+            .that().areNotMetaAnnotatedWith(Configuration.class)
+            .and().areNotAnnotatedWith(RestController.class)
+            .and().areNotAnnotatedWith(ControllerAdvice.class)
+            .and().areNotAnnotatedWith(RestControllerAdvice.class)
+            .should().beAnnotatedWith(Component.class)
             .because("""
-                    defining beans outside the configuration package leads to inconsistent dependency management \
+                    defining beans outside a configuration class leads to inconsistent dependency management \
                     and reduced clarity in bean instantiation.
                     
                     Context:
-                    1) Using more than one way of bean instantiation can be confusing.
-                    2) It should be easy to locate bean definitions in the codebase.
-                    3) Domain code should not be polluted with a dependency on Spring, yet some domain classes must
+                    - Using more than one way of bean instantiation can be confusing.
+                    - It should be easy to locate bean definitions in the codebase.
+                    - Domain code should not be polluted with a dependency on Spring, yet some domain classes must
                     be instantiated as beans.
-                    4) It's a good practice to reduce coupling with the framework wherever possible
-                    5) Services often need additional logic like @Profile, which can make it difficult to tell which \
+                    - It's a good practice to reduce coupling with the framework wherever possible.
+                    - Services often need additional logic like @Profile, which can make it difficult to tell which \
                     beans will be instantiated if this logic is kept on the classes themselves.
-                    @Configuration classes, as a bird's eye view of the bean configuration, \
+                    - @Configuration classes, as a bird's eye view of the bean configuration, \
                     can provide clarity around what gets instantiated when.
                     
                     Therefore, it is a good practice to instantiate all services using @Configuration classes, which
-                    should be located in a configuration subpackage. However, there may be cases where annotating \
-                    a Spring-specific configuration bean is necessary, so using @Component is acceptable in these cases.
+                    should be located in a configuration subpackage.
+                    
+                    Some advanced Spring annotations are themselves meta-annotated with @Component and there is no
+                    reliable way to avoid using them. These should be allowed.
                     
                     Positive consequences:
                     - Decouples large parts of the codebase from Spring, making it easier to work with and maintain.
@@ -256,7 +261,8 @@ public class GeneralCodingRules {
 
     @ArchTest
     static final ArchRule CONFIGURATION_CLASSES_SHOULD_RESIDE_IN_CORRECT_PACKAGE = classes().that()
-            .areAnnotatedWith(SPRING_CONFIGURATION_ANNOTATION)
+            .areMetaAnnotatedWith(Configuration.class)
+            .and().areNotAnnotatedWith(SpringBootApplication.class)
             .should()
             .resideInAPackage(CONFIG_PACKAGE)
             .because("""
