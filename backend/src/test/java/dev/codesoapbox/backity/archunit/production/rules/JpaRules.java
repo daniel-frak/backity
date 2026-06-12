@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.archunit.rules;
+package dev.codesoapbox.backity.archunit.production.rules;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaAnnotation;
@@ -22,11 +22,9 @@ import static com.tngtech.archunit.lang.conditions.ArchConditions.notBeAnnotated
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
-/**
- * Rules for JPA repositories
- */
+/// Rules specifically about JPA repositories, unrelated to anything else.
 @SuppressWarnings({"unused", "squid:S100"})
-public final class JpaRules {
+public class JpaRules {
 
     private static final String TRANSACTIONAL_CLASS_NAME = "org.springframework.transaction.annotation.Transactional";
     private static final String JPA_REPOSITORY_CLASS_SUFFIX = "JpaRepository";
@@ -36,11 +34,13 @@ public final class JpaRules {
             .that()
             .haveSimpleNameEndingWith(JPA_REPOSITORY_CLASS_SUFFIX)
             .should(BE_ANNOTATED_WITH_TRANSACTIONAL(true))
-            .because("executing read-only queries in a read-only transaction can be more performant" +
-                     " and use less memory (e.g., read-only entities are not dirty-checked," +
-                     " persistent state snapshots are not being maintained for them) and sometimes save money" +
-                     " (connecting to a read-only database instance may cost less). Since most repository methods" +
-                     " will be queries, the default transaction should be read-only.");
+            .because("""
+                    executing read-only queries in a read-only transaction can be more performant \
+                    and use less memory (e.g., read-only entities are not dirty-checked, \
+                    persistent state snapshots are not being maintained for them) and sometimes save money \
+                    (connecting to a read-only database instance may cost less). Since most repository methods \
+                    will be queries, the default transaction should be read-only.
+                    """);
 
     @ArchTest
     static final ArchRule MODIFYING_METHODS_SHOULD_BE_ANNOTATED_WITH_MODIFYING_TRANSACTIONAL = methods()
@@ -131,7 +131,7 @@ public final class JpaRules {
             public void check(HasAnnotations<T> item, ConditionEvents conditionEvents) {
                 Optional<Boolean> isSpecificTransactional = isSpecificTransactional(item);
 
-                if (isSpecificTransactional.isPresent() && Boolean.TRUE.equals(isSpecificTransactional.get())) {
+                if (isSpecificTransactional.isPresent() && isSpecificTransactional.get()) {
                     return;
                 }
                 String message = isSpecificTransactional
@@ -142,7 +142,8 @@ public final class JpaRules {
 
             private Optional<Boolean> isSpecificTransactional(HasAnnotations<T> item) {
                 return item.getAnnotations().stream()
-                        .filter(annotation -> annotation.getRawType().isAssignableTo(TRANSACTIONAL_CLASS_NAME))
+                        .filter(annotation ->
+                                annotation.getRawType().isAssignableTo(TRANSACTIONAL_CLASS_NAME))
                         .findFirst()
                         .map(this::isSpecificReadOnly);
             }

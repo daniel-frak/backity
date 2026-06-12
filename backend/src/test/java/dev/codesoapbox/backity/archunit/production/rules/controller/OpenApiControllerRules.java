@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.archunit.rules;
+package dev.codesoapbox.backity.archunit.production.rules.controller;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.Dependency;
@@ -10,6 +10,7 @@ import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
 import dev.codesoapbox.backity.BackityApplication;
+import dev.codesoapbox.backity.archunit.ArchUnitMetaAnnotation;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,8 @@ import java.util.*;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
-public final class OpenApiControllerRules {
+@SuppressWarnings("unused")
+public class OpenApiControllerRules {
 
     @ArchTest
     static final ArchRule OPENAPI_OPERATION_IDS_SHOULD_BE_UNIQUE =
@@ -81,10 +83,10 @@ public final class OpenApiControllerRules {
                 it helps avoid non-unique operationIds and makes the OpenAPI documentation more consistent..
                 
                 Context:
-                OpenAPI operationIds must be unique across the application. An easy way to achieve this is to include the Controller resource name \
-                in the method name.
-                This also helps avoid an inconsistent API naming where some operationIds include a prefix or suffix for uniqueness, \
-                while others don't.
+                OpenAPI operationIds must be unique across the application. An easy way to achieve this is to include \
+                the Controller resource name in the method name.
+                This also helps avoid an inconsistent API naming where \
+                some operationIds include a prefix or suffix for uniqueness, while others don't.
                 If an operationId is not explicitly defined via the @io.swagger.v3.oas.annotations.Operation annotation,
                 OpenAPI generates one based on the method name.
                 

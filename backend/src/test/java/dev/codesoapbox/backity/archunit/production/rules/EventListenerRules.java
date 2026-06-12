@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.archunit.rules;
+package dev.codesoapbox.backity.archunit.production.rules;
 
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.junit.ArchTest;
@@ -6,6 +6,7 @@ import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.ConditionEvents;
 import com.tngtech.archunit.lang.SimpleConditionEvent;
+import dev.codesoapbox.backity.archunit.ArchUnitMetaAnnotation;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -14,6 +15,7 @@ import java.util.*;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
+/// Rules specifically about event listeners, unrelated to anything else.
 @SuppressWarnings("unused")
 public class EventListenerRules {
 
@@ -27,7 +29,7 @@ public class EventListenerRules {
                 @Override
                 public void check(JavaMethod method, ConditionEvents events) {
                     Optional<TransactionalEventListener> annotationOpt =
-                            method.tryGetAnnotationOfType(TransactionalEventListener.class);
+                            ArchUnitMetaAnnotation.tryGet(TransactionalEventListener.class, method.getAnnotations());
 
                     if (annotationOpt.isEmpty()) {
                         return;
@@ -57,7 +59,8 @@ public class EventListenerRules {
                             List<JavaMethod> methods = entry.getValue();
 
                             for (JavaMethod method : methods) {
-                                String location = method.getOwner().getName() + "#" + method.getName() + " " + method.getSourceCodeLocation();
+                                String location = "%s#%s %s".formatted(
+                                        method.getOwner().getName(), method.getName(), method.getSourceCodeLocation());
                                 String message = "Duplicate @TransactionalEventListener id '%s' used in: %s".formatted(
                                         id,
                                         location
