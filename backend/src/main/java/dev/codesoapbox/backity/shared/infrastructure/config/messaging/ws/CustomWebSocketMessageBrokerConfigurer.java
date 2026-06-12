@@ -3,13 +3,11 @@ package dev.codesoapbox.backity.shared.infrastructure.config.messaging.ws;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.converter.JacksonJsonMessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
-import org.springframework.stereotype.Component;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 
-@Component
 @RequiredArgsConstructor
 public class CustomWebSocketMessageBrokerConfigurer implements WebSocketMessageBrokerConfigurer {
 

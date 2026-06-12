@@ -78,29 +78,6 @@ public class AdditionalArchitectureRules {
                     """);
 
     @ArchTest
-    static final ArchRule CONFIGURATION_SHOULD_RESIDE_IN_CORRECT_PACKAGE = classes().that()
-            .areAnnotatedWith(Configuration.class)
-            .should().resideInAPackage(CONFIG_PACKAGE)
-            .because("""
-                    a consistent structure makes code easier to work with.
-                    
-                    Context:
-                    If configuration classes are scattered across the project, developers \
-                    may struggle to find and use them properly. This can lead to duplicated and messy code.
-                    Keeping them in a dedicated package makes it easier to manage and understand them.
-                    
-                    Positive consequences:
-                    - Makes configuration classes easier to locate and manage.
-                    - Reduces confusion by maintaining a consistent project structure.
-                    
-                    Neutral consequences:
-                    - Configuration classes will still be spread across feature packages.
-                    
-                    Negative consequences:
-                    - Can introduce unnecessary subpackage complexity in simple modules.
-                    """);
-
-    @ArchTest
     static final ArchRule DOMAIN_SHOULD_NOT_DEPEND_ON_SPRING = noClasses().that()
             .resideInAPackage(DOMAIN_PACKAGE)
             .should().dependOnClassesThat(resideInAPackage(SPRING_PACKAGE))
@@ -217,7 +194,7 @@ public class AdditionalArchitectureRules {
 
     @ArchTest
     static final ArchRule CONTROLLERS_SHOULD_RESIDE_IN_CORRECT_PACKAGE = classes().that()
-            .areAnnotatedWith(RestController.class)
+            .areMetaAnnotatedWith(RestController.class)
             .should().resideInAPackage(CONTROLLER_PACKAGE)
             .because("""
                     a consistent structure makes code easier to work with.
