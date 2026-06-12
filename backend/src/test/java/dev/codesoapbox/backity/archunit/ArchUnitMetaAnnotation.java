@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.archunit.rules;
+package dev.codesoapbox.backity.archunit;
 
 import com.tngtech.archunit.core.domain.JavaAnnotation;
 import com.tngtech.archunit.core.domain.JavaClass;
@@ -13,11 +13,9 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * ArchUnit's {@link JavaMethod#tryGetAnnotationOfType(Class)} does not support meta annotations.
- * <p>
- * This class provides a workaround for that.
- */
+/// ArchUnit's [JavaMethod#tryGetAnnotationOfType(Class)] does not support meta annotations.
+///
+/// This class provides a workaround for that.
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ArchUnitMetaAnnotation {
 
