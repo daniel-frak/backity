@@ -50,14 +50,11 @@ import java.lang.annotation.*;
 ///
 /// # Motivation for shared context
 ///
-/// Creating many unique Spring Boot contexts can lead to the context cache filling up and evicting other,
-/// equally expensive contexts.
+/// Creating many unique Spring Boot contexts can lead to the context cache filling up and evicting other
+/// (potentially expensive) contexts.
 ///
-/// The database connection pool is also likely to run out of connections,
-/// randomly failing tests with errors such as "PSQLException: FATAL: sorry, too many clients already".
-///
-/// Thus, making all repository tests share a single application context should protect against cache eviction slowing
-/// down the tests, as well as test flakiness due to connection issues.
+/// Thus, making all tests of the same slice share a single application context should
+/// protect against cache eviction slowing down the tests.
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

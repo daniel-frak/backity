@@ -34,7 +34,8 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ContextCustomizerFactories(MockBeansContextCustomizerFactory.class)
+@ContextCustomizerFactories(factories = MockBeansContextCustomizerFactory.class,
+        mergeMode = ContextCustomizerFactories.MergeMode.MERGE_WITH_DEFAULTS)
 public @interface MockBeansMatching {
 
     ComponentScan value();

@@ -10,7 +10,7 @@ public class GogAuthRefreshSpringScheduler {
     private final GogAuthService gogAuthService;
 
     @Scheduled(fixedRateString = "${backity.gog-auth-scheduler.rate-ms}")
-    public void refreshAccessTokenIfNeeded() {
+    public void execute() {
         gogAuthService.refreshAccessTokenIfNeeded();
     }
 }
