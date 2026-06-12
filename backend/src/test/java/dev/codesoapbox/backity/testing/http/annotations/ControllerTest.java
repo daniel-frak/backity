@@ -14,19 +14,17 @@ import org.springframework.test.context.TestExecutionListeners;
 
 import java.lang.annotation.*;
 
-/**
- * Annotation for a controller test.
- * <p>
- * Mocks every use case and injects a fake clock bean.
- *
- * <h1>Motivation for shared context</h1>
- * <p>
- * While creating an application context for controller tests does not take a long time, it can lead to the context
- * cache filling up and evicting other, more expensive contexts (such as those for testing repositories).
- * <p>
- * Thus, making all controller tests share a single application context should protect against cache eviction slowing
- * down the tests.
- */
+/// Annotation for a controller test.
+///
+/// Mocks every use case and injects a fake clock bean.
+///
+/// # Motivation for shared context
+///
+/// Creating many unique Spring Boot contexts can lead to the context cache filling up and evicting other
+/// (potentially expensive) contexts.
+///
+/// Thus, making all tests of the same slice share a single application context should
+/// protect against cache eviction slowing down the tests.
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
