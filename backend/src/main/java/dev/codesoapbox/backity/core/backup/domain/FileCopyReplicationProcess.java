@@ -2,6 +2,13 @@ package dev.codesoapbox.backity.core.backup.domain;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+/// Coordinates file copy replication to ensure it starts only when the application is ready
+/// and that only one replication process runs at a time.
+///
+/// # Concurrency warning
+///
+/// Process information is maintained in memory. Therefore, file copy replication cannot be coordinated
+/// across multiple instances of this class or multiple instances of the application.
 public class FileCopyReplicationProcess {
 
     /*
