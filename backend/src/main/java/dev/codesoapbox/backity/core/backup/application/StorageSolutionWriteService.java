@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.backup.application.exceptions.StorageSolutio
 import dev.codesoapbox.backity.core.backup.application.writeprogress.OutputStreamProgressTracker;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
+import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolver;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,16 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class StorageSolutionWriteService {
 
+    /// [UniqueFilePathResolver] can only check for uniqueness against files which already exist, and therefore
+    /// cannot guarantee currently active backups are unique amongst themselves
+    /// (as their files may not exist at the time of validation).
+    ///
+    /// This map can be used to ensure multiple active backups are not writing to the same file at the same time.
+    ///
+    /// Warning! This alone is not enough to protect against overwriting existing files
+    /// if multiple instances of this application are running.
+    /// If multiple instances may be running, it is likely best to only allow one of them to perform backups at a time
+    /// (e.g., by using a distributed lock).
     private final ConcurrentHashMap<WriteDestination, ActiveWrite> activeWritesByDestination =
             new ConcurrentHashMap<>();
 
