@@ -94,14 +94,6 @@ The following optional properties are also available:
 - `backity.filesystem.s3.buffer-size-in-bytes` - the buffer size for multipart uploads
   (see: [AWS S3 multipart upload limits](https://docs.aws.amazon.com/AmazonS3/latest/userguide/qfacts.html))
 
-## Application Behavior
-
-The following information is useful to know about the application's functionality:
-
-- If downloading a file would result in overwriting an existing file, an exception will be thrown.
-  This helps to protect the existing file
-  and prevents multiple FileCopy aggregates from pointing to the same physical file.
-
 <!-- END_WEBSITE -->
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with
