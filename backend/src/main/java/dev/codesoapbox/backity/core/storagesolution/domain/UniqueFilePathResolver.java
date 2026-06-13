@@ -8,6 +8,10 @@ public class UniqueFilePathResolver {
 
     private static final int MAX_ATTEMPTS = 1000;
 
+    /*
+    Warning! This alone is not enough to ensure uniqueness if files are backed up concurrently.
+    In that case, two or more files might resolve to the same path, as neither exists in the storage solution yet.
+     */
     public FilePath resolve(PathTemplate pathTemplate, SourceFile sourceFile, StorageSolution storageSolution) {
         return constructPathUntilUnique(pathTemplate, sourceFile, storageSolution);
     }
