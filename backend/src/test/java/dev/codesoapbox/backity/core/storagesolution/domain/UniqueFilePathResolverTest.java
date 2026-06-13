@@ -46,11 +46,12 @@ class UniqueFilePathResolverTest {
             var filePath = new FilePath("/test/someGameProviderId/someGameTitle/someFileName.txt");
             fakeUnixFileManager.createFile(filePath);
 
-            FilePath result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
+            try (FilePathReservation result =
+                         uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager)) {
+                String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_1.txt";
 
-            String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_1.txt";
-
-            assertThat(toUnixPath(result.toString())).isEqualTo(expectedPath);
+                assertThat(toUnixPath(result.get().toString())).isEqualTo(expectedPath);
+            }
         }
 
         @Test
@@ -65,11 +66,13 @@ class UniqueFilePathResolverTest {
             fakeUnixFileManager.createFile(new FilePath(
                     "/test/someGameProviderId/someGameTitle/someFileName_1.txt"));
 
-            FilePath result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
+            try (FilePathReservation result =
+                         uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager)) {
 
-            String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_2.txt";
+                String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_2.txt";
 
-            assertThat(toUnixPath(result.toString())).isEqualTo(expectedPath);
+                assertThat(toUnixPath(result.get().toString())).isEqualTo(expectedPath);
+            }
         }
 
         @Test
@@ -81,11 +84,13 @@ class UniqueFilePathResolverTest {
                     .build();
             fakeUnixFileManager.createFile(new FilePath("/test/someGameProviderId/someGameTitle/someFileName"));
 
-            FilePath result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
+            try (FilePathReservation result =
+                         uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager)) {
 
-            String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_1";
+                String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_1";
 
-            assertThat(toUnixPath(result.toString())).isEqualTo(expectedPath);
+                assertThat(toUnixPath(result.get().toString())).isEqualTo(expectedPath);
+            }
         }
 
         @Test
@@ -98,11 +103,13 @@ class UniqueFilePathResolverTest {
             createFileSeveralTimes(999,
                     "/test/someGameProviderId/someGameTitle/someFileName", ".exe");
 
-            FilePath result = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager);
+            try (FilePathReservation result =
+                         uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager)) {
 
-            String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_999.exe";
+                String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_999.exe";
 
-            assertThat(toUnixPath(result.toString())).isEqualTo(expectedPath);
+                assertThat(toUnixPath(result.get().toString())).isEqualTo(expectedPath);
+            }
         }
 
         @SuppressWarnings("SameParameterValue")
@@ -114,6 +121,45 @@ class UniqueFilePathResolverTest {
             }
         }
 
+        @Test
+        void shouldResolveUniqueFilePathGivenPathIsReserved() {
+            SourceFile sourceFile = TestSourceFile.gogBuilder()
+                    .gameProviderId(new GameProviderId("someGameProviderId"))
+                    .originalGameTitle(new GameTitle("someGameTitle"))
+                    .originalFileName(new FileName("someFileName.exe"))
+                    .build();
+
+            try (var _ = uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager)) {
+                try (FilePathReservation result =
+                             uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager)) {
+
+                    String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName_1.exe";
+
+                    assertThat(toUnixPath(result.get().toString())).isEqualTo(expectedPath);
+                }
+            }
+        }
+
+        @Test
+        void shouldIgnoreFilePathReservationGivenItIsReleased() {
+            SourceFile sourceFile = TestSourceFile.gogBuilder()
+                    .gameProviderId(new GameProviderId("someGameProviderId"))
+                    .originalGameTitle(new GameTitle("someGameTitle"))
+                    .originalFileName(new FileName("someFileName.exe"))
+                    .build();
+            uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager)
+                    .close();
+
+            try (FilePathReservation result =
+                         uniqueFilePathResolver.resolve(PATH_TEMPLATE, sourceFile, fakeUnixFileManager)) {
+
+                String expectedPath = "/test/someGameProviderId/someGameTitle/someFileName.exe";
+
+                assertThat(toUnixPath(result.get().toString())).isEqualTo(expectedPath);
+            }
+        }
+
+        @SuppressWarnings("resource") // Will throw before returning closeable resource
         @Test
         void shouldThrowAfterFailingToFindUniqueFilePathTooManyTimes() {
             SourceFile sourceFile = TestSourceFile.gogBuilder()

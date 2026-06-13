@@ -8,6 +8,7 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
+import dev.codesoapbox.backity.core.storagesolution.domain.FilePathReservation;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolver;
 import lombok.RequiredArgsConstructor;
@@ -51,11 +52,14 @@ public class FileBackupService {
     @SuppressWarnings("java:S1166") // Intentionally suppressing FileWriteWasCanceledException
     private void tryToBackUp(FileCopy fileCopy, SourceFile sourceFile, BackupTarget backupTarget,
                              StorageSolution storageSolution) {
-        FilePath filePath = uniqueFilePathResolver.resolve(
-                backupTarget.getPathTemplate(), sourceFile, storageSolution);
-        markInProgress(fileCopy, filePath);
-
-        try {
+        /*
+        Note that the file path is only guaranteed to be unique within this replication process.
+        If the replication fails, a new file path MUST be resolved, as the UniqueFilePathResolver
+        does not verify against persisted file paths stored in the database.
+         */
+        try (FilePathReservation filePathReservation = uniqueFilePathResolver.resolve(
+                backupTarget.getPathTemplate(), sourceFile, storageSolution)) {
+            markInProgress(fileCopy, filePathReservation.get());
             fileCopyReplicator.replicate(storageSolution, sourceFile, fileCopy);
         } catch (FileWriteWasCanceledException _) {
             storageSolution.deleteIfExists(fileCopy.getFilePath());

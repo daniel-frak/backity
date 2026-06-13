@@ -7,14 +7,12 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopyFailureReason;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
-import dev.codesoapbox.backity.core.storagesolution.domain.FakeUnixStorageSolution;
-import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
-import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
-import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolver;
+import dev.codesoapbox.backity.core.storagesolution.domain.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -60,7 +58,7 @@ class FileBackupServiceTest {
                     fileBackupContext.backupTarget().getPathTemplate(),
                     fileBackupContext.sourceFile(),
                     fileBackupContext.storageSolution()))
-                    .thenReturn(filePath);
+                    .thenReturn(TestFilePathReservation.of(filePath));
 
             return filePath;
         }
@@ -156,6 +154,59 @@ class FileBackupServiceTest {
         }
 
         @Nested
+        class ReservingFilePaths {
+
+            private FilePathReservation aMockFilePathReservation() {
+                var filePathReservation = mock(FilePathReservation.class);
+                var filePath = new FilePath("someFileDir/someFile");
+                when(filePathReservation.get()).thenReturn(filePath);
+                return filePathReservation;
+            }
+
+            @Test
+            void shouldNotCloseReservationBeforeReplicating() {
+                FileBackupContext fileBackupContext = TestFileBackupContext.enqueuedLocalGog();
+                gameProviderIsConnectedFor(fileBackupContext.sourceFile());
+                FilePathReservation filePathReservation = aMockFilePathReservation();
+                aUniqueFilePathIsResolved(fileBackupContext, filePathReservation);
+
+                fileBackupService.backUpFile(fileBackupContext);
+
+                InOrder inOrder = inOrder(fileCopyReplicator, filePathReservation);
+                inOrder.verify(fileCopyReplicator).replicate(any(), any(), any());
+                inOrder.verify(filePathReservation).close();
+            }
+
+            /*
+             * It's safe to release the reservation immediately after replication, as the file already
+             * exists in the storage solution.
+             */
+            @Test
+            void shouldCloseReservationAfterStoringFileCopy() {
+                FileBackupContext fileBackupContext = TestFileBackupContext.enqueuedLocalGog();
+                gameProviderIsConnectedFor(fileBackupContext.sourceFile());
+                FilePathReservation filePathReservation = aMockFilePathReservation();
+                aUniqueFilePathIsResolved(fileBackupContext, filePathReservation);
+
+                fileBackupService.backUpFile(fileBackupContext);
+
+                InOrder inOrder = inOrder(fileCopyRepository, filePathReservation);
+                inOrder.verify(fileCopyRepository).save(argThat(fileCopy ->
+                        fileCopy.getStatus() == FileCopyStatus.STORED_INTEGRITY_UNKNOWN));
+                inOrder.verify(filePathReservation).close();
+            }
+
+            private void aUniqueFilePathIsResolved(
+                    FileBackupContext fileBackupContext, FilePathReservation filePathReservation) {
+                when(uniqueFilePathResolver.resolve(
+                        fileBackupContext.backupTarget().getPathTemplate(),
+                        fileBackupContext.sourceFile(),
+                        fileBackupContext.storageSolution()
+                )).thenReturn(filePathReservation);
+            }
+        }
+
+        @Nested
         class Canceling {
 
             @Test
@@ -191,7 +242,8 @@ class FileBackupServiceTest {
                 assertThat(storageSolution.fileExists(filePath)).isFalse();
             }
 
-            private void backupIsCanceledDuringReplication(FilePath filePath, FakeUnixStorageSolution storageSolution, FileBackupContext fileBackupContext) {
+            private void backupIsCanceledDuringReplication(
+                    FilePath filePath, FakeUnixStorageSolution storageSolution, FileBackupContext fileBackupContext) {
                 doThrow(new FileWriteWasCanceledException(filePath, storageSolution))
                         .when(fileCopyReplicator).replicate(storageSolution, fileBackupContext.sourceFile(),
                                 fileBackupContext.fileCopy());
