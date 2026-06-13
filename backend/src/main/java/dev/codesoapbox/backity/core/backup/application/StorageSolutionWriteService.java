@@ -19,11 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class StorageSolutionWriteService {
 
-    /// [UniqueFilePathResolver] can only check for uniqueness against files which already exist, and therefore
-    /// cannot guarantee currently active backups are unique amongst themselves
-    /// (as their files may not exist at the time of validation).
-    ///
-    /// This map can be used to ensure multiple active backups are not writing to the same file at the same time.
+    /// [UniqueFilePathResolver] should already guarantee active backups are unique among themselves.
+    /// This acts as a second layer of protection.
     ///
     /// Warning! This alone is not enough to protect against overwriting existing files
     /// if multiple instances of this application are running.
