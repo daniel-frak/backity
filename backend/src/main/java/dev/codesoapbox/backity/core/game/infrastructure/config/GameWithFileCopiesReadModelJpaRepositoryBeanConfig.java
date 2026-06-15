@@ -5,11 +5,11 @@ import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persiste
 import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.readmodel.GameWithFilesCopiesReadModelJpaEntityMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageableMapper;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositoryBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositorySliceConfiguration;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 
-@JpaRepositoryBeanConfiguration
+@JpaRepositorySliceConfiguration
 public class GameWithFileCopiesReadModelJpaRepositoryBeanConfig {
 
     @Bean

@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.testing.jpa.annotations;
 
 import dev.codesoapbox.backity.BackityApplication;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositoryBeanConfiguration;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringApplicationEventPublisherBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositorySliceConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringApplicationEventPublisherSliceConfiguration;
 import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceStrategy;
 import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceAdapter;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControlExtension;
@@ -57,7 +57,7 @@ import java.lang.annotation.Target;
         includeFilters = {
                 @ComponentScan.Filter(
                         type = FilterType.ANNOTATION,
-                        classes = JpaRepositoryBeanConfiguration.class
+                        classes = JpaRepositorySliceConfiguration.class
                 ),
                 @ComponentScan.Filter(
                         type = FilterType.ASSIGNABLE_TYPE,
@@ -71,7 +71,7 @@ import java.lang.annotation.Target;
                 basePackageClasses = BackityApplication.class,
                 includeFilters = @ComponentScan.Filter(
                         type = FilterType.ANNOTATION,
-                        classes = SpringApplicationEventPublisherBeanConfiguration.class
+                        classes = SpringApplicationEventPublisherSliceConfiguration.class
                 ),
                 useDefaultFilters = false
         )

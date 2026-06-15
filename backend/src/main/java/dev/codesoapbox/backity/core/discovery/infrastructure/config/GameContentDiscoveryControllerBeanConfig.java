@@ -1,11 +1,11 @@
 package dev.codesoapbox.backity.core.discovery.infrastructure.config;
 
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driving.api.http.model.GameContentDiscoveryOverviewHttpDtoMapper;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.ControllerBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.ControllerSliceConfiguration;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 
-@ControllerBeanConfiguration
+@ControllerSliceConfiguration
 public class GameContentDiscoveryControllerBeanConfig {
 
     @Bean

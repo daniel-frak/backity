@@ -2,11 +2,11 @@ package dev.codesoapbox.backity.core.backuptarget.infrastructure.config;
 
 import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driving.api.http.model.AddBackupTargetHttpDtoMapper;
 import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driving.api.http.model.BackupTargetHttpDtoMapper;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.ControllerBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.ControllerSliceConfiguration;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 
-@ControllerBeanConfiguration
+@ControllerSliceConfiguration
 public class BackupTargetControllerBeanConfig {
 
     @Bean

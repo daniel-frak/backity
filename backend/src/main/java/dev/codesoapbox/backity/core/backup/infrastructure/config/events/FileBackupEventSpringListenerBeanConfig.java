@@ -9,11 +9,11 @@ import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.event
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.eventlisteners.spring.ProcessFileCopyQueueOnFileCopyEnqueuedEventSpringListener;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.driving.eventlisteners.spring.SaveProgressToRepositoryOnFileCopyReplicationProgressChangedEventSpringListener;
 import dev.codesoapbox.backity.core.backup.infrastructure.adapters.shared.messaging.spring.outbox.FileCopyEnqueuedOutboxEventMapper;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringEventListenerBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringEventListenerSliceConfiguration;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 
-@SpringEventListenerBeanConfiguration
+@SpringEventListenerSliceConfiguration
 public class FileBackupEventSpringListenerBeanConfig {
 
     @Bean

@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.BackityApplication;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.lowercaseenums.CaseInsensitiveEnumConverter;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.lowercaseenums.LowercaseEnumFinder;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.lowercaseenums.openapi.LowercaseApiEnum;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.WebMvcConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.ControllerSliceConfiguration;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.context.ApplicationContext;
@@ -21,7 +21,7 @@ import org.springframework.web.servlet.resource.PathResourceResolver;
 import java.io.IOException;
 import java.util.List;
 
-@WebMvcConfiguration
+@ControllerSliceConfiguration
 @RequiredArgsConstructor
 public class MvcConfig implements WebMvcConfigurer {
 

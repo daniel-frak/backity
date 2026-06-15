@@ -4,12 +4,10 @@ import org.springframework.context.annotation.Configuration;
 
 import java.lang.annotation.*;
 
-/**
- * Configuration for ApplicationListener implementations.
- */
+/// Configuration for asynchronous execution
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Configuration(proxyBeanMethods = false)
-public @interface SpringApplicationListenerBeanConfiguration {
+public @interface SpringAsyncSliceConfiguration {
 }

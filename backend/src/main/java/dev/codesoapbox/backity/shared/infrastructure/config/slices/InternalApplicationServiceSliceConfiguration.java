@@ -5,11 +5,11 @@ import org.springframework.context.annotation.Configuration;
 import java.lang.annotation.*;
 
 /**
- * Configuration for use cases meant to be called by driving adapters.
+ * Configuration for application and domain services meant to be used by use cases or their dependencies.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Configuration(proxyBeanMethods = false)
-public @interface UseCaseBeanConfiguration {
+public @interface InternalApplicationServiceSliceConfiguration {
 }

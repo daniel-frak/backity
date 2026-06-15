@@ -3,10 +3,10 @@ package dev.codesoapbox.backity.core.game.infrastructure.config;
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesReadModelRepository;
 import dev.codesoapbox.backity.core.game.application.usecases.GetGamesWithFilesUseCase;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseSliceConfiguration;
 import org.springframework.context.annotation.Bean;
 
-@UseCaseBeanConfiguration
+@UseCaseSliceConfiguration
 public class GameUseCaseBeanConfig {
 
     @Bean

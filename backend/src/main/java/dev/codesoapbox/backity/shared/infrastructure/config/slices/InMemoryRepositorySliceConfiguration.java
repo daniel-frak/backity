@@ -5,11 +5,11 @@ import org.springframework.context.annotation.Configuration;
 import java.lang.annotation.*;
 
 /**
- * Configuration for OpenAPI.
+ * Configuration for in-memory and hardcoded repositories.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Configuration(proxyBeanMethods = false)
-public @interface OpenApiBeanConfiguration {
+public @interface InMemoryRepositorySliceConfiguration {
 }

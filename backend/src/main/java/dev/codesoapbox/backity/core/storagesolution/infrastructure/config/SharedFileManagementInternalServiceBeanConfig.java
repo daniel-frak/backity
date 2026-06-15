@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.core.storagesolution.infrastructure.config;
 
 import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolver;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.InternalApplicationServiceBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.InternalApplicationServiceSliceConfiguration;
 import org.springframework.context.annotation.Bean;
 
-@InternalApplicationServiceBeanConfiguration
+@InternalApplicationServiceSliceConfiguration
 public class SharedFileManagementInternalServiceBeanConfig {
 
     @Bean

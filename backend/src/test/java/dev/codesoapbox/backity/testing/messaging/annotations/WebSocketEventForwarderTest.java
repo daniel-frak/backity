@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.testing.messaging.annotations;
 
 import dev.codesoapbox.backity.BackityApplication;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.WebSocketEventForwarderBeanConfiguration;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.WebSocketEventPublisherBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.WebSocketEventForwarderSliceConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.WebSocketEventPublisherSliceConfiguration;
 import dev.codesoapbox.backity.testing.messaging.extensions.WebSocketEventPublisherTestExtension;
 import dev.codesoapbox.backity.testing.messaging.websockets.SharedSpringWebSocketEventListenerTestConfig;
 import dev.codesoapbox.backity.testing.messaging.websockets.TestMessageChannel;
@@ -47,8 +47,8 @@ public @interface WebSocketEventForwarderTest {
             includeFilters = @ComponentScan.Filter(
                     type = FilterType.ANNOTATION,
                     classes = {
-                            WebSocketEventPublisherBeanConfiguration.class,
-                            WebSocketEventForwarderBeanConfiguration.class
+                            WebSocketEventPublisherSliceConfiguration.class,
+                            WebSocketEventForwarderSliceConfiguration.class
                     }
             ),
             useDefaultFilters = false

@@ -5,12 +5,11 @@ import org.springframework.context.annotation.Configuration;
 import java.lang.annotation.*;
 
 /**
- * Configuration for event forwarders using
- * {@link dev.codesoapbox.backity.shared.application.eventhandlers.DomainEventForwarder}.
+ * Configuration for publishing WebSocket events.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Configuration(proxyBeanMethods = false)
-public @interface WebSocketEventForwarderBeanConfiguration {
+public @interface WebSocketEventPublisherSliceConfiguration {
 }

@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.core.storagesolution.infrastructure.config;
 
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolution;
 import dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.driven.filesystem.S3StorageSolution;
-import dev.codesoapbox.backity.core.storagesolution.infrastructure.config.slices.S3StorageSolutionBeanConfiguration;
+import dev.codesoapbox.backity.core.storagesolution.infrastructure.config.slices.S3StorageSolutionSliceConfiguration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import software.amazon.awssdk.services.s3.S3Client;
 
 @ConditionalOnProperty(value = "backity.filesystem.s3.enabled", havingValue = "true")
-@S3StorageSolutionBeanConfiguration
+@S3StorageSolutionSliceConfiguration
 public class S3StorageSolutionBeanConfig {
 
     @Bean

@@ -2,10 +2,10 @@ package dev.codesoapbox.backity.core.storagesolution.infrastructure.config;
 
 import dev.codesoapbox.backity.core.storagesolution.application.GetStorageSolutionStatusesUseCase;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseSliceConfiguration;
 import org.springframework.context.annotation.Bean;
 
-@UseCaseBeanConfiguration
+@UseCaseSliceConfiguration
 public class StorageSolutionUseCaseBeanConfig {
 
     @Bean

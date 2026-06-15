@@ -3,11 +3,11 @@ package dev.codesoapbox.backity.core.discovery.infrastructure.config;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.persistence.jpa.GameContentDiscoveryResultJpaEntityMapper;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.persistence.jpa.GameContentDiscoveryResultJpaRepository;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.persistence.jpa.GameContentDiscoveryResultSpringRepository;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositoryBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositorySliceConfiguration;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 
-@JpaRepositoryBeanConfiguration
+@JpaRepositorySliceConfiguration
 public class GameContentDiscoveryResultJpaRepositoryBeanConfig {
 
     @Bean

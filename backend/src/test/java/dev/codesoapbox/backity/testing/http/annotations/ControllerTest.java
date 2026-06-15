@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.testing.http.annotations;
 
 import dev.codesoapbox.backity.BackityApplication;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.ControllerBeanConfiguration;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.ControllerSliceConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseSliceConfiguration;
 import dev.codesoapbox.backity.testing.mocking.MockBeansMatching;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import dev.codesoapbox.backity.testing.time.config.ResetClockTestExecutionListener;
@@ -40,7 +40,7 @@ import java.lang.annotation.*;
         basePackageClasses = BackityApplication.class,
         includeFilters = @ComponentScan.Filter(
                 type = FilterType.ANNOTATION,
-                classes = ControllerBeanConfiguration.class
+                classes = ControllerSliceConfiguration.class
         ),
         useDefaultFilters = false
 )
@@ -49,7 +49,7 @@ import java.lang.annotation.*;
                 basePackageClasses = BackityApplication.class,
                 includeFilters = @ComponentScan.Filter(
                         type = FilterType.ANNOTATION,
-                        classes = UseCaseBeanConfiguration.class
+                        classes = UseCaseSliceConfiguration.class
                 ),
                 useDefaultFilters = false
         )

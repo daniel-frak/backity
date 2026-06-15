@@ -7,10 +7,10 @@ import dev.codesoapbox.backity.core.filecopy.application.FileCopyWithContextFact
 import dev.codesoapbox.backity.core.filecopy.application.usecases.*;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseSliceConfiguration;
 import org.springframework.context.annotation.Bean;
 
-@UseCaseBeanConfiguration
+@UseCaseSliceConfiguration
 public class FileCopyUseCaseBeanConfig {
 
     @Bean

@@ -5,11 +5,11 @@ import org.springframework.context.annotation.Configuration;
 import java.lang.annotation.*;
 
 /**
- * Configuration for schedulers using Spring's {@link org.springframework.scheduling.annotation.Scheduled}.
+ * Configuration for use cases meant to be called by driving adapters.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Configuration(proxyBeanMethods = false)
-public @interface SpringSchedulerBeanConfiguration {
+public @interface UseCaseSliceConfiguration {
 }

@@ -5,11 +5,11 @@ import org.springframework.context.annotation.Configuration;
 import java.lang.annotation.*;
 
 /**
- * Configuration for Domain Event handlers.
+ * Configuration for {@link org.springframework.web.reactive.function.client.WebClient} implementations.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Configuration(proxyBeanMethods = false)
-public @interface DomainEventHandlerBeanConfiguration {
+public @interface SpringWebClientSliceConfiguration {
 }

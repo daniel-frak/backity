@@ -1,10 +1,10 @@
 package dev.codesoapbox.backity.testing.messaging.annotations;
 
 import dev.codesoapbox.backity.BackityApplication;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.DomainEventHandlerBeanConfiguration;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringApplicationEventPublisherBeanConfiguration;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringAsyncConfiguration;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringEventListenerBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.DomainEventHandlerSliceConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringApplicationEventPublisherSliceConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringAsyncSliceConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringEventListenerSliceConfiguration;
 import dev.codesoapbox.backity.testing.async.TrackingTaskExecutor;
 import dev.codesoapbox.backity.testing.jpa.annotations.PostgresRepositoryTest;
 import dev.codesoapbox.backity.testing.messaging.extensions.InMemoryEventScenarioExtension;
@@ -71,9 +71,9 @@ import java.lang.annotation.*;
         includeFilters = @ComponentScan.Filter(
                 type = FilterType.ANNOTATION,
                 classes = {
-                        SpringAsyncConfiguration.class,
-                        SpringEventListenerBeanConfiguration.class,
-                        SpringApplicationEventPublisherBeanConfiguration.class
+                        SpringAsyncSliceConfiguration.class,
+                        SpringEventListenerSliceConfiguration.class,
+                        SpringApplicationEventPublisherSliceConfiguration.class
                 }
         ),
         useDefaultFilters = false
@@ -83,7 +83,7 @@ import java.lang.annotation.*;
                 basePackageClasses = BackityApplication.class,
                 includeFilters = @ComponentScan.Filter(
                         type = FilterType.ANNOTATION,
-                        classes = DomainEventHandlerBeanConfiguration.class
+                        classes = DomainEventHandlerSliceConfiguration.class
                 ),
                 useDefaultFilters = false
         )

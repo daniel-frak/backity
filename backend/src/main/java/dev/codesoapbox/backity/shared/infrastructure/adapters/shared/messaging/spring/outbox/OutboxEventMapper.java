@@ -1,5 +1,7 @@
 package dev.codesoapbox.backity.shared.infrastructure.adapters.shared.messaging.spring.outbox;
 
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringEventListenerSliceConfiguration;
+
 import java.lang.annotation.*;
 
 /// Marks a component responsible for converting a domain event into its corresponding outbox DTO representation.
@@ -29,9 +31,9 @@ import java.lang.annotation.*;
 /// }
 /// ```
 /// 
-/// 3. Declare it in a `@SpringEventListenerBeanConfiguration` class:
+/// 3. Declare it in a [SpringEventListenerSliceConfiguration] class:
 /// ```
-/// @SpringEventListenerBeanConfiguration
+/// @SpringEventListenerSliceConfiguration
 /// public class YourEventSpringListenerBeanConfig {
 ///
 ///     // ...

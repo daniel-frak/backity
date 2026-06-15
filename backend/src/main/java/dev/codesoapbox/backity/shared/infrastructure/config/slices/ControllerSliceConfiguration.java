@@ -5,11 +5,11 @@ import org.springframework.context.annotation.Configuration;
 import java.lang.annotation.*;
 
 /**
- * Configuration for application and domain services meant to be used by use cases or their dependencies.
+ * Configuration for Controller beans and their mappers.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Configuration(proxyBeanMethods = false)
-public @interface InternalApplicationServiceBeanConfiguration {
+public @interface ControllerSliceConfiguration {
 }
