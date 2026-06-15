@@ -3,18 +3,15 @@ package dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.p
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
-import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntity;
-import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntityMapper;
 import dev.codesoapbox.backity.core.sourcefile.domain.*;
 import dev.codesoapbox.backity.core.sourcefile.domain.exceptions.SourceFileNotFoundException;
-import dev.codesoapbox.backity.testing.jpa.TestJpaPersistenceAdapter;
+import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceAdapter;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,30 +37,15 @@ abstract class SourceFileJpaRepositoryIT {
     protected TestEntityManager entityManager;
 
     @Autowired
-    protected SourceFileJpaEntityMapper entityMapper;
-
-    @Autowired
     protected Clock clock;
 
-    private TestJpaPersistenceAdapter<SourceFile, SourceFileJpaEntity> sourceFileJpaAdapter;
-    private TestJpaPersistenceAdapter<Game, GameJpaEntity> gameJpaAdapter;
+    @Autowired
+    private DirectJpaPersistenceAdapter directPersistenceAdapter;
 
     @SuppressWarnings("JUnitMalformedDeclaration")
     @BeforeEach
     void setUp(EntityAuditControl entityAuditControl) {
         entityAuditControl.disable();
-        sourceFileJpaAdapter = new TestJpaPersistenceAdapter<>(
-                entityManager,
-                entityMapper::toEntity,
-                entityMapper::toDomain,
-                (em, obj) -> em.find(SourceFileJpaEntity.class, obj.getId().value())
-        );
-        gameJpaAdapter = new TestJpaPersistenceAdapter<>(
-                entityManager,
-                SampleGames.MAPPER::toEntity,
-                SampleGames.MAPPER::toDomain,
-                (em, obj) -> em.find(GameJpaEntity.class, obj.getId().value())
-        );
     }
 
     @Test
@@ -74,14 +56,14 @@ abstract class SourceFileJpaRepositoryIT {
         repository.save(sourceFile);
         entityManager.flush();
 
-        SourceFile persistedAggregate = sourceFileJpaAdapter.getPersistedDomainObject(sourceFile);
+        SourceFile persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(sourceFile);
         assertThat(persistedAggregate)
                 .usingRecursiveComparison()
                 .isEqualTo(sourceFile);
     }
 
     private void persistSampleDependencies() {
-        gameJpaAdapter.persist(SampleGames.getAll());
+        directPersistenceAdapter.persist(SampleGames.getAll());
     }
 
     @Test
@@ -93,7 +75,7 @@ abstract class SourceFileJpaRepositoryIT {
         repository.save(sourceFile);
         entityManager.flush();
 
-        SourceFile persistedAggregate = sourceFileJpaAdapter.getPersistedDomainObject(sourceFile);
+        SourceFile persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(sourceFile);
         assertThat(persistedAggregate)
                 .usingRecursiveComparison()
                 .isEqualTo(sourceFile);
@@ -101,7 +83,7 @@ abstract class SourceFileJpaRepositoryIT {
 
     void persistSampleData() {
         persistSampleDependencies();
-        sourceFileJpaAdapter.persist(SampleSourceFiles.getAll());
+        directPersistenceAdapter.persist(SampleSourceFiles.getAll());
     }
 
     @SuppressWarnings("JUnitMalformedDeclaration")
@@ -115,7 +97,7 @@ abstract class SourceFileJpaRepositoryIT {
         entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
-        SourceFile persistedAggregate = sourceFileJpaAdapter.getPersistedDomainObject(sourceFile);
+        SourceFile persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(sourceFile);
         assertThat(persistedAggregate.getDateCreated())
                 .isNotEqualTo(sourceFile.getDateCreated())
                 .isEqualTo(now);
@@ -136,7 +118,7 @@ abstract class SourceFileJpaRepositoryIT {
         entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
-        SourceFile persistedAggregate = sourceFileJpaAdapter.getPersistedDomainObject(sourceFile);
+        SourceFile persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(sourceFile);
         assertThat(persistedAggregate.getDateCreated())
                 .isEqualTo(sourceFile.getDateCreated())
                 .isNotEqualTo(now);
@@ -149,7 +131,7 @@ abstract class SourceFileJpaRepositoryIT {
     @CsvSource(value = {"1.0.0,true", "fakeVersion,false"})
     void existsByUrlAndVersion(String versionValue, boolean shouldFind) {
         persistSampleDependencies();
-        sourceFileJpaAdapter.persist(SampleSourceFiles.getAll());
+        directPersistenceAdapter.persist(SampleSourceFiles.getAll());
         var version = new FileVersion(versionValue);
         var url = new SourceFileUrl("/downlink/some_game/some_file");
 
@@ -161,7 +143,7 @@ abstract class SourceFileJpaRepositoryIT {
     @Test
     void findByIdShouldReturnAggregateGivenItExists() {
         persistSampleDependencies();
-        sourceFileJpaAdapter.persist(SampleSourceFiles.getAll());
+        directPersistenceAdapter.persist(SampleSourceFiles.getAll());
         SourceFile expectedSourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
 
         Optional<SourceFile> result = repository.findById(expectedSourceFile.getId());
@@ -184,7 +166,7 @@ abstract class SourceFileJpaRepositoryIT {
     @Test
     void getByIdShouldReturnAggregateGivenItExists() {
         persistSampleDependencies();
-        sourceFileJpaAdapter.persist(SampleSourceFiles.getAll());
+        directPersistenceAdapter.persist(SampleSourceFiles.getAll());
         SourceFile expectedSourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
 
         SourceFile result = repository.getById(expectedSourceFile.getId());
@@ -204,7 +186,7 @@ abstract class SourceFileJpaRepositoryIT {
     @Test
     void findAllByGameIdShouldReturnAllDataForAggregate() {
         persistSampleDependencies();
-        sourceFileJpaAdapter.persist(SampleSourceFiles.getAll());
+        directPersistenceAdapter.persist(SampleSourceFiles.getAll());
         List<SourceFile> result = repository.findAllByGameId(SampleGames.GAME_1.getId());
 
         assertThat(result)
@@ -218,7 +200,7 @@ abstract class SourceFileJpaRepositoryIT {
     @Test
     void findAllByIdInShouldReturnAllDataForAggregate() {
         persistSampleDependencies();
-        sourceFileJpaAdapter.persist(SampleSourceFiles.getAll());
+        directPersistenceAdapter.persist(SampleSourceFiles.getAll());
         SourceFile expectedSourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
 
         List<SourceFile> result = repository.findAllByIdIn(List.of(expectedSourceFile.getId()));
@@ -232,16 +214,14 @@ abstract class SourceFileJpaRepositoryIT {
     void deleteByIdShouldDeleteAggregate() {
         persistSampleDependencies();
         SourceFile sourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
-        sourceFileJpaAdapter.persist(sourceFile);
+        directPersistenceAdapter.persist(sourceFile);
 
         repository.deleteById(sourceFile.getId());
 
-        assertThat(sourceFileJpaAdapter.exists(sourceFile)).isFalse();
+        assertThat(directPersistenceAdapter.exists(sourceFile)).isFalse();
     }
 
     private static class SampleGames {
-
-        public static final GameJpaEntityMapper MAPPER = Mappers.getMapper(GameJpaEntityMapper.class);
 
         public static final Game GAME_1 = anyBuilder()
                 .withId(new GameId("1eec1c19-25bf-4094-b926-84b5bb8fa281"))

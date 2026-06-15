@@ -5,7 +5,7 @@ import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetName;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.exceptions.BackupTargetNotFoundException;
-import dev.codesoapbox.backity.testing.jpa.TestJpaPersistenceAdapter;
+import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceAdapter;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import dev.codesoapbox.backity.testing.time.FakeClock;
@@ -34,23 +34,15 @@ abstract class BackupTargetJpaRepositoryIT {
     protected TestEntityManager entityManager;
 
     @Autowired
-    protected BackupTargetJpaEntityMapper entityMapper;
-
-    @Autowired
     protected FakeClock clock;
 
-    private TestJpaPersistenceAdapter<BackupTarget, BackupTargetJpaEntity> backupTargetJpaAdapter;
+    @Autowired
+    private DirectJpaPersistenceAdapter directPersistenceAdapter;
 
     @SuppressWarnings("JUnitMalformedDeclaration")
     @BeforeEach
     void setUp(EntityAuditControl entityAuditControl) {
         entityAuditControl.disable();
-        backupTargetJpaAdapter = new TestJpaPersistenceAdapter<>(
-                entityManager,
-                entityMapper::toEntity,
-                entityMapper::toDomain,
-                (em, obj) -> em.find(BackupTargetJpaEntity.class, obj.getId().value())
-        );
     }
 
     @Test
@@ -60,7 +52,7 @@ abstract class BackupTargetJpaRepositoryIT {
         repository.save(backupTarget);
         entityManager.flush();
 
-        BackupTarget persistedAggregate = backupTargetJpaAdapter.getPersistedDomainObject(backupTarget);
+        BackupTarget persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(backupTarget);
         assertThat(persistedAggregate)
                 .usingRecursiveComparison()
                 .isEqualTo(backupTarget);
@@ -75,14 +67,14 @@ abstract class BackupTargetJpaRepositoryIT {
         repository.save(backupTarget);
         entityManager.flush();
 
-        BackupTarget persistedAggregate = backupTargetJpaAdapter.getPersistedDomainObject(backupTarget);
+        BackupTarget persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(backupTarget);
         assertThat(persistedAggregate)
                 .usingRecursiveComparison()
                 .isEqualTo(backupTarget);
     }
 
     void persistSampleData() {
-        backupTargetJpaAdapter.persist(SampleBackupTargets.getAll());
+        directPersistenceAdapter.persist(SampleBackupTargets.getAll());
     }
 
     @SuppressWarnings("JUnitMalformedDeclaration")
@@ -95,7 +87,7 @@ abstract class BackupTargetJpaRepositoryIT {
         entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
-        BackupTarget persistedAggregate = backupTargetJpaAdapter.getPersistedDomainObject(backupTarget);
+        BackupTarget persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(backupTarget);
         assertThat(persistedAggregate.getDateCreated())
                 .isNotEqualTo(backupTarget.getDateCreated())
                 .isEqualTo(now);
@@ -116,7 +108,7 @@ abstract class BackupTargetJpaRepositoryIT {
         entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
-        BackupTarget persistedAggregate = backupTargetJpaAdapter.getPersistedDomainObject(backupTarget);
+        BackupTarget persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(backupTarget);
         assertThat(persistedAggregate.getDateCreated())
                 .isEqualTo(backupTarget.getDateCreated())
                 .isNotEqualTo(now);
@@ -156,7 +148,7 @@ abstract class BackupTargetJpaRepositoryIT {
     @Test
     void findAllShouldReturnAllDataForAggregate() {
         BackupTarget backupTarget = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
-        backupTargetJpaAdapter.persist(backupTarget);
+        directPersistenceAdapter.persist(backupTarget);
 
         List<BackupTarget> result = repository.findAll();
 
@@ -222,7 +214,7 @@ abstract class BackupTargetJpaRepositoryIT {
 
         repository.deleteById(aggregateToDelete.getId());
 
-        assertThat(backupTargetJpaAdapter.exists(aggregateToDelete)).isFalse();
+        assertThat(directPersistenceAdapter.exists(aggregateToDelete)).isFalse();
     }
 
     private static class Time {
