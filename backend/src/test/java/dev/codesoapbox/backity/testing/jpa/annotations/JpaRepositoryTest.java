@@ -3,6 +3,8 @@ package dev.codesoapbox.backity.testing.jpa.annotations;
 import dev.codesoapbox.backity.BackityApplication;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositoryBeanConfiguration;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringApplicationEventPublisherBeanConfiguration;
+import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceStrategy;
+import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceAdapter;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControlExtension;
 import dev.codesoapbox.backity.testing.mocking.MockBeansMatching;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
@@ -45,14 +47,23 @@ import java.lang.annotation.Target;
         mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS)
 @Import({
         // Common
-        FakeTimeBeanConfig.class
+        FakeTimeBeanConfig.class,
+
+        // Testing tools
+        DirectJpaPersistenceAdapter.class,
 })
 @ComponentScan(
         basePackageClasses = BackityApplication.class,
-        includeFilters = @ComponentScan.Filter(
-                type = FilterType.ANNOTATION,
-                classes = JpaRepositoryBeanConfiguration.class
-        ),
+        includeFilters = {
+                @ComponentScan.Filter(
+                        type = FilterType.ANNOTATION,
+                        classes = JpaRepositoryBeanConfiguration.class
+                ),
+                @ComponentScan.Filter(
+                        type = FilterType.ASSIGNABLE_TYPE,
+                        classes = DirectJpaPersistenceStrategy.class
+                )
+        },
         useDefaultFilters = false
 )
 @MockBeansMatching(

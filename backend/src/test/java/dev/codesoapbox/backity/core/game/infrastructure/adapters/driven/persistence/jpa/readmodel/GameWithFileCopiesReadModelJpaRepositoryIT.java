@@ -3,11 +3,7 @@ package dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persist
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
-import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driven.persistence.jpa.BackupTargetJpaEntity;
-import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driven.persistence.jpa.BackupTargetJpaEntityMapper;
 import dev.codesoapbox.backity.core.filecopy.domain.*;
-import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.persistence.jpa.FileCopyJpaEntity;
-import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.persistence.jpa.FileCopyJpaEntityMapper;
 import dev.codesoapbox.backity.core.game.application.GameWithFileCopiesSearchFilter;
 import dev.codesoapbox.backity.core.game.application.TestGameWithFileCopiesSearchFilter;
 import dev.codesoapbox.backity.core.game.application.readmodel.*;
@@ -15,14 +11,10 @@ import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
-import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntity;
-import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntityMapper;
 import dev.codesoapbox.backity.core.sourcefile.domain.*;
-import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaEntity;
-import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaEntityMapper;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
-import dev.codesoapbox.backity.testing.jpa.TestJpaPersistenceAdapter;
+import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceAdapter;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
@@ -33,7 +25,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,47 +105,21 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
     @Autowired
     private TestEntityManager entityManager;
 
-    private TestJpaPersistenceAdapter<Game, GameJpaEntity> gameJpaAdapter;
-    private TestJpaPersistenceAdapter<SourceFile, SourceFileJpaEntity> sourceFileJpaAdapter;
-    private TestJpaPersistenceAdapter<BackupTarget, BackupTargetJpaEntity> backupTargetJpaAdapter;
-    private TestJpaPersistenceAdapter<FileCopy, FileCopyJpaEntity> fileCopyJpaAdapter;
+    @Autowired
+    private DirectJpaPersistenceAdapter directPersistenceAdapter;
 
     @SuppressWarnings("JUnitMalformedDeclaration")
     @BeforeEach
     void setUp(EntityAuditControl entityAuditControl) {
         entityAuditControl.disable();
-        fileCopyJpaAdapter = new TestJpaPersistenceAdapter<>(
-                entityManager,
-                SampleFileCopies.MAPPER::toEntity,
-                SampleFileCopies.MAPPER::toDomain,
-                (em, obj) -> em.find(FileCopyJpaEntity.class, obj.getId().value())
-        );
-        gameJpaAdapter = new TestJpaPersistenceAdapter<>(
-                entityManager,
-                SampleGames.MAPPER::toEntity,
-                SampleGames.MAPPER::toDomain,
-                (em, obj) -> em.find(GameJpaEntity.class, obj.getId().value())
-        );
-        sourceFileJpaAdapter = new TestJpaPersistenceAdapter<>(
-                entityManager,
-                SampleSourceFiles.MAPPER::toEntity,
-                SampleSourceFiles.MAPPER::toDomain,
-                (em, obj) -> em.find(SourceFileJpaEntity.class, obj.getId().value())
-        );
-        backupTargetJpaAdapter = new TestJpaPersistenceAdapter<>(
-                entityManager,
-                SampleBackupTargets.MAPPER::toEntity,
-                SampleBackupTargets.MAPPER::toDomain,
-                (em, obj) -> em.find(BackupTargetJpaEntity.class, obj.getId().value())
-        );
         persistSampleData();
     }
 
     private void persistSampleData() {
-        gameJpaAdapter.persist(SampleGames.getAll());
-        sourceFileJpaAdapter.persist(SampleSourceFiles.getAll());
-        backupTargetJpaAdapter.persist(SampleBackupTargets.getAll());
-        fileCopyJpaAdapter.persist(SampleFileCopies.getAll());
+        directPersistenceAdapter.persist(SampleGames.getAll());
+        directPersistenceAdapter.persist(SampleSourceFiles.getAll());
+        directPersistenceAdapter.persist(SampleBackupTargets.getAll());
+        directPersistenceAdapter.persist(SampleFileCopies.getAll());
     }
 
     @ParameterizedTest
@@ -399,8 +364,6 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
                 .withDateCreated(Time.TWO_DAYS_AGO.atStartOfDay())
                 .build();
 
-        private static final GameJpaEntityMapper MAPPER = Mappers.getMapper(GameJpaEntityMapper.class);
-
         public static List<Game> getAll() {
             return List.of(
                     GAME_1_CREATED_TODAY,
@@ -444,8 +407,6 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
                 .originalFileName(new FileName("game_3.exe"))
                 .build();
 
-        private static final SourceFileJpaEntityMapper MAPPER = Mappers.getMapper(SourceFileJpaEntityMapper.class);
-
         public static List<SourceFile> getAll() {
             return List.of(
                     GOG_SOURCE_FILE_1_FOR_GAME_1,
@@ -457,8 +418,6 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
     }
 
     private static class SampleBackupTargets {
-
-        public static final BackupTargetJpaEntityMapper MAPPER = Mappers.getMapper(BackupTargetJpaEntityMapper.class);
 
         public static final Supplier<BackupTarget> LOCAL_FOLDER_1 = () -> TestBackupTarget.localFolderBuilder()
                 .withId(new BackupTargetId("eda52c13-ddf7-406f-97d9-d3ce2cab5a76"))
@@ -527,8 +486,6 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
                         ))
                         .dateModified(Time.TODAY.atStartOfDay())
                         .build();
-
-        private static final FileCopyJpaEntityMapper MAPPER = Mappers.getMapper(FileCopyJpaEntityMapper.class);
 
         public static List<FileCopy> getAll() {
             return List.of(

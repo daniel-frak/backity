@@ -4,27 +4,21 @@ import dev.codesoapbox.backity.core.backup.domain.events.FileBackupStartedEvent;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import dev.codesoapbox.backity.core.backuptarget.domain.TestBackupTarget;
-import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driven.persistence.jpa.BackupTargetJpaEntity;
-import dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driven.persistence.jpa.BackupTargetJpaEntityMapper;
 import dev.codesoapbox.backity.core.filecopy.domain.*;
 import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotFoundException;
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.core.game.domain.GameId;
 import dev.codesoapbox.backity.core.game.domain.GameTitle;
-import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntity;
-import dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persistence.jpa.GameJpaEntityMapper;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileId;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
-import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaEntity;
-import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.persistence.jpa.SourceFileJpaEntityMapper;
 import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageableMapper;
-import dev.codesoapbox.backity.testing.jpa.TestJpaPersistenceAdapter;
+import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceAdapter;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import dev.codesoapbox.backity.testing.time.FakeClock;
@@ -32,7 +26,6 @@ import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -69,39 +62,13 @@ abstract class FileCopyJpaRepositoryIT {
     @Autowired
     protected FakeClock clock;
 
-    private TestJpaPersistenceAdapter<FileCopy, FileCopyJpaEntity> fileCopyJpaAdapter;
-    private TestJpaPersistenceAdapter<Game, GameJpaEntity> gameJpaAdapter;
-    private TestJpaPersistenceAdapter<SourceFile, SourceFileJpaEntity> sourceFileJpaAdapter;
-    private TestJpaPersistenceAdapter<BackupTarget, BackupTargetJpaEntity> backupTargetJpaAdapter;
+    @Autowired
+    private DirectJpaPersistenceAdapter directPersistenceAdapter;
 
     @SuppressWarnings("JUnitMalformedDeclaration")
     @BeforeEach
     void setUp(EntityAuditControl entityAuditControl) {
         entityAuditControl.disable();
-        fileCopyJpaAdapter = new TestJpaPersistenceAdapter<>(
-                entityManager,
-                entityMapper::toEntity,
-                entityMapper::toDomain,
-                (em, obj) -> em.find(FileCopyJpaEntity.class, obj.getId().value())
-        );
-        gameJpaAdapter = new TestJpaPersistenceAdapter<>(
-                entityManager,
-                SampleGames.MAPPER::toEntity,
-                SampleGames.MAPPER::toDomain,
-                (em, obj) -> em.find(GameJpaEntity.class, obj.getId().value())
-        );
-        sourceFileJpaAdapter = new TestJpaPersistenceAdapter<>(
-                entityManager,
-                SampleSourceFiles.MAPPER::toEntity,
-                SampleSourceFiles.MAPPER::toDomain,
-                (em, obj) -> em.find(SourceFileJpaEntity.class, obj.getId().value())
-        );
-        backupTargetJpaAdapter = new TestJpaPersistenceAdapter<>(
-                entityManager,
-                SampleBackupTargets.MAPPER::toEntity,
-                SampleBackupTargets.MAPPER::toDomain,
-                (em, obj) -> em.find(BackupTargetJpaEntity.class, obj.getId().value())
-        );
     }
 
     @Test
@@ -117,16 +84,16 @@ abstract class FileCopyJpaRepositoryIT {
         repository.save(fileCopy);
         entityManager.flush();
 
-        FileCopy persistedAggregate = fileCopyJpaAdapter.getPersistedDomainObject(fileCopy);
+        FileCopy persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(fileCopy);
         assertThat(persistedAggregate)
                 .usingRecursiveComparison()
                 .isEqualTo(fileCopy);
     }
 
     private void persistSampleDependencies() {
-        gameJpaAdapter.persist(SampleGames.getAll());
-        sourceFileJpaAdapter.persist(SampleSourceFiles.getAll());
-        backupTargetJpaAdapter.persist(SampleBackupTargets.getAll());
+        directPersistenceAdapter.persist(SampleGames.getAll());
+        directPersistenceAdapter.persist(SampleSourceFiles.getAll());
+        directPersistenceAdapter.persist(SampleBackupTargets.getAll());
     }
 
     @Test
@@ -138,7 +105,7 @@ abstract class FileCopyJpaRepositoryIT {
         repository.save(fileCopy);
         entityManager.flush();
 
-        FileCopy persistedAggregate = fileCopyJpaAdapter.getPersistedDomainObject(fileCopy);
+        FileCopy persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(fileCopy);
         assertThat(persistedAggregate)
                 .usingRecursiveComparison()
                 .isEqualTo(fileCopy);
@@ -146,7 +113,7 @@ abstract class FileCopyJpaRepositoryIT {
 
     private void persistSampleData() {
         persistSampleDependencies();
-        fileCopyJpaAdapter.persist(SampleFileCopies.getAll());
+        directPersistenceAdapter.persist(SampleFileCopies.getAll());
     }
 
     @SuppressWarnings("JUnitMalformedDeclaration")
@@ -160,7 +127,7 @@ abstract class FileCopyJpaRepositoryIT {
         entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
-        FileCopy persistedAggregate = fileCopyJpaAdapter.getPersistedDomainObject(fileCopy);
+        FileCopy persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(fileCopy);
         assertThat(persistedAggregate.getDateCreated())
                 .isNotEqualTo(fileCopy.getDateCreated())
                 .isEqualTo(now);
@@ -181,7 +148,7 @@ abstract class FileCopyJpaRepositoryIT {
         entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
-        FileCopy persistedAggregate = fileCopyJpaAdapter.getPersistedDomainObject(fileCopy);
+        FileCopy persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(fileCopy);
         assertThat(persistedAggregate.getDateCreated())
                 .isEqualTo(fileCopy.getDateCreated())
                 .isNotEqualTo(now);
@@ -222,7 +189,7 @@ abstract class FileCopyJpaRepositoryIT {
                 .id(new FileCopyId("09366863-b707-4e5c-8315-ed7e7c56d0a9"))
                 .naturalId(fileCopy1.getNaturalId())
                 .build();
-        fileCopyJpaAdapter.persist(fileCopy1);
+        directPersistenceAdapter.persist(fileCopy1);
 
         repository.save(fileCopy2);
 
@@ -301,7 +268,8 @@ abstract class FileCopyJpaRepositoryIT {
                 .isEqualTo(expectedExisting);
     }
 
-    private void aggregateIsCreatedConcurrently(FileCopySpringRepository mockSpringRepository, FileCopyNaturalId naturalId, FileCopy expectedExisting) {
+    private void aggregateIsCreatedConcurrently(
+            FileCopySpringRepository mockSpringRepository, FileCopyNaturalId naturalId, FileCopy expectedExisting) {
         when(mockSpringRepository.findByNaturalIdSourceFileIdAndNaturalIdBackupTargetId(
                 naturalId.sourceFileId().value(), naturalId.backupTargetId().value()))
                 // Nothing in DB during initial lookup:
@@ -473,8 +441,8 @@ abstract class FileCopyJpaRepositoryIT {
         repository.deleteByBackupTargetIdAndStatusIn(
                 fileCopy.getNaturalId().backupTargetId(), List.of(fileCopy.getStatus()));
 
-        assertThat(fileCopyJpaAdapter.exists(fileCopy)).isFalse();
-        assertThat(fileCopyJpaAdapter.exists(unaffectedFileCopy)).isTrue();
+        assertThat(directPersistenceAdapter.exists(fileCopy)).isFalse();
+        assertThat(directPersistenceAdapter.exists(unaffectedFileCopy)).isTrue();
     }
 
     @Test
@@ -485,7 +453,7 @@ abstract class FileCopyJpaRepositoryIT {
         repository.deleteByBackupTargetIdAndStatusIn(
                 fileCopy.getNaturalId().backupTargetId(), List.of(FileCopyStatus.FAILED));
 
-        assertThat(fileCopyJpaAdapter.exists(fileCopy)).isTrue();
+        assertThat(directPersistenceAdapter.exists(fileCopy)).isTrue();
     }
 
     private static class Time {
@@ -498,8 +466,6 @@ abstract class FileCopyJpaRepositoryIT {
 
     private static class SampleGames {
 
-        public static final GameJpaEntityMapper MAPPER = Mappers.getMapper(GameJpaEntityMapper.class);
-
         public static final Game GAME_1 = anyBuilder()
                 .withId(new GameId("1eec1c19-25bf-4094-b926-84b5bb8fa281"))
                 .withTitle(new GameTitle("Game 1"))
@@ -511,8 +477,6 @@ abstract class FileCopyJpaRepositoryIT {
     }
 
     private static class SampleSourceFiles {
-
-        public static final SourceFileJpaEntityMapper MAPPER = Mappers.getMapper(SourceFileJpaEntityMapper.class);
 
         public static final Supplier<SourceFile> GOG_SOURCE_FILE_1_FOR_GAME_1 = () -> TestSourceFile.gogBuilder()
                 .id(new SourceFileId("acde26d7-33c7-42ee-be16-bca91a604b48"))
@@ -564,8 +528,6 @@ abstract class FileCopyJpaRepositoryIT {
         public static final Supplier<BackupTarget> LOCAL_FOLDER_8 = () -> TestBackupTarget.localFolderBuilder()
                 .withId(new BackupTargetId("03468b45-7152-4026-b416-6a2602bf0c1c"))
                 .build();
-
-        private static final BackupTargetJpaEntityMapper MAPPER = Mappers.getMapper(BackupTargetJpaEntityMapper.class);
 
         public static List<BackupTarget> getAll() {
             return List.of(

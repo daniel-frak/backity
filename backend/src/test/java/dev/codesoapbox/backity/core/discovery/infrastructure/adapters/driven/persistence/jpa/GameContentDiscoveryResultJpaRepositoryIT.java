@@ -3,7 +3,7 @@ package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.pe
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResult;
 import dev.codesoapbox.backity.core.discovery.domain.TestGameContentDiscoveryResult;
-import dev.codesoapbox.backity.testing.jpa.TestJpaPersistenceAdapter;
+import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceAdapter;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,29 +28,17 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
     protected TestEntityManager entityManager;
 
     @Autowired
-    protected GameContentDiscoveryResultJpaEntityMapper entityMapper;
-
-    private TestJpaPersistenceAdapter<GameContentDiscoveryResult, GameContentDiscoveryResultJpaEntity>
-            gameContentDiscoveryResultJpaAdapter;
+    private DirectJpaPersistenceAdapter directPersistenceAdapter;
 
     @SuppressWarnings("JUnitMalformedDeclaration")
     @BeforeEach
     void setUp(EntityAuditControl entityAuditControl) {
         entityAuditControl.disable();
-        gameContentDiscoveryResultJpaAdapter = new TestJpaPersistenceAdapter<>(
-                entityManager,
-                entityMapper::toEntity,
-                entityMapper::toDomain,
-                (em, obj) ->
-                        em.find(GameContentDiscoveryResultJpaEntity.class, obj.getGameProviderId().value())
-        );
         persistSampleDependencies();
     }
 
     private void persistSampleDependencies() {
-        for (GameContentDiscoveryResult discoveryResult : SampleDiscoveryResults.getAll()) {
-            entityManager.persist(entityMapper.toEntity(discoveryResult));
-        }
+        directPersistenceAdapter.persist(SampleDiscoveryResults.getAll());
     }
 
     @Test
@@ -63,7 +51,7 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
         entityManager.flush();
 
         GameContentDiscoveryResult persistedAggregate =
-                gameContentDiscoveryResultJpaAdapter.getPersistedDomainObject(newDiscoveryResult);
+                directPersistenceAdapter.getPersistedDomainObject(newDiscoveryResult);
         assertThat(persistedAggregate)
                 .usingRecursiveComparison()
                 .isEqualTo(newDiscoveryResult);
@@ -77,7 +65,7 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
         entityManager.flush();
 
         GameContentDiscoveryResult persistedResult =
-                gameContentDiscoveryResultJpaAdapter.getPersistedDomainObject(discoveryResult);
+                directPersistenceAdapter.getPersistedDomainObject(discoveryResult);
         assertThat(persistedResult.getGamesDiscovered()).isEqualTo(999);
     }
 

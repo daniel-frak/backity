@@ -7,7 +7,7 @@ import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.game.domain.exceptions.GameNotFoundException;
 import dev.codesoapbox.backity.shared.domain.Page;
 import dev.codesoapbox.backity.shared.domain.Pagination;
-import dev.codesoapbox.backity.testing.jpa.TestJpaPersistenceAdapter;
+import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceAdapter;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import dev.codesoapbox.backity.testing.time.FakeClock;
@@ -39,23 +39,15 @@ abstract class GameJpaRepositoryIT {
     private TestEntityManager entityManager;
 
     @Autowired
-    private GameJpaEntityMapper entityMapper;
+    private FakeClock clock;
 
     @Autowired
-    private FakeClock clock;
-    
-    private TestJpaPersistenceAdapter<Game, GameJpaEntity> gameJpaAdapter;
+    private DirectJpaPersistenceAdapter directPersistenceAdapter;
 
     @SuppressWarnings("JUnitMalformedDeclaration")
     @BeforeEach
     void setUp(EntityAuditControl entityAuditControl) {
         entityAuditControl.disable();
-        gameJpaAdapter = new TestJpaPersistenceAdapter<>(
-                entityManager,
-                entityMapper::toEntity,
-                entityMapper::toDomain,
-                (em, obj) -> em.find(GameJpaEntity.class, obj.getId().value())
-        );
     }
 
     @Test
@@ -68,7 +60,7 @@ abstract class GameJpaRepositoryIT {
         repository.save(game);
         entityManager.flush();
 
-        Game persistedAggregate = gameJpaAdapter.getPersistedDomainObject(game);
+        Game persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(game);
         assertThat(persistedAggregate)
                 .usingRecursiveComparison()
                 .isEqualTo(game);
@@ -88,9 +80,9 @@ abstract class GameJpaRepositoryIT {
         assertThatThrownBy(() -> entityManager.flush())
                 .isInstanceOf(ConstraintViolationException.class);
     }
-    
+
     void persistSampleData() {
-        gameJpaAdapter.persist(SampleGames.getAll());
+        directPersistenceAdapter.persist(SampleGames.getAll());
     }
 
     @Test
@@ -102,7 +94,7 @@ abstract class GameJpaRepositoryIT {
         repository.save(game);
         entityManager.flush();
 
-        Game persistedAggregate = gameJpaAdapter.getPersistedDomainObject(game);
+        Game persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(game);
         assertThat(persistedAggregate)
                 .usingRecursiveComparison()
                 .isEqualTo(game);
@@ -118,7 +110,7 @@ abstract class GameJpaRepositoryIT {
         entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
-        Game persistedAggregate = gameJpaAdapter.getPersistedDomainObject(game);
+        Game persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(game);
         assertThat(persistedAggregate.getDateCreated())
                 .isNotEqualTo(game.getDateCreated())
                 .isEqualTo(now);
@@ -139,7 +131,7 @@ abstract class GameJpaRepositoryIT {
         entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
-        Game persistedAggregate = gameJpaAdapter.getPersistedDomainObject(game);
+        Game persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(game);
         assertThat(persistedAggregate.getDateCreated())
                 .isEqualTo(game.getDateCreated())
                 .isNotEqualTo(now);
