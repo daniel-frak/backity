@@ -4,10 +4,12 @@ import org.springframework.context.annotation.Configuration;
 
 import java.lang.annotation.*;
 
-/// Configuration for asynchronous execution
+/**
+ * Configuration for a Spring ApplicationEvent publisher.
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Configuration(proxyBeanMethods = false)
-public @interface SpringAsyncConfiguration {
+public @interface SpringApplicationEventPublisherSliceConfiguration {
 }

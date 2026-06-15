@@ -7,10 +7,10 @@ import dev.codesoapbox.backity.core.filecopy.application.FileCopyWithContextFact
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.game.domain.GameRepository;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileRepository;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.InternalApplicationServiceBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.InternalApplicationServiceSliceConfiguration;
 import org.springframework.context.annotation.Bean;
 
-@InternalApplicationServiceBeanConfiguration
+@InternalApplicationServiceSliceConfiguration
 public class FileCopyInternalServiceBeanConfig {
 
     @Bean

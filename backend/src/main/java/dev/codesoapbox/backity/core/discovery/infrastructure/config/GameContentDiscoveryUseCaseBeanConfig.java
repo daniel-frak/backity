@@ -5,10 +5,10 @@ import dev.codesoapbox.backity.core.discovery.application.GameContentDiscoverySe
 import dev.codesoapbox.backity.core.discovery.application.usecases.GetGameContentDiscoveryOverviewsUseCase;
 import dev.codesoapbox.backity.core.discovery.application.usecases.StartGameContentDiscoveryUseCase;
 import dev.codesoapbox.backity.core.discovery.application.usecases.StopGameContentDiscoveryUseCase;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseSliceConfiguration;
 import org.springframework.context.annotation.Bean;
 
-@UseCaseBeanConfiguration
+@UseCaseSliceConfiguration
 public class GameContentDiscoveryUseCaseBeanConfig {
 
     @Bean

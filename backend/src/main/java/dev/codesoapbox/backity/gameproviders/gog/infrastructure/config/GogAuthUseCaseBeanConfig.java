@@ -5,10 +5,10 @@ import dev.codesoapbox.backity.gameproviders.gog.application.usecases.CheckGogAu
 import dev.codesoapbox.backity.gameproviders.gog.application.usecases.LogOutOfGogUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.application.usecases.RefreshGogAccessTokenUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogAuthService;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseSliceConfiguration;
 import org.springframework.context.annotation.Bean;
 
-@UseCaseBeanConfiguration
+@UseCaseSliceConfiguration
 public class GogAuthUseCaseBeanConfig {
 
     @Bean

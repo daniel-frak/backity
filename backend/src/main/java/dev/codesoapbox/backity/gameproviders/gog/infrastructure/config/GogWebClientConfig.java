@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.gameproviders.gog.infrastructure.config;
 
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringWebClientBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringWebClientSliceConfiguration;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -8,7 +8,7 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
-@SpringWebClientBeanConfiguration
+@SpringWebClientSliceConfiguration
 @RequiredArgsConstructor
 public class GogWebClientConfig {
 

@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.shared.infrastructure.config;
 
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringAsyncConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringAsyncSliceConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +12,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 @EnableAsync
-@SpringAsyncConfiguration
+@SpringAsyncSliceConfiguration
 @Slf4j
 @SuppressWarnings("java:S103") // Can't avoid long URL in javadoc
 public class SpringAsyncConfigurer implements AsyncConfigurer {

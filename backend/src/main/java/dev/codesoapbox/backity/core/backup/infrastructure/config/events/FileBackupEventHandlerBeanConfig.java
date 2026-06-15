@@ -7,10 +7,10 @@ import dev.codesoapbox.backity.core.backup.application.eventhandlers.SaveProgres
 import dev.codesoapbox.backity.core.backup.application.usecases.ProcessFileCopyQueueUseCase;
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProcess;
 import dev.codesoapbox.backity.core.backup.domain.FileCopyReplicationProgressRepository;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.DomainEventHandlerBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.DomainEventHandlerSliceConfiguration;
 import org.springframework.context.annotation.Bean;
 
-@DomainEventHandlerBeanConfiguration
+@DomainEventHandlerSliceConfiguration
 public class FileBackupEventHandlerBeanConfig {
 
     @Bean

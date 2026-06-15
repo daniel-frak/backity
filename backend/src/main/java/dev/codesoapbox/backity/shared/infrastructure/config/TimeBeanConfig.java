@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.shared.infrastructure.config;
 
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.SystemServiceBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SystemServiceSliceConfiguration;
 import org.springframework.boot.validation.autoconfigure.ValidationConfigurationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.annotation.CreatedDate;
@@ -11,7 +11,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-@SystemServiceBeanConfiguration
+@SystemServiceSliceConfiguration
 public class TimeBeanConfig {
 
     @Bean

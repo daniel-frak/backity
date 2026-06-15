@@ -9,10 +9,10 @@ import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionRepository;
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseSliceConfiguration;
 import org.springframework.context.annotation.Bean;
 
-@UseCaseBeanConfiguration
+@UseCaseSliceConfiguration
 public class FileBackupUseCaseBeanConfig {
 
     @Bean

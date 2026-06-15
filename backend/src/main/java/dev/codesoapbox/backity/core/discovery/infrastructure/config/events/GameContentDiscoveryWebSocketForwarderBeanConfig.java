@@ -7,11 +7,11 @@ import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.mes
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.model.GameContentDiscoveryStartedWsEventMapper;
 import dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.messaging.ws.model.GameContentDiscoveryStoppedWsEventMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.ws.WebSocketEventPublisher;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.WebSocketEventForwarderBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.WebSocketEventForwarderSliceConfiguration;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 
-@WebSocketEventForwarderBeanConfiguration
+@WebSocketEventForwarderSliceConfiguration
 public class GameContentDiscoveryWebSocketForwarderBeanConfig {
 
     @Bean

@@ -1,6 +1,6 @@
 package dev.codesoapbox.backity.shared.infrastructure.config;
 
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.WebSocketEventPublisherBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.WebSocketEventPublisherSliceConfiguration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -11,7 +11,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 import java.util.List;
 
 @RequiredArgsConstructor
-@WebSocketEventPublisherBeanConfiguration
+@WebSocketEventPublisherSliceConfiguration
 @EnableWebSocketMessageBroker
 public class WebSocketBrokerConfig implements WebSocketMessageBrokerConfigurer {
 

@@ -7,11 +7,11 @@ import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.pers
 import dev.codesoapbox.backity.shared.domain.DomainEventPublisher;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageMapper;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence.jpa.SpringPageableMapper;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositoryBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositorySliceConfiguration;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 
-@JpaRepositoryBeanConfiguration
+@JpaRepositorySliceConfiguration
 public class FileCopyJpaRepositoryBeanConfig {
 
     @Bean

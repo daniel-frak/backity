@@ -4,7 +4,7 @@ import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.s
 import dev.codesoapbox.backity.shared.infrastructure.adapters.shared.messaging.spring.outbox.AnnotationBasedJsonEventSerializer;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.shared.messaging.spring.outbox.AnnotationBasedOutboxEventMapperRegistry;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.shared.messaging.spring.outbox.OutboxEventMapper;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringApplicationEventPublisherBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringApplicationEventPublisherSliceConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +14,7 @@ import tools.jackson.databind.json.JsonMapper;
 
 import java.util.List;
 
-@SpringApplicationEventPublisherBeanConfiguration
+@SpringApplicationEventPublisherSliceConfiguration
 public class SpringDomainEventPublisherBeanConfig {
 
     @Bean

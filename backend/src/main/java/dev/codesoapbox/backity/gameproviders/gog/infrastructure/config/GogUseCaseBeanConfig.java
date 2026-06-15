@@ -5,12 +5,12 @@ import dev.codesoapbox.backity.gameproviders.gog.application.usecases.GetGogConf
 import dev.codesoapbox.backity.gameproviders.gog.application.usecases.GetGogGameDetailsUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.application.usecases.GetGogLibrarySizeUseCase;
 import dev.codesoapbox.backity.gameproviders.gog.domain.GogLibraryService;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseSliceConfiguration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 
 @RequiredArgsConstructor
-@UseCaseBeanConfiguration
+@UseCaseSliceConfiguration
 public class GogUseCaseBeanConfig {
 
     private static final String USER_AUTH_URL_SUFFIX =

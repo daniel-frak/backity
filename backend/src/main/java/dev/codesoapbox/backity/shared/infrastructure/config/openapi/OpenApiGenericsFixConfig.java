@@ -1,13 +1,13 @@
 package dev.codesoapbox.backity.shared.infrastructure.config.openapi;
 
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.OpenApiBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.OpenApiSliceConfiguration;
 import io.swagger.v3.core.converter.ModelConverter;
 import org.springdoc.core.providers.ObjectMapperProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 
-@OpenApiBeanConfiguration
+@OpenApiSliceConfiguration
 public class OpenApiGenericsFixConfig {
 
     @Bean

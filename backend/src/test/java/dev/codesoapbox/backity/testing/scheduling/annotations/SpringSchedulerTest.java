@@ -2,7 +2,7 @@ package dev.codesoapbox.backity.testing.scheduling.annotations;
 
 import dev.codesoapbox.backity.BackityApplication;
 import dev.codesoapbox.backity.gameproviders.shared.infrastructure.config.slices.GameProviderServiceConfiguration;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringSchedulerBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringSchedulerSliceConfiguration;
 import dev.codesoapbox.backity.testing.mocking.MockBeansMatching;
 import dev.codesoapbox.backity.testing.scheduling.RegisteredSchedulers;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,7 +58,7 @@ public @interface SpringSchedulerTest {
             basePackageClasses = BackityApplication.class,
             includeFilters = @ComponentScan.Filter(
                     type = FilterType.ANNOTATION,
-                    classes = SpringSchedulerBeanConfiguration.class
+                    classes = SpringSchedulerSliceConfiguration.class
             ),
             useDefaultFilters = false
     )

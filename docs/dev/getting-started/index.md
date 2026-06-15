@@ -131,7 +131,7 @@ docker compose --profile s3 -f docker/e2e/docker-compose.yml --env-file docker/e
 
 # Running test suites
 
-## Unit tests (backend)
+## Backend tests
 
 Run backend unit tests with:
 
@@ -146,6 +146,21 @@ Run all backend tests (including integration tests) with:
 cd backend
 ../mvnw verify
 ````
+
+### Notice about running backend tests via Intellij
+
+Repository tests are generated via annotation processing, in the Maven `test-compile` step.
+IntelliJ does its own optimizations around build management 
+and might have trouble picking up the annotation processors for its internal logic,
+leading to missing tests when using Junit run configurations.
+
+If there are no tests in `backend/target/generated-test-sources`,
+that means they must be generated via `mvn test-compile`
+(or any other command which will trigger the necessary Maven steps.)
+
+A `generate test sources` run configuration is available as an alternative.
+
+Once the tests are generated, new tests in existing classes will automatically be picked up.
 
 ## Frontend tests
 

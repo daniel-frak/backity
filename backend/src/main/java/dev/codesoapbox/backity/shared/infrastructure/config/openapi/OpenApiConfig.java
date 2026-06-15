@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.shared.infrastructure.config.openapi;
 
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.lowercaseenums.openapi.SwaggerEnumLowerCaseModelConverter;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.OpenApiBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.OpenApiSliceConfiguration;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -17,7 +17,7 @@ import java.util.Arrays;
 
 import static java.util.Collections.singletonList;
 
-@OpenApiBeanConfiguration
+@OpenApiSliceConfiguration
 @OpenAPIDefinition
 @AllArgsConstructor
 public class OpenApiConfig {

@@ -1,14 +1,14 @@
 package dev.codesoapbox.backity.shared.infrastructure.config.events;
 
 import dev.codesoapbox.backity.shared.application.eventhandlers.DomainEventForwardingHandler;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.DomainEventHandlerBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.DomainEventHandlerSliceConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
 import java.util.Map;
 
-@DomainEventHandlerBeanConfiguration
+@DomainEventHandlerSliceConfiguration
 public class DomainEventForwardingHandlerBeanConfig {
 
     @Bean

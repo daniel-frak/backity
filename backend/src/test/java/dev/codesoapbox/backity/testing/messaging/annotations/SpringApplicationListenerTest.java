@@ -1,8 +1,8 @@
 package dev.codesoapbox.backity.testing.messaging.annotations;
 
 import dev.codesoapbox.backity.BackityApplication;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringApplicationListenerBeanConfiguration;
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringApplicationListenerSliceConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.UseCaseSliceConfiguration;
 import dev.codesoapbox.backity.testing.messaging.extensions.ApplicationEventScenarioExtension;
 import dev.codesoapbox.backity.testing.mocking.MockBeansMatching;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +33,7 @@ import java.time.Duration;
                 basePackageClasses = BackityApplication.class,
                 includeFilters = @ComponentScan.Filter(
                         type = FilterType.ANNOTATION,
-                        classes = UseCaseBeanConfiguration.class
+                        classes = UseCaseSliceConfiguration.class
                 ),
                 useDefaultFilters = false
         )
@@ -46,7 +46,7 @@ public @interface SpringApplicationListenerTest {
             includeFilters = @ComponentScan.Filter(
                     type = FilterType.ANNOTATION,
                     classes = {
-                            SpringApplicationListenerBeanConfiguration.class
+                            SpringApplicationListenerSliceConfiguration.class
                     }
             ),
             useDefaultFilters = false

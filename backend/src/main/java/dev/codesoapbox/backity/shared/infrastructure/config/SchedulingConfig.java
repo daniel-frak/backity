@@ -1,9 +1,9 @@
 package dev.codesoapbox.backity.shared.infrastructure.config;
 
-import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringSchedulerBeanConfiguration;
+import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringSchedulerSliceConfiguration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
-@SpringSchedulerBeanConfiguration
+@SpringSchedulerSliceConfiguration
 public class SchedulingConfig {
 }

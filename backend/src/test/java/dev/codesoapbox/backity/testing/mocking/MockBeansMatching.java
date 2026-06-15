@@ -19,7 +19,7 @@ import java.lang.annotation.*;
 ///         basePackageClasses = MyApplication.class,
 ///         includeFilters = @ComponentScan.Filter(
 ///                 type = FilterType.ANNOTATION,
-///                 classes = BarSliceBeanConfiguration.class // BarBeanConfiguration is annotated with it
+///                 classes = BarSliceConfiguration.class // BarBeanConfig is annotated with it
 ///         ),
 ///         useDefaultFilters = false
 ///     )
@@ -28,7 +28,7 @@ import java.lang.annotation.*;
 ///
 ///     @Autowired Foo foo;
 ///
-///     @Autowired Bar barMock; // declared as a real bean in BarBeanConfiguration
+///     @Autowired Bar barMock; // declared as a real bean in BarBeanConfig
 /// }
 /// ```
 @Target(ElementType.TYPE)
