@@ -2,22 +2,36 @@ package dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driven.p
 
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceStrategy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("unused") // Used via component scanning
+@RequiredArgsConstructor
 public class SourceFileDirectJpaPersistenceStrategy
-        extends DirectJpaPersistenceStrategy<SourceFile, SourceFileJpaEntity> {
+        implements DirectJpaPersistenceStrategy<SourceFile, SourceFileJpaEntity> {
 
-    public SourceFileDirectJpaPersistenceStrategy(
-            TestEntityManager entityManager,
-            SourceFileJpaEntityMapper entityMapper
-    ) {
-        super(
-                entityManager,
-                entityMapper::toEntity,
-                entityMapper::toDomain,
-                (em, obj) -> em.find(SourceFileJpaEntity.class, obj.getId().value()),
-                SourceFile.class
+    private final SourceFileJpaEntityMapper entityMapper;
+
+    @Override
+    public Class<SourceFile> getDomainObjectClass() {
+        return SourceFile.class;
+    }
+
+    @Override
+    public SourceFileJpaEntity toEntity(SourceFile domainObject) {
+        return entityMapper.toEntity(domainObject);
+    }
+
+    @Override
+    public SourceFile toDomain(SourceFileJpaEntity entity) {
+        return entityMapper.toDomain(entity);
+    }
+
+    @Override
+    public SourceFileJpaEntity findPersistedEntity(TestEntityManager entityManager, SourceFile domainObject) {
+        return entityManager.find(
+                SourceFileJpaEntity.class,
+                domainObject.getId().value()
         );
     }
 }

@@ -2,21 +2,35 @@ package dev.codesoapbox.backity.core.game.infrastructure.adapters.driven.persist
 
 import dev.codesoapbox.backity.core.game.domain.Game;
 import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceStrategy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 
-@SuppressWarnings("unused")
-public class GameDirectJpaPersistenceStrategy extends DirectJpaPersistenceStrategy<Game, GameJpaEntity> {
+@SuppressWarnings("unused") // Used via component scanning
+@RequiredArgsConstructor
+public class GameDirectJpaPersistenceStrategy implements DirectJpaPersistenceStrategy<Game, GameJpaEntity> {
 
-    public GameDirectJpaPersistenceStrategy(
-            TestEntityManager entityManager,
-            GameJpaEntityMapper entityMapper
-    ) {
-        super(
-                entityManager,
-                entityMapper::toEntity,
-                entityMapper::toDomain,
-                (em, obj) -> em.find(GameJpaEntity.class, obj.getId().value()),
-                Game.class
+    private final GameJpaEntityMapper entityMapper;
+
+    @Override
+    public Class<Game> getDomainObjectClass() {
+        return Game.class;
+    }
+
+    @Override
+    public GameJpaEntity toEntity(Game domainObject) {
+        return entityMapper.toEntity(domainObject);
+    }
+
+    @Override
+    public Game toDomain(GameJpaEntity entity) {
+        return entityMapper.toDomain(entity);
+    }
+
+    @Override
+    public GameJpaEntity findPersistedEntity(TestEntityManager entityManager, Game domainObject) {
+        return entityManager.find(
+                GameJpaEntity.class,
+                domainObject.getId().value()
         );
     }
 }
