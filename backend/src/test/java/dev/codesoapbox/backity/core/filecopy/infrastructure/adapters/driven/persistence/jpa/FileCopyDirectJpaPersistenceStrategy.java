@@ -2,21 +2,35 @@ package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.per
 
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceStrategy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 
-@SuppressWarnings("unused")
-public class FileCopyDirectJpaPersistenceStrategy extends DirectJpaPersistenceStrategy<FileCopy, FileCopyJpaEntity> {
+@SuppressWarnings("unused") // Used via component scanning
+@RequiredArgsConstructor
+public class FileCopyDirectJpaPersistenceStrategy implements DirectJpaPersistenceStrategy<FileCopy, FileCopyJpaEntity> {
 
-    public FileCopyDirectJpaPersistenceStrategy(
-            TestEntityManager entityManager,
-            FileCopyJpaEntityMapper entityMapper
-    ) {
-        super(
-                entityManager,
-                entityMapper::toEntity,
-                entityMapper::toDomain,
-                (em, obj) -> em.find(FileCopyJpaEntity.class, obj.getId().value()),
-                FileCopy.class
+    private final FileCopyJpaEntityMapper entityMapper;
+
+    @Override
+    public Class<FileCopy> getDomainObjectClass() {
+        return FileCopy.class;
+    }
+
+    @Override
+    public FileCopyJpaEntity toEntity(FileCopy domainObject) {
+        return entityMapper.toEntity(domainObject);
+    }
+
+    @Override
+    public FileCopy toDomain(FileCopyJpaEntity entity) {
+        return entityMapper.toDomain(entity);
+    }
+
+    @Override
+    public FileCopyJpaEntity findPersistedEntity(TestEntityManager entityManager, FileCopy domainObject) {
+        return entityManager.find(
+                FileCopyJpaEntity.class,
+                domainObject.getId().value()
         );
     }
 }

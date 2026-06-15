@@ -2,23 +2,37 @@ package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.pe
 
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResult;
 import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceStrategy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 
-@SuppressWarnings("unused")
+@SuppressWarnings("unused") // Used via component scanning
+@RequiredArgsConstructor
 public class GameContentDiscoveryResultDirectJpaPersistenceStrategy
-        extends DirectJpaPersistenceStrategy<GameContentDiscoveryResult, GameContentDiscoveryResultJpaEntity> {
+        implements DirectJpaPersistenceStrategy<GameContentDiscoveryResult, GameContentDiscoveryResultJpaEntity> {
 
-    public GameContentDiscoveryResultDirectJpaPersistenceStrategy(
-            TestEntityManager entityManager,
-            GameContentDiscoveryResultJpaEntityMapper entityMapper
-    ) {
-        super(
-                entityManager,
-                entityMapper::toEntity,
-                entityMapper::toDomain,
-                (em, obj) ->
-                        em.find(GameContentDiscoveryResultJpaEntity.class, obj.getGameProviderId().value()),
-                GameContentDiscoveryResult.class
+    private final GameContentDiscoveryResultJpaEntityMapper entityMapper;
+
+    @Override
+    public Class<GameContentDiscoveryResult> getDomainObjectClass() {
+        return GameContentDiscoveryResult.class;
+    }
+
+    @Override
+    public GameContentDiscoveryResultJpaEntity toEntity(GameContentDiscoveryResult domainObject) {
+        return entityMapper.toEntity(domainObject);
+    }
+
+    @Override
+    public GameContentDiscoveryResult toDomain(GameContentDiscoveryResultJpaEntity entity) {
+        return entityMapper.toDomain(entity);
+    }
+
+    @Override
+    public GameContentDiscoveryResultJpaEntity findPersistedEntity(
+            TestEntityManager entityManager, GameContentDiscoveryResult domainObject) {
+        return entityManager.find(
+                GameContentDiscoveryResultJpaEntity.class,
+                domainObject.getGameProviderId().value()
         );
     }
 }
