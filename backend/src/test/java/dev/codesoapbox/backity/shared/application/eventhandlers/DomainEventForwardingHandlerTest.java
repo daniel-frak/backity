@@ -1,6 +1,7 @@
 package dev.codesoapbox.backity.shared.application.eventhandlers;
 
 import dev.codesoapbox.backity.shared.application.eventhandlers.exceptions.DomainEventForwardingHandlerException;
+import dev.codesoapbox.backity.testing.TestException;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.Test;
@@ -50,7 +51,7 @@ class DomainEventForwardingHandlerTest {
     @Test
     void shouldWrapButDeliverLaterGivenEarlierConsumerThrows() {
         var throwingConsumer = new TestEventConsumer();
-        RuntimeException expectedCause = new RuntimeException("Test exception");
+        var expectedCause = new TestException();
         throwingConsumer.setShouldThrow(expectedCause);
         var succeedingConsumer = new TestEventConsumer();
         var eventHandler = new DomainEventForwardingHandler(Map.of(

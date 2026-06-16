@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.shared.infrastructure.config.events;
 import dev.codesoapbox.backity.shared.application.eventhandlers.DomainEventForwarder;
 import dev.codesoapbox.backity.shared.application.eventhandlers.DomainEventForwardingHandler;
 import dev.codesoapbox.backity.shared.infrastructure.config.events.exceptions.DomainEventForwarderException;
+import dev.codesoapbox.backity.testing.TestException;
 import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +56,7 @@ class DomainEventForwarderFinderIT {
     @Test
     void shouldWrapGivenEventConsumerThrows() {
         var event = new TestEvent("test");
-        var expectedCause = new RuntimeException("Test exception");
+        var expectedCause = new TestException();
         testEventForwarder.setShouldThrow(expectedCause);
         Map<Class<?>, List<DomainEventForwardingHandler.EventForwardingConsumer<?>>> result =
                 finder.findEventForwardingConsumersByEventClass();
@@ -75,11 +76,11 @@ class DomainEventForwarderFinderIT {
     @DomainEventForwarder
     public static class TestEventForwarder {
 
-        @Setter
-        private RuntimeException shouldThrow = null;
-
         @Getter
         private final List<String> forwardedEvents = new ArrayList<>();
+
+        @Setter
+        private RuntimeException shouldThrow = null;
 
         public void clear() {
             forwardedEvents.clear();

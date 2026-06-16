@@ -8,6 +8,7 @@ import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFileRepository;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestDiscoveredFile;
+import dev.codesoapbox.backity.testing.TestException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -127,7 +128,7 @@ class GameContentDiscoveryServiceTest {
 
         @Test
         void shouldChangeStatusToNotInProgressOnFailure() {
-            gameProviderFileDiscoveryService.setExceptionToThrowDuringDiscovery(new RuntimeException("Test exception"));
+            gameProviderFileDiscoveryService.setExceptionToThrowDuringDiscovery(new TestException());
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();
 
@@ -145,7 +146,7 @@ class GameContentDiscoveryServiceTest {
 
         @Test
         void shouldFinalizeTrackingOnFailure() {
-            gameProviderFileDiscoveryService.setExceptionToThrowDuringDiscovery(new RuntimeException("Test exception"));
+            gameProviderFileDiscoveryService.setExceptionToThrowDuringDiscovery(new TestException());
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();
 
@@ -163,7 +164,7 @@ class GameContentDiscoveryServiceTest {
 
         @Test
         void shouldNotMarkSuccessfulOnFailure() {
-            gameProviderFileDiscoveryService.setExceptionToThrowDuringDiscovery(new RuntimeException("Test exception"));
+            gameProviderFileDiscoveryService.setExceptionToThrowDuringDiscovery(new TestException());
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();
 

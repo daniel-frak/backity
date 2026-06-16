@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.ap
 import dev.codesoapbox.backity.core.filecopy.application.usecases.DownloadFileCopyUseCase;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
 import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
+import dev.codesoapbox.backity.testing.TestException;
 import dev.codesoapbox.backity.testing.http.annotations.ControllerTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,13 +98,13 @@ class DownloadFileCopyControllerIT {
         when(useCase.execute(fileCopyId))
                 .thenReturn(fileResource);
         when(fileResource.inputStream())
-                .thenThrow(new RuntimeException("Test exception"));
+                .thenThrow(new TestException());
 
         return fileResource;
     }
 
     private void useCaseThrows() throws FileNotFoundException {
         when(useCase.execute(any()))
-                .thenThrow(new RuntimeException("Test exception"));
+                .thenThrow(new TestException());
     }
 }

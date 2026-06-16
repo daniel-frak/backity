@@ -5,6 +5,7 @@ import dev.codesoapbox.backity.core.storagesolution.domain.FileResource;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionStatus;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.FileCouldNotBeDeletedException;
+import dev.codesoapbox.backity.testing.TestException;
 import dev.codesoapbox.backity.testing.s3.annotations.S3RepositoryTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -145,7 +146,7 @@ class S3StorageSolutionIT {
 
         @Test
         void shouldThrowGivenException() {
-            var expectedCause = new RuntimeException("Test exception");
+            var expectedCause = new TestException();
             S3Client s3Client = s3ClientThrowingOnDeletion(expectedCause);
             s3StorageSolution = new S3StorageSolution(s3Client, BUCKET_NAME, BUFFER_SIZE_IN_BYTES);
             var filePath = new FilePath(S3_FILE_1_KEY);

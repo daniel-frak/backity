@@ -8,6 +8,7 @@ import dev.codesoapbox.backity.core.filecopy.domain.FileCopyRepository;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import dev.codesoapbox.backity.core.sourcefile.domain.SourceFile;
 import dev.codesoapbox.backity.core.storagesolution.domain.*;
+import dev.codesoapbox.backity.testing.TestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -361,9 +362,10 @@ class FileBackupServiceTest {
                 }
 
                 private RuntimeException pathResolverAlwaysThrows() {
-                    var coreException = new RuntimeException("Test exception");
+                    var coreException = new TestException();
                     when(uniqueFilePathResolver.resolve(any(), any(), any()))
                             .thenThrow(coreException);
+
                     return coreException;
                 }
 
