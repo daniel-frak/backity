@@ -1,8 +1,7 @@
 package dev.codesoapbox.backity.shared.infrastructure.config.exceptionhandling;
 
-import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
-import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotBackedUpException;
 import dev.codesoapbox.backity.shared.domain.exceptions.DomainInvariantViolationException;
+import dev.codesoapbox.backity.testing.TestException;
 import dev.codesoapbox.backity.testing.matchers.UuidMatcher;
 import jakarta.persistence.OptimisticLockException;
 import org.junit.jupiter.api.AfterEach;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.RequestContextHolder;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -32,6 +32,8 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standal
 
 class RestExceptionHandlerIT {
 
+    private static final String DOMAIN_INVARIANT_VIOLATION_KEY = "TEST_DOMAIN_INVARIANT_VIOLATION";
+
     private MockMvc mockMvc;
     private TestController testController;
 
@@ -39,7 +41,11 @@ class RestExceptionHandlerIT {
     void setup() {
         testController = mock(TestController.class);
         this.mockMvc = standaloneSetup(testController)
-                .setControllerAdvice(RestExceptionHandler.class)
+                .setControllerAdvice(new RestExceptionHandler(List.of(
+                        () -> Map.of(
+                                DomainInvariantViolationException.class, DOMAIN_INVARIANT_VIOLATION_KEY
+                        )
+                )))
                 .setMessageConverters(new JacksonJsonHttpMessageConverter()).build();
     }
 
@@ -85,25 +91,25 @@ class RestExceptionHandlerIT {
 
     @Test
     void shouldHandleDomainInvariantViolationExceptionsWithNoCauseWithMessageKeys() throws Exception {
-        var expectedException = new FileCopyNotBackedUpException(FileCopyId.newInstance());
+        var expectedException = new DomainInvariantViolationException();
         testEndpointThrows(expectedException);
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isUnprocessableContent())
                 .andExpect(jsonPath("$.message").value(expectedException.getMessage()))
-                .andExpect(jsonPath("$.messageKey").value("FILE_COPY_NOT_BACKED_UP"));
+                .andExpect(jsonPath("$.messageKey").value(DOMAIN_INVARIANT_VIOLATION_KEY));
     }
 
     @Test
     void shouldHandleDomainInvariantViolationExceptionsWithCauseWithMessageKeys() throws Exception {
         String expectedMessage = "Domain error message";
         testEndpointThrows(new DomainInvariantViolationException(expectedMessage,
-                new FileCopyNotBackedUpException(FileCopyId.newInstance())));
+                new TestException()));
 
         mockMvc.perform(get("/"))
                 .andExpect(status().isUnprocessableContent())
                 .andExpect(jsonPath("$.message").value(expectedMessage))
-                .andExpect(jsonPath("$.messageKey").value("FILE_COPY_NOT_BACKED_UP"));
+                .andExpect(jsonPath("$.messageKey").value(DOMAIN_INVARIANT_VIOLATION_KEY));
     }
 
     @Test
@@ -169,9 +175,9 @@ class RestExceptionHandlerIT {
         return methodParameter;
     }
 
-    @RestController
+    @RestController("test")
     @RequestMapping
-    private interface TestController {
+    public interface TestController {
 
         @GetMapping
         String testEndpoint() throws MethodArgumentNotValidException;
