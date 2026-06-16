@@ -10,6 +10,7 @@ import dev.codesoapbox.backity.core.storagesolution.domain.FilePath;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.testing.TestDataBufferFlux;
 import dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driven.api.embed.testing.TestFlux;
 import dev.codesoapbox.backity.shared.application.progress.ProgressInfo;
+import dev.codesoapbox.backity.testing.TestException;
 import dev.codesoapbox.backity.testing.time.FakeClock;
 import io.netty.handler.codec.dns.DefaultDnsQuestion;
 import io.netty.handler.codec.dns.DnsRecordType;
@@ -334,24 +335,24 @@ class DataBufferFluxTrackableFileStreamTest {
                         ),
                         Arguments.of(
                                 "non-recoverable exception thrown during write",
-                                TestDataBufferFlux.immediatelyFailing(new IllegalStateException("Test exception")),
+                                TestDataBufferFlux.immediatelyFailing(new TestException()),
                                 (Consumer<FakeUnixStorageSolution>) _ -> {
                                     // Do nothing
                                 }
                         ),
                         Arguments.of(
                                 "file deletion throws exception",
-                                TestDataBufferFlux.immediatelyFailing(new IllegalStateException("Test exception")),
+                                TestDataBufferFlux.immediatelyFailing(new TestException()),
                                 (Consumer<FakeUnixStorageSolution>) storage -> {
-                                    var testException = new RuntimeException("Test exception");
+                                    var testException = new TestException();
                                     storage.setShouldThrowOnFileDeletion(testException);
                                 }
                         ),
                         Arguments.of(
                                 "OutputStream retrieval throws exception",
-                                TestDataBufferFlux.immediatelyFailing(new IllegalStateException("Test exception")),
+                                TestDataBufferFlux.immediatelyFailing(new TestException()),
                                 (Consumer<FakeUnixStorageSolution>) storage -> {
-                                    var testException = new RuntimeException("Test exception");
+                                    var testException = new TestException();
                                     storage.setShouldThrowOnGetOutputStream(testException);
                                 }
                         )
