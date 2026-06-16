@@ -1,4 +1,4 @@
-package dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driving.api.http.model.sourcefile;
+package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

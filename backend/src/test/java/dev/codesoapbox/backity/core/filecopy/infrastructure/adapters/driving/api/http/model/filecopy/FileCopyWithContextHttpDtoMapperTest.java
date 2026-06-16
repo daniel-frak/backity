@@ -6,7 +6,6 @@ import dev.codesoapbox.backity.core.filecopy.application.usecases.FileCopyWithCo
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
 import dev.codesoapbox.backity.core.game.domain.TestGame;
 import dev.codesoapbox.backity.core.sourcefile.domain.TestSourceFile;
-import dev.codesoapbox.backity.core.sourcefile.infrastructure.adapters.driving.api.http.model.sourcefile.FileCopyStatusHttpDto;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.model.ProgressHttpDto;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
