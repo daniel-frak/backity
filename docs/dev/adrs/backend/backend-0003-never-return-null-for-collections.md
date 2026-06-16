@@ -1,5 +1,6 @@
 ---
 title: Never Return NULL for Collection Types
+date: 2026-06-16
 status: accepted
 scope: backend
 ---

@@ -1,5 +1,6 @@
 ---
 title: Decouple event listeners from handlers
+date: 2026-06-16
 status: accepted
 scope: backend
 tags: ['architecture']

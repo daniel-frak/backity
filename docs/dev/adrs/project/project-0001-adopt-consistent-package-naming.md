@@ -1,5 +1,6 @@
 ---
 title: Adopt Consistent Package Naming Conventions
+date: 2026-06-16
 status: accepted
 scope: project
 ---

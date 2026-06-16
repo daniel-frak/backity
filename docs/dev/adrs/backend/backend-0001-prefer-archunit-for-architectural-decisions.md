@@ -1,5 +1,6 @@
 ---
 title: Prefer ArchUnit as an Architectural Decision Record store
+date: 2026-06-16
 status: accepted
 scope: backend
 tags: ['architecture']

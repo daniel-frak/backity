@@ -1,5 +1,6 @@
 ---
 title: Use consistent naming conventions for Liquibase migrations
+date: 2026-06-16
 status: accepted
 scope: backend
 tags: ['database']

@@ -1,5 +1,6 @@
 ---
 title: Prefer to treat a single class as a unit for testing
+date: 2026-06-16
 status: accepted
 scope: backend
 tags: ['testing']

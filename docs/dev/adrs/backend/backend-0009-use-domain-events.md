@@ -1,5 +1,6 @@
 ---
 title: Use domain events
+date: 2026-06-16
 status: accepted
 scope: backend
 tags: [ 'architecture' ]

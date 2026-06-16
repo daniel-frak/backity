@@ -1,5 +1,6 @@
 ---
 title: Adhere to the test pyramid
+date: 2026-06-16
 status: accepted
 scope: project
 tags: ['testing']

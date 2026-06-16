@@ -1,5 +1,6 @@
 ---
 title: Use Pitest for mutation testing
+date: 2026-06-16
 status: accepted
 scope: backend
 tags: ['testing']

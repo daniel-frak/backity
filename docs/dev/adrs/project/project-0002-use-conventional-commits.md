@@ -1,5 +1,6 @@
 ---
 title: Use Conventional Commits
+date: 2026-06-16
 status: accepted
 scope: project
 ---
