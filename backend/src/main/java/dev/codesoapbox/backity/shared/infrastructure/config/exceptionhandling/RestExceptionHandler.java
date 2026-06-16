@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.shared.infrastructure.config.exceptionhandling;
 
-import dev.codesoapbox.backity.core.filecopy.domain.exceptions.FileCopyNotBackedUpException;
 import dev.codesoapbox.backity.shared.domain.exceptions.DomainInvariantViolationException;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.exceptionhandling.ErrorMessageHttpDto;
 import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.exceptionhandling.ValidationErrorHttpDto;
@@ -27,15 +26,23 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 @Slf4j
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @SuppressWarnings("java:S6411") // Cannot implement Comparable for Class type
-    private final Map<Class<? extends Throwable>, String> messageKeysByExceptionClass = Map.of(
-            FileCopyNotBackedUpException.class, "FILE_COPY_NOT_BACKED_UP"
-    );
+    private final Map<Class<? extends Throwable>, String> messageKeysByExceptionClass;
+
+    public RestExceptionHandler(List<ExceptionMessageKeyProvider> providers) {
+        this.messageKeysByExceptionClass = providers.stream()
+                .flatMap(p -> p.getMessageKeys().entrySet().stream())
+                .collect(Collectors.toUnmodifiableMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue
+                ));
+    }
 
     @ExceptionHandler(RuntimeException.class)
     @ApiResponse(responseCode = "500", description = "An internal error occurred")
@@ -49,7 +56,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(DomainInvariantViolationException.class)
     @ApiResponse(responseCode = "422",
             description = "The request was well-formed, but the parameters were contradictory, invalid, " +
-                          "or otherwise unable to be processed")
+                    "or otherwise unable to be processed")
     public ResponseEntity<ErrorMessageHttpDto> handleDomainErrors(DomainInvariantViolationException ex) {
         log.warn("A domain error occurred: ", ex);
         String messageKey = null;

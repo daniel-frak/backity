@@ -2,6 +2,7 @@ package dev.codesoapbox.backity.core.filecopy.infrastructure.config;
 
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyHttpDtoMapper;
 import dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driving.api.http.model.filecopy.FileCopyWithContextHttpDtoMapper;
+import dev.codesoapbox.backity.core.filecopy.infrastructure.config.exceptionhandling.FileCopyExceptionMessageKeyProvider;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.ControllerSliceConfiguration;
 import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
@@ -17,5 +18,10 @@ public class FileCopyControllerBeanConfig {
     @Bean
     FileCopyWithContextHttpDtoMapper fileCopyWithContextHttpDtoMapper() {
         return Mappers.getMapper(FileCopyWithContextHttpDtoMapper.class);
+    }
+
+    @Bean
+    FileCopyExceptionMessageKeyProvider fileCopyExceptionMessageKeyProvider() {
+        return new FileCopyExceptionMessageKeyProvider();
     }
 }

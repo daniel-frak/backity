@@ -37,6 +37,32 @@ public class ModuleIsolationRules {
                     """);
 
     @ArchTest
+    static final ArchRule SHARED_SHOULD_NOT_DEPEND_ON_OTHER_MODULES = noClasses().that()
+            .resideInAPackage(BackityApplication.class.getPackageName() + ".shared..")
+            .should().dependOnClassesThat()
+            .resideInAnyPackage(
+                    BackityApplication.class.getPackageName() + ".core..",
+                    BackityApplication.class.getPackageName() + ".integrations.."
+            )
+            .because("""
+                circular dependencies between shared and other modules would undermine modularity \
+                and complicate builds and testing.
+                
+                Context:
+                The shared module is intended to provide common utilities and abstractions \
+                that other modules can depend on.
+                Referencing other modules from shared would invert this dependency direction, \
+                creating circular dependencies and tightly coupling shared to the rest of the codebase.
+                This would undermine the purpose of the shared module and make it difficult to reuse \
+                or reason about in isolation.
+                
+                Positive consequences:
+                - Preserves the shared module as a stable, reusable foundation for other modules.
+                - Prevents circular dependencies between shared and the modules that depend on it.
+                - Makes the shared module easier to reason about and test in isolation.
+                """);
+
+    @ArchTest
     static final ArchRule GAME_PROVIDER_INTEGRATIONS_SHOULD_NOT_DEPEND_ON_EACH_OTHER = slices()
             .matching(ArchitectureRules.Constants.GAME_PROVIDERS_PACKAGE_PATTERN)
             .should().notDependOnEachOther()
