@@ -2,13 +2,17 @@ package dev.codesoapbox.backity.testing.jpa;
 
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /// Allows interacting with the database directly through simple JPA queries
-/// so that repository tests can be made completely independent of each other.
+/// so that repository method tests can be made independent of other repository methods.
+///
+/// Automatically flushes and clears the entity manager
+/// so that assertions check persisted state rather than in-memory state from the persistence context.
 public class DirectJpaPersistenceAdapter {
 
     private final TestEntityManager entityManager;
@@ -30,17 +34,30 @@ public class DirectJpaPersistenceAdapter {
 
     @SafeVarargs
     public final <T> void persist(T... domainObjects) {
-        if (domainObjects == null || domainObjects.length == 0) {
-            throw new IllegalArgumentException("At least one domain object is required");
+        if (domainObjects == null) {
+            throw atLeastOneDomainObjectIsRequiredException();
+        }
+        persist(Arrays.asList(domainObjects));
+    }
+
+    private IllegalArgumentException atLeastOneDomainObjectIsRequiredException() {
+        return new IllegalArgumentException("At least one domain object is required");
+    }
+
+    public <T> void persist(List<T> domainObjects) {
+        if (domainObjects == null || domainObjects.isEmpty()) {
+            throw atLeastOneDomainObjectIsRequiredException();
         }
 
-        DirectJpaPersistenceStrategy<T, ?> strategy = getStrategyFor(domainObjects[0]);
+        DirectJpaPersistenceStrategy<T, ?> strategy = getStrategyFor(domainObjects.getFirst());
 
-        for (T domainObject : domainObjects) {
-            entityManager.persist(strategy.toEntity(domainObject));
-        }
+        domainObjects.forEach(
+                domainObject -> entityManager.persist(strategy.toEntity(domainObject))
+        );
 
+        // Verify persisted state rather than the managed entity's in-memory state:
         entityManager.flush();
+        entityManager.clear();
     }
 
     @SuppressWarnings("unchecked")
@@ -64,21 +81,16 @@ public class DirectJpaPersistenceAdapter {
                 strategiesByDomainClass.get(domainObject.getClass());
     }
 
-    public <T> void persist(List<T> domainObjects) {
-        if (domainObjects == null || domainObjects.isEmpty()) {
-            throw new IllegalArgumentException("At least one domain object is required");
-        }
-
-        DirectJpaPersistenceStrategy<T, ?> strategy = getStrategyFor(domainObjects.getFirst());
-
-        domainObjects.forEach(
-                domainObject -> entityManager.persist(strategy.toEntity(domainObject))
-        );
-
-        entityManager.flush();
+    @SuppressWarnings("unchecked")
+    private <E> E cast(Object entity) {
+        return (E) entity;
     }
 
     public <T> T getPersistedDomainObject(T domainObject) {
+        // Verify persisted state rather than the managed entity's in-memory state:
+        entityManager.flush();
+        entityManager.clear();
+
         DirectJpaPersistenceStrategy<T, ?> strategy = getStrategyFor(domainObject);
 
         Object entity = strategy.findPersistedEntity(entityManager, domainObject);
@@ -86,11 +98,6 @@ public class DirectJpaPersistenceAdapter {
         return entity == null
                 ? null
                 : strategy.toDomain(cast(entity));
-    }
-
-    @SuppressWarnings("unchecked")
-    private <E> E cast(Object entity) {
-        return (E) entity;
     }
 
     public <T> boolean exists(T domainObject) {
