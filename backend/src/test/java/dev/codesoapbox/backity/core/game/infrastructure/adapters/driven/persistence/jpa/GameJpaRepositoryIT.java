@@ -58,7 +58,6 @@ abstract class GameJpaRepositoryIT {
                 .build();
 
         repository.save(game);
-        entityManager.flush();
 
         Game persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(game);
         assertThat(persistedAggregate)
@@ -85,6 +84,10 @@ abstract class GameJpaRepositoryIT {
         directPersistenceAdapter.persist(SampleGames.getAll());
     }
 
+    private Pagination everythingOnOnePage() {
+        return new Pagination(0, 999);
+    }
+
     @Test
     void saveShouldModifyExisting() {
         persistSampleData();
@@ -92,7 +95,6 @@ abstract class GameJpaRepositoryIT {
         game.setTitle(new GameTitle("New Title"));
 
         repository.save(game);
-        entityManager.flush();
 
         Game persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(game);
         assertThat(persistedAggregate)
@@ -107,7 +109,6 @@ abstract class GameJpaRepositoryIT {
         Game game = SampleGames.GAME_CREATED_YESTERDAY.get();
 
         repository.save(game);
-        entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
         Game persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(game);
@@ -128,7 +129,6 @@ abstract class GameJpaRepositoryIT {
         game.setTitle(new GameTitle("Changed Title"));
 
         repository.save(game);
-        entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
         Game persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(game);
@@ -197,10 +197,6 @@ abstract class GameJpaRepositoryIT {
         assertThat(result.content())
                 .usingRecursiveFieldByFieldElementComparator()
                 .containsExactlyInAnyOrderElementsOf(expectedContent);
-    }
-
-    private Pagination everythingOnOnePage() {
-        return new Pagination(0, 999);
     }
 
     @Test

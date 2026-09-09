@@ -82,7 +82,6 @@ abstract class FileCopyJpaRepositoryIT {
                 .build();
 
         repository.save(fileCopy);
-        entityManager.flush();
 
         FileCopy persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(fileCopy);
         assertThat(persistedAggregate)
@@ -96,6 +95,25 @@ abstract class FileCopyJpaRepositoryIT {
         directPersistenceAdapter.persist(SampleBackupTargets.getAll());
     }
 
+    private void aggregateIsCreatedConcurrently(
+            FileCopySpringRepository mockSpringRepository, FileCopyNaturalId naturalId, FileCopy expectedExisting) {
+        when(mockSpringRepository.findByNaturalIdSourceFileIdAndNaturalIdBackupTargetId(
+                naturalId.sourceFileId().value(), naturalId.backupTargetId().value()))
+                // Nothing in DB during initial lookup:
+                .thenReturn(Optional.empty());
+        when(mockSpringRepository.save(any()))
+                // Someone saved before we did
+                .thenThrow(new DataIntegrityViolationException("unique constraint violation"));
+        when(mockSpringRepository.getByNaturalIdSourceFileIdAndNaturalIdBackupTargetId(
+                naturalId.sourceFileId().value(), naturalId.backupTargetId().value()))
+                // Someone saved before second lookup:
+                .thenReturn(entityMapper.toEntity(expectedExisting));
+    }
+
+    private Pagination everythingOnOnePage() {
+        return new Pagination(0, 999);
+    }
+
     @Test
     void saveShouldModifyExisting() {
         persistSampleData();
@@ -103,7 +121,6 @@ abstract class FileCopyJpaRepositoryIT {
         fileCopy.toInProgress(new FilePath("someFilePath"));
 
         repository.save(fileCopy);
-        entityManager.flush();
 
         FileCopy persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(fileCopy);
         assertThat(persistedAggregate)
@@ -124,7 +141,6 @@ abstract class FileCopyJpaRepositoryIT {
         FileCopy fileCopy = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
 
         repository.save(fileCopy);
-        entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
         FileCopy persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(fileCopy);
@@ -145,7 +161,6 @@ abstract class FileCopyJpaRepositoryIT {
         fileCopy.toInProgress(new FilePath("someFilePath"));
 
         repository.save(fileCopy);
-        entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
         FileCopy persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(fileCopy);
@@ -268,21 +283,6 @@ abstract class FileCopyJpaRepositoryIT {
                 .isEqualTo(expectedExisting);
     }
 
-    private void aggregateIsCreatedConcurrently(
-            FileCopySpringRepository mockSpringRepository, FileCopyNaturalId naturalId, FileCopy expectedExisting) {
-        when(mockSpringRepository.findByNaturalIdSourceFileIdAndNaturalIdBackupTargetId(
-                naturalId.sourceFileId().value(), naturalId.backupTargetId().value()))
-                // Nothing in DB during initial lookup:
-                .thenReturn(Optional.empty());
-        when(mockSpringRepository.save(any()))
-                // Someone saved before we did
-                .thenThrow(new DataIntegrityViolationException("unique constraint violation"));
-        when(mockSpringRepository.getByNaturalIdSourceFileIdAndNaturalIdBackupTargetId(
-                naturalId.sourceFileId().value(), naturalId.backupTargetId().value()))
-                // Someone saved before second lookup:
-                .thenReturn(entityMapper.toEntity(expectedExisting));
-    }
-
     @Test
     void findOldestEnqueuedShouldReturnOldestEnqueued() {
         persistSampleData();
@@ -310,10 +310,6 @@ abstract class FileCopyJpaRepositoryIT {
         assertThat(result.content())
                 .usingRecursiveFieldByFieldElementComparator()
                 .containsExactlyInAnyOrderElementsOf(expectedContent);
-    }
-
-    private Pagination everythingOnOnePage() {
-        return new Pagination(0, 999);
     }
 
     @Test

@@ -54,7 +54,6 @@ abstract class SourceFileJpaRepositoryIT {
         SourceFile sourceFile = TestSourceFile.gog();
 
         repository.save(sourceFile);
-        entityManager.flush();
 
         SourceFile persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(sourceFile);
         assertThat(persistedAggregate)
@@ -73,7 +72,6 @@ abstract class SourceFileJpaRepositoryIT {
         sourceFile.setFileTitle(new FileTitle("differentFileTitle"));
 
         repository.save(sourceFile);
-        entityManager.flush();
 
         SourceFile persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(sourceFile);
         assertThat(persistedAggregate)
@@ -94,7 +92,6 @@ abstract class SourceFileJpaRepositoryIT {
         SourceFile sourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
 
         repository.save(sourceFile);
-        entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
         SourceFile persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(sourceFile);
@@ -115,7 +112,6 @@ abstract class SourceFileJpaRepositoryIT {
         sourceFile.setFileTitle(new FileTitle("differentFileTitle"));
 
         repository.save(sourceFile);
-        entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
         SourceFile persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(sourceFile);

@@ -50,7 +50,6 @@ abstract class BackupTargetJpaRepositoryIT {
         BackupTarget backupTarget = SampleBackupTargets.TODAY_LOCAL_FOLDER.get();
 
         repository.save(backupTarget);
-        entityManager.flush();
 
         BackupTarget persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(backupTarget);
         assertThat(persistedAggregate)
@@ -65,7 +64,6 @@ abstract class BackupTargetJpaRepositoryIT {
         backupTarget.setName(new BackupTargetName("Changed name"));
 
         repository.save(backupTarget);
-        entityManager.flush();
 
         BackupTarget persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(backupTarget);
         assertThat(persistedAggregate)
@@ -84,7 +82,6 @@ abstract class BackupTargetJpaRepositoryIT {
         BackupTarget backupTarget = SampleBackupTargets.YESTERDAY_S3_BUCKET.get();
 
         repository.save(backupTarget);
-        entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
         BackupTarget persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(backupTarget);
@@ -105,7 +102,6 @@ abstract class BackupTargetJpaRepositoryIT {
         entityAuditControl.enable();
 
         repository.save(backupTarget);
-        entityManager.flush();
 
         LocalDateTime now = LocalDateTime.now(clock);
         BackupTarget persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(backupTarget);

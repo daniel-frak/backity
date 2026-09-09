@@ -48,7 +48,6 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
                 .build();
 
         repository.save(newDiscoveryResult);
-        entityManager.flush();
 
         GameContentDiscoveryResult persistedAggregate =
                 directPersistenceAdapter.getPersistedDomainObject(newDiscoveryResult);
@@ -62,7 +61,6 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
         GameContentDiscoveryResult discoveryResult = SampleDiscoveryResults.GOG_DISCOVERY_RESULT.get();
         discoveryResult.setGamesDiscovered(999);
         repository.save(discoveryResult);
-        entityManager.flush();
 
         GameContentDiscoveryResult persistedResult =
                 directPersistenceAdapter.getPersistedDomainObject(discoveryResult);
