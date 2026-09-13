@@ -53,6 +53,6 @@
     "karma-jasmine": "5.1.0",
     "karma-jasmine-html-reporter": "2.3.0",
     "karma-sonarqube-unit-reporter": "1.0.0",
-    "typescript": "6.0.3"
+    "typescript": "7.0.2"
   }
 }
