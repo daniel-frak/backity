@@ -81,6 +81,17 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true
+            },
+            "testing": {
+              "aot": false,
+              "optimization": false,
+              "extractLicenses": false,
+              "polyfills": [
+                "zone.js",
+                "zone.js/testing",
+                "zone.js/plugins/vitest-patch",
+                "@angular/localize/init"
+              ]
             }
           },
           "defaultConfiguration": ""
@@ -104,45 +115,27 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "main": "src/test.ts",
-            "polyfills": [
-              "src/polyfills.ts",
-              "@angular/localize/init"
-            ],
             "tsConfig": "tsconfig.spec.json",
-            "karmaConfig": "karma.conf.js",
-            "stylePreprocessorOptions": {
-              "includePaths": [
-                "src/scss"
-              ]
-            },
-            "inlineStyleLanguage": "scss",
-            "assets": [
-              "src/assets",
-              {
-                "glob": "favicon.svg",
-                "input": ".generated/branding",
-                "output": "/assets"
-              },
-              {
-                "glob": "logo-color-on-dark.svg",
-                "input": ".generated/branding",
-                "output": "/assets"
-              }
-            ],
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": [],
-            "codeCoverageExclude": [
+            "coverageExclude": [
               "**/test-*.ts",
               "**/*.factory.ts",
               "**/*.stub.ts",
               "src/backend/**",
               "src/app/core/pages/theme/**"
-            ]
+            ],
+            "reporters": [
+              "default"
+            ],
+            "coverageReporters": [
+              "html",
+              "text-summary",
+              "lcov"
+            ],
+            "buildTarget": ":build:testing",
+            "runner": "vitest",
+            "runnerConfig": true
           }
         }
       }

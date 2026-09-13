@@ -5,48 +5,48 @@ import {NavigatorProviderService} from "@app/shared/services/navigator-provider.
 import {provideRouter} from "@angular/router";
 
 describe('SettingsSideNavComponent', () => {
-  let component: SettingsSideNavComponent;
-  let fixture: ComponentFixture<SettingsSideNavComponent>;
-  const navigatorMock = {
-    userAgent: ''
-  };
-
-  beforeEach(async () => {
-    navigatorMock.userAgent = 'Desktop';
-    const navigatorProviderServiceMock: NavigatorProviderService = {
-      get: () => navigatorMock as any
+    let component: SettingsSideNavComponent;
+    let fixture: ComponentFixture<SettingsSideNavComponent>;
+    const navigatorMock = {
+        userAgent: ''
     };
-    await TestBed.configureTestingModule({
-      imports: [SettingsSideNavComponent],
-      providers: [
-        {
-          provide: NavigatorProviderService,
-          useValue: navigatorProviderServiceMock
-        },
-        provideRouter([])
-      ]
-    })
-      .compileComponents();
-  });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SettingsSideNavComponent);
-    component = fixture.componentInstance;
-  });
+    beforeEach(async () => {
+        navigatorMock.userAgent = 'Desktop';
+        const navigatorProviderServiceMock: NavigatorProviderService = {
+            get: () => navigatorMock as any
+        };
+        await TestBed.configureTestingModule({
+            imports: [SettingsSideNavComponent],
+            providers: [
+                {
+                    provide: NavigatorProviderService,
+                    useValue: navigatorProviderServiceMock
+                },
+                provideRouter([])
+            ]
+        })
+            .compileComponents();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(SettingsSideNavComponent);
+        component = fixture.componentInstance;
+    });
 
-  it('should set minimizeSideNav to false if desktop client', () => {
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should set minimizeSideNav to true if mobile client', () => {
-    navigatorMock.userAgent = 'Android';
-    fixture.detectChanges();
+    it('should set minimizeSideNav to false if desktop client', () => {
+        fixture.detectChanges();
+        expect(component).toBeTruthy();
+    });
 
-    expect(component.minimizeSideNav).toBeTrue();
-  });
+    it('should set minimizeSideNav to true if mobile client', () => {
+        navigatorMock.userAgent = 'Android';
+        fixture.detectChanges();
+
+        expect(component.minimizeSideNav).toBe(true);
+    });
 });

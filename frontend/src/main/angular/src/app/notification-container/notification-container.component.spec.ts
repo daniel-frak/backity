@@ -53,7 +53,7 @@ describe('NotificationContainerComponent', () => {
   });
 
   it('should apply the correct classes to the close button', () => {
-    spyOn(console, 'error');
+    vi.spyOn(console, 'error').mockReturnValue(undefined);
     notificationService.show('Normal Text');
     notificationService.showFailure('Light Text');
 

@@ -29,401 +29,391 @@ import {
 import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
 import {AutoLayoutStubComponent} from "@app/shared/components/auto-layout/auto-layout.stub.component";
 import {By} from "@angular/platform-browser";
-import SpyObj = jasmine.SpyObj;
-import createSpyObj = jasmine.createSpyObj;
+import {Mocked} from "vitest";
 
 describe('GameProvidersComponent', () => {
-  let component: GameProvidersComponent;
-  let fixture: ComponentFixture<GameProvidersComponent>;
+    let component: GameProvidersComponent;
+    let fixture: ComponentFixture<GameProvidersComponent>;
 
-  let messageSimulator: MessageSimulator;
-  let gameContentDiscoveryClient: SpyObj<GameContentDiscoveryClient>;
-  let notificationService: SpyObj<NotificationService>;
-  let messageService: SpyObj<MessageService>;
+    let messageSimulator: MessageSimulator;
+    let gameContentDiscoveryClient: Mocked<GameContentDiscoveryClient>;
+    let notificationService: Mocked<NotificationService>;
+    let messageService: Mocked<MessageService>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [GameProvidersComponent],
-      providers: [
-        {
-          provide: MessageService,
-          useValue: createSpyObj(MessageService, ['watch'])
-        },
-        {
-          provide: GameContentDiscoveryClient,
-          useValue: createSpyObj('GameContentDiscoveryClient',
-            ['getGameContentDiscoveryOverviews', 'startGameContentDiscovery', 'stopGameContentDiscovery'])
-        },
-        {
-          provide: NotificationService,
-          useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])
-        }
-      ]
-    })
-      .overrideComponent(GameProvidersComponent, {
-        remove: {imports: [GogAuthComponent, AutoLayoutComponent]},
-        add: {imports: [GogAuthComponentStub, AutoLayoutStubComponent]}
-      })
-      .compileComponents();
-  });
+    beforeEach(async () => {
+        messageService = { watch: vi.fn() } as unknown as Mocked<MessageService>;
+        gameContentDiscoveryClient = {
+            getGameContentDiscoveryOverviews: vi.fn(),
+            startGameContentDiscovery: vi.fn(),
+            stopGameContentDiscovery: vi.fn()
+        } as unknown as Mocked<GameContentDiscoveryClient>;
+        notificationService = {
+            showSuccess: vi.fn(),
+            showFailure: vi.fn()
+        } as unknown as Mocked<NotificationService>;
 
-  beforeEach(() => {
-    messageService = TestBed.inject(MessageService) as SpyObj<MessageService>;
-    gameContentDiscoveryClient = TestBed.inject(GameContentDiscoveryClient) as SpyObj<GameContentDiscoveryClient>;
-    notificationService = TestBed.inject(NotificationService) as SpyObj<NotificationService>;
-
-    messageSimulator = MessageSimulator.given(messageService);
-  });
-
-  it('should create', () => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
-  });
-
-  it('should refresh info on init', fakeAsync(() => {
-    const newOverview: GameContentDiscoveryOverview = TestGameContentDiscoveryOverview.inProgress();
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([newOverview]) as any);
-
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    tick();
-    fixture.detectChanges();
-
-    expect(component.discoveryIsInProgressByGameProviderId().get('someGameProviderId')).toBeTrue();
-    expect(component.discoveryOverviewsByGameProviderId().get('someGameProviderId')).toEqual(newOverview);
-    expect(component.discoveryStatusUnknownByGameProviderId().get('someGameProviderId')).toBeFalse();
-  }));
-
-  it('should subscribe to discovery started events', () => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    expect(messageService.watch)
-      .toHaveBeenCalledWith(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStarted);
-  });
-
-  it('should subscribe to discovery stopped events', () => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    expect(messageService.watch)
-      .toHaveBeenCalledWith(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStopped);
-  });
-
-  it('should subscribe to discovery progress updates', () => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    expect(messageService.watch)
-      .toHaveBeenCalledWith(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryProgressUpdate);
-  });
-
-  it('should update discovery status given discovery started event received', fakeAsync(() => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    const event: GameContentDiscoveryStartedEvent = TestGameContentDiscoveryStartedEvent.any();
-
-    emitDiscoveryStarted(event);
-    tick();
-
-    expect(component.discoveryIsInProgressByGameProviderId().get(event.gameProviderId)).toBeTrue();
-    expect(component.discoveryStatusUnknownByGameProviderId().get(event.gameProviderId)).toBeFalse();
-  }));
-
-  function emitDiscoveryStarted(event: GameContentDiscoveryStartedEvent) {
-    messageSimulator.emit(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStarted, event);
-  }
-
-  it('should not refresh info when already loading', () => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    component.infoIsLoading.set(true);
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.calls.reset();
-
-    fixture.detectChanges(); // Triggers refreshInfo() on init
-
-    expect(gameContentDiscoveryClient.getGameContentDiscoveryOverviews).not.toHaveBeenCalled();
-  });
-
-  it('should update overview given discovery started event received and overview exists',
-    fakeAsync(() => {
-      gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-      fixture = TestBed.createComponent(GameProvidersComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-      const event: GameContentDiscoveryStartedEvent = TestGameContentDiscoveryStartedEvent.any();
-      component.discoveryOverviewsByGameProviderId.update(map =>
-        new Map(map).set(event.gameProviderId, TestGameContentDiscoveryOverview.notInProgress()));
-
-      emitDiscoveryStarted(event);
-      tick();
-
-      expect(component.discoveryOverviewsByGameProviderId().get(event.gameProviderId)?.isInProgress).toBeTrue();
-    }));
-
-  it('should update overview given discovery started event received and overview is undefined',
-    fakeAsync(() => {
-      gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-      fixture = TestBed.createComponent(GameProvidersComponent);
-      component = fixture.componentInstance;
-      fixture.detectChanges();
-      const event: GameContentDiscoveryStartedEvent = TestGameContentDiscoveryStartedEvent.any();
-      component.discoveryOverviewsByGameProviderId.update(map => {
-        const newMap = new Map(map);
-        newMap.delete(event.gameProviderId);
-        return newMap;
-      });
-
-      emitDiscoveryStarted(event);
-      tick();
-
-      expect(component.discoveryOverviewsByGameProviderId().get(event.gameProviderId)?.isInProgress).toBeTrue();
-    }));
-
-  it('should update discovery status given discovery stopped event received', fakeAsync(() => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    const event: GameContentDiscoveryStoppedEvent = TestGameContentDiscoveryStoppedEvent.successfulSubsequent();
-    component.discoveryIsInProgressByGameProviderId.update(map =>
-      new Map(map).set(event.gameProviderId, true));
-
-    emitDiscoveryStopped(event);
-    tick();
-
-    expect(component.discoveryIsInProgressByGameProviderId().get(event.gameProviderId)).toBeFalse();
-    expect(component.discoveryStatusUnknownByGameProviderId().get(event.gameProviderId)).toBeFalse();
-  }));
-
-  function emitDiscoveryStopped(event: GameContentDiscoveryStoppedEvent) {
-    messageSimulator.emit(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStopped, event);
-  }
-
-  it('should update overview given discovery stopped event received and overview exists', fakeAsync(() => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    const event: GameContentDiscoveryStoppedEvent = TestGameContentDiscoveryStoppedEvent.successfulSubsequent();
-    component.discoveryOverviewsByGameProviderId.update(map =>
-      new Map(map).set(event.gameProviderId, TestGameContentDiscoveryOverview.inProgress()));
-
-    emitDiscoveryStopped(event);
-    tick();
-
-    const expectedOverview: GameContentDiscoveryOverview =
-      TestGameContentDiscoveryOverview.notInProgressAfterSuccessfulSubsequent()
-    expect(component.discoveryOverviewsByGameProviderId().get(event.gameProviderId)).toEqual(expectedOverview);
-    expect(component.discoveryStatusUnknownByGameProviderId().get(event.gameProviderId)).toBeFalse();
-  }));
-
-  it('should update overview given discovery stopped event received and overview is undefined', fakeAsync(() => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    const event: GameContentDiscoveryStoppedEvent = TestGameContentDiscoveryStoppedEvent.successfulSubsequent();
-    component.discoveryOverviewsByGameProviderId.update(map => {
-      const newMap = new Map(map);
-      newMap.delete(event.gameProviderId);
-      return newMap;
+        await TestBed.configureTestingModule({
+            imports: [GameProvidersComponent],
+            providers: [
+                {
+                    provide: MessageService,
+                    useValue: messageService
+                },
+                {
+                    provide: GameContentDiscoveryClient,
+                    useValue: gameContentDiscoveryClient
+                },
+                {
+                    provide: NotificationService,
+                    useValue: notificationService
+                }
+            ]
+        })
+            .overrideComponent(GameProvidersComponent, {
+            remove: { imports: [GogAuthComponent, AutoLayoutComponent] },
+            add: { imports: [GogAuthComponentStub, AutoLayoutStubComponent] }
+        })
+            .compileComponents();
     });
 
-    emitDiscoveryStopped(event);
-    tick();
-
-    const expectedOverview: GameContentDiscoveryOverview =
-      TestGameContentDiscoveryOverview.notInProgressAfterSuccessfulSubsequent()
-    expect(component.discoveryOverviewsByGameProviderId().get(event.gameProviderId)).toEqual(expectedOverview);
-    expect(component.discoveryStatusUnknownByGameProviderId().get(event.gameProviderId)).toBeFalse();
-  }));
-
-  async function clickButtonByTestId(testId: string) {
-    const button = fixture.debugElement.query(By.css('[data-testid="' + testId + '"]'));
-    button.triggerEventHandler('click');
-    await fixture.whenStable();
-    fixture.detectChanges();
-  }
-
-  it('should start game content discovery', async () => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    const fakeObservable = of(new HttpResponse());
-    gameContentDiscoveryClient.startGameContentDiscovery.and.returnValue(fakeObservable);
-    component.discoveryStatusUnknownByGameProviderId.update(map => new Map(map).set('someGameProviderId', false));
-
-    await clickButtonByTestId('start-game-content-discovery-btn');
-
-    expect(gameContentDiscoveryClient.startGameContentDiscovery).toHaveBeenCalled();
-    expect(component.discoveryStatusUnknownByGameProviderId().get('someGameProviderId')).toBeTrue();
-  });
-
-  it('should log an error when game content discovery cannot be started', async () => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    const mockError = new Error('Discovery failed');
-
-    gameContentDiscoveryClient.startGameContentDiscovery.and.returnValue(throwError(() => mockError));
-
-    await component.startGameContentDiscovery();
-
-    expect(notificationService.showFailure).toHaveBeenCalledWith(
-      'Error starting discovery', mockError);
-  });
-
-  it('should stop game content discovery', async () => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    const fakeObservable = of(new HttpResponse());
-    gameContentDiscoveryClient.stopGameContentDiscovery.and.returnValue(fakeObservable);
-    component.discoveryStatusUnknownByGameProviderId.update(map =>
-      new Map(map).set('someGameProviderId', false));
-
-    await clickButtonByTestId('stop-game-content-discovery-btn');
-
-    expect(gameContentDiscoveryClient.stopGameContentDiscovery).toHaveBeenCalled();
-    expect(component.discoveryStatusUnknownByGameProviderId().get('someGameProviderId')).toBeTrue();
-  });
-
-  it('should log an error when game content discovery cannot be stopped', async () => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    const mockError = new Error('Discovery failed');
-
-    gameContentDiscoveryClient.stopGameContentDiscovery.and.returnValue(throwError(() => mockError));
-
-    await component.stopGameContentDiscovery();
-
-    expect(notificationService.showFailure).toHaveBeenCalledWith(
-      'Error stopping discovery', mockError);
-  });
-
-  it('should update discovery progress given event received and overview is defined', () => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    const event: GameContentDiscoveryProgressChangedEvent =
-      TestGameContentDiscoveryProgressChangedEvent.twentyFivePercent();
-    component.discoveryOverviewsByGameProviderId.update(map =>
-      new Map(map).set(event.gameProviderId, {
-        gameProviderId: event.gameProviderId,
-        isInProgress: true
-      }));
-
-    emitProgressUpdate(event);
-
-    expect(component.discoveryOverviewsByGameProviderId().get(event.gameProviderId!))
-      .toEqual(TestGameContentDiscoveryOverview.inProgressAtTwentyFivePercent());
-    expect(component.discoveryStatusUnknownByGameProviderId().get(event.gameProviderId)).toBeFalse();
-  });
-
-  it('should update discovery progress given event received and overview is undefined', () => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    const event: GameContentDiscoveryProgressChangedEvent =
-      TestGameContentDiscoveryProgressChangedEvent.twentyFivePercent();
-    component.discoveryOverviewsByGameProviderId.update(map => {
-      const newMap = new Map(map);
-      newMap.delete(event.gameProviderId!);
-      return newMap;
+    beforeEach(() => {
+        messageSimulator = MessageSimulator.given(messageService);
     });
 
-    emitProgressUpdate(event);
+    it('should create', () => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        expect(component).toBeTruthy();
+    });
 
-    expect(component.discoveryOverviewsByGameProviderId().get(event.gameProviderId!))
-      .toEqual(TestGameContentDiscoveryOverview.inProgressAtTwentyFivePercent());
-    expect(component.discoveryStatusUnknownByGameProviderId().get(event.gameProviderId!)).toBeFalse();
-    expect(component.discoveryIsInProgressByGameProviderId().get(event.gameProviderId!)).toBeTrue();
-  });
+    it('should refresh info on init', fakeAsync(() => {
+        const newOverview: GameContentDiscoveryOverview = TestGameContentDiscoveryOverview.inProgress();
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([newOverview]) as any);
 
-  it('should show error when discovery overviews fetch fails in refreshInfo', fakeAsync(() => {
-    const mockError = new Error('fetch failed');
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(throwError(() => mockError) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
 
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    tick();
+        expect(component.discoveryIsInProgressByGameProviderId().get('someGameProviderId')).toBe(true);
+        expect(component.discoveryOverviewsByGameProviderId().get('someGameProviderId')).toEqual(newOverview);
+        expect(component.discoveryStatusUnknownByGameProviderId().get('someGameProviderId')).toBe(false);
+    }));
 
-    expect(notificationService.showFailure)
-      .toHaveBeenCalledWith('Error fetching discovery overviews', mockError);
-    expect(component.infoIsLoading()).toBeFalse();
-  }));
+    it('should subscribe to discovery started events', () => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        expect(messageService.watch)
+            .toHaveBeenCalledWith(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStarted);
+    });
 
-  it('should block refreshInfo when already loading', () => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    it('should subscribe to discovery stopped events', () => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        expect(messageService.watch)
+            .toHaveBeenCalledWith(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStopped);
+    });
 
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.calls.reset();
-    component.infoIsLoading.set(true);
+    it('should subscribe to discovery progress updates', () => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        expect(messageService.watch)
+            .toHaveBeenCalledWith(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryProgressUpdate);
+    });
 
-    // Triggers refreshInfo
-    void component.stopGameContentDiscovery();
+    it('should update discovery status given discovery started event received', fakeAsync(() => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        const event: GameContentDiscoveryStartedEvent = TestGameContentDiscoveryStartedEvent.any();
 
-    expect(gameContentDiscoveryClient.getGameContentDiscoveryOverviews).not.toHaveBeenCalled();
-  });
+        emitDiscoveryStarted(event);
+        tick();
 
-  function emitProgressUpdate(event: GameContentDiscoveryProgressChangedEvent) {
-    messageSimulator.emit(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryProgressUpdate, event);
-  }
+        expect(component.discoveryIsInProgressByGameProviderId().get(event.gameProviderId)).toBe(true);
+        expect(component.discoveryStatusUnknownByGameProviderId().get(event.gameProviderId)).toBe(false);
+    }));
 
-  it('should return undefined from getOverview when game provider not found', () => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    const gameProviderId = 'someGameProvider';
-    expect(component.getOverview(gameProviderId)).toEqual(undefined);
-  });
+    function emitDiscoveryStarted(event: GameContentDiscoveryStartedEvent) {
+        messageSimulator.emit(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStarted, event);
+    }
 
-  it('should get overview for specific game provider', () => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    const expectedOverview: GameContentDiscoveryOverview =
-      TestGameContentDiscoveryOverview.notInProgressAfterSuccessfulSubsequent();
-    component.discoveryOverviewsByGameProviderId.update(map =>
-      new Map(map).set(expectedOverview.gameProviderId, expectedOverview));
-    expect(component.getOverview(expectedOverview.gameProviderId)).toEqual(expectedOverview);
-  });
+    it('should not refresh info when already loading', () => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        component.infoIsLoading.set(true);
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockClear();
 
-  it('should return if discovery is ongoing', () => {
-    gameContentDiscoveryClient.getGameContentDiscoveryOverviews.and.returnValue(of([]) as any);
-    fixture = TestBed.createComponent(GameProvidersComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+        fixture.detectChanges(); // Triggers refreshInfo() on init
 
-    expect(component.discoveryOngoing()).toBeFalse();
+        expect(gameContentDiscoveryClient.getGameContentDiscoveryOverviews).not.toHaveBeenCalled();
+    });
 
-    component.discoveryIsInProgressByGameProviderId.update(map => new Map(map).set('someGameProviderId', false));
-    expect(component.discoveryOngoing()).toBeFalse();
+    it('should update overview given discovery started event received and overview exists', fakeAsync(() => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        const event: GameContentDiscoveryStartedEvent = TestGameContentDiscoveryStartedEvent.any();
+        component.discoveryOverviewsByGameProviderId.update(map => new Map(map).set(event.gameProviderId, TestGameContentDiscoveryOverview.notInProgress()));
 
-    component.discoveryIsInProgressByGameProviderId.update(map => new Map(map).set('someGameProviderId', true));
-    expect(component.discoveryOngoing()).toBeTrue();
-  });
+        emitDiscoveryStarted(event);
+        tick();
+
+        expect(component.discoveryOverviewsByGameProviderId().get(event.gameProviderId)?.isInProgress).toBe(true);
+    }));
+
+    it('should update overview given discovery started event received and overview is undefined', fakeAsync(() => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        const event: GameContentDiscoveryStartedEvent = TestGameContentDiscoveryStartedEvent.any();
+        component.discoveryOverviewsByGameProviderId.update(map => {
+            const newMap = new Map(map);
+            newMap.delete(event.gameProviderId);
+            return newMap;
+        });
+
+        emitDiscoveryStarted(event);
+        tick();
+
+        expect(component.discoveryOverviewsByGameProviderId().get(event.gameProviderId)?.isInProgress).toBe(true);
+    }));
+
+    it('should update discovery status given discovery stopped event received', fakeAsync(() => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        const event: GameContentDiscoveryStoppedEvent = TestGameContentDiscoveryStoppedEvent.successfulSubsequent();
+        component.discoveryIsInProgressByGameProviderId.update(map => new Map(map).set(event.gameProviderId, true));
+
+        emitDiscoveryStopped(event);
+        tick();
+
+        expect(component.discoveryIsInProgressByGameProviderId().get(event.gameProviderId)).toBe(false);
+        expect(component.discoveryStatusUnknownByGameProviderId().get(event.gameProviderId)).toBe(false);
+    }));
+
+    function emitDiscoveryStopped(event: GameContentDiscoveryStoppedEvent) {
+        messageSimulator.emit(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryDiscoveryStopped, event);
+    }
+
+    it('should update overview given discovery stopped event received and overview exists', fakeAsync(() => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        const event: GameContentDiscoveryStoppedEvent = TestGameContentDiscoveryStoppedEvent.successfulSubsequent();
+        component.discoveryOverviewsByGameProviderId.update(map => new Map(map).set(event.gameProviderId, TestGameContentDiscoveryOverview.inProgress()));
+
+        emitDiscoveryStopped(event);
+        tick();
+
+        const expectedOverview: GameContentDiscoveryOverview = TestGameContentDiscoveryOverview.notInProgressAfterSuccessfulSubsequent();
+        expect(component.discoveryOverviewsByGameProviderId().get(event.gameProviderId)).toEqual(expectedOverview);
+        expect(component.discoveryStatusUnknownByGameProviderId().get(event.gameProviderId)).toBe(false);
+    }));
+
+    it('should update overview given discovery stopped event received and overview is undefined', fakeAsync(() => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        const event: GameContentDiscoveryStoppedEvent = TestGameContentDiscoveryStoppedEvent.successfulSubsequent();
+        component.discoveryOverviewsByGameProviderId.update(map => {
+            const newMap = new Map(map);
+            newMap.delete(event.gameProviderId);
+            return newMap;
+        });
+
+        emitDiscoveryStopped(event);
+        tick();
+
+        const expectedOverview: GameContentDiscoveryOverview = TestGameContentDiscoveryOverview.notInProgressAfterSuccessfulSubsequent();
+        expect(component.discoveryOverviewsByGameProviderId().get(event.gameProviderId)).toEqual(expectedOverview);
+        expect(component.discoveryStatusUnknownByGameProviderId().get(event.gameProviderId)).toBe(false);
+    }));
+
+    async function clickButtonByTestId(testId: string) {
+        const button = fixture.debugElement.query(By.css('[data-testid="' + testId + '"]'));
+        button.triggerEventHandler('click');
+        await fixture.whenStable();
+        fixture.detectChanges();
+    }
+
+    it('should start game content discovery', async () => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        const fakeObservable = of(new HttpResponse());
+        gameContentDiscoveryClient.startGameContentDiscovery.mockReturnValue(fakeObservable);
+        component.discoveryStatusUnknownByGameProviderId.update(map => new Map(map).set('someGameProviderId', false));
+
+        await clickButtonByTestId('start-game-content-discovery-btn');
+
+        expect(gameContentDiscoveryClient.startGameContentDiscovery).toHaveBeenCalled();
+        expect(component.discoveryStatusUnknownByGameProviderId().get('someGameProviderId')).toBe(true);
+    });
+
+    it('should log an error when game content discovery cannot be started', async () => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        const mockError = new Error('Discovery failed');
+
+        gameContentDiscoveryClient.startGameContentDiscovery.mockReturnValue(throwError(() => mockError));
+
+        await component.startGameContentDiscovery();
+
+        expect(notificationService.showFailure).toHaveBeenCalledWith('Error starting discovery', mockError);
+    });
+
+    it('should stop game content discovery', async () => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        const fakeObservable = of(new HttpResponse());
+        gameContentDiscoveryClient.stopGameContentDiscovery.mockReturnValue(fakeObservable);
+        component.discoveryStatusUnknownByGameProviderId.update(map => new Map(map).set('someGameProviderId', false));
+
+        await clickButtonByTestId('stop-game-content-discovery-btn');
+
+        expect(gameContentDiscoveryClient.stopGameContentDiscovery).toHaveBeenCalled();
+        expect(component.discoveryStatusUnknownByGameProviderId().get('someGameProviderId')).toBe(true);
+    });
+
+    it('should log an error when game content discovery cannot be stopped', async () => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        const mockError = new Error('Discovery failed');
+
+        gameContentDiscoveryClient.stopGameContentDiscovery.mockReturnValue(throwError(() => mockError));
+
+        await component.stopGameContentDiscovery();
+
+        expect(notificationService.showFailure).toHaveBeenCalledWith('Error stopping discovery', mockError);
+    });
+
+    it('should update discovery progress given event received and overview is defined', () => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        const event: GameContentDiscoveryProgressChangedEvent = TestGameContentDiscoveryProgressChangedEvent.twentyFivePercent();
+        component.discoveryOverviewsByGameProviderId.update(map => new Map(map).set(event.gameProviderId, {
+            gameProviderId: event.gameProviderId,
+            isInProgress: true
+        }));
+
+        emitProgressUpdate(event);
+
+        expect(component.discoveryOverviewsByGameProviderId().get(event.gameProviderId!))
+            .toEqual(TestGameContentDiscoveryOverview.inProgressAtTwentyFivePercent());
+        expect(component.discoveryStatusUnknownByGameProviderId().get(event.gameProviderId)).toBe(false);
+    });
+
+    it('should update discovery progress given event received and overview is undefined', () => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        const event: GameContentDiscoveryProgressChangedEvent = TestGameContentDiscoveryProgressChangedEvent.twentyFivePercent();
+        component.discoveryOverviewsByGameProviderId.update(map => {
+            const newMap = new Map(map);
+            newMap.delete(event.gameProviderId!);
+            return newMap;
+        });
+
+        emitProgressUpdate(event);
+
+        expect(component.discoveryOverviewsByGameProviderId().get(event.gameProviderId!))
+            .toEqual(TestGameContentDiscoveryOverview.inProgressAtTwentyFivePercent());
+        expect(component.discoveryStatusUnknownByGameProviderId().get(event.gameProviderId!)).toBe(false);
+        expect(component.discoveryIsInProgressByGameProviderId().get(event.gameProviderId!)).toBe(true);
+    });
+
+    it('should show error when discovery overviews fetch fails in refreshInfo', fakeAsync(() => {
+        const mockError = new Error('fetch failed');
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(throwError(() => mockError) as any);
+
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        tick();
+
+        expect(notificationService.showFailure)
+            .toHaveBeenCalledWith('Error fetching discovery overviews', mockError);
+        expect(component.infoIsLoading()).toBe(false);
+    }));
+
+    it('should block refreshInfo when already loading', () => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockClear();
+        component.infoIsLoading.set(true);
+
+        // Triggers refreshInfo
+        void component.stopGameContentDiscovery();
+
+        expect(gameContentDiscoveryClient.getGameContentDiscoveryOverviews).not.toHaveBeenCalled();
+    });
+
+    function emitProgressUpdate(event: GameContentDiscoveryProgressChangedEvent) {
+        messageSimulator.emit(GameContentDiscoveryWebSocketTopics.TopicGameContentDiscoveryProgressUpdate, event);
+    }
+
+    it('should return undefined from getOverview when game provider not found', () => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        const gameProviderId = 'someGameProvider';
+        expect(component.getOverview(gameProviderId)).toEqual(undefined);
+    });
+
+    it('should get overview for specific game provider', () => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+        const expectedOverview: GameContentDiscoveryOverview = TestGameContentDiscoveryOverview.notInProgressAfterSuccessfulSubsequent();
+        component.discoveryOverviewsByGameProviderId.update(map => new Map(map).set(expectedOverview.gameProviderId, expectedOverview));
+        expect(component.getOverview(expectedOverview.gameProviderId)).toEqual(expectedOverview);
+    });
+
+    it('should return if discovery is ongoing', () => {
+        gameContentDiscoveryClient.getGameContentDiscoveryOverviews.mockReturnValue(of([]) as any);
+        fixture = TestBed.createComponent(GameProvidersComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        expect(component.discoveryOngoing()).toBe(false);
+
+        component.discoveryIsInProgressByGameProviderId.update(map => new Map(map).set('someGameProviderId', false));
+        expect(component.discoveryOngoing()).toBe(false);
+
+        component.discoveryIsInProgressByGameProviderId.update(map => new Map(map).set('someGameProviderId', true));
+        expect(component.discoveryOngoing()).toBe(true);
+    });
 });
