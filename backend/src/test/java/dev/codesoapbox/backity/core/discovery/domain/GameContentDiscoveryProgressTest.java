@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.Duration;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class GameContentDiscoveryProgressTest {
@@ -27,6 +28,19 @@ class GameContentDiscoveryProgressTest {
                     gameProviderId, invalidPercentage, duration, gamesDiscovered, sourceFilesDiscovered))
                     .isInstanceOf(InvalidGameContentDiscoveryProgressPercentageException.class)
                     .hasMessageContaining(String.valueOf(invalidPercentage));
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {0, 50, 100})
+        void shouldNotThrowGivenValidPercentage(int validPercentage) {
+            var gameProviderId = new GameProviderId("GOG");
+            Duration duration = Duration.ofSeconds(1);
+            int gamesDiscovered = 5;
+            int sourceFilesDiscovered = 70;
+
+            assertThatCode(() -> new GameContentDiscoveryProgress(
+                    gameProviderId, validPercentage, duration, gamesDiscovered, sourceFilesDiscovered))
+                    .doesNotThrowAnyException();
         }
     }
 }

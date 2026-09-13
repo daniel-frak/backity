@@ -419,6 +419,7 @@
                         <excludedClass>*StorageSolution</excludedClass>
                         <excludedClass>*GogEmbedOperation</excludedClass>
                         <excludedClass>*GogAuthClient</excludedClass>
+                        <excludedClass>**spring.**.*WebClient</excludedClass>
                     </excludedClasses>
                     <excludedTestClasses>
                         <!-- Integration tests are too costly for mutation testing -->

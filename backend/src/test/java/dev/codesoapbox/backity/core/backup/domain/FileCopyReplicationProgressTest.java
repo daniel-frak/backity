@@ -8,6 +8,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.Duration;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class FileCopyReplicationProgressTest {
@@ -24,6 +25,16 @@ class FileCopyReplicationProgressTest {
             assertThatThrownBy(() -> new FileCopyReplicationProgress(fileCopyId, invalidPercentage, duration))
                     .isInstanceOf(InvalidReplicationProgressPercentageException.class)
                     .hasMessageContaining(String.valueOf(invalidPercentage));
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {0, 50, 100})
+        void shouldNotThrowGivenValidPercentage(int validPercentage) {
+            var fileCopyId = new FileCopyId("6df888e8-90b9-4df5-a237-0cba422c0310");
+            Duration duration = Duration.ofSeconds(1);
+
+            assertThatCode(() -> new FileCopyReplicationProgress(fileCopyId, validPercentage, duration))
+                    .doesNotThrowAnyException();
         }
     }
 }
