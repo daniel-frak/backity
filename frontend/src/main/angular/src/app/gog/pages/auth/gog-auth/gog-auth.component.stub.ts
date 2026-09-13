@@ -1,9 +1,10 @@
-import {Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 import {GameContentDiscoveryOverview} from "@backend";
 
 @Component({
   selector: 'app-gog-auth',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: ''
 })
 export class GogAuthComponentStub {

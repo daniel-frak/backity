@@ -1,5 +1,5 @@
 import {ApplicationConfig, ErrorHandler, provideZoneChangeDetection} from '@angular/core';
-import {provideHttpClient, withInterceptorsFromDi} from "@angular/common/http";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {provideRouter} from '@angular/router';
 import {routes} from "@app/app.routes";
 import {GlobalErrorHandler} from "@app/shared/errors/error-handler/global-error-handler.service";
@@ -10,7 +10,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({eventCoalescing: true}),
     provideRouter(routes),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withXhr(), withInterceptorsFromDi()),
     {
       provide: RxStompService,
       useFactory: rxStompServiceFactory,

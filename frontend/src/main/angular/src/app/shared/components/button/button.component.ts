@@ -1,4 +1,4 @@
-import {Component, input, model} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, model} from '@angular/core';
 import {NgClass} from "@angular/common";
 import {ButtonStyle} from "@app/shared/components/button/button-style";
 import {ButtonSize} from "@app/shared/components/button/button-size";
@@ -9,6 +9,7 @@ import {ButtonSize} from "@app/shared/components/button/button-size";
     NgClass
 ],
     templateUrl: './button.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './button.component.scss'
 })
 export class ButtonComponent {

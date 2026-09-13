@@ -1,10 +1,11 @@
-import {Component, input, Optional, output, Self} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, Optional, output, Self} from '@angular/core';
 import {ControlValueAccessor, FormsModule, NgControl, ReactiveFormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-select',
   imports: [ReactiveFormsModule, FormsModule],
   templateUrl: './select.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./select.component.scss']
 })
 export class SelectComponent<T> implements ControlValueAccessor {

@@ -1,4 +1,4 @@
-import {Component, computed, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, computed, OnInit, signal} from '@angular/core';
 import {PageHeaderComponent} from '@app/shared/components/page-header/page-header.component';
 import {GogAuthComponent} from '@app/gog/pages/auth/gog-auth/gog-auth.component';
 import {SectionComponent} from "@app/shared/components/section/section.component";
@@ -22,6 +22,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   selector: 'app-game-providers',
   templateUrl: './game-providers.component.html',
   styleUrl: './game-providers.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [PageHeaderComponent, GogAuthComponent, SectionComponent, ButtonComponent, LoadedContentComponent,
     AutoLayoutComponent]
 })

@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
 import {ButtonComponent} from "@app/shared/components/button/button.component";
@@ -25,6 +25,7 @@ interface GogAuthForm {
     LoadedContentComponent,
   ],
   templateUrl: './gog-auth-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './gog-auth-modal.component.scss'
 })
 export class GogAuthModalComponent {

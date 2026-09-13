@@ -1,4 +1,4 @@
-import {Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {GameContentDiscoveryOutcome} from "@backend";
 
@@ -7,6 +7,7 @@ import {GameContentDiscoveryOutcome} from "@backend";
     templateUrl: './game-content-discovery-outcome-badge.component.html',
     styleUrl: './game-content-discovery-outcome-badge.component.scss',
     host: { 'data-testid': 'game-content-discovery-status-badge' },
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [CommonModule]
 })
 export class GameContentDiscoveryOutcomeBadgeComponent {

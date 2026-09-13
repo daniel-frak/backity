@@ -1,4 +1,4 @@
-import {Component, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
@@ -29,6 +29,7 @@ interface AddBackupTargetForm {
     SelectComponent
   ],
   templateUrl: './add-backup-target-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './add-backup-target-modal.component.scss',
 })
 export class AddBackupTargetModalComponent {

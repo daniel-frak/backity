@@ -1,4 +1,4 @@
-import {Component, effect, EventEmitter, input, model, OnInit, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, effect, EventEmitter, input, model, OnInit, Output} from '@angular/core';
 import {NgbPagination, NgbPaginationPages} from "@ng-bootstrap/ng-bootstrap";
 import {Page} from "@app/shared/components/table/page";
 
@@ -18,6 +18,7 @@ const LEADING_ZEROES_REGEX = /^0+/;
     SelectComponent
   ],
   templateUrl: './pagination.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './pagination.component.scss'
 })
 export class PaginationComponent<T> implements OnInit {

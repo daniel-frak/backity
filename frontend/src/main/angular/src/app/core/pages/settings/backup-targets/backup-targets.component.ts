@@ -1,4 +1,4 @@
-import {Component, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {BackupTarget, BackupTargetsClient} from "@backend";
 import {finalize, firstValueFrom} from "rxjs";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
@@ -32,6 +32,7 @@ import {ModalRef} from "@app/shared/services/modal-service/modal-ref";
     ButtonComponent
   ],
   templateUrl: './backup-targets.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './backup-targets.component.scss',
 })
 export class BackupTargetsComponent implements OnInit {

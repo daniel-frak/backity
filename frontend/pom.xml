@@ -14,8 +14,8 @@
 
     <properties>
         <frontend.maven.plugin.version>2.0.2</frontend.maven.plugin.version>
-        <node.version>v22.16.0</node.version>
-        <npm.version>11.4.2</npm.version>
+        <node.version>v26.8.2</node.version>
+        <npm.version>11.19.1</npm.version>
 
         <sonar.projectKey>backity-frontend</sonar.projectKey>
         <sonar.projectName>Backity (frontend)</sonar.projectName>

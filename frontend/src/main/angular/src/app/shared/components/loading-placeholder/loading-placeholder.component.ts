@@ -1,4 +1,4 @@
-import {Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 import {NgStyle} from "@angular/common";
 
 @Component({
@@ -7,6 +7,7 @@ import {NgStyle} from "@angular/common";
     NgStyle
 ],
     templateUrl: './loading-placeholder.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './loading-placeholder.component.scss'
 })
 export class LoadingPlaceholderComponent {
