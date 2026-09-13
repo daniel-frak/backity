@@ -18,42 +18,42 @@ import {By} from "@angular/platform-browser";
 })
 class TestHostComponent {
 
-  hideableText = 'Hideable details';
+    hideableText = 'Hideable details';
 }
 
 describe('IconItemComponent', () => {
-  let component: IconItemComponent;
-  let fixture: ComponentFixture<TestHostComponent>;
+    let component: IconItemComponent;
+    let fixture: ComponentFixture<TestHostComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [IconItemComponent],
-      declarations: [TestHostComponent]
-    })
-      .compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [IconItemComponent],
+            declarations: [TestHostComponent]
+        })
+            .compileComponents();
 
-    fixture = TestBed.createComponent(TestHostComponent);
-    component = fixture.debugElement.query(By.directive(IconItemComponent)).componentInstance;
-    fixture.detectChanges();
-  });
+        fixture = TestBed.createComponent(TestHostComponent);
+        component = fixture.debugElement.query(By.directive(IconItemComponent)).componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initially render the hideableDetails in the DOM', () => {
-    expect(fixture.debugElement.query(By.css('.collapsible')).classes['open']).toBeTrue();
-  });
+    it('should initially render the hideableDetails in the DOM', () => {
+        expect(fixture.debugElement.query(By.css('.collapsible')).classes['open']).toBe(true);
+    });
 
-  it('should toggle hideable details when toggleHideableDetails is called', () => {
-    component.showHideableDetails.set(true);
+    it('should toggle hideable details when toggleHideableDetails is called', () => {
+        component.showHideableDetails.set(true);
 
-    component.toggleHideableDetails();
-    fixture.detectChanges();
-    expect(fixture.debugElement.query(By.css('.collapsible')).classes['open']).toBeUndefined();
+        component.toggleHideableDetails();
+        fixture.detectChanges();
+        expect(fixture.debugElement.query(By.css('.collapsible')).classes['open']).toBeUndefined();
 
-    component.toggleHideableDetails();
-    fixture.detectChanges();
-    expect(fixture.debugElement.query(By.css('.collapsible')).classes['open']).toBeTrue();
-  });
+        component.toggleHideableDetails();
+        fixture.detectChanges();
+        expect(fixture.debugElement.query(By.css('.collapsible')).classes['open']).toBe(true);
+    });
 });

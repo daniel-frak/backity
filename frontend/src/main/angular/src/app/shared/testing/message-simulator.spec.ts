@@ -1,28 +1,29 @@
-import {MessageService} from "@app/shared/backend/services/message.service";
 import {MessageSimulator} from "@app/shared/testing/message-simulator";
-import createSpyObj = jasmine.createSpyObj;
-import SpyObj = jasmine.SpyObj;
+import {Mocked} from "vitest";
+import {MessageService} from "@app/shared/backend/services/message.service";
 
 describe('MessageSimulator', () => {
 
-  let messageServiceSpy: SpyObj<MessageService>;
+    let messageServiceSpy: Mocked<MessageService>;
 
-  beforeEach(() => {
-    messageServiceSpy = createSpyObj('MessageService', ['watch']);
-  });
+    beforeEach(() => {
+        messageServiceSpy = {
+            watch: vi.fn()
+        } as unknown as Mocked<MessageService>;
+    });
 
-  it('should mock messageService.watch and route messages via given().emit()', () => {
-    const topic = 'someTopic';
-    const callback = jasmine.createSpy('callback');
+    it('should mock messageService.watch and route messages via given().emit()', () => {
+        const topic = 'someTopic';
+        const callback = vi.fn().mockName('callback');
 
-    const messageSimulator = MessageSimulator.given(messageServiceSpy);
+        const messageSimulator = MessageSimulator.given(messageServiceSpy);
 
-    messageServiceSpy.watch(topic).subscribe(callback);
+        messageServiceSpy.watch(topic).subscribe(callback);
 
-    const message = {key: 'value'};
-    messageSimulator.emit(topic, message);
+        const message = { key: 'value' };
+        messageSimulator.emit(topic, message);
 
-    expect(callback).toHaveBeenCalledWith(message);
-    expect(messageServiceSpy.watch).toHaveBeenCalledWith(topic);
-  });
+        expect(callback).toHaveBeenCalledWith(message);
+        expect(messageServiceSpy.watch).toHaveBeenCalledWith(topic);
+    });
 });

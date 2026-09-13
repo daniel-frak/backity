@@ -3,13 +3,13 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
+    "target": "ES2016",
     "types": [
-      "jasmine",
-      "@angular/localize"
+      "@angular/localize",
+      "vitest/globals"
     ]
   },
   "files": [
-    "src/test.ts",
     "src/polyfills.ts"
   ],
   "include": [

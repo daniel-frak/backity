@@ -11,195 +11,199 @@ import {AddBackupTargetResponse} from "@backend/model/addBackupTargetResponse";
 import {AddBackupTargetRequest} from "@backend/model/addBackupTargetRequest";
 import {TestBackupTarget} from "@app/shared/testing/objects/test-backup-target";
 import {of, throwError} from "rxjs";
-import SpyObj = jasmine.SpyObj;
-import createSpyObj = jasmine.createSpyObj;
+import {Mocked} from "vitest";
 
 describe('AddBackupTargetModalComponent', () => {
-  let component: AddBackupTargetModalComponent;
-  let fixture: ComponentFixture<AddBackupTargetModalComponent>;
+    let component: AddBackupTargetModalComponent;
+    let fixture: ComponentFixture<AddBackupTargetModalComponent>;
 
-  let notificationService: SpyObj<NotificationService>;
-  let modal: NgbActiveModalMock;
-  let backupTargetsClient: SpyObj<BackupTargetsClient>;
+    let notificationService: Mocked<NotificationService>;
+    let modal: NgbActiveModalMock;
+    let backupTargetsClient: Mocked<BackupTargetsClient>;
 
-  class Page {
+    class Page {
 
-    setInput(input: HTMLInputElement, value: string) {
-      input.value = value;
-      input.dispatchEvent(new Event('input'));
-    }
-
-    get closeButton(): HTMLButtonElement {
-      return this.getElementByTestId('close-add-backup-target-modal-btn') as HTMLButtonElement;
-    }
-
-    get formInputs(): HTMLInputElement[] {
-      return fixture.debugElement
-        .queryAll(By.css('[data-testid="add-backup-target-form"] input'))
-        .map(de => de.nativeElement as HTMLInputElement)
-        .filter(el => !!el);
-    }
-
-    get nameInput(): HTMLInputElement {
-      return this.getElementByTestId('name-input') as HTMLInputElement;
-    }
-
-    get storageSolutionIdInput(): HTMLInputElement {
-      return this.getElementByTestId('storage-solution-id-input') as HTMLInputElement;
-    }
-
-    get pathTemplateInput(): HTMLInputElement {
-      return this.getElementByTestId('path-template-input') as HTMLInputElement;
-    }
-
-    get submitButton(): HTMLButtonElement {
-      return this.getElementByTestId('submit-new-backup-target-btn') as HTMLButtonElement;
-    }
-
-    get form(): HTMLFormElement {
-      return this.getElementByTestId('add-backup-target-form') as HTMLFormElement;
-    }
-
-    private getElementByTestId(testId: string): HTMLElement {
-      const addBackupTargetButtonDe: DebugElement = fixture.debugElement.query(By.css('[data-testid="' + testId + '"]'));
-      return addBackupTargetButtonDe?.nativeElement;
-    }
-
-    submitForm() {
-      this.form.dispatchEvent(new Event('submit'));
-    }
-  }
-
-  let page: Page;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AddBackupTargetModalComponent],
-      providers: [
-        {
-          provide: NotificationService,
-          useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])
-        },
-        {provide: NgbActiveModal, useExisting: NgbActiveModalMock},
-        NgbActiveModalMock,
-        {
-          provide: BackupTargetsClient,
-          useValue: createSpyObj('BackupTargetsClient', ['addBackupTarget'])
+        setInput(input: HTMLInputElement, value: string) {
+            input.value = value;
+            input.dispatchEvent(new Event('input'));
         }
-      ]
-    })
-      .compileComponents();
 
-    notificationService = TestBed.inject(NotificationService) as SpyObj<NotificationService>;
-    modal = TestBed.inject(NgbActiveModalMock);
-    backupTargetsClient = TestBed.inject(BackupTargetsClient) as SpyObj<BackupTargetsClient>;
+        get closeButton(): HTMLButtonElement {
+            return this.getElementByTestId('close-add-backup-target-modal-btn') as HTMLButtonElement;
+        }
 
-    page = new Page();
+        get formInputs(): HTMLInputElement[] {
+            return fixture.debugElement
+                .queryAll(By.css('[data-testid="add-backup-target-form"] input'))
+                .map(de => de.nativeElement as HTMLInputElement)
+                .filter(el => !!el);
+        }
 
-    fixture = TestBed.createComponent(AddBackupTargetModalComponent);
-    component = fixture.componentInstance;
-  });
+        get nameInput(): HTMLInputElement {
+            return this.getElementByTestId('name-input') as HTMLInputElement;
+        }
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+        get storageSolutionIdInput(): HTMLInputElement {
+            return this.getElementByTestId('storage-solution-id-input') as HTMLInputElement;
+        }
 
-  it('should close modal on close button click', () => {
-    page.closeButton.click();
+        get pathTemplateInput(): HTMLInputElement {
+            return this.getElementByTestId('path-template-input') as HTMLInputElement;
+        }
 
-    expect(modal.timesDismissed).toBe(1);
-  })
+        get submitButton(): HTMLButtonElement {
+            return this.getElementByTestId('submit-new-backup-target-btn') as HTMLButtonElement;
+        }
 
-  it('should enable submit button given not loading', () => {
-    component.isLoading.set(false);
-    fixture.detectChanges();
+        get form(): HTMLFormElement {
+            return this.getElementByTestId('add-backup-target-form') as HTMLFormElement;
+        }
 
-    expect(page.submitButton.disabled).toBeFalse();
-  });
+        private getElementByTestId(testId: string): HTMLElement {
+            const addBackupTargetButtonDe: DebugElement = fixture.debugElement.query(By.css('[data-testid="' + testId + '"]'));
+            return addBackupTargetButtonDe?.nativeElement;
+        }
 
-  it('should disable submit button given loading', () => {
-    component.isLoading.set(true);
-    fixture.detectChanges();
+        submitForm() {
+            this.form.dispatchEvent(new Event('submit'));
+        }
+    }
 
-    expect(page.submitButton.disabled).toBeTrue();
-  });
+    let page: Page;
 
-  it('should show form inputs given not loading', () => {
-    component.isLoading.set(false);
-    fixture.detectChanges();
+    beforeEach(async () => {
+        notificationService = {
+            showSuccess: vi.fn(),
+            showFailure: vi.fn()
+        } as unknown as Mocked<NotificationService>;
+        backupTargetsClient = {
+            addBackupTarget: vi.fn()
+        } as unknown as Mocked<BackupTargetsClient>;
+        await TestBed.configureTestingModule({
+            imports: [AddBackupTargetModalComponent],
+            providers: [
+                {
+                    provide: NotificationService,
+                    useValue: notificationService
+                },
+                { provide: NgbActiveModal, useExisting: NgbActiveModalMock },
+                NgbActiveModalMock,
+                {
+                    provide: BackupTargetsClient,
+                    useValue: backupTargetsClient
+                }
+            ]
+        })
+            .compileComponents();
 
-    expect(page.formInputs).not.toEqual([]);
-  });
+        modal = TestBed.inject(NgbActiveModalMock);
 
-  it('should hide form inputs given loading', () => {
-    component.isLoading.set(true);
-    fixture.detectChanges();
+        page = new Page();
 
-    expect(page.formInputs).toEqual([]);
-  });
+        fixture = TestBed.createComponent(AddBackupTargetModalComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should not add backup target on submit given form validation fails', async () => {
-    await fixture.whenStable();
-    page.setInput(page.nameInput, '');
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-    page.submitForm();
+    it('should close modal on close button click', () => {
+        page.closeButton.click();
 
-    expect(notificationService.showFailure)
-      .not.toHaveBeenCalledWith("Adding backup targets is not yet implemented.");
-    expect(modal.timesClosed).toBe(0);
-    expect(component.isLoading()).toBeFalse();
-  });
+        expect(modal.timesDismissed).toBe(1);
+    });
 
-  it('should add backup target on submit given form validation succeeds', async () => {
-    await fixture.whenStable();
-    const backupTarget: BackupTarget = TestBackupTarget.localFolder();
-    backupTarget.storageSolutionId = component.storageSolutions()[0];
-    const expectedRequest: AddBackupTargetRequest = {
-      name: backupTarget.name,
-      storageSolutionId: backupTarget.storageSolutionId,
-      pathTemplate: backupTarget.pathTemplate,
-    };
-    addingBackupTargetSucceeds(backupTarget);
+    it('should enable submit button given not loading', () => {
+        component.isLoading.set(false);
+        fixture.detectChanges();
 
-    page.setInput(page.nameInput, backupTarget.name);
-    page.setInput(page.storageSolutionIdInput, backupTarget.storageSolutionId);
-    page.setInput(page.pathTemplateInput, backupTarget.pathTemplate);
+        expect(page.submitButton.disabled).toBe(false);
+    });
 
-    page.submitForm();
+    it('should disable submit button given loading', () => {
+        component.isLoading.set(true);
+        fixture.detectChanges();
 
-    expect(backupTargetsClient.addBackupTarget)
-      .toHaveBeenCalledWith(expectedRequest);
-    expect(notificationService.showSuccess)
-      .toHaveBeenCalledWith("Backup target added successfully");
-    expect(modal.timesClosed).toBe(1);
-    expect(component.isLoading()).toBeFalse();
-  });
+        expect(page.submitButton.disabled).toBe(true);
+    });
 
-  function addingBackupTargetSucceeds(backupTarget: BackupTarget) {
-    backupTargetsClient.addBackupTarget.and.returnValue(of({
-      backupTarget: backupTarget,
-    } as AddBackupTargetResponse) as any);
-  }
+    it('should show form inputs given not loading', () => {
+        component.isLoading.set(false);
+        fixture.detectChanges();
 
-  it('should gracefully handle errors when adding backup target fails', async () => {
-    await fixture.whenStable();
-    const backupTarget: BackupTarget = TestBackupTarget.localFolder();
-    const error = new Error('Test error');
-    addingBackupTargetThrows(error);
+        expect(page.formInputs).not.toEqual([]);
+    });
 
-    page.setInput(page.nameInput, backupTarget.name);
-    page.setInput(page.storageSolutionIdInput, backupTarget.storageSolutionId);
-    page.setInput(page.pathTemplateInput, backupTarget.pathTemplate);
+    it('should hide form inputs given loading', () => {
+        component.isLoading.set(true);
+        fixture.detectChanges();
 
-    page.submitForm();
+        expect(page.formInputs).toEqual([]);
+    });
 
-    expect(notificationService.showFailure).toHaveBeenCalledWith(
-      "Something went wrong when adding a Backup Target.", error);
-    expect(modal.timesClosed).toBe(0);
-    expect(component.isLoading()).toBeFalse();
-  });
+    it('should not add backup target on submit given form validation fails', async () => {
+        await fixture.whenStable();
+        page.setInput(page.nameInput, '');
 
-  function addingBackupTargetThrows(error: Error) {
-    backupTargetsClient.addBackupTarget.and.returnValue(throwError(() => error));
-  }
+        page.submitForm();
+
+        expect(notificationService.showFailure)
+            .not.toHaveBeenCalledWith("Adding backup targets is not yet implemented.");
+        expect(modal.timesClosed).toBe(0);
+        expect(component.isLoading()).toBe(false);
+    });
+
+    it('should add backup target on submit given form validation succeeds', async () => {
+        await fixture.whenStable();
+        const backupTarget: BackupTarget = TestBackupTarget.localFolder();
+        backupTarget.storageSolutionId = component.storageSolutions()[0];
+        const expectedRequest: AddBackupTargetRequest = {
+            name: backupTarget.name,
+            storageSolutionId: backupTarget.storageSolutionId,
+            pathTemplate: backupTarget.pathTemplate,
+        };
+        addingBackupTargetSucceeds(backupTarget);
+
+        page.setInput(page.nameInput, backupTarget.name);
+        page.setInput(page.storageSolutionIdInput, backupTarget.storageSolutionId);
+        page.setInput(page.pathTemplateInput, backupTarget.pathTemplate);
+
+        page.submitForm();
+
+        expect(backupTargetsClient.addBackupTarget)
+            .toHaveBeenCalledWith(expectedRequest);
+        expect(notificationService.showSuccess)
+            .toHaveBeenCalledWith("Backup target added successfully");
+        expect(modal.timesClosed).toBe(1);
+        expect(component.isLoading()).toBe(false);
+    });
+
+    function addingBackupTargetSucceeds(backupTarget: BackupTarget) {
+        backupTargetsClient.addBackupTarget.mockReturnValue(of({
+            backupTarget: backupTarget,
+        } as AddBackupTargetResponse) as any);
+    }
+
+    it('should gracefully handle errors when adding backup target fails', async () => {
+        await fixture.whenStable();
+        const backupTarget: BackupTarget = TestBackupTarget.localFolder();
+        const error = new Error('Test error');
+        addingBackupTargetThrows(error);
+
+        page.setInput(page.nameInput, backupTarget.name);
+        page.setInput(page.storageSolutionIdInput, backupTarget.storageSolutionId);
+        page.setInput(page.pathTemplateInput, backupTarget.pathTemplate);
+
+        page.submitForm();
+
+        expect(notificationService.showFailure).toHaveBeenCalledWith("Something went wrong when adding a Backup Target.", error);
+        expect(modal.timesClosed).toBe(0);
+        expect(component.isLoading()).toBe(false);
+    });
+
+    function addingBackupTargetThrows(error: Error) {
+        backupTargetsClient.addBackupTarget.mockReturnValue(throwError(() => error));
+    }
 });

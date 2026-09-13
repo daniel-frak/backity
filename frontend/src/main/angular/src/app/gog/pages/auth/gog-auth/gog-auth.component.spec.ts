@@ -7,209 +7,218 @@ import {By} from '@angular/platform-browser';
 import {DebugElement} from "@angular/core";
 import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {GogAuthModalComponent} from "@app/gog/components/modals/gog-auth-modal/gog-auth-modal.component";
-import createSpyObj = jasmine.createSpyObj;
-import SpyObj = jasmine.SpyObj;
+import {Mocked} from "vitest";
 
 const USER_AUTH_URL = "someGogAuthUrl";
 
 const GOG_CONFIG_RESPONSE = {
-  userAuthUrl: USER_AUTH_URL
+    userAuthUrl: USER_AUTH_URL
 };
+
 describe('GogAuthComponent', () => {
-  let component: GogAuthComponent;
-  let fixture: ComponentFixture<GogAuthComponent>;
+    let component: GogAuthComponent;
+    let fixture: ComponentFixture<GogAuthComponent>;
 
-  let gogConfigClientMock: SpyObj<GOGConfigurationClient>;
-  let gogAuthClientMock: SpyObj<GOGAuthenticationClient>;
-  let notificationService: NotificationService;
-  let ngbModal: SpyObj<NgbModal>;
+    let gogConfigClientMock: Mocked<GOGConfigurationClient>;
+    let gogAuthClientMock: Mocked<GOGAuthenticationClient>;
+    let notificationService: NotificationService;
+    let ngbModal: Mocked<NgbModal>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [GogAuthComponent],
-      providers: [
-        {
-          provide: GOGConfigurationClient,
-          useValue: createSpyObj(GOGConfigurationClient, ['getGogConfig'])
-        },
-        {
-          provide: GOGAuthenticationClient,
-          useValue: createSpyObj(GOGAuthenticationClient, ['getGogAuthenticationStatus', 'logOutOfGog'])
-        },
-        {
-          provide: NotificationService,
-          useValue: createSpyObj('NotificationService', ['showSuccess', 'showFailure'])
-        },
-        {provide: NgbModal, useValue: createSpyObj('NgbModal', ['open'])}
-      ]
-    }).compileComponents();
+    beforeEach(async () => {
+        gogConfigClientMock = {
+            getGogConfig: vi.fn()
+        } as unknown as Mocked<GOGConfigurationClient>;
+        gogAuthClientMock = {
+            getGogAuthenticationStatus: vi.fn(),
+            logOutOfGog: vi.fn()
+        } as unknown as Mocked<GOGAuthenticationClient>;
+        ngbModal = {
+            open: vi.fn()
+        } as unknown as Mocked<NgbModal>;
 
-    fixture = TestBed.createComponent(GogAuthComponent);
-    component = fixture.componentInstance;
+        await TestBed.configureTestingModule({
+            imports: [GogAuthComponent],
+            providers: [
+                {
+                    provide: GOGConfigurationClient,
+                    useValue: gogConfigClientMock
+                },
+                {
+                    provide: GOGAuthenticationClient,
+                    useValue: gogAuthClientMock
+                },
+                {
+                    provide: NotificationService,
+                    useValue: {
+                        showSuccess: vi.fn(),
+                        showFailure: vi.fn()
+                    }
+                },
+                { provide: NgbModal, useValue: ngbModal }
+            ]
+        }).compileComponents();
 
-    gogConfigClientMock = TestBed.inject(GOGConfigurationClient) as SpyObj<GOGConfigurationClient>;
-    gogAuthClientMock = TestBed.inject(GOGAuthenticationClient) as SpyObj<GOGAuthenticationClient>;
-    notificationService = TestBed.inject(NotificationService);
-    ngbModal = TestBed.inject(NgbModal) as SpyObj<NgbModal>;
+        fixture = TestBed.createComponent(GogAuthComponent);
+        component = fixture.componentInstance;
 
-    gogAuthClientMock.getGogAuthenticationStatus.and.returnValue(of(false) as any);
-    gogConfigClientMock.getGogConfig.and.returnValue(of(GOG_CONFIG_RESPONSE) as any);
-  });
+        notificationService = TestBed.inject(NotificationService);
 
-  it('should create the component', () => {
-    fixture.detectChanges();
+        gogAuthClientMock.getGogAuthenticationStatus.mockReturnValue(of(false) as any);
+        gogConfigClientMock.getGogConfig.mockReturnValue(of(GOG_CONFIG_RESPONSE) as any);
+    });
 
-    expect(component).toBeTruthy();
-  });
+    it('should create the component', () => {
+        fixture.detectChanges();
 
-  it('should check authentication status on init', () => {
-    gogAuthClientMock.getGogAuthenticationStatus.and.returnValue(defer(() => {
-      expect(component.gogIsLoading).toBeTrue();
-      return of(true);
-    }) as any);
-    fixture.detectChanges();
+        expect(component).toBeTruthy();
+    });
 
-    component.ngOnInit();
+    it('should check authentication status on init', () => {
+        gogAuthClientMock.getGogAuthenticationStatus.mockReturnValue(defer(() => {
+            expect(component.gogIsLoading).toBe(true);
+            return of(true);
+        }) as any);
+        fixture.detectChanges();
 
-    expect(component.gogAuthenticated).toBeTrue();
-    expect(component.gogIsLoading).toBeFalse();
-  });
+        component.ngOnInit();
 
-  it('should notify and disable loading on authentication check failure', () => {
-    const error = new Error('Test error');
-    gogAuthClientMock.getGogAuthenticationStatus.and.returnValue(throwError(() => error));
-    fixture.detectChanges();
+        expect(component.gogAuthenticated).toBe(true);
+        expect(component.gogIsLoading).toBe(false);
+    });
 
-    expect(component.gogIsLoading).toBeFalse();
-    expect(notificationService.showFailure).toHaveBeenCalledWith(
-      'Failed to configure GOG', error);
-  });
+    it('should notify and disable loading on authentication check failure', () => {
+        const error = new Error('Test error');
+        gogAuthClientMock.getGogAuthenticationStatus.mockReturnValue(throwError(() => error));
+        fixture.detectChanges();
 
-  it('should notify and disable loading on configuration check failure', () => {
-    const error = new Error('Test error');
-    gogConfigClientMock.getGogConfig.and.returnValue(throwError(() => error));
-    fixture.detectChanges();
+        expect(component.gogIsLoading).toBe(false);
+        expect(notificationService.showFailure).toHaveBeenCalledWith('Failed to configure GOG', error);
+    });
 
-    expect(component.gogIsLoading).toBeFalse();
-    expect(notificationService.showFailure).toHaveBeenCalledWith(
-      'Failed to configure GOG', error);
-  });
+    it('should notify and disable loading on configuration check failure', () => {
+        const error = new Error('Test error');
+        gogConfigClientMock.getGogConfig.mockReturnValue(throwError(() => error));
+        fixture.detectChanges();
 
-  it('should open authentication modal when user clicks on "Authenticate with GOG"', async () => {
-    fixture.detectChanges();
+        expect(component.gogIsLoading).toBe(false);
+        expect(notificationService.showFailure).toHaveBeenCalledWith('Failed to configure GOG', error);
+    });
 
-    const mockModalRef = mockAuthModalImmediatelyReturnsTrue();
+    it('should open authentication modal when user clicks on "Authenticate with GOG"', async () => {
+        fixture.detectChanges();
 
-    ngbModal.open.and.returnValue(mockModalRef as any);
+        const mockModalRef = mockAuthModalImmediatelyReturnsTrue();
 
-    const authenticateButton: DebugElement = getAuthenticateButton();
-    await authenticateButton.nativeElement.click();
+        ngbModal.open.mockReturnValue(mockModalRef as any);
 
-    expect(ngbModal.open).toHaveBeenCalledWith(GogAuthModalComponent);
-  });
+        const authenticateButton: DebugElement = getAuthenticateButton();
+        await authenticateButton.nativeElement.click();
 
-  function mockAuthModalImmediatelyReturnsTrue(): NgbModalRef {
-    const mockModalRef = {
-      componentInstance: {},
-      result: Promise.resolve(true) // Simulates modal closing behavior
-    } as NgbModalRef;
-    ngbModal.open.and.returnValue(mockModalRef as any);
-    return mockModalRef;
-  }
+        expect(ngbModal.open).toHaveBeenCalledWith(GogAuthModalComponent);
+    });
 
-  function getAuthenticateButton(): DebugElement {
-    return fixture.debugElement.query(By.css('[data-testid="show-gog-auth-modal-btn"]'));
-  }
+    function mockAuthModalImmediatelyReturnsTrue(): NgbModalRef {
+        const mockModalRef = {
+            componentInstance: {},
+            result: Promise.resolve(true) // Simulates modal closing behavior
+        } as NgbModalRef;
+        ngbModal.open.mockReturnValue(mockModalRef as any);
+        return mockModalRef;
+    }
 
-  it('should not open second authentication modal when one is already open', async () => {
-    fixture.detectChanges();
-    mockAuthModalNeverCloses();
+    function getAuthenticateButton(): DebugElement {
+        return fixture.debugElement.query(By.css('[data-testid="show-gog-auth-modal-btn"]'));
+    }
 
-    const authenticateButton: DebugElement = getAuthenticateButton();
-    await authenticateButton.nativeElement.click(); // First modal opens
-    await authenticateButton.nativeElement.click(); // Second modal opens
+    it('should not open second authentication modal when one is already open', async () => {
+        fixture.detectChanges();
+        mockAuthModalNeverCloses();
 
-    expect(ngbModal.open).toHaveBeenCalledTimes(1);
-  });
+        const authenticateButton: DebugElement = getAuthenticateButton();
+        await authenticateButton.nativeElement.click(); // First modal opens
+        await authenticateButton.nativeElement.click(); // Second modal opens
 
-  function mockAuthModalNeverCloses() {
-    const mockModalRef = {
-      componentInstance: {},
-      result: new Promise(() => {
-      }) // Never closes
-    } as NgbModalRef;
-    ngbModal.open.and.returnValue(mockModalRef as any);
-  }
+        expect(ngbModal.open).toHaveBeenCalledTimes(1);
+    });
 
-  it('should open authentication modal after authentication succeeded', async () => {
-    fixture.detectChanges();
-    mockAuthModalImmediatelyReturnsTrue();
+    function mockAuthModalNeverCloses() {
+        const mockModalRef = {
+            componentInstance: {},
+            result: new Promise(() => {
+            }) // Never closes
+        } as NgbModalRef;
+        ngbModal.open.mockReturnValue(mockModalRef as any);
+    }
 
-    const authenticateButton: DebugElement = getAuthenticateButton();
-    await authenticateButton.nativeElement.click(); // First modal opens and succeeds
-    await authenticateButton.nativeElement.click(); // Second modal opens and succeeds
+    it('should open authentication modal after authentication succeeded', async () => {
+        fixture.detectChanges();
+        mockAuthModalImmediatelyReturnsTrue();
 
-    expect(ngbModal.open).toHaveBeenCalledTimes(2);
-  });
+        const authenticateButton: DebugElement = getAuthenticateButton();
+        await authenticateButton.nativeElement.click(); // First modal opens and succeeds
+        await authenticateButton.nativeElement.click(); // Second modal opens and succeeds
 
-  it('should open authentication modal after authentication failed', async () => {
-    fixture.detectChanges();
-    mockAuthModalImmediatelyRejects();
+        expect(ngbModal.open).toHaveBeenCalledTimes(2);
+    });
 
-    const authenticateButton: DebugElement = getAuthenticateButton();
-    await authenticateButton.nativeElement.click(); // First modal opens and fails
-    await authenticateButton.nativeElement.click(); // Second modal opens and fails
+    it('should open authentication modal after authentication failed', async () => {
+        fixture.detectChanges();
+        mockAuthModalImmediatelyRejects();
 
-    expect(ngbModal.open).toHaveBeenCalledTimes(2);
-  });
+        const authenticateButton: DebugElement = getAuthenticateButton();
+        await authenticateButton.nativeElement.click(); // First modal opens and fails
+        await authenticateButton.nativeElement.click(); // Second modal opens and fails
 
-  function mockAuthModalImmediatelyRejects() {
-    const mockModalRef = {
-      componentInstance: {},
-      result: Promise.reject("some rejection reason") // Simulates modal closing behavior
-    } as NgbModalRef;
-    ngbModal.open.and.returnValue(mockModalRef as any);
-  }
+        expect(ngbModal.open).toHaveBeenCalledTimes(2);
+    });
 
-  it('should log out given logged in', async () => {
-    mockIsAuthenticated();
-    gogAuthClientMock.logOutOfGog.and.returnValue(of(true) as any);
-    fixture.detectChanges();
+    function mockAuthModalImmediatelyRejects() {
+        const mockModalRef = {
+            componentInstance: {},
+            result: Promise.reject("some rejection reason") // Simulates modal closing behavior
+        } as NgbModalRef;
+        ngbModal.open.mockReturnValue(mockModalRef as any);
+    }
 
-    const logOutButton: DebugElement = getLogOutButton();
+    it('should log out given logged in', async () => {
+        mockIsAuthenticated();
+        gogAuthClientMock.logOutOfGog.mockReturnValue(of(true) as any);
+        fixture.detectChanges();
 
-    await logOutButton.nativeElement.click();
+        const logOutButton: DebugElement = getLogOutButton();
 
-    expect(component.gogIsLoading).toBeFalsy();
-    expect(component.gogAuthenticated).toBeFalsy();
-    expect(notificationService.showSuccess).toHaveBeenCalledWith("Logged out of GOG");
-  });
+        await logOutButton.nativeElement.click();
 
-  function mockIsAuthenticated() {
-    gogAuthClientMock.getGogAuthenticationStatus.and.returnValue(of(true) as any);
-  }
+        expect(component.gogIsLoading).toBeFalsy();
+        expect(component.gogAuthenticated).toBeFalsy();
+        expect(notificationService.showSuccess).toHaveBeenCalledWith("Logged out of GOG");
+    });
 
-  function getLogOutButton(): DebugElement {
-    return fixture.debugElement.query(By.css('[data-testid="log-out-gog-btn"]'));
-  }
+    function mockIsAuthenticated() {
+        gogAuthClientMock.getGogAuthenticationStatus.mockReturnValue(of(true) as any);
+    }
 
-  it('should handle error during log out', async () => {
-    mockIsAuthenticated();
-    const error = throwErrorDuringLogOut();
-    fixture.detectChanges();
+    function getLogOutButton(): DebugElement {
+        return fixture.debugElement.query(By.css('[data-testid="log-out-gog-btn"]'));
+    }
 
-    const logOutButton: DebugElement = getLogOutButton();
+    it('should handle error during log out', async () => {
+        mockIsAuthenticated();
+        const error = throwErrorDuringLogOut();
+        fixture.detectChanges();
 
-    await logOutButton.nativeElement.click();
+        const logOutButton: DebugElement = getLogOutButton();
 
-    expect(component.gogIsLoading).toBeFalsy();
-    expect(component.gogAuthenticated).toBeTruthy();
-    expect(notificationService.showFailure).toHaveBeenCalledWith("Could not log out of GOG", error);
-  });
+        await logOutButton.nativeElement.click();
 
-  function throwErrorDuringLogOut() {
-    const error = new Error('Log out failed');
-    gogAuthClientMock.logOutOfGog.and.returnValue(throwError(() => error));
-    return error;
-  }
+        expect(component.gogIsLoading).toBeFalsy();
+        expect(component.gogAuthenticated).toBeTruthy();
+        expect(notificationService.showFailure).toHaveBeenCalledWith("Could not log out of GOG", error);
+    });
+
+    function throwErrorDuringLogOut() {
+        const error = new Error('Log out failed');
+        gogAuthClientMock.logOutOfGog.mockReturnValue(throwError(() => error));
+        return error;
+    }
 });
