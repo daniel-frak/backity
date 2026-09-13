@@ -29,7 +29,7 @@
               <option value="verify" />
               <option value="sonar:sonar" />
               <option value="-Ppitest-full" />
-              <option value="-Pfrontend-pre-sonar" />
+              <option value="-Pfrontend-generate-test-coverage" />
             </list>
           </option>
           <option name="multimoduleDir" />

@@ -3,14 +3,19 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "prepare-assets": "node scripts/copy-shared-assets.mjs",
+    "prestart": "npm run prepare-assets",
     "start": "ng serve",
-    "prebuild": "node scripts/copy-shared-assets.mjs",
+    "prebuild": "npm run prepare-assets",
     "build": "ng build",
+    "prebuild-prod": "npm run prepare-assets",
     "build-prod": "ng build --configuration production",
+    "prewatch": "npm run prepare-assets",
     "watch": "ng build --watch --configuration development",
-    "pretest": "node scripts/copy-shared-assets.mjs",
+    "pretest": "npm run prepare-assets",
     "test": "ng test",
-    "pre-sonar": "ng test --code-coverage --no-watch --source-map=true --browsers=ChromeHeadless"
+    "pregenerate-test-coverage": "npm run prepare-assets",
+    "generate-test-coverage": "ng test --code-coverage --no-watch --source-map=true --browsers=ChromeHeadless"
   },
   "private": true,
   "dependencies": {
