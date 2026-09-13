@@ -62,6 +62,7 @@ To run the Angular frontend independently for faster iteration:
 
 ```shell
 cd frontend/src/main/angular
+npm run prepare-assets # Needed on first run to copy shared assets
 ng serve
 ```
 

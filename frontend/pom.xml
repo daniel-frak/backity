@@ -115,7 +115,7 @@
 
         <profile>
             <!-- Includes code coverage reports from the `frontend` module during a sonar analysis. -->
-            <id>frontend-pre-sonar</id>
+            <id>frontend-generate-test-coverage</id>
             <build>
                 <plugins>
                     <plugin>
@@ -146,7 +146,7 @@
                                     <goal>npm</goal>
                                 </goals>
                                 <configuration>
-                                    <arguments>run pre-sonar</arguments>
+                                    <arguments>run generate-test-coverage</arguments>
                                 </configuration>
                             </execution>
                         </executions>

@@ -50,7 +50,7 @@ You can run analysis for the **whole project** (both backend and frontend) by ru
 the root of this repository:
 
 ```shell
-./mvnw clean verify sonar:sonar -Pfrontend-pre-sonar -Ppitest-full
+./mvnw clean verify sonar:sonar -Pfrontend-generate-test-coverage -Ppitest-full
 ```
 
 ## Backend analysis
@@ -68,7 +68,7 @@ You can run a separate analysis for the **frontend** module:
 
 ```shell
 cd frontend
-./mvnw sonar:sonar -Pfrontend-pre-sonar
+./mvnw sonar:sonar -Pfrontend-generate-test-coverage
 ```
 
 ## Verifying results

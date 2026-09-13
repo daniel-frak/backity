@@ -46,7 +46,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         # mvn install instead of verify for sonar-fork-analysis to work
-        run: mvn -B install -Pfrontend-pre-sonar -Ppitest-new-code -Ppitest-strict
+        run: mvn -B install -Pfrontend-generate-test-coverage -Ppitest-new-code -Ppitest-strict
 
       - name: Upload files for Sonar analysis
         uses: ./.github/actions/sonar-fork-analysis
