@@ -34,7 +34,6 @@
             /node_modules/,
             src/main/angular/src/backend/**,
             src/main/angular/src/polyfills.ts,
-            src/main/angular/src/test.ts,
             src/main/angular/src/main.ts,
             src/main/angular/src/app/core/pages/theme/**,
             src/main/angular/src/app/**.config.ts,

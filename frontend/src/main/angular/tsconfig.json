@@ -39,5 +39,9 @@
 
     // https://github.com/angular/angular/issues/21049
     "preserveWhitespaces": true
-  }
+  },
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.spec.json" }
+  ]
 }

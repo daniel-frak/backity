@@ -5,16 +5,16 @@ import {
   ConfirmationModalComponent
 } from '@app/shared/components/modals/confirmation-modal/confirmation-modal.component';
 import {ModalRef} from "@app/shared/services/modal-service/modal-ref";
-import SpyObj = jasmine.SpyObj;
-import createSpyObj = jasmine.createSpyObj;
-import createSpy = jasmine.createSpy;
+import {Mocked} from "vitest";
 
 describe('ModalService', () => {
   let service: ModalService;
-  let ngbModal: SpyObj<NgbModal>;
+  let ngbModal: Mocked<NgbModal>;
 
   beforeEach(() => {
-    const modalServiceMock = createSpyObj('NgbModal', ['open']);
+    const modalServiceMock = {
+      open: vi.fn()
+    };
 
     TestBed.configureTestingModule({
       providers: [
@@ -24,7 +24,7 @@ describe('ModalService', () => {
     });
 
     service = TestBed.inject(ModalService);
-    ngbModal = TestBed.inject(NgbModal) as SpyObj<NgbModal>;
+    ngbModal = TestBed.inject(NgbModal) as any;
   });
 
   it('should be created', () => {
@@ -34,21 +34,23 @@ describe('ModalService', () => {
   describe('open()', () => {
 
     it('should return a ModalRef', () => {
-      const ngbModalRef: NgbModalRef = createSpyObj('NgbModalRef', ['result']);
-      ngbModal.open.and.returnValue(ngbModalRef as any);
+      const ngbModalRef: NgbModalRef = {
+        result: vi.fn()
+      } as unknown as NgbModalRef;
+      ngbModal.open.mockReturnValue(ngbModalRef as any);
       const content = {} as any;
 
       const result: ModalRef = service.open(content);
 
       expect(result).toEqual(ngbModalRef);
-    })
+    });
   });
 
   describe('withConfirmationModal()', () => {
 
     it('should open the confirmation modal with the correct message', async () => {
       const mockModalRef: NgbModalRef = mockNgbModalConfirmationAfterOpening();
-      const callback = createSpy('callback');
+      const callback = vi.fn();
 
       await service.withConfirmationModal('Test message', callback);
 
@@ -58,7 +60,7 @@ describe('ModalService', () => {
 
     function mockNgbModalConfirmationAfterOpening(): NgbModalRef {
       const mockMessage = {
-        set: createSpy('set')
+        set: vi.fn()
       };
       const mockModalRef = {
         componentInstance: {
@@ -67,14 +69,14 @@ describe('ModalService', () => {
         result: Promise.resolve(true)
       } as any;
 
-      ngbModal.open.and.returnValue(mockModalRef);
+      ngbModal.open.mockReturnValue(mockModalRef);
 
       return mockModalRef;
     }
 
     it('should execute the callback if modal is confirmed', async () => {
       mockNgbModalConfirmationAfterOpening();
-      const callback = createSpy('callback').and.returnValue(Promise.resolve());
+      const callback = vi.fn().mockResolvedValue(undefined);
 
       await service.withConfirmationModal('Test message', callback);
 
@@ -83,7 +85,7 @@ describe('ModalService', () => {
 
     it('should not execute the callback if the modal is dismissed', async () => {
       mockNgbModalCancellationAfterOpening();
-      const callback = createSpy('callback').and.returnValue(Promise.resolve());
+      const callback = vi.fn().mockResolvedValue(undefined);
 
       await service.withConfirmationModal('Test message', callback);
 
@@ -94,19 +96,19 @@ describe('ModalService', () => {
       const mockModalRef = {
         componentInstance: {
           message: {
-            set: createSpy('set')
+            set: vi.fn()
           }
         },
         result: Promise.resolve(false)
       } as any;
-      ngbModal.open.and.returnValue(mockModalRef);
+      ngbModal.open.mockReturnValue(mockModalRef);
 
       return mockModalRef;
     }
 
     it('should not call the callback on modal dismissal (rejected promise)', async () => {
       mockNgbModalDismissalAfterOpening();
-      const callback = createSpy('callback').and.returnValue(Promise.resolve());
+      const callback = vi.fn().mockResolvedValue(undefined);
 
       await (service.withConfirmationModal('Test message', callback));
 
@@ -117,12 +119,12 @@ describe('ModalService', () => {
       const mockModalRef = {
         componentInstance: {
           message: {
-            set: createSpy('set')
+            set: vi.fn()
           }
         },
         result: Promise.reject('dismiss')
       } as any;
-      ngbModal.open.and.returnValue(mockModalRef);
+      ngbModal.open.mockReturnValue(mockModalRef);
 
       return mockModalRef;
     }
