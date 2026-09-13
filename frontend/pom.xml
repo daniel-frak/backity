@@ -22,7 +22,7 @@
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
         <sonar.sources>src/main/angular/src</sonar.sources>
         <sonar.tests>src/main/angular/src</sonar.tests>
-        <sonar.javascript.lcov.reportPaths>src/main/angular/coverage/lcov.info</sonar.javascript.lcov.reportPaths>
+        <sonar.javascript.lcov.reportPaths>src/main/angular/coverage/angular/lcov.info</sonar.javascript.lcov.reportPaths>
         <sonar.test.inclusions>src/main/angular/src/**/*.spec.ts</sonar.test.inclusions>
         <sonar.coverage.exclusions>
             src/main/angular/src/environments/environment*.ts,
@@ -34,7 +34,6 @@
             /node_modules/,
             src/main/angular/src/backend/**,
             src/main/angular/src/polyfills.ts,
-            src/main/angular/src/test.ts,
             src/main/angular/src/main.ts,
             src/main/angular/src/app/core/pages/theme/**,
             src/main/angular/src/app/**.config.ts,

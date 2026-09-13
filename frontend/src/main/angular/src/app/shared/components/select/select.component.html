@@ -1,6 +1,7 @@
 <div [class.form-floating]="floating()">
   <select class="form-select" [attr.aria-label]="label()"
           [(ngModel)]="value"
+          [ngModelOptions]="{ standalone: true }"
           (ngModelChange)="handleChange($event)">
     @if (noValueText() !== undefined) {
       <option [ngValue]="null">{{ noValueText() }}</option>

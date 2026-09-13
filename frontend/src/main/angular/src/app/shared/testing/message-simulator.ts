@@ -1,6 +1,6 @@
 import {MessageService} from "@app/shared/backend/services/message.service";
 import {Subject} from "rxjs";
-import SpyObj = jasmine.SpyObj;
+import {Mocked} from "vitest";
 
 /**
  * Utility for simulating incoming {@link MessageService} messages.
@@ -12,13 +12,13 @@ export class MessageSimulator {
 
   private readonly subjects = new Map<string, Subject<any>>();
 
-  private constructor(private readonly messageService: SpyObj<MessageService>) {
-    messageService.watch.and.callFake((topic: string) => {
+  private constructor(private readonly messageService: Mocked<MessageService>) {
+    messageService.watch.mockImplementation((topic: string) => {
       return this.getOrCreateSubject(topic).asObservable();
     });
   }
 
-  static given(messageService: SpyObj<MessageService>): MessageSimulator {
+  static given(messageService: Mocked<MessageService>): MessageSimulator {
     return new MessageSimulator(messageService);
   }
 

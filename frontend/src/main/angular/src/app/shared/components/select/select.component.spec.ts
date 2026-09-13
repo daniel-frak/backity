@@ -3,82 +3,82 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {SelectComponent} from './select.component';
 
 describe('SelectComponent', () => {
-  let component: SelectComponent<string>;
-  let fixture: ComponentFixture<SelectComponent<string>>;
+    let component: SelectComponent<string>;
+    let fixture: ComponentFixture<SelectComponent<string>>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [SelectComponent]
-    })
-    .compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [SelectComponent]
+        })
+            .compileComponents();
 
-    fixture = TestBed.createComponent(SelectComponent<string>);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+        fixture = TestBed.createComponent(SelectComponent<string>);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should render all provided elements as options', () => {
-    fixture.componentRef.setInput('elements', ['One', 'Two', 'Three']);
-    fixture.componentRef.setInput('label', 'Select an option');
-    fixture.componentRef.setInput('noValueText', 'None');
-    fixture.detectChanges();
+    it('should render all provided elements as options', () => {
+        fixture.componentRef.setInput('elements', ['One', 'Two', 'Three']);
+        fixture.componentRef.setInput('label', 'Select an option');
+        fixture.componentRef.setInput('noValueText', 'None');
+        fixture.detectChanges();
 
-    const options = fixture.nativeElement.querySelectorAll('option');
-    expect(options.length).toBe(4);
-    expect(options[0].textContent).toContain('None');
-    expect(options[1].textContent).toContain('One');
-    expect(options[2].textContent).toContain('Two');
-    expect(options[3].textContent).toContain('Three');
-  });
+        const options = fixture.nativeElement.querySelectorAll('option');
+        expect(options.length).toBe(4);
+        expect(options[0].textContent).toContain('None');
+        expect(options[1].textContent).toContain('One');
+        expect(options[2].textContent).toContain('Two');
+        expect(options[3].textContent).toContain('Three');
+    });
 
-  it('should set label correctly', () => {
-    fixture.componentRef.setInput('label', 'Custom Label');
-    fixture.detectChanges();
+    it('should set label correctly', () => {
+        fixture.componentRef.setInput('label', 'Custom Label');
+        fixture.detectChanges();
 
-    const label = fixture.nativeElement.querySelector('label');
-    expect(label.textContent).toContain('Custom Label');
-  });
+        const label = fixture.nativeElement.querySelector('label');
+        expect(label.textContent).toContain('Custom Label');
+    });
 
-  it('should apply form-floating class when "floating" is true', () => {
-    fixture.componentRef.setInput('floating', true);
-    fixture.detectChanges();
+    it('should apply form-floating class when "floating" is true', () => {
+        fixture.componentRef.setInput('floating', true);
+        fixture.detectChanges();
 
-    const wrapper = fixture.nativeElement.querySelector('div');
-    expect(wrapper.classList).toContain('form-floating');
-  });
+        const wrapper = fixture.nativeElement.querySelector('div');
+        expect(wrapper.classList).toContain('form-floating');
+    });
 
-  it('should not apply form-floating class when "floating" is false', () => {
-    fixture.componentRef.setInput('floating', false);
-    fixture.detectChanges();
+    it('should not apply form-floating class when "floating" is false', () => {
+        fixture.componentRef.setInput('floating', false);
+        fixture.detectChanges();
 
-    const wrapper = fixture.nativeElement.querySelector('div');
-    expect(wrapper.classList).not.toContain('form-floating');
-  });
+        const wrapper = fixture.nativeElement.querySelector('div');
+        expect(wrapper.classList).not.toContain('form-floating');
+    });
 
-  it('should propagate value changes via handleChange()', () => {
-    const spy = spyOn(component as any, 'onChange');
-    const testValue = 'Two';
+    it('should propagate value changes via handleChange()', () => {
+        const spy = vi.spyOn(component as any, 'onChange').mockReturnValue(undefined);
+        const testValue = 'Two';
 
-    component.handleChange(testValue);
-    expect(component.value).toBe(testValue);
-    expect(spy).toHaveBeenCalledWith(testValue);
-  });
+        component.handleChange(testValue);
+        expect(component.value).toBe(testValue);
+        expect(spy).toHaveBeenCalledWith(testValue);
+    });
 
-  it('should call registered onTouched and onChange from ControlValueAccessor', () => {
-    let changed = '';
-    let touched = false;
+    it('should call registered onTouched and onChange from ControlValueAccessor', () => {
+        let changed = '';
+        let touched = false;
 
-    component.registerOnChange((value: string) => (changed = value));
-    component.registerOnTouched(() => (touched = true));
+        component.registerOnChange((value: string) => (changed = value));
+        component.registerOnTouched(() => (touched = true));
 
-    const value = 'Selected';
-    component.handleChange(value);
+        const value = 'Selected';
+        component.handleChange(value);
 
-    expect(changed).toBe(value);
-    expect(touched).toBeTrue();
-  });
+        expect(changed).toBe(value);
+        expect(touched).toBe(true);
+    });
 });
