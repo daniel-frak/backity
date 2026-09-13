@@ -19,7 +19,7 @@
     "mermaid": "^11.13.0",
     "rehype-shift-heading": "^2.0.0",
     "remark-toc": "^9.0.0",
-    "typescript": "^6.0.3"
+    "typescript": "^7.0.0"
   },
   "devDependencies": {
     "@types/node": "25.9.6",
