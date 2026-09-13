@@ -1,4 +1,4 @@
-import {Component, input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, OnInit} from '@angular/core';
 import {GameContentDiscoveryOverview, GOGAuthenticationClient, GogConfig, GOGConfigurationClient} from "@backend";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NotificationService} from "@app/shared/services/notification/notification.service";
@@ -23,6 +23,7 @@ import {
   selector: 'app-gog-auth',
   templateUrl: './gog-auth.component.html',
   styleUrl: './gog-auth.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     LoadedContentComponent,
     CommonModule,

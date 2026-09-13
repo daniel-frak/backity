@@ -1,4 +1,4 @@
-import {Component, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, signal} from '@angular/core';
 import {
   FileBackupMessageTopics,
   FileCopiesClient,
@@ -57,6 +57,7 @@ import {MessageService} from "@app/shared/backend/services/message.service";
     NamedValueContainerComponent
   ],
   templateUrl: './queue.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './queue.component.scss'
 })
 export class QueueComponent implements OnInit {

@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {IconItemComponent} from './icon-item.component';
-import {Component} from "@angular/core";
+import {ChangeDetectionStrategy, Component} from "@angular/core";
 import {By} from "@angular/platform-browser";
 
 @Component({
@@ -13,6 +13,7 @@ import {By} from "@angular/platform-browser";
       <div details>Always visible details</div>
     </app-icon-item>
   `,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 class TestHostComponent {

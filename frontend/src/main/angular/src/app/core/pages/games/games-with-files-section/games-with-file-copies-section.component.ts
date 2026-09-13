@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnInit, signal} from '@angular/core';
 import {
   BackupTarget,
   BackupTargetsClient,
@@ -84,6 +84,7 @@ interface SearchForm {
     FormsModule
   ],
   templateUrl: './games-with-file-copies-section.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './games-with-file-copies-section.component.scss'
 })
 export class GamesWithFileCopiesSectionComponent implements OnInit {

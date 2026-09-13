@@ -2,7 +2,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
@@ -18,16 +17,16 @@
     "module": "es2022",
     "paths": {
       "@environment/*": [
-        "src/environments/*"
+        "./src/environments/*"
       ],
       "@app/*": [
-        "src/app/*"
+        "./src/app/*"
       ],
       "@backend": [
-        "src/backend/index.ts"
+        "./src/backend/index.ts"
       ],
       "@backend/*": [
-        "src/backend/*"
+        "./src/backend/*"
       ]
     },
     "useDefineForClassFields": false

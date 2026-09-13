@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 
 @Component({
     selector: 'app-auto-layout',
     imports: [],
     templateUrl: './auto-layout.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './auto-layout.component.scss'
 })
 export class AutoLayoutComponent {

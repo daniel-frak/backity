@@ -34,12 +34,12 @@
               "src/assets",
               {
                 "glob": "favicon.svg",
-                "input": "../../../../branding",
+                "input": ".generated/branding",
                 "output": "/assets"
               },
               {
                 "glob": "logo-color-on-dark.svg",
-                "input": "../../../../branding",
+                "input": ".generated/branding",
                 "output": "/assets"
               }
             ],
@@ -60,7 +60,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumError": "1.1mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -123,12 +123,12 @@
               "src/assets",
               {
                 "glob": "favicon.svg",
-                "input": "../../../../branding",
+                "input": ".generated/branding",
                 "output": "/assets"
               },
               {
                 "glob": "logo-color-on-dark.svg",
-                "input": "../../../../branding",
+                "input": ".generated/branding",
                 "output": "/assets"
               }
             ],

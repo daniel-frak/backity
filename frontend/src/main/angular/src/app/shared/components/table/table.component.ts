@@ -1,4 +1,13 @@
-import {AfterContentInit, Component, computed, ContentChildren, input, QueryList, signal} from '@angular/core';
+import {
+  AfterContentInit,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ContentChildren,
+  input,
+  QueryList,
+  signal
+} from '@angular/core';
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
 import {LoadedContentComponent} from '../loaded-content/loaded-content.component';
 import {NgClass, NgTemplateOutlet} from '@angular/common';
@@ -58,6 +67,7 @@ import {TableContentGroup} from "@app/shared/components/table/table-content-grou
   selector: 'app-table',
   templateUrl: './table.component.html',
   styleUrl: './table.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [LoadedContentComponent, NgClass, NgTemplateOutlet]
 })
 export class TableComponent implements AfterContentInit {

@@ -73,7 +73,7 @@
                                                         [status]="potentialFileCopyWithContext.potentialFileCopy.status"/>
                             @if (potentialFileCopyWithContext.progress?.timeLeftSeconds) {
                               (time left: {{
-                                (potentialFileCopyWithContext.progress?.timeLeftSeconds! * 1000)
+                                ($safeNavigationMigration(potentialFileCopyWithContext.progress?.timeLeftSeconds)! * 1000)
                                   | date:'H:mm:ss':'UTC'
                               }})
                             }

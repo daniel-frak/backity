@@ -1,4 +1,4 @@
-import {Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 import {StorageSolutionStatus} from "@backend";
 import {NgClass} from "@angular/common";
 
@@ -8,6 +8,7 @@ import {NgClass} from "@angular/common";
         NgClass
     ],
     templateUrl: './storage-solution-status-badge.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './storage-solution-status-badge.component.scss'
 })
 export class StorageSolutionStatusBadgeComponent {

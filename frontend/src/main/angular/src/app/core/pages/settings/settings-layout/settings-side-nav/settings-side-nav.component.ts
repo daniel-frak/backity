@@ -1,4 +1,4 @@
-import {Component, HostBinding, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, HostBinding, OnInit} from '@angular/core';
 import {NavigatorProviderService} from "@app/shared/services/navigator-provider.service";
 import {NgClass} from '@angular/common';
 import {RouterLink, RouterLinkActive} from '@angular/router';
@@ -7,6 +7,7 @@ import {RouterLink, RouterLinkActive} from '@angular/router';
     selector: 'app-settings-side-nav',
     templateUrl: './settings-side-nav.component.html',
     styleUrl: './settings-side-nav.component.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [
         NgClass,
         RouterLinkActive,

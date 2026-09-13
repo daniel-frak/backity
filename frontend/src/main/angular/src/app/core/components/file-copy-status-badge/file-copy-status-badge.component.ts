@@ -1,4 +1,4 @@
-import {Component, input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input} from '@angular/core';
 import {FileCopyStatus} from "@backend";
 import {CommonModule} from '@angular/common';
 
@@ -6,6 +6,7 @@ import {CommonModule} from '@angular/common';
   selector: 'app-file-copy-status-badge',
   templateUrl: './file-copy-status-badge.component.html',
   styleUrl: './file-copy-status-badge.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule]
 })
 export class FileCopyStatusBadgeComponent {

@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {InputComponent} from './input.component';
 import {By} from '@angular/platform-browser';
-import {Component, DebugElement} from '@angular/core';
+import {ChangeDetectionStrategy, Component, DebugElement} from '@angular/core';
 
 @Component({
     template: `
@@ -10,6 +10,7 @@ import {Component, DebugElement} from '@angular/core';
       <app-input formControlName="testInput"></app-input>
     </form>
   `,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class TestHostComponent {

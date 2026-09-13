@@ -1,4 +1,4 @@
-import {Component, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, signal} from '@angular/core';
 import {AutoLayoutComponent} from "@app/shared/components/auto-layout/auto-layout.component";
 import {LoadedContentComponent} from "@app/shared/components/loaded-content/loaded-content.component";
 import {SectionComponent} from "@app/shared/components/section/section.component";
@@ -11,6 +11,7 @@ import {SectionComponent} from "@app/shared/components/section/section.component
     SectionComponent
   ],
   templateUrl: './storage-solutions.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './storage-solutions.component.scss',
 })
 export class StorageSolutionsComponent {

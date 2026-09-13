@@ -1,4 +1,4 @@
-import {Component, input, model, Optional, Self} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, model, Optional, Self} from '@angular/core';
 import {NgClass} from "@angular/common";
 import {ControlValueAccessor, NgControl, ReactiveFormsModule} from "@angular/forms";
 
@@ -9,6 +9,7 @@ import {ControlValueAccessor, NgControl, ReactiveFormsModule} from "@angular/for
     ReactiveFormsModule
   ],
   templateUrl: './input.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './input.component.scss'
 })
 export class InputComponent implements ControlValueAccessor {

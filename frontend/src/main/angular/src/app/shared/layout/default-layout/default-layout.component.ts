@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {NotificationContainerComponent} from '@app/notification-container/notification-container.component';
 import {RouterLink, RouterLinkActive, RouterOutlet} from '@angular/router';
 import {NgbCollapse} from '@ng-bootstrap/ng-bootstrap';
@@ -7,6 +7,7 @@ import {NgbCollapse} from '@ng-bootstrap/ng-bootstrap';
   selector: 'app-default-layout',
   templateUrl: './default-layout.component.html',
   styleUrl: './default-layout.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [NotificationContainerComponent, RouterLink, NgbCollapse, RouterLinkActive, RouterOutlet]
 })
 export class DefaultLayoutComponent {

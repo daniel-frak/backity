@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {NgbModalConfig} from "@ng-bootstrap/ng-bootstrap";
 import {RouterOutlet} from '@angular/router';
 
@@ -6,6 +6,7 @@ import {RouterOutlet} from '@angular/router';
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [RouterOutlet]
 })
 export class AppComponent {

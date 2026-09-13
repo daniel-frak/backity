@@ -1,7 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TableComponent} from './table.component';
-import {Component, QueryList, ViewChild} from "@angular/core";
+import {ChangeDetectionStrategy, Component, QueryList, ViewChild} from "@angular/core";
 import {TableColumnDirective} from "@app/shared/components/table/column-directive/table-column.directive";
 import {By} from "@angular/platform-browser";
 import {TableContentGroup} from "@app/shared/components/table/table-content-group";
@@ -23,6 +23,7 @@ import {TableContentGroup} from "@app/shared/components/table/table-content-grou
       </ng-template>
     </app-table>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     TableComponent,
     TableColumnDirective

@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {PageHeaderComponent} from '@app/shared/components/page-header/page-header.component';
 import {
   GamesWithFileCopiesSectionComponent
@@ -8,6 +8,7 @@ import {
     selector: 'app-games',
     templateUrl: './games.component.html',
     styleUrl: './games.component.scss',
+    changeDetection: ChangeDetectionStrategy.Eager,
     imports: [PageHeaderComponent, GamesWithFileCopiesSectionComponent]
 })
 export class GamesComponent {

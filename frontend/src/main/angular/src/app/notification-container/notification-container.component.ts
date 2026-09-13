@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {NotificationService} from "@app/shared/services/notification/notification.service";
 import {NgbToast} from "@ng-bootstrap/ng-bootstrap";
-import { NgClass } from "@angular/common";
+import {NgClass} from "@angular/common";
 
 @Component({
     selector: 'app-notification-container',
@@ -10,6 +10,7 @@ import { NgClass } from "@angular/common";
     NgClass
 ],
     templateUrl: './notification-container.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './notification-container.component.scss'
 })
 export class NotificationContainerComponent {

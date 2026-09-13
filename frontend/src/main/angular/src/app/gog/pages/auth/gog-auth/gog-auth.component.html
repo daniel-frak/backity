@@ -15,7 +15,7 @@
            [ngClass]="{
            'bi bi-check-circle': gogAuthenticated && !overview()?.progress,
            'bi bi-x-circle': !gogAuthenticated && !overview()?.progress,
-           'bi bi-hourglass': overview()?.progress
+           'bi bi-hourglass': $safeNavigationMigration(overview()?.progress)
            }"
            aria-hidden="true">
         </i>
@@ -75,7 +75,7 @@
             <ng-container name>Last successful discovery stopped at</ng-container>
             <ng-container value>
               @if (overview()?.lastDiscoveryResult) {
-                {{ overview()?.lastDiscoveryResult?.lastSuccessfulDiscoveryCompletedAt | date:'dd.MM.yyyy HH:mm:ss' }}
+                {{ $safeNavigationMigration(overview()?.lastDiscoveryResult?.lastSuccessfulDiscoveryCompletedAt) | date:'dd.MM.yyyy HH:mm:ss' }}
               } @else {
                 N/A
               }
@@ -86,7 +86,7 @@
             <ng-container value>
               <span data-testid="last-discovery-timestamp">
                 @if (overview()?.lastDiscoveryResult) {
-                  {{ overview()?.lastDiscoveryResult?.stoppedAt | date:'dd.MM.yyyy HH:mm:ss' }}
+                  {{ $safeNavigationMigration(overview()?.lastDiscoveryResult?.stoppedAt) | date:'dd.MM.yyyy HH:mm:ss' }}
                 } @else {
                   N/A
                 }
@@ -96,7 +96,7 @@
           <app-named-value>
             <ng-container name>Last discovery outcome</ng-container>
             <ng-container value>
-              <app-game-content-discovery-outcome-badge [status]="overview()?.lastDiscoveryResult?.discoveryOutcome"/>
+              <app-game-content-discovery-outcome-badge [status]="$safeNavigationMigration(overview()?.lastDiscoveryResult?.discoveryOutcome)"/>
             </ng-container>
           </app-named-value>
           <app-named-value>
@@ -138,9 +138,9 @@
           <app-named-value>
             <ng-container name>Time left</ng-container>
             <ng-container value>
-              @if (overview()?.progress?.timeLeftSeconds !== undefined
-              && overview()?.progress?.timeLeftSeconds !== null) {
-                {{ (overview()?.progress?.timeLeftSeconds! * 1000) | date:'H:mm:ss':'UTC' }}
+              @if ($safeNavigationMigration(overview()?.progress?.timeLeftSeconds) !== undefined
+              && $safeNavigationMigration(overview()?.progress?.timeLeftSeconds) !== null) {
+                {{ ($safeNavigationMigration(overview()?.progress?.timeLeftSeconds)! * 1000) | date:'H:mm:ss':'UTC' }}
               } @else {
                 N/A
               }
