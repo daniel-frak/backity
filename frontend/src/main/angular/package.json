@@ -15,7 +15,7 @@
     "pretest": "npm run prepare-assets",
     "test": "ng test",
     "pregenerate-test-coverage": "npm run prepare-assets",
-    "generate-test-coverage": "ng test --code-coverage --no-watch --source-map=true --browsers=ChromeHeadless"
+    "generate-test-coverage": "ng test --coverage --no-watch --coverage-reporters=lcov"
   },
   "private": true,
   "dependencies": {
@@ -44,11 +44,11 @@
     "@angular/cli": "22.1.8",
     "@angular/compiler-cli": "22.1.6",
     "@types/node": "24.13.4",
-    "@vitest/coverage-v8": "^4.0.8",
+    "@vitest/coverage-v8": "^4.1.11",
     "istanbul-lib-instrument": "6.0.3",
     "jsdom": "^30.0.1",
-    "karma-sonarqube-unit-reporter": "0.0.23",
     "typescript": "6.0.3",
-    "vitest": "^4.1.11"
+    "vitest": "^4.1.11",
+    "vitest-sonar-reporter": "^3.0.0"
   }
 }

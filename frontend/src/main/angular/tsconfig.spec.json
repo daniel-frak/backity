@@ -3,7 +3,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
-    "target": "ES2016",
+    "target": "ES2022",
     "types": [
       "@angular/localize",
       "vitest/globals"

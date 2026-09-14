@@ -134,7 +134,8 @@
               "lcovonly"
             ],
             "buildTarget": ":build:testing",
-            "runner": "vitest"
+            "runner": "vitest",
+            "runnerConfig": true
           }
         }
       }

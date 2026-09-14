@@ -5,77 +5,77 @@ import {By} from '@angular/platform-browser';
 import {DebugElement} from '@angular/core';
 
 describe('NotificationContainerComponent', () => {
-    let component: NotificationContainerComponent;
-    let fixture: ComponentFixture<NotificationContainerComponent>;
-    let notificationService: NotificationService;
+  let component: NotificationContainerComponent;
+  let fixture: ComponentFixture<NotificationContainerComponent>;
+  let notificationService: NotificationService;
 
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            imports: [NotificationContainerComponent],
-            declarations: [],
-            providers: [NotificationService]
-        }).compileComponents();
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [NotificationContainerComponent],
+      declarations: [],
+      providers: [NotificationService]
+    }).compileComponents();
 
-        fixture = TestBed.createComponent(NotificationContainerComponent);
-        component = fixture.componentInstance;
-        notificationService = TestBed.inject(NotificationService);
-    });
+    fixture = TestBed.createComponent(NotificationContainerComponent);
+    component = fixture.componentInstance;
+    notificationService = TestBed.inject(NotificationService);
+  });
 
-    it('should create', () => {
-        fixture.detectChanges();
+  it('should create', () => {
+    fixture.detectChanges();
 
-        expect(component).toBeTruthy();
-    });
+    expect(component).toBeTruthy();
+  });
 
-    it('should display notifications', () => {
-        notificationService.show('Content 1', 'Test Notification 1');
-        fixture.detectChanges();
+  it('should display notifications', () => {
+    notificationService.show('Content 1', 'Test Notification 1');
+    fixture.detectChanges();
 
-        const toastElements: DebugElement[] = fixture.debugElement.queryAll(By.css('ngb-toast'));
-        expect(toastElements.length).toBe(1);
+    const toastElements: DebugElement[] = fixture.debugElement.queryAll(By.css('ngb-toast'));
+    expect(toastElements.length).toBe(1);
 
-        const contentElement: DebugElement = fixture.debugElement.query(By.css('.toast-body div'));
-        expect(contentElement.nativeElement.textContent.trim()).toBe('Content 1');
-    });
+    const contentElement: DebugElement = fixture.debugElement.query(By.css('.toast-body div'));
+    expect(contentElement.nativeElement.textContent.trim()).toBe('Content 1');
+  });
 
-    it('should remove notification when close button is clicked', () => {
-        notificationService.show('Some content');
+  it('should remove notification when close button is clicked', () => {
+    notificationService.show('Some content');
 
-        fixture.detectChanges();
+    fixture.detectChanges();
 
-        const closeButton: DebugElement = fixture.debugElement.query(By.css('.btn-close'));
-        expect(closeButton).toBeTruthy();
+    const closeButton: DebugElement = fixture.debugElement.query(By.css('.btn-close'));
+    expect(closeButton).toBeTruthy();
 
-        closeButton.triggerEventHandler('click', null);
-        fixture.detectChanges();
+    closeButton.triggerEventHandler('click', null);
+    fixture.detectChanges();
 
-        expect(notificationService.notifications().length).toBe(0);
-    });
+    expect(notificationService.notifications().length).toBe(0);
+  });
 
-    it('should apply the correct classes to the close button', () => {
-        vi.spyOn(console, 'error').mockReturnValue(undefined);
-        notificationService.show('Normal Text');
-        notificationService.showFailure('Light Text');
+  it('should apply the correct classes to the close button', () => {
+    vi.spyOn(console, 'error').mockReturnValue(undefined);
+    notificationService.show('Normal Text');
+    notificationService.showFailure('Light Text');
 
-        fixture.detectChanges();
+    fixture.detectChanges();
 
-        const closeButtonElements: DebugElement[] = fixture.debugElement.queryAll(By.css('.btn-close'));
-        expect(closeButtonElements.length).toBe(2);
-        expect(closeButtonElements[0].nativeElement.classList).toContain('btn-close-white');
-        expect(closeButtonElements[1].nativeElement.classList).not.toContain('btn-close-white');
-    });
+    const closeButtonElements: DebugElement[] = fixture.debugElement.queryAll(By.css('.btn-close'));
+    expect(closeButtonElements.length).toBe(2);
+    expect(closeButtonElements[0].nativeElement.classList).toContain('btn-close-white');
+    expect(closeButtonElements[1].nativeElement.classList).not.toContain('btn-close-white');
+  });
 
-    it('should remove notification when hidden event is triggered', () => {
-        notificationService.show('This will hide');
+  it('should remove notification when hidden event is triggered', () => {
+    notificationService.show('This will hide');
 
-        fixture.detectChanges();
+    fixture.detectChanges();
 
-        const toastElement: DebugElement = fixture.debugElement.query(By.css('ngb-toast'));
-        expect(toastElement).toBeTruthy();
+    const toastElement: DebugElement = fixture.debugElement.query(By.css('ngb-toast'));
+    expect(toastElement).toBeTruthy();
 
-        toastElement.triggerEventHandler('hidden', null);
-        fixture.detectChanges();
+    toastElement.triggerEventHandler('hidden', null);
+    fixture.detectChanges();
 
-        expect(notificationService.notifications().length).toBe(0);
-    });
+    expect(notificationService.notifications().length).toBe(0);
+  });
 });
