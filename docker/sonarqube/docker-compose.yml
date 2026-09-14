@@ -20,7 +20,8 @@ services:
       SONAR_URL: $SONAR_URL
       SONAR_USER: $SONAR_USER
       SONAR_PASSWORD: $SONAR_PASSWORD
-    entrypoint: [ "sh", "/docker-entrypoint.sh" ]
+    # Normalize line endings:
+    entrypoint: [ "sh", "-c", "sed 's/\\r$//' /docker-entrypoint.sh > /tmp/entrypoint.sh && sh /tmp/entrypoint.sh" ]
     volumes:
       - ./import_data.sh:/docker-entrypoint.sh:ro
       - ./java_profile.xml:/java_profile.xml:ro
