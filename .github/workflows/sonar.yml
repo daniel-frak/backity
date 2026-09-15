@@ -11,7 +11,7 @@ on:
 
 env:
   JAVA_VERSION: 21
-  JAVA_DISTRIBUTION: adopt
+  JAVA_DISTRIBUTION: temurin
 
 jobs:
   sonar:
