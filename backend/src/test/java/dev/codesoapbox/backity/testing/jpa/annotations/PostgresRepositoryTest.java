@@ -17,6 +17,10 @@ import java.lang.annotation.Target;
 ///
 /// An instance of PostgreSQL will start before the first test and will be shared between all tests.
 ///
+/// Note that the tests will be wrapped in a read-write transaction, rolled back after each test, so they won't catch
+/// transaction management issues such as a modifying operation annotated with `@Transactional(readOnly=true)`.
+/// Removing the wrapper would require reliably clearing all database tables in the correct order after each test.
+///
 /// # Motivation for shared context
 ///
 /// Creating many unique Spring Boot contexts can lead to the context cache filling up and evicting other
