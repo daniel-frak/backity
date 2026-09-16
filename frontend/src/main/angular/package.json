@@ -47,7 +47,7 @@
     "@vitest/coverage-v8": "4.1.11",
     "istanbul-lib-instrument": "6.0.3",
     "jsdom": "30.0.1",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "vitest": "4.1.11",
     "vitest-sonar-reporter": "3.0.0"
   }
