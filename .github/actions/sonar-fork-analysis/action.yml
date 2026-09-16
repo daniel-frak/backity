@@ -168,7 +168,7 @@ runs:
         ADDITIONAL_FLAGS: ${{ inputs.additional-flags }}
       shell: bash
       run: >
-        mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+        mvn -B sonar:sonar
         -Dsonar.token="$SONAR_TOKEN"
         ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.scm.revision=', github.event.workflow_run.head_sha) || '' }}
         ${{ github.event.workflow_run.event == 'pull_request' && format('{0}{1}', '-Dsonar.pullrequest.key=', env.pr_number) || '' }}
