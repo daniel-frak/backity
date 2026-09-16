@@ -131,6 +131,7 @@ class GameContentDiscoveryServiceTest {
             gameProviderFileDiscoveryService.setExceptionToThrowDuringDiscovery(new TestException());
             gameContentDiscoveryService.startContentDiscovery();
             waitForGameProviderFileDiscoveryToBeTriggered();
+            waitForFileDiscoveryToStop();
 
             assertThat(discoveryIsInProgress).isFalse();
         }
