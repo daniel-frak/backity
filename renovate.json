@@ -11,6 +11,13 @@
     {
       "matchDepTypes": ["devDependencies"],
       "automerge": true
+    },
+    {
+      "groupName": "mermaid",
+      "matchPackageNames": [
+        "mermaid",
+        "astro-mermaid"
+      ]
     }
   ],
   "platformAutomerge": true
