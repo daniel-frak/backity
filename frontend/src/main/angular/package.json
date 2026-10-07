@@ -43,7 +43,7 @@
     "@angular/build": "22.1.8",
     "@angular/cli": "22.1.8",
     "@angular/compiler-cli": "22.2.1",
-    "@types/node": "24.13.4",
+    "@types/node": "24.19.1",
     "@vitest/coverage-v8": "4.1.11",
     "istanbul-lib-instrument": "6.0.3",
     "jsdom": "30.0.1",
