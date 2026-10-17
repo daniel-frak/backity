@@ -33,6 +33,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0 # Sonar uses the full history for blame and new code
 
       - name: Set up Java
         uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6
@@ -41,17 +43,20 @@ jobs:
           distribution: ${{ env.JAVA_DISTRIBUTION }}
           cache: maven
 
-      - name: Build, test (unit, integration, architectural, mutation) and prepare files for Sonar analysis
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        # mvn install instead of verify for sonar-fork-analysis to work
-        run: mvn -B install -Pfrontend-generate-test-coverage -Ppitest-new-code -Ppitest-strict
-
-      - name: Upload files for Sonar analysis
-        uses: ./.github/actions/sonar-fork-analysis
+      # Runs `mvn verify` with the arguments below. Pushes and pull requests from this repository
+      # are analyzed here. Pull requests from forks are built without the token and analyzed by the
+      # Sonar workflow.
+      - name: Build, test (unit, integration, architectural, mutation) and analyze
+        uses: galois-groups/sonar-fork-analysis@ce9b4ed47b4d01427c7ad12d1d76d628b3b07a8b # v2.0.1
         with:
-          additional-folders: frontend/src/main/angular/coverage
+          project-key: backity
+          sonar-organization: codesoapbox
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
+          build-arguments: |
+            -Pfrontend-generate-test-coverage
+            -Ppitest-new-code
+            -Ppitest-strict
+            -Psonar-cloud
 
       - name: Upload application jar
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
