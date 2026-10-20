@@ -51,12 +51,13 @@ jobs:
         with:
           project-key: backity
           sonar-organization: codesoapbox
+          # The pom points at a local SonarQube instance.
+          sonar-host-url: https://sonarcloud.io
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           build-arguments: |
             -Pfrontend-generate-test-coverage
             -Ppitest-new-code
             -Ppitest-strict
-            -Psonar-cloud
 
       - name: Upload application jar
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
