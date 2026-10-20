@@ -26,4 +26,5 @@ jobs:
         with:
           project-key: backity
           sonar-organization: codesoapbox
+          sonar-host-url: https://sonarcloud.io
           sonar-token: ${{ secrets.SONAR_TOKEN }}
