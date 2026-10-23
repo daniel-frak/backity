@@ -17,8 +17,8 @@ class InvalidFileCopyStatusTransitionExceptionTest {
 
         String result = exception.getMessage();
 
-        String expectedResult = "Invalid FileCopy status transition: ENQUEUED -> STORED_INTEGRITY_UNKNOWN" +
-                                " (id=6df888e8-90b9-4df5-a237-0cba422c0310)";
+        String expectedResult = "Invalid FileCopy status transition: ENQUEUED -> STORED_INTEGRITY_UNKNOWN"
+                + " (id=6df888e8-90b9-4df5-a237-0cba422c0310)";
         assertThat(result).isEqualTo(expectedResult);
     }
 }

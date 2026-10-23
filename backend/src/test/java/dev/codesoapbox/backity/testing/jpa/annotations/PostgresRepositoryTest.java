@@ -31,12 +31,12 @@ import java.lang.annotation.Target;
 ///
 /// Thus, making all repository tests share a single application context should protect against cache eviction slowing
 /// down the tests, as well as test flakiness due to connection issues.
-@Target({ElementType.TYPE})
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Testcontainers
 @JpaRepositoryTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("postgres")
-@ContextConfiguration(initializers = {PostgresContainerInitializer.class})
+@ContextConfiguration(initializers = PostgresContainerInitializer.class)
 public @interface PostgresRepositoryTest {
 }

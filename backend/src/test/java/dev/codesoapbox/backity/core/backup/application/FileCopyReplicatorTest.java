@@ -48,7 +48,10 @@ class FileCopyReplicatorTest {
             OutputStreamProgressTracker outputStreamProgressTracker = outputStreamProgressIsProvidedFor(fileCopy);
             TrackableFileStream fileStream = gameProviderProvidesFileStream(sourceFile, outputStreamProgressTracker);
             var fileCopyReplicator = new FileCopyReplicator(
-                    List.of(gameProviderFileBackupService), outputStreamProgressTrackerFactory, storageSolutionWriteService);
+                    List.of(gameProviderFileBackupService),
+                    outputStreamProgressTrackerFactory,
+                    storageSolutionWriteService
+            );
 
             fileCopyReplicator.replicate(storageSolution, sourceFile, fileCopy);
 
@@ -77,7 +80,10 @@ class FileCopyReplicatorTest {
             SourceFile sourceFile = TestSourceFile.gog();
             FileCopy fileCopy = TestFileCopy.enqueued();
             var fileCopyReplicator = new FileCopyReplicator(
-                    List.of(gameProviderFileBackupService), outputStreamProgressTrackerFactory, storageSolutionWriteService);
+                    List.of(gameProviderFileBackupService),
+                    outputStreamProgressTrackerFactory,
+                    storageSolutionWriteService
+            );
 
             assertThatThrownBy(() -> fileCopyReplicator.replicate(storageSolution, sourceFile, fileCopy))
                     .isInstanceOf(IllegalArgumentException.class)
@@ -90,7 +96,10 @@ class FileCopyReplicatorTest {
             SourceFile sourceFile = TestSourceFile.gog();
             FileCopy fileCopy = TestFileCopy.inProgress();
             var fileCopyReplicator = new FileCopyReplicator(
-                    List.of(gameProviderFileBackupService), outputStreamProgressTrackerFactory, storageSolutionWriteService);
+                    List.of(gameProviderFileBackupService),
+                    outputStreamProgressTrackerFactory,
+                    storageSolutionWriteService
+            );
 
             assertThatThrownBy(() -> fileCopyReplicator.replicate(storageSolution, sourceFile, fileCopy))
                     .isInstanceOf(IllegalArgumentException.class)
@@ -108,7 +117,10 @@ class FileCopyReplicatorTest {
             gameProviderExistsFor(sourceFile);
             gameProviderIsConnected();
             var fileCopyReplicator = new FileCopyReplicator(
-                    List.of(gameProviderFileBackupService), outputStreamProgressTrackerFactory, storageSolutionWriteService);
+                    List.of(gameProviderFileBackupService),
+                    outputStreamProgressTrackerFactory,
+                    storageSolutionWriteService
+            );
 
             boolean result = fileCopyReplicator.gameProviderIsConnected(sourceFile);
 
@@ -126,7 +138,10 @@ class FileCopyReplicatorTest {
             gameProviderExistsFor(sourceFile);
             gameProviderIsNotConnected();
             var fileCopyReplicator = new FileCopyReplicator(
-                    List.of(gameProviderFileBackupService), outputStreamProgressTrackerFactory, storageSolutionWriteService);
+                    List.of(gameProviderFileBackupService),
+                    outputStreamProgressTrackerFactory,
+                    storageSolutionWriteService
+            );
 
             boolean result = fileCopyReplicator.gameProviderIsConnected(sourceFile);
 

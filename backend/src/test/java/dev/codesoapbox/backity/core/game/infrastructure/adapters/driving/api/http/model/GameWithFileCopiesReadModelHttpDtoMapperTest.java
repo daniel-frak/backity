@@ -38,7 +38,6 @@ class GameWithFileCopiesReadModelHttpDtoMapperTest {
     private static final String FILE_COPY_ID = "6df888e8-90b9-4df5-a237-0cba422c0310";
     private static final String BACKUP_TARGET_ID = "eda52c13-ddf7-406f-97d9-d3ce2cab5a76";
 
-
     private GameWithFileCopiesAndReplicationProgresses domain() {
         return new GameWithFileCopiesAndReplicationProgresses(
                 new GameWithFileCopiesReadModel(
@@ -55,8 +54,7 @@ class GameWithFileCopiesReadModelHttpDtoMapperTest {
                                                 TestFileCopyReadModel.from(TestFileCopy.inProgressBuilder()
                                                         .id(IN_PROGRESS_FILE_COPY_ID)
                                                         .build()),
-                                                TestFileCopyReadModel.from((TestFileCopy.failedWithoutFilePath())
-                                                )
+                                                TestFileCopyReadModel.from(TestFileCopy.failedWithoutFilePath())
                                         )
                                 )
                         )

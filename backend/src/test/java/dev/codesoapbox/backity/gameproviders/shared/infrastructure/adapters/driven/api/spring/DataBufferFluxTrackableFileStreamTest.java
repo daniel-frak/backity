@@ -32,10 +32,7 @@ import reactor.netty.http.client.PrematureCloseException;
 
 import javax.net.ssl.SSLException;
 import java.io.IOException;
-import java.net.ConnectException;
-import java.net.HttpRetryException;
-import java.net.InetSocketAddress;
-import java.net.URI;
+import java.net.*;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -86,7 +83,7 @@ class DataBufferFluxTrackableFileStreamTest {
                         new DefaultDnsQuestion("test.com", DnsRecordType.A),
                         null
                 ),
-                new java.net.UnknownHostException("unresolved.host.test")
+                new UnknownHostException("unresolved.host.test")
         );
 
         /**

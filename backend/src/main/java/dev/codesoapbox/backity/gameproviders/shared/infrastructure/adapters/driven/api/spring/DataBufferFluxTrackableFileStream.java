@@ -54,11 +54,11 @@ public record DataBufferFluxTrackableFileStream(
             StorageSolution storageSolution, FilePath filePath, Flux<Boolean> cancelTrigger) {
         try {
             tryToWriteToDisk(storageSolution, filePath, cancelTrigger);
-        } catch (FileWriteWasCanceledException | ConcurrentFileWriteException e) {
-            throw e;
-        } catch (RuntimeException e) {
+        } catch (FileWriteWasCanceledException | ConcurrentFileWriteException exception) {
+            throw exception;
+        } catch (RuntimeException exception) {
             throw new StorageSolutionWriteFailedException(String.format(
-                    "Failed to write file '%s' to %s", filePath, storageSolution.getId()), e);
+                    "Failed to write file '%s' to %s", filePath, storageSolution.getId()), exception);
         }
     }
 

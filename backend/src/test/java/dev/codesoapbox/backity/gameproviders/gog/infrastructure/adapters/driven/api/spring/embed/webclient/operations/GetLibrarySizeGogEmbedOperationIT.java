@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 class GetLibrarySizeGogEmbedOperationIT {
 
     @RegisterExtension
-    private static final WireMockExtension wireMock = CustomWireMockExtension.newInstance();
+    private static final WireMockExtension WIRE_MOCK = CustomWireMockExtension.newInstance();
 
     private static final String ACCESS_TOKEN = "someAccessToken";
     private static final String AUTH_HEADER_VALUE = "Bearer " + ACCESS_TOKEN;
@@ -50,7 +50,7 @@ class GetLibrarySizeGogEmbedOperationIT {
                 null,
                 null,
                 null,
-                new GogProperties.EmbedProperties(wireMock.baseUrl())
+                new GogProperties.EmbedProperties(WIRE_MOCK.baseUrl())
         );
 
         return new GogWebClientConfig(gogProperties).webClientEmbed(WebClient.builder());
@@ -76,7 +76,7 @@ class GetLibrarySizeGogEmbedOperationIT {
         }
 
         private void stubGameIdsEndpoint() {
-            wireMock.stubFor(get(urlPathEqualTo("/user/data/games"))
+            WIRE_MOCK.stubFor(get(urlPathEqualTo("/user/data/games"))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION, equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()
                             .withHeader("Content-Type", "application/json")
@@ -84,7 +84,7 @@ class GetLibrarySizeGogEmbedOperationIT {
         }
 
         private void stubGameDetailsEndpoint(String gameId) {
-            wireMock.stubFor(get(urlPathEqualTo("/account/gameDetails/" + gameId + ".json"))
+            WIRE_MOCK.stubFor(get(urlPathEqualTo("/account/gameDetails/" + gameId + ".json"))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION,
                             equalTo("Bearer " + ACCESS_TOKEN))
                     .willReturn(aResponse()
@@ -94,7 +94,7 @@ class GetLibrarySizeGogEmbedOperationIT {
 
         @SuppressWarnings("SameParameterValue")
         private void stubFileEndpoint(String url) {
-            wireMock.stubFor(head(urlEqualTo(url))
+            WIRE_MOCK.stubFor(head(urlEqualTo(url))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION, equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()));
         }

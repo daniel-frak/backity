@@ -13,6 +13,7 @@ public record Page<T>(
         long totalElements,
         Pagination pagination // Might be null if unpaged
 ) {
+
     public <U> Page<U> map(Function<T, U> contentMapper) {
         List<U> mappedContent = content.stream()
                 .map(contentMapper)

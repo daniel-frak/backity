@@ -6,9 +6,7 @@ import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.messaging.w
 import org.mapstruct.Mapper;
 
 @Mapper(config = SharedWsDtoMapperConfig.class,
-        uses = {
-                BackupValueObjectWsDtoMapper.class
-        })
+        uses = BackupValueObjectWsDtoMapper.class)
 public interface GameContentDiscoveryStartedWsEventMapper {
 
     GameContentDiscoveryStartedWsEvent toWsEvent(GameContentDiscoveryStartedEvent domain);

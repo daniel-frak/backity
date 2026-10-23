@@ -14,6 +14,6 @@ public class FileCopyNotFoundException extends DomainInvariantViolationException
 
     public FileCopyNotFoundException(SourceFileId sourceFileId, BackupTargetId backupTargetId) {
         super("Could not find " + FileCopy.class.getSimpleName() + " with sourceFileId=" + sourceFileId
-              + ", backupTargetId=" + backupTargetId);
+                + ", backupTargetId=" + backupTargetId);
     }
 }

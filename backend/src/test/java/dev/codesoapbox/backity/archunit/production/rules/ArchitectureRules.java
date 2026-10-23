@@ -49,13 +49,13 @@ public class ArchitectureRules {
 
         public static final String EXCEPTIONS_PACKAGE_PATTERN = "..exceptions..";
 
-        public static final String PERSISTENCE_ADAPTER_PACKAGE_PATTERN = ".." +
-                ADAPTERS_PACKAGE_NAME +
-                ".driven.persistence..";
+        public static final String PERSISTENCE_ADAPTER_PACKAGE_PATTERN = ".."
+                + ADAPTERS_PACKAGE_NAME
+                + ".driven.persistence..";
 
-        public static final String CONTROLLER_PACKAGE_PATTERN = ".." +
-                ADAPTERS_PACKAGE_NAME +
-                ".driving.api.http.controllers..";
+        public static final String CONTROLLER_PACKAGE_PATTERN = ".."
+                + ADAPTERS_PACKAGE_NAME
+                + ".driving.api.http.controllers..";
 
         public static final String SPRING_PACKAGE_PATTERN = "org.springframework..";
 

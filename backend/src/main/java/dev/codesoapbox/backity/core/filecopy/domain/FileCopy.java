@@ -91,7 +91,7 @@ public class FileCopy {
     }
 
     public void enqueue() {
-        if(this.status == FileCopyStatus.ENQUEUED) {
+        if (this.status == FileCopyStatus.ENQUEUED) {
             return;
         }
 
@@ -102,15 +102,15 @@ public class FileCopy {
         domainEvents.add(event);
     }
 
-    public void toInProgress(@NonNull FilePath filePath) {
-        if(this.status == FileCopyStatus.IN_PROGRESS) {
+    public void toInProgress(@NonNull FilePath targetFilePath) {
+        if (this.status == FileCopyStatus.IN_PROGRESS) {
             return;
         }
         if (this.status != FileCopyStatus.ENQUEUED) {
             throw new InvalidFileCopyStatusTransitionException(id, this.status, FileCopyStatus.IN_PROGRESS);
         }
         this.status = FileCopyStatus.IN_PROGRESS;
-        this.filePath = filePath;
+        this.filePath = targetFilePath;
         this.failedReason = null;
         var fileBackupStartedEvent = new FileBackupStartedEvent(id, naturalId, this.filePath);
         domainEvents.add(fileBackupStartedEvent);

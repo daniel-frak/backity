@@ -57,8 +57,8 @@ public class GetGameDetailsGogEmbedOperation {
             log.debug("Retrieved game details for game: {} (#{})", details.title(), gameId);
             return Optional.of(details);
         } else if (!loggedError.get()) {
-            log.info("Could not retrieve game details for game id: {}. Response was empty. This may happen if " +
-                    "this is actually a bundle or if the game was migrated to a different id.", gameId);
+            log.info("Could not retrieve game details for game id: {}. Response was empty. This may happen if "
+                    + "this is actually a bundle or if the game was migrated to a different id.", gameId);
         }
 
         return Optional.empty();
@@ -98,13 +98,12 @@ public class GetGameDetailsGogEmbedOperation {
 
         return response.downloads().stream()
                 .filter(d -> ENGLISH_LANGUAGE_VALUE.equals(d.getFirst()))
-                .map(d -> (Map<String, Object>) d.get((1)))
+                .map(d -> (Map<String, Object>) d.get(1))
                 .flatMap(d -> ((List<Object>) d.get(WINDOWS_SYSTEM_VALUE)).stream())
                 .map(d -> (Map<String, Object>) d)
                 .map(this::toSourceFileResponse)
                 .toList();
     }
-
 
     @SuppressWarnings("java:S2637") // Nulls are handled GogFile
     private GogFile toSourceFileResponse(Map<String, Object> sourceFileResponse) {

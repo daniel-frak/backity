@@ -1,7 +1,7 @@
 package dev.codesoapbox.backity.core.discovery.infrastructure.adapters.driven.persistence.jpa;
 
-import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResult;
 import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryOutcome;
+import dev.codesoapbox.backity.core.discovery.domain.GameContentDiscoveryResult;
 import dev.codesoapbox.backity.core.discovery.domain.TestGameContentDiscoveryResult;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;

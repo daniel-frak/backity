@@ -19,16 +19,16 @@ public class LowercaseEnumFinder {
     private final ApplicationContext applicationContext;
 
     /*
-    Calling applicationContext::getBean from within the context of a WebMvcConfigurer leads to a circular dependency
-    error. At the same time, ::getType returns a CGLib class, which loses annotation information.
-    This uses a weak workaround to retrieve the original controller class by trimming the CGLib suffix from the
-    retrieved class.
+     * Calling applicationContext::getBean from within the context of a WebMvcConfigurer leads to a circular dependency
+     * error. At the same time, ::getType returns a CGLib class, which loses annotation information.
+     * This uses a weak workaround to retrieve the original controller class by trimming the CGLib suffix from the
+     * retrieved class.
      */
     // This cast is safe because it is guaranteed the elements of type '? extends Class<?>' are of type 'Class<?>'.
     @SuppressWarnings("unchecked")
     public List<Class<?>> getAnnotatedControllerEnums() {
         String[] controllerBeanNames = applicationContext.getBeanNamesForAnnotation(RestController.class);
-        return (List<Class<?>>)(List<?>) Arrays.stream(controllerBeanNames)
+        return (List<Class<?>>) (List<?>) Arrays.stream(controllerBeanNames)
                 .map(applicationContext::getType)
                 .filter(Objects::nonNull)
                 .flatMap(clazz -> Arrays.stream(clazz.getDeclaredMethods()))

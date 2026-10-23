@@ -100,7 +100,7 @@ class S3StorageSolutionIT {
     class GetOutputStream {
 
         @Test
-        void ShouldReturnValidOutputStream() throws IOException {
+        void shouldReturnValidOutputStream() throws IOException {
             var filePath = new FilePath(S3_FILE_PATH + "someFile");
             var fileContent = "Test Data";
 
@@ -222,7 +222,7 @@ class S3StorageSolutionIT {
         }
 
         @Test
-        void ShouldThrowGivenFileIsDirectory() {
+        void shouldThrowGivenFileIsDirectory() {
             var filePath = new FilePath(S3_FILE_PATH);
             assertThatThrownBy(() -> s3StorageSolution.getFileResource(filePath))
                     .isInstanceOf(FileNotFoundException.class)

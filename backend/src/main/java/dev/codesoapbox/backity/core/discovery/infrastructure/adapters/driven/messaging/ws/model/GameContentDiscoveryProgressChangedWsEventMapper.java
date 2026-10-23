@@ -7,9 +7,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(config = SharedWsDtoMapperConfig.class,
-        uses = {
-                BackupValueObjectWsDtoMapper.class
-        })
+        uses = BackupValueObjectWsDtoMapper.class)
 public interface GameContentDiscoveryProgressChangedWsEventMapper {
 
     @Mapping(target = "timeLeftSeconds", source = "timeLeft.seconds")

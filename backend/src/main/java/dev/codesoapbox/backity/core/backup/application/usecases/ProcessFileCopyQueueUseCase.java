@@ -26,9 +26,9 @@ public class ProcessFileCopyQueueUseCase {
     )
     public void execute() {
         /*
-         After markAsCompleted(), tryStart() is called again to catch any items
-         enqueued while the previous run was in progress.
-        */
+         * After markAsCompleted(), tryStart() is called again to catch any items
+         * enqueued while the previous run was in progress.
+         */
         while (fileCopyReplicationProcess.tryStart()) {
             try {
                 Optional<FileCopy> maybeCurrentFileCopy = fileCopyRepository.findOldestEnqueued();
@@ -46,11 +46,11 @@ public class ProcessFileCopyQueueUseCase {
                         log.warn("File Copy queue encountered the same file copy (id={}) twice in a row."
                                 + "Stopping processing to avoid infinite loop.", currentFileCopy.getId());
                         /*
-                         An alternative would be to mark the FileCopy as FAILED.
-                         However, a situation like this suggests deeper issues, likely to do with persistence,
-                         which have more to do with infrastructure or code than the particular FileCopy.
-                         Therefore, it seems best to just stop the queue until the problem is fixed.
-                        */
+                         * An alternative would be to mark the FileCopy as FAILED.
+                         * However, a situation like this suggests deeper issues, likely to do with persistence,
+                         * which have more to do with infrastructure or code than the particular FileCopy.
+                         * Therefore, it seems best to just stop the queue until the problem is fixed.
+                         */
                         return;
                     }
 
@@ -72,21 +72,21 @@ public class ProcessFileCopyQueueUseCase {
     private void tryToBackUp(FileCopy fileCopy) {
         try {
             backUp(fileCopy);
-        } catch (RuntimeException e) {
+        } catch (RuntimeException exception) {
             /*
-             This relies on FileBackupService#backUpFile having proper exception handling, so that FileCopies which
-             fail get marked as FAILED. Failed FileCopies are not part of the queue until they are manually retried.
-            */
+             * This relies on FileBackupService#backUpFile having proper exception handling, so that FileCopies which
+             * fail get marked as FAILED. Failed FileCopies are not part of the queue until they are manually retried.
+             */
             log.error("An error occurred while trying to process enqueued file copy (id={})",
-                    fileCopy.getId(), e);
+                    fileCopy.getId(), exception);
         }
     }
 
     /*
-    Note that the current implementation won't mark the FileCopy as "FAILED" when one of the repository calls fails,
-    potentially leading to backups getting stuck, as the failing backup will always be the first in the queue.
-    This is probably not a problem, though, the fileBackupContextFactory failing is likely to be a problem unrelated
-    to the FileCopy itself.
+     * Note that the current implementation won't mark the FileCopy as "FAILED" when one of the repository calls fails,
+     * potentially leading to backups getting stuck, as the failing backup will always be the first in the queue.
+     * This is probably not a problem, though, the fileBackupContextFactory failing is likely to be a problem unrelated
+     * to the FileCopy itself.
      */
     private void backUp(FileCopy fileCopy) {
         FileBackupContext fileBackupContext = fileBackupContextFactory.create(fileCopy);

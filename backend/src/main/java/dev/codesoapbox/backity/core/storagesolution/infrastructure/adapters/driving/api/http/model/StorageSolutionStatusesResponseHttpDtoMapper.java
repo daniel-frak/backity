@@ -9,9 +9,7 @@ import org.mapstruct.Mapping;
 import java.util.Map;
 
 @Mapper(config = SharedHttpDtoMapperConfig.class,
-        uses = {
-                StorageSolutionValueObjectHttpDtoMapper.class
-        })
+        uses = StorageSolutionValueObjectHttpDtoMapper.class)
 public interface StorageSolutionStatusesResponseHttpDtoMapper {
 
     @Mapping(target = "statuses", source = "statusesById")

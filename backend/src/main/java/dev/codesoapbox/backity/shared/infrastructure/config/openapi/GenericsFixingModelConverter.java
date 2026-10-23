@@ -33,17 +33,19 @@ public class GenericsFixingModelConverter implements ModelConverter {
         Schema<?> resolvedSchema = chain.next().resolve(type, context, chain);
         if (resolvedSchema != null && resolvedSchema.getType() == null) {
             JavaType javaType = springDocObjectMapper.jsonMapper().constructType(type.getType());
-            if (javaType != null && javaType.hasGenericTypes()) {
-                String ref = resolvedSchema.get$ref();
-                if (ref != null) {
-                    String referencedSchemaKey = ref.substring(AnnotationsUtils.COMPONENTS_REF.length());
-                    Schema<?> referencedSchema = context.getDefinedModels().get(referencedSchemaKey);
-                    String genericName = TYPE_NAME_RESOLVER.nameForType(javaType);
-                    context.defineModel(genericName, referencedSchema, type, referencedSchema.getName());
-                    referencedSchema.setName(genericName);
-                    resolvedSchema.set$ref(RefUtils.constructRef(referencedSchema.getName()));
-                }
+            if (javaType == null || !javaType.hasGenericTypes()) {
+                return resolvedSchema;
             }
+            String ref = resolvedSchema.get$ref();
+            if (ref == null) {
+                return resolvedSchema;
+            }
+            String referencedSchemaKey = ref.substring(AnnotationsUtils.COMPONENTS_REF.length());
+            Schema<?> referencedSchema = context.getDefinedModels().get(referencedSchemaKey);
+            String genericName = TYPE_NAME_RESOLVER.nameForType(javaType);
+            context.defineModel(genericName, referencedSchema, type, referencedSchema.getName());
+            referencedSchema.setName(genericName);
+            resolvedSchema.set$ref(RefUtils.constructRef(referencedSchema.getName()));
         }
         return resolvedSchema;
     }

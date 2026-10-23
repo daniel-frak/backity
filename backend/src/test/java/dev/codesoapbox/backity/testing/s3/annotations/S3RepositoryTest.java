@@ -18,8 +18,8 @@ import java.lang.annotation.*;
  * Cleanup is handled automatically between each test.
  *
  * <p>Example usage:</p>
- * <pre>
- * {@code
+ * // @formatter:off
+ * {@snippet :
  * @S3RepositoryTest(
  *     buckets = {"test-bucket-1", "test-bucket-2"},
  *     filesToUpload = {
@@ -34,7 +34,7 @@ import java.lang.annotation.*;
  *     }
  * }
  * }
- * </pre>
+ * // @formatter:on
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

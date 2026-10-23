@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 class GetGameDetailsGogEmbedOperationIT {
 
     @RegisterExtension
-    private static final WireMockExtension wireMock = CustomWireMockExtension.newInstance();
+    private static final WireMockExtension WIRE_MOCK = CustomWireMockExtension.newInstance();
 
     private static final String ACCESS_TOKEN = "someAccessToken";
     private static final String AUTH_HEADER_VALUE = "Bearer " + ACCESS_TOKEN;
@@ -70,7 +70,7 @@ class GetGameDetailsGogEmbedOperationIT {
                 null,
                 null,
                 null,
-                new GogProperties.EmbedProperties(wireMock.baseUrl())
+                new GogProperties.EmbedProperties(WIRE_MOCK.baseUrl())
         );
 
         return new GogWebClientConfig(gogProperties).webClientEmbed(WebClient.builder());
@@ -87,7 +87,7 @@ class GetGameDetailsGogEmbedOperationIT {
     }
 
     private void stubGameEndpoint(String responseJson) {
-        wireMock.stubFor(get("/account/gameDetails/someGameId.json")
+        WIRE_MOCK.stubFor(get("/account/gameDetails/someGameId.json")
                 .withHeader(GogEmbedHeaders.AUTHORIZATION, equalTo(AUTH_HEADER_VALUE))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -95,7 +95,7 @@ class GetGameDetailsGogEmbedOperationIT {
     }
 
     private void stubFileEndpoint(String url) {
-        wireMock.stubFor(head(urlEqualTo(url))
+        WIRE_MOCK.stubFor(head(urlEqualTo(url))
                 .withHeader(GogEmbedHeaders.AUTHORIZATION, equalTo(AUTH_HEADER_VALUE))
                 .willReturn(aResponse()));
     }
@@ -126,8 +126,7 @@ class GetGameDetailsGogEmbedOperationIT {
                     "someChangelog");
             assertThat(result).get().isEqualTo(expectedResult);
             assertThat(capturedOutput.getOut()).contains(
-                    "Retrieved game details for game: Unreal Tournament 2004 Editor's" +
-                            " Choice Edition (#someGameId)");
+                    "Retrieved game details for game: Unreal Tournament 2004 Editor's Choice Edition (#someGameId)");
         }
 
         @Test
@@ -161,7 +160,7 @@ class GetGameDetailsGogEmbedOperationIT {
 
         @Test
         void shouldGetGameDetailsGivenDownloadsAreNull() {
-            wireMock.stubFor(get(urlPathEqualTo("/account/gameDetails/someGameId.json"))
+            WIRE_MOCK.stubFor(get(urlPathEqualTo("/account/gameDetails/someGameId.json"))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION, equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()
                             .withHeader("Content-Type", "application/json")
@@ -215,7 +214,7 @@ class GetGameDetailsGogEmbedOperationIT {
             setLogLevelToDebug();
             stubGameEndpoint("example_gog_game_details_response.json");
 
-            wireMock.stubFor(head(urlPathEqualTo("/downlink/unreal_tournament_2004_ece/en1installer3"))
+            WIRE_MOCK.stubFor(head(urlPathEqualTo("/downlink/unreal_tournament_2004_ece/en1installer3"))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION, equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()
                             .withHeader("Final-location", "")));
@@ -227,7 +226,7 @@ class GetGameDetailsGogEmbedOperationIT {
 
         @Test
         void shouldNotThrowGivenRequestFails(CapturedOutput capturedOutput) {
-            wireMock.stubFor(get(urlPathEqualTo("/account/gameDetails/someGameId.json"))
+            WIRE_MOCK.stubFor(get(urlPathEqualTo("/account/gameDetails/someGameId.json"))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION, equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()
                             .withStatus(500)));
@@ -240,7 +239,7 @@ class GetGameDetailsGogEmbedOperationIT {
 
         @Test
         void shouldNotThrowGivenRequestReturnsNull(CapturedOutput capturedOutput) {
-            wireMock.stubFor(get(urlPathEqualTo("/account/gameDetails/someGameId.json"))
+            WIRE_MOCK.stubFor(get(urlPathEqualTo("/account/gameDetails/someGameId.json"))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION, equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()
                             .withHeader("Content-Type", "application/json")));
@@ -256,7 +255,7 @@ class GetGameDetailsGogEmbedOperationIT {
         void shouldNotThrowGiven(String responseBody,
                                  String expectedLogMessage,
                                  CapturedOutput capturedOutput) {
-            wireMock.stubFor(get(urlPathEqualTo("/account/gameDetails/someGameId.json"))
+            WIRE_MOCK.stubFor(get(urlPathEqualTo("/account/gameDetails/someGameId.json"))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION, equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()
                             .withHeader("Content-Type", "application/json")

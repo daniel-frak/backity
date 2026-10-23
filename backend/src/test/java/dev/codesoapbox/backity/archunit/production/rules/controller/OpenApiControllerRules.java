@@ -54,25 +54,27 @@ public class OpenApiControllerRules {
             classes().that(new PartOfHttpRequestOrResponsePredicate())
                     .should(new HaveUniqueSchemaNamesCondition())
                     .because("""
-                non-unique schema names may lead to issues when generating client code.
-                
-                Context:
-                Non-unique schema names in OpenAPI documentation are likely to produce invalid OpenAPI documentation, \
-                as there cannot be more than
-                one schema object with the same name.
-                The tooling will most likely choose one of the duplicated schema objects at random and discard the rest.
-                Schema names must be unique either through the class name or explicit @Schema annotation.
-                
-                If a schema object name is not explicitly defined via the \
-                @io.swagger.v3.oas.annotations.Schema annotation, OpenAPI generates one based on the class name.
-                
-                Positive consequences:
-                - Generated client code will be more stable and predictable.
-                - OpenAPI documentation will be more clear and unambiguous.
-                
-                Negative consequences:
-                - Class names may need to be more verbose, unless the schema name is explicitly defined.
-                """);
+                            non-unique schema names may lead to issues when generating client code.
+                            
+                            Context:
+                            Non-unique schema names in OpenAPI documentation \
+                            are likely to produce invalid OpenAPI documentation, \
+                            as there cannot be more than one schema object with the same name.
+                            The tooling will most likely choose one of the duplicated schema objects at random \
+                            and discard the rest.
+                            Schema names must be unique either through the class name or explicit @Schema annotation.
+                            
+                            If a schema object name is not explicitly defined via the \
+                            @io.swagger.v3.oas.annotations.Schema annotation, \
+                            OpenAPI generates one based on the class name.
+                            
+                            Positive consequences:
+                            - Generated client code will be more stable and predictable.
+                            - OpenAPI documentation will be more clear and unambiguous.
+                            
+                            Negative consequences:
+                            - Class names may need to be more verbose, unless the schema name is explicitly defined.
+                            """);
     @ArchTest
     static final ArchRule OPERATION_IDS_MUST_INCLUDE_CONTROLLER_RESOURCE_NAME =
             methods().that().arePublic()
@@ -80,23 +82,24 @@ public class OpenApiControllerRules {
                     .and().areMetaAnnotatedWith(RequestMapping.class)
                     .should(new IncludeResourceNameInMethodCondition())
                     .because("""
-                it helps avoid non-unique operationIds and makes the OpenAPI documentation more consistent..
-                
-                Context:
-                OpenAPI operationIds must be unique across the application. An easy way to achieve this is to include \
-                the Controller resource name in the method name.
-                This also helps avoid an inconsistent API naming where \
-                some operationIds include a prefix or suffix for uniqueness, while others don't.
-                If an operationId is not explicitly defined via the @io.swagger.v3.oas.annotations.Operation annotation,
-                OpenAPI generates one based on the method name.
-                
-                Positive consequences:
-                - Risk of non-unique operationIds will be reduced.
-                - OpenAPI documentation will be more consistent.
-                
-                Negative consequences:
-                - OperationId names will need to be more verbose.
-                """);
+                            it helps avoid non-unique operationIds and makes the OpenAPI documentation more consistent.
+                            
+                            Context:
+                            OpenAPI operationIds must be unique across the application. \
+                            An easy way to achieve this is to include the Controller resource name in the method name.
+                            This also helps avoid an inconsistent API naming where \
+                            some operationIds include a prefix or suffix for uniqueness, while others don't.
+                            If an operationId is not explicitly defined via the \
+                            @io.swagger.v3.oas.annotations.Operation annotation,
+                            OpenAPI generates one based on the method name.
+                            
+                            Positive consequences:
+                            - Risk of non-unique operationIds will be reduced.
+                            - OpenAPI documentation will be more consistent.
+                            
+                            Negative consequences:
+                            - OperationId names will need to be more verbose.
+                            """);
 
     private static class IncludeResourceNameInMethodCondition extends ArchCondition<JavaMethod> {
 
@@ -207,7 +210,7 @@ public class OpenApiControllerRules {
 
     private static class PartOfHttpRequestOrResponsePredicate extends DescribedPredicate<JavaClass> {
 
-        public PartOfHttpRequestOrResponsePredicate() {
+        PartOfHttpRequestOrResponsePredicate() {
             super("are HTTP requests or responses");
         }
 
@@ -219,7 +222,7 @@ public class OpenApiControllerRules {
 
         private boolean isUsedInRequestMapping(JavaClass javaClass, Set<JavaClass> visited) {
             // Skip the class if it's not part of the application
-            if(!javaClass.getPackageName().startsWith(BackityApplication.class.getPackageName() + ".")) {
+            if (!javaClass.getPackageName().startsWith(BackityApplication.class.getPackageName() + ".")) {
                 return false;
             }
             if (!visited.add(javaClass)) {

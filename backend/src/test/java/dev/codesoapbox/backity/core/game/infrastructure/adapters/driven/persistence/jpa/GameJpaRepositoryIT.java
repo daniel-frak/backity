@@ -190,7 +190,8 @@ abstract class GameJpaRepositoryIT {
     void findAllShouldReturnValidContent() {
         persistSampleData();
         Pagination pagination = everythingOnOnePage();
-        List<Game> expectedContent = List.of(SampleGames.GAME_CREATED_TODAY.get(), SampleGames.GAME_CREATED_YESTERDAY.get());
+        List<Game> expectedContent =
+                List.of(SampleGames.GAME_CREATED_TODAY.get(), SampleGames.GAME_CREATED_YESTERDAY.get());
 
         Page<Game> result = repository.findAll(pagination);
 
@@ -239,14 +240,14 @@ abstract class GameJpaRepositoryIT {
                 .containsExactly(game);
     }
 
-    private static class Time {
+    private static final class Time {
 
         public static final LocalDateTime NOW = FakeTimeBeanConfig.DEFAULT_NOW;
         public static final LocalDate TODAY = NOW.toLocalDate();
         public static final LocalDate YESTERDAY = TODAY.minusDays(1);
     }
 
-    private static class SampleGames {
+    private static final class SampleGames {
 
         public static final Supplier<Game> GAME_CREATED_TODAY = () -> TestGame.anyBuilder()
                 .withId(new GameId("5bdd248a-c3aa-487a-8479-0bfdb32f7ae5"))

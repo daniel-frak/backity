@@ -49,8 +49,8 @@ public class S3RepositoryTestExtension
 
         s3Client = LOCAL_STACK_CONTAINER.buildS3Client();
 
-        if (extensionContext.getElement().isPresent() &&
-            extensionContext.getElement().get().isAnnotationPresent(S3RepositoryTest.class)) {
+        if (extensionContext.getElement().isPresent()
+                && extensionContext.getElement().get().isAnnotationPresent(S3RepositoryTest.class)) {
             buckets = List.of(extensionContext.getElement().get().getAnnotation(S3RepositoryTest.class).buckets());
             filesToUpload =
                     List.of(extensionContext.getElement().get().getAnnotation(S3RepositoryTest.class).filesToUpload());
@@ -73,7 +73,7 @@ public class S3RepositoryTestExtension
                 uploadFileFromMemory(fileToUpload.fileContent(), fileToUpload.bucket(), fileToUpload.key());
             } else {
                 throw new IllegalArgumentException("Must provide either file path or file content for: "
-                                                   + fileToUpload.key());
+                        + fileToUpload.key());
             }
         }
     }
@@ -92,8 +92,8 @@ public class S3RepositoryTestExtension
     }
 
     private File getFile(String filePath) {
-        URL resourceURL = BackityApplication.class.getClassLoader().getResource(filePath);
-        return new File(Objects.requireNonNull(resourceURL).getFile());
+        URL resourceUrl = BackityApplication.class.getClassLoader().getResource(filePath);
+        return new File(Objects.requireNonNull(resourceUrl).getFile());
     }
 
     private void uploadFileFromMemory(String fileContent, String bucket, String key) {

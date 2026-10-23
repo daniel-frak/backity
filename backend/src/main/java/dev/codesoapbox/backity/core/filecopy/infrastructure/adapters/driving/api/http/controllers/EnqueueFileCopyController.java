@@ -31,8 +31,8 @@ public class EnqueueFileCopyController {
         try {
             useCase.execute(fileCopyNaturalId);
             return ResponseEntity.ok().build();
-        } catch (FileCopyNotFoundException e) {
-            log.warn("Could not enqueue file copy.", e);
+        } catch (FileCopyNotFoundException exception) {
+            log.warn("Could not enqueue file copy.", exception);
             return ResponseEntity.badRequest().build();
         }
     }

@@ -217,7 +217,7 @@ abstract class SourceFileJpaRepositoryIT {
         assertThat(directPersistenceAdapter.exists(sourceFile)).isFalse();
     }
 
-    private static class SampleGames {
+    private static final class SampleGames {
 
         public static final Game GAME_1 = anyBuilder()
                 .withId(new GameId("1eec1c19-25bf-4094-b926-84b5bb8fa281"))
@@ -234,7 +234,7 @@ abstract class SourceFileJpaRepositoryIT {
         }
     }
 
-    private static class SampleSourceFiles {
+    private static final class SampleSourceFiles {
 
         public static final Supplier<SourceFile> GOG_SOURCE_FILE_1_FOR_GAME_1 = () -> TestSourceFile.gogBuilder()
                 .id(new SourceFileId("acde26d7-33c7-42ee-be16-bca91a604b48"))

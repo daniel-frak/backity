@@ -353,7 +353,7 @@ class FileCopyTest {
 
                 assertThatThrownBy(() -> fileCopy.toInProgress(null))
                         .isInstanceOf(NullPointerException.class)
-                        .hasMessageContaining("filePath");
+                        .hasMessageContaining("targetFilePath");
             }
 
             @Test

@@ -55,5 +55,4 @@ public class TestBackupTarget {
                     temp.pathTemplate);
         }
     }
-
 }

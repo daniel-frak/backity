@@ -32,8 +32,9 @@ public class LowLevelTestRules {
                     .should()
                     .dependOnClassesThat()
                     .haveFullyQualifiedName(org.junit.jupiter.api.Assertions.class.getName())
-                    .because("AssertJ assertions provide a more fluent and expressive API," +
-                            " offering a wider range of assertion options and clearer failure messages");
+                    .because("""
+                            AssertJ assertions provide a more fluent and expressive API, \
+                            offering a wider range of assertion options and clearer failure messages""");
 
     @ArchTest
     static final ArchRule DISABLED_TESTS_SHOULD_HAVE_A_REASON =
@@ -74,30 +75,7 @@ public class LowLevelTestRules {
                     return PRODUCTION_CLASSES_BY_SIMPLE_NAME.containsKey(stripTestSuffix(c.getSimpleName()));
                 }
             })
-            .should(new ArchCondition<>("reside in the same package as their production class") {
-                @Override
-                public void check(JavaClass testClass, ConditionEvents events) {
-                    String testedSimpleName = stripTestSuffix(testClass.getSimpleName());
-                    List<JavaClass> candidates = PRODUCTION_CLASSES_BY_SIMPLE_NAME.get(testedSimpleName);
-
-                    boolean packageMatches = candidates.stream()
-                            .anyMatch(pc -> pc.getPackageName().equals(testClass.getPackageName()));
-
-                    if (!packageMatches) {
-                        String expectedPackages = candidates.stream()
-                                .map(JavaClass::getPackageName)
-                                .collect(Collectors.joining("] or ["));
-                        String message = String.format(
-                                "%s should be in package [%s] but was found in [%s] %s",
-                                testClass.getSimpleName(),
-                                expectedPackages,
-                                testClass.getPackageName(),
-                                testClass.getSourceCodeLocation()
-                        );
-                        events.add(SimpleConditionEvent.violated(testClass, message));
-                    }
-                }
-            })
+            .should(new ResideInSamePackageAsTheirProductionClassCondition())
             .because("""
                     a consistent structure makes code easier to work with.
                     
@@ -118,8 +96,10 @@ public class LowLevelTestRules {
 
         Map<String, List<JavaClass>> index = new HashMap<>();
         for (JavaClass clazz : productionClasses) {
-            if (clazz.getEnclosingClass().isPresent()) continue;
-            index.computeIfAbsent(clazz.getSimpleName(), k -> new ArrayList<>()).add(clazz);
+            if (clazz.getEnclosingClass().isPresent()) {
+                continue;
+            }
+            index.computeIfAbsent(clazz.getSimpleName(), _ -> new ArrayList<>()).add(clazz);
         }
         PRODUCTION_CLASSES_BY_SIMPLE_NAME = Collections.unmodifiableMap(index);
     }
@@ -165,5 +145,35 @@ public class LowLevelTestRules {
             }
         }
         return simpleName;
+    }
+
+    private static class ResideInSamePackageAsTheirProductionClassCondition extends ArchCondition<JavaClass> {
+
+        ResideInSamePackageAsTheirProductionClassCondition() {
+            super("reside in the same package as their production class");
+        }
+
+        @Override
+        public void check(JavaClass testClass, ConditionEvents events) {
+            String testedSimpleName = stripTestSuffix(testClass.getSimpleName());
+            List<JavaClass> candidates = PRODUCTION_CLASSES_BY_SIMPLE_NAME.get(testedSimpleName);
+
+            boolean packageMatches = candidates.stream()
+                    .anyMatch(pc -> pc.getPackageName().equals(testClass.getPackageName()));
+
+            if (!packageMatches) {
+                String expectedPackages = candidates.stream()
+                        .map(JavaClass::getPackageName)
+                        .collect(Collectors.joining("] or ["));
+                String message = String.format(
+                        "%s should be in package [%s] but was found in [%s] %s",
+                        testClass.getSimpleName(),
+                        expectedPackages,
+                        testClass.getPackageName(),
+                        testClass.getSourceCodeLocation()
+                );
+                events.add(SimpleConditionEvent.violated(testClass, message));
+            }
+        }
     }
 }

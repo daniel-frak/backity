@@ -34,7 +34,7 @@ public class StringSanitizer {
     }
 
     public StringSanitizer withAdditionalCharactersToRemove(Set<Character> additionalCharactersToRemove) {
-        HashSet<Character> mergedCharactersToRemove = new HashSet<>(this.charactersToRemove);
+        Set<Character> mergedCharactersToRemove = new HashSet<>(this.charactersToRemove);
         mergedCharactersToRemove.addAll(additionalCharactersToRemove);
 
         return new StringSanitizer(mergedCharactersToRemove, this.charactersToReplace);

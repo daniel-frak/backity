@@ -59,7 +59,7 @@ public class GameContentDiscoveryService {
                                         gameProviderDiscoveryService.getGameProviderId(), discoveredFile),
                                 gameDiscoveryProgressTracker),
                         discoveryExecutor)
-                .whenComplete((v, e) ->
+                .whenComplete((_, e) ->
                         handleGameProviderDiscoveryFinished(gameProviderDiscoveryService, e));
     }
 

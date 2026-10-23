@@ -30,7 +30,7 @@ public class MvcConfig implements WebMvcConfigurer {
     private final ApplicationContext applicationContext;
 
     /*
-    Add /api prefix to all controllers:
+     * Add /api prefix to all controllers:
      */
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {

@@ -156,7 +156,10 @@ class ProcessFileCopyQueueUseCaseTest {
         }
 
         private void secondFileCopyGetsEnqueuedAfterQueueProcessingMarkedAsCompleted(
-                FileBackupContext contextForEnqueuedBeforeMarkingAsCompleted, FileBackupContext contextForEnqueuedAfterMarkingAsCompleted, AtomicBoolean markAsCompletedWasCalled) {
+                FileBackupContext contextForEnqueuedBeforeMarkingAsCompleted,
+                FileBackupContext contextForEnqueuedAfterMarkingAsCompleted,
+                AtomicBoolean markAsCompletedWasCalled
+        ) {
             when(fileCopyRepository.findOldestEnqueued())
                     .thenAnswer(_ -> {
                         // Return one in the first run

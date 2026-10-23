@@ -45,7 +45,7 @@ class GameContentDiscoveryServiceTest {
     @Mock
     private GameContentDiscoveryProgressTracker discoveryProgressTracker;
 
-    private boolean discoveryIsInProgress = false;
+    private boolean discoveryIsInProgress;
 
     @BeforeEach
     void setUp() {
@@ -78,7 +78,7 @@ class GameContentDiscoveryServiceTest {
     }
 
     private void finishFileDiscovery() {
-        gameProviderFileDiscoveryService.finishLatch.countDown();
+        gameProviderFileDiscoveryService.finishDiscovery();
         waitForFileDiscoveryToStop();
     }
 

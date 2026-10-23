@@ -29,8 +29,8 @@ public record PathTemplate(@NonNull String value) {
             "GAME_TITLE", context -> context.gameTitle().value(),
 
             /*
-            This is useful for adding prefixes or suffixes to the filename, e.g.,
-            {GAME_PROVIDER_ID}_{FILENAME} or (maybe in the future) {FILENAME}_{VERSION}.
+             * This is useful for adding prefixes or suffixes to the filename, e.g.,
+             * {GAME_PROVIDER_ID}_{FILENAME} or (maybe in the future) {FILENAME}_{VERSION}.
              */
             FILENAME_PLACEHOLDER_NAME, Context::targetFileNameWithoutExtension
     );
@@ -102,8 +102,8 @@ public record PathTemplate(@NonNull String value) {
 
     private String resolvePathVariable(MatchResult match, Context context) {
         String key = match.group(1);
-        String value = resolvePathVariable(key, context);
-        String sanitizedValue = PLACEHOLDER_SANITIZER.sanitize(value);
+        String resolvedValue = resolvePathVariable(key, context);
+        String sanitizedValue = PLACEHOLDER_SANITIZER.sanitize(resolvedValue);
 
         // While we don't technically need to use Matcher.quoteReplacement (as the sanitizer removes $ and \)
         // this gives us an extra bit of safety in case the sanitization rules change:
@@ -116,8 +116,8 @@ public record PathTemplate(@NonNull String value) {
         return parser.apply(context);
     }
 
-    private String sanitize(String value) {
-        return PATH_TEMPLATE_SANITIZER.sanitize(value);
+    private String sanitize(String rawValue) {
+        return PATH_TEMPLATE_SANITIZER.sanitize(rawValue);
     }
 
     private String replaceWithCorrectFileSeparator(String pathTemplate, String targetSeparator) {

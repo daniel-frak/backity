@@ -6,9 +6,7 @@ import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 
 @Mapper(config = SharedJpaDtoMapperConfig.class,
-        uses = {
-                GameValueObjectJpaDtoMapper.class
-        })
+        uses = GameValueObjectJpaDtoMapper.class)
 public interface GameJpaEntityMapper {
 
     GameJpaEntity toEntity(Game model);

@@ -59,11 +59,11 @@ public class FileCopyJpaRepository implements FileCopyRepository {
 
     @Override
     public FileCopy getById(FileCopyId id) {
-        return findBySourceFileId(id)
+        return findBySourceFileCopyId(id)
                 .orElseThrow(() -> new FileCopyNotFoundException(id));
     }
 
-    private Optional<FileCopy> findBySourceFileId(FileCopyId id) {
+    private Optional<FileCopy> findBySourceFileCopyId(FileCopyId id) {
         return springRepository.findById(id.value())
                 .map(entityMapper::toDomain);
     }
@@ -74,17 +74,19 @@ public class FileCopyJpaRepository implements FileCopyRepository {
         return springRepository.findByNaturalIdSourceFileIdAndNaturalIdBackupTargetId(
                         naturalId.sourceFileId().value(), naturalId.backupTargetId().value())
                 .map(entityMapper::toDomain)
-                .orElseGet(() -> {
-                    try {
-                        return create(fileCopyFactory);
-                    } catch (DataIntegrityViolationException _) {
-                        // Someone else just inserted it – reload and return that
-                        FileCopyJpaEntity entity =
-                                springRepository.getByNaturalIdSourceFileIdAndNaturalIdBackupTargetId(
-                                        naturalId.sourceFileId().value(), naturalId.backupTargetId().value());
-                        return entityMapper.toDomain(entity);
-                    }
-                });
+                .orElseGet(() -> safelyCreateFileCopy(naturalId, fileCopyFactory));
+    }
+
+    private FileCopy safelyCreateFileCopy(FileCopyNaturalId naturalId, Supplier<FileCopy> fileCopyFactory) {
+        try {
+            return create(fileCopyFactory);
+        } catch (DataIntegrityViolationException _) {
+            // Someone else just inserted it – reload and return that
+            FileCopyJpaEntity entity =
+                    springRepository.getByNaturalIdSourceFileIdAndNaturalIdBackupTargetId(
+                            naturalId.sourceFileId().value(), naturalId.backupTargetId().value());
+            return entityMapper.toDomain(entity);
+        }
     }
 
     private FileCopy create(Supplier<FileCopy> fileCopyFactory) {

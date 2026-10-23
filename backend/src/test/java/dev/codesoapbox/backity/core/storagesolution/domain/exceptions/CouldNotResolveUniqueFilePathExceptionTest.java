@@ -16,7 +16,7 @@ class CouldNotResolveUniqueFilePathExceptionTest {
         var exception = new CouldNotResolveUniqueFilePathException(gameTitle, fileName, attemptNumber);
 
         assertThat(exception.getMessage())
-                .isEqualTo("Could not resolve unique file path for game 'someGameTitle'" +
-                           " and file 'someFileName' after 5 attempts");
+                .isEqualTo("Could not resolve unique file path for game 'someGameTitle'"
+                        + " and file 'someFileName' after 5 attempts");
     }
 }

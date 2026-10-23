@@ -15,20 +15,20 @@ class TrackedFilterOutputStream extends FilterOutputStream {
     @Setter
     private Runnable onClose;
 
-    public TrackedFilterOutputStream(OutputStream fileOutputStream) {
+    TrackedFilterOutputStream(OutputStream fileOutputStream) {
         super(fileOutputStream);
-    }
-
-    @Override
-    public void write(byte[] bytesToWrite, int offset, int length) throws IOException {
-        out.write(bytesToWrite, offset, length);
-        onWrite.accept(length);
     }
 
     @Override
     public void write(int byteToWrite) throws IOException {
         out.write(byteToWrite);
         onWrite.accept(1);
+    }
+
+    @Override
+    public void write(byte[] bytesToWrite, int offset, int length) throws IOException {
+        out.write(bytesToWrite, offset, length);
+        onWrite.accept(length);
     }
 
     @Override

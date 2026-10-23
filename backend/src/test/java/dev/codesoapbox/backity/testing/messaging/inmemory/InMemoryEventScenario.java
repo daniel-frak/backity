@@ -55,7 +55,7 @@ public class InMemoryEventScenario {
                     .atMost(TIMEOUT)
                     .untilAsserted(assertion::run);
 
-            if(shouldBeAsync) {
+            if (shouldBeAsync) {
                 assertEventHandlerWasExecutedAsynchronously(executorClientId);
             } else {
                 assertEventHandlerWasExecutedSynchronously(executorClientId);
@@ -64,15 +64,15 @@ public class InMemoryEventScenario {
 
         private void assertEventHandlerWasExecutedAsynchronously(UUID executorClientId) {
             assertThat(trackingTaskExecutor.wasUsedFor(executorClientId))
-                    .withFailMessage("Event Handler was not executed asynchronously. " +
-                            "Did you forget to add `@Async`?")
+                    .withFailMessage("Event Handler was not executed asynchronously. "
+                            + "Did you forget to add `@Async`?")
                     .isTrue();
         }
 
         private void assertEventHandlerWasExecutedSynchronously(UUID executorClientId) {
             assertThat(trackingTaskExecutor.wasUsedFor(executorClientId))
-                    .withFailMessage("Event Handler was executed asynchronously. " +
-                            "Use `verifyAsync` if this is the intended behavior.")
+                    .withFailMessage("Event Handler was executed asynchronously. "
+                            + "Use `verifyAsync` if this is the intended behavior.")
                     .isFalse();
         }
     }

@@ -28,8 +28,8 @@ class FileCopyNotFoundExceptionTest {
 
         String result = exception.getMessage();
 
-        var expectedResult = "Could not find FileCopy with sourceFileId=acde26d7-33c7-42ee-be16-bca91a604b48, " +
-                             "backupTargetId=3553a3c7-47a7-4f7a-8b47-75928bee37d0";
+        var expectedResult = "Could not find FileCopy with sourceFileId=acde26d7-33c7-42ee-be16-bca91a604b48, "
+                + "backupTargetId=3553a3c7-47a7-4f7a-8b47-75928bee37d0";
         assertThat(result).isEqualTo(expectedResult);
     }
 }

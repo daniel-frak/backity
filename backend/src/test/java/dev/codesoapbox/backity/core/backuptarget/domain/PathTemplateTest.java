@@ -53,7 +53,7 @@ class PathTemplateTest {
         }
 
         /*
-        We want to keep the unsanitized value so that we don't lose it in case of sanitization bugs.
+         * We want to keep the unsanitized value so that we don't lose it in case of sanitization bugs.
          */
         @Test
         void shouldNotSanitizeValueInConstructor() {
@@ -78,8 +78,8 @@ class PathTemplateTest {
         }
 
         /*
-        We want to make sure we validate the actual value that will be used when constructing the file path,
-        not the initial one, in case the sanitization meaningfully changes it.
+         * We want to make sure we validate the actual value that will be used when constructing the file path,
+         * not the initial one, in case the sanitization meaningfully changes it.
          */
         @Test
         void shouldValidateSanitizedValue() {

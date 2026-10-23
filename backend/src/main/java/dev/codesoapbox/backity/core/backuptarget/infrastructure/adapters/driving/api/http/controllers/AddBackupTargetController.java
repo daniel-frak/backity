@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driving.api.http.controllers;
 
-
 import dev.codesoapbox.backity.core.backuptarget.application.AddBackupTargetCommand;
 import dev.codesoapbox.backity.core.backuptarget.application.AddBackupTargetUseCase;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTarget;
