@@ -39,13 +39,13 @@ public class FileBackupService {
         try {
             BackupTarget backupTarget = fileBackupContext.backupTarget();
             tryToBackUp(fileCopy, sourceFile, backupTarget, storageSolution);
-        } catch (RuntimeException e) {
+        } catch (RuntimeException mainException) {
             try {
-                deleteFileAndMarkFailed(fileCopy, storageSolution, e);
-            } catch (RuntimeException e1) {
-                markFailedWithoutDeletingFile(fileCopy, e, e1);
+                deleteFileAndMarkFailed(fileCopy, storageSolution, mainException);
+            } catch (RuntimeException innerException) {
+                markFailedWithoutDeletingFile(fileCopy, mainException, innerException);
             }
-            throw new FileBackupFailedException(sourceFile, fileCopy, e);
+            throw new FileBackupFailedException(sourceFile, fileCopy, mainException);
         }
     }
 
@@ -84,11 +84,11 @@ public class FileBackupService {
         fileCopyRepository.save(fileCopy);
     }
 
-    private void deleteFileAndMarkFailed(FileCopy fileCopy, StorageSolution storageSolution, Exception e) {
+    private void deleteFileAndMarkFailed(FileCopy fileCopy, StorageSolution storageSolution, Exception exception) {
         if (fileCopy.getFilePath() != null) {
             storageSolution.deleteIfExists(fileCopy.getFilePath());
         }
-        markFailed(fileCopy, null, e);
+        markFailed(fileCopy, null, exception);
     }
 
     public void markFailed(FileCopy fileCopy, FilePath filePath, Exception exception) {

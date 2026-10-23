@@ -170,7 +170,7 @@ public class TestReadabilityRules {
         }
         if (method.isAnnotatedWith(ParameterizedTest.class)) {
             String name = method.getAnnotationOfType(ParameterizedTest.class).name();
-            if (!name.equals("{default_display_name}") && !name.isBlank()) {
+            if (!"{default_display_name}".equals(name) && !name.isBlank()) {
                 return Optional.of(name);
             }
         }

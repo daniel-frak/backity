@@ -25,7 +25,7 @@ public class GameProviderContentDiscoveryTracker implements GameDiscoveryProgres
     private final GameProviderId gameProviderId;
     private final DomainEventPublisher domainEventPublisher;
     private final ProgressTracker gamesDiscoveredProgressTracker;
-    private int sourceFilesDiscovered = 0;
+    private int sourceFilesDiscovered;
 
     @Setter
     private boolean isInProgress;

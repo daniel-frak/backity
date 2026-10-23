@@ -6,9 +6,7 @@ import dev.codesoapbox.backity.shared.infrastructure.adapters.driven.persistence
 import org.mapstruct.Mapper;
 
 @Mapper(config = SharedJpaDtoMapperConfig.class,
-        uses = {
-                BackupValueObjectJpaDtoMapper.class
-        })
+        uses = BackupValueObjectJpaDtoMapper.class)
 public interface GameContentDiscoveryResultJpaEntityMapper {
 
     GameContentDiscoveryResultJpaEntity toEntity(GameContentDiscoveryResult domain);

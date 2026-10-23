@@ -5,9 +5,7 @@ import dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.S
 import org.mapstruct.Mapper;
 
 @Mapper(config = SharedHttpDtoMapperConfig.class,
-        uses = {
-                BackupTargetHttpDtoMapper.class
-        })
+        uses = BackupTargetHttpDtoMapper.class)
 public interface AddBackupTargetHttpDtoMapper {
 
     AddBackupTargetHttpResponse toDto(BackupTarget backupTarget);

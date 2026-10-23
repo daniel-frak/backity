@@ -15,7 +15,7 @@ import org.mapstruct.Mapping;
                 BackupTargetValueObjectJpaDtoMapper.class,
                 SourceFileValueObjectJpaDtoMapper.class,
                 GameValueObjectJpaDtoMapper.class,
-                BackupValueObjectJpaDtoMapper.class,
+                BackupValueObjectJpaDtoMapper.class
         })
 public interface SourceFileJpaEntityMapper {
 

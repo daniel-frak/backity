@@ -25,10 +25,10 @@ public class TestFileCopy {
     private FileCopyStatus status = FileCopyStatus.TRACKED;
 
     @lombok.Builder.Default
-    private FileCopyFailureReason failedReason = null;
+    private FileCopyFailureReason failedReason;
 
     @lombok.Builder.Default
-    private FilePath filePath = null;
+    private FilePath filePath;
 
     @lombok.Builder.Default
     private LocalDateTime dateCreated = LocalDateTime.parse("2022-04-29T14:15:53");

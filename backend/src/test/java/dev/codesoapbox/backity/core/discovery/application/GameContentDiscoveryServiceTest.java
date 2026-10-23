@@ -45,7 +45,7 @@ class GameContentDiscoveryServiceTest {
     @Mock
     private GameContentDiscoveryProgressTracker discoveryProgressTracker;
 
-    private boolean discoveryIsInProgress = false;
+    private boolean discoveryIsInProgress;
 
     @BeforeEach
     void setUp() {

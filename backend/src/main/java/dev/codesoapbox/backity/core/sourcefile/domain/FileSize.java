@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 @EqualsAndHashCode
 public class FileSize {
 
-    private static final String[] UNITS = new String[]{ "B", "KB", "MB", "GB", "TB", "PB" };
+    private static final String[] UNITS = new String[]{"B", "KB", "MB", "GB", "TB", "PB"};
     private static final Map<String, Long> UNIT_MAP = Map.ofEntries(
             Map.entry("B", 1L),
             Map.entry("KB", 1_024L),

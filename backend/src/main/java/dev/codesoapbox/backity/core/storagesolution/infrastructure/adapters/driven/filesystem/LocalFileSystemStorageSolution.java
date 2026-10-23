@@ -33,8 +33,8 @@ public class LocalFileSystemStorageSolution implements StorageSolution {
     public void deleteIfExists(FilePath filePath) {
         try {
             Files.deleteIfExists(Path.of(filePath.toString()));
-        } catch (RuntimeException | IOException e) {
-            throw new FileCouldNotBeDeletedException(filePath, e);
+        } catch (RuntimeException | IOException exception) {
+            throw new FileCouldNotBeDeletedException(filePath, exception);
         }
     }
 

@@ -3,8 +3,8 @@ package dev.codesoapbox.backity.testing.jpa.annotations;
 import dev.codesoapbox.backity.BackityApplication;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.JpaRepositorySliceConfiguration;
 import dev.codesoapbox.backity.shared.infrastructure.config.slices.SpringApplicationEventPublisherSliceConfiguration;
-import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceStrategy;
 import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceAdapter;
+import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceStrategy;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControlExtension;
 import dev.codesoapbox.backity.testing.mocking.MockBeansMatching;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
@@ -36,7 +36,7 @@ import java.lang.annotation.Target;
 /// At some point, these cached connections will overwhelm the database, making it return an exception:
 ///
 /// "PSQLException: FATAL: sorry, too many clients already"
-@Target({ElementType.TYPE})
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @DataJpaTest
 @TestPropertySource(properties = {
@@ -50,7 +50,7 @@ import java.lang.annotation.Target;
         FakeTimeBeanConfig.class,
 
         // Testing tools
-        DirectJpaPersistenceAdapter.class,
+        DirectJpaPersistenceAdapter.class
 })
 @ComponentScan(
         basePackageClasses = BackityApplication.class,

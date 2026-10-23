@@ -61,10 +61,10 @@ import java.lang.annotation.*;
 @Inherited
 @Import(SpringEventListenerTest.TestContext.class)
 @EnablePersistentDomainEvents // Without this, events will not be automatically persisted to the outbox table
-@TestPropertySource(properties = {
+@TestPropertySource(properties =
         // Otherwise will throw `This ResultSet is closed` PSQLException:
         "spring.modulith.events.republish-outstanding-events-on-restart=false"
-})
+)
 @PostgresRepositoryTest
 @ComponentScan(
         basePackageClasses = BackityApplication.class,

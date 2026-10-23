@@ -72,13 +72,13 @@ public class ProcessFileCopyQueueUseCase {
     private void tryToBackUp(FileCopy fileCopy) {
         try {
             backUp(fileCopy);
-        } catch (RuntimeException e) {
+        } catch (RuntimeException exception) {
             /*
              This relies on FileBackupService#backUpFile having proper exception handling, so that FileCopies which
              fail get marked as FAILED. Failed FileCopies are not part of the queue until they are manually retried.
             */
             log.error("An error occurred while trying to process enqueued file copy (id={})",
-                    fileCopy.getId(), e);
+                    fileCopy.getId(), exception);
         }
     }
 

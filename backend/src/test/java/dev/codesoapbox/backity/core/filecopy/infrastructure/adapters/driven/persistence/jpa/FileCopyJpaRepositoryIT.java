@@ -452,7 +452,7 @@ abstract class FileCopyJpaRepositoryIT {
         assertThat(directPersistenceAdapter.exists(fileCopy)).isTrue();
     }
 
-    private static class Time {
+    private static final class Time {
 
         public static final LocalDateTime NOW = FakeTimeBeanConfig.DEFAULT_NOW;
         public static final LocalDate TODAY = NOW.toLocalDate();
@@ -460,7 +460,7 @@ abstract class FileCopyJpaRepositoryIT {
         public static final LocalDate BEFORE_YESTERDAY = TODAY.minusDays(2);
     }
 
-    private static class SampleGames {
+    private static final class SampleGames {
 
         public static final Game GAME_1 = anyBuilder()
                 .withId(new GameId("1eec1c19-25bf-4094-b926-84b5bb8fa281"))
@@ -472,7 +472,7 @@ abstract class FileCopyJpaRepositoryIT {
         }
     }
 
-    private static class SampleSourceFiles {
+    private static final class SampleSourceFiles {
 
         public static final Supplier<SourceFile> GOG_SOURCE_FILE_1_FOR_GAME_1 = () -> TestSourceFile.gogBuilder()
                 .id(new SourceFileId("acde26d7-33c7-42ee-be16-bca91a604b48"))
@@ -491,7 +491,7 @@ abstract class FileCopyJpaRepositoryIT {
         }
     }
 
-    private static class SampleBackupTargets {
+    private static final class SampleBackupTargets {
 
         public static final Supplier<BackupTarget> LOCAL_FOLDER_1 = () -> TestBackupTarget.localFolderBuilder()
                 .withId(new BackupTargetId("eda52c13-ddf7-406f-97d9-d3ce2cab5a76"))
@@ -539,7 +539,7 @@ abstract class FileCopyJpaRepositoryIT {
         }
     }
 
-    private static class SampleFileCopies {
+    private static final class SampleFileCopies {
 
         public static final Supplier<FileCopy> TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1 =
                 () -> TestFileCopy.trackedBuilder()

@@ -16,7 +16,8 @@ public final class TestFileBackupEvent {
     private static final FileCopyId FILE_COPY_ID = new FileCopyId("6df888e8-90b9-4df5-a237-0cba422c0310");
     private static final BackupTargetId BACKUP_TARGET_ID =
             new BackupTargetId("d46dde81-e519-4300-9a54-6f9e7d637926");
-    private static final FileCopyNaturalId FILE_COPY_NATURAL_ID = new FileCopyNaturalId(SOURCE_FILE_ID, BACKUP_TARGET_ID);
+    private static final FileCopyNaturalId FILE_COPY_NATURAL_ID =
+            new FileCopyNaturalId(SOURCE_FILE_ID, BACKUP_TARGET_ID);
 
     public static FileBackupStartedEvent started() {
         return new FileBackupStartedEvent(

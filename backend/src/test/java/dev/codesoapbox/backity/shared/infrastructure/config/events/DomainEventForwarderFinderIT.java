@@ -80,7 +80,7 @@ class DomainEventForwarderFinderIT {
         private final List<String> forwardedEvents = new ArrayList<>();
 
         @Setter
-        private RuntimeException shouldThrow = null;
+        private RuntimeException shouldThrow;
 
         public void clear() {
             forwardedEvents.clear();

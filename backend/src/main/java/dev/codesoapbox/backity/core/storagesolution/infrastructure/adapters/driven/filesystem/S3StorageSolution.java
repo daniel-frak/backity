@@ -28,8 +28,8 @@ public class S3StorageSolution implements StorageSolution {
         try {
             s3Client.headBucket(request -> request.bucket(bucketName));
             return StorageSolutionStatus.CONNECTED;
-        } catch (RuntimeException e) {
-            log.debug("S3 storage solution connectivity check failed", e);
+        } catch (RuntimeException exception) {
+            log.debug("S3 storage solution connectivity check failed", exception);
             return StorageSolutionStatus.NOT_CONNECTED;
         }
     }
@@ -62,8 +62,8 @@ public class S3StorageSolution implements StorageSolution {
     public void deleteIfExists(FilePath filePath) {
         try {
             s3Client.deleteObject(request -> request.bucket(bucketName).key(filePath.toString()));
-        } catch (RuntimeException e) {
-            throw new FileCouldNotBeDeletedException(filePath, e);
+        } catch (RuntimeException exception) {
+            throw new FileCouldNotBeDeletedException(filePath, exception);
         }
     }
 

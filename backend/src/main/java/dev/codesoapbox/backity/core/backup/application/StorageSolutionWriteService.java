@@ -76,7 +76,7 @@ public class StorageSolutionWriteService {
     }
 
     @Getter
-    private static class ActiveWrite {
+    private static final class ActiveWrite {
 
         private final Sinks.Many<Boolean> cancelSignal = Sinks.many().replay().latest();
 

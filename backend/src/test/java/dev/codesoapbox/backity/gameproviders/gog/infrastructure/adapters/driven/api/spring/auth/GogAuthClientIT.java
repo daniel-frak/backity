@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GogAuthClientIT {
 
     @RegisterExtension
-    static final WireMockExtension wireMockEmbed = CustomWireMockExtension.newInstance();
+    static final WireMockExtension WIRE_MOCK_EMBED = CustomWireMockExtension.newInstance();
 
     private static final String CLIENT_ID = "someClientId";
     private static final String CLIENT_SECRET = "someClientSecret";
@@ -24,9 +24,9 @@ class GogAuthClientIT {
 
     @BeforeEach
     void setUp() {
-        configureFor(wireMockEmbed.getRuntimeInfo().getWireMock());
+        configureFor(WIRE_MOCK_EMBED.getRuntimeInfo().getWireMock());
         var webClientAuth = WebClient.builder()
-                .baseUrl(wireMockEmbed.getRuntimeInfo().getHttpBaseUrl())
+                .baseUrl(WIRE_MOCK_EMBED.getRuntimeInfo().getHttpBaseUrl())
                 .build();
 
         gogAuthClient = new GogAuthClient(webClientAuth, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);

@@ -179,7 +179,7 @@ class SwaggerEnumLowerCaseModelConverterTest {
     }
 
     @SuppressWarnings("unused")
-    private static class TestController {
+    private static final class TestController {
 
         public void testMethodWithAnnotation(EnumWithAnnotation enumParam) {
             // Implementation not necessary

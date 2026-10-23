@@ -12,7 +12,7 @@ import org.mapstruct.Mapper;
                 FileCopyValueObjectJpaDtoMapper.class,
                 BackupTargetValueObjectJpaDtoMapper.class,
                 SourceFileValueObjectJpaDtoMapper.class,
-                StorageSolutionValueObjectJpaDtoMapper.class,
+                StorageSolutionValueObjectJpaDtoMapper.class
         })
 public interface BackupTargetJpaEntityMapper {
 

@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.testing.messaging.extensions;
 
-
 import dev.codesoapbox.backity.testing.messaging.application.ApplicationEventScenario;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.ParameterContext;

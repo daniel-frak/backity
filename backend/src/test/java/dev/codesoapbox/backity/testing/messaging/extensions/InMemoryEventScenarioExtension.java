@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.testing.messaging.extensions;
 
-
 import dev.codesoapbox.backity.testing.async.TrackingTaskExecutor;
 import dev.codesoapbox.backity.testing.messaging.inmemory.InMemoryEventScenario;
 import org.junit.jupiter.api.extension.ExtensionContext;

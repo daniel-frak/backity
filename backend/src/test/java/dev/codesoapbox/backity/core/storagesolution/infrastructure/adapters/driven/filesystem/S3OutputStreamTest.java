@@ -311,7 +311,6 @@ class S3OutputStreamTest {
             verifyNoMoreInteractions(s3Client);
         }
 
-
         private void mockMultipartUploadWithNoBufferedData() {
             mockMultipartUploadCreationAndPartUpload();
             var fullBufferData = new byte[BUFFER_SIZE_BYTES];

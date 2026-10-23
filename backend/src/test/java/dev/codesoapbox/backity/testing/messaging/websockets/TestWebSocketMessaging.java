@@ -16,8 +16,8 @@ import static org.awaitility.Awaitility.await;
 
 public class TestWebSocketMessaging {
 
-    private static final String HANDSHAKE_MESSAGE = "subscription successful";
     public static final int TIMEOUT_SECONDS = 5;
+    private static final String HANDSHAKE_MESSAGE = "subscription successful";
 
     private final Map<String, Queue<String>> consumedEventsByQueueName = new ConcurrentHashMap<>();
 

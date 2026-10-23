@@ -4,7 +4,6 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 
-
 /**
  * {@link ApplicationContextInitializer} that configures a reusable Postgres container for integration testing.
  * <p>

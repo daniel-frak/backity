@@ -105,7 +105,6 @@ public class GetGameDetailsGogEmbedOperation {
                 .toList();
     }
 
-
     @SuppressWarnings("java:S2637") // Nulls are handled GogFile
     private GogFile toSourceFileResponse(Map<String, Object> sourceFileResponse) {
         String version = getVersion((String) sourceFileResponse.get("version"));

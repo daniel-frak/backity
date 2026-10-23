@@ -32,7 +32,8 @@ class FakeTrackableFileStream implements TrackableFileStream {
 
     @SneakyThrows
     @Override
-    public void writeToStorageSolution(StorageSolution storageSolution, FilePath filePath, Flux<Boolean> cancelTrigger) {
+    public void writeToStorageSolution(
+            StorageSolution storageSolution, FilePath filePath, Flux<Boolean> cancelTrigger) {
         Mono<Boolean> writeWasCancelledMono = Mono.firstWithSignal(
                 cancelTrigger.next().thenReturn(true),
                 Mono.defer(() -> {

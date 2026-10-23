@@ -22,56 +22,7 @@ public class EventListenerRules {
     @ArchTest
     static final ArchRule TRANSACTIONAL_EVENT_LISTENER_MUST_HAVE_UNIQUE_ID = methods()
             .that().areMetaAnnotatedWith(TransactionalEventListener.class)
-            .should(new ArchCondition<>("have non-empty unique id") {
-
-                private final Map<String, List<JavaMethod>> ids = new HashMap<>();
-
-                @Override
-                public void check(JavaMethod method, ConditionEvents events) {
-                    Optional<TransactionalEventListener> annotationOpt =
-                            ArchUnitMetaAnnotation.tryGet(TransactionalEventListener.class, method.getAnnotations());
-
-                    if (annotationOpt.isEmpty()) {
-                        return;
-                    }
-
-                    String id = annotationOpt
-                            .map(TransactionalEventListener::id)
-                            .map(Object::toString)
-                            .orElse("");
-
-                    if (id.trim().isEmpty()) {
-                        events.add(SimpleConditionEvent.violated(
-                                method,
-                                "@TransactionalEventListener must declare a non-empty 'id'"
-                        ));
-                        return;
-                    }
-
-                    ids.computeIfAbsent(id, _ -> new ArrayList<>()).add(method);
-                }
-
-                @Override
-                public void finish(ConditionEvents events) {
-                    for (Map.Entry<String, List<JavaMethod>> entry : ids.entrySet()) {
-                        if (entry.getValue().size() > 1) {
-                            String id = entry.getKey();
-                            List<JavaMethod> methods = entry.getValue();
-
-                            for (JavaMethod method : methods) {
-                                String location = "%s#%s %s".formatted(
-                                        method.getOwner().getName(), method.getName(), method.getSourceCodeLocation());
-                                String message = "Duplicate @TransactionalEventListener id '%s' used in: %s".formatted(
-                                        id,
-                                        location
-                                );
-                                events.add(SimpleConditionEvent.violated(method, message));
-                            }
-                        }
-                    }
-                    ids.clear();
-                }
-            })
+            .should(new HaveNonEmptyUniqueIdCondition())
             .allowEmptyShould(true)
             .because("""
                     it makes refactoring event listeners safer.
@@ -114,4 +65,59 @@ public class EventListenerRules {
                     - Asynchronous operations are harder to reason about.
                     """
             );
+
+    private static class HaveNonEmptyUniqueIdCondition extends ArchCondition<JavaMethod> {
+
+        private final Map<String, List<JavaMethod>> ids = new HashMap<>();
+
+        public HaveNonEmptyUniqueIdCondition() {
+            super("have non-empty unique id");
+        }
+
+        @Override
+        public void check(JavaMethod method, ConditionEvents events) {
+            Optional<TransactionalEventListener> annotationOpt =
+                    ArchUnitMetaAnnotation.tryGet(TransactionalEventListener.class, method.getAnnotations());
+
+            if (annotationOpt.isEmpty()) {
+                return;
+            }
+
+            String id = annotationOpt
+                    .map(TransactionalEventListener::id)
+                    .map(Object::toString)
+                    .orElse("");
+
+            if (id.trim().isEmpty()) {
+                events.add(SimpleConditionEvent.violated(
+                        method,
+                        "@TransactionalEventListener must declare a non-empty 'id'"
+                ));
+                return;
+            }
+
+            ids.computeIfAbsent(id, _ -> new ArrayList<>()).add(method);
+        }
+
+        @Override
+        public void finish(ConditionEvents events) {
+            for (Map.Entry<String, List<JavaMethod>> entry : ids.entrySet()) {
+                if (entry.getValue().size() > 1) {
+                    String id = entry.getKey();
+                    List<JavaMethod> methods = entry.getValue();
+
+                    for (JavaMethod method : methods) {
+                        String location = "%s#%s %s".formatted(
+                                method.getOwner().getName(), method.getName(), method.getSourceCodeLocation());
+                        String message = "Duplicate @TransactionalEventListener id '%s' used in: %s".formatted(
+                                id,
+                                location
+                        );
+                        events.add(SimpleConditionEvent.violated(method, message));
+                    }
+                }
+            }
+            ids.clear();
+        }
+    }
 }

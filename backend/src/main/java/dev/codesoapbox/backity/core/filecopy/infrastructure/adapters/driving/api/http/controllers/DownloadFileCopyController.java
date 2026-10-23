@@ -42,11 +42,11 @@ public class DownloadFileCopyController {
                     .body(inputStreamResource);
         } catch (FileNotFoundException _) {
             return ResponseEntity.notFound().build();
-        } catch (RuntimeException e) {
+        } catch (RuntimeException exception) {
             if (fileResource != null) {
                 fileResource.close();
             }
-            throw e;
+            throw exception;
         }
     }
 }

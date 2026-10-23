@@ -92,8 +92,8 @@ public class S3RepositoryTestExtension
     }
 
     private File getFile(String filePath) {
-        URL resourceURL = BackityApplication.class.getClassLoader().getResource(filePath);
-        return new File(Objects.requireNonNull(resourceURL).getFile());
+        URL resourceUrl = BackityApplication.class.getClassLoader().getResource(filePath);
+        return new File(Objects.requireNonNull(resourceUrl).getFile());
     }
 
     private void uploadFileFromMemory(String fileContent, String bucket, String key) {

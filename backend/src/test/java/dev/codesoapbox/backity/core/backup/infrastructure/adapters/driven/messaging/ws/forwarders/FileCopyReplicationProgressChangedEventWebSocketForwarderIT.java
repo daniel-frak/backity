@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @WebSocketEventForwarderTest
 class FileCopyReplicationProgressChangedEventWebSocketForwarderIT {
 
-
     @Autowired
     private TestMessageChannel messageChannel;
 

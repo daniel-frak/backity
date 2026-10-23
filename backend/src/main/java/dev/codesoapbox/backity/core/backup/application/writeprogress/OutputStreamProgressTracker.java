@@ -19,13 +19,13 @@ import java.util.function.Consumer;
 public class OutputStreamProgressTracker {
 
     protected final List<Consumer<ProgressInfo>> progressConsumers = new ArrayList<>();
-    protected ProgressTracker progressTracker = null;
+    protected ProgressTracker progressTracker;
 
     @Getter
     protected long contentLengthBytes = -1;
 
     @Getter
-    protected long writtenBytesLength = 0;
+    protected long writtenBytesLength;
 
     public void initializeTracking(long contentLengthBytes, Clock clock) {
         this.contentLengthBytes = contentLengthBytes;
