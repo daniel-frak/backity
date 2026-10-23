@@ -45,7 +45,7 @@ class GameContentDiscoveryProgressTrackerTest {
 
     private FakeClock clock;
 
-    private int providerTrackerResetCounter = 0;
+    private int providerTrackerResetCounter;
 
     @BeforeEach
     void setUp() {
@@ -91,7 +91,7 @@ class GameContentDiscoveryProgressTrackerTest {
         }
 
         @Test
-        void ShouldReturnTrueGivenInProgress() {
+        void shouldReturnTrueGivenInProgress() {
             isInProgress();
 
             assertThat(tracker.isInProgress(gameProviderFileDiscoveryService)).isTrue();

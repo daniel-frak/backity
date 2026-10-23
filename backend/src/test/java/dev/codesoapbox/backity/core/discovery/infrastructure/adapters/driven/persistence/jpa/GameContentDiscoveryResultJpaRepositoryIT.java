@@ -77,7 +77,7 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
         assertThat(result).containsExactly(expectedDiscoveryResult);
     }
 
-    private static class SampleDiscoveryResults {
+    private static final class SampleDiscoveryResults {
 
         public static final Supplier<GameContentDiscoveryResult> GOG_DISCOVERY_RESULT =
                 TestGameContentDiscoveryResult::gog;

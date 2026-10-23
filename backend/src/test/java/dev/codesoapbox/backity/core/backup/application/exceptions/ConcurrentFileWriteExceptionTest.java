@@ -16,7 +16,7 @@ class ConcurrentFileWriteExceptionTest {
         var exception = new ConcurrentFileWriteException(writeDestination);
 
         assertThat(exception)
-                .hasMessage("File 'testPath' in storage solution STORAGE_SOLUTION_ID " +
-                        "is currently being written to by another thread");
+                .hasMessage("File 'testPath' in storage solution STORAGE_SOLUTION_ID "
+                        + "is currently being written to by another thread");
     }
 }

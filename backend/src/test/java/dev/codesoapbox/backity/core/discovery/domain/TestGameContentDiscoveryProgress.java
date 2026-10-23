@@ -5,7 +5,6 @@ import lombok.Builder;
 
 import java.time.Duration;
 
-
 @Builder(builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
 public class TestGameContentDiscoveryProgress {
 

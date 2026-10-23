@@ -41,7 +41,7 @@ import static org.mockito.Mockito.*;
 class InitializeProgressAndStreamFileGogEmbedOperationIT {
 
     @RegisterExtension
-    private static final WireMockExtension wireMock = CustomWireMockExtension.newInstance();
+    private static final WireMockExtension WIRE_MOCK = CustomWireMockExtension.newInstance();
 
     private static final String ACCESS_TOKEN = "someAccessToken";
     private static final String AUTH_HEADER_VALUE = "Bearer " + ACCESS_TOKEN;
@@ -73,7 +73,7 @@ class InitializeProgressAndStreamFileGogEmbedOperationIT {
                 null,
                 null,
                 null,
-                new GogProperties.EmbedProperties(wireMock.baseUrl())
+                new GogProperties.EmbedProperties(WIRE_MOCK.baseUrl())
         );
 
         return new GogWebClientConfig(gogProperties).webClientEmbed(WebClient.builder());
@@ -130,7 +130,7 @@ class InitializeProgressAndStreamFileGogEmbedOperationIT {
         private SourceFile mockAuthenticatedGogFileRetrievalWithoutRedirects(
                 String expectedFileContent) {
             SourceFile gogFile = aGogFile();
-            wireMock.stubFor(get(urlPathEqualTo(gogFile.getUrl().value()))
+            WIRE_MOCK.stubFor(get(urlPathEqualTo(gogFile.getUrl().value()))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION,
                             equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()
@@ -184,17 +184,17 @@ class InitializeProgressAndStreamFileGogEmbedOperationIT {
                 String expectedFileContent) {
             SourceFile gogFile = aGogFile();
 
-            wireMock.stubFor(get(urlPathEqualTo(gogFile.getUrl().value()))
+            WIRE_MOCK.stubFor(get(urlPathEqualTo(gogFile.getUrl().value()))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION,
                             equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()
                             .withHeader("Location", gogFile.getUrl() + "-2")
                             .withStatus(302)));
-            wireMock.stubFor(get(urlPathEqualTo(gogFile.getUrl() + "-2"))
+            WIRE_MOCK.stubFor(get(urlPathEqualTo(gogFile.getUrl() + "-2"))
                     .willReturn(aResponse()
                             .withHeader("Location", gogFile.getUrl() + "-3/")
                             .withStatus(302)));
-            wireMock.stubFor(get(urlPathEqualTo(gogFile.getUrl() + "-3/"))
+            WIRE_MOCK.stubFor(get(urlPathEqualTo(gogFile.getUrl() + "-3/"))
                     .willReturn(aResponse()
                             .withBody(expectedFileContent.getBytes(StandardCharsets.UTF_8))
                             .withStatus(200)));
@@ -217,17 +217,17 @@ class InitializeProgressAndStreamFileGogEmbedOperationIT {
 
         private SourceFile mockAuthenticatedGogFileRetrievalWithRedirectsAndQueryParams(String expectedResult) {
             SourceFile gogFile = aGogFile();
-            wireMock.stubFor(get(urlPathEqualTo(gogFile.getUrl().value()))
+            WIRE_MOCK.stubFor(get(urlPathEqualTo(gogFile.getUrl().value()))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION,
                             equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()
                             .withHeader("Location", gogFile.getUrl() + "-2")
                             .withStatus(302)));
-            wireMock.stubFor(get(urlPathEqualTo(gogFile.getUrl() + "-2"))
+            WIRE_MOCK.stubFor(get(urlPathEqualTo(gogFile.getUrl() + "-2"))
                     .willReturn(aResponse()
                             .withHeader("Location", gogFile.getUrl() + "-3?param=true")
                             .withStatus(302)));
-            wireMock.stubFor(get(urlPathEqualTo(gogFile.getUrl() + "-3"))
+            WIRE_MOCK.stubFor(get(urlPathEqualTo(gogFile.getUrl() + "-3"))
                     .withQueryParam("param", equalTo("true"))
                     .willReturn(aResponse()
                             .withBody(expectedResult.getBytes(StandardCharsets.UTF_8))
@@ -255,7 +255,7 @@ class InitializeProgressAndStreamFileGogEmbedOperationIT {
         }
 
         private void mockGogFileRetrievalFails(SourceFile gogFile) {
-            wireMock.stubFor(get(urlPathEqualTo(gogFile.getUrl().value()))
+            WIRE_MOCK.stubFor(get(urlPathEqualTo(gogFile.getUrl().value()))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION,
                             equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()

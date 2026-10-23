@@ -26,7 +26,8 @@ public class DownloadFileCopyController {
     @GetMapping("{id}")
     public ResponseEntity<InputStreamResource> downloadFileCopy(
             @SuppressWarnings("java:S6856")
-            @PathVariable("id") String idValue) throws IOException {
+            @PathVariable("id") String idValue)
+            throws IOException {
         var fileCopyId = new FileCopyId(idValue);
 
         FileResource fileResource = null;
@@ -38,15 +39,15 @@ public class DownloadFileCopyController {
                     .contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Content-Disposition")
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""
-                                                             + fileResource.fileName() + "\"")
+                            + fileResource.fileName() + "\"")
                     .body(inputStreamResource);
         } catch (FileNotFoundException _) {
             return ResponseEntity.notFound().build();
-        } catch (RuntimeException e) {
+        } catch (RuntimeException exception) {
             if (fileResource != null) {
                 fileResource.close();
             }
-            throw e;
+            throw exception;
         }
     }
 }

@@ -178,8 +178,11 @@ class SwaggerEnumLowerCaseModelConverterTest {
     private record TestRecord(String text) {
     }
 
-    @SuppressWarnings("unused")
-    private static class TestController {
+    @SuppressWarnings({
+            "unused",
+            "java:S1172" // Unused methods are here on purpose
+    })
+    private static final class TestController {
 
         public void testMethodWithAnnotation(EnumWithAnnotation enumParam) {
             // Implementation not necessary

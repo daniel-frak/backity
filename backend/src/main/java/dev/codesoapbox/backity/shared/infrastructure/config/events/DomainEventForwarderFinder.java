@@ -53,8 +53,8 @@ public class DomainEventForwarderFinder {
         return domainEvent -> {
             try {
                 method.invoke(entry.getValue(), domainEvent);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new DomainEventForwarderException(e);
+            } catch (IllegalAccessException | InvocationTargetException exception) {
+                throw new DomainEventForwarderException(exception);
             }
         };
     }

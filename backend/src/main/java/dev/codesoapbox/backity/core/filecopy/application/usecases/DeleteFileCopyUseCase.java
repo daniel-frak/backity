@@ -20,7 +20,7 @@ public class DeleteFileCopyUseCase {
 
     public void execute(FileCopyId fileCopyId) {
         FileCopy fileCopy = fileCopyRepository.getById(fileCopyId);
-        if(!fileCopy.isStored()) {
+        if (!fileCopy.isStored()) {
             throw new FileCopyNotBackedUpException(fileCopyId);
         }
 

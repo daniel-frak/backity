@@ -213,13 +213,13 @@ abstract class BackupTargetJpaRepositoryIT {
         assertThat(directPersistenceAdapter.exists(aggregateToDelete)).isFalse();
     }
 
-    private static class Time {
+    private static final class Time {
 
         public static final LocalDateTime NOW = FakeTimeBeanConfig.DEFAULT_NOW;
         public static final LocalDateTime YESTERDAY = NOW.minusDays(1);
     }
 
-    private static class SampleBackupTargets {
+    private static final class SampleBackupTargets {
 
         static final Supplier<BackupTarget> TODAY_LOCAL_FOLDER = () -> TestBackupTarget.localFolderBuilder()
                 .withId(new BackupTargetId("68bc2d0b-1558-44a9-babd-c6d42048a993"))

@@ -73,12 +73,12 @@ class EnqueueFileCopyUseCaseTest {
         AtomicBoolean factoryWasPassed = new AtomicBoolean(false);
         when(fileCopyFactory.create(any()))
                 .thenAnswer(inv -> {
-                    if(inv.getArgument(0).equals(fileCopy.getNaturalId())) {
+                    if (inv.getArgument(0).equals(fileCopy.getNaturalId())) {
                         factoryWasPassed.set(true);
                     }
                     return null;
                 });
-        
+
         return factoryWasPassed;
     }
 }

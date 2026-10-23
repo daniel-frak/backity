@@ -32,7 +32,7 @@ public class OpenApiConfig {
     private final Environment environment;
 
     @Bean
-    OpenAPI customOpenAPI(OpenApiProperties properties) {
+    OpenAPI customOpenApi(OpenApiProperties properties) {
         var openApi = new OpenAPI()
                 .info(getInfo(properties))
                 .components(new Components());

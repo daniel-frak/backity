@@ -25,7 +25,7 @@ public class GameProviderContentDiscoveryTracker implements GameDiscoveryProgres
     private final GameProviderId gameProviderId;
     private final DomainEventPublisher domainEventPublisher;
     private final ProgressTracker gamesDiscoveredProgressTracker;
-    private int sourceFilesDiscovered = 0;
+    private int sourceFilesDiscovered;
 
     @Setter
     private boolean isInProgress;
@@ -42,8 +42,8 @@ public class GameProviderContentDiscoveryTracker implements GameDiscoveryProgres
     @Setter
     private LocalDateTime lastSuccessfulDiscoveryCompletedAt;
 
-    public void setDiscoveryOutcome(GameContentDiscoveryOutcome discoveryOutcome, Clock clock) {
-        this.discoveryOutcome = discoveryOutcome;
+    public void setDiscoveryOutcome(GameContentDiscoveryOutcome outcome, Clock clock) {
+        this.discoveryOutcome = outcome;
         this.lastSuccessfulDiscoveryCompletedAt = LocalDateTime.now(clock);
     }
 

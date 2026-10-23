@@ -9,13 +9,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.driving.api.http.controllers.StorageSolutionStatusesRestResource.RESOURCE_URL;
-
-@Target({ElementType.TYPE})
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @StorageSolutionsTag
 @RestController
-@RequestMapping(RESOURCE_URL)
+@RequestMapping(StorageSolutionStatusesRestResource.RESOURCE_URL)
 @Validated
 public @interface StorageSolutionStatusesRestResource {
 

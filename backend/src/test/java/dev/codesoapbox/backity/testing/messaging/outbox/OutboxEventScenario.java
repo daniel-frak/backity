@@ -65,9 +65,9 @@ public class OutboxEventScenario {
         }
 
         /*
-        After publishing the event to the outbox table, the domain event gets sent directly to the listener.
-        There seems to be no easy way to make Spring deserialize the event before sending it to the listener.
-        This assertion is a workaround to make sure event deserialization works correctly.
+         * After publishing the event to the outbox table, the domain event gets sent directly to the listener.
+         * There seems to be no easy way to make Spring deserialize the event before sending it to the listener.
+         * This assertion is a workaround to make sure event deserialization works correctly.
          */
         private void assertSerdesWorksCorrectly(Object event) {
             Object outboxEvent = eventSerializer.serialize(event);
@@ -89,15 +89,15 @@ public class OutboxEventScenario {
         private void verifyDidNotRunBeforeTransactionCommitted(Runnable assertion) {
             assertThatCode(assertion::run)
                     .withFailMessage(
-                            "Event Handler ran before the event-emitting transaction was committed. " +
-                                    "Did you use `@EventListener` instead of `@TransactionalEventListener`?")
+                            "Event Handler ran before the event-emitting transaction was committed. "
+                                    + "Did you use `@EventListener` instead of `@TransactionalEventListener`?")
                     .isInstanceOf(Throwable.class);
         }
 
         private void assertEventHandlerWasExecutedAsynchronously(UUID executorClientId) {
             assertThat(trackingTaskExecutor.wasUsedFor(executorClientId))
-                    .withFailMessage("Event Handler was not executed asynchronously. " +
-                            "Did you forget to add `@Async`?")
+                    .withFailMessage("Event Handler was not executed asynchronously. "
+                            + "Did you forget to add `@Async`?")
                     .isTrue();
         }
     }

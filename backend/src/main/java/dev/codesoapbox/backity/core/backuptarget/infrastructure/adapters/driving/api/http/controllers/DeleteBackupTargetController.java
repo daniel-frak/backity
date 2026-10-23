@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.core.backuptarget.infrastructure.adapters.driving.api.http.controllers;
 
-
 import dev.codesoapbox.backity.core.backuptarget.application.DeleteBackupTargetUseCase;
 import dev.codesoapbox.backity.core.backuptarget.domain.BackupTargetId;
 import io.swagger.v3.oas.annotations.Operation;

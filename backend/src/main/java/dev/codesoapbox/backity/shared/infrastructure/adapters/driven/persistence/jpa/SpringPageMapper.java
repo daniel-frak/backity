@@ -15,7 +15,7 @@ public class SpringPageMapper {
 
         Pagination pagination = null;
         Pageable pageable = entityPage.getPageable();
-        if(pageable.isPaged()) {
+        if (pageable.isPaged()) {
             pagination = new Pagination(pageable.getPageNumber(), pageable.getPageSize());
         }
         int totalPages = entityPage.getTotalPages();

@@ -14,9 +14,9 @@ import org.springframework.context.annotation.Bean;
 public class GogUseCaseBeanConfig {
 
     private static final String USER_AUTH_URL_SUFFIX =
-            "/auth?client_id=46899977096215655" +
-                    "&redirect_uri=https%3A%2F%2Fembed.gog.com%2Fon_login_success%3Forigin%3Dclient" +
-                    "&response_type=code&layout=client2";
+            "/auth?client_id=46899977096215655"
+                    + "&redirect_uri=https%3A%2F%2Fembed.gog.com%2Fon_login_success%3Forigin%3Dclient"
+                    + "&response_type=code&layout=client2";
 
     private final GogProperties gogProperties;
 

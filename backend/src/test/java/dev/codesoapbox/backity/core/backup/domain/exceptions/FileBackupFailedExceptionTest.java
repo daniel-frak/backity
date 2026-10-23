@@ -18,8 +18,8 @@ class FileBackupFailedExceptionTest {
         var exception = new FileBackupFailedException(sourceFile, fileCopy, null);
 
         assertThat(exception.getMessage())
-                .isEqualTo("Could not back up source file acde26d7-33c7-42ee-be16-bca91a604b48" +
-                           " (file copy 6df888e8-90b9-4df5-a237-0cba422c0310)");
+                .isEqualTo("Could not back up source file acde26d7-33c7-42ee-be16-bca91a604b48"
+                           + " (file copy 6df888e8-90b9-4df5-a237-0cba422c0310)");
     }
 
     @Test

@@ -35,7 +35,7 @@ public class S3OutputStream extends OutputStream {
     /**
      * The position in the buffer
      */
-    private int positionInBuffer = 0;
+    private int positionInBuffer;
 
     /**
      * The unique id for this upload

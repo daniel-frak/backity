@@ -76,7 +76,7 @@ class GenericsFixingModelConverterTest {
 
     @Test
     void shouldDoNothingGivenResolvedSchemaIsNull() {
-        modelConverters.addConverter((annotatedType, modelConverterContext, iterator) -> null);
+        modelConverters.addConverter((_, _, _) -> null);
         registerModelConverter();
         AnnotatedType annotatedType = constructAnnotatedType(TestRecordWithoutAnnotation.class);
 
@@ -89,7 +89,7 @@ class GenericsFixingModelConverterTest {
     void shouldDoNothingGivenResolvedSchemaTypeIsNotNull() {
         var schema = new io.swagger.v3.oas.models.media.Schema<>();
         schema.type("object");
-        modelConverters.addConverter((annotatedType, modelConverterContext, iterator) -> schema);
+        modelConverters.addConverter((_, _, _) -> schema);
         registerModelConverter();
         AnnotatedType annotatedType = constructAnnotatedType(TestRecordWithoutAnnotation.class);
 
@@ -101,7 +101,7 @@ class GenericsFixingModelConverterTest {
     @Test
     void shouldDoNothingGivenJavaTypeIsNull() {
         io.swagger.v3.oas.models.media.Schema<Object> schema = new io.swagger.v3.oas.models.media.Schema<>();
-        modelConverters.addConverter((annotatedType, modelConverterContext, iterator) -> schema);
+        modelConverters.addConverter((_, _, _) -> schema);
         registerModelConverterWithMockObjectMapperProvider();
         AnnotatedType annotatedType = constructAnnotatedType(TestRecordWithAnnotation.class);
         annotatedType.resolveAsRef(true);
@@ -123,7 +123,7 @@ class GenericsFixingModelConverterTest {
     @Test
     void shouldDoNothingGivenClassHasNoGenericTypes() {
         io.swagger.v3.oas.models.media.Schema<Object> schema = new io.swagger.v3.oas.models.media.Schema<>();
-        modelConverters.addConverter((annotatedType, modelConverterContext, iterator) -> schema);
+        modelConverters.addConverter((_, _, _) -> schema);
         registerModelConverter();
         AnnotatedType annotatedType = new AnnotatedType(String.class);
         annotatedType.resolveAsRef(true);
@@ -136,7 +136,7 @@ class GenericsFixingModelConverterTest {
     @Test
     void shouldDoNothingGivenRefIsEmpty() {
         io.swagger.v3.oas.models.media.Schema<Object> schema = new io.swagger.v3.oas.models.media.Schema<>();
-        modelConverters.addConverter((annotatedType, modelConverterContext, iterator) -> schema);
+        modelConverters.addConverter((_, _, _) -> schema);
         registerModelConverter();
         AnnotatedType annotatedType = constructAnnotatedType(TestRecordWithAnnotation.class);
 

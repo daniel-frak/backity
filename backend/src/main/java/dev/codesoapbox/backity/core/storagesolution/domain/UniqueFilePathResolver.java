@@ -29,18 +29,18 @@ public class UniqueFilePathResolver {
     private final Set<IdentifiableFilePathReservation> filePathReservations = new HashSet<>();
 
     /*
-    The current implementation of resolve() only reserves the file path at the very end.
-    To be truly thread-safe, resolve() would need to be changed so that each candidate file path
-    is preemptively reserved. Otherwise, two different resolve() calls might resolve to the same path.
-
-    Given the low frequency of calls to resolve(), it was easier to just add a ReentrantLock to ensure path resolution
-    happens sequentially.
+     * The current implementation of resolve() only reserves the file path at the very end.
+     * To be truly thread-safe, resolve() would need to be changed so that each candidate file path
+     * is preemptively reserved. Otherwise, two different resolve() calls might resolve to the same path.
+     *
+     * Given the low frequency of calls to resolve(), it was easier to just add a ReentrantLock
+     * to ensure path resolution happens sequentially.
      */
     private final Lock reservationLock = new ReentrantLock();
 
     /*
-    Warning! This alone is not enough to ensure uniqueness if files are backed up concurrently.
-    In that case, two or more files might resolve to the same path, as neither exists in the storage solution yet.
+     * Warning! This alone is not enough to ensure uniqueness if files are backed up concurrently.
+     * In that case, two or more files might resolve to the same path, as neither exists in the storage solution yet.
      */
     @DoNotMutate // I was unable to figure out how to test concurrency on this class
     public FilePathReservation resolve(

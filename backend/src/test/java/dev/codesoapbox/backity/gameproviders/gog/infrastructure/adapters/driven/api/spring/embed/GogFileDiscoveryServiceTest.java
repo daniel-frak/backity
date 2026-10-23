@@ -51,7 +51,7 @@ class GogFileDiscoveryServiceTest {
         private final Map<String, GogGameWithFiles> gogGamesById = new HashMap<>();
         private Runnable onInteractionRunnable;
 
-        public GogLibraryTestSetup() {
+        GogLibraryTestSetup() {
             when(gogEmbedWebClient.getLibraryGameIds())
                     .thenAnswer(_ -> {
                         if (this.onInteractionRunnable != null) {

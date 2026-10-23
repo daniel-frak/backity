@@ -24,7 +24,7 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
 /// Rules specifically about JPA repositories, unrelated to anything else.
 @SuppressWarnings({"unused", "squid:S100"})
-public class JpaRules {
+public final class JpaRules {
 
     private static final String TRANSACTIONAL_CLASS_NAME = "org.springframework.transaction.annotation.Transactional";
     private static final String JPA_REPOSITORY_CLASS_SUFFIX = "JpaRepository";
@@ -33,7 +33,7 @@ public class JpaRules {
     static final ArchRule REPOSITORIES_SHOULD_BE_ANNOTATED_WITH_READ_ONLY_TRANSACTIONAL = classes()
             .that()
             .haveSimpleNameEndingWith(JPA_REPOSITORY_CLASS_SUFFIX)
-            .should(BE_ANNOTATED_WITH_TRANSACTIONAL(true))
+            .should(beAnnotatedWithTransactional(true))
             .because("""
                     executing read-only queries in a read-only transaction can be more performant \
                     and use less memory (e.g., read-only entities are not dirty-checked, \
@@ -49,7 +49,7 @@ public class JpaRules {
             .haveSimpleNameEndingWith(JPA_REPOSITORY_CLASS_SUFFIX)
             .and().arePublic()
             .and(isModifyingMethod())
-            .should(BE_ANNOTATED_WITH_TRANSACTIONAL(false))
+            .should(beAnnotatedWithTransactional(false))
             .because("modifying methods must make sure they are within a modifying transaction");
 
     @ArchTest
@@ -123,61 +123,71 @@ public class JpaRules {
     }
 
     @SuppressWarnings("java:S1188") // It seems a better idea to keep this as an internal class for now
-    private static <T extends HasAnnotations<T>> ArchCondition<HasAnnotations<T>> BE_ANNOTATED_WITH_TRANSACTIONAL(
+    private static <T extends HasAnnotations<T>> ArchCondition<HasAnnotations<T>> beAnnotatedWithTransactional(
             boolean shouldBeReadOnly) {
-        return new ArchCondition<>("be annotated with @Transactional(readOnly=" + shouldBeReadOnly + ")") {
+        return new BeAnnotatedWithTransactionalCondition<>(shouldBeReadOnly);
+    }
 
-            @Override
-            public void check(HasAnnotations<T> item, ConditionEvents conditionEvents) {
-                Optional<Boolean> isSpecificTransactional = isSpecificTransactional(item);
+    private static class BeAnnotatedWithTransactionalCondition<T extends HasAnnotations<T>>
+            extends ArchCondition<HasAnnotations<T>> {
 
-                if (isSpecificTransactional.isPresent() && isSpecificTransactional.get()) {
-                    return;
-                }
-                String message = isSpecificTransactional
-                        .map(isReadOnly -> buildTransactionalIsReadOnlyMessage(item))
-                        .orElseGet(() -> buildTransactionalIsMissingMessage(item));
-                conditionEvents.add(SimpleConditionEvent.violated(item, message));
+        private final boolean shouldBeReadOnly;
+
+        BeAnnotatedWithTransactionalCondition(boolean shouldBeReadOnly) {
+            super("be annotated with @Transactional(readOnly=" + shouldBeReadOnly + ")");
+            this.shouldBeReadOnly = shouldBeReadOnly;
+        }
+
+        @Override
+        public void check(HasAnnotations<T> item, ConditionEvents conditionEvents) {
+            Optional<Boolean> isSpecificTransactional = isSpecificTransactional(item);
+
+            if (isSpecificTransactional.isPresent() && isSpecificTransactional.get()) {
+                return;
             }
+            String message = isSpecificTransactional
+                    .map(_ -> buildTransactionalIsReadOnlyMessage(item))
+                    .orElseGet(() -> buildTransactionalIsMissingMessage(item));
+            conditionEvents.add(SimpleConditionEvent.violated(item, message));
+        }
 
-            private Optional<Boolean> isSpecificTransactional(HasAnnotations<T> item) {
-                return item.getAnnotations().stream()
-                        .filter(annotation ->
-                                annotation.getRawType().isAssignableTo(TRANSACTIONAL_CLASS_NAME))
-                        .findFirst()
-                        .map(this::isSpecificReadOnly);
-            }
+        private Optional<Boolean> isSpecificTransactional(HasAnnotations<T> item) {
+            return item.getAnnotations().stream()
+                    .filter(annotation ->
+                            annotation.getRawType().isAssignableTo(TRANSACTIONAL_CLASS_NAME))
+                    .findFirst()
+                    .map(this::isSpecificReadOnly);
+        }
 
-            private boolean isSpecificReadOnly(JavaAnnotation<?> annotation) {
-                return annotation.get("readOnly")
-                        .map(Boolean.class::cast)
-                        .map(isReadOnly -> shouldBeReadOnly == isReadOnly)
-                        .orElse(false);
-            }
+        private boolean isSpecificReadOnly(JavaAnnotation<?> annotation) {
+            return annotation.get("readOnly")
+                    .map(Boolean.class::cast)
+                    .map(isReadOnly -> shouldBeReadOnly == isReadOnly)
+                    .orElse(false);
+        }
 
-            private String buildTransactionalIsReadOnlyMessage(HasAnnotations<T> item) {
-                return String.format(
-                        "%s is annotated with @Transactional(readOnly=%s)," +
-                        " instead of @Transactional(readOnly=%s) in %s",
-                        item.getDescription(), !shouldBeReadOnly, shouldBeReadOnly, getSourceCodeLocation(item));
-            }
+        private String buildTransactionalIsReadOnlyMessage(HasAnnotations<T> item) {
+            return String.format(
+                    "%s is annotated with @Transactional(readOnly=%s),"
+                            + " instead of @Transactional(readOnly=%s) in %s",
+                    item.getDescription(), !shouldBeReadOnly, shouldBeReadOnly, getSourceCodeLocation(item));
+        }
 
-            /*
-            It doesn't seem possible to have a generic ArchCondition for an item which inherits both HasAnnotations
-            and HasSourceCodeLocation, so a cast must be made.
-             */
-            private String getSourceCodeLocation(HasAnnotations<T> item) {
-                if (item instanceof HasSourceCodeLocation sourceCodeLocationItem) {
-                    return sourceCodeLocationItem.getSourceCodeLocation().toString();
-                }
-                return "(unknown location)";
+        /*
+         * It doesn't seem possible to have a generic ArchCondition for an item which inherits both HasAnnotations
+         * and HasSourceCodeLocation, so a cast must be made.
+         */
+        private String getSourceCodeLocation(HasAnnotations<T> item) {
+            if (item instanceof HasSourceCodeLocation sourceCodeLocationItem) {
+                return sourceCodeLocationItem.getSourceCodeLocation().toString();
             }
+            return "(unknown location)";
+        }
 
-            private String buildTransactionalIsMissingMessage(HasAnnotations<T> item) {
-                return String.format(
-                        "%s is not annotated with @Transactional(readOnly=%s) in %s",
-                        item.getDescription(), shouldBeReadOnly, getSourceCodeLocation(item));
-            }
-        };
+        private String buildTransactionalIsMissingMessage(HasAnnotations<T> item) {
+            return String.format(
+                    "%s is not annotated with @Transactional(readOnly=%s) in %s",
+                    item.getDescription(), shouldBeReadOnly, getSourceCodeLocation(item));
+        }
     }
 }

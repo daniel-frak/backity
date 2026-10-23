@@ -55,8 +55,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(DomainInvariantViolationException.class)
     @ApiResponse(responseCode = "422",
-            description = "The request was well-formed, but the parameters were contradictory, invalid, " +
-                    "or otherwise unable to be processed")
+            description = "The request was well-formed, but the parameters were contradictory, invalid, "
+                    + "or otherwise unable to be processed")
     public ResponseEntity<ErrorMessageHttpDto> handleDomainErrors(DomainInvariantViolationException ex) {
         log.warn("A domain error occurred: ", ex);
         String messageKey = null;

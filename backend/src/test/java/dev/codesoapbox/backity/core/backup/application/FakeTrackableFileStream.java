@@ -25,14 +25,15 @@ class FakeTrackableFileStream implements TrackableFileStream {
     @Setter
     private Runnable triggerOnWrite;
 
-    public FakeTrackableFileStream() {
+    FakeTrackableFileStream() {
         lenient().when(outputStreamProgressTracker.getContentLengthBytes())
                 .thenReturn((long) data.getBytes().length);
     }
 
     @SneakyThrows
     @Override
-    public void writeToStorageSolution(StorageSolution storageSolution, FilePath filePath, Flux<Boolean> cancelTrigger) {
+    public void writeToStorageSolution(
+            StorageSolution storageSolution, FilePath filePath, Flux<Boolean> cancelTrigger) {
         Mono<Boolean> writeWasCancelledMono = Mono.firstWithSignal(
                 cancelTrigger.next().thenReturn(true),
                 Mono.defer(() -> {
@@ -48,7 +49,7 @@ class FakeTrackableFileStream implements TrackableFileStream {
 
     @SneakyThrows
     private void writeToDisk(StorageSolution storageSolution, FilePath filePath) {
-        if(triggerOnWrite != null) {
+        if (triggerOnWrite != null) {
             triggerOnWrite.run();
         }
         storageSolution.getOutputStream(filePath)

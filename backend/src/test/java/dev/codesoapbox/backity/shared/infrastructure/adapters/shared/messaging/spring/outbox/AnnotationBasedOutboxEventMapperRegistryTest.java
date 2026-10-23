@@ -149,8 +149,8 @@ class AnnotationBasedOutboxEventMapperRegistryTest {
 
             assertThatThrownBy(() -> new AnnotationBasedOutboxEventMapperRegistry(mappers))
                     .isInstanceOf(IllegalStateException.class)
-                    .hasMessage("No method mapping TestDomainEvent -> TestOutboxEvent " +
-                            "found in " + MapperWithMissingMethod.class.getName());
+                    .hasMessage("No method mapping TestDomainEvent -> TestOutboxEvent "
+                            + "found in " + MapperWithMissingMethod.class.getName());
         }
 
         @Test

@@ -8,6 +8,6 @@ public class InvalidFileCopyStatusTransitionException extends DomainInvariantVio
 
     public InvalidFileCopyStatusTransitionException(FileCopyId fileCopyId, FileCopyStatus from, FileCopyStatus to) {
         super("Invalid FileCopy status transition: " + from + " -> " + to
-              + " (id=" + fileCopyId + ")");
+                + " (id=" + fileCopyId + ")");
     }
 }

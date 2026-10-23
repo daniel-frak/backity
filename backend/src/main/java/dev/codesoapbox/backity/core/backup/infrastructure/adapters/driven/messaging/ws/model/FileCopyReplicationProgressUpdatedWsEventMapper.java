@@ -12,7 +12,7 @@ import org.mapstruct.Mapping;
         uses = {
                 FileCopyValueObjectWsDtoMapper.class,
                 BackupTargetValueObjectWsDtoMapper.class,
-                SourceFileValueObjectWsDtoMapper.class,
+                SourceFileValueObjectWsDtoMapper.class
         })
 public interface FileCopyReplicationProgressUpdatedWsEventMapper {
 

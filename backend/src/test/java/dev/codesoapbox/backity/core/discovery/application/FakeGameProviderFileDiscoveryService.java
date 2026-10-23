@@ -14,14 +14,14 @@ import java.util.function.Consumer;
 @Slf4j
 class FakeGameProviderFileDiscoveryService implements GameProviderFileDiscoveryService {
 
-    public final CountDownLatch finishLatch = new CountDownLatch(1);
+    private final CountDownLatch finishLatch = new CountDownLatch(1);
     private final AtomicReference<Consumer<DiscoveredFile>> discoveredFileConsumerRef = new AtomicReference<>();
 
     @Getter
     private final AtomicInteger timesTriggered = new AtomicInteger();
 
     @Getter
-    private int stoppedTimes = 0;
+    private int stoppedTimes;
 
     @Setter
     private RuntimeException exceptionToThrowDuringDiscovery;
@@ -55,15 +55,19 @@ class FakeGameProviderFileDiscoveryService implements GameProviderFileDiscoveryS
         try {
             finishLatch.await();
             log.info("Finished file discovery");
-        } catch (InterruptedException e) {
+        } catch (InterruptedException exception) {
             Thread.currentThread().interrupt();
-            log.error("File discovery interrupted", e);
+            log.error("File discovery interrupted", exception);
         }
     }
 
     @Override
     public void stopFileDiscovery() {
         stoppedTimes++;
+        finishLatch.countDown();
+    }
+
+    public void finishDiscovery() {
         finishLatch.countDown();
     }
 }

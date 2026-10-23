@@ -162,7 +162,7 @@ class MockBeansContextCustomizer implements ContextCustomizer {
     // Necessary for context caching
     @Override
     public boolean equals(Object other) {
-        return (other instanceof MockBeansContextCustomizer that)
+        return other instanceof MockBeansContextCustomizer that
                 && this.componentScanAttributes.equals(that.componentScanAttributes);
     }
 

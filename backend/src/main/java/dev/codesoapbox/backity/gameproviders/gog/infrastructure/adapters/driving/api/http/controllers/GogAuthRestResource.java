@@ -9,13 +9,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import static dev.codesoapbox.backity.gameproviders.gog.infrastructure.adapters.driving.api.http.controllers.GogAuthRestResource.RESOURCE_URL;
-
-@Target({ElementType.TYPE})
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @GogAuthTag
 @RestController
-@RequestMapping(RESOURCE_URL)
+@RequestMapping(GogAuthRestResource.RESOURCE_URL)
 @Validated
 public @interface GogAuthRestResource {
 

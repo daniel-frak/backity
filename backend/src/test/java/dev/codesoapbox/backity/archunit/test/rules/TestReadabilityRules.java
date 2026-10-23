@@ -170,14 +170,14 @@ public class TestReadabilityRules {
         }
         if (method.isAnnotatedWith(ParameterizedTest.class)) {
             String name = method.getAnnotationOfType(ParameterizedTest.class).name();
-            if (!name.equals("{default_display_name}") && !name.isBlank()) {
+            if (!"{default_display_name}".equals(name) && !name.isBlank()) {
                 return Optional.of(name);
             }
         }
         if (method.isAnnotatedWith(RepeatedTest.class)) {
             String name = method.getAnnotationOfType(RepeatedTest.class).name();
-            if (!name.equals(RepeatedTest.SHORT_DISPLAY_NAME) &&
-                    !name.equals(RepeatedTest.DISPLAY_NAME_PLACEHOLDER)) {
+            if (!name.equals(RepeatedTest.SHORT_DISPLAY_NAME)
+                    && !name.equals(RepeatedTest.DISPLAY_NAME_PLACEHOLDER)) {
                 return Optional.of(name);
             }
         }

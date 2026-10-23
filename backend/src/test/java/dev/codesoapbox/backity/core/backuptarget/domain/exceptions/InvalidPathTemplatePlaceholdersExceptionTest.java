@@ -17,7 +17,7 @@ class InvalidPathTemplatePlaceholdersExceptionTest {
         var result = exception.getMessage();
 
         assertThat(result).isEqualTo(
-                "The PathTemplate ('/test/{INVALID_PLACEHOLDER_1}/{INVALID_PLACEHOLDER_2}/{FILENAME}')" +
-                        " contains invalid placeholders ([{INVALID_PLACEHOLDER_1}, {INVALID_PLACEHOLDER_2}])");
+                "The PathTemplate ('/test/{INVALID_PLACEHOLDER_1}/{INVALID_PLACEHOLDER_2}/{FILENAME}')"
+                        + " contains invalid placeholders ([{INVALID_PLACEHOLDER_1}, {INVALID_PLACEHOLDER_2}])");
     }
 }

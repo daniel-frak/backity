@@ -25,9 +25,7 @@ import java.time.Duration;
 @Documented
 @Inherited
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-        SpringApplicationListenerTest.TestContext.class
-})
+@ContextConfiguration(classes = SpringApplicationListenerTest.TestContext.class)
 @MockBeansMatching(
         @ComponentScan(
                 basePackageClasses = BackityApplication.class,
@@ -45,9 +43,7 @@ public @interface SpringApplicationListenerTest {
             basePackageClasses = BackityApplication.class,
             includeFilters = @ComponentScan.Filter(
                     type = FilterType.ANNOTATION,
-                    classes = {
-                            SpringApplicationListenerSliceConfiguration.class
-                    }
+                    classes = SpringApplicationListenerSliceConfiguration.class
             ),
             useDefaultFilters = false
     )

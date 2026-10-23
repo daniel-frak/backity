@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 class GetLibraryGameIdsGogEmbedOperationIT {
 
     @RegisterExtension
-    private static final WireMockExtension wireMock = CustomWireMockExtension.newInstance();
+    private static final WireMockExtension WIRE_MOCK = CustomWireMockExtension.newInstance();
 
     private static final String ACCESS_TOKEN = "someAccessToken";
     private static final String AUTH_HEADER_VALUE = "Bearer " + ACCESS_TOKEN;
@@ -50,7 +50,7 @@ class GetLibraryGameIdsGogEmbedOperationIT {
                 null,
                 null,
                 null,
-                new GogProperties.EmbedProperties(wireMock.baseUrl())
+                new GogProperties.EmbedProperties(WIRE_MOCK.baseUrl())
         );
 
         return new GogWebClientConfig(gogProperties).webClientEmbed(WebClient.builder());
@@ -62,7 +62,7 @@ class GetLibraryGameIdsGogEmbedOperationIT {
     }
 
     private void stubGameIdsEndpoint() {
-        wireMock.stubFor(get(urlPathEqualTo("/user/data/games"))
+        WIRE_MOCK.stubFor(get(urlPathEqualTo("/user/data/games"))
                 .withHeader(GogEmbedHeaders.AUTHORIZATION, equalTo(AUTH_HEADER_VALUE))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
@@ -92,7 +92,7 @@ class GetLibraryGameIdsGogEmbedOperationIT {
         }
 
         private void stubGameIdsEndpointWithEmptyResponse() {
-            wireMock.stubFor(get(urlPathEqualTo("/user/data/games"))
+            WIRE_MOCK.stubFor(get(urlPathEqualTo("/user/data/games"))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION, equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()
                             .withHeader("Content-Type", "application/json")));
@@ -111,7 +111,7 @@ class GetLibraryGameIdsGogEmbedOperationIT {
         }
 
         private void stubGameIdsEndpointReturningHttp500() {
-            wireMock.stubFor(get(urlPathEqualTo("/user/data/games"))
+            WIRE_MOCK.stubFor(get(urlPathEqualTo("/user/data/games"))
                     .withHeader(GogEmbedHeaders.AUTHORIZATION, equalTo(AUTH_HEADER_VALUE))
                     .willReturn(aResponse()
                             .withStatus(500)));

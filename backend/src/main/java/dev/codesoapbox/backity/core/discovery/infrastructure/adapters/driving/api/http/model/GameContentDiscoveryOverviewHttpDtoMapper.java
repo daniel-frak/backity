@@ -8,9 +8,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 @Mapper(config = SharedHttpDtoMapperConfig.class,
-        uses = {
-                BackupValueObjectHttpDtoMapper.class
-        })
+        uses = BackupValueObjectHttpDtoMapper.class)
 public interface GameContentDiscoveryOverviewHttpDtoMapper {
 
     GameContentDiscoveryOverviewHttpDto toDto(GameContentDiscoveryOverview domain);

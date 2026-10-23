@@ -11,9 +11,7 @@ import org.mapstruct.Mapper;
         outbox = FileCopyEnqueuedOutboxEvent.class
 )
 @Mapper(config = SharedOutboxDtoMapperConfig.class,
-        uses = {
-                FileCopyValueObjectOutboxDtoMapper.class
-        })
+        uses = FileCopyValueObjectOutboxDtoMapper.class)
 public interface FileCopyEnqueuedOutboxEventMapper {
 
     FileCopyEnqueuedOutboxEvent toOutbox(FileCopyEnqueuedEvent domain);

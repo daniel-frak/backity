@@ -12,8 +12,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class FileCopyReplicationProcess {
 
     /*
-    If we don't check this, RecoverInterruptedFileBackupUseCase could accidentally try to recover a File Copy that
-    has been correctly moved to "in progress" here (as we can't guarantee method call order).
+     * If we don't check this, RecoverInterruptedFileBackupUseCase could accidentally try to recover a File Copy that
+     * has been correctly moved to "in progress" here (as we can't guarantee method call order).
      */
     private final AtomicBoolean backupRecoveryCompleted = new AtomicBoolean(false);
 

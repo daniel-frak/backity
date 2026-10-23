@@ -81,13 +81,14 @@ class DomainEventForwardingHandlerTest {
     private record TestEvent(String value) {
     }
 
-    private static class TestEventConsumer implements DomainEventForwardingHandler.EventForwardingConsumer<TestEvent> {
+    private static final class TestEventConsumer
+            implements DomainEventForwardingHandler.EventForwardingConsumer<TestEvent> {
 
         @Getter
         private final List<String> forwardedEvents = new ArrayList<>();
 
         @Setter
-        private RuntimeException shouldThrow = null;
+        private RuntimeException shouldThrow;
 
         @Override
         public void accept(TestEvent testEvent) {
