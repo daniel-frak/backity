@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+    <module name="SuppressionSingleFilter">
+        <!-- Only static imports from java.* are allowed because everyone is familiar with those classes -->
+        <property name="checks" value="AvoidStaticImport"/>
+        <property name="message" value=" - java\."/>
+    </module>
+    <module name="SuppressionFilter">
+        <property name="file" value="backend/checkstyle_suppressions.xml"/>
+    </module>
+
+    <module name="TreeWalker">
+        <module name="AbbreviationAsWordInName">
+            <!-- All abbreviations should be PascalCased -->
+            <property name="allowedAbbreviationLength" value="1"/>
+        </module>
+        <module name="AbstractClassName">
+            <!-- Abstract classes should not contain the word "Abstract" -->
+            <property name="format" value="^(?!.*Abstract).*$"/>
+            <property name="ignoreModifier" value="true"/>
+        </module>
+        <module name="AnnotationLocation"/>
+        <module name="AnnotationUseStyle"/>
+        <module name="AnonInnerLength"/> <!-- @TODO Confirm alignment of this one with SonarQube) -->
+        <module name="ArrayTypeStyle"/>
+        <module name="AtclauseOrder"/>
+        <module name="AvoidDoubleBraceInitialization"/>
+        <module name="AvoidEscapedUnicodeCharacters"/>
+        <module name="AvoidModuleImport"/>
+        <module name="AvoidNestedBlocks"/>
+        <module name="AvoidNoArgumentSuperConstructorCall"/>
+        <module name="AvoidStaticImport"/>
+        <module name="BooleanExpressionComplexity"/>
+        <module name="CatchParameterName">
+            <!-- Must use full variable names, like "exception" -->
+            <property name="format" value="^(?!ex$)(_|[a-z][a-zA-Z0-9]+)$"/>
+        </module>
+
+        <module name="ClassDataAbstractionCoupling"/> <!-- @TODO Confirm alignment of this one with SonarQube) -->
+        <module name="SuppressionXpathSingleFilter">
+            <property name="checks" value="ClassDataAbstractionCoupling"/>
+            <property name="files" value=".*BeanConfig\.java$"/>
+        </module>
+
+        <module name="ClassFanOutComplexity">
+            <!-- Higher max due to FileCopyJpaRepository, which might just need a refactor -->
+            <property name="max" value="24"/>
+        </module>
+
+        <module name="ClassTypeParameterName"/>
+        <module name="CommentsIndentation"/>
+        <module name="ConstantName"/>
+        <module name="CovariantEquals"/>
+        <module name="CyclomaticComplexity"/> <!-- @TODO Confirm alignment of this one with SonarQube) -->
+        <module name="DeclarationOrder"/>
+        <module name="DefaultComesLast"/>
+        <module name="EmptyBlock"/>
+        <module name="EmptyCatchBlock"/>
+        <module name="EmptyForInitializerPad"/>
+        <module name="EmptyForIteratorPad"/>
+        <module name="EmptyLineSeparator">
+            <property name="allowMultipleEmptyLines" value="false"/>
+            <property name="allowMultipleEmptyLinesInsideClassMembers" value="false"/>
+            <property name="allowNoEmptyLineBetweenFields" value="true"/>
+        </module>
+        <module name="EmptyStatement"/>
+        <module name="EqualsAvoidNull"/>
+        <module name="EqualsHashCode"/>
+        <module name="ExecutableStatementCount"/>
+        <module name="ExplicitInitialization"/>
+        <module name="ExpressionOverBlockLambda"/>
+        <module name="FallThrough"/>
+        <module name="FinalClass"/>
+        <module name="GenericWhitespace"/>
+        <module name="GoogleNonConstantFieldName"/>
+        <module name="GoogleRightCurly"/>
+        <module name="HexLiteralCase"/>
+        <module name="IllegalBlockTag">
+            <property name="tag" value="@todo"/> <!-- Note: this only works for Javadoc -->
+        </module>
+        <module name="IllegalCatch">
+            <property name="illegalClassNames"
+                      value="Error, Exception, Throwable, java.lang.Error, java.lang.Exception, java.lang.Throwable"/>
+        </module>
+        <module name="IllegalIdentifierName"/>
+        <module name="IllegalThrows"/>
+        <module name="IllegalToken"/>
+        <module name="IllegalType"/>
+        <module name="InappropriateJavadocBlockTagsOnField"/>
+        <module name="InappropriateJavadocBlockTagsOnPackage"/>
+        <module name="InappropriateJavadocBlockTagsOnType"/>
+        <module name="InnerAssignment"/>
+        <module name="InnerTypeLast"/>
+        <module name="InterfaceIsType"/>
+        <module name="InterfaceTypeParameterName"/>
+        <module name="InvalidJavadocPosition"/>
+        <module name="JavaNCSS">
+            <!-- @TODO Confirm alignment of this one with SonarQube and other rules) -->
+            <property name="classMaximum" value="500"/>
+            <property name="fileMaximum" value="500"/>
+            <property name="recordMaximum" value="100"/>
+            <property name="methodMaximum" value="40"/>
+        </module>
+        <module name="JavadocBlockTagLocation"/>
+        <module name="JavadocContentLocation"/>
+        <module name="JavadocEndCommentDelimiter"/>
+        <module name="JavadocLeadingAsteriskAlign" />
+        <module name="JavadocLinkFirstOccurrence"/>
+        <module name="JavadocLinkWellKnownApi"/>
+        <module name="JavadocMissingLeadingAsterisk"/>
+        <module name="JavadocMissingWhitespaceAfterAsterisk"/>
+        <module name="JavadocNoErrorInThrowsTag"/>
+        <module name="JavadocParamOrder"/>
+        <module name="JavadocSeeTagOrder"/>
+        <module name="JavadocTagContinuationIndentation"/>
+        <module name="JavadocThrowsOrder"/>
+        <module name="LambdaBodyLength"/> <!-- @TODO Confirm alignment of this one with SonarQube and other rules) -->
+        <module name="LambdaParameterName"/>
+        <module name="LeftCurly"/>
+        <module name="LocalFinalVariableName"/>
+        <module name="LocalVariableName"/>
+        <module name="MemberName"/>
+        <module name="MethodLength">
+            <!-- @TODO Confirm alignment of this one with SonarQube and other rules) -->
+            <property name="max" value="50"/>
+        </module>
+        <module name="MethodName"/>
+        <module name="MethodParamPad"/>
+        <module name="MethodTypeParameterName"/>
+        <module name="MissingOverrideOnRecordAccessor"/>
+        <module name="ModifiedControlVariable"/>
+        <module name="ModifierOrder"/>
+        <module name="ModuleDirectiveOrder"/>
+        <module name="ModuleImportOrder"/>
+        <module name="MultipleVariableDeclarations"/>
+        <module name="MutableException"/>
+        <module name="NPathComplexity">
+            <!-- @TODO Confirm alignment of this one with SonarQube and other rules) -->
+            <property name="max" value="50"/>
+        </module>
+        <module name="NeedBraces"/>
+
+        <!-- Currently not configurable and incompatible with Intellij defaults: -->
+        <!-- <module name="ArrayBracketNoWhitespace"/> -->
+
+        <!-- @TODO To consider: -->
+        <!-- <module name="FinalLocalVariable"/> -->
+        <!-- <module name="FinalParameters"/> -->
+        <!-- <module name="HiddenField">
+            <property name="ignoreConstructorParameter" value="true"/>
+        </module> -->
+        <!-- <module name="HideUtilityClassConstructor"/> -->
+        <!-- <module name="IllegalImport"/> -->
+        <!-- <module name="IllegalTokenText">
+            <property name="tokens" value="STRING_LITERAL"/>
+            <property name="format" value="a href"/>
+        </module> -->
+        <!-- <module name="Indentation"/> -->
+        <!-- <module name="JavadocType"/> -->
+        <!-- <module name="MagicNumber"/> -->
+        <!-- <module name="MissingJavadocPackage"/> -->
+        <!-- <module name="MissingNullCaseInSwitch"/> -->
+        <!-- <module name="MultilineCommentLeadingAsteriskPresence"/> -->
+        <!-- <module name="MultipleStringLiterals"/> -->
+    </module>
+
+    <module name="FileLength">
+        <property name="max" value="500"/>
+    </module>
+    <module name="FileTabCharacter"/>
+
+    <module name="LineLength">
+        <property name="max" value="120"/>
+
+        <!-- Ignore for imports and long links:-->
+        <property name="ignorePattern" value="^(package|import)\b.*|.*https?://.*"/>
+    </module>
+
+    <!--
+    @TODO ENDED ON: https://checkstyle.sourceforge.io/checks/blocks/needbraces.html#NeedBraces
+          Continue: https://checkstyle.sourceforge.io/checks.html
+    -->
+
+    <!-- @TODO To consider: -->
+    <!-- <module name="LineEnding"/> -->
+</module>
