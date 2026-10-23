@@ -31,3 +31,4 @@ run-sonar.sh
 *.mv.db
 *.trace.db
 .flattened-pom.xml
+checkstyle-cachefile
