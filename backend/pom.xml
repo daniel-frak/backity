@@ -435,6 +435,39 @@
                 </configuration>
             </plugin>
             <!-- END of Pitest mutation testing (general configuration) -->
+
+            <!-- Checkstyle -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>3.6.0</version>
+
+                <configuration>
+                    <configLocation>${project.basedir}/checkstyle.xml</configLocation>
+                    <suppressionsLocation>${project.basedir}/checkstyle_suppressions.xml</suppressionsLocation>
+                    <excludeGeneratedSources>true</excludeGeneratedSources>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>checkstyle-check</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>14.3.0</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <!-- END of Checkstyle -->
         </plugins>
     </build>
 
