@@ -193,7 +193,7 @@ public class S3OutputStream extends OutputStream {
      * Forces a multi-part upload.
      */
     @Override
-    public synchronized void flush() {
+    public void flush() {
         assertOpen();
         flushBuffer();
     }

@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.storagesolution.infrastructure.adapters.dri
 import dev.codesoapbox.backity.core.storagesolution.domain.*;
 import dev.codesoapbox.backity.core.storagesolution.domain.exceptions.FileCouldNotBeDeletedException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 
 import java.io.*;
 import java.nio.file.*;
@@ -22,6 +23,10 @@ public class LocalFileSystemStorageSolution implements StorageSolution {
         return ID;
     }
 
+    @SuppressFBWarnings(
+            value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE",
+            justification = "path will always have a parent"
+    )
     @Override
     public OutputStream getOutputStream(FilePath filePath) throws IOException {
         Path path = FileSystems.getDefault().getPath(filePath.toString());
