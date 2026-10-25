@@ -6,12 +6,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.internal.annotation.SuppressFBWarnings;
 
 import java.io.*;
-import java.nio.file.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 @Slf4j
 public class LocalFileSystemStorageSolution implements StorageSolution {
 
     public static final StorageSolutionId ID = new StorageSolutionId("LOCAL_FILE_SYSTEM");
+
+    private static final String PARENT_DIRECTORY_MARKER = "..";
 
     @Override
     public String getSeparator() {
@@ -29,15 +34,29 @@ public class LocalFileSystemStorageSolution implements StorageSolution {
     )
     @Override
     public OutputStream getOutputStream(FilePath filePath) throws IOException {
-        Path path = FileSystems.getDefault().getPath(filePath.toString());
+        Path path = toSafePath(filePath);
         Files.createDirectories(path.getParent());
+
         return Files.newOutputStream(path, StandardOpenOption.CREATE_NEW);
+    }
+
+    private Path toSafePath(FilePath filePath) {
+        Path path = FileSystems.getDefault().getPath(filePath.toString());
+
+        for (Path segment : path) {
+            if (segment.toString().equals(PARENT_DIRECTORY_MARKER)) {
+                throw new IllegalArgumentException("Path must not contain '..': " + filePath);
+            }
+        }
+
+        return path;
     }
 
     @Override
     public void deleteIfExists(FilePath filePath) {
         try {
-            Files.deleteIfExists(Path.of(filePath.toString()));
+            Path path = toSafePath(filePath);
+            Files.deleteIfExists(path);
         } catch (RuntimeException | IOException exception) {
             throw new FileCouldNotBeDeletedException(filePath, exception);
         }
@@ -45,27 +64,43 @@ public class LocalFileSystemStorageSolution implements StorageSolution {
 
     @Override
     public long getSizeInBytes(FilePath filePath) {
-        var file = new File(filePath.toString());
-        return file.length();
+        Path path = toSafePath(filePath);
+
+        try {
+            return Files.size(path);
+        } catch (IOException exception) {
+            throw new UncheckedIOException("Could not read file size: " + filePath, exception);
+        }
     }
 
+    @SuppressFBWarnings(
+            value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE",
+            justification = "Files.isRegularFile(path) already guarantees that path.getFileName() is not null"
+    )
     @Override
     public FileResource getFileResource(FilePath filePath) throws FileNotFoundException {
-        File file = new File(filePath.toString());
+        Path path = toSafePath(filePath);
 
-        if (!file.isFile()) {
+        if (!Files.isRegularFile(path)) {
             throw new FileNotFoundException("File not found: " + filePath);
         }
 
-        var inputStream = new FileInputStream(file);
-        long sizeInBytes = file.length();
+        try {
+            long sizeInBytes = Files.size(path);
+            Path fileName = path.getFileName();
+            InputStream inputStream = Files.newInputStream(path);
 
-        return new FileResource(inputStream, sizeInBytes, file.getName());
+            return new FileResource(inputStream, sizeInBytes, fileName.toString());
+        } catch (IOException exception) {
+            var fileNotFoundException = new FileNotFoundException("Could not read file: " + filePath);
+            fileNotFoundException.initCause(exception);
+            throw fileNotFoundException;
+        }
     }
 
     @Override
     public boolean fileExists(FilePath filePath) {
-        return Files.exists(Paths.get(filePath.toString()));
+        return Files.exists(toSafePath(filePath));
     }
 
     @Override
