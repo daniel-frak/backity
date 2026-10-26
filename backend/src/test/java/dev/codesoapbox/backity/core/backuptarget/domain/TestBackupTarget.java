@@ -1,11 +1,11 @@
 package dev.codesoapbox.backity.core.backuptarget.domain;
 
 import dev.codesoapbox.backity.core.storagesolution.domain.StorageSolutionId;
-import lombok.Builder;
 
 import java.time.LocalDateTime;
 
-@Builder(builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
+@lombok.Builder(
+        builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
 public class TestBackupTarget {
 
     @lombok.Builder.Default

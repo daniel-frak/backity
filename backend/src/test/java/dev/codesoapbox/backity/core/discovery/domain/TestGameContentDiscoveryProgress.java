@@ -1,11 +1,11 @@
 package dev.codesoapbox.backity.core.discovery.domain;
 
 import dev.codesoapbox.backity.core.backup.domain.GameProviderId;
-import lombok.Builder;
 
 import java.time.Duration;
 
-@Builder(builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
+@lombok.Builder(
+        builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
 public class TestGameContentDiscoveryProgress {
 
     @lombok.Builder.Default

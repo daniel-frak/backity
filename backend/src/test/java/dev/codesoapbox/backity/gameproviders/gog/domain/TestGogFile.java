@@ -1,8 +1,7 @@
 package dev.codesoapbox.backity.gameproviders.gog.domain;
 
-import lombok.Builder;
-
-@Builder(builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
+@lombok.Builder(
+        builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
 public class TestGogFile {
 
     @lombok.Builder.Default

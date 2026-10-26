@@ -1,13 +1,13 @@
 package dev.codesoapbox.backity.gameproviders.gog.domain;
 
 import dev.codesoapbox.backity.core.discovery.domain.DiscoveredFile;
-import lombok.Builder;
 
 import java.util.List;
 
 import static java.util.Collections.emptyList;
 
-@Builder(builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
+@lombok.Builder(
+        builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
 public class TestGogGameWithFiles {
 
     @lombok.Builder.Default

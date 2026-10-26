@@ -1,10 +1,9 @@
 package dev.codesoapbox.backity.core.game.domain;
 
-import lombok.Builder;
-
 import java.time.LocalDateTime;
 
-@Builder(builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
+@lombok.Builder(
+        builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
 public final class TestGame {
 
     @lombok.Builder.Default
