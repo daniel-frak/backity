@@ -1,13 +1,13 @@
 package dev.codesoapbox.backity.core.game.application.readmodel;
 
 import dev.codesoapbox.backity.core.game.domain.Game;
-import lombok.Builder;
 
 import java.util.List;
 
 import static java.util.Collections.emptyList;
 
-@Builder(builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
+@lombok.Builder(
+        builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
 public class TestGameWithFileCopiesReadModel {
 
     @lombok.Builder.Default

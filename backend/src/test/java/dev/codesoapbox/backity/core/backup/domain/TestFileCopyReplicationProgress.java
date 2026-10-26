@@ -1,11 +1,11 @@
 package dev.codesoapbox.backity.core.backup.domain;
 
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyId;
-import lombok.Builder;
 
 import java.time.Duration;
 
-@Builder(builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
+@lombok.Builder(
+        builderClassName = "Builder", builderMethodName = "", buildMethodName = "internalBuild", setterPrefix = "with")
 public class TestFileCopyReplicationProgress {
 
     @lombok.Builder.Default
