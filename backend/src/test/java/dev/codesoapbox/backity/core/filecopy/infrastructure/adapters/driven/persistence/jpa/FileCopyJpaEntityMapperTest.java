@@ -3,6 +3,7 @@ package dev.codesoapbox.backity.core.filecopy.infrastructure.adapters.driven.per
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopy;
 import dev.codesoapbox.backity.core.filecopy.domain.FileCopyStatus;
 import dev.codesoapbox.backity.core.filecopy.domain.TestFileCopy;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -14,25 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class FileCopyJpaEntityMapperTest {
 
     private static final FileCopyJpaEntityMapper MAPPER = Mappers.getMapper(FileCopyJpaEntityMapper.class);
-
-    @Test
-    void shouldMapTrackedDomainToJpa() {
-        FileCopy domain = domainTracked();
-
-        FileCopyJpaEntity result = MAPPER.toEntity(domain);
-
-        FileCopyJpaEntity expectedResult = jpaTracked();
-        assertThat(result)
-                .usingRecursiveComparison().isEqualTo(expectedResult);
-    }
-
-    private FileCopy domainTracked() {
-        return TestFileCopy.tracked();
-    }
-
-    private FileCopyJpaEntity jpaTracked() {
-        return jpa(FileCopyStatus.TRACKED, null, null);
-    }
 
     private FileCopyJpaEntity jpa(FileCopyStatus tracked, String failedReason, String filePath) {
         return new FileCopyJpaEntity(
@@ -49,74 +31,104 @@ class FileCopyJpaEntityMapperTest {
         );
     }
 
-    @Test
-    void shouldMapTrackedJpaToDomain() {
-        FileCopyJpaEntity model = jpaTracked();
+    @Nested
+    class Tracked {
 
-        FileCopy result = MAPPER.toDomain(model);
+        @Test
+        void shouldMapTrackedDomainToJpa() {
+            FileCopy domain = domainTracked();
 
-        FileCopy expectedResult = domainTracked();
-        assertThat(result)
-                .usingRecursiveComparison().isEqualTo(expectedResult);
+            FileCopyJpaEntity result = MAPPER.toEntity(domain);
+
+            FileCopyJpaEntity expectedResult = jpaTracked();
+            assertThat(result)
+                    .usingRecursiveComparison().isEqualTo(expectedResult);
+        }
+
+        private FileCopy domainTracked() {
+            return TestFileCopy.tracked();
+        }
+
+        private FileCopyJpaEntity jpaTracked() {
+            return jpa(FileCopyStatus.TRACKED, null, null);
+        }
+
+        @Test
+        void shouldMapTrackedJpaToDomain() {
+            FileCopyJpaEntity model = jpaTracked();
+
+            FileCopy result = MAPPER.toDomain(model);
+
+            FileCopy expectedResult = domainTracked();
+            assertThat(result)
+                    .usingRecursiveComparison().isEqualTo(expectedResult);
+        }
     }
 
-    @Test
-    void shouldMapStoredUnverifiedDomainToJpa() {
-        FileCopy domain = domainStoredUnverified();
+    @Nested
+    class StoredUnverified {
+        @Test
+        void shouldMapStoredUnverifiedDomainToJpa() {
+            FileCopy domain = domainStoredUnverified();
 
-        FileCopyJpaEntity result = MAPPER.toEntity(domain);
+            FileCopyJpaEntity result = MAPPER.toEntity(domain);
 
-        FileCopyJpaEntity expectedResult = jpaStoredUnverified();
-        assertThat(result)
-                .usingRecursiveComparison().isEqualTo(expectedResult);
+            FileCopyJpaEntity expectedResult = jpaStoredUnverified();
+            assertThat(result)
+                    .usingRecursiveComparison().isEqualTo(expectedResult);
+        }
+
+        private FileCopy domainStoredUnverified() {
+            return TestFileCopy.storedIntegrityUnknown();
+        }
+
+        private FileCopyJpaEntity jpaStoredUnverified() {
+            return jpa(FileCopyStatus.STORED_INTEGRITY_UNKNOWN, null, "someFilePath");
+        }
+
+        @Test
+        void shouldMapStoredUnverifiedJpaToDomain() {
+            FileCopyJpaEntity model = jpaStoredUnverified();
+
+            FileCopy result = MAPPER.toDomain(model);
+
+            FileCopy expectedResult = domainStoredUnverified();
+            assertThat(result)
+                    .usingRecursiveComparison().isEqualTo(expectedResult);
+        }
     }
 
-    private FileCopy domainStoredUnverified() {
-        return TestFileCopy.storedIntegrityUnknown();
-    }
+    @Nested
+    class Failed {
 
-    private FileCopyJpaEntity jpaStoredUnverified() {
-        return jpa(FileCopyStatus.STORED_INTEGRITY_UNKNOWN, null, "someFilePath");
-    }
+        @Test
+        void shouldMapFailedDomainToJpa() {
+            FileCopy domain = domainFailed();
 
-    @Test
-    void shouldMapStoredUnverifiedJpaToDomain() {
-        FileCopyJpaEntity model = jpaStoredUnverified();
+            FileCopyJpaEntity result = MAPPER.toEntity(domain);
 
-        FileCopy result = MAPPER.toDomain(model);
+            FileCopyJpaEntity expectedResult = jpaFailed();
+            assertThat(result)
+                    .usingRecursiveComparison().isEqualTo(expectedResult);
+        }
 
-        FileCopy expectedResult = domainStoredUnverified();
-        assertThat(result)
-                .usingRecursiveComparison().isEqualTo(expectedResult);
-    }
+        private FileCopy domainFailed() {
+            return TestFileCopy.failedWithoutFilePath();
+        }
 
-    @Test
-    void shouldMapFailedDomainToJpa() {
-        FileCopy domain = domainFailed();
+        private FileCopyJpaEntity jpaFailed() {
+            return jpa(FileCopyStatus.FAILED, "someFailedReason", null);
+        }
 
-        FileCopyJpaEntity result = MAPPER.toEntity(domain);
+        @Test
+        void shouldMapFailedJpaToDomain() {
+            FileCopyJpaEntity model = jpaFailed();
 
-        FileCopyJpaEntity expectedResult = jpaFailed();
-        assertThat(result)
-                .usingRecursiveComparison().isEqualTo(expectedResult);
-    }
+            FileCopy result = MAPPER.toDomain(model);
 
-    private FileCopy domainFailed() {
-        return TestFileCopy.failedWithoutFilePath();
-    }
-
-    private FileCopyJpaEntity jpaFailed() {
-        return jpa(FileCopyStatus.FAILED, "someFailedReason", null);
-    }
-
-    @Test
-    void shouldMapFailedJpaToDomain() {
-        FileCopyJpaEntity model = jpaFailed();
-
-        FileCopy result = MAPPER.toDomain(model);
-
-        FileCopy expectedResult = domainFailed();
-        assertThat(result)
-                .usingRecursiveComparison().isEqualTo(expectedResult);
+            FileCopy expectedResult = domainFailed();
+            assertThat(result)
+                    .usingRecursiveComparison().isEqualTo(expectedResult);
+        }
     }
 }
