@@ -1,7 +1,9 @@
 package dev.codesoapbox.backity.archunit.test.rules;
 
 import com.tngtech.archunit.base.DescribedPredicate;
+import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMethod;
+import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
@@ -10,9 +12,10 @@ import com.tngtech.archunit.lang.SimpleConditionEvent;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 
-import java.util.Optional;
-import java.util.Set;
+import java.lang.annotation.Annotation;
+import java.util.*;
 
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 
 /// Rules about creating readable tests.
@@ -28,6 +31,16 @@ public class TestReadabilityRules {
             "lenient",         // Mockito.lenient().when(...)
             "will", "willReturn", "willThrow", "willAnswer", "willDoNothing", "willCallRealMethod" // BDD style
     );
+    static final List<Class<? extends Annotation>> TEST_ANNOTATIONS = List.of(
+            Test.class,
+            ParameterizedTest.class,
+            RepeatedTest.class,
+            TestFactory.class,
+            TestTemplate.class
+    );
+    static final DescribedPredicate<JavaMethod> ARE_TEST_METHODS =
+            DescribedPredicate.describe("are test methods", TestReadabilityRules::isTestMethod);
+    static final int MAX_UNGROUPED_TESTS = 5;
 
     @ArchTest
     static final ArchRule TEST_NAMES_SHOULD_FOLLOW_PATTERN =
@@ -47,16 +60,11 @@ public class TestReadabilityRules {
     @ArchTest
     static final ArchRule TEST_METHOD_NAMES_SHOULD_USE_GIVEN_INSTEAD_OF_WHEN_OR_IF =
             methods()
-                    .that().areAnnotatedWith(Test.class)
-                    .or().areAnnotatedWith(ParameterizedTest.class)
-                    .or().areAnnotatedWith(RepeatedTest.class)
-                    .or().areAnnotatedWith(TestFactory.class)
-                    .or().areAnnotatedWith(TestTemplate.class)
+                    .that(ARE_TEST_METHODS)
                     .should(notContainWhenOrIf())
                     .because("""
                             consistency across the test suite reduces cognitive overhead when \
-                            navigating tests and helps quickly identify intended behavior. \
-                            Use 'given' to describe context instead of 'when' or 'if'.
+                            navigating tests and helps quickly identify intended behavior.
                             """);
 
     @ArchTest
@@ -117,9 +125,93 @@ public class TestReadabilityRules {
                             would have been.
                             
                             Negative consequences:
-                            - For simple stubbings such as use case execution, extracting stubbing methods may feel \
+                            - For simple stubbing such as use case execution, extracting stubbing methods may feel \
                             excessive and unnecessary.
                             """);
+
+    @ArchTest
+    static final ArchRule LARGE_TEST_CLASSES_SHOULD_GROUP_TESTS_IN_NESTED_CLASSES =
+            classes()
+                    .that().areNotAnnotatedWith(Nested.class)
+                    // @Nested doesn't work in abstract classes:
+                    .and().doNotHaveModifier(JavaModifier.ABSTRACT)
+                    .should(notHaveTooManyUngroupedTests())
+                    .because("""
+                            grouping related tests makes test reports easier to navigate \
+                            and keeps the test class organized as it grows.
+                            Small classes are exempt from this rule, \
+                            since there may not be any meaningful groups for their tests.
+                            """);
+
+    @ArchTest
+    static final ArchRule CLASSES_WITH_NESTED_GROUPS_SHOULD_NOT_DECLARE_TESTS_DIRECTLY =
+            classes()
+                    .that().areAnnotatedWith(Nested.class)
+                    .should(haveEnclosingClassWithoutDirectTests())
+                    .because("""
+                            mixing grouped and ungrouped tests in one class makes the structure \
+                            inconsistent and leaves readers unsure where a new test belongs.
+                            """);
+
+    private static ArchCondition<JavaClass> notHaveTooManyUngroupedTests() {
+        return new ArchCondition<>(
+                "directly declare at most " + MAX_UNGROUPED_TESTS + " tests") {
+
+            @Override
+            public void check(JavaClass javaClass, ConditionEvents events) {
+                long testCount = countTests(javaClass);
+
+                if (testCount > MAX_UNGROUPED_TESTS) {
+                    events.add(SimpleConditionEvent.violated(javaClass, String.format(
+                            "Class %s declares %d tests directly (max %d without @Nested grouping) in %s",
+                            javaClass.getFullName(),
+                            testCount,
+                            MAX_UNGROUPED_TESTS,
+                            javaClass.getSourceCodeLocation()
+                    )));
+                }
+            }
+        };
+    }
+
+    private static long countTests(JavaClass javaClass) {
+        return javaClass.getMethods().stream()
+                .filter(TestReadabilityRules::isTestMethod)
+                .count();
+    }
+
+    private static boolean isTestMethod(JavaMethod method) {
+        return TEST_ANNOTATIONS.stream()
+                .anyMatch(method::isAnnotatedWith);
+    }
+
+    private static ArchCondition<JavaClass> haveEnclosingClassWithoutDirectTests() {
+        return new ArchCondition<>("have an enclosing class that declares no tests directly") {
+
+            private final Set<JavaClass> checked = new HashSet<>();
+
+            @Override
+            public void init(Collection<JavaClass> allGroups) {
+                checked.clear();
+            }
+
+            @Override
+            public void check(JavaClass group, ConditionEvents events) {
+                group.getEnclosingClass()
+                        .filter(checked::add)
+                        .ifPresent(enclosing -> enclosing.getMethods().stream()
+                                .filter(TestReadabilityRules::isTestMethod)
+                                .forEach(testMethod -> events.add(SimpleConditionEvent.violated(
+                                        testMethod,
+                                        String.format(
+                                                "Test %s is declared outside the @Nested groups of its class in %s",
+                                                testMethod.getFullName(),
+                                                testMethod.getSourceCodeLocation()
+                                        )
+                                ))));
+            }
+        };
+    }
 
     private static ArchCondition<JavaMethod> notContainWhenOrIf() {
         return new ArchCondition<>("not contain 'When' or 'If' in name or display name") {
@@ -134,27 +226,6 @@ public class TestReadabilityRules {
                 if (methodContainsWhen || displayContainsWhen) {
                     events.add(SimpleConditionEvent.violated(method, String.format(
                             "Method '%s'%s should use 'Given' instead of 'When' or 'If' in %s",
-                            method.getOwner().getFullName() + "#" + method.getName(),
-                            displayName.map(n -> " (display name: '" + n + "')").orElse(""),
-                            method.getSourceCodeLocation()
-                    )));
-                }
-            }
-        };
-    }
-
-    private static ArchCondition<JavaMethod> followShouldGivenConvention() {
-        return new ArchCondition<>("follow 'should...(given)' naming convention") {
-
-            @Override
-            public void check(JavaMethod method, ConditionEvents events) {
-                Optional<String> displayName = resolveTestDisplayName(method);
-                boolean passes = method.getName().matches(SHOULD_GIVEN_PATTERN)
-                        || displayName.map(n -> n.matches(SHOULD_GIVEN_PATTERN)).orElse(false);
-
-                if (!passes) {
-                    events.add(SimpleConditionEvent.violated(method, String.format(
-                            "Method '%s'%s fails the 'should...given' pattern in %s",
                             method.getOwner().getFullName() + "#" + method.getName(),
                             displayName.map(n -> " (display name: '" + n + "')").orElse(""),
                             method.getSourceCodeLocation()
@@ -182,5 +253,26 @@ public class TestReadabilityRules {
             }
         }
         return Optional.empty();
+    }
+
+    private static ArchCondition<JavaMethod> followShouldGivenConvention() {
+        return new ArchCondition<>("follow 'should...(given)' naming convention") {
+
+            @Override
+            public void check(JavaMethod method, ConditionEvents events) {
+                Optional<String> displayName = resolveTestDisplayName(method);
+                boolean passes = method.getName().matches(SHOULD_GIVEN_PATTERN)
+                        || displayName.map(n -> n.matches(SHOULD_GIVEN_PATTERN)).orElse(false);
+
+                if (!passes) {
+                    events.add(SimpleConditionEvent.violated(method, String.format(
+                            "Method '%s'%s fails the 'should...given' pattern in %s",
+                            method.getOwner().getFullName() + "#" + method.getName(),
+                            displayName.map(n -> " (display name: '" + n + "')").orElse(""),
+                            method.getSourceCodeLocation()
+                    )));
+                }
+            }
+        };
     }
 }

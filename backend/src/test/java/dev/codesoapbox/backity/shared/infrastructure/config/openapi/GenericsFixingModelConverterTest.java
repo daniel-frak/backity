@@ -7,6 +7,7 @@ import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.converter.ResolvedSchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springdoc.core.properties.SpringDocConfigProperties;
 import org.springdoc.core.providers.ObjectMapperProvider;
@@ -27,18 +28,6 @@ class GenericsFixingModelConverterTest {
         modelConverters = new ModelConverters();
     }
 
-    @Test
-    void shouldStillBeNecessary() {
-        ResolvedSchema schemaForTestRecordWithoutAnnotation = getResolvedSchemaFor(TestRecordWithoutAnnotation.class);
-        ResolvedSchema schemaForTestRecordWithAnnotation = getResolvedSchemaFor(TestRecordWithAnnotation.class);
-
-        assertThat(schemaForTestRecordWithoutAnnotation.schema.getName())
-                .isEqualTo("TestRecordWithoutAnnotationObject");
-
-        assertThat(schemaForTestRecordWithAnnotation.schema.getName())
-                .isEqualTo("MyRecord"); // Should be MyRecordString!
-    }
-
     private ResolvedSchema getResolvedSchemaFor(Class<?> rawType) {
         AnnotatedType annotatedType = constructAnnotatedType(rawType);
         return modelConverters.resolveAsResolvedSchema(annotatedType);
@@ -47,102 +36,6 @@ class GenericsFixingModelConverterTest {
     private static AnnotatedType constructAnnotatedType(Class<?> rawType) {
         Type type = TypeFactory.defaultInstance().constructParametricType(rawType, Object.class);
         return new AnnotatedType(type);
-    }
-
-    @Test
-    void shouldHandleGenericWithCustomSchemaName() {
-        registerModelConverter();
-        AnnotatedType annotatedType = constructAnnotatedType(TestRecordWithAnnotation.class);
-        annotatedType.resolveAsRef(true);
-
-        ResolvedSchema result = modelConverters.resolveAsResolvedSchema(annotatedType);
-
-        String expectedSchemaName = "MyRecordObject";
-        assertThat(result.schema.get$ref())
-                .isEqualTo("#/components/schemas/" + expectedSchemaName);
-        assertThat(result.referencedSchemas)
-                .extracting(s -> s.get(expectedSchemaName))
-                .extracting(io.swagger.v3.oas.models.media.Schema::getName)
-                .isEqualTo(expectedSchemaName);
-    }
-
-    private void registerModelConverter() {
-        SpringDocConfigProperties springDocConfigProperties = new SpringDocConfigProperties();
-        springDocConfigProperties.getApiDocs().setVersion(SpringDocConfigProperties.ApiDocs.OpenApiVersion.OPENAPI_3_1);
-        ObjectMapperProvider springDocObjectMapper = new ObjectMapperProvider(springDocConfigProperties);
-        GenericsFixingModelConverter converter = new GenericsFixingModelConverter(springDocObjectMapper);
-        modelConverters.addConverter(converter);
-    }
-
-    @Test
-    void shouldDoNothingGivenResolvedSchemaIsNull() {
-        modelConverters.addConverter((_, _, _) -> null);
-        registerModelConverter();
-        AnnotatedType annotatedType = constructAnnotatedType(TestRecordWithoutAnnotation.class);
-
-        ResolvedSchema result = modelConverters.resolveAsResolvedSchema(annotatedType);
-
-        assertThat(result.schema).isNull();
-    }
-
-    @Test
-    void shouldDoNothingGivenResolvedSchemaTypeIsNotNull() {
-        var schema = new io.swagger.v3.oas.models.media.Schema<>();
-        schema.type("object");
-        modelConverters.addConverter((_, _, _) -> schema);
-        registerModelConverter();
-        AnnotatedType annotatedType = constructAnnotatedType(TestRecordWithoutAnnotation.class);
-
-        ResolvedSchema result = modelConverters.resolveAsResolvedSchema(annotatedType);
-
-        assertThat(result.schema).isEqualTo(schema);
-    }
-
-    @Test
-    void shouldDoNothingGivenJavaTypeIsNull() {
-        io.swagger.v3.oas.models.media.Schema<Object> schema = new io.swagger.v3.oas.models.media.Schema<>();
-        modelConverters.addConverter((_, _, _) -> schema);
-        registerModelConverterWithMockObjectMapperProvider();
-        AnnotatedType annotatedType = constructAnnotatedType(TestRecordWithAnnotation.class);
-        annotatedType.resolveAsRef(true);
-
-        ResolvedSchema result = modelConverters.resolveAsResolvedSchema(annotatedType);
-
-        assertThat(result.schema).isEqualTo(schema);
-    }
-
-    private void registerModelConverterWithMockObjectMapperProvider() {
-        ObjectMapperProvider springDocObjectMapper = mock(ObjectMapperProvider.class);
-        ObjectMapper objectMapper = mock(ObjectMapper.class);
-        when(springDocObjectMapper.jsonMapper())
-                .thenReturn(objectMapper);
-        GenericsFixingModelConverter converter = new GenericsFixingModelConverter(springDocObjectMapper);
-        modelConverters.addConverter(converter);
-    }
-
-    @Test
-    void shouldDoNothingGivenClassHasNoGenericTypes() {
-        io.swagger.v3.oas.models.media.Schema<Object> schema = new io.swagger.v3.oas.models.media.Schema<>();
-        modelConverters.addConverter((_, _, _) -> schema);
-        registerModelConverter();
-        AnnotatedType annotatedType = new AnnotatedType(String.class);
-        annotatedType.resolveAsRef(true);
-
-        ResolvedSchema result = modelConverters.resolveAsResolvedSchema(annotatedType);
-
-        assertThat(result.schema).isEqualTo(schema);
-    }
-
-    @Test
-    void shouldDoNothingGivenRefIsEmpty() {
-        io.swagger.v3.oas.models.media.Schema<Object> schema = new io.swagger.v3.oas.models.media.Schema<>();
-        modelConverters.addConverter((_, _, _) -> schema);
-        registerModelConverter();
-        AnnotatedType annotatedType = constructAnnotatedType(TestRecordWithAnnotation.class);
-
-        ResolvedSchema result = modelConverters.resolveAsResolvedSchema(annotatedType);
-
-        assertThat(result.schema).isEqualTo(schema);
     }
 
     private record TestRecordWithoutAnnotation<T>(
@@ -154,5 +47,123 @@ class GenericsFixingModelConverterTest {
     private record TestRecordWithAnnotation<T>(
             List<T> content
     ) {
+    }
+
+    @Nested
+    class Necessity {
+
+        @Test
+        void shouldStillBeNecessary() {
+            ResolvedSchema schemaForTestRecordWithoutAnnotation =
+                    getResolvedSchemaFor(TestRecordWithoutAnnotation.class);
+            ResolvedSchema schemaForTestRecordWithAnnotation = getResolvedSchemaFor(TestRecordWithAnnotation.class);
+
+            assertThat(schemaForTestRecordWithoutAnnotation.schema.getName())
+                    .isEqualTo("TestRecordWithoutAnnotationObject");
+
+            assertThat(schemaForTestRecordWithAnnotation.schema.getName())
+                    .isEqualTo("MyRecord"); // Should be MyRecordString!
+        }
+    }
+
+    @Nested
+    class Resolve {
+
+        @Test
+        void shouldHandleGenericWithCustomSchemaName() {
+            registerModelConverter();
+            AnnotatedType annotatedType = constructAnnotatedType(TestRecordWithAnnotation.class);
+            annotatedType.resolveAsRef(true);
+
+            ResolvedSchema result = modelConverters.resolveAsResolvedSchema(annotatedType);
+
+            String expectedSchemaName = "MyRecordObject";
+            assertThat(result.schema.get$ref())
+                    .isEqualTo("#/components/schemas/" + expectedSchemaName);
+            assertThat(result.referencedSchemas)
+                    .extracting(s -> s.get(expectedSchemaName))
+                    .extracting(io.swagger.v3.oas.models.media.Schema::getName)
+                    .isEqualTo(expectedSchemaName);
+        }
+
+        private void registerModelConverter() {
+            var springDocConfigProperties = new SpringDocConfigProperties();
+            springDocConfigProperties.getApiDocs()
+                    .setVersion(SpringDocConfigProperties.ApiDocs.OpenApiVersion.OPENAPI_3_1);
+            var springDocObjectMapper = new ObjectMapperProvider(springDocConfigProperties);
+            var converter = new GenericsFixingModelConverter(springDocObjectMapper);
+            modelConverters.addConverter(converter);
+        }
+
+        @Test
+        void shouldDoNothingGivenResolvedSchemaIsNull() {
+            modelConverters.addConverter((_, _, _) -> null);
+            registerModelConverter();
+            AnnotatedType annotatedType = constructAnnotatedType(TestRecordWithoutAnnotation.class);
+
+            ResolvedSchema result = modelConverters.resolveAsResolvedSchema(annotatedType);
+
+            assertThat(result.schema).isNull();
+        }
+
+        @Test
+        void shouldDoNothingGivenResolvedSchemaTypeIsNotNull() {
+            var schema = new io.swagger.v3.oas.models.media.Schema<>();
+            schema.type("object");
+            modelConverters.addConverter((_, _, _) -> schema);
+            registerModelConverter();
+            AnnotatedType annotatedType = constructAnnotatedType(TestRecordWithoutAnnotation.class);
+
+            ResolvedSchema result = modelConverters.resolveAsResolvedSchema(annotatedType);
+
+            assertThat(result.schema).isEqualTo(schema);
+        }
+
+        @Test
+        void shouldDoNothingGivenJavaTypeIsNull() {
+            io.swagger.v3.oas.models.media.Schema<Object> schema = new io.swagger.v3.oas.models.media.Schema<>();
+            modelConverters.addConverter((_, _, _) -> schema);
+            registerModelConverterWithMockObjectMapperProvider();
+            AnnotatedType annotatedType = constructAnnotatedType(TestRecordWithAnnotation.class);
+            annotatedType.resolveAsRef(true);
+
+            ResolvedSchema result = modelConverters.resolveAsResolvedSchema(annotatedType);
+
+            assertThat(result.schema).isEqualTo(schema);
+        }
+
+        private void registerModelConverterWithMockObjectMapperProvider() {
+            ObjectMapperProvider springDocObjectMapper = mock(ObjectMapperProvider.class);
+            ObjectMapper objectMapper = mock(ObjectMapper.class);
+            when(springDocObjectMapper.jsonMapper())
+                    .thenReturn(objectMapper);
+            GenericsFixingModelConverter converter = new GenericsFixingModelConverter(springDocObjectMapper);
+            modelConverters.addConverter(converter);
+        }
+
+        @Test
+        void shouldDoNothingGivenClassHasNoGenericTypes() {
+            io.swagger.v3.oas.models.media.Schema<Object> schema = new io.swagger.v3.oas.models.media.Schema<>();
+            modelConverters.addConverter((_, _, _) -> schema);
+            registerModelConverter();
+            AnnotatedType annotatedType = new AnnotatedType(String.class);
+            annotatedType.resolveAsRef(true);
+
+            ResolvedSchema result = modelConverters.resolveAsResolvedSchema(annotatedType);
+
+            assertThat(result.schema).isEqualTo(schema);
+        }
+
+        @Test
+        void shouldDoNothingGivenRefIsEmpty() {
+            io.swagger.v3.oas.models.media.Schema<Object> schema = new io.swagger.v3.oas.models.media.Schema<>();
+            modelConverters.addConverter((_, _, _) -> schema);
+            registerModelConverter();
+            AnnotatedType annotatedType = constructAnnotatedType(TestRecordWithAnnotation.class);
+
+            ResolvedSchema result = modelConverters.resolveAsResolvedSchema(annotatedType);
+
+            assertThat(result.schema).isEqualTo(schema);
+        }
     }
 }

@@ -34,12 +34,16 @@ class OutputStreamProgressTrackerFactoryTest {
         outputStreamProgressTrackerFactory = new OutputStreamProgressTrackerFactory(domainEventPublisher);
     }
 
-    @Test
-    void shouldCreate() {
-        FileCopy fileCopy = TestFileCopy.inProgress();
-        OutputStreamProgressTracker result = outputStreamProgressTrackerFactory.create(fileCopy);
+    @Nested
+    class Create {
 
-        assertThat(result).isNotNull();
+        @Test
+        void shouldCreate() {
+            FileCopy fileCopy = TestFileCopy.inProgress();
+            OutputStreamProgressTracker result = outputStreamProgressTrackerFactory.create(fileCopy);
+
+            assertThat(result).isNotNull();
+        }
     }
 
     @Nested
