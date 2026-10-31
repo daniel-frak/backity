@@ -5,6 +5,6 @@
 
 <suppressions>
     <suppress
-            checks="AvoidStaticImport|ClassDataAbstractionCoupling|FileLength|LambdaBodyLength|MethodLength|HideUtilityClassConstructor|MagicNumber|MultipleStringLiterals|EmptyBlock"
+            checks="AvoidStaticImport|ClassDataAbstractionCoupling|FileLength|LambdaBodyLength|MethodLength|HideUtilityClassConstructor|MagicNumber|MultipleStringLiterals|EmptyBlock|AnonInnerLength"
             files="[\\/]src[\\/]test[\\/].*"/>
 </suppressions>
