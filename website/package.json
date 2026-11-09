@@ -23,7 +23,7 @@
     "typescript": "^6.0.3"
   },
   "devDependencies": {
-    "@types/node": "25.9.9",
+    "@types/node": "26.6.6",
     "sass-embedded": "1.108.0"
   }
 }
