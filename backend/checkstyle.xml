@@ -30,6 +30,14 @@
     </module>
     <module name="NewlineAtEndOfFile"/>
 
+    <!-- Comment style -->
+
+    <module name="RegexpSingleline">
+        <property name="format" value="^\s*/\*\*(?!\*)"/>
+        <property name="message"
+                  value="Use the JEP 467 Markdown documentation comment style (///) instead of the traditional style (/** */)."/>
+    </module>
+
     <module name="TreeWalker">
 
         <!-- Naming -->
@@ -78,32 +86,6 @@
         <module name="PackageDeclaration"/>
         <module name="RedundantImport"/>
         <module name="UnnecessaryFullyQualifiedType"/>
-
-        <!-- Javadoc -->
-
-        <module name="AtclauseOrder"/>
-        <module name="InappropriateJavadocBlockTagsOnField"/>
-        <module name="InappropriateJavadocBlockTagsOnPackage"/>
-        <module name="InappropriateJavadocBlockTagsOnType"/>
-        <module name="InvalidJavadocPosition"/>
-        <module name="JavadocBlockTagLocation"/>
-        <module name="JavadocContentLocation"/>
-        <module name="JavadocEndCommentDelimiter"/>
-        <module name="JavadocLeadingAsteriskAlign" />
-        <module name="JavadocLinkFirstOccurrence"/>
-        <module name="JavadocLinkWellKnownApi"/>
-        <module name="JavadocMissingLeadingAsterisk"/>
-        <module name="JavadocMissingWhitespaceAfterAsterisk"/>
-        <module name="JavadocNoErrorInThrowsTag"/>
-        <module name="JavadocParamOrder"/>
-        <module name="JavadocSeeTagOrder"/>
-        <module name="JavadocTagContinuationIndentation"/>
-        <module name="JavadocThrowsOrder"/>
-        <module name="NonEmptyAtclauseDescription"/>
-        <module name="PreferCodeOrSnippetJavadocInlineTag"/>
-        <module name="PreferLiteralJavadocInlineTag"/>
-        <module name="RequireEmptyLineBeforeBlockTagGroup"/>
-        <module name="SingleLineJavadoc"/>
 
         <!-- Whitespace and formatting -->
 
@@ -250,7 +232,7 @@
             <!-- This won't find classes with non-private Lombok-generated constructors -->
             <!-- but that should be rare -->
             <property name="ignoreAnnotatedBy"
-                      value="SpringBootApplication, NoArgsConstructor, RequiredArgsConstructor" />
+                      value="SpringBootApplication, NoArgsConstructor, RequiredArgsConstructor"/>
         </module>
         <module name="InnerTypeLast"/>
         <module name="InterfaceIsType"/>
@@ -332,5 +314,33 @@
 
         <!-- Currently incompatible with Markdown Javadoc: -->
         <!-- <module name="UnusedImports"/> -->
+
+        <!--
+        Javadoc - currently broken for Markdown comments, see: https://github.com/checkstyle/checkstyle/issues/16100
+
+        <module name="AtclauseOrder"/>
+        <module name="InappropriateJavadocBlockTagsOnField"/>
+        <module name="InappropriateJavadocBlockTagsOnPackage"/>
+        <module name="InappropriateJavadocBlockTagsOnType"/>
+        <module name="InvalidJavadocPosition"/>
+        <module name="JavadocBlockTagLocation"/>
+        <module name="JavadocContentLocation"/>
+        <module name="JavadocEndCommentDelimiter"/>
+        <module name="JavadocLeadingAsteriskAlign"/>
+        <module name="JavadocLinkFirstOccurrence"/>
+        <module name="JavadocLinkWellKnownApi"/>
+        <module name="JavadocMissingLeadingAsterisk"/>
+        <module name="JavadocMissingWhitespaceAfterAsterisk"/>
+        <module name="JavadocNoErrorInThrowsTag"/>
+        <module name="JavadocParamOrder"/>
+        <module name="JavadocSeeTagOrder"/>
+        <module name="JavadocTagContinuationIndentation"/>
+        <module name="JavadocThrowsOrder"/>
+        <module name="NonEmptyAtclauseDescription"/>
+        <module name="PreferCodeOrSnippetJavadocInlineTag"/>
+        <module name="PreferLiteralJavadocInlineTag"/>
+        <module name="RequireEmptyLineBeforeBlockTagGroup"/>
+        <module name="SingleLineJavadoc"/>
+        -->
     </module>
 </module>
