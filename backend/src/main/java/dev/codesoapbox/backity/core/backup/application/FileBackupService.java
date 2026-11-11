@@ -48,8 +48,12 @@ public class FileBackupService {
     }
 
     @SuppressWarnings("java:S1166") // Intentionally suppressing FileWriteWasCanceledException
-    private void tryToBackUp(FileCopy fileCopy, SourceFile sourceFile, BackupTarget backupTarget,
-                             StorageSolution storageSolution) {
+    private void tryToBackUp(
+            FileCopy fileCopy,
+            SourceFile sourceFile,
+            BackupTarget backupTarget,
+            StorageSolution storageSolution
+    ) {
         /*
          * Note that the file path is only guaranteed to be unique within this replication process.
          * If the replication fails, a new file path MUST be resolved, as the UniqueFilePathResolver

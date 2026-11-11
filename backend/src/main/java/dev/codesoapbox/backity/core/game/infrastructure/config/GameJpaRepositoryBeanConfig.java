@@ -18,9 +18,12 @@ public class GameJpaRepositoryBeanConfig {
     }
 
     @Bean
-    GameJpaRepository gameRepository(GameJpaEntitySpringRepository springRepository,
-                                     GameJpaEntityMapper entityMapper, SpringPageMapper springPageMapper,
-                                     SpringPageableMapper springPageableMapper) {
+    GameJpaRepository gameRepository(
+            GameJpaEntitySpringRepository springRepository,
+            GameJpaEntityMapper entityMapper,
+            SpringPageMapper springPageMapper,
+            SpringPageableMapper springPageableMapper
+    ) {
         return new GameJpaRepository(springRepository, entityMapper, springPageMapper, springPageableMapper);
     }
 }

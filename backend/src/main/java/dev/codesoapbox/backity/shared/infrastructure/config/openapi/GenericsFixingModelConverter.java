@@ -26,8 +26,11 @@ public class GenericsFixingModelConverter implements ModelConverter {
     private final ObjectMapperProvider springDocObjectMapper;
 
     @Override
-    public Schema<?> resolve(AnnotatedType type, ModelConverterContext context,
-                             Iterator<ModelConverter> chain) {
+    public Schema<?> resolve(
+            AnnotatedType type,
+            ModelConverterContext context,
+            Iterator<ModelConverter> chain
+    ) {
         Schema<?> resolvedSchema = chain.next().resolve(type, context, chain);
         if (resolvedSchema != null && resolvedSchema.getType() == null) {
             JavaType javaType = springDocObjectMapper.jsonMapper().constructType(type.getType());

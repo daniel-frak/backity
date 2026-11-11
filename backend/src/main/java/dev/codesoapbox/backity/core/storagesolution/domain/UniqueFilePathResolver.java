@@ -55,8 +55,11 @@ public class UniqueFilePathResolver {
         }
     }
 
-    private FilePath constructPathUntilUnique(PathTemplate pathTemplate, SourceFile sourceFile,
-                                              StorageSolution storageSolution) {
+    private FilePath constructPathUntilUnique(
+            PathTemplate pathTemplate,
+            SourceFile sourceFile,
+            StorageSolution storageSolution
+    ) {
         FilePath filePath;
         int attemptNumber = -1;
         do {
