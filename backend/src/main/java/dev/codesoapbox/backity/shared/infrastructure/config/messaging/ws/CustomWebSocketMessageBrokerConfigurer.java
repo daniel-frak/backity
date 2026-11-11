@@ -13,10 +13,8 @@ public class CustomWebSocketMessageBrokerConfigurer implements WebSocketMessageB
 
     private final JsonMapper jsonMapper;
 
-    /**
-     * Otherwise the default uses a {@link MessageConverter} that uses its own ObjectMapper, which is not configured
-     * for LocalDate conversion, etc.
-     */
+    /// Otherwise the default uses a [MessageConverter] that uses its own ObjectMapper, which is not configured
+    /// for LocalDate conversion, etc.
     @Override
     public boolean configureMessageConverters(List<MessageConverter> messageConverters) {
         var messageConverter = new JacksonJsonMessageConverter(jsonMapper);

@@ -12,11 +12,9 @@ import org.springdoc.core.customizers.OpenApiCustomizer;
 import java.util.Map;
 import java.util.stream.Stream;
 
-/**
- * Provides objects annotated with {@code @IncludeInApiDocs} as additional schema in OpenAPI docs.
- *
- * @see IncludeInDocumentation
- */
+/// Provides objects annotated with `@IncludeInApiDocs` as additional schema in OpenAPI docs.
+///
+/// @see IncludeInDocumentation
 @RequiredArgsConstructor
 public class OpenApiAdditionalSchemaProvider implements OpenApiCustomizer {
 

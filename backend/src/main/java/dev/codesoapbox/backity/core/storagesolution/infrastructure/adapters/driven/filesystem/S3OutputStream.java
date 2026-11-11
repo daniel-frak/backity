@@ -9,42 +9,30 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Based on: <a href="https://gist.github.com/jcputney/b5daeb86a1c0696859da2a0c3b466327">Github gist</a>
- */
+/// Based on: [Github gist](https://gist.github.com/jcputney/b5daeb86a1c0696859da2a0c3b466327)
 public class S3OutputStream extends OutputStream {
 
-    /**
-     * The temporary buffer used for storing the chunks
-     */
+    /// The temporary buffer used for storing the chunks
     protected final byte[] temporaryBuffer;
+
     private final S3Client s3Client;
-    /**
-     * The bucket-name on Amazon S3
-     */
+
+    /// The bucket-name on Amazon S3
     private final String bucket;
-    /**
-     * The object key within the bucket
-     */
+
+    /// The object key within the bucket
     private final String key;
-    /**
-     * Collection of the eTags for the parts that have been uploaded
-     */
+
+    /// Collection of the eTags for the parts that have been uploaded
     private final List<String> partETags = new ArrayList<>();
 
-    /**
-     * The position in the buffer
-     */
+    /// The position in the buffer
     private int positionInBuffer;
 
-    /**
-     * The unique id for this upload
-     */
+    /// The unique id for this upload
     private String uploadId;
 
-    /**
-     * Indicates whether the stream is still open / valid
-     */
+    /// Indicates whether the stream is still open / valid
     private boolean isOpen = true;
 
     public S3OutputStream(S3Client s3Client, String bucket, String key, int bufferSizeBytes) {
@@ -138,23 +126,19 @@ public class S3OutputStream extends OutputStream {
         return RequestBody.fromInputStream(inputStream, positionInBuffer);
     }
 
-    /**
-     * Write an array to the S3 output stream.
-     *
-     * @param bytes the byte-array to append
-     */
+    /// Write an array to the S3 output stream.
+    ///
+    /// @param bytes the byte-array to append
     @Override
     public void write(byte[] bytes) {
         write(bytes, 0, bytes.length);
     }
 
-    /**
-     * Writes an array to the S3 Output Stream
-     *
-     * @param bytesToWrite the array to write
-     * @param offset       the offset into the array
-     * @param length       the number of bytes to write
-     */
+    /// Writes an array to the S3 Output Stream
+    ///
+    /// @param bytesToWrite the array to write
+    /// @param offset       the offset into the array
+    /// @param length       the number of bytes to write
     @Override
     public void write(byte[] bytesToWrite, int offset, int length) {
         assertOpen();
@@ -187,11 +171,9 @@ public class S3OutputStream extends OutputStream {
         positionInBuffer += numOfBytesToWrite;
     }
 
-    /**
-     * Flushes the buffer by uploading a part to S3.
-     * <p>
-     * Forces a multi-part upload.
-     */
+    /// Flushes the buffer by uploading a part to S3.
+    ///
+    /// Forces a multi-part upload.
     @Override
     public void flush() {
         assertOpen();

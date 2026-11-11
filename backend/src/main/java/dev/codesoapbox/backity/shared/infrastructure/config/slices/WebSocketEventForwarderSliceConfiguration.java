@@ -4,10 +4,8 @@ import org.springframework.context.annotation.Configuration;
 
 import java.lang.annotation.*;
 
-/**
- * Configuration for event forwarders using
- * {@link dev.codesoapbox.backity.shared.application.eventhandlers.DomainEventForwarder}.
- */
+/// Configuration for event forwarders using
+/// [dev.codesoapbox.backity.shared.application.eventhandlers.DomainEventForwarder].
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

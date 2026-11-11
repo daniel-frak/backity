@@ -74,9 +74,7 @@ class DataBufferFluxTrackableFileStreamTest {
 
     static class RecoverableExceptions {
 
-        /**
-         * DNS resolution failures that are typically temporary and resolve themselves when DNS servers recover.
-         */
+        /// DNS resolution failures that are typically temporary and resolve themselves when DNS servers recover.
         private static final List<Throwable> DNS_EXCEPTIONS = List.of(
                 new DnsNameResolverTimeoutException(
                         InetSocketAddress.createUnresolved("test.com", 80),
@@ -86,10 +84,8 @@ class DataBufferFluxTrackableFileStreamTest {
                 new UnknownHostException("unresolved.host.test")
         );
 
-        /**
-         * Connection issues that commonly occur due to network instability
-         * or temporary server unavailability.
-         */
+        /// Connection issues that commonly occur due to network instability
+        /// or temporary server unavailability.
         private static final List<Throwable> CONNECTION_EXCEPTIONS = List.of(
                 new ConnectException("Connection refused"),
                 PrematureCloseException.TEST_EXCEPTION,
@@ -101,23 +97,17 @@ class DataBufferFluxTrackableFileStreamTest {
                 )
         );
 
-        /**
-         * Timeout exceptions that occur when the server is slow to respond but may succeed on retry.
-         */
+        /// Timeout exceptions that occur when the server is slow to respond but may succeed on retry.
         private static final List<Throwable> TIMEOUT_EXCEPTIONS = List.of(
                 ReadTimeoutException.INSTANCE
         );
 
-        /**
-         * SSL/TLS related issues that may be temporary.
-         */
+        /// SSL/TLS related issues that may be temporary.
         private static final List<Throwable> SSL_EXCEPTIONS = List.of(
                 new SSLException("SSL error")
         );
 
-        /**
-         * HTTP specific errors that indicate server-side issues that may resolve with a retry.
-         */
+        /// HTTP specific errors that indicate server-side issues that may resolve with a retry.
         private static final List<Throwable> HTTP_EXCEPTIONS = List.of(
                 new HttpRetryException("Retry", 1),
                 WebClientResponseException.create(

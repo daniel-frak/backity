@@ -14,9 +14,7 @@ import dev.codesoapbox.backity.core.storagesolution.domain.UniqueFilePathResolve
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * Orchestrates the overall backup workflow, including state management and cleanup operations.
- */
+/// Orchestrates the overall backup workflow, including state management and cleanup operations.
 @Slf4j
 @RequiredArgsConstructor
 public class FileBackupService {

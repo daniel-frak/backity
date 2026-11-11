@@ -4,9 +4,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.lang.annotation.*;
 
-/**
- * Configuration for Game Provider services.
- */
+/// Configuration for Game Provider services.
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

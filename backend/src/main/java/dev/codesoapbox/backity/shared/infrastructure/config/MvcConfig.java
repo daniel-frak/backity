@@ -65,9 +65,7 @@ public class MvcConfig implements WebMvcConfigurer {
         makeAnnotatedControllerEnumArgumentsCaseInsensitive(registry);
     }
 
-    /**
-     * @see LowercaseApiEnum
-     */
+    /// @see LowercaseApiEnum
     @SuppressWarnings({"rawtypes", "unchecked"})
     private void makeAnnotatedControllerEnumArgumentsCaseInsensitive(FormatterRegistry registry) {
         List<Class<?>> annotatedControllerEnums = new LowercaseEnumFinder(applicationContext)

@@ -4,9 +4,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.lang.annotation.*;
 
-/**
- * Configuration for Domain Event handlers.
- */
+/// Configuration for Domain Event handlers.
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

@@ -17,11 +17,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-/**
- * JUnit Jupiter {@code @Extension} for managing an S3 test environment using LocalStack.
- * It handles the setup and teardown of S3 buckets and objects for test classes annotated with {@link S3RepositoryTest}.
- * It also provides the ability to inject an {@link S3Client} into test methods or classes.
- */
+/// JUnit Jupiter `@Extension` for managing an S3 test environment using LocalStack.
+/// It handles the setup and teardown of S3 buckets and objects for test classes annotated with [S3RepositoryTest].
+/// It also provides the ability to inject an [S3Client] into test methods or classes.
 public class S3RepositoryTestExtension
         implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
 

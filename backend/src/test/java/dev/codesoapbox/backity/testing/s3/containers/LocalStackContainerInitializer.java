@@ -4,20 +4,18 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 
-/**
- * {@link ApplicationContextInitializer} that configures a reusable LocalStack container for integration testing.
- * <p>
- * The Spring environment is automatically configured to use the container.
- * <p>
- * Should typically be used as {@code @ContextConfiguration(initializers = LocalStackContainerInitializer.class)}
- * on a slice test annotation.
- * <p>
- * Based on:
- * <a href="https://stackoverflow.com/a/68890310">https://stackoverflow.com/a/68890310</a>
- *
- * @see ApplicationContextInitializer
- * @see PreconfiguredLocalStackContainer
- */
+/// [ApplicationContextInitializer] that configures a reusable LocalStack container for integration testing.
+///
+/// The Spring environment is automatically configured to use the container.
+///
+/// Should typically be used as `@ContextConfiguration(initializers = LocalStackContainerInitializer.class)`
+/// on a slice test annotation.
+///
+/// Based on:
+/// [https://stackoverflow.com/a/68890310](https://stackoverflow.com/a/68890310)
+///
+/// @see ApplicationContextInitializer
+/// @see PreconfiguredLocalStackContainer
 public class LocalStackContainerInitializer
         implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 

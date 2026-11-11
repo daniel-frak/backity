@@ -4,9 +4,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.lang.annotation.*;
 
-/**
- * Configuration for {@link org.springframework.web.reactive.function.client.WebClient} implementations.
- */
+/// Configuration for [org.springframework.web.reactive.function.client.WebClient] implementations.
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

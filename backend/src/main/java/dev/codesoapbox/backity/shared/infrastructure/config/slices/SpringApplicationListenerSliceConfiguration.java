@@ -4,9 +4,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.lang.annotation.*;
 
-/**
- * Configuration for ApplicationListener implementations.
- */
+/// Configuration for ApplicationListener implementations.
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented

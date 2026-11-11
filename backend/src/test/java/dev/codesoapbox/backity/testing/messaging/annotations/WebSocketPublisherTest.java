@@ -12,10 +12,9 @@ import org.springframework.boot.websocket.autoconfigure.servlet.WebSocketMessagi
 
 import java.lang.annotation.*;
 
-/**
- * Creates a minimal Spring Boot context which allows sending WebSocket messages.
- * Note: The context here could probably be slimmed down.
- */
+/// Creates a minimal Spring Boot context which allows sending WebSocket messages.
+///
+/// Note: The context here could probably be slimmed down.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = {
         WebSocketBrokerConfig.class,
         WebSocketEventPublisherBeanConfig.class

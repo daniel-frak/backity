@@ -13,14 +13,12 @@ import org.springdoc.core.providers.ObjectMapperProvider;
 
 import java.util.Iterator;
 
-/**
- * io.swagger.v3.core.jackson.ModelResolver does not handle generics properly if class is annotated
- * with @Schema(name="...").
- * <p>
- * This class provides a workaround that corrects the behavior.
- *
- * @see <a href="https://github.com/swagger-api/swagger-core/issues/4440">Github issue</a>
- */
+/// `io.swagger.v3.core.jackson.ModelResolver` does not handle generics properly if class is annotated
+/// with `@Schema(name="...")`.
+///
+/// This class provides a workaround that corrects the behavior.
+///
+/// @see <a href="https://github.com/swagger-api/swagger-core/issues/4440">Github issue</a>
 @RequiredArgsConstructor
 public class GenericsFixingModelConverter implements ModelConverter {
 

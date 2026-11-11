@@ -12,9 +12,7 @@ import lombok.NonNull;
 
 import java.time.LocalDateTime;
 
-/**
- * A file provided by a Game Provider.
- */
+/// A file provided by a Game Provider.
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
