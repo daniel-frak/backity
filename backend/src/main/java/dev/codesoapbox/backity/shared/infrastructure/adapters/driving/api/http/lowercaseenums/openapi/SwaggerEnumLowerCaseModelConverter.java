@@ -17,8 +17,11 @@ import java.util.Locale;
 public class SwaggerEnumLowerCaseModelConverter implements ModelConverter {
 
     @Override
-    public Schema<?> resolve(AnnotatedType annotatedType, ModelConverterContext modelConverterContext,
-                             Iterator<ModelConverter> iterator) {
+    public Schema<?> resolve(
+            AnnotatedType annotatedType,
+            ModelConverterContext modelConverterContext,
+            Iterator<ModelConverter> iterator
+    ) {
         JavaType javaType = Json.mapper().constructType(annotatedType.getType());
         if (isAnnotatedEnum(annotatedType, javaType)) {
             Enum<?>[] enumConstants = getEnumConstants(javaType);
@@ -74,8 +77,11 @@ public class SwaggerEnumLowerCaseModelConverter implements ModelConverter {
         return stringSchema;
     }
 
-    private Schema<?> delegate(AnnotatedType annotatedType, ModelConverterContext modelConverterContext,
-                               Iterator<ModelConverter> iterator) {
+    private Schema<?> delegate(
+            AnnotatedType annotatedType,
+            ModelConverterContext modelConverterContext,
+            Iterator<ModelConverter> iterator
+    ) {
         return iterator.hasNext()
                 ? iterator.next().resolve(annotatedType, modelConverterContext, iterator)
                 : null;

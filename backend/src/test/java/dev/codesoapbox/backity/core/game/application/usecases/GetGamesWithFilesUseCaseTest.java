@@ -62,14 +62,17 @@ class GetGamesWithFilesUseCaseTest {
                 .usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
-    private GameWithFileCopiesReadModel gameWithFileCopiesExists(FileCopy localCopy, Pagination pagination,
-                                                                 GameWithFileCopiesSearchFilter filter) {
+    private GameWithFileCopiesReadModel gameWithFileCopiesExists(
+            FileCopy localCopy,
+            Pagination pagination,
+            GameWithFileCopiesSearchFilter filter
+    ) {
         GameWithFileCopiesReadModel game = TestGameWithFileCopiesReadModel.withNoSourceFilesBuilder()
                 .withSourceFilesWithCopies(List.of(
                         new SourceFileWithCopiesReadModel(
                                 TestSourceFileReadModel.from(TestSourceFile.gog()),
                                 List.of(TestFileCopyReadModel.from(localCopy))
-                                )
+                        )
                 ))
                 .build();
         when(gameReadModelRepository.findAllPaginated(pagination, filter))

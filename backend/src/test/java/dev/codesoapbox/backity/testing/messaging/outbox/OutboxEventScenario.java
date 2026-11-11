@@ -23,9 +23,12 @@ public class OutboxEventScenario {
     private final EventSerializer eventSerializer;
     private final TrackingTaskExecutor trackingTaskExecutor;
 
-    public OutboxEventScenario(ApplicationEventPublisher publisher,
-                               PlatformTransactionManager transactionManager,
-                               EventSerializer eventSerializer, TrackingTaskExecutor trackingTaskExecutor) {
+    public OutboxEventScenario(
+            ApplicationEventPublisher publisher,
+            PlatformTransactionManager transactionManager,
+            EventSerializer eventSerializer,
+            TrackingTaskExecutor trackingTaskExecutor
+    ) {
         this.publisher = publisher;
         this.transactionManager = transactionManager;
         this.eventSerializer = eventSerializer;

@@ -36,9 +36,15 @@ public class FileCopy {
     private FileCopyFailureReason failedReason;
     private FilePath filePath;
 
-    public FileCopy(@NonNull FileCopyId id, @NonNull FileCopyNaturalId naturalId,
-                    @NonNull FileCopyStatus status, FileCopyFailureReason failedReason, FilePath filePath,
-                    LocalDateTime dateCreated, LocalDateTime dateModified) {
+    public FileCopy(
+            @NonNull FileCopyId id,
+            @NonNull FileCopyNaturalId naturalId,
+            @NonNull FileCopyStatus status,
+            FileCopyFailureReason failedReason,
+            FilePath filePath,
+            LocalDateTime dateCreated,
+            LocalDateTime dateModified
+    ) {
         this.id = id;
         this.naturalId = naturalId;
         this.status = status;

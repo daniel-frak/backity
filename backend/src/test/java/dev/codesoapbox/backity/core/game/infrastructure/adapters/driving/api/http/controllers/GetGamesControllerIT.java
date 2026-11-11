@@ -192,8 +192,11 @@ class GetGamesControllerIT {
                 .andExpect(content().json(expectedJsonResponse()));
     }
 
-    private void gamesWithFileCopiesExist(Pagination pagination, GameWithFileCopiesSearchFilter expectedFilter,
-                                          Page<GameWithFileCopiesAndReplicationProgresses> gameWithFileCopiesPage) {
+    private void gamesWithFileCopiesExist(
+            Pagination pagination,
+            GameWithFileCopiesSearchFilter expectedFilter,
+            Page<GameWithFileCopiesAndReplicationProgresses> gameWithFileCopiesPage
+    ) {
         when(getGamesWithFilesUseCase.execute(pagination, expectedFilter))
                 .thenReturn(gameWithFileCopiesPage);
     }

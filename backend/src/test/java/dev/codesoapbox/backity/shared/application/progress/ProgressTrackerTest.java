@@ -107,8 +107,12 @@ class ProgressTrackerTest {
 
         @ParameterizedTest(name = "given {0}")
         @MethodSource("progressArguments")
-        void shouldShowCorrectProgress(Integer trackerIncrement, Integer timeOffset,
-                                       Integer expectedPercentage, Long expectedSecondsLeft) {
+        void shouldShowCorrectProgress(
+                Integer trackerIncrement,
+                Integer timeOffset,
+                Integer expectedPercentage,
+                Long expectedSecondsLeft
+        ) {
             var tracker = new ProgressTracker(10L, clock);
             clock.moveForward(Duration.of(timeOffset, ChronoUnit.SECONDS));
             tracker.incrementBy(trackerIncrement);
