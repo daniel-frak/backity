@@ -10,10 +10,18 @@ on:
     types:
       - completed
 
+concurrency:
+  # Limitation: two pull requests from the same branch to different target branches will have the same concurrency key,
+  # which will lead to one PR cancelling the other's analysis. However, this is unlikely to be a problem in practice,
+  # as PRs in this project are only opened against the main branch.
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
 jobs:
   sonar:
     name: Sonar analysis
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       actions: read # Required to download artifacts
