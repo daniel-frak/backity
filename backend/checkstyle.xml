@@ -320,6 +320,14 @@
         <!-- Currently marks records which would fit on one line, which would make them less readable: -->
         <!-- <module name="ClassHeaderWrapOpenjdk"/> -->
 
+        <!-- Currently shows false positives for empty interfaces, classes, records: -->
+        <!--
+        <module name="EmptyLineWrappingInBlock">
+            <property name="topSeparator" value="empty_line"/>
+            <property name="bottomSeparator" value="empty_line_allowed"/>
+        </module>
+        -->
+
         <!--
         Javadoc - currently broken for Markdown comments, see: https://github.com/checkstyle/checkstyle/issues/16100
 
