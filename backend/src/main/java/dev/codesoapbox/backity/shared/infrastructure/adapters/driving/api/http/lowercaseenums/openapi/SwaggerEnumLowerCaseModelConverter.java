@@ -13,9 +13,7 @@ import java.lang.reflect.Type;
 import java.util.Iterator;
 import java.util.Locale;
 
-/**
- * Shows all Enum values for Enums annotated with {@link LowercaseApiEnum} as lowercase in OpenAPI.
- */
+/// Shows all Enum values for Enums annotated with [LowercaseApiEnum] as lowercase in OpenAPI.
 public class SwaggerEnumLowerCaseModelConverter implements ModelConverter {
 
     @Override

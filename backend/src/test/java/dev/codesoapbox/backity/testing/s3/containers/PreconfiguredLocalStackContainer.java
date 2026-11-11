@@ -7,10 +7,8 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
-/**
- * A wrapper for the {@link LocalStackContainer} which simplifies its setup by predefining the image version,
- * and provides additional methods for easier interaction with its services.
- */
+/// A wrapper for the [LocalStackContainer] which simplifies its setup by predefining the image version,
+/// and provides additional methods for easier interaction with its services.
 public class PreconfiguredLocalStackContainer extends LocalStackContainer {
 
     private static final String IMAGE_VERSION = "localstack/localstack:4.0.3";
@@ -24,9 +22,7 @@ public class PreconfiguredLocalStackContainer extends LocalStackContainer {
                 .asCompatibleSubstituteFor("localstack/localstack");
     }
 
-    /**
-     * A standalone S3Client, to be used when a Spring Context is not needed.
-     */
+    /// A standalone S3Client, to be used when a Spring Context is not needed.
     public S3Client buildS3Client() {
         return S3Client.builder()
                 .endpointOverride(getEndpoint())

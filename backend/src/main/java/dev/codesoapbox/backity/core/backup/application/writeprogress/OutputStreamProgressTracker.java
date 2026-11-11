@@ -10,12 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-/**
- * Tracks the progress of an OutputStream.
- * <p>
- * Based on:
- * https://stackoverflow.com/a/68971635/11247096
- */
+/// Tracks the progress of an OutputStream.
+///
+/// Based on:
+/// ["How to track progress of DataBufferUtils.write()?" - StackOverflow](https://stackoverflow.com/a/68971635/11247096)
 public class OutputStreamProgressTracker {
 
     protected final List<Consumer<ProgressInfo>> progressConsumers = new ArrayList<>();

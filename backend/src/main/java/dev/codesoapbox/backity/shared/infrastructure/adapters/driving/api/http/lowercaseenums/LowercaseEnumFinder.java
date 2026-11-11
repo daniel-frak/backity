@@ -10,9 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Finds Enums annotated with {@link LowercaseApiEnum}.
- */
+/// Finds Enums annotated with [LowercaseApiEnum].
 @RequiredArgsConstructor
 public class LowercaseEnumFinder {
 
