@@ -166,6 +166,7 @@
         <module name="WhitespaceAfter"/>
         <module name="WhitespaceAround"/>
         <module name="WhitespaceBeforeEmptyBody"/>
+        <module name="OpenjdkMethodParameterAlignment"/>
 
         <!-- Syntax style and literals -->
 
@@ -303,6 +304,7 @@
         <module name="UnusedTryResourceShouldBeUnnamed"/>
         <module name="UseEnhancedSwitch"/>
         <module name="WhenShouldBeUsed"/>
+        <module name="NoCauseGetMessageInExceptionConstructor"/>
 
         <!-- Disabled checks -->
 
@@ -314,6 +316,9 @@
 
         <!-- Currently incompatible with Markdown Javadoc: -->
         <!-- <module name="UnusedImports"/> -->
+
+        <!-- Currently marks records which would fit on one line, which would make them less readable: -->
+        <!-- <module name="ClassHeaderWrapOpenjdk"/> -->
 
         <!--
         Javadoc - currently broken for Markdown comments, see: https://github.com/checkstyle/checkstyle/issues/16100
