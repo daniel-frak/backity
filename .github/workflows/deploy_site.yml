@@ -9,8 +9,13 @@ on:
       - 'branding/**'
   workflow_dispatch:
 
+concurrency:
+  group: website
+  cancel-in-progress: false
+
 jobs:
   build:
+    timeout-minutes: 5
     runs-on: ubuntu-latest
 
     # Minimal permissions required for building and uploading Pages artifact
@@ -28,6 +33,7 @@ jobs:
           path: ./website
 
   deploy:
+    timeout-minutes: 5
     needs: build
     runs-on: ubuntu-latest
     environment:

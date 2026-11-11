@@ -21,6 +21,10 @@ on:
       - '**.md'
       - '.run'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   JAVA_VERSION: '25-ea'
   JAVA_DISTRIBUTION: temurin
@@ -30,6 +34,7 @@ jobs:
   build:
     name: Build & test (unit, integration, architectural, mutation)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout Code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -77,6 +82,7 @@ jobs:
     needs: build
     name: End-to-End Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout Code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -106,6 +112,7 @@ jobs:
         run: java -jar ./backend/target/*.jar --spring.profiles.active=dev,dev-provider-api &
 
       - name: Wait for application to start
+        timeout-minutes: 2
         run: |
           echo "Waiting for the application to start..."
           while ! nc -z localhost 8080; do
