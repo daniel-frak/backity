@@ -3,10 +3,8 @@
 # https://github.com/mock-server/mockserver/issues/1751
 # https://github.com/mock-server/mockserver/issues/1895
 
-ARG MOCKSERVER_VERSION
-
 FROM busybox:1.38.0-uclibc@sha256:b2e35951f72501f6a99f1bf45bcfe6d4795be08c518c2f97d0ed2fe776958a3b AS busybox
-FROM mockserver/mockserver:$MOCKSERVER_VERSION
+FROM mockserver/mockserver:5.15.0
 
 COPY --from=busybox /bin /bin
 
