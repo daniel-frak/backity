@@ -2,7 +2,7 @@ version: '3.3'
 services:
   ### CODE ANALYSIS ###
   sonarqube:
-    image: sonarqube:26.9.0.129388-community
+    image: sonarqube:26.11.0.134175-community@sha256:65541accbdb92e27fe770fc6ba99988a3dd5a0c71ffafd67f88abfad366996fa
     ports:
       - "9000:9000"
     volumes:
