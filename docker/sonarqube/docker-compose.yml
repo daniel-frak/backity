@@ -2,7 +2,7 @@ version: '3.3'
 services:
   ### CODE ANALYSIS ###
   sonarqube:
-    image: sonarqube:$SONAR_VERSION
+    image: sonarqube:26.9.0.129388-community
     ports:
       - "9000:9000"
     volumes:
@@ -15,7 +15,7 @@ services:
 
   # Only used for first-time setup:
   sonarqube_first_run_setup_backend:
-    image: alpine:$SONAR_CONFIG_ALPINE_LINUX_VERSION
+    image: alpine:3.24.1
     environment:
       SONAR_URL: $SONAR_URL
       SONAR_USER: $SONAR_USER

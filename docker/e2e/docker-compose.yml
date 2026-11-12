@@ -4,8 +4,6 @@ services:
     build:
       context: .
       dockerfile: mockserver/Dockerfile
-      args:
-        MOCKSERVER_VERSION: ${MOCKSERVER_VERSION}
     ports:
       - "1080:1080"
     environment:
@@ -30,7 +28,7 @@ services:
   ### S3 ###
   localstack: # https://docs.localstack.cloud/overview/
     profiles: [ "s3" ]
-    image: localstack/localstack:$LOCALSTACK_VERSION
+    image: localstack/localstack:4.0.3
     ports:
       - "4566:4566" # LocalStack Gateway
     #      Services like OpenSearch or Elasticsearch use external software which binds to separate ports,
