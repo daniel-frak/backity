@@ -93,11 +93,26 @@ public record PathTemplate(@NonNull String value) {
     }
 
     private FilePath resolvePathVariables(String sanitizedPathTemplateValue, SourceFile sourceFile, int suffixIndex) {
-        Context context = Context.from(this, sourceFile, suffixIndex);
+        Context context = createContext(this, sourceFile, suffixIndex);
         String pathWithResolvedVariables = PLACEHOLDER_PATTERN.matcher(sanitizedPathTemplateValue)
                 .replaceAll(match -> resolvePathVariable(match, context));
 
         return new FilePath(pathWithResolvedVariables + context.extensionWithDot());
+    }
+
+    private Context createContext(PathTemplate pathTemplate, SourceFile sourceFile, int suffixIndex) {
+        FileName fileName = sourceFile.getOriginalFileName();
+        String baseName = Context.getBaseName(fileName);
+        String extensionWithDot = fileName.value().substring(baseName.length());
+
+        return new Context(
+                pathTemplate,
+                sourceFile.getGameProviderId(),
+                sourceFile.getOriginalGameTitle(),
+                baseName,
+                extensionWithDot,
+                suffixIndex
+        );
     }
 
     private String resolvePathVariable(MatchResult match, Context context) {
@@ -134,21 +149,6 @@ public record PathTemplate(@NonNull String value) {
             String extensionWithDot,
             int suffixIndex
     ) {
-
-        static Context from(PathTemplate pathTemplate, SourceFile sourceFile, int suffixIndex) {
-            FileName fileName = sourceFile.getOriginalFileName();
-            String baseName = getBaseName(fileName);
-            String extensionWithDot = fileName.value().substring(baseName.length());
-
-            return new Context(
-                    pathTemplate,
-                    sourceFile.getGameProviderId(),
-                    sourceFile.getOriginalGameTitle(),
-                    baseName,
-                    extensionWithDot,
-                    suffixIndex
-            );
-        }
 
         private static String getBaseName(FileName fileName) {
             int dotIndex = fileName.value().lastIndexOf(".");

@@ -14,6 +14,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
@@ -22,8 +24,9 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.methods;
 @SuppressWarnings("unused")
 public class TestReadabilityRules {
 
-    static final String SHOULD_GIVEN_PATTERN = "(?i)(?=.*should)(?!.*given.*should).*";
-    static final String WHEN_OR_IF_PATTERN = ".*(?:^|[_\\W]|)[sS]hould(?:[_\\W]|[A-Z]).*?(?:[Ww]hen|[Ii]f)(?![a-z]).*";
+    static final Pattern SHOULD_WORD = Pattern.compile("[sS]hould(?:[_\\W]|[A-Z])");
+    static final Pattern WHEN_OR_IF = Pattern.compile("(?:[Ww]hen|[Ii]f)(?![a-z])");
+
     static final Set<String> STUBBING_ENTRY_POINTS = Set.of(
             "when",            // Mockito.when, LenientStubber.when
             "given",           // BDDMockito.given
@@ -219,8 +222,9 @@ public class TestReadabilityRules {
             @Override
             public void check(JavaMethod method, ConditionEvents events) {
                 Optional<String> displayName = resolveTestDisplayName(method);
-                boolean methodContainsWhen = method.getName().matches(WHEN_OR_IF_PATTERN);
-                boolean displayContainsWhen = displayName.map(n -> n.matches(WHEN_OR_IF_PATTERN))
+                boolean methodContainsWhen = containsWhenOrIfAfterShould(method.getName());
+                boolean displayContainsWhen = displayName
+                        .map(TestReadabilityRules::containsWhenOrIfAfterShould)
                         .orElse(false);
 
                 if (methodContainsWhen || displayContainsWhen) {
@@ -233,6 +237,14 @@ public class TestReadabilityRules {
                 }
             }
         };
+    }
+
+    private static boolean containsWhenOrIfAfterShould(String name) {
+        Matcher shouldMatcher = SHOULD_WORD.matcher(name);
+        return shouldMatcher.find()
+                && WHEN_OR_IF.matcher(name)
+                .region(shouldMatcher.end(), name.length())
+                .find();
     }
 
     private static Optional<String> resolveTestDisplayName(JavaMethod method) {
@@ -261,10 +273,12 @@ public class TestReadabilityRules {
             @Override
             public void check(JavaMethod method, ConditionEvents events) {
                 Optional<String> displayName = resolveTestDisplayName(method);
-                boolean passes = method.getName().matches(SHOULD_GIVEN_PATTERN)
-                        || displayName.map(n -> n.matches(SHOULD_GIVEN_PATTERN)).orElse(false);
+                boolean methodFollowsConvention = followsShouldGivenConvention(method.getName());
+                Boolean displayNameFollowsConvention = displayName
+                        .map(this::followsShouldGivenConvention)
+                        .orElse(false);
 
-                if (!passes) {
+                if (!methodFollowsConvention && !displayNameFollowsConvention) {
                     events.add(SimpleConditionEvent.violated(method, String.format(
                             "Method '%s'%s fails the 'should...given' pattern in %s",
                             method.getOwner().getFullName() + "#" + method.getName(),
@@ -272,6 +286,16 @@ public class TestReadabilityRules {
                             method.getSourceCodeLocation()
                     )));
                 }
+            }
+
+            private boolean followsShouldGivenConvention(String name) {
+                String lower = name.toLowerCase(Locale.ROOT);
+                int lastShouldIndex = lower.lastIndexOf("should");
+                if (lastShouldIndex < 0) {
+                    return false;
+                }
+                int firstGivenIndex = lower.indexOf("given");
+                return firstGivenIndex < 0 || firstGivenIndex > lastShouldIndex;
             }
         };
     }
