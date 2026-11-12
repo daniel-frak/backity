@@ -12,8 +12,8 @@ public record FileCopyNaturalId(
     @Override
     public int compareTo(FileCopyNaturalId other) {
         int sourceFileComparison = this.sourceFileId.compareTo(other.sourceFileId);
-        return sourceFileComparison != 0
-                ? sourceFileComparison
-                : this.backupTargetId.compareTo(other.backupTargetId);
+        return sourceFileComparison == 0
+                ? this.backupTargetId.compareTo(other.backupTargetId)
+                : sourceFileComparison;
     }
 }
