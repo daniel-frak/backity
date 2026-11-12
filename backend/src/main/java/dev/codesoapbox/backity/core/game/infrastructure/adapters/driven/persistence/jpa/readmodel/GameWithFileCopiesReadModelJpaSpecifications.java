@@ -123,11 +123,11 @@ public class GameWithFileCopiesReadModelJpaSpecifications {
             Expression<String> valueLower,
             List<String> likePatternsLower
     ) {
-        List<Predicate> predicates = new ArrayList<>(likePatternsLower.size());
-        for (String patternLower : likePatternsLower) {
-            predicates.add(builder.like(valueLower, patternLower, LIKE_ESCAPE_CHAR));
-        }
-        return builder.or(predicates.toArray(new Predicate[0]));
+        List<Predicate> predicates = likePatternsLower.stream()
+                .map(patternLower -> builder.like(valueLower, patternLower, LIKE_ESCAPE_CHAR))
+                .toList();
+
+        return builder.or(predicates);
     }
 
     private static List<String> toLikePatternsLower(List<String> tokens) {

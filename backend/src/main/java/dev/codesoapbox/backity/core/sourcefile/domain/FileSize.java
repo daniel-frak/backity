@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@SuppressWarnings({"LombokGetterMayBeUsed", "ClassCanBeRecord"})
+@SuppressWarnings("ClassCanBeRecord")
 @RequiredArgsConstructor
 @EqualsAndHashCode
 public class FileSize {
@@ -67,7 +67,7 @@ public class FileSize {
 
     @Override
     public String toString() {
-        double size = bytes;
+        double size = (double) bytes;
         int unitIndex = 0;
 
         while (size >= BYTES_IN_KILOBYTE && unitIndex < UNITS.length - NUMERIC_VALUE_REGEX_GROUP) {
