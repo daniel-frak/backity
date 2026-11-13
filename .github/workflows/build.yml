@@ -136,9 +136,22 @@ jobs:
 
       - name: Show Playwright trace link
         if: ${{ failure() && steps.upload_traces.outcome == 'success' }}
+        env:
+          ARTIFACT_URL: ${{ steps.upload_traces.outputs.artifact-url }}
         run: |
-          echo "❌ E2E tests failed"
-          echo "📎 Download Playwright traces here:"
-          echo "${{ steps.upload_traces.outputs.artifact-url }}"
-          echo "Remember that the artifact needs to be unzipped before you can access the trace files."
-          echo "Examine them using Playwright Trace Viewer: https://trace.playwright.dev"
+          message=$(cat <<EOF
+          ❌ E2E tests failed
+
+          📎 Download Playwright traces: ${ARTIFACT_URL}
+
+          Remember that the artifact needs to be unzipped before you can access the trace files.
+
+          Examine them using Playwright Trace Viewer: https://trace.playwright.dev
+          EOF
+          )
+
+          # Print to workflow logs
+          echo "$message"
+
+          # Add to GitHub Actions job summary
+          echo "$message" >> "$GITHUB_STEP_SUMMARY"
