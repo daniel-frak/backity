@@ -133,6 +133,7 @@ jobs:
           name: playwright-traces
           path: e2e/target/playwright-traces/**/*.zip
           retention-days: 30
+          if-no-files-found: error
 
       - name: Show Playwright trace link
         if: ${{ failure() && steps.upload_traces.outcome == 'success' }}
