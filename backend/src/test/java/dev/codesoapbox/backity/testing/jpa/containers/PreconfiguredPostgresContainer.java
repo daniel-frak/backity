@@ -5,7 +5,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 /// A wrapper for the [PostgreSQLContainer] which simplifies its setup by predefining the image version.
 public class PreconfiguredPostgresContainer extends PostgreSQLContainer {
 
-    private static final String IMAGE_VERSION = "postgres:17.4";
+    private static final String IMAGE_VERSION = "postgres:17.12";
 
     public PreconfiguredPostgresContainer() {
         super(IMAGE_VERSION);
