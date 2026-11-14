@@ -11,7 +11,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 /// and provides additional methods for easier interaction with its services.
 public class PreconfiguredLocalStackContainer extends LocalStackContainer {
 
-    private static final String IMAGE_VERSION = "localstack/localstack:4.0.3";
+    private static final String IMAGE_VERSION = "localstack/localstack:4.14.0";
 
     public PreconfiguredLocalStackContainer() {
         super(getImageName());
