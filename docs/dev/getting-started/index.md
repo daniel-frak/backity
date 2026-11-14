@@ -139,29 +139,30 @@ Run backend unit tests with:
 ```shell
 cd backend
 ../mvnw test
-````
+```
 
 Run all backend tests (including integration tests) with:
 
 ```shell
 cd backend
 ../mvnw verify
-````
+```
 
-### Notice about running backend tests via Intellij
+### Notice about running backend tests via IntelliJ
 
-Repository tests are generated via annotation processing, in the Maven `test-compile` step.
-IntelliJ does its own optimizations around build management 
+Implementations of the abstract repository test classes are generated via annotation processing,
+in the Maven `test-compile` step. IntelliJ does its own optimizations around build management
 and might have trouble picking up the annotation processors for its internal logic,
-leading to missing tests when using Junit run configurations.
+leading to missing tests when using JUnit run configurations.
 
-If there are no tests in `backend/target/generated-test-sources`,
-that means they must be generated via `mvn test-compile`
-(or any other command which will trigger the necessary Maven steps.)
+If there are no test classes in `backend/target/generated-test-sources`,
+that means they need to be generated via `mvn test-compile`
+(or any other command which will trigger the `test-compile` step).
 
-A `generate test sources` run configuration is available as an alternative.
+A `generate test sources` [IntelliJ run configuration](#intellij-run-configurations) is available as an alternative.
 
-Once the tests are generated, new tests in existing classes will automatically be picked up.
+Once the test sources are generated, changes to existing abstract test classes (e.g. adding new test methods)
+will automatically be picked up. However, new test classes may not be discovered until the next `test-compile`.
 
 ## Frontend tests
 
@@ -170,7 +171,7 @@ Run Angular frontend tests with:
 ```shell
 cd frontend/src/main/angular
 ng test
-````
+```
 
 ## End-to-End (E2E) tests
 
@@ -180,6 +181,14 @@ Ensure the application is running, then execute:
 cd e2e
 ../mvnw test
 ```
+
+# IntelliJ run configurations
+
+Figuring out the right combination of commands and profiles can be tricky.
+To make this easier, several IntelliJ run configurations are provided in this repository.
+
+They cover the most common use cases, such as running tests, generating client code,
+or running the application with different setups (e.g., using a real or mock API).
 
 # Feedback
 
