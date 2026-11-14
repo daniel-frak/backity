@@ -24,9 +24,11 @@ import java.util.Set;
 
 class MockBeansContextCustomizer implements ContextCustomizer {
 
+    private final ComponentScan componentScan;
     private final AnnotationAttributes componentScanAttributes;
 
     MockBeansContextCustomizer(ComponentScan componentScan) {
+        this.componentScan = componentScan;
         this.componentScanAttributes = MergedAnnotation.from(componentScan)
                 .asAnnotationAttributes(MergedAnnotation.Adapt.ANNOTATION_TO_MAP);
     }
@@ -163,12 +165,12 @@ class MockBeansContextCustomizer implements ContextCustomizer {
     @Override
     public boolean equals(Object other) {
         return other instanceof MockBeansContextCustomizer that
-                && this.componentScanAttributes.equals(that.componentScanAttributes);
+                && Objects.equals(this.componentScan, that.componentScan);
     }
 
     // Necessary for context caching
     @Override
     public int hashCode() {
-        return this.componentScanAttributes.hashCode();
+        return Objects.hashCode(this.componentScan);
     }
 }
