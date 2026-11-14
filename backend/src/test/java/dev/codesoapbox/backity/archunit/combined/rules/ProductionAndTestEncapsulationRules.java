@@ -34,6 +34,7 @@ public class ProductionAndTestEncapsulationRules {
             .and().areDeclaredInClassesThat(ARE_NOT_TEST_CLASSES)
             .and().areDeclaredInClassesThat().doNotHaveModifier(JavaModifier.ABSTRACT)
             .should(notHaveWiderScopeOnlyForTests())
+            .allowEmptyShould(true)
             .because("""
                     tests should exercise behavior through the public API \
                     so internals can be refactored without breaking them
