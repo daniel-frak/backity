@@ -1,0 +1,12 @@
+# Dry run of Renovate against the local copy, for verifying config changes.
+# Use the command:
+# docker compose run --rm renovate
+services:
+  renovate:
+    image: renovate/renovate:44.239.1
+    working_dir: /repo
+    volumes:
+      - ../..:/repo
+    environment:
+      LOG_LEVEL: info
+    command: ["renovate", "--platform=local", "--dry-run=extract"]
