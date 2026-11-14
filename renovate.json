@@ -3,6 +3,16 @@
   "extends": [
     "config:best-practices"
   ],
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "**/vendor/**",
+    "**/examples/**",
+    "**/__tests__/**",
+    "**/tests/**",
+    "**/__fixtures__/**",
+    "**/src/test/resources/**"
+  ],
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
@@ -18,6 +28,19 @@
         "mermaid",
         "astro-mermaid"
       ]
+    }
+  ],
+  "customManagers": [
+    {
+      "description": "Update Testcontainers image versions in IMAGE_VERSION constants of classes in the dev.codesoapbox.backity.testing package",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/(^|/)dev/codesoapbox/backity/testing/.+\\.java$/"
+      ],
+      "matchStrings": [
+        "String\\s+IMAGE_VERSION\\s*=\\s*\"(?<depName>[^\"\\s]+?):(?<currentValue>[^\"\\s:@]+)\""
+      ],
+      "datasourceTemplate": "docker"
     }
   ],
   "platformAutomerge": true
