@@ -1,6 +1,6 @@
 ---
 title: 'Domain Vision Statement'
-order: 20
+order: 30
 ---
 
 The domain model ensures reliable automation of the game preservation process

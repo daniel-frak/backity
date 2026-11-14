@@ -1,6 +1,6 @@
 ---
 title: 'Backup workflow'
-order: 30
+order: 40
 ---
 
 The following diagram illustrates the tedious manual process that users typically face when trying to preserve their
