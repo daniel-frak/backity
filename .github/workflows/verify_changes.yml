@@ -1,25 +1,10 @@
-name: Build application
+name: Verify changes
 
 on:
   push:
     branches:
       - main
-    paths-ignore:
-      - 'docs/**'
-      - 'website'
-      - 'branding'
-      - 'readme-images'
-      - '**.md'
-      - '.run'
   pull_request:
-    types: [opened, synchronize, reopened]
-    paths-ignore:
-      - 'docs/**'
-      - 'website'
-      - 'branding'
-      - 'readme-images'
-      - '**.md'
-      - '.run'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -31,8 +16,55 @@ env:
   MAVEN_CACHE_PATH: ~/.m2
 
 jobs:
-  build:
-    name: Build & test (unit, integration, architectural, mutation)
+  # Each change requires a different set of jobs to verify it
+  # (e.g., a website change does not need to run application tests).
+  # We cannot use `paths-ignore` for this because a skipped workflow with a job marked as "required" would block a PR.
+  # Workaround:
+  # - Keep all verification jobs in one workflow file.
+  # - Skip jobs instead of entire workflows.
+  # - Only require a single job to pass.
+  # - Make that job require all previous unskipped jobs to have passed.
+  # See: https://github.com/orgs/community/discussions/44490
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read # Required by actions/checkout
+      pull-requests: read
+    outputs:
+      # Expose matched filters as job variables
+      code: ${{ steps.filter.outputs.code }}
+      website: ${{ steps.filter.outputs.website }}
+    steps:
+      - name: Checkout Code
+        if: github.event_name == 'push'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Detect changed paths
+        id: filter
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        with:
+          predicate-quantifier: some-with-excludes
+          filters: |
+            code:
+              - '**'
+              - '!docs/**'
+              - '!website/**'
+              - '!branding/**'
+              - '!readme-images/**'
+              - '!.run/**'
+              - '!**/*.md'
+              - '!.github/**'
+            website:
+              - 'website/**'
+              - 'docs/**'
+              - 'branding/**'
+
+  verify-application:
+    name: Verify application changes
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -64,7 +96,6 @@ jobs:
         with:
           project-key: backity
           sonar-organization: codesoapbox
-          # The pom points at a local SonarQube instance.
           sonar-host-url: https://sonarcloud.io
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           build-arguments: |
@@ -79,8 +110,8 @@ jobs:
           path: backend/target/*.jar
 
   e2e:
-    needs: build
-    name: End-to-End Tests
+    needs: verify-application
+    name: Run end-to-end Tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -156,3 +187,53 @@ jobs:
 
           # Add to GitHub Actions job summary
           echo "$message" >> "$GITHUB_STEP_SUMMARY"
+
+  verify-website:
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.website == 'true'
+    name: Verify website changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    defaults:
+      run:
+        working-directory: ./website
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          # Node version should match deploy-website.yml
+          node-version: "26"
+          cache: "npm"
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Restore/save Astro cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ./website/node_modules/.astro
+          key: astro-cache-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            astro-cache-${{ runner.os }}-
+
+      - name: Type check
+        run: npm run astro check
+
+      - name: Build site
+        run: npm run build
+
+  verification-gate:
+    name: Verification gate
+    if: ${{ !cancelled() && !contains(needs.*.result, 'cancelled') }}
+    needs: [changes, verify-application, e2e, verify-website]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - if: contains(needs.*.result, 'failure')
+        run: exit 1
