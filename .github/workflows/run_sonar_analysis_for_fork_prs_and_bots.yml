@@ -1,0 +1,66 @@
+name: Run Sonar analysis for fork PR or Dependabot
+
+on:
+  # PRs from forks (and some bots like Dependabot) don't have access to the Sonar token.
+  # `workflow_run` runs in the context of the base repository, so it can always access secrets.
+  # This makes it possible to trigger a SonarCloud analysis without exposing the Sonar token.
+  workflow_run:
+    workflows: [ Verify changes ]
+    types:
+      - completed
+
+concurrency:
+  # Limitation: two pull requests from the same branch to different target branches will have the same concurrency key,
+  # which will lead to one PR cancelling the other's analysis. However, this is unlikely to be a problem in practice,
+  # as PRs in this project are only opened against the main branch.
+  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
+  cancel-in-progress: true
+
+jobs:
+  sonar:
+    name: Sonar analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Conditional taken from:
+    # https://github.com/galois-groups/sonar-fork-analysis/blob/e1bb6680448bbe2646e1ef3a3245c3d6ac52c4bc/docs/configuration.md#skipping-runs-with-nothing-to-do
+    #
+    # It only decides whether this job starts,
+    # so this "forgeable GitHub context value" (githubactions:S8232) is safe to ignore here:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.head_repository.full_name != github.repository || github.event.workflow_run.actor.login == 'dependabot[bot]') }} # NOSONAR
+    permissions:
+      actions: read # Required to download artifacts
+      contents: read
+      pull-requests: read
+      statuses: write # Lets the action post a status on the pull request
+    steps:
+      # The "parent" workflow creates a fake job named `SonarCloud Code Analysis`
+      # for non-application changes so that the PR isn't blocked due to the missing required Sonar analysis check
+      # (while not wasting resources analyzing unchanged code).
+      #
+      # However, the sonar-fork-analysis action below will post a failed commit status
+      # if it's triggered and doesn't find anything to analyze:
+      # https://github.com/galois-groups/sonar-fork-analysis/blob/main/docs/configuration.md#commit-statuses-and-required-checks
+      # While not a blocking issue, a failed commit status on a PR could cause confusion.
+      #
+      # The `if` condition for this workflow does not take the contents of the change into account.
+      # Therefore, we must implement an additional check that the fake job doesn't exist before running the analysis.
+      - name: Check if fake Sonar analysis job exists
+        id: fake_job_detection
+        env:
+          GH_TOKEN: ${{ github.token }} # Necessary for `gh api` call
+          RUN_ID: ${{ github.event.workflow_run.id }} # The run that triggered this one
+        # .name must match the name of the job which should cause analysis to be skipped:
+        run: |
+          exists=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/jobs" \
+            --jq 'any(.jobs[]; .name == "SonarCloud Code Analysis")')
+          echo "exists=$exists" >> "$GITHUB_OUTPUT"
+
+      # This job does not run code from the pull request, only performs the Sonar analysis:
+      - name: Perform Sonar analysis
+        if: steps.fake_job_detection.outputs.exists == 'false'
+        uses: galois-groups/sonar-fork-analysis@f947a3c4d3a2ece53e306324263198c9fd4273b3 # v2.2.0
+        with:
+          project-key: backity
+          sonar-organization: codesoapbox
+          sonar-host-url: https://sonarcloud.io
+          sonar-token: ${{ secrets.SONAR_TOKEN }}

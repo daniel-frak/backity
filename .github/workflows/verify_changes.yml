@@ -22,7 +22,7 @@ jobs:
   # Workaround:
   # - Keep all verification jobs in one workflow file.
   # - Skip jobs instead of entire workflows.
-  # - Only require a single job to pass.
+  # - Only require a single job to pass (except jobs which run for every type of change).
   # - Make that job require all previous unskipped jobs to have passed.
   # See: https://github.com/orgs/community/discussions/44490
   changes:
@@ -46,6 +46,8 @@ jobs:
         uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
         with:
           predicate-quantifier: some-with-excludes
+          # GitHub workflows and actions are not excluded from `code` because Sonar actually analyzes them
+          # (see: https://docs.sonarsource.com/sonarqube-server/analyzing-source-code/languages/github-actions).
           filters: |
             code:
               - '**'
@@ -55,7 +57,10 @@ jobs:
               - '!readme-images/**'
               - '!.run/**'
               - '!**/*.md'
-              - '!.github/**'
+              - '!.github/*'
+              - '!.github/ISSUE_TEMPLATE/**'
+              - '!.github/DISCUSSION_TEMPLATE/**'
+              - '!.github/PULL_REQUEST_TEMPLATE/**'
             website:
               - 'website/**'
               - 'docs/**'
@@ -88,9 +93,11 @@ jobs:
           restore-keys: |
             checkstyle-${{ runner.os }}-
 
-      # Runs `mvn verify` with the arguments below. Pushes and pull requests from this repository
-      # are analyzed here. Pull requests from forks are built without the token and analyzed by the
-      # Sonar workflow.
+      # PRs from forks (and some bots like Dependabot) don't have access to the Sonar token.
+      # Analysis for them must therefore happen in a separate workflow which runs in the context of the base repository.
+      #
+      # If the Sonar token is unavailable (cases above), this step will prepare data for that separate workflow.
+      # If the Sonar token is available (e.g., internal PRs), the whole analysis will be done in this step.
       - name: Build, test (unit, integration, architectural, mutation) and analyze
         uses: galois-groups/sonar-fork-analysis@f947a3c4d3a2ece53e306324263198c9fd4273b3 # v2.2.0
         with:
@@ -98,6 +105,7 @@ jobs:
           sonar-organization: codesoapbox
           sonar-host-url: https://sonarcloud.io
           sonar-token: ${{ secrets.SONAR_TOKEN }}
+          # `mvn verify` will be run with the arguments below:
           build-arguments: |
             -Pfrontend-generate-test-coverage
             -Ppitest-new-code
@@ -227,6 +235,29 @@ jobs:
 
       - name: Build site
         run: npm run build
+
+  # Satisfies the required SonarCloud analysis check when there is nothing for Sonar to analyze,
+  # by creating a fake analysis job.
+  # This will work as long as the `SonarCloud Code Analysis` requirement is defined as "any source" in the GH ruleset.
+  # It's an ugly hack but GitHub doesn't support conditionally required actions,
+  # so there doesn't seem to be a better solution.
+  #
+  # Note that this is just half of the solution for skipping Sonar analysis when using sonar-fork-analysis.
+  # The subsequent PR-specific workflow's analysis job must also be skipped if this fake job was created.
+  conditionally-create-fake-sonar-analysis-job:
+    # Conditional name because we don't want this fake job to compete with the real analysis job if it's going to exist:
+    name: ${{ needs.changes.outputs.code == 'true' && 'Check if Sonar analysis is required' || 'SonarCloud Code Analysis' }}
+    needs: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Conditionally skipping the job would be preferable, but dynamic job names are broken for skipped jobs
+    # (see: https://github.com/actions/runner/issues/1215)
+    steps:
+      - if: needs.changes.outputs.code == 'true'
+        run: echo "Sonar analysis will not be skipped."
+
+      - if: needs.changes.outputs.code != 'true'
+        run: echo "Sonar analysis deliberately skipped."
 
   verification-gate:
     name: Verification gate
