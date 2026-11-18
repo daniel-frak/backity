@@ -121,7 +121,8 @@ jobs:
     needs: verify-application
     name: Run end-to-end Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # This step very occasionally takes a long time, hence the long timeout:
+    timeout-minutes: 20
     steps:
       - name: Checkout Code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -261,10 +262,11 @@ jobs:
 
   verification-gate:
     name: Verification gate
-    if: ${{ !cancelled() && !contains(needs.*.result, 'cancelled') }}
+    if: ${{ !cancelled() }}
     needs: [changes, verify-application, e2e, verify-website]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - if: contains(needs.*.result, 'failure')
+      # Timed out jobs will get canceled by GH, so we must check for those as well:
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
         run: exit 1

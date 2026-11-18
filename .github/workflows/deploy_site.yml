@@ -15,6 +15,10 @@ concurrency:
 
 jobs:
   build:
+    # Don't deploy the website for forked repositories.
+    # Otherwise, contributors will get a failing job with "Ensure GitHub Pages has been enabled"
+    # when pushing anything to their main repository (which includes pulling upstream changes).
+    if: github.repository == 'daniel-frak/backity'
     timeout-minutes: 5
     runs-on: ubuntu-latest
 
