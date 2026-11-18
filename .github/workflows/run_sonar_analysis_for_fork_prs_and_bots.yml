@@ -4,7 +4,7 @@ on:
   # PRs from forks (and some bots like Dependabot) don't have access to the Sonar token.
   # `workflow_run` runs in the context of the base repository, so it can always access secrets.
   # This makes it possible to trigger a SonarCloud analysis without exposing the Sonar token.
-  workflow_run:
+  workflow_run: # zizmor: ignore[dangerous-triggers] Unfortunately this is required for SonarCloud analysis to work on fork PRs
     workflows: [ Verify changes ]
     types:
       - completed
@@ -15,6 +15,8 @@ concurrency:
   # as PRs in this project are only opened against the main branch.
   group: ${{ github.workflow }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
   cancel-in-progress: true
+
+permissions: {}
 
 jobs:
   sonar:

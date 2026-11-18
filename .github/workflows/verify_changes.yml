@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  JAVA_VERSION: '25-ea'
+  JAVA_VERSION: '25'
   JAVA_DISTRIBUTION: temurin
   MAVEN_CACHE_PATH: ~/.m2
 
@@ -37,7 +37,7 @@ jobs:
       code: ${{ steps.filter.outputs.code }}
       website: ${{ steps.filter.outputs.website }}
     steps:
-      - name: Checkout Code
+      - name: Checkout repository
         if: github.event_name == 'push'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -73,17 +73,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Checkout Code
+      - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0 # Sonar uses the full history for blame and new code
 
       - name: Set up Java
-        uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-          cache: maven
+        uses: ./.github/actions/setup-java
 
       - name: Restore/save Checkstyle cache
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -116,6 +112,8 @@ jobs:
         with:
           name: app-jar
           path: backend/target/*.jar
+          retention-days: 30
+          if-no-files-found: error
 
   e2e:
     needs: verify-application
@@ -124,15 +122,11 @@ jobs:
     # This step very occasionally takes a long time, hence the long timeout:
     timeout-minutes: 20
     steps:
-      - name: Checkout Code
+      - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - name: Set up Java
-        uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6
-        with:
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.JAVA_DISTRIBUTION }}
-          cache: maven
+        uses: ./.github/actions/setup-java
 
       - name: Download application jar
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
@@ -146,7 +140,7 @@ jobs:
 
       - name: Configure Playwright
         working-directory: e2e
-        run: sudo mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install-deps"
+        run: mvn exec:java -e -D exec.mainClass=com.microsoft.playwright.CLI -D exec.args="install --with-deps chromium"
 
       - name: Start application
         run: java -jar ./backend/target/*.jar --spring.profiles.active=dev,dev-provider-api &
@@ -215,8 +209,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          # Node version should match deploy-website.yml
-          node-version: "26"
+          node-version-file: website/.nvmrc
           cache: "npm"
           cache-dependency-path: website/package-lock.json
 

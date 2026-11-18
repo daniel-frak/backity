@@ -13,6 +13,8 @@ concurrency:
   group: website
   cancel-in-progress: false
 
+permissions: {}
+
 jobs:
   build:
     # Don't deploy the website for forked repositories.
@@ -25,16 +27,25 @@ jobs:
     # Minimal permissions required for building and uploading Pages artifact
     permissions:
       contents: read # required by actions/checkout
-      pages: write # required by actions/configure-pages
+      pages: write # required by actions/deploy-pages
 
     steps:
-      - name: Checkout your repository using git
+      - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - name: Install, build, and upload your site
+        with:
+          persist-credentials: false
+
+      - name: Read Node version
+        id: node
+        # Reads contents of .nvmrc, deletes all whitespace characters:
+        run: echo "version=$(tr -d '[:space:]' < website/.nvmrc)" >> "$GITHUB_OUTPUT"
+
+      - name: Install, build, and upload site
         # https://github.com/withastro/action
         uses: withastro/action@a8b97df764791eb61fbf3338ef713b0e61ae05c5 # v6
         with:
           path: ./website
+          node-version: ${{ steps.node.outputs.version }}
 
   deploy:
     timeout-minutes: 5
