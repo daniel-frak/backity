@@ -18,7 +18,7 @@ jobs:
         if: failure() && steps.commitlint.outcome == 'failure'
         run: |
           {
-            echo '### ❌ At least one commit message doesn’t follow Conventional Commits'
+            echo "### ❌ At least one commit message doesn't follow Conventional Commits"
             echo
-            echo 'Each commit message must look like `type(optional-scope): description.'
+            echo "Each commit message must look like \`type(optional-scope): description.\`"
           } >> "$GITHUB_STEP_SUMMARY"
