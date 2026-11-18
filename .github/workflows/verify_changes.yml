@@ -10,6 +10,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 env:
   JAVA_VERSION: '25'
   JAVA_DISTRIBUTION: temurin
@@ -31,7 +33,7 @@ jobs:
     timeout-minutes: 5
     permissions:
       contents: read # Required by actions/checkout
-      pull-requests: read
+      pull-requests: read # Required by dorny/paths-filter
     outputs:
       # Expose matched filters as job variables
       code: ${{ steps.filter.outputs.code }}
@@ -40,6 +42,8 @@ jobs:
       - name: Checkout repository
         if: github.event_name == 'push'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Detect changed paths
         id: filter
@@ -72,14 +76,16 @@ jobs:
     if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          persist-credentials: false
           fetch-depth: 0 # Sonar uses the full history for blame and new code
 
-      - name: Set up Java
-        uses: ./.github/actions/setup-java
+      - uses: $/.github/actions/setup-java
 
       - name: Restore/save Checkstyle cache
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -119,14 +125,16 @@ jobs:
     needs: verify-application
     name: Run end-to-end Tests
     runs-on: ubuntu-latest
-    # This step very occasionally takes a long time, hence the long timeout:
     timeout-minutes: 20
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
-      - name: Set up Java
-        uses: ./.github/actions/setup-java
+      - uses: $/.github/actions/setup-java
 
       - name: Download application jar
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
@@ -205,6 +213,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -253,10 +263,75 @@ jobs:
       - if: needs.changes.outputs.code != 'true'
         run: echo "Sonar analysis deliberately skipped."
 
+  run-actionlint:
+    name: Analyze GHA workflows with actionlint
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      # This step installs actionlint differently than is recommended in the docs:
+      # https://github.com/rhysd/actionlint/blob/v1.7.12/docs/usage.md
+      #
+      # The recommended way is flagged by Sonar as unsafe
+      # ("Avoid executing downloaded artifacts directly without verification").
+      - name: Run actionlint
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # Single variable for easier management by Renovate:
+          ACTIONLINT_REF: 'v1.7.12@914e7df21a07ef503a81201c76d2b11c789d3fca'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ACTIONLINT_VERSION="${ACTIONLINT_REF%@*}"
+          ACTIONLINT_SOURCE_COMMIT="${ACTIONLINT_REF#*@}"
+
+          archive="actionlint_${ACTIONLINT_VERSION#v}_linux_amd64.tar.gz"
+
+          gh release download "$ACTIONLINT_VERSION" \
+            --repo rhysd/actionlint \
+            --pattern "$archive"
+
+          gh attestation verify "$archive" \
+            --repo rhysd/actionlint \
+            --signer-workflow rhysd/actionlint/.github/workflows/release.yaml \
+            --source-digest "$ACTIONLINT_SOURCE_COMMIT"
+
+          tar -xzf "$archive" actionlint
+          ./actionlint -color \
+            -ignore 'specifying action "\$/.+" in invalid format because ref is missing'
+
+  run-zizmor:
+    name: Analyze security of GHA workflows with zizmor
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Run zizmor
+        uses: zizmorcore/zizmor-action@45d7276c9ca790aabd705e31ca99c6185c3e76dd # v0.8.1
+        with:
+          advanced-security: false
+
   verification-gate:
     name: Verification gate
     if: ${{ !cancelled() }}
-    needs: [changes, verify-application, e2e, verify-website]
+    needs: [changes, verify-application, e2e, verify-website, run-actionlint, run-zizmor]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:

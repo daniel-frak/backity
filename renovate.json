@@ -41,6 +41,20 @@
         "String\\s+IMAGE_VERSION\\s*=\\s*\"(?<depName>[^\"\\s]+?):(?<currentValue>[^\"\\s:@]+)\""
       ],
       "datasourceTemplate": "docker"
+    },
+    {
+      "description": "Update actionlint version GitHub workflows",
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^\\.github\\/workflows\\/.*\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "(?<indentation>[ \\t]*)ACTIONLINT_REF:[ \\t]*'(?<currentValue>v\\d+\\.\\d+\\.\\d+)@(?<currentDigest>[0-9a-f]{40})'"
+      ],
+      "depNameTemplate": "rhysd/actionlint",
+      "datasourceTemplate": "github-tags",
+      "versioningTemplate": "semver",
+      "autoReplaceStringTemplate": "{{{indentation}}}ACTIONLINT_REF: '{{{newValue}}}@{{{newDigest}}}'"
     }
   ],
   "platformAutomerge": true
