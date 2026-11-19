@@ -38,6 +38,7 @@ jobs:
       # Expose matched filters as job variables
       code: ${{ steps.filter.outputs.code }}
       website: ${{ steps.filter.outputs.website }}
+      gha: ${{ steps.filter.outputs.gha }}
     steps:
       - name: Checkout repository
         if: github.event_name == 'push'
@@ -69,6 +70,11 @@ jobs:
               - 'website/**'
               - 'docs/**'
               - 'branding/**'
+            gha:
+              - '.github/**'
+              - '!.github/ISSUE_TEMPLATE/**'
+              - '!.github/DISCUSSION_TEMPLATE/**'
+              - '!.github/PULL_REQUEST_TEMPLATE/**'
 
   verify-application:
     name: Verify application changes
@@ -266,7 +272,7 @@ jobs:
   run-actionlint:
     name: Analyze GHA workflows with actionlint
     needs: changes
-    if: needs.changes.outputs.code == 'true'
+    if: needs.changes.outputs.gha == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -312,7 +318,7 @@ jobs:
   run-zizmor:
     name: Analyze security of GHA workflows with zizmor
     needs: changes
-    if: needs.changes.outputs.code == 'true'
+    if: needs.changes.outputs.gha == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
