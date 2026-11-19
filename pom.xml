@@ -39,6 +39,9 @@
         <sonar.projectName>Backity</sonar.projectName>
         <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
         <sonar.host.url>http://localhost:9000</sonar.host.url>
+        <sonar.coverage.exclusions>
+            .github/**
+        </sonar.coverage.exclusions>
         <!-- END of Sonar -->
     </properties>
 
