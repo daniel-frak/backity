@@ -1,0 +1,54 @@
+name: Validate commit metadata
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  validate-commit-msg-and-authors:
+    name: Validate messages and authors
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Required to load `forbidden-commit-markers.mjs` in the verify_no_ai_identities job script:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          # Non-shallow fetch is required to perform `git log BASE..HEAD`:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - id: commitlint
+        name: Lint commit messages with commitlint
+        uses: wagoid/commitlint-github-action@b948419dd99f3fd78a6548d48f94e3df7f6bf3ed # v6
+        with:
+          configFile: commitlint.config.mjs
+
+      # Some agents commit under their own identity, so we need to check author/committer as well.
+      - id: verify_no_ai_identities
+        name: Check commit author and committer identities
+        if: ${{ !cancelled() }}
+        shell: bash # enables pipefail so that a failing `git log` fails the job
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git log --format='%H %an %ae %cn %ce' "$BASE..$HEAD" \
+            | node .github/workflows/scripts/check_commit_identities.mjs
+
+      - name: Write job summary
+        if: ${{ !cancelled() && (steps.commitlint.outcome == 'failure' || steps.verify_no_ai_identities.outcome == 'failure') }}
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+          ### ❌ Commit message/author check failed
+
+          - Each commit message must follow Conventional Commits: `type(optional-scope): description`
+          - Commits must not contain AI markers (co-author trailers, generator footers, session links) or be authored by an LLM agent
+          EOF
