@@ -24,7 +24,7 @@ jobs:
   # Workaround:
   # - Keep all verification jobs in one workflow file.
   # - Skip jobs instead of entire workflows.
-  # - Only require a single job to pass (except jobs which run for every type of change).
+  # - Only require a single job to pass for that workflow.
   # - Make that job require all previous unskipped jobs to have passed.
   # See: https://github.com/orgs/community/discussions/44490
   changes:
@@ -35,7 +35,6 @@ jobs:
       contents: read # Required by actions/checkout
       pull-requests: read # Required by dorny/paths-filter
     outputs:
-      # Expose matched filters as job variables
       code: ${{ steps.filter.outputs.code }}
       website: ${{ steps.filter.outputs.website }}
       gha: ${{ steps.filter.outputs.gha }}
