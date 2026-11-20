@@ -9,7 +9,6 @@ import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -23,9 +22,6 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
 
     @Autowired
     protected GameContentDiscoveryResultJpaRepository repository;
-
-    @Autowired
-    protected TestEntityManager entityManager;
 
     @Autowired
     private DirectJpaPersistenceAdapter directPersistenceAdapter;

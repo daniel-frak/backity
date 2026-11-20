@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
@@ -32,9 +31,6 @@ abstract class SourceFileJpaRepositoryIT {
 
     @Autowired
     protected SourceFileJpaRepository repository;
-
-    @Autowired
-    protected TestEntityManager entityManager;
 
     @Autowired
     protected Clock clock;

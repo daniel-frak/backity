@@ -59,6 +59,7 @@ import java.lang.annotation.Target;
                         type = FilterType.ANNOTATION,
                         classes = JpaRepositorySliceConfiguration.class
                 ),
+                // Required only to detect custom strategies:
                 @ComponentScan.Filter(
                         type = FilterType.ASSIGNABLE_TYPE,
                         classes = DirectJpaPersistenceStrategy.class

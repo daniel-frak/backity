@@ -13,7 +13,6 @@ import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -29,9 +28,6 @@ abstract class BackupTargetJpaRepositoryIT {
 
     @Autowired
     protected BackupTargetJpaRepository repository;
-
-    @Autowired
-    protected TestEntityManager entityManager;
 
     @Autowired
     protected FakeClock clock;
