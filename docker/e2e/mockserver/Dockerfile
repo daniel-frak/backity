@@ -4,7 +4,7 @@
 # https://github.com/mock-server/mockserver/issues/1895
 
 FROM busybox:1.38.0-uclibc@sha256:b2e35951f72501f6a99f1bf45bcfe6d4795be08c518c2f97d0ed2fe776958a3b AS busybox
-FROM mockserver/mockserver:5.15.0@sha256:0f9ef78c94894ac3e70135d156193b25e23872575d58e2228344964273b4af6b
+FROM mockserver/mockserver:9.4.0@sha256:b54cb4aa72605b43ff9b728e5750d7beceb8f2d203d77ad9cb47743c5446ded6
 
 COPY --from=busybox /bin /bin
 
