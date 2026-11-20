@@ -1,12 +1,15 @@
 package dev.codesoapbox.backity.testing.jpa;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import static java.util.Collections.emptyList;
 
 /// Allows interacting with the database directly through simple JPA queries
 /// so that repository method tests can be made independent of other repository methods.
@@ -21,15 +24,59 @@ public class DirectJpaPersistenceAdapter {
 
     public DirectJpaPersistenceAdapter(
             TestEntityManager entityManager,
-            List<DirectJpaPersistenceStrategy<?, ?>> strategies
+            ObjectProvider<DirectJpaPersistenceStrategy<?, ?>> customStrategies,
+            ApplicationContext context
     ) {
         this.entityManager = entityManager;
+        this.strategiesByDomainClass = getStrategies(customStrategies, context);
+    }
 
-        this.strategiesByDomainClass = strategies.stream()
-                .collect(Collectors.toMap(
-                        DirectJpaPersistenceStrategy::getDomainObjectClass,
-                        Function.identity()
-                ));
+    private Map<Class<?>, DirectJpaPersistenceStrategy<?, ?>> getStrategies(
+            ObjectProvider<DirectJpaPersistenceStrategy<?, ?>> customStrategies, ApplicationContext context
+    ) {
+        Map<Class<?>, DirectJpaPersistenceStrategy<?, ?>> strategies = createDefaultStrategies(context);
+
+        customStrategies.forEach(customStrategy ->
+                strategies.put(customStrategy.getDomainObjectClass(), customStrategy));
+
+        return strategies;
+    }
+
+    private Map<Class<?>, DirectJpaPersistenceStrategy<?, ?>> createDefaultStrategies(ApplicationContext context) {
+        Map<Class<?>, DirectJpaPersistenceStrategy<?, ?>> strategies = new HashMap<>();
+
+        for (MapperBasedDirectJpaPersistenceStrategy strategy : createMapperBasedStrategies(context)) {
+            DirectJpaPersistenceStrategy<?, ?> duplicate = strategies.put(strategy.getDomainObjectClass(), strategy);
+            if (duplicate != null) {
+                throw new IllegalStateException(
+                        "Multiple mappers found for %s: %s and %s".formatted(
+                                strategy.getDomainObjectClass().getName(), duplicate, strategy
+                        )
+                );
+            }
+        }
+        return strategies;
+    }
+
+    private List<MapperBasedDirectJpaPersistenceStrategy> createMapperBasedStrategies(
+            ApplicationContext context
+    ) {
+        return Arrays.stream(context.getBeanDefinitionNames())
+                .flatMap(beanName -> createMapperBasedStrategiesFromBean(context, beanName).stream())
+                .toList();
+    }
+
+    private List<MapperBasedDirectJpaPersistenceStrategy> createMapperBasedStrategiesFromBean(
+            ApplicationContext context,
+            String beanName
+    ) {
+        Class<?> beanType = context.getType(beanName, false);
+        if (beanType == null
+                || DirectJpaPersistenceStrategy.class.isAssignableFrom(beanType)) {
+            return emptyList();
+        }
+
+        return MapperBasedDirectJpaPersistenceStrategy.createFrom(beanType, () -> context.getBean(beanName));
     }
 
     @SafeVarargs
@@ -51,9 +98,9 @@ public class DirectJpaPersistenceAdapter {
 
         DirectJpaPersistenceStrategy<T, ?> strategy = getStrategyFor(domainObjects.getFirst());
 
-        domainObjects.forEach(
-                domainObject -> entityManager.persist(strategy.toEntity(domainObject))
-        );
+        for (T domainObject : domainObjects) {
+            entityManager.persist(strategy.toEntity(domainObject));
+        }
 
         // Verify persisted state rather than the managed entity's in-memory state:
         entityManager.flush();
@@ -77,13 +124,7 @@ public class DirectJpaPersistenceAdapter {
             );
         }
 
-        return (DirectJpaPersistenceStrategy<T, E>)
-                strategiesByDomainClass.get(domainObject.getClass());
-    }
-
-    @SuppressWarnings("unchecked")
-    private <E> E cast(Object entity) {
-        return (E) entity;
+        return (DirectJpaPersistenceStrategy<T, E>) strategy;
     }
 
     public <T> T getPersistedDomainObject(T domainObject) {
@@ -91,18 +132,19 @@ public class DirectJpaPersistenceAdapter {
         entityManager.flush();
         entityManager.clear();
 
-        DirectJpaPersistenceStrategy<T, ?> strategy = getStrategyFor(domainObject);
-
+        DirectJpaPersistenceStrategy<T, Object> strategy = getStrategyFor(domainObject);
         Object entity = strategy.findPersistedEntity(entityManager, domainObject);
 
         return entity == null
                 ? null
-                : strategy.toDomain(cast(entity));
+                : strategy.toDomain(entity);
     }
 
-    public <T> boolean exists(T domainObject) {
-        DirectJpaPersistenceStrategy<T, ?> strategy =
-                getStrategyFor(domainObject);
+    public boolean exists(Object domainObject) {
+        DirectJpaPersistenceStrategy<Object, Object> strategy = getStrategyFor(domainObject);
+
+        entityManager.flush();
+        entityManager.clear();
 
         return strategy.findPersistedEntity(entityManager, domainObject) != null;
     }
