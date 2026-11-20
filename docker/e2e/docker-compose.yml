@@ -1,20 +1,13 @@
 services:
   ### API MOCKING ###
   mockserver:
-    build:
-      context: .
-      dockerfile: mockserver/Dockerfile
+    image: mockserver/mockserver:9.4.0@sha256:b54cb4aa72605b43ff9b728e5750d7beceb8f2d203d77ad9cb47743c5446ded6
     ports:
       - "1080:1080"
     environment:
       MOCKSERVER_PROPERTY_FILE: /config/mockserver.properties
       MOCKSERVER_INITIALIZATION_JSON_PATH: /config/api_*.json
       MOCKSERVER_WATCH_INITIALIZATION_JSON: true
-    healthcheck:
-      test: ["CMD", "curl", "-sSf", "-X", "PUT", "http://localhost:1080/mockserver/status"]
-      interval: 5s
-      timeout: 10s
-      retries: 30
     volumes:
       - type: bind
         source: ./mockserver_config
@@ -45,7 +38,7 @@ services:
       retries: 30
     volumes:
       - ./localstack/localstack-script.sh:/etc/localstack/init/ready.d/script.sh # Init script
-      - localstack:/var/lib/localstack"
+      - localstack:/var/lib/localstack
 #      - "/var/run/docker.sock:/var/run/docker.sock" # Only necessary for some services
     restart: unless-stopped
     networks:
