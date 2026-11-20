@@ -4,10 +4,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.context.ApplicationContext;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.util.Collections.emptyList;
 
@@ -133,11 +130,24 @@ public class DirectJpaPersistenceAdapter {
         entityManager.clear();
 
         DirectJpaPersistenceStrategy<T, Object> strategy = getStrategyFor(domainObject);
-        Object entity = strategy.findPersistedEntity(entityManager, domainObject);
+        Object entity = findPersistedEntity(strategy, domainObject);
 
         return entity == null
                 ? null
                 : strategy.toDomain(entity);
+    }
+
+    private <T> Object findPersistedEntity(
+            DirectJpaPersistenceStrategy<T, Object> strategy,
+            T domainObject
+    ) {
+        Object entity = strategy.toEntity(domainObject);
+        Object id = Objects.requireNonNull(
+                entityManager.getId(entity),
+                () -> "Mapped entity has no identifier: " + entity
+        );
+
+        return entityManager.find(entity.getClass(), id);
     }
 
     public boolean exists(Object domainObject) {
@@ -146,6 +156,6 @@ public class DirectJpaPersistenceAdapter {
         entityManager.flush();
         entityManager.clear();
 
-        return strategy.findPersistedEntity(entityManager, domainObject) != null;
+        return findPersistedEntity(strategy, domainObject) != null;
     }
 }

@@ -3,14 +3,12 @@ package dev.codesoapbox.backity.testing.jpa;
 import jakarta.persistence.Entity;
 import lombok.ToString;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
-import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -110,17 +108,6 @@ final class MapperBasedDirectJpaPersistenceStrategy implements DirectJpaPersiste
     @Override
     public Object toDomain(Object entity) {
         return ReflectionUtils.invokeMethod(toDomainMethod, mapper, entity);
-    }
-
-    @Override
-    public Object findPersistedEntity(TestEntityManager entityManager, Object domainObject) {
-        Object entity = toEntity(domainObject);
-        Object id = Objects.requireNonNull(
-                entityManager.getId(entity),
-                () -> "Mapped entity has no identifier: " + entity
-        );
-
-        return entityManager.find(entity.getClass(), id);
     }
 
     @Override
