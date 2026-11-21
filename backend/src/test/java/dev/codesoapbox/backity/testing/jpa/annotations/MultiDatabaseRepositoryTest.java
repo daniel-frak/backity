@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
 ///
 /// Note that:
 /// 1. You must run `mvn test-compile` for the IDE to see the child classes.
-/// 2. Due to limitations of Junit, `@Nested` cannot be used in abstract test classes.
+/// 2. You must run `mvn test-compile` every time you add a `@Nested` class to the abstract test class.
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)
 @MultiAnnotationTest(

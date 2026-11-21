@@ -28,7 +28,7 @@ class MockBeansContextCustomizer implements ContextCustomizer {
     private final AnnotationAttributes componentScanAttributes;
 
     MockBeansContextCustomizer(ComponentScan componentScan) {
-        this.componentScan = componentScan;
+        this.componentScan = MergedAnnotation.from(componentScan).synthesize();
         this.componentScanAttributes = MergedAnnotation.from(componentScan)
                 .asAnnotationAttributes(MergedAnnotation.Adapt.ANNOTATION_TO_MAP);
     }
