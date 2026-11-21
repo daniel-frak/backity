@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.lowercaseenums.openapi;
 
-import com.fasterxml.jackson.databind.type.SimpleType;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
@@ -16,6 +15,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import tools.jackson.databind.type.SimpleType;
 
 import java.lang.reflect.Parameter;
 import java.util.Iterator;
