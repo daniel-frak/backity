@@ -2,6 +2,8 @@ package dev.codesoapbox.backity.buildtools;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public record GeneratedClassInfo(
         String packageName,
@@ -9,8 +11,11 @@ public record GeneratedClassInfo(
         String annotationFqcn,
         String annotationName,
         String parentClassName,
+        List<NestedClassInfo> nestedClasses,
         Element origin
 ) {
+
+    private static final String INDENT = "    ";
 
     public static GeneratedClassInfo create(
             TypeElement abstractClassElement,
@@ -30,6 +35,7 @@ public record GeneratedClassInfo(
                 concreteAnnotation.getQualifiedName().toString(),
                 concreteAnnotationName,
                 parentClassInfo.className(),
+                NestedClassFinder.findNestedClasses(abstractClassElement),
                 abstractClassElement
         );
     }
@@ -54,14 +60,32 @@ public record GeneratedClassInfo(
                  */
                 @%s
                 public class %s extends %s {
-                }
+                %s}
                 """.formatted(
                 packageName,
                 annotationFqcn,
                 MultiAnnotationTestProcessor.class.getName(),
                 annotationName,
                 className,
-                parentClassName
+                parentClassName,
+                getNestedClassesContent()
         );
+    }
+
+    private String getNestedClassesContent() {
+        return nestedClasses.stream()
+                .map(this::getNestedClassContent)
+                .collect(Collectors.joining("\n"));
+    }
+
+    private String getNestedClassContent(NestedClassInfo nestedClass) {
+        String annotations = nestedClass.annotations().stream()
+                .map(annotation -> INDENT + annotation + "\n")
+                .collect(Collectors.joining());
+
+        return annotations + """
+                    class %1$s extends %2$s.%1$s {
+                    }
+                """.formatted(nestedClass.name(), parentClassName);
     }
 }
