@@ -1,13 +1,13 @@
 package dev.codesoapbox.backity.shared.infrastructure.adapters.driving.api.http.lowercaseenums.openapi;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.SimpleType;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
 import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.media.StringSchema;
+import tools.jackson.databind.JavaType;
+import tools.jackson.databind.type.SimpleType;
 
 import java.lang.reflect.Type;
 import java.util.Iterator;
