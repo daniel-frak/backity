@@ -1,7 +1,5 @@
 package dev.codesoapbox.backity.shared.infrastructure.config.openapi;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverters;
 import io.swagger.v3.core.converter.ResolvedSchema;
@@ -11,6 +9,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springdoc.core.properties.SpringDocConfigProperties;
 import org.springdoc.core.providers.ObjectMapperProvider;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.type.TypeFactory;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -34,7 +34,9 @@ class GenericsFixingModelConverterTest {
     }
 
     private static AnnotatedType constructAnnotatedType(Class<?> rawType) {
-        Type type = TypeFactory.defaultInstance().constructParametricType(rawType, Object.class);
+        Type type = TypeFactory.createDefaultInstance()
+                .constructParametricType(rawType, Object.class);
+
         return new AnnotatedType(type);
     }
 

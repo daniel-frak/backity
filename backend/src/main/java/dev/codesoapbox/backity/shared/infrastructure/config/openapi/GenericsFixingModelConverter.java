@@ -1,6 +1,5 @@
 package dev.codesoapbox.backity.shared.infrastructure.config.openapi;
 
-import com.fasterxml.jackson.databind.JavaType;
 import io.swagger.v3.core.converter.AnnotatedType;
 import io.swagger.v3.core.converter.ModelConverter;
 import io.swagger.v3.core.converter.ModelConverterContext;
@@ -10,6 +9,7 @@ import io.swagger.v3.core.util.RefUtils;
 import io.swagger.v3.oas.models.media.Schema;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.providers.ObjectMapperProvider;
+import tools.jackson.databind.JavaType;
 
 import java.util.Iterator;
 
