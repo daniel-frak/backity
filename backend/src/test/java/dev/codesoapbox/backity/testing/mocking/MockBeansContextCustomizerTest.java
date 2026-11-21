@@ -76,6 +76,11 @@ class MockBeansContextCustomizerTest {
         }
     }
 
+    @MockCandidate
+    @TestConfiguration(proxyBeanMethods = false)
+    static class EmptyMatchedConfiguration {
+    }
+
     @ComponentScan(
             basePackageClasses = MockBeansContextCustomizerTest.class,
             useDefaultFilters = false,
@@ -243,6 +248,17 @@ class MockBeansContextCustomizerTest {
                     .isInstanceOf(IllegalStateException.class)
                     .hasMessageStartingWith(
                             "@MockBeansMatching matched no beans for the given @ComponentScan:");
+        }
+
+        @Test
+        void shouldNotRegisterMatchedConfigurationClassWithoutBeanMethods() {
+            var context = new GenericApplicationContext();
+            MockBeansContextCustomizer customizer = createCustomizer(ScanningMockCandidates.class);
+            MergedContextConfiguration contextConfiguration = mock(MergedContextConfiguration.class);
+
+            customizer.customizeContext(context, contextConfiguration);
+
+            assertThat(getBeanNames(context, EmptyMatchedConfiguration.class)).isEmpty();
         }
     }
 

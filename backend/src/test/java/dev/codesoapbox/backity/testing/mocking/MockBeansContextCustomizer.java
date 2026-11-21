@@ -122,11 +122,16 @@ class MockBeansContextCustomizer implements ContextCustomizer {
             return true; // Keep plain classes (individual beans)
         }
         return isBeanMethod(annotated) // Keep @Bean instances
-                || !hasBeanMethods(annotated); // Drop config classes
+                || !isConfigurationClass(annotated); // Drop config classes
     }
 
     private boolean isBeanMethod(AnnotatedBeanDefinition annotated) {
         return annotated.getFactoryMethodMetadata() != null;
+    }
+
+    private boolean isConfigurationClass(AnnotatedBeanDefinition definition) {
+        return definition.getMetadata().isAnnotated(Configuration.class.getName())
+                || hasBeanMethods(definition);
     }
 
     private boolean hasBeanMethods(AnnotatedBeanDefinition definition) {
