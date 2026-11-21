@@ -9,6 +9,7 @@ import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceAdapter;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -44,173 +45,13 @@ abstract class SourceFileJpaRepositoryIT {
         entityAuditControl.disable();
     }
 
-    @Test
-    void saveShouldPersistNew() {
-        persistSampleDependencies();
-        SourceFile sourceFile = TestSourceFile.gog();
-
-        repository.save(sourceFile);
-
-        SourceFile persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(sourceFile);
-        assertThat(persistedAggregate)
-                .usingRecursiveComparison()
-                .isEqualTo(sourceFile);
-    }
-
     private void persistSampleDependencies() {
         directPersistenceAdapter.persist(SampleGames.getAll());
-    }
-
-    @Test
-    void saveShouldModifyExisting() {
-        persistSampleData();
-        SourceFile sourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
-        sourceFile.setFileTitle(new FileTitle("differentFileTitle"));
-
-        repository.save(sourceFile);
-
-        SourceFile persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(sourceFile);
-        assertThat(persistedAggregate)
-                .usingRecursiveComparison()
-                .isEqualTo(sourceFile);
     }
 
     void persistSampleData() {
         persistSampleDependencies();
         directPersistenceAdapter.persist(SampleSourceFiles.getAll());
-    }
-
-    @SuppressWarnings("JUnitMalformedDeclaration")
-    @Test
-    void saveShouldUpdateDatesGivenNew(EntityAuditControl entityAuditControl) {
-        persistSampleDependencies();
-        entityAuditControl.enable();
-        SourceFile sourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
-
-        repository.save(sourceFile);
-
-        LocalDateTime now = LocalDateTime.now(clock);
-        SourceFile persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(sourceFile);
-        assertThat(persistedAggregate.getDateCreated())
-                .isNotEqualTo(sourceFile.getDateCreated())
-                .isEqualTo(now);
-        assertThat(persistedAggregate.getDateModified())
-                .isNotEqualTo(sourceFile.getDateModified())
-                .isEqualTo(now);
-    }
-
-    @SuppressWarnings("JUnitMalformedDeclaration")
-    @Test
-    void saveShouldUpdateDatesGivenExisting(EntityAuditControl entityAuditControl) {
-        persistSampleData();
-        SourceFile sourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
-        entityAuditControl.enable();
-        sourceFile.setFileTitle(new FileTitle("differentFileTitle"));
-
-        repository.save(sourceFile);
-
-        LocalDateTime now = LocalDateTime.now(clock);
-        SourceFile persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(sourceFile);
-        assertThat(persistedAggregate.getDateCreated())
-                .isEqualTo(sourceFile.getDateCreated())
-                .isNotEqualTo(now);
-        assertThat(persistedAggregate.getDateModified())
-                .isNotEqualTo(sourceFile.getDateModified())
-                .isEqualTo(now);
-    }
-
-    @ParameterizedTest(name = "should return {1} for version={0}")
-    @CsvSource(value = {"1.0.0,true", "fakeVersion,false"})
-    void existsByUrlAndVersion(String versionValue, boolean shouldFind) {
-        persistSampleDependencies();
-        directPersistenceAdapter.persist(SampleSourceFiles.getAll());
-        var version = new FileVersion(versionValue);
-        var url = new SourceFileUrl("/downlink/some_game/some_file");
-
-        boolean exists = repository.existsByUrlAndVersion(url, version);
-
-        assertThat(exists).isEqualTo(shouldFind);
-    }
-
-    @Test
-    void findByIdShouldReturnAggregateGivenItExists() {
-        persistSampleDependencies();
-        directPersistenceAdapter.persist(SampleSourceFiles.getAll());
-        SourceFile expectedSourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
-
-        Optional<SourceFile> result = repository.findById(expectedSourceFile.getId());
-
-        assertThat(result)
-                .get()
-                .usingRecursiveComparison()
-                .isEqualTo(expectedSourceFile);
-    }
-
-    @Test
-    void findByIdShouldReturnEmptyOptionalGivenNotFound() {
-        SourceFile sourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
-
-        Optional<SourceFile> result = repository.findById(sourceFile.getId());
-
-        assertThat(result).isEmpty();
-    }
-
-    @Test
-    void getByIdShouldReturnAggregateGivenItExists() {
-        persistSampleDependencies();
-        directPersistenceAdapter.persist(SampleSourceFiles.getAll());
-        SourceFile expectedSourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
-
-        SourceFile result = repository.getById(expectedSourceFile.getId());
-
-        assertThat(result).usingRecursiveComparison()
-                .isEqualTo(expectedSourceFile);
-    }
-
-    @Test
-    void getByIdShouldThrowGivenNotFound() {
-        var nonexistentId = new SourceFileId("59e37c43-dda7-4c5f-87a3-c380ebb5f8ea");
-
-        assertThatThrownBy(() -> repository.getById(nonexistentId))
-                .isInstanceOf(SourceFileNotFoundException.class);
-    }
-
-    @Test
-    void findAllByGameIdShouldReturnAllDataForAggregate() {
-        persistSampleDependencies();
-        directPersistenceAdapter.persist(SampleSourceFiles.getAll());
-        List<SourceFile> result = repository.findAllByGameId(SampleGames.GAME_1.getId());
-
-        assertThat(result)
-                .usingRecursiveFieldByFieldElementComparator()
-                .containsExactlyInAnyOrder(
-                        SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get(),
-                        SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get()
-                );
-    }
-
-    @Test
-    void findAllByIdInShouldReturnAllDataForAggregate() {
-        persistSampleDependencies();
-        directPersistenceAdapter.persist(SampleSourceFiles.getAll());
-        SourceFile expectedSourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
-
-        List<SourceFile> result = repository.findAllByIdIn(List.of(expectedSourceFile.getId()));
-
-        assertThat(result)
-                .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(expectedSourceFile);
-    }
-
-    @Test
-    void deleteByIdShouldDeleteAggregate() {
-        persistSampleDependencies();
-        SourceFile sourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
-        directPersistenceAdapter.persist(sourceFile);
-
-        repository.deleteById(sourceFile.getId());
-
-        assertThat(directPersistenceAdapter.exists(sourceFile)).isFalse();
     }
 
     private static final class SampleGames {
@@ -253,6 +94,194 @@ abstract class SourceFileJpaRepositoryIT {
                     SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get(),
                     SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_2.get()
             );
+        }
+    }
+
+    @Nested
+    class Save {
+
+        @Test
+        void shouldPersistNew() {
+            persistSampleDependencies();
+            SourceFile sourceFile = TestSourceFile.gog();
+
+            repository.save(sourceFile);
+
+            SourceFile persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(sourceFile);
+            assertThat(persistedAggregate)
+                    .usingRecursiveComparison()
+                    .isEqualTo(sourceFile);
+        }
+
+        @Test
+        void shouldModifyExisting() {
+            persistSampleData();
+            SourceFile sourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
+            sourceFile.setFileTitle(new FileTitle("differentFileTitle"));
+
+            repository.save(sourceFile);
+
+            SourceFile persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(sourceFile);
+            assertThat(persistedAggregate)
+                    .usingRecursiveComparison()
+                    .isEqualTo(sourceFile);
+        }
+
+        @SuppressWarnings("JUnitMalformedDeclaration")
+        @Test
+        void shouldUpdateDatesGivenNew(EntityAuditControl entityAuditControl) {
+            persistSampleDependencies();
+            entityAuditControl.enable();
+            SourceFile sourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
+
+            repository.save(sourceFile);
+
+            LocalDateTime now = LocalDateTime.now(clock);
+            SourceFile persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(sourceFile);
+            assertThat(persistedAggregate.getDateCreated())
+                    .isNotEqualTo(sourceFile.getDateCreated())
+                    .isEqualTo(now);
+            assertThat(persistedAggregate.getDateModified())
+                    .isNotEqualTo(sourceFile.getDateModified())
+                    .isEqualTo(now);
+        }
+
+        @SuppressWarnings("JUnitMalformedDeclaration")
+        @Test
+        void shouldUpdateDatesGivenExisting(EntityAuditControl entityAuditControl) {
+            persistSampleData();
+            SourceFile sourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
+            entityAuditControl.enable();
+            sourceFile.setFileTitle(new FileTitle("differentFileTitle"));
+
+            repository.save(sourceFile);
+
+            LocalDateTime now = LocalDateTime.now(clock);
+            SourceFile persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(sourceFile);
+            assertThat(persistedAggregate.getDateCreated())
+                    .isEqualTo(sourceFile.getDateCreated())
+                    .isNotEqualTo(now);
+            assertThat(persistedAggregate.getDateModified())
+                    .isNotEqualTo(sourceFile.getDateModified())
+                    .isEqualTo(now);
+        }
+    }
+
+    @Nested
+    class ExistsByUrlAndVersion {
+
+        @ParameterizedTest(name = "should return {1} for version={0}")
+        @CsvSource(value = {"1.0.0,true", "fakeVersion,false"})
+        void shouldReturnValue(String versionValue, boolean shouldFind) {
+            persistSampleDependencies();
+            directPersistenceAdapter.persist(SampleSourceFiles.getAll());
+            var version = new FileVersion(versionValue);
+            var url = new SourceFileUrl("/downlink/some_game/some_file");
+
+            boolean exists = repository.existsByUrlAndVersion(url, version);
+
+            assertThat(exists).isEqualTo(shouldFind);
+        }
+    }
+
+    @Nested
+    class FindById {
+
+        @Test
+        void shouldReturnAggregateGivenItExists() {
+            persistSampleDependencies();
+            directPersistenceAdapter.persist(SampleSourceFiles.getAll());
+            SourceFile expectedSourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
+
+            Optional<SourceFile> result = repository.findById(expectedSourceFile.getId());
+
+            assertThat(result)
+                    .get()
+                    .usingRecursiveComparison()
+                    .isEqualTo(expectedSourceFile);
+        }
+
+        @Test
+        void shouldReturnEmptyOptionalGivenNotFound() {
+            SourceFile sourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
+
+            Optional<SourceFile> result = repository.findById(sourceFile.getId());
+
+            assertThat(result).isEmpty();
+        }
+    }
+
+    @Nested
+    class GetById {
+
+        @Test
+        void shouldReturnAggregateGivenItExists() {
+            persistSampleDependencies();
+            directPersistenceAdapter.persist(SampleSourceFiles.getAll());
+            SourceFile expectedSourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
+
+            SourceFile result = repository.getById(expectedSourceFile.getId());
+
+            assertThat(result).usingRecursiveComparison()
+                    .isEqualTo(expectedSourceFile);
+        }
+
+        @Test
+        void shouldThrowGivenNotFound() {
+            var nonexistentId = new SourceFileId("59e37c43-dda7-4c5f-87a3-c380ebb5f8ea");
+
+            assertThatThrownBy(() -> repository.getById(nonexistentId))
+                    .isInstanceOf(SourceFileNotFoundException.class);
+        }
+    }
+
+    @Nested
+    class FindAllByGameID {
+
+        @Test
+        void shouldReturnAllDataForAggregate() {
+            persistSampleDependencies();
+            directPersistenceAdapter.persist(SampleSourceFiles.getAll());
+            List<SourceFile> result = repository.findAllByGameId(SampleGames.GAME_1.getId());
+
+            assertThat(result)
+                    .usingRecursiveFieldByFieldElementComparator()
+                    .containsExactlyInAnyOrder(
+                            SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get(),
+                            SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get()
+                    );
+        }
+    }
+
+    @Nested
+    class FindAllByIdIn {
+
+        @Test
+        void shouldReturnAllDataForAggregate() {
+            persistSampleDependencies();
+            directPersistenceAdapter.persist(SampleSourceFiles.getAll());
+            SourceFile expectedSourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
+
+            List<SourceFile> result = repository.findAllByIdIn(List.of(expectedSourceFile.getId()));
+
+            assertThat(result)
+                    .usingRecursiveFieldByFieldElementComparator()
+                    .containsExactly(expectedSourceFile);
+        }
+    }
+
+    @Nested
+    class DeleteById {
+
+        @Test
+        void shouldDeleteAggregate() {
+            persistSampleDependencies();
+            SourceFile sourceFile = SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get();
+            directPersistenceAdapter.persist(sourceFile);
+
+            repository.deleteById(sourceFile.getId());
+
+            assertThat(directPersistenceAdapter.exists(sourceFile)).isFalse();
         }
     }
 }

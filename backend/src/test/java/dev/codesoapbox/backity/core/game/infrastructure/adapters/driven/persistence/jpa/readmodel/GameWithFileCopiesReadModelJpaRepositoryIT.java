@@ -21,6 +21,7 @@ import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import org.hibernate.SessionFactory;
 import org.hibernate.stat.Statistics;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
@@ -120,220 +121,6 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
         directPersistenceAdapter.persist(SampleSourceFiles.getAll());
         directPersistenceAdapter.persist(SampleBackupTargets.getAll());
         directPersistenceAdapter.persist(SampleFileCopies.getAll());
-    }
-
-    @ParameterizedTest
-    @NullSource
-    @ValueSource(strings = {
-            " \n", // Blank (blank search query)
-            "\"\"", // "" (empty token list)
-            "\"\t\""// "  " (blank token)
-    }
-    )
-    void findAllPaginatedShouldReturnGamesGivenEmptyQueryAndNoOtherFilters(String searchQuery) {
-        GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
-
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
-
-        assertThat(result.content())
-                .usingRecursiveFieldByFieldElementComparator()
-                .containsExactlyInAnyOrder(
-                        GAME_1_READ_MODEL,
-                        GAME_2_READ_MODEL,
-                        GAME_3_READ_MODEL
-                );
-    }
-
-    @Test
-    void findAllPaginatedShouldOrderByCreatedAt() {
-        GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.empty();
-
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
-
-        assertThat(result.content())
-                .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(
-                        GAME_1_READ_MODEL,
-                        GAME_2_READ_MODEL,
-                        GAME_3_READ_MODEL
-                );
-    }
-
-    @Test
-    void findAllPaginatedShouldProperlyPaginate() {
-        var pagination = new Pagination(0, 1);
-        GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.empty();
-
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
-
-        assertThat(result.content()).hasSize(1);
-        assertThat(result.totalPages()).isEqualTo(3);
-        assertThat(result.totalElements()).isEqualTo(3);
-        assertThat(result.pagination()).isEqualTo(pagination);
-    }
-
-    @Test
-    void findAllPaginatedShouldFetchEntireAggregateWithoutAdditionalLazyQueries() {
-        Statistics statistics = getHibernateStatistics();
-        statistics.clear();
-
-        var pagination = new Pagination(0, 1);
-        GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(null);
-
-        repository.findAllPaginated(pagination, filter);
-
-        // 1 count query
-        // 1 query for fetching Games
-        // 1 query for fetching SourceFiles
-        // 1 query for fetching FileCopies
-        assertThat(statistics.getPrepareStatementCount())
-                .isEqualTo(4L);
-    }
-
-    @SuppressWarnings("resource") // Spring owns SessionFactory, so we should not close it
-    private Statistics getHibernateStatistics() {
-        return entityManager.getEntityManager()
-                .getEntityManagerFactory()
-                .unwrap(SessionFactory.class)
-                .getStatistics();
-    }
-
-    @Test
-    void findAllPaginatedShouldTokenizeEveryWordGivenNotQuoted() {
-        var searchQuery = "Test Game";
-        GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
-
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
-
-        assertThat(result.content())
-                .contains(GAME_2_READ_MODEL); // Matched even though it has "TEST_GAME"
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"Test_Game", "100%", "Better\\Edition"})
-    void findAllPaginatedShouldEscapeCharacters(String searchQuery) {
-        GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
-
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
-
-        assertThat(result.content())
-                .containsExactly(GAME_2_READ_MODEL);
-    }
-
-    @Test
-    void findAllPaginatedShouldFilterByFileCopyStatus() {
-        var filter = new GameWithFileCopiesSearchFilter(null, FileCopyStatus.ENQUEUED);
-
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
-
-        assertThat(result.content())
-                .containsExactly(GAME_2_READ_MODEL);
-    }
-
-    @Test
-    void findAllPaginatedShouldFilterByFullGameTitleCaseInsensitive() {
-        var searchQuery = "\"" + SampleGames.GAME_1_CREATED_TODAY.getTitle().value().toUpperCase() + "\"";
-        GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
-
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
-
-        assertThat(result.content())
-                .containsExactly(GAME_1_READ_MODEL);
-    }
-
-    @Test
-    void findAllPaginatedShouldFilterByPartOfGameTitleCaseInsensitive() {
-        var partOfGameTitleQuery = "\"EST GAME 1\"";
-        GameWithFileCopiesSearchFilter filter =
-                TestGameWithFileCopiesSearchFilter.onlySearchQuery(partOfGameTitleQuery);
-
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
-
-        assertThat(result.content())
-                .containsExactly(GAME_1_READ_MODEL);
-    }
-
-    @Test
-    void findAllPaginatedShouldFilterByFullFileTitleCaseInsensitive() {
-        var searchQuery = "\"" + SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getFileTitle().value()
-                .toUpperCase() + "\"";
-        GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
-
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
-
-        assertThat(result.content())
-                .containsExactly(GAME_1_READ_MODEL);
-    }
-
-    @Test
-    void findAllPaginatedShouldFilterByPartOfFileTitleCaseInsensitive() {
-        var partOfFileTitleQuery = "\"1 (INSTALLER\"";
-        GameWithFileCopiesSearchFilter filter =
-                TestGameWithFileCopiesSearchFilter.onlySearchQuery(partOfFileTitleQuery);
-
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
-
-        assertThat(result.content())
-                .containsExactly(GAME_1_READ_MODEL);
-    }
-
-    @Test
-    void findAllPaginatedShouldFilterByFullOriginalFileNameCaseInsensitive() {
-        var searchQuery = "\"" + SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getOriginalFileName().value()
-                .toUpperCase() + "\"";
-        GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
-
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
-
-        assertThat(result.content())
-                .containsExactly(GAME_1_READ_MODEL);
-    }
-
-    @Test
-    void findAllPaginatedShouldFilterByPartOfOriginalFileNameCaseInsensitive() {
-        var partOfOriginalFileNameQuery = "\"1_INSTALLER.EX\"";
-        GameWithFileCopiesSearchFilter filter =
-                TestGameWithFileCopiesSearchFilter.onlySearchQuery(partOfOriginalFileNameQuery);
-
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
-
-        assertThat(result.content())
-                .containsExactly(GAME_1_READ_MODEL);
-    }
-
-    @Test
-    void findAllPaginatedShouldFilterByFullOriginalGameTitleCaseInsensitive() {
-        var searchQuery = "\"" + SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getOriginalGameTitle().value()
-                .toUpperCase() + "\"";
-        GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
-
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
-
-        assertThat(result.content())
-                .containsExactly(GAME_1_READ_MODEL);
-    }
-
-    @Test
-    void findAllPaginatedShouldFilterByPartOfOriginalGameTitleCaseInsensitive() {
-        var partOfOriginalGameTitleSearchQuery = "\"RIGINAL GAME 1\"";
-        GameWithFileCopiesSearchFilter filter =
-                TestGameWithFileCopiesSearchFilter.onlySearchQuery(partOfOriginalGameTitleSearchQuery);
-
-        Page<GameWithFileCopiesReadModel> result =
-                repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
-
-        assertThat(result.content())
-                .containsExactly(GAME_1_READ_MODEL);
-    }
-
-    @Test
-    void findAllPaginatedShouldReturnEmptyListGivenNothingMatches() {
-        var searchQuery = "\"notMatchingAnything\"";
-        GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
-
-        Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
-
-        assertThat(result.content()).isEmpty();
     }
 
     private static final class Time {
@@ -494,6 +281,224 @@ abstract class GameWithFileCopiesReadModelJpaRepositoryIT {
                     TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2_FOR_GAME_1,
                     ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1_FOR_GAME_2
             );
+        }
+    }
+
+    @Nested
+    class FindAllPaginated {
+
+        @ParameterizedTest
+        @NullSource
+        @ValueSource(strings = {
+                " \n", // Blank (blank search query)
+                "\"\"", // "" (empty token list)
+                "\"\t\""// "  " (blank token)
+        }
+        )
+        void shouldReturnGamesGivenEmptyQueryAndNoOtherFilters(String searchQuery) {
+            GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
+
+            Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
+
+            assertThat(result.content())
+                    .usingRecursiveFieldByFieldElementComparator()
+                    .containsExactlyInAnyOrder(
+                            GAME_1_READ_MODEL,
+                            GAME_2_READ_MODEL,
+                            GAME_3_READ_MODEL
+                    );
+        }
+
+        @Test
+        void shouldOrderByCreatedAt() {
+            GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.empty();
+
+            Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
+
+            assertThat(result.content())
+                    .usingRecursiveFieldByFieldElementComparator()
+                    .containsExactly(
+                            GAME_1_READ_MODEL,
+                            GAME_2_READ_MODEL,
+                            GAME_3_READ_MODEL
+                    );
+        }
+
+        @Test
+        void shouldProperlyPaginate() {
+            var pagination = new Pagination(0, 1);
+            GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.empty();
+
+            Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(pagination, filter);
+
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.totalPages()).isEqualTo(3);
+            assertThat(result.totalElements()).isEqualTo(3);
+            assertThat(result.pagination()).isEqualTo(pagination);
+        }
+
+        @Test
+        void shouldFetchEntireAggregateWithoutAdditionalLazyQueries() {
+            Statistics statistics = getHibernateStatistics();
+            statistics.clear();
+
+            var pagination = new Pagination(0, 1);
+            GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(null);
+
+            repository.findAllPaginated(pagination, filter);
+
+            // 1 count query
+            // 1 query for fetching Games
+            // 1 query for fetching SourceFiles
+            // 1 query for fetching FileCopies
+            assertThat(statistics.getPrepareStatementCount())
+                    .isEqualTo(4L);
+        }
+
+        @SuppressWarnings("resource") // Spring owns SessionFactory, so we should not close it
+        private Statistics getHibernateStatistics() {
+            return entityManager.getEntityManager()
+                    .getEntityManagerFactory()
+                    .unwrap(SessionFactory.class)
+                    .getStatistics();
+        }
+
+        @Test
+        void shouldTokenizeEveryWordGivenNotQuoted() {
+            var searchQuery = "Test Game";
+            GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
+
+            Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
+
+            assertThat(result.content())
+                    .contains(GAME_2_READ_MODEL); // Matched even though it has "TEST_GAME"
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"Test_Game", "100%", "Better\\Edition"})
+        void shouldEscapeCharacters(String searchQuery) {
+            GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
+
+            Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
+
+            assertThat(result.content())
+                    .containsExactly(GAME_2_READ_MODEL);
+        }
+
+        @Test
+        void shouldFilterByFileCopyStatus() {
+            var filter = new GameWithFileCopiesSearchFilter(null, FileCopyStatus.ENQUEUED);
+
+            Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
+
+            assertThat(result.content())
+                    .containsExactly(GAME_2_READ_MODEL);
+        }
+
+        @Test
+        void shouldFilterByFullGameTitleCaseInsensitive() {
+            var searchQuery = "\"" + SampleGames.GAME_1_CREATED_TODAY.getTitle().value().toUpperCase() + "\"";
+            GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
+
+            Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
+
+            assertThat(result.content())
+                    .containsExactly(GAME_1_READ_MODEL);
+        }
+
+        @Test
+        void shouldFilterByPartOfGameTitleCaseInsensitive() {
+            var partOfGameTitleQuery = "\"EST GAME 1\"";
+            GameWithFileCopiesSearchFilter filter =
+                    TestGameWithFileCopiesSearchFilter.onlySearchQuery(partOfGameTitleQuery);
+
+            Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
+
+            assertThat(result.content())
+                    .containsExactly(GAME_1_READ_MODEL);
+        }
+
+        @Test
+        void shouldFilterByFullFileTitleCaseInsensitive() {
+            var searchQuery = "\"" + SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getFileTitle().value()
+                    .toUpperCase() + "\"";
+            GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
+
+            Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
+
+            assertThat(result.content())
+                    .containsExactly(GAME_1_READ_MODEL);
+        }
+
+        @Test
+        void shouldFilterByPartOfFileTitleCaseInsensitive() {
+            var partOfFileTitleQuery = "\"1 (INSTALLER\"";
+            GameWithFileCopiesSearchFilter filter =
+                    TestGameWithFileCopiesSearchFilter.onlySearchQuery(partOfFileTitleQuery);
+
+            Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
+
+            assertThat(result.content())
+                    .containsExactly(GAME_1_READ_MODEL);
+        }
+
+        @Test
+        void shouldFilterByFullOriginalFileNameCaseInsensitive() {
+            var searchQuery = "\"" + SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getOriginalFileName().value()
+                    .toUpperCase() + "\"";
+            GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
+
+            Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
+
+            assertThat(result.content())
+                    .containsExactly(GAME_1_READ_MODEL);
+        }
+
+        @Test
+        void shouldFilterByPartOfOriginalFileNameCaseInsensitive() {
+            var partOfOriginalFileNameQuery = "\"1_INSTALLER.EX\"";
+            GameWithFileCopiesSearchFilter filter =
+                    TestGameWithFileCopiesSearchFilter.onlySearchQuery(partOfOriginalFileNameQuery);
+
+            Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
+
+            assertThat(result.content())
+                    .containsExactly(GAME_1_READ_MODEL);
+        }
+
+        @Test
+        void shouldFilterByFullOriginalGameTitleCaseInsensitive() {
+            var searchQuery = "\"" + SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.getOriginalGameTitle().value()
+                    .toUpperCase() + "\"";
+            GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
+
+            Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
+
+            assertThat(result.content())
+                    .containsExactly(GAME_1_READ_MODEL);
+        }
+
+        @Test
+        void shouldFilterByPartOfOriginalGameTitleCaseInsensitive() {
+            var partOfOriginalGameTitleSearchQuery = "\"RIGINAL GAME 1\"";
+            GameWithFileCopiesSearchFilter filter =
+                    TestGameWithFileCopiesSearchFilter.onlySearchQuery(partOfOriginalGameTitleSearchQuery);
+
+            Page<GameWithFileCopiesReadModel> result =
+                    repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
+
+            assertThat(result.content())
+                    .containsExactly(GAME_1_READ_MODEL);
+        }
+
+        @Test
+        void shouldReturnEmptyListGivenNothingMatches() {
+            var searchQuery = "\"notMatchingAnything\"";
+            GameWithFileCopiesSearchFilter filter = TestGameWithFileCopiesSearchFilter.onlySearchQuery(searchQuery);
+
+            Page<GameWithFileCopiesReadModel> result = repository.findAllPaginated(EVERYTHING_ON_ONE_PAGE, filter);
+
+            assertThat(result.content()).isEmpty();
         }
     }
 }

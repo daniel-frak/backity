@@ -7,6 +7,7 @@ import dev.codesoapbox.backity.testing.jpa.DirectJpaPersistenceAdapter;
 import dev.codesoapbox.backity.testing.jpa.annotations.MultiDatabaseRepositoryTest;
 import dev.codesoapbox.backity.testing.jpa.extensions.EntityAuditControl;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,40 +38,48 @@ abstract class GameContentDiscoveryResultJpaRepositoryIT {
         directPersistenceAdapter.persist(SampleDiscoveryResults.getAll());
     }
 
-    @Test
-    void saveShouldPersistNew() {
-        GameContentDiscoveryResult newDiscoveryResult = TestGameContentDiscoveryResult.gogBuilder()
-                .withGameProviderId(new GameProviderId("ANOTHER_PROVIDER"))
-                .build();
+    @Nested
+    class Save {
 
-        repository.save(newDiscoveryResult);
+        @Test
+        void shouldPersistNew() {
+            GameContentDiscoveryResult newDiscoveryResult = TestGameContentDiscoveryResult.gogBuilder()
+                    .withGameProviderId(new GameProviderId("ANOTHER_PROVIDER"))
+                    .build();
 
-        GameContentDiscoveryResult persistedAggregate =
-                directPersistenceAdapter.getPersistedDomainObject(newDiscoveryResult);
-        assertThat(persistedAggregate)
-                .usingRecursiveComparison()
-                .isEqualTo(newDiscoveryResult);
+            repository.save(newDiscoveryResult);
+
+            GameContentDiscoveryResult persistedAggregate =
+                    directPersistenceAdapter.getPersistedDomainObject(newDiscoveryResult);
+            assertThat(persistedAggregate)
+                    .usingRecursiveComparison()
+                    .isEqualTo(newDiscoveryResult);
+        }
+
+        @Test
+        void shouldReplaceExisting() {
+            GameContentDiscoveryResult discoveryResult = SampleDiscoveryResults.GOG_DISCOVERY_RESULT.get();
+            discoveryResult.setGamesDiscovered(999);
+            repository.save(discoveryResult);
+
+            GameContentDiscoveryResult persistedResult =
+                    directPersistenceAdapter.getPersistedDomainObject(discoveryResult);
+            assertThat(persistedResult.getGamesDiscovered()).isEqualTo(999);
+        }
     }
+    
+    @Nested
+    class FindAllByGameProviderIdIn {
 
-    @Test
-    void saveShouldReplaceExisting() {
-        GameContentDiscoveryResult discoveryResult = SampleDiscoveryResults.GOG_DISCOVERY_RESULT.get();
-        discoveryResult.setGamesDiscovered(999);
-        repository.save(discoveryResult);
+        @Test
+        void shouldReturnAllDataForAggregate() {
+            GameContentDiscoveryResult expectedDiscoveryResult = SampleDiscoveryResults.GOG_DISCOVERY_RESULT.get();
 
-        GameContentDiscoveryResult persistedResult =
-                directPersistenceAdapter.getPersistedDomainObject(discoveryResult);
-        assertThat(persistedResult.getGamesDiscovered()).isEqualTo(999);
-    }
+            List<GameContentDiscoveryResult> result = repository.findAllByGameProviderIdIn(
+                    List.of(expectedDiscoveryResult.getGameProviderId()));
 
-    @Test
-    void findAllByGameProviderIdInShouldReturnAllDataForAggregate() {
-        GameContentDiscoveryResult expectedDiscoveryResult = SampleDiscoveryResults.GOG_DISCOVERY_RESULT.get();
-
-        List<GameContentDiscoveryResult> result = repository.findAllByGameProviderIdIn(
-                List.of(expectedDiscoveryResult.getGameProviderId()));
-
-        assertThat(result).containsExactly(expectedDiscoveryResult);
+            assertThat(result).containsExactly(expectedDiscoveryResult);
+        }
     }
 
     private static final class SampleDiscoveryResults {

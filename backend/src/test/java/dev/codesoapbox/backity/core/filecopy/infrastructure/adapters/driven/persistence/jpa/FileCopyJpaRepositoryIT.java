@@ -25,6 +25,7 @@ import dev.codesoapbox.backity.testing.time.FakeClock;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
@@ -71,24 +72,6 @@ abstract class FileCopyJpaRepositoryIT {
         entityAuditControl.disable();
     }
 
-    @Test
-    void saveShouldPersistNew() {
-        persistSampleDependencies();
-        FileCopy fileCopy = TestFileCopy.trackedBuilder()
-                .naturalId(new FileCopyNaturalId(
-                        SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId(),
-                        SampleBackupTargets.LOCAL_FOLDER_1.get().getId()
-                ))
-                .build();
-
-        repository.save(fileCopy);
-
-        FileCopy persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(fileCopy);
-        assertThat(persistedAggregate)
-                .usingRecursiveComparison()
-                .isEqualTo(fileCopy);
-    }
-
     private void persistSampleDependencies() {
         directPersistenceAdapter.persist(SampleGames.getAll());
         directPersistenceAdapter.persist(SampleSourceFiles.getAll());
@@ -114,342 +97,9 @@ abstract class FileCopyJpaRepositoryIT {
         return new Pagination(0, 999);
     }
 
-    @Test
-    void saveShouldModifyExisting() {
-        persistSampleData();
-        FileCopy fileCopy = SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get();
-        fileCopy.toInProgress(new FilePath("someFilePath"));
-
-        repository.save(fileCopy);
-
-        FileCopy persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(fileCopy);
-        assertThat(persistedAggregate)
-                .usingRecursiveComparison()
-                .isEqualTo(fileCopy);
-    }
-
     private void persistSampleData() {
         persistSampleDependencies();
         directPersistenceAdapter.persist(SampleFileCopies.getAll());
-    }
-
-    @SuppressWarnings("JUnitMalformedDeclaration")
-    @Test
-    void saveShouldUpdateDatesGivenNew(EntityAuditControl entityAuditControl) {
-        persistSampleDependencies();
-        entityAuditControl.enable();
-        FileCopy fileCopy = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
-
-        repository.save(fileCopy);
-
-        LocalDateTime now = LocalDateTime.now(clock);
-        FileCopy persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(fileCopy);
-        assertThat(persistedAggregate.getDateCreated())
-                .isNotEqualTo(fileCopy.getDateCreated())
-                .isEqualTo(now);
-        assertThat(persistedAggregate.getDateModified())
-                .isNotEqualTo(fileCopy.getDateModified())
-                .isEqualTo(now);
-    }
-
-    @SuppressWarnings("JUnitMalformedDeclaration")
-    @Test
-    void saveShouldUpdateDatesGivenExisting(EntityAuditControl entityAuditControl) {
-        persistSampleData();
-        entityAuditControl.enable();
-        FileCopy fileCopy = SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get();
-        fileCopy.toInProgress(new FilePath("someFilePath"));
-
-        repository.save(fileCopy);
-
-        LocalDateTime now = LocalDateTime.now(clock);
-        FileCopy persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(fileCopy);
-        assertThat(persistedAggregate.getDateCreated())
-                .isEqualTo(fileCopy.getDateCreated())
-                .isNotEqualTo(now);
-        assertThat(persistedAggregate.getDateModified())
-                .isNotEqualTo(fileCopy.getDateModified())
-                .isEqualTo(now);
-    }
-
-    @Test
-    void saveShouldPublishEvents() {
-        persistSampleData();
-        FileCopy fileCopy = TestFileCopy.enqueued();
-        var aFilePath = new FilePath("someFilePath");
-        fileCopy.toInProgress(aFilePath);
-        repository.save(fileCopy);
-
-        verify(domainEventPublisher).publish(any(FileBackupStartedEvent.class));
-    }
-
-    @Test
-    void saveShouldClearEvents() {
-        persistSampleData();
-        FileCopy fileCopy = TestFileCopy.enqueued();
-        var aFilePath = new FilePath("someFilePath");
-        fileCopy.toInProgress(aFilePath);
-        repository.save(fileCopy);
-
-        assertThat(fileCopy.getDomainEvents()).isEmpty();
-    }
-
-    @Test
-    void saveShouldThrowGivenNaturalIdIsNotUnique() {
-        persistSampleDependencies();
-        FileCopy fileCopy1 = TestFileCopy.trackedBuilder()
-                .id(new FileCopyId("7bf408f7-9b6e-4ee7-a2f2-27a454a4f5ba"))
-                .build();
-        FileCopy fileCopy2 = TestFileCopy.trackedBuilder()
-                .id(new FileCopyId("09366863-b707-4e5c-8315-ed7e7c56d0a9"))
-                .naturalId(fileCopy1.getNaturalId())
-                .build();
-        directPersistenceAdapter.persist(fileCopy1);
-
-        repository.save(fileCopy2);
-
-        assertThatThrownBy(() -> entityManager.flush())
-                .isInstanceOf(ConstraintViolationException.class);
-    }
-
-    @Test
-    void getByIdShouldReturnAggregateGivenItExists() {
-        persistSampleData();
-        FileCopy expectedResult = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
-        FileCopy result = repository.getById(expectedResult.getId());
-
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(expectedResult);
-    }
-
-    @Test
-    void getByIdShouldThrowGivenNotFound() {
-        persistSampleData();
-        var nonExistentId = new FileCopyId("247900d6-8829-47cd-a068-4f35f37d8eb8");
-
-        assertThatThrownBy(() -> repository.getById(nonExistentId))
-                .isInstanceOf(FileCopyNotFoundException.class)
-                .hasMessageContaining(nonExistentId.toString());
-    }
-
-    @Test
-    void findByNaturalIdOrCreateShouldGetGivenExists() {
-        persistSampleData();
-        FileCopy expectedResult = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
-
-        FileCopy result = repository.getByNaturalIdOrCreate(expectedResult.getNaturalId(), () -> null);
-
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(expectedResult);
-    }
-
-    @Test
-    void findByNaturalIdOrCreateShouldGetGivenNotExists() {
-        persistSampleDependencies();
-        FileCopy expectedResult = TestFileCopy.trackedBuilder()
-                .id(new FileCopyId("7bf408f7-9b6e-4ee7-a2f2-27a454a4f5ba"))
-                .naturalId(new FileCopyNaturalId(
-                        SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
-                        SampleBackupTargets.LOCAL_FOLDER_1.get().getId()
-                ))
-                .build();
-
-        FileCopy result = repository.getByNaturalIdOrCreate(expectedResult.getNaturalId(), () -> expectedResult);
-
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(expectedResult);
-    }
-
-    @Test
-    void findByNaturalIdOrCreateShouldGetGivenCreatedInParallel() {
-        persistSampleData();
-        FileCopySpringRepository mockSpringRepository = mock(FileCopySpringRepository.class);
-        repository = new FileCopyJpaRepository(mockSpringRepository, entityMapper,
-                mock(SpringPageMapper.class), mock(SpringPageableMapper.class), domainEventPublisher);
-        FileCopy expectedExisting = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
-        FileCopyNaturalId naturalId = expectedExisting.getNaturalId();
-        FileCopy newFileCopy = TestFileCopy.trackedBuilder()
-                .naturalId(naturalId)
-                .build();
-        aggregateIsCreatedConcurrently(mockSpringRepository, naturalId, expectedExisting);
-
-        FileCopy result = repository.getByNaturalIdOrCreate(naturalId, () -> newFileCopy);
-
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(expectedExisting);
-    }
-
-    @Test
-    void findOldestEnqueuedShouldReturnOldestEnqueued() {
-        persistSampleData();
-        Optional<FileCopy> result = repository.findOldestEnqueued();
-
-        FileCopy expectedResult = SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get();
-        assertThat(result).isPresent();
-        assertThat(result.get())
-                .usingRecursiveComparison()
-                .isEqualTo(expectedResult);
-    }
-
-    @Test
-    void findAllInProgressOrEnqueuedShouldReturnInProgressAndEnqueued() {
-        persistSampleData();
-        Pagination pagination = everythingOnOnePage();
-        List<FileCopy> expectedContent = List.of(
-                SampleFileCopies.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
-                SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
-                SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get()
-        );
-
-        Page<FileCopy> result = repository.findAllInProgressOrEnqueued(pagination);
-
-        assertThat(result.content())
-                .usingRecursiveFieldByFieldElementComparator()
-                .containsExactlyInAnyOrderElementsOf(expectedContent);
-    }
-
-    @Test
-    void findAllInProgressOrEnqueuedShouldProperlyPaginate() {
-        persistSampleData();
-        Pagination pagination = new Pagination(0, 1);
-
-        Page<FileCopy> result = repository.findAllInProgressOrEnqueued(pagination);
-
-        assertThat(result.content()).hasSize(1);
-        assertThat(result.totalPages()).isEqualTo(3);
-        assertThat(result.totalElements()).isEqualTo(3);
-        assertThat(result.pagination()).isEqualTo(pagination);
-    }
-
-    @Test
-    void findAllInProgressOrEnqueuedShouldSortByStatusAscThenDateModifiedAsc() {
-        persistSampleData();
-        Pagination pagination = everythingOnOnePage();
-        var expectedContent = List.of(
-                SampleFileCopies.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
-                SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
-                SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get()
-        );
-
-        Page<FileCopy> result = repository.findAllInProgressOrEnqueued(pagination);
-
-        assertThat(result.content())
-                .containsExactlyElementsOf(expectedContent);
-    }
-
-    @Test
-    void findAllInProgressShouldReturnAllInProgress() {
-        persistSampleData();
-        List<FileCopy> expectedResult = List.of(
-                SampleFileCopies.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get()
-        );
-
-        List<FileCopy> result = repository.findAllInProgress();
-
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(expectedResult);
-    }
-
-    @Test
-    void findAllBySourceFileIdShouldReturnAllMatching() {
-        persistSampleData();
-        List<FileCopy> result =
-                repository.findAllBySourceFileId(SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId());
-
-        List<FileCopy> expectedResult = List.of(
-                SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get(),
-                SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get()
-        );
-        assertThat(result)
-                .usingRecursiveFieldByFieldElementComparator()
-                .containsExactlyInAnyOrderElementsOf(expectedResult);
-    }
-
-    @Test
-    void existByBackupTargetIdAndStatusNotInShouldReturnTrueGivenFileCopyExists() {
-        persistSampleData();
-        BackupTargetId existingBackupTargetId =
-                SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get().getNaturalId().backupTargetId();
-
-        boolean result = repository.existByBackupTargetIdAndStatusNotIn(
-                existingBackupTargetId, List.of(FileCopyStatus.IN_PROGRESS));
-
-        assertThat(result).isTrue();
-    }
-
-    @Test
-    void existByBackupTargetIdAndStatusNotInShouldReturnFalseGivenFileCopyNotFoundWithCorrectStatusNot() {
-        persistSampleData();
-        BackupTargetId existingBackupTargetId =
-                SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get().getNaturalId().backupTargetId();
-
-        boolean result = repository.existByBackupTargetIdAndStatusNotIn(
-                existingBackupTargetId, List.of(FileCopyStatus.values()));
-
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    void existByBackupTargetIdAndStatusNotInShouldReturnFalseGivenFileCopyNotFoundWithCorrectIdNot() {
-        persistSampleData();
-        BackupTargetId existingBackupTargetId =
-                SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get().getNaturalId()
-                        .backupTargetId();
-
-        boolean result =
-                repository.existByBackupTargetIdAndStatusNotIn(existingBackupTargetId, List.of(FileCopyStatus.TRACKED));
-
-        assertThat(result).isFalse();
-    }
-
-    @Test
-    void getUniqueBackupTargetIdsByStatusNotInShouldReturnIds() {
-        persistSampleData();
-        List<BackupTargetId> result =
-                repository.getUniqueBackupTargetIdsByStatusNotIn(
-                        List.of(FileCopyStatus.TRACKED, FileCopyStatus.FAILED));
-
-        assertThat(result).containsOnly(
-                SampleFileCopies.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get()
-                        .getNaturalId().backupTargetId(),
-                SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get()
-                        .getNaturalId().backupTargetId(),
-                SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get()
-                        .getNaturalId().backupTargetId(),
-                SampleFileCopies.STORED_UNVERIFIED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get()
-                        .getNaturalId().backupTargetId(),
-                SampleFileCopies.STORED_VERIFIED_FILE_COPY_FROM_BEFORE_YESTERDAY_FOR_SOURCE_FILE_2.get()
-                        .getNaturalId().backupTargetId()
-        );
-    }
-
-    @Test
-    void deleteTrackedWithBackupTargetIdShouldDeleteFileCopies() {
-        persistSampleData();
-        FileCopy fileCopy = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
-        FileCopy unaffectedFileCopy = SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get();
-
-        repository.deleteByBackupTargetIdAndStatusIn(
-                fileCopy.getNaturalId().backupTargetId(), List.of(fileCopy.getStatus()));
-
-        assertThat(directPersistenceAdapter.exists(fileCopy)).isFalse();
-        assertThat(directPersistenceAdapter.exists(unaffectedFileCopy)).isTrue();
-    }
-
-    @Test
-    void deleteTrackedWithBackupTargetIdShouldNotDeleteFileCopiesWithoutMatchingStatus() {
-        persistSampleData();
-        FileCopy fileCopy = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
-
-        repository.deleteByBackupTargetIdAndStatusIn(
-                fileCopy.getNaturalId().backupTargetId(), List.of(FileCopyStatus.FAILED));
-
-        assertThat(directPersistenceAdapter.exists(fileCopy)).isTrue();
     }
 
     private static final class Time {
@@ -640,6 +290,403 @@ abstract class FileCopyJpaRepositoryIT {
                     STORED_VERIFIED_FILE_COPY_FROM_BEFORE_YESTERDAY_FOR_SOURCE_FILE_2.get(),
                     FAILED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get()
             );
+        }
+    }
+
+    @Nested
+    class Save {
+
+        @Test
+        void shouldPersistNew() {
+            persistSampleDependencies();
+            FileCopy fileCopy = TestFileCopy.trackedBuilder()
+                    .naturalId(new FileCopyNaturalId(
+                            SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId(),
+                            SampleBackupTargets.LOCAL_FOLDER_1.get().getId()
+                    ))
+                    .build();
+
+            repository.save(fileCopy);
+
+            FileCopy persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(fileCopy);
+            assertThat(persistedAggregate)
+                    .usingRecursiveComparison()
+                    .isEqualTo(fileCopy);
+        }
+
+        @Test
+        void shouldModifyExisting() {
+            persistSampleData();
+            FileCopy fileCopy = SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get();
+            fileCopy.toInProgress(new FilePath("someFilePath"));
+
+            repository.save(fileCopy);
+
+            FileCopy persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(fileCopy);
+            assertThat(persistedAggregate)
+                    .usingRecursiveComparison()
+                    .isEqualTo(fileCopy);
+        }
+
+        @SuppressWarnings("JUnitMalformedDeclaration")
+        @Test
+        void shouldUpdateDatesGivenNew(EntityAuditControl entityAuditControl) {
+            persistSampleDependencies();
+            entityAuditControl.enable();
+            FileCopy fileCopy = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
+
+            repository.save(fileCopy);
+
+            LocalDateTime now = LocalDateTime.now(clock);
+            FileCopy persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(fileCopy);
+            assertThat(persistedAggregate.getDateCreated())
+                    .isNotEqualTo(fileCopy.getDateCreated())
+                    .isEqualTo(now);
+            assertThat(persistedAggregate.getDateModified())
+                    .isNotEqualTo(fileCopy.getDateModified())
+                    .isEqualTo(now);
+        }
+
+        @SuppressWarnings("JUnitMalformedDeclaration")
+        @Test
+        void shouldUpdateDatesGivenExisting(EntityAuditControl entityAuditControl) {
+            persistSampleData();
+            entityAuditControl.enable();
+            FileCopy fileCopy = SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get();
+            fileCopy.toInProgress(new FilePath("someFilePath"));
+
+            repository.save(fileCopy);
+
+            LocalDateTime now = LocalDateTime.now(clock);
+            FileCopy persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(fileCopy);
+            assertThat(persistedAggregate.getDateCreated())
+                    .isEqualTo(fileCopy.getDateCreated())
+                    .isNotEqualTo(now);
+            assertThat(persistedAggregate.getDateModified())
+                    .isNotEqualTo(fileCopy.getDateModified())
+                    .isEqualTo(now);
+        }
+
+        @Test
+        void shouldPublishEvents() {
+            persistSampleData();
+            FileCopy fileCopy = TestFileCopy.enqueued();
+            var aFilePath = new FilePath("someFilePath");
+            fileCopy.toInProgress(aFilePath);
+            repository.save(fileCopy);
+
+            verify(domainEventPublisher).publish(any(FileBackupStartedEvent.class));
+        }
+
+        @Test
+        void shouldClearEvents() {
+            persistSampleData();
+            FileCopy fileCopy = TestFileCopy.enqueued();
+            var aFilePath = new FilePath("someFilePath");
+            fileCopy.toInProgress(aFilePath);
+            repository.save(fileCopy);
+
+            assertThat(fileCopy.getDomainEvents()).isEmpty();
+        }
+
+        @Test
+        void shouldThrowGivenNaturalIdIsNotUnique() {
+            persistSampleDependencies();
+            FileCopy fileCopy1 = TestFileCopy.trackedBuilder()
+                    .id(new FileCopyId("7bf408f7-9b6e-4ee7-a2f2-27a454a4f5ba"))
+                    .build();
+            FileCopy fileCopy2 = TestFileCopy.trackedBuilder()
+                    .id(new FileCopyId("09366863-b707-4e5c-8315-ed7e7c56d0a9"))
+                    .naturalId(fileCopy1.getNaturalId())
+                    .build();
+            directPersistenceAdapter.persist(fileCopy1);
+
+            repository.save(fileCopy2);
+
+            assertThatThrownBy(() -> entityManager.flush())
+                    .isInstanceOf(ConstraintViolationException.class);
+        }
+    }
+
+    @Nested
+    class GetById {
+
+        @Test
+        void shouldReturnAggregateGivenItExists() {
+            persistSampleData();
+            FileCopy expectedResult = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
+            FileCopy result = repository.getById(expectedResult.getId());
+
+            assertThat(result)
+                    .usingRecursiveComparison()
+                    .isEqualTo(expectedResult);
+        }
+
+        @Test
+        void shouldThrowGivenNotFound() {
+            persistSampleData();
+            var nonExistentId = new FileCopyId("247900d6-8829-47cd-a068-4f35f37d8eb8");
+
+            assertThatThrownBy(() -> repository.getById(nonExistentId))
+                    .isInstanceOf(FileCopyNotFoundException.class)
+                    .hasMessageContaining(nonExistentId.toString());
+        }
+    }
+
+    @Nested
+    class GetByNaturalIdOrCreate {
+
+        @Test
+        void shouldGetGivenExists() {
+            persistSampleData();
+            FileCopy expectedResult = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
+
+            FileCopy result = repository.getByNaturalIdOrCreate(expectedResult.getNaturalId(), () -> null);
+
+            assertThat(result)
+                    .usingRecursiveComparison()
+                    .isEqualTo(expectedResult);
+        }
+
+        @Test
+        void shouldGetGivenNotExists() {
+            persistSampleDependencies();
+            FileCopy expectedResult = TestFileCopy.trackedBuilder()
+                    .id(new FileCopyId("7bf408f7-9b6e-4ee7-a2f2-27a454a4f5ba"))
+                    .naturalId(new FileCopyNaturalId(
+                            SampleSourceFiles.GOG_SOURCE_FILE_2_FOR_GAME_1.get().getId(),
+                            SampleBackupTargets.LOCAL_FOLDER_1.get().getId()
+                    ))
+                    .build();
+
+            FileCopy result = repository.getByNaturalIdOrCreate(expectedResult.getNaturalId(), () -> expectedResult);
+
+            assertThat(result)
+                    .usingRecursiveComparison()
+                    .isEqualTo(expectedResult);
+        }
+
+        @Test
+        void shouldGetGivenCreatedInParallel() {
+            persistSampleData();
+            FileCopySpringRepository mockSpringRepository = mock(FileCopySpringRepository.class);
+            repository = new FileCopyJpaRepository(mockSpringRepository, entityMapper,
+                    mock(SpringPageMapper.class), mock(SpringPageableMapper.class), domainEventPublisher);
+            FileCopy expectedExisting = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
+            FileCopyNaturalId naturalId = expectedExisting.getNaturalId();
+            FileCopy newFileCopy = TestFileCopy.trackedBuilder()
+                    .naturalId(naturalId)
+                    .build();
+            aggregateIsCreatedConcurrently(mockSpringRepository, naturalId, expectedExisting);
+
+            FileCopy result = repository.getByNaturalIdOrCreate(naturalId, () -> newFileCopy);
+
+            assertThat(result)
+                    .usingRecursiveComparison()
+                    .isEqualTo(expectedExisting);
+        }
+    }
+
+    @Nested
+    class FindOldestEnqueued {
+
+        @Test
+        void shouldReturnOldestEnqueued() {
+            persistSampleData();
+            Optional<FileCopy> result = repository.findOldestEnqueued();
+
+            FileCopy expectedResult = SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get();
+            assertThat(result).isPresent();
+            assertThat(result.get())
+                    .usingRecursiveComparison()
+                    .isEqualTo(expectedResult);
+        }
+    }
+
+    @Nested
+    class FindAllInProgressOrEnqueued {
+
+        @Test
+        void shouldReturnInProgressAndEnqueued() {
+            persistSampleData();
+            Pagination pagination = everythingOnOnePage();
+            List<FileCopy> expectedContent = List.of(
+                    SampleFileCopies.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
+                    SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
+                    SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get()
+            );
+
+            Page<FileCopy> result = repository.findAllInProgressOrEnqueued(pagination);
+
+            assertThat(result.content())
+                    .usingRecursiveFieldByFieldElementComparator()
+                    .containsExactlyInAnyOrderElementsOf(expectedContent);
+        }
+
+        @Test
+        void shouldProperlyPaginate() {
+            persistSampleData();
+            Pagination pagination = new Pagination(0, 1);
+
+            Page<FileCopy> result = repository.findAllInProgressOrEnqueued(pagination);
+
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.totalPages()).isEqualTo(3);
+            assertThat(result.totalElements()).isEqualTo(3);
+            assertThat(result.pagination()).isEqualTo(pagination);
+        }
+
+        @Test
+        void shouldSortByStatusAscThenDateModifiedAsc() {
+            persistSampleData();
+            Pagination pagination = everythingOnOnePage();
+            var expectedContent = List.of(
+                    SampleFileCopies.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
+                    SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get(),
+                    SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get()
+            );
+
+            Page<FileCopy> result = repository.findAllInProgressOrEnqueued(pagination);
+
+            assertThat(result.content())
+                    .containsExactlyElementsOf(expectedContent);
+        }
+    }
+
+    @Nested
+    class FindAllInProgress {
+
+        @Test
+        void shouldReturnAllInProgress() {
+            persistSampleData();
+            List<FileCopy> expectedResult = List.of(
+                    SampleFileCopies.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get()
+            );
+
+            List<FileCopy> result = repository.findAllInProgress();
+
+            assertThat(result)
+                    .usingRecursiveComparison()
+                    .isEqualTo(expectedResult);
+        }
+    }
+
+    @Nested
+    class FindAllBySourceFileId {
+
+        @Test
+        void shouldReturnAllMatching() {
+            persistSampleData();
+            List<FileCopy> result =
+                    repository.findAllBySourceFileId(SampleSourceFiles.GOG_SOURCE_FILE_1_FOR_GAME_1.get().getId());
+
+            List<FileCopy> expectedResult = List.of(
+                    SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get(),
+                    SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get()
+            );
+            assertThat(result)
+                    .usingRecursiveFieldByFieldElementComparator()
+                    .containsExactlyInAnyOrderElementsOf(expectedResult);
+        }
+    }
+
+    @Nested
+    class ExistByBackupTargetIdAndStatusNotIn {
+
+        @Test
+        void shouldReturnTrueGivenFileCopyExists() {
+            persistSampleData();
+            BackupTargetId existingBackupTargetId =
+                    SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get()
+                            .getNaturalId()
+                            .backupTargetId();
+
+            boolean result = repository.existByBackupTargetIdAndStatusNotIn(
+                    existingBackupTargetId, List.of(FileCopyStatus.IN_PROGRESS));
+
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        void shouldReturnFalseGivenFileCopyNotFoundWithCorrectStatusNot() {
+            persistSampleData();
+            BackupTargetId existingBackupTargetId =
+                    SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get()
+                            .getNaturalId()
+                            .backupTargetId();
+
+            boolean result = repository.existByBackupTargetIdAndStatusNotIn(
+                    existingBackupTargetId, List.of(FileCopyStatus.values()));
+
+            assertThat(result).isFalse();
+        }
+
+        @Test
+        void shouldReturnFalseGivenFileCopyNotFoundWithCorrectIdNot() {
+            persistSampleData();
+            BackupTargetId existingBackupTargetId =
+                    SampleFileCopies.TRACKED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_1.get().getNaturalId()
+                            .backupTargetId();
+
+            boolean result = repository.existByBackupTargetIdAndStatusNotIn(
+                    existingBackupTargetId,
+                    List.of(FileCopyStatus.TRACKED)
+            );
+
+            assertThat(result).isFalse();
+        }
+    }
+
+    @Nested
+    class GetUniqueBackupTargetIdsByStatusNotIn {
+
+        @Test
+        void shouldReturnIds() {
+            persistSampleData();
+            List<BackupTargetId> result =
+                    repository.getUniqueBackupTargetIdsByStatusNotIn(
+                            List.of(FileCopyStatus.TRACKED, FileCopyStatus.FAILED));
+
+            assertThat(result).containsOnly(
+                    SampleFileCopies.IN_PROGRESS_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get()
+                            .getNaturalId().backupTargetId(),
+                    SampleFileCopies.ENQUEUED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get()
+                            .getNaturalId().backupTargetId(),
+                    SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get()
+                            .getNaturalId().backupTargetId(),
+                    SampleFileCopies.STORED_UNVERIFIED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_2.get()
+                            .getNaturalId().backupTargetId(),
+                    SampleFileCopies.STORED_VERIFIED_FILE_COPY_FROM_BEFORE_YESTERDAY_FOR_SOURCE_FILE_2.get()
+                            .getNaturalId().backupTargetId()
+            );
+        }
+    }
+
+    @Nested
+    class DeleteByBackupTargetIdAndStatusIn {
+
+        @Test
+        void shouldDeleteFileCopies() {
+            persistSampleData();
+            FileCopy fileCopy = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
+            FileCopy unaffectedFileCopy = SampleFileCopies.ENQUEUED_FILE_COPY_FROM_TODAY_FOR_SOURCE_FILE_2.get();
+
+            repository.deleteByBackupTargetIdAndStatusIn(
+                    fileCopy.getNaturalId().backupTargetId(), List.of(fileCopy.getStatus()));
+
+            assertThat(directPersistenceAdapter.exists(fileCopy)).isFalse();
+            assertThat(directPersistenceAdapter.exists(unaffectedFileCopy)).isTrue();
+        }
+
+        @Test
+        void shouldNotDeleteFileCopiesWithoutMatchingStatus() {
+            persistSampleData();
+            FileCopy fileCopy = SampleFileCopies.TRACKED_FILE_COPY_FROM_YESTERDAY_FOR_SOURCE_FILE_1.get();
+
+            repository.deleteByBackupTargetIdAndStatusIn(
+                    fileCopy.getNaturalId().backupTargetId(), List.of(FileCopyStatus.FAILED));
+
+            assertThat(directPersistenceAdapter.exists(fileCopy)).isTrue();
         }
     }
 }
