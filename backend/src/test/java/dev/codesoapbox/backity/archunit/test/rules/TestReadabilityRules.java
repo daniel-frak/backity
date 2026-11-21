@@ -3,7 +3,6 @@ package dev.codesoapbox.backity.archunit.test.rules;
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMethod;
-import com.tngtech.archunit.core.domain.JavaModifier;
 import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchCondition;
 import com.tngtech.archunit.lang.ArchRule;
@@ -136,8 +135,6 @@ public class TestReadabilityRules {
     static final ArchRule LARGE_TEST_CLASSES_SHOULD_GROUP_TESTS_IN_NESTED_CLASSES =
             classes()
                     .that().areNotAnnotatedWith(Nested.class)
-                    // @Nested doesn't work in abstract classes:
-                    .and().doNotHaveModifier(JavaModifier.ABSTRACT)
                     .should(notHaveTooManyUngroupedTests())
                     .because("""
                             grouping related tests makes test reports easier to navigate \
