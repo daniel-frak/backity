@@ -14,6 +14,7 @@ import dev.codesoapbox.backity.testing.time.FakeClock;
 import dev.codesoapbox.backity.testing.time.config.FakeTimeBeanConfig;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
@@ -50,194 +51,12 @@ abstract class GameJpaRepositoryIT {
         entityAuditControl.disable();
     }
 
-    @Test
-    void saveShouldPersistNew() {
-        Game game = TestGame.anyBuilder()
-                .withId(GameId.newInstance())
-                .withTitle(new GameTitle("New Title"))
-                .build();
-
-        repository.save(game);
-
-        Game persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(game);
-        assertThat(persistedAggregate)
-                .usingRecursiveComparison()
-                .isEqualTo(game);
-    }
-
-    @Test
-    void shouldNotSaveGivenGameWithTitleAlreadyExists() {
-        persistSampleData();
-        GameTitle existingTitle = SampleGames.GAME_CREATED_TODAY.get().getTitle();
-        Game game = TestGame.anyBuilder()
-                .withId(GameId.newInstance())
-                .withTitle(existingTitle)
-                .build();
-
-        repository.save(game);
-
-        assertThatThrownBy(() -> entityManager.flush())
-                .isInstanceOf(ConstraintViolationException.class);
-    }
-
     void persistSampleData() {
         directPersistenceAdapter.persist(SampleGames.getAll());
     }
 
     private Pagination everythingOnOnePage() {
         return new Pagination(0, 999);
-    }
-
-    @Test
-    void saveShouldModifyExisting() {
-        persistSampleData();
-        Game game = SampleGames.GAME_CREATED_TODAY.get();
-        game.setTitle(new GameTitle("New Title"));
-
-        repository.save(game);
-
-        Game persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(game);
-        assertThat(persistedAggregate)
-                .usingRecursiveComparison()
-                .isEqualTo(game);
-    }
-
-    @SuppressWarnings("JUnitMalformedDeclaration")
-    @Test
-    void saveShouldUpdateDatesGivenNew(EntityAuditControl entityAuditControl) {
-        entityAuditControl.enable();
-        Game game = SampleGames.GAME_CREATED_YESTERDAY.get();
-
-        repository.save(game);
-
-        LocalDateTime now = LocalDateTime.now(clock);
-        Game persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(game);
-        assertThat(persistedAggregate.getDateCreated())
-                .isNotEqualTo(game.getDateCreated())
-                .isEqualTo(now);
-        assertThat(persistedAggregate.getDateModified())
-                .isNotEqualTo(game.getDateModified())
-                .isEqualTo(now);
-    }
-
-    @SuppressWarnings("JUnitMalformedDeclaration")
-    @Test
-    void saveShouldUpdateDatesGivenExisting(EntityAuditControl entityAuditControl) {
-        persistSampleData();
-        entityAuditControl.enable();
-        Game game = SampleGames.GAME_CREATED_YESTERDAY.get();
-        game.setTitle(new GameTitle("Changed Title"));
-
-        repository.save(game);
-
-        LocalDateTime now = LocalDateTime.now(clock);
-        Game persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(game);
-        assertThat(persistedAggregate.getDateCreated())
-                .isEqualTo(game.getDateCreated())
-                .isNotEqualTo(now);
-        assertThat(persistedAggregate.getDateModified())
-                .isNotEqualTo(game.getDateModified())
-                .isEqualTo(now);
-    }
-
-    @Test
-    void findByIdShouldReturnAggregateGivenItExists() {
-        persistSampleData();
-        Game expectedGame = SampleGames.GAME_CREATED_TODAY.get();
-
-        Optional<Game> result = repository.findById(expectedGame.getId());
-
-        assertThat(result)
-                .get()
-                .usingRecursiveComparison()
-                .isEqualTo(expectedGame);
-    }
-
-    @Test
-    void shouldGetById() {
-        persistSampleData();
-        Game expectedResult = SampleGames.GAME_CREATED_TODAY.get();
-
-        Game result = repository.getById(expectedResult.getId());
-
-        assertThat(result)
-                .usingRecursiveComparison()
-                .isEqualTo(expectedResult);
-    }
-
-    @Test
-    void getByIdShouldThrowGivenNotFound() {
-        GameId nonexistentId = new GameId("9e9d9a87-919c-4475-a79d-1d897e1b0f53");
-
-        assertThatThrownBy(() -> repository.getById(nonexistentId))
-                .isInstanceOf(GameNotFoundException.class);
-    }
-
-    @Test
-    void shouldFindByTitle() {
-        persistSampleData();
-        var expectedResult = SampleGames.GAME_CREATED_TODAY.get();
-
-        Optional<Game> result = repository.findByTitle(expectedResult.getTitle());
-
-        assertThat(result)
-                .get()
-                .usingRecursiveComparison()
-                .isEqualTo(expectedResult);
-    }
-
-    @Test
-    void findAllShouldReturnValidContent() {
-        persistSampleData();
-        Pagination pagination = everythingOnOnePage();
-        List<Game> expectedContent =
-                List.of(SampleGames.GAME_CREATED_TODAY.get(), SampleGames.GAME_CREATED_YESTERDAY.get());
-
-        Page<Game> result = repository.findAll(pagination);
-
-        assertThat(result.content())
-                .usingRecursiveFieldByFieldElementComparator()
-                .containsExactlyInAnyOrderElementsOf(expectedContent);
-    }
-
-    @Test
-    void findAllShouldProperlyPaginate() {
-        persistSampleData();
-        Pagination pagination = new Pagination(0, 1);
-
-        Page<Game> result = repository.findAll(pagination);
-
-        assertThat(result.content()).hasSize(1);
-        assertThat(result.totalPages()).isEqualTo(2);
-        assertThat(result.totalElements()).isEqualTo(2);
-        assertThat(result.pagination()).isEqualTo(pagination);
-    }
-
-    @Test
-    void findAllShouldSortByDateCreatedAsc() {
-        persistSampleData();
-        Pagination pageable = new Pagination(0, 5);
-        List<Game> expectedContent = List.of(
-                SampleGames.GAME_CREATED_YESTERDAY.get(),
-                SampleGames.GAME_CREATED_TODAY.get()
-        );
-
-        Page<Game> result = repository.findAll(pageable);
-
-        assertThat(result.content())
-                .containsExactlyElementsOf(expectedContent);
-    }
-
-    @Test
-    void findAllByIdInShouldReturnAllDataForAggregate() {
-        persistSampleData();
-        Game game = SampleGames.GAME_CREATED_TODAY.get();
-
-        List<Game> result = repository.findAllByIdIn(List.of(game.getId()));
-
-        assertThat(result)
-                .usingRecursiveFieldByFieldElementComparator()
-                .containsExactly(game);
     }
 
     private static final class Time {
@@ -263,6 +82,212 @@ abstract class GameJpaRepositoryIT {
 
         public static List<Game> getAll() {
             return List.of(GAME_CREATED_TODAY.get(), GAME_CREATED_YESTERDAY.get());
+        }
+    }
+
+    @Nested
+    class Save {
+
+        @Test
+        void shouldPersistNew() {
+            Game game = TestGame.anyBuilder()
+                    .withId(GameId.newInstance())
+                    .withTitle(new GameTitle("New Title"))
+                    .build();
+
+            repository.save(game);
+
+            Game persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(game);
+            assertThat(persistedAggregate)
+                    .usingRecursiveComparison()
+                    .isEqualTo(game);
+        }
+
+        @Test
+        void shouldNotSaveGivenGameWithTitleAlreadyExists() {
+            persistSampleData();
+            GameTitle existingTitle = SampleGames.GAME_CREATED_TODAY.get().getTitle();
+            Game game = TestGame.anyBuilder()
+                    .withId(GameId.newInstance())
+                    .withTitle(existingTitle)
+                    .build();
+
+            repository.save(game);
+
+            assertThatThrownBy(() -> entityManager.flush())
+                    .isInstanceOf(ConstraintViolationException.class);
+        }
+
+        @Test
+        void shouldModifyExisting() {
+            persistSampleData();
+            Game game = SampleGames.GAME_CREATED_TODAY.get();
+            game.setTitle(new GameTitle("New Title"));
+
+            repository.save(game);
+
+            Game persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(game);
+            assertThat(persistedAggregate)
+                    .usingRecursiveComparison()
+                    .isEqualTo(game);
+        }
+
+        @SuppressWarnings("JUnitMalformedDeclaration")
+        @Test
+        void shouldUpdateDatesGivenNew(EntityAuditControl entityAuditControl) {
+            entityAuditControl.enable();
+            Game game = SampleGames.GAME_CREATED_YESTERDAY.get();
+
+            repository.save(game);
+
+            LocalDateTime now = LocalDateTime.now(clock);
+            Game persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(game);
+            assertThat(persistedAggregate.getDateCreated())
+                    .isNotEqualTo(game.getDateCreated())
+                    .isEqualTo(now);
+            assertThat(persistedAggregate.getDateModified())
+                    .isNotEqualTo(game.getDateModified())
+                    .isEqualTo(now);
+        }
+
+        @SuppressWarnings("JUnitMalformedDeclaration")
+        @Test
+        void shouldUpdateDatesGivenExisting(EntityAuditControl entityAuditControl) {
+            persistSampleData();
+            entityAuditControl.enable();
+            Game game = SampleGames.GAME_CREATED_YESTERDAY.get();
+            game.setTitle(new GameTitle("Changed Title"));
+
+            repository.save(game);
+
+            LocalDateTime now = LocalDateTime.now(clock);
+            Game persistedAggregate = directPersistenceAdapter.getPersistedDomainObject(game);
+            assertThat(persistedAggregate.getDateCreated())
+                    .isEqualTo(game.getDateCreated())
+                    .isNotEqualTo(now);
+            assertThat(persistedAggregate.getDateModified())
+                    .isNotEqualTo(game.getDateModified())
+                    .isEqualTo(now);
+        }
+    }
+
+    @Nested
+    class FindById {
+
+        @Test
+        void shouldReturnAggregateGivenItExists() {
+            persistSampleData();
+            Game expectedGame = SampleGames.GAME_CREATED_TODAY.get();
+
+            Optional<Game> result = repository.findById(expectedGame.getId());
+
+            assertThat(result)
+                    .get()
+                    .usingRecursiveComparison()
+                    .isEqualTo(expectedGame);
+        }
+    }
+
+    @Nested
+    class GetById {
+
+        @Test
+        void shouldGetById() {
+            persistSampleData();
+            Game expectedResult = SampleGames.GAME_CREATED_TODAY.get();
+
+            Game result = repository.getById(expectedResult.getId());
+
+            assertThat(result)
+                    .usingRecursiveComparison()
+                    .isEqualTo(expectedResult);
+        }
+
+        @Test
+        void shouldThrowGivenNotFound() {
+            GameId nonexistentId = new GameId("9e9d9a87-919c-4475-a79d-1d897e1b0f53");
+
+            assertThatThrownBy(() -> repository.getById(nonexistentId))
+                    .isInstanceOf(GameNotFoundException.class);
+        }
+    }
+
+    @Nested
+    class FindByTitle {
+
+        @Test
+        void shouldFindByTitle() {
+            persistSampleData();
+            var expectedResult = SampleGames.GAME_CREATED_TODAY.get();
+
+            Optional<Game> result = repository.findByTitle(expectedResult.getTitle());
+
+            assertThat(result)
+                    .get()
+                    .usingRecursiveComparison()
+                    .isEqualTo(expectedResult);
+        }
+    }
+
+    @Nested
+    class FindAll {
+
+        @Test
+        void shouldReturnValidContent() {
+            persistSampleData();
+            Pagination pagination = everythingOnOnePage();
+            List<Game> expectedContent =
+                    List.of(SampleGames.GAME_CREATED_TODAY.get(), SampleGames.GAME_CREATED_YESTERDAY.get());
+
+            Page<Game> result = repository.findAll(pagination);
+
+            assertThat(result.content())
+                    .usingRecursiveFieldByFieldElementComparator()
+                    .containsExactlyInAnyOrderElementsOf(expectedContent);
+        }
+
+        @Test
+        void shouldProperlyPaginate() {
+            persistSampleData();
+            Pagination pagination = new Pagination(0, 1);
+
+            Page<Game> result = repository.findAll(pagination);
+
+            assertThat(result.content()).hasSize(1);
+            assertThat(result.totalPages()).isEqualTo(2);
+            assertThat(result.totalElements()).isEqualTo(2);
+            assertThat(result.pagination()).isEqualTo(pagination);
+        }
+
+        @Test
+        void shouldSortByDateCreatedAsc() {
+            persistSampleData();
+            Pagination pageable = new Pagination(0, 5);
+            List<Game> expectedContent = List.of(
+                    SampleGames.GAME_CREATED_YESTERDAY.get(),
+                    SampleGames.GAME_CREATED_TODAY.get()
+            );
+
+            Page<Game> result = repository.findAll(pageable);
+
+            assertThat(result.content())
+                    .containsExactlyElementsOf(expectedContent);
+        }
+    }
+
+    @Nested
+    class FindAllByIdIn {
+
+        @Test
+        void shouldReturnAllDataForAggregate() {
+            persistSampleData();
+            Game game = SampleGames.GAME_CREATED_TODAY.get();
+
+            List<Game> result = repository.findAllByIdIn(List.of(game.getId()));
+
+            assertThat(result)
+                    .usingRecursiveFieldByFieldElementComparator()
+                    .containsExactly(game);
         }
     }
 }
