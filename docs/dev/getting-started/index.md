@@ -161,8 +161,9 @@ that means they need to be generated via `mvn test-compile`
 
 A `generate test sources` [IntelliJ run configuration](#intellij-run-configurations) is available as an alternative.
 
-Once the test sources are generated, changes to existing abstract test classes (e.g. adding new test methods)
-will automatically be picked up. However, new test classes may not be discovered until the next `test-compile`.
+Once the test sources are generated, changes to existing abstract test classes (e.g., adding new test methods)
+will automatically be picked up. However, new test classes (or new inner `@Nested` classes)
+may not be discovered until the next `test-compile`.
 
 ## Frontend tests
 
