@@ -10,8 +10,6 @@ services:
       - sonarqube_extensions:/opt/sonarqube/extensions
     stop_grace_period: 5m
     restart: unless-stopped
-    networks:
-      - internal
 
   # Only used for first-time setup:
   sonarqube_first_run_setup_backend:
@@ -27,12 +25,7 @@ services:
       - ./java_profile.xml:/java_profile.xml:ro
     depends_on:
       - sonarqube
-    networks:
-      - internal
   ### END CODE ANALYSIS ###
-
-networks:
-  internal:
 
 volumes:
   sonarqube_data:

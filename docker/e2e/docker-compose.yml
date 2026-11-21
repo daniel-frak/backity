@@ -14,8 +14,6 @@ services:
         target: /config
     stop_grace_period: 5m
     restart: unless-stopped
-    networks:
-      - internal
   ### END API MOCKING ###
 
   ### S3 ###
@@ -41,12 +39,7 @@ services:
       - localstack:/var/lib/localstack
 #      - "/var/run/docker.sock:/var/run/docker.sock" # Only necessary for some services
     restart: unless-stopped
-    networks:
-      - internal
   ### END S3 ###
-
-networks:
-  internal:
 
 volumes:
   localstack:
