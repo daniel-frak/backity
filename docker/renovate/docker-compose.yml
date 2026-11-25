@@ -3,7 +3,7 @@
 # docker compose run --rm renovate
 services:
   renovate:
-    image: renovate/renovate:44.262.0@sha256:4c5d7663f0d5e072d5e6066a64789b199fce2d592ae0d283609b5070d66b408b
+    image: renovate/renovate:44.263.1@sha256:0efa7b743c52015c08a5bd2bb98fbc16f735a4e684a45526c622eddce00be909
     working_dir: /repo
     volumes:
       - ../..:/repo
